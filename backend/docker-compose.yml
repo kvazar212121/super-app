@@ -1,0 +1,20 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: superapp
+    ports:
+      # 5432 ko‘pincha mahalliy PostgreSQL bilan band; super-app konteyneri 5433 orqali
+      - "5433:5432"
+    volumes:
+      - superapp_pg:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+volumes:
+  superapp_pg:

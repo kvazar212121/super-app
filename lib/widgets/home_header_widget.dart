@@ -23,7 +23,7 @@ class HomeHeaderWidget extends StatelessWidget {
             color: Colors.white,
             borderRadius: BorderRadius.circular(15),
             boxShadow: [
-              BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 10)
+              BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 10)
             ],
           ),
           child: IconButton(

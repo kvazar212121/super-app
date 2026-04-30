@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:lucide_icons/lucide_icons.dart';
 import '../widgets/search_input_widget.dart';
 import '../widgets/recent_searches_widget.dart';
 import '../widgets/search_results_widget.dart';
@@ -13,7 +12,7 @@ class SearchScreen extends StatefulWidget {
 
 class _SearchScreenState extends State<SearchScreen> {
   final _controller = TextEditingController();
-  List<String> _recentSearches = ["Sartarosh", "Elektrik", "Usta"];
+  final List<String> _recentSearches = ["Sartarosh", "Elektrik", "Usta"];
 
   @override
   Widget build(BuildContext context) {

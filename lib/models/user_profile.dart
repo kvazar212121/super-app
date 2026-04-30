@@ -19,6 +19,28 @@ class UserProfile {
     this.isPremium = false,
   });
 
+  UserProfile copyWith({
+    String? name,
+    String? surname,
+    String? phone,
+    String? avatarUrl,
+    String? telegramUsername,
+    double? balance,
+    double? cashback,
+    bool? isPremium,
+  }) {
+    return UserProfile(
+      name: name ?? this.name,
+      surname: surname ?? this.surname,
+      phone: phone ?? this.phone,
+      avatarUrl: avatarUrl ?? this.avatarUrl,
+      telegramUsername: telegramUsername ?? this.telegramUsername,
+      balance: balance ?? this.balance,
+      cashback: cashback ?? this.cashback,
+      isPremium: isPremium ?? this.isPremium,
+    );
+  }
+
   static UserProfile demo = UserProfile(
     name: "Kudratulloh",
     surname: "Rahimov",

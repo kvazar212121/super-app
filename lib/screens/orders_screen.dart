@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../widgets/orders_filter_widget.dart';
 import '../widgets/orders_list_widget.dart';
+import 'all_categories_screen.dart';
 
 class OrdersScreen extends StatefulWidget {
   const OrdersScreen({super.key});
@@ -29,30 +30,17 @@ class _OrdersScreenState extends State<OrdersScreen> {
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => _showNewOrderDialog(context),
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute<void>(
+              builder: (_) => const AllCategoriesScreen(),
+            ),
+          );
+        },
         backgroundColor: Theme.of(context).colorScheme.primary,
         icon: const Icon(Icons.add),
-        label: const Text("Yangi"),
-      ),
-    );
-  }
-
-  void _showNewOrderDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (_) => AlertDialog(
-        title: const Text("Yangi buyurtma"),
-        content: const Text("Xizmat tanlang va ma'lumotlarni kiriting"),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text("Bekor qilish")),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Buyurtma yaratildi")));
-            },
-            child: const Text("Yaratish"),
-          ),
-        ],
+        label: const Text("Yangi buyurtma"),
       ),
     );
   }

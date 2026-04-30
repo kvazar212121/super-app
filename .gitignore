@@ -25,6 +25,7 @@ build/
 .env
 .env.local
 *.env.*
+!backend/.env.example
 
 # Dependencies
 node_modules/
