@@ -3,22 +3,29 @@ import 'package:lucide_icons/lucide_icons.dart';
 import '../models/barber_shop.dart';
 import '../screens/barber_map_screen.dart';
 
+class _ServiceEntry {
+  final String name;
+  final IconData icon;
+  final Color color;
+  const _ServiceEntry({required this.name, required this.icon, required this.color});
+}
+
 class SearchResultsWidget extends StatelessWidget {
   final String query;
   const SearchResultsWidget({super.key, required this.query});
 
   @override
   Widget build(BuildContext context) {
-    final services = [
-      {"name": "Sartarosh", "icon": LucideIcons.scissors, "color": Colors.blue},
-      {"name": "Salon", "icon": LucideIcons.sparkles, "color": Colors.pink},
-      {"name": "Futbol", "icon": LucideIcons.trophy, "color": Colors.green},
-      {"name": "Ishchi", "icon": LucideIcons.users, "color": Colors.orange},
-      {"name": "Usta", "icon": LucideIcons.wrench, "color": Colors.teal},
-      {"name": "Elektrik", "icon": LucideIcons.zap, "color": Colors.yellow[700]!},
-      {"name": "Santexnik", "icon": LucideIcons.droplet, "color": Colors.lightBlue},
-      {"name": "Oshpaz", "icon": LucideIcons.utensils, "color": Colors.brown},
-      {"name": "Haydovchi", "icon": LucideIcons.car, "color": Colors.indigo},
+    const services = <_ServiceEntry>[
+      _ServiceEntry(name: "Sartarosh", icon: LucideIcons.scissors, color: Colors.blue),
+      _ServiceEntry(name: "Salon", icon: LucideIcons.sparkles, color: Colors.pink),
+      _ServiceEntry(name: "Futbol", icon: LucideIcons.trophy, color: Colors.green),
+      _ServiceEntry(name: "Ishchi", icon: LucideIcons.users, color: Colors.orange),
+      _ServiceEntry(name: "Usta", icon: LucideIcons.wrench, color: Colors.teal),
+      _ServiceEntry(name: "Elektrik", icon: LucideIcons.zap, color: Color(0xFFF59E0B)),
+      _ServiceEntry(name: "Santexnik", icon: LucideIcons.droplet, color: Colors.lightBlue),
+      _ServiceEntry(name: "Oshpaz", icon: LucideIcons.utensils, color: Colors.brown),
+      _ServiceEntry(name: "Haydovchi", icon: LucideIcons.car, color: Colors.indigo),
     ];
 
     if (query.isEmpty) {
@@ -37,19 +44,22 @@ class SearchResultsWidget extends StatelessWidget {
       );
     }
 
-    final filtered = services.where((s) => s["name"].toString().toLowerCase().contains(query.toLowerCase())).toList();
+    final filtered = services.where((s) => s.name.toLowerCase().contains(query.toLowerCase())).toList();
     return ListView.builder(
       itemCount: filtered.length,
-      itemBuilder: (ctx, i) => ListTile(
+      itemBuilder: (ctx, i) {
+        final s = filtered[i];
+        return ListTile(
         leading: Container(
           width: 40, height: 40,
-          decoration: BoxDecoration(color: filtered[i]["color"].withOpacity(0.1), borderRadius: BorderRadius.circular(10)),
-          child: Icon(filtered[i]["icon"], color: filtered[i]["color"]),
+          decoration: BoxDecoration(color: s.color.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(10)),
+          child: Icon(s.icon, color: s.color),
         ),
-        title: Text(filtered[i]["name"]),
+        title: Text(s.name),
         trailing: const Icon(LucideIcons.chevronRight),
         onTap: () {},
-      ),
+        );
+      },
     );
   }
 }

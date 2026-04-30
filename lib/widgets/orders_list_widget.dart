@@ -55,6 +55,9 @@ class _OrderCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final accent = _serviceAccentColor(order.serviceIcon);
+    final icon = _serviceIconData(order.serviceIcon);
+    final dateStr = "${order.date.day}.${order.date.month}.${order.date.year}";
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
       child: Padding(
@@ -63,21 +66,28 @@ class _OrderCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(children: [
-              Container(width: 40, height: 40, decoration: BoxDecoration(color: order.serviceColor.withOpacity(0.1), borderRadius: BorderRadius.circular(10)),
-                child: Icon(order.icon, color: order.serviceColor)),
+              Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                      color: accent.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(10)),
+                  child: Icon(icon, color: accent)),
               const SizedBox(width: 12),
               Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                 Text(order.serviceName, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                 Text(order.providerName, style: const TextStyle(color: Colors.grey)),
               ])),
-              Container(padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(color: statusColor.withOpacity(0.1), borderRadius: BorderRadius.circular(20)),
-                child: Text(_getStatusText(order.status), style: TextStyle(color: statusColor, fontWeight: FontWeight.w500))),
+              Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                      color: statusColor.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(20)),
+                  child: Text(_getStatusText(order.status),
+                      style: TextStyle(color: statusColor, fontWeight: FontWeight.w500))),
             ]),
             const Divider(height: 24),
             Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-              Text("Sana: ${order.date}", style: const TextStyle(fontSize: 12)),
-              Text("Narx: ${order.price} so'm", style: const TextStyle(fontWeight: FontWeight.bold)),
+              Text("Sana: $dateStr", style: const TextStyle(fontSize: 12)),
+              Text("Narx: ${order.price.toStringAsFixed(0)} so'm", style: const TextStyle(fontWeight: FontWeight.bold)),
             ]),
           ],
         ),
@@ -93,5 +103,31 @@ class _OrderCard extends StatelessWidget {
       case OrderStatus.completed: return "Yakunlandi";
       case OrderStatus.cancelled: return "Bekor qilindi";
     }
+  }
+}
+
+IconData _serviceIconData(String name) {
+  switch (name) {
+    case "scissors":
+      return LucideIcons.scissors;
+    case "zap":
+      return LucideIcons.zap;
+    case "droplet":
+      return LucideIcons.droplet;
+    default:
+      return LucideIcons.briefcase;
+  }
+}
+
+Color _serviceAccentColor(String name) {
+  switch (name) {
+    case "scissors":
+      return Colors.indigo;
+    case "zap":
+      return Colors.amber.shade700;
+    case "droplet":
+      return Colors.lightBlue;
+    default:
+      return Colors.blueGrey;
   }
 }

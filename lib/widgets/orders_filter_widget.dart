@@ -14,16 +14,16 @@ class OrdersFilterWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        _buildFilterChip("Barchasi", "all"),
+        _buildFilterChip(context, "Barchasi", "all"),
         const SizedBox(width: 8),
-        _buildFilterChip("Faol", "active"),
+        _buildFilterChip(context, "Faol", "active"),
         const SizedBox(width: 8),
-        _buildFilterChip("Yakunlangan", "completed"),
+        _buildFilterChip(context, "Yakunlangan", "completed"),
       ],
     );
   }
 
-  Widget _buildFilterChip(String label, String value) {
+  Widget _buildFilterChip(BuildContext context, String label, String value) {
     return FilterChip(
       label: Text(label),
       selected: currentFilter == value,
