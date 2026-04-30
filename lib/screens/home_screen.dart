@@ -77,10 +77,10 @@ class HomeScreen extends StatelessWidget {
               // Banner
               CarouselSlider(
                 options: CarouselOptions(
-                  height: 160.0,
+                  height: 200.0,
                   viewportFraction: 1.0,
                   autoPlay: true,
-                  enlargeCenterPage: true,
+                  enlargeCenterPage: false,
                 ),
                 items: [1, 2, 3].map((i) {
                   return Builder(

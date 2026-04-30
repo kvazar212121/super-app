@@ -2,23 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../models/service_order.dart';
 
+Color _getStatusColor(OrderStatus status) {
+  switch (status) {
+    case OrderStatus.pending:
+      return Colors.orange;
+    case OrderStatus.accepted:
+      return Colors.blue;
+    case OrderStatus.inProgress:
+      return Colors.purple;
+    case OrderStatus.completed:
+      return Colors.green;
+    case OrderStatus.cancelled:
+      return Colors.red;
+  }
+}
+
 class OrdersScreen extends StatelessWidget {
   const OrdersScreen({super.key});
-
-  Color _getStatusColor(OrderStatus status) {
-    switch (status) {
-      case OrderStatus.pending:
-        return Colors.orange;
-      case OrderStatus.accepted:
-        return Colors.blue;
-      case OrderStatus.inProgress:
-        return Colors.purple;
-      case OrderStatus.completed:
-        return Colors.green;
-      case OrderStatus.cancelled:
-        return Colors.red;
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
