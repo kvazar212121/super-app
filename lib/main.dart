@@ -1,21 +1,32 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'theme/app_theme.dart';
+import 'providers/app_provider.dart';
 import 'screens/main_screen.dart';
 
 void main() {
-  runApp(const SuperApp());
+  runApp(const MyApp());
 }
 
-class SuperApp extends StatelessWidget {
-  const SuperApp({super.key});
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Super App',
-      debugShowCheckedModeBanner: false,
-      theme: AppTheme.lightTheme,
-      home: const MainScreen(),
+    return ChangeNotifierProvider(
+      create: (_) => AppProvider(),
+      child: Consumer<AppProvider>(
+        builder: (context, provider, _) {
+          return MaterialApp(
+            title: 'Super App',
+            debugShowCheckedModeBanner: false,
+            theme: AppTheme.lightTheme,
+            darkTheme: AppTheme.darkTheme,
+            themeMode: provider.isDarkMode ? ThemeMode.dark : ThemeMode.light,
+            home: const MainScreen(),
+          );
+        },
+      ),
     );
   }
 }

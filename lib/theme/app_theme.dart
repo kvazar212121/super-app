@@ -1,46 +1,51 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
-  static const primaryColor = Color(0xFF6366F1); // Indigo
-  static const secondaryColor = Color(0xFFF1F5F9); // Light Grey
-  static const accentColor = Color(0xFF10B981); // Emerald
-  static const backgroundColor = Color(0xFFF8FAFC);
-  static const textColor = Color(0xFF1E293B);
-  static const mutedColor = Color(0xFF64748B);
+  static bool isDarkMode = false;
 
-  static ThemeData lightTheme = ThemeData(
-    useMaterial3: true,
-    colorScheme: ColorScheme.fromSeed(
-      seedColor: primaryColor,
-      background: backgroundColor,
-    ),
-    scaffoldBackgroundColor: backgroundColor,
-    textTheme: GoogleFonts.interTextTheme().copyWith(
-      displayLarge: GoogleFonts.inter(
-        fontSize: 32,
-        fontWeight: FontWeight.bold,
-        color: textColor,
+  static ThemeData get lightTheme {
+    return ThemeData(
+      useMaterial3: true,
+      brightness: Brightness.light,
+      colorScheme: ColorScheme.fromSeed(
+        seedColor: const Color(0xFF6366F1),
+        secondary: const Color(0xFF10B981),
+        brightness: Brightness.light,
       ),
-      titleLarge: GoogleFonts.inter(
-        fontSize: 20,
-        fontWeight: FontWeight.w600,
-        color: textColor,
+      fontFamily: 'Inter',
+      appBarTheme: const AppBarTheme(
+        centerTitle: true,
+        elevation: 0,
       ),
-      bodyLarge: GoogleFonts.inter(
-        fontSize: 16,
-        color: textColor,
+      cardTheme: CardTheme(
+        elevation: 2,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
       ),
-      bodyMedium: GoogleFonts.inter(
-        fontSize: 14,
-        color: mutedColor,
+    );
+  }
+
+  static ThemeData get darkTheme {
+    return ThemeData(
+      useMaterial3: true,
+      brightness: Brightness.dark,
+      colorScheme: ColorScheme.fromSeed(
+        seedColor: const Color(0xFF6366F1),
+        secondary: const Color(0xFF10B981),
+        brightness: Brightness.dark,
       ),
-    ),
-    appBarTheme: const AppBarTheme(
-      backgroundColor: Colors.transparent,
-      elevation: 0,
-      centerTitle: false,
-      iconTheme: IconThemeData(color: textColor),
-    ),
-  );
+      fontFamily: 'Inter',
+      appBarTheme: const AppBarTheme(
+        centerTitle: true,
+        elevation: 0,
+      ),
+      cardTheme: CardTheme(
+        elevation: 2,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+      ),
+    );
+  }
 }

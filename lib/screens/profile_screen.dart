@@ -1,155 +1,144 @@
 import 'package:flutter/material.dart';
-import 'package:lucide_icons/lucide_icons.dart';
-import '../models/user_profile.dart';
+import 'package:provider/provider.dart';
+import '../providers/app_provider.dart';
+import '../widgets/card_item_widget.dart';
+import '../widgets/cashback_card_widget.dart';
 
-class ProfileScreen extends StatefulWidget {
+class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
 
   @override
-  State<ProfileScreen> createState() => _ProfileScreenState();
-}
-
-class _ProfileScreenState extends State<ProfileScreen> {
-  final user = UserProfile.demo;
-
-  void _showLogoutDialog() {
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text("Chiqish"),
-        content: const Text("Haqiqatan ham chiqmoqchimisiz?"),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text("Bekor qilish"),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(ctx);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text("Hisobdan chiqdingiz")),
-              );
-            },
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: const Text("Chiqish", style: TextStyle(color: Colors.white)),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showDeleteAccountDialog() {
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text("Hisobni o'chirish"),
-        content: const Text("Bu amal qaytarib bo'lmaydi. Davom etasizmi?"),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text("Bekor qilish"),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(ctx);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text("Hisob o'chirildi")),
-              );
-            },
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: const Text("O'chirish", style: TextStyle(color: Colors.white)),
-          ),
-        ],
-      ),
-    );
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final provider = Provider.of<AppProvider>(context);
+    final user = provider.user;
+    final theme = Theme.of(context);
+
     return Scaffold(
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(20),
+      appBar: AppBar(
+        title: const Text('Profil'),
+        actions: [
+          IconButton(
+            icon: Icon(provider.isDarkMode 
+              ? Icons.light_mode : Icons.dark_mode),
+            onPressed: () => provider.toggleTheme(),
+          ),
+        ],
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            _buildProfileHeader(user, theme),
+            const SizedBox(height: 20),
+            CashbackCardWidget(
+              balance: user.balance,
+              cashback: user.cashback,
+              isPremium: user.isPremium,
+            ),
+            const SizedBox(height: 20),
+            _buildSectionTitle('Mening kartalarim', theme),
+            ...provider.cards.map((card) => Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: CardItemWidget(card: card),
+            )),
+            ListTile(
+              leading: const Icon(Icons.add_circle_outline),
+              title: const Text('Karta qo\'shish'),
+              onTap: () => _showAddCardDialog(context, provider),
+            ),
+            const Divider(),
+            ListTile(
+              leading: const Icon(Icons.logout, color: Colors.red),
+              title: const Text('Chiqish'),
+              onTap: () => _showLogoutDialog(context),
+            ),
+            ListTile(
+              leading: const Icon(Icons.delete_forever, color: Colors.red),
+              title: const Text('Hisobni o\'chirish'),
+              onTap: () => _showDeleteDialog(context),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildProfileHeader(user, ThemeData theme) {
+    return Row(
+      children: [
+        CircleAvatar(
+          radius: 40,
+          backgroundColor: theme.colorScheme.primaryContainer,
+          child: user.avatarUrl != null
+            ? ClipOval(child: Image.network(user.avatarUrl!))
+            : Text(user.name[0], style: theme.textTheme.headlineMedium),
+        ),
+        const SizedBox(width: 16),
+        Expanded(
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: 20),
-              CircleAvatar(
-                radius: 50,
-                backgroundColor: Colors.grey[200],
-                child: user.avatarUrl != null
-                    ? ClipOval(child: Image.network(user.avatarUrl!))
-                    : const Icon(LucideIcons.user, size: 50, color: Colors.grey),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                "${user.name} ${user.surname}",
-                style: Theme.of(context).textTheme.titleLarge,
-              ),
-              const SizedBox(height: 4),
-              Text(user.phone, style: Theme.of(context).textTheme.bodyMedium),
-              if (user.telegramUsername != null) ...[
-                const SizedBox(height: 4),
+              Text('${user.name} ${user.surname}',
+                style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+              Text(user.phone, style: theme.textTheme.bodyMedium),
+              if (user.telegramUsername != null)
                 Text(user.telegramUsername!,
-                    style: const TextStyle(color: Colors.blue)),
-              ],
-              const SizedBox(height: 30),
-              _buildMenuItem(
-                icon: LucideIcons.user,
-                title: "Profilni tahrirlash",
-                onTap: () {},
-              ),
-              _buildMenuItem(
-                icon: LucideIcons.bell,
-                title: "Bildirishnomalar",
-                onTap: () {},
-              ),
-              _buildMenuItem(
-                icon: LucideIcons.settings,
-                title: "Sozlamalar",
-                onTap: () {},
-              ),
-              _buildMenuItem(
-                icon: LucideIcons.helpCircle,
-                title: "Yordam",
-                onTap: () {},
-              ),
-              const Divider(height: 30),
-              _buildMenuItem(
-                icon: LucideIcons.logOut,
-                title: "Chiqish",
-                onTap: _showLogoutDialog,
-                isDestructive: true,
-              ),
-              _buildMenuItem(
-                icon: LucideIcons.trash2,
-                title: "Hisobni o'chirish",
-                onTap: _showDeleteAccountDialog,
-                isDestructive: true,
-              ),
+                  style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.primary)),
             ],
           ),
         ),
-      ),
+      ],
     );
   }
 
-  Widget _buildMenuItem({
-    required IconData icon,
-    required String title,
-    required VoidCallback onTap,
-    bool isDestructive = false,
-  }) {
-    return ListTile(
-      leading: Icon(icon, color: isDestructive ? Colors.red : Colors.grey),
-      title: Text(
-        title,
-        style: TextStyle(
-          color: isDestructive ? Colors.red : Colors.black87,
-          fontWeight: FontWeight.w500,
-        ),
-      ),
-      trailing: const Icon(LucideIcons.chevronRight, color: Colors.grey),
-      onTap: onTap,
+  Widget _buildSectionTitle(String title, ThemeData theme) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Text(title,
+        style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
     );
+  }
+
+  void _showAddCardDialog(BuildContext context, AppProvider provider) {
+    showDialog(context: context, builder: (_) => AlertDialog(
+      title: const Text('Karta qo\'shish'),
+      content: const Text('Karta ma\'lumotlarini kiriting'),
+      actions: [
+        TextButton(onPressed: () => Navigator.pop(context),
+          child: const Text('Bekor qilish')),
+        ElevatedButton(onPressed: () {
+          Navigator.pop(context);
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Karta qo\'shildi')));
+        }, child: const Text('Qo\'shish')),
+      ],
+    ));
+  }
+
+  void _showLogoutDialog(BuildContext context) {
+    showDialog(context: context, builder: (_) => AlertDialog(
+      title: const Text('Chiqish'),
+      content: const Text('Haqiqatan chiqasizmi?'),
+      actions: [
+        TextButton(onPressed: () => Navigator.pop(context),
+          child: const Text('Yo\'q')),
+        ElevatedButton(onPressed: () => Navigator.pop(context),
+          child: const Text('Ha')),
+      ],
+    ));
+  }
+
+  void _showDeleteDialog(BuildContext context) {
+    showDialog(context: context, builder: (_) => AlertDialog(
+      title: const Text('Hisobni o\'chirish'),
+      content: const Text('Bu amal qaytarilmaydi! Davom etasizmi?'),
+      actions: [
+        TextButton(onPressed: () => Navigator.pop(context),
+          child: const Text('Bekor qilish')),
+        ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+          onPressed: () => Navigator.pop(context),
+          child: const Text('O\'chirish')),
+      ],
+    ));
   }
 }
