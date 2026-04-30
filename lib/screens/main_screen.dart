@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'home_screen.dart';
+import 'search_screen.dart';
+import 'orders_screen.dart';
+import 'profile_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -14,9 +17,9 @@ class _MainScreenState extends State<MainScreen> {
 
   final List<Widget> _screens = [
     const HomeScreen(),
-    const Center(child: Text("Qidiruv")),
-    const Center(child: Text("Buyurtmalar")),
-    const Center(child: Text("Profil")),
+    const SearchScreen(),
+    const OrdersScreen(),
+    const ProfileScreen(),
   ];
 
   @override

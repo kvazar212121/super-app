@@ -191,6 +191,18 @@ class HomeScreen extends StatelessWidget {
                     onTap: () {},
                   ),
                   ServiceCard(
+                    title: "Elektrik",
+                    icon: LucideIcons.zap,
+                    color: Colors.yellow,
+                    onTap: () {},
+                  ),
+                  ServiceCard(
+                    title: "Santexnik",
+                    icon: LucideIcons.droplet,
+                    color: Colors.lightBlue,
+                    onTap: () {},
+                  ),
+                  ServiceCard(
                     title: "Yana",
                     icon: LucideIcons.moreHorizontal,
                     color: Colors.grey,
