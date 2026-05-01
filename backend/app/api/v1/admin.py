@@ -1,13 +1,14 @@
 from fastapi import APIRouter, Depends, Query
+from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import func, select
 
 from app.db.session import get_db
 from app.api.dependencies import get_current_user
 from app.models.user import User
 from app.models.category import Category, CategoryVariant
 from app.models.provider import Provider
-from app.models.order import Order
+from app.models.order import Order, OrderStatus
 from app.services.order_service import OrderService
 from app.schemas.category import CategoryCreate, CategoryOut, VariantCreate, VariantOut
 from app.schemas.provider import ProviderCreate, ProviderUpdate, ProviderOut
@@ -24,6 +25,49 @@ def require_admin(current_user: User = Depends(get_current_user)) -> User:
         from fastapi import HTTPException
         raise HTTPException(status_code=403, detail=admin_only_msg)
     return current_user
+
+
+class AdminStatsOut(BaseModel):
+    orders_total: int
+    orders_by_status: dict[str, int]
+    providers: int
+    users: int
+    categories: int
+
+
+@router.get("/stats", response_model=AdminStatsOut)
+async def admin_stats(
+    _admin: User = Depends(require_admin),
+    db: AsyncSession = Depends(get_db),
+):
+    orders_total = int(
+        await db.scalar(select(func.count()).select_from(Order)) or 0
+    )
+    status_rows = await db.execute(
+        select(Order.status, func.count(Order.id)).group_by(Order.status)
+    )
+    orders_by_status: dict[str, int] = {
+        s.value: 0 for s in OrderStatus
+    }
+    for row in status_rows.all():
+        status_val, cnt = row[0], int(row[1])
+        if status_val is not None:
+            orders_by_status[status_val.value] = cnt
+
+    providers = int(
+        await db.scalar(select(func.count()).select_from(Provider)) or 0
+    )
+    users = int(await db.scalar(select(func.count()).select_from(User)) or 0)
+    categories = int(
+        await db.scalar(select(func.count()).select_from(Category)) or 0
+    )
+    return AdminStatsOut(
+        orders_total=orders_total,
+        orders_by_status=orders_by_status,
+        providers=providers,
+        users=users,
+        categories=categories,
+    )
 
 
 @router.get("/orders", response_model=PaginatedResponse)
@@ -55,7 +99,6 @@ async def admin_update_order_status(
     if not order:
         from fastapi import HTTPException
         raise HTTPException(status_code=404, detail="Buyurtma topilmadi")
-    from app.models.order import OrderStatus
     order.status = OrderStatus(data.status)
     await db.flush()
     await db.refresh(order)
@@ -97,7 +140,7 @@ async def create_provider(
 ):
     p = Provider(**data.model_dump(exclude={"metadata_json"}))
     if data.metadata_json:
-        p.metadata = data.metadata_json
+        p.metadata_json = data.metadata_json
     db.add(p)
     await db.flush()
     await db.refresh(p)
@@ -120,7 +163,7 @@ async def update_provider(
     for key, val in update_data.items():
         setattr(p, key, val)
     if data.metadata_json is not None:
-        p.metadata = data.metadata_json
+        p.metadata_json = data.metadata_json
     await db.flush()
     await db.refresh(p)
     return p
