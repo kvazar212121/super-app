@@ -6,8 +6,7 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: superapp
     ports:
-      # 5432 ko‘pincha mahalliy PostgreSQL bilan band; super-app konteyneri 5433 orqali
-      - "5433:5432"
+      - "5434:5432"
     volumes:
       - superapp_pg:/var/lib/postgresql/data
 
@@ -15,6 +14,18 @@ services:
     image: redis:7-alpine
     ports:
       - "6379:6379"
+
+  backend:
+    build: .
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    depends_on:
+      - db
+      - redis
+    volumes:
+      - ./app:/app/app
 
 volumes:
   superapp_pg:

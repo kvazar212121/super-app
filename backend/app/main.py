@@ -2,16 +2,38 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy import select
 
 from app.api.v1.router import api_router
+from app.api.v1.admin_panel import router as admin_panel_router
 from app.core.config import settings
+from app.core.security import hash_password
+from app.db.base import Base
+from app.db.session import async_session, engine
+from app.models.user import User
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # TODO: DB engine, Redis ulanishi
+    # Create tables
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+
+    # Seed admin user
+    async with async_session() as db:
+        result = await db.execute(select(User).where(User.phone == "admin"))
+        if not result.scalar_one_or_none():
+            admin = User(
+                name="Admin",
+                surname="SuperApp",
+                phone="admin",
+                hashed_password=hash_password("admin123"),
+                is_admin=True,
+            )
+            db.add(admin)
+            await db.commit()
     yield
-    # TODO: ulanishlarni yopish
+    await engine.dispose()
 
 
 def create_app() -> FastAPI:
@@ -39,6 +61,7 @@ def create_app() -> FastAPI:
     )
 
     app.include_router(api_router, prefix=settings.api_v1_prefix)
+    app.include_router(admin_panel_router)
     return app
 
 

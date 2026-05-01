@@ -4,10 +4,13 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 
 import '../models/barber_shop.dart';
+import '../models/football_field.dart';
 import '../models/service_hub_kind.dart';
 import '../widgets/hub_map_preview.dart';
 import 'all_categories_screen.dart';
 import 'barber_map_screen.dart';
+import 'football_field_booking_screen.dart';
+import 'football_field_map_screen.dart';
 import 'universal_booking_screen.dart';
 
 class ServiceHubScreen extends StatelessWidget {
@@ -101,6 +104,69 @@ class ServiceHubScreen extends StatelessWidget {
             ),
           );
         }).toList();
+
+      case ServiceHubKind.futbol:
+        return FootballField.demoFields.map((field) {
+          return Marker(
+            width: 120,
+            height: 72,
+            point: LatLng(field.latitude, field.longitude),
+            child: GestureDetector(
+              onTap: () => _openFieldPeek(context, field),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+                    decoration: BoxDecoration(
+                      color: field.surface.color,
+                      borderRadius: BorderRadius.circular(8),
+                      boxShadow: [
+                        BoxShadow(
+                          color: field.surface.color.withValues(alpha: 0.4),
+                          blurRadius: 6,
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(field.surface.icon, color: Colors.white, size: 14),
+                        const SizedBox(width: 4),
+                        Flexible(
+                          child: Text(
+                            field.name,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 10,
+                              fontWeight: FontWeight.w700,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Material(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(4),
+                    elevation: 2,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      child: Text(
+                        '${field.basePricePerHour ~/ 1000}k soʻm/soat',
+                        style: const TextStyle(fontSize: 8, fontWeight: FontWeight.w600, color: Color(0xFF4CAF50)),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }).toList();
+
       default:
         return _genericPins(context);
     }
@@ -190,6 +256,87 @@ class ServiceHubScreen extends StatelessWidget {
       ),
     );
   }
+
+  void _openFieldPeek(BuildContext context, FootballField field) {
+    showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      builder: (ctx) => Padding(
+        padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: field.surface.color.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(field.surface.icon, color: field.surface.color, size: 28),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(field.name, style: Theme.of(ctx).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+                      const SizedBox(height: 4),
+                      Text(field.size.shortLabel, style: TextStyle(fontSize: 14, color: field.surface.color, fontWeight: FontWeight.w600)),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Icon(Icons.star, size: 18, color: Colors.amber[700]),
+                Text(' ${field.rating}  ·  ${field.reviewCount} sharh'),
+                const Spacer(),
+                Text(
+                  '${field.basePricePerHour ~/ 1000}k soʻm / soat',
+                  style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15, color: Color(0xFF4CAF50)),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text(field.address, style: TextStyle(color: Colors.grey[700])),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: () => Navigator.pop(ctx),
+                    child: const Text('Yopish'),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: FilledButton.icon(
+                    style: FilledButton.styleFrom(backgroundColor: const Color(0xFF4CAF50)),
+                    onPressed: () {
+                      Navigator.pop(ctx);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute<void>(
+                          builder: (_) => FootballFieldBookingScreen(field: field),
+                        ),
+                      );
+                    },
+                    icon: const Icon(Icons.calendar_month, size: 18),
+                    label: const Text('Bron qilish'),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }
 
 class _ActionList extends StatelessWidget {
@@ -261,8 +408,27 @@ class _ActionList extends StatelessWidget {
       ],
       ServiceHubKind.futbol => [
         book,
-        _HubActionSpec(LucideIcons.users, 'Jamoa o‘yini', 'Bir necha soat bandlov', () => toast('Jamoa rejasi — demo')),
-        _HubActionSpec(LucideIcons.search, 'Maydon qidirish', 'Narx va joy filter', () => toast('Qidiruv — demo')),
+        _HubActionSpec(
+          LucideIcons.map,
+          'Kengaytirilgan xarita',
+          'Barcha futbol maydonlari ro‘yxati',
+          () {
+            Navigator.push(
+              context,
+              MaterialPageRoute<void>(
+                builder: (_) => FootballFieldMapScreen(fields: FootballField.demoFields),
+              ),
+            );
+          },
+        ),
+        _HubActionSpec(LucideIcons.users, 'Jamoa o‘yini', 'Bir necha soat bandlov', () {
+          Navigator.push(
+            context,
+            MaterialPageRoute<void>(
+              builder: (_) => UniversalBookingScreen(kind: ServiceHubKind.futbol),
+            ),
+          );
+        }),
       ],
       ServiceHubKind.ishchi => [
         book,
