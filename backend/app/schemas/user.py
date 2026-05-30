@@ -15,7 +15,22 @@ class UserOut(BaseModel):
     is_premium: bool
     created_at: Optional[datetime] = None
 
-    model_config = {"from_attributes": True}
+    model_config = {"from_attributes": False}
+
+    @classmethod
+    def from_user(cls, u) -> "UserOut":
+        return cls(
+            id=u.id,
+            name=u.name,
+            surname=u.surname,
+            phone=u.phone,
+            avatar_url=u.avatar_url,
+            telegram_username=u.telegram_username,
+            balance=u.balance,
+            cashback=u.cashback,
+            is_premium=u.is_premium,
+            created_at=u.created_at,
+        )
 
 
 class UserUpdate(BaseModel):

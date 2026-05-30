@@ -41,6 +41,26 @@ class BeautySalon {
     required this.staff,
   });
 
+  factory BeautySalon.fromProviderJson(Map<String, dynamic> json) {
+    final meta = json['metadata'] as Map<String, dynamic>? ?? {};
+    final services = (meta['services'] as List<dynamic>? ?? [])
+        .map((e) => e.toString())
+        .toList();
+    return BeautySalon(
+      id: json['id']?.toString() ?? '',
+      name: json['name'] ?? '',
+      address: json['address'] ?? '',
+      phoneNumber: json['phone'] ?? '',
+      rating: (json['rating'] as num?)?.toDouble() ?? 0,
+      reviewCount: json['review_count'] ?? 0,
+      latitude: (json['lat'] as num?)?.toDouble() ?? 41.31,
+      longitude: (json['lng'] as num?)?.toDouble() ?? 69.25,
+      services: services.isNotEmpty ? services : ['Fen', 'Manikyur'],
+      prices: {for (final s in services) s: 50000.0},
+      staff: const [],
+    );
+  }
+
   static List<BeautySalon> demoSalons = [
     BeautySalon(
       id: "s1",

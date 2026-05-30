@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:provider/provider.dart';
 import '../providers/app_provider.dart';
+import '../widgets/glass/glass_bottom_bar.dart';
+import '../widgets/glass/mesh_background.dart';
 import 'home_screen.dart';
 import 'search_screen.dart';
 import 'orders_screen.dart';
@@ -17,6 +19,13 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
 
+  static const _navItems = [
+    GlassNavItem(icon: LucideIcons.home, label: 'Asosiy'),
+    GlassNavItem(icon: LucideIcons.search, label: 'Qidiruv'),
+    GlassNavItem(icon: LucideIcons.briefcase, label: 'Buyurtmalar'),
+    GlassNavItem(icon: LucideIcons.user, label: 'Profil'),
+  ];
+
   @override
   void initState() {
     super.initState();
@@ -25,58 +34,35 @@ class _MainScreenState extends State<MainScreen> {
     });
   }
 
-  final List<Widget> _screens = [
-    const HomeScreen(),
-    const SearchScreen(),
-    const OrdersScreen(),
-    const ProfileScreen(),
+  final List<Widget> _screens = const [
+    HomeScreen(),
+    SearchScreen(),
+    OrdersScreen(),
+    ProfileScreen(),
   ];
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: _screens[_selectedIndex],
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.05),
-              blurRadius: 10,
-              offset: const Offset(0, -5),
-            ),
-          ],
+    final isDark = context.watch<AppProvider>().isDarkMode;
+
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        MeshBackground(isDark: isDark),
+        Scaffold(
+          backgroundColor: Colors.transparent,
+          extendBody: true,
+          body: IndexedStack(
+            index: _selectedIndex,
+            children: _screens,
+          ),
+          bottomNavigationBar: GlassBottomBar(
+            currentIndex: _selectedIndex,
+            onTap: (i) => setState(() => _selectedIndex = i),
+            items: _navItems,
+          ),
         ),
-        child: BottomNavigationBar(
-          currentIndex: _selectedIndex,
-          onTap: (index) => setState(() => _selectedIndex = index),
-          type: BottomNavigationBarType.fixed,
-          backgroundColor: Colors.white,
-          selectedItemColor: const Color(0xFF6366F1),
-          unselectedItemColor: Colors.grey,
-          showSelectedLabels: true,
-          showUnselectedLabels: true,
-          elevation: 0,
-          items: const [
-            BottomNavigationBarItem(
-              icon: Icon(LucideIcons.home),
-              label: "Asosiy",
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(LucideIcons.search),
-              label: "Qidiruv",
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(LucideIcons.briefcase),
-              label: "Buyurtmalar",
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(LucideIcons.user),
-              label: "Profil",
-            ),
-          ],
-        ),
-      ),
+      ],
     );
   }
 }

@@ -1,13 +1,15 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:provider/provider.dart';
+import '../../providers/app_provider.dart';
 import '../../providers/auth_provider.dart';
+import '../../theme/glass_tokens.dart';
+import '../../widgets/glass/mesh_background.dart';
 import '../main_screen.dart';
 import 'login_screen.dart';
 
-/// Ilova boshlanishida token tekshiradi:
-/// - Token bor → MainScreen
-/// - Token yo'q → LoginScreen
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
@@ -26,15 +28,15 @@ class _SplashScreenState extends State<SplashScreen>
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1200),
+      duration: const Duration(milliseconds: 1400),
     );
-    _scaleAnim = Tween<double>(begin: 0.5, end: 1.0).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.elasticOut),
+    _scaleAnim = Tween<double>(begin: 0.7, end: 1.0).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeOutBack),
     );
     _fadeAnim = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
         parent: _controller,
-        curve: const Interval(0.0, 0.6, curve: Curves.easeOut),
+        curve: const Interval(0.0, 0.65, curve: Curves.easeOut),
       ),
     );
     _controller.forward();
@@ -42,9 +44,7 @@ class _SplashScreenState extends State<SplashScreen>
   }
 
   Future<void> _checkAuth() async {
-    // Splash animatsiyasi uchun minimal kutish
-    await Future.delayed(const Duration(milliseconds: 1500));
-
+    await Future.delayed(const Duration(milliseconds: 1800));
     if (!mounted) return;
 
     final auth = context.read<AuthProvider>();
@@ -53,6 +53,8 @@ class _SplashScreenState extends State<SplashScreen>
     if (!mounted) return;
 
     if (loggedIn) {
+      await context.read<AppProvider>().fetchInitialData();
+      if (!mounted) return;
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: (_) => const MainScreen()),
       );
@@ -71,76 +73,79 @@ class _SplashScreenState extends State<SplashScreen>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        width: double.infinity,
-        height: double.infinity,
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              Color(0xFF6366F1),
-              Color(0xFF8B5CF6),
-              Color(0xFFA855F7),
-            ],
-          ),
-        ),
-        child: Center(
-          child: FadeTransition(
-            opacity: _fadeAnim,
-            child: ScaleTransition(
-              scale: _scaleAnim,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  // App icon
-                  Container(
-                    width: 100,
-                    height: 100,
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.2),
-                      borderRadius: BorderRadius.circular(30),
+    final isDark = context.watch<AppProvider>().isDarkMode;
+
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        MeshBackground(isDark: isDark),
+        Scaffold(
+          backgroundColor: Colors.transparent,
+          body: Center(
+            child: FadeTransition(
+              opacity: _fadeAnim,
+              child: ScaleTransition(
+                scale: _scaleAnim,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(32),
+                      child: BackdropFilter(
+                        filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+                        child: Container(
+                          width: 100,
+                          height: 100,
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: isDark ? 0.1 : 0.5),
+                            borderRadius: BorderRadius.circular(32),
+                            border: Border.all(
+                              color: Colors.white.withValues(alpha: 0.45),
+                              width: 1.5,
+                            ),
+                          ),
+                          child: const Icon(
+                            LucideIcons.layers,
+                            color: Color(0xFF6366F1),
+                            size: 48,
+                          ),
+                        ),
+                      ),
                     ),
-                    child: const Icon(
-                      LucideIcons.layers,
-                      color: Colors.white,
-                      size: 50,
+                    const SizedBox(height: 28),
+                    Text(
+                      'Super App',
+                      style: TextStyle(
+                        fontSize: 34,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: -0.8,
+                        color: GlassTokens.primaryText(context),
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 24),
-                  const Text(
-                    'Super App',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 1,
+                    const SizedBox(height: 8),
+                    Text(
+                      'Barcha xizmatlar bir joyda',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: GlassTokens.secondaryText(context),
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Barcha xizmatlar bir joyda',
-                    style: TextStyle(
-                      color: Colors.white.withValues(alpha: 0.8),
-                      fontSize: 16,
+                    const SizedBox(height: 48),
+                    SizedBox(
+                      width: 28,
+                      height: 28,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2.5,
+                        color: const Color(0xFF6366F1).withValues(alpha: 0.8),
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 48),
-                  SizedBox(
-                    width: 32,
-                    height: 32,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 3,
-                      color: Colors.white.withValues(alpha: 0.8),
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
         ),
-      ),
+      ],
     );
   }
 }

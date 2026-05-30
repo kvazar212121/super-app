@@ -1,4 +1,7 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
+import '../theme/glass_tokens.dart';
 
 class CashbackCardWidget extends StatelessWidget {
   final double balance;
@@ -14,64 +17,104 @@ class CashbackCardWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: isPremium 
-            ? [const Color(0xFF6366F1), const Color(0xFF8B5CF6)]
-            : [theme.colorScheme.primary, theme.colorScheme.secondary],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: theme.colorScheme.primary.withValues(alpha: 0.3),
-            blurRadius: 15,
-            offset: const Offset(0, 8),
-          ),
-        ],
-      ),
-      padding: const EdgeInsets.all(20),
-      child: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text('Hisob', style: theme.textTheme.titleMedium?.copyWith(color: Colors.white)),
-              if (isPremium)
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: Colors.amber,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: const Text('PREMIUM', 
-                    style: TextStyle(color: Colors.black, fontSize: 10, fontWeight: FontWeight.bold)),
-                ),
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(GlassTokens.radiusLg),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 14, sigmaY: 14),
+        child: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: isPremium
+                  ? [
+                      const Color(0xFF6366F1).withValues(alpha: 0.88),
+                      const Color(0xFF8B5CF6).withValues(alpha: 0.72),
+                    ]
+                  : [
+                      const Color(0xFF6366F1).withValues(alpha: 0.78),
+                      const Color(0xFF06B6D4).withValues(alpha: 0.62),
+                    ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.circular(GlassTokens.radiusLg),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.35)),
+            boxShadow: [
+              BoxShadow(
+                color: const Color(0xFF6366F1).withValues(alpha: 0.28),
+                blurRadius: 20,
+                offset: const Offset(0, 10),
+              ),
             ],
           ),
-          const SizedBox(height: 8),
-          Text('${balance.toStringAsFixed(0)} so\'m',
-            style: theme.textTheme.headlineMedium?.copyWith(
-              color: Colors.white, fontWeight: FontWeight.bold)),
-          const Divider(color: Colors.white24, height: 30),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          padding: const EdgeInsets.all(22),
+          child: Column(
             children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('Keshbek', style: theme.textTheme.bodyMedium?.copyWith(color: Colors.white70)),
-                  Text('+${cashback.toStringAsFixed(0)} so\'m',
-                    style: theme.textTheme.titleLarge?.copyWith(color: Colors.white)),
+                  const Text(
+                    'Hisob',
+                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+                  ),
+                  if (isPremium)
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: Colors.amber.withValues(alpha: 0.95),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Text(
+                        'PREMIUM',
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 10,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                    ),
                 ],
               ),
-              Icon(Icons.card_giftcard, color: Colors.white, size: 32),
+              const SizedBox(height: 8),
+              Text(
+                '${balance.toStringAsFixed(0)} so\'m',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w800,
+                  fontSize: 28,
+                  letterSpacing: -0.5,
+                ),
+              ),
+              Divider(color: Colors.white.withValues(alpha: 0.25), height: 30),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Keshbek',
+                        style: TextStyle(color: Colors.white.withValues(alpha: 0.8)),
+                      ),
+                      Text(
+                        '+${cashback.toStringAsFixed(0)} so\'m',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 18,
+                        ),
+                      ),
+                    ],
+                  ),
+                  Icon(
+                    Icons.card_giftcard_rounded,
+                    color: Colors.white.withValues(alpha: 0.9),
+                    size: 32,
+                  ),
+                ],
+              ),
             ],
           ),
-        ],
+        ),
       ),
     );
   }

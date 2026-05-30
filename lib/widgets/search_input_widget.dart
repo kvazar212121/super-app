@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import '../theme/glass_tokens.dart';
+import 'glass/glass_surface.dart';
 
 class SearchInputWidget extends StatelessWidget {
   final TextEditingController controller;
@@ -15,18 +17,30 @@ class SearchInputWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TextField(
-      controller: controller,
-      onChanged: (_) => onChanged(),
-      decoration: InputDecoration(
-        hintText: "Xizmatlarni qidirish...",
-        prefixIcon: const Icon(LucideIcons.search, color: Colors.grey),
-        suffixIcon: controller.text.isNotEmpty
-            ? IconButton(icon: const Icon(LucideIcons.x, color: Colors.grey), onPressed: onClear)
-            : null,
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(15), borderSide: BorderSide.none),
-        filled: true,
-        fillColor: Colors.white,
+    return GlassSurface(
+      padding: const EdgeInsets.symmetric(horizontal: 4),
+      borderRadius: GlassTokens.radiusLg,
+      opacity: 0.58,
+      blur: GlassTokens.blurHeavy,
+      child: TextField(
+        controller: controller,
+        onChanged: (_) => onChanged(),
+        style: TextStyle(color: GlassTokens.primaryText(context)),
+        decoration: InputDecoration(
+          hintText: 'Xizmatlarni qidirish...',
+          border: InputBorder.none,
+          enabledBorder: InputBorder.none,
+          focusedBorder: InputBorder.none,
+          filled: false,
+          prefixIcon: Icon(LucideIcons.search, color: GlassTokens.secondaryText(context)),
+          suffixIcon: controller.text.isNotEmpty
+              ? IconButton(
+                  icon: Icon(LucideIcons.x, color: GlassTokens.secondaryText(context)),
+                  onPressed: onClear,
+                )
+              : null,
+          hintStyle: TextStyle(color: GlassTokens.secondaryText(context)),
+        ),
       ),
     );
   }

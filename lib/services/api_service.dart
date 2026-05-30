@@ -211,6 +211,7 @@ class ApiService {
   /// Provayderlar ro'yxati
   Future<Map<String, dynamic>> getProviders({
     int? categoryId,
+    String? categoryKey,
     int page = 1,
     int perPage = 20,
     double? lat,
@@ -221,6 +222,7 @@ class ApiService {
       'per_page': perPage,
     };
     if (categoryId != null) params['category_id'] = categoryId;
+    if (categoryKey != null) params['category_key'] = categoryKey;
     if (lat != null) params['lat'] = lat;
     if (lng != null) params['lng'] = lng;
 

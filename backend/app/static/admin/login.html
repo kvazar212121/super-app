@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <title>Super App — Admin Panel</title>
     <style>
         *, *::before, *::after {
@@ -487,8 +488,14 @@
 
                     const data = await response.json().catch(() => null);
 
-                    if (response.ok) {
-                        window.location.href = '/admin';
+                    if (response.ok && data && data.access_token) {
+                        localStorage.setItem('at', data.access_token);
+                        if (data.refresh_token) {
+                            localStorage.setItem('rt', data.refresh_token);
+                        }
+                        window.location.replace('/admin');
+                    } else if (response.ok) {
+                        showError('Token olinmadi. Sahifani yangilang (Ctrl+Shift+R) va qayta urinib ko\'ring.');
                     } else {
                         const message = data?.message || data?.error || 'Telefon yoki parol noto\'g\'ri. Iltimos, qayta urinib ko\'ring.';
                         showError(message);

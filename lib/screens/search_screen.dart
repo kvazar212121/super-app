@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../widgets/search_input_widget.dart';
 import '../widgets/recent_searches_widget.dart';
 import '../widgets/search_results_widget.dart';
+import '../widgets/glass/glass_scaffold.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -12,14 +13,14 @@ class SearchScreen extends StatefulWidget {
 
 class _SearchScreenState extends State<SearchScreen> {
   final _controller = TextEditingController();
-  final List<String> _recentSearches = ["Sartarosh", "Elektrik", "Usta"];
+  final List<String> _recentSearches = ['Sartarosh', 'Elektrik', 'Usta'];
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text("Qidiruv"), centerTitle: true),
+    return GlassScaffold(
+      title: 'Qidiruv',
       body: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.fromLTRB(16, 8, 16, 90),
         child: Column(
           children: [
             SearchInputWidget(
@@ -38,7 +39,7 @@ class _SearchScreenState extends State<SearchScreen> {
                 onRemove: (s) => setState(() => _recentSearches.remove(s)),
               ),
               const SizedBox(height: 20),
-              Expanded(child: SearchResultsWidget(query: "")),
+              const Expanded(child: SearchResultsWidget(query: '')),
             ] else
               Expanded(child: SearchResultsWidget(query: _controller.text)),
           ],

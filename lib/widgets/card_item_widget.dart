@@ -1,5 +1,8 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import '../models/payment_card.dart';
+import '../theme/glass_tokens.dart';
 
 class CardItemWidget extends StatelessWidget {
   final PaymentCard card;
@@ -8,71 +11,96 @@ class CardItemWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final isUzcard = card.cardType == 'uzcard';
-    
-    return Card(
-      child: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: isUzcard
-              ? [const Color(0xFF00A8E1), const Color(0xFF0077B5)]
-              : [const Color(0xFF00C853), const Color(0xFF69F0AE)],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
+
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(GlassTokens.radiusLg),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+        child: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: isUzcard
+                  ? [
+                      const Color(0xFF00A8E1).withValues(alpha: 0.85),
+                      const Color(0xFF0077B5).withValues(alpha: 0.75),
+                    ]
+                  : [
+                      const Color(0xFF00C853).withValues(alpha: 0.85),
+                      const Color(0xFF069668).withValues(alpha: 0.75),
+                    ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.circular(GlassTokens.radiusLg),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.3)),
           ),
-          borderRadius: BorderRadius.circular(16),
-        ),
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(card.cardType.toUpperCase(),
-                  style: theme.textTheme.labelLarge?.copyWith(color: Colors.white)),
-                if (card.isDefault)
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.3),
-                      borderRadius: BorderRadius.circular(8),
+          padding: const EdgeInsets.all(18),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    card.cardType.toUpperCase(),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w700,
                     ),
-                    child: const Text('ASOSIY',
-                      style: TextStyle(color: Colors.white, fontSize: 10)),
                   ),
-              ],
-            ),
-            const SizedBox(height: 20),
-            Text(card.maskedNumber,
-              style: theme.textTheme.titleLarge?.copyWith(
-                color: Colors.white, letterSpacing: 2)),
-            const SizedBox(height: 16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Karta egasi',
-                      style: theme.textTheme.bodySmall?.copyWith(color: Colors.white70)),
-                    Text(card.cardHolder,
-                      style: theme.textTheme.bodyMedium?.copyWith(color: Colors.white)),
-                  ],
+                  if (card.isDefault)
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.25),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: const Text(
+                        'ASOSIY',
+                        style: TextStyle(color: Colors.white, fontSize: 10),
+                      ),
+                    ),
+                ],
+              ),
+              const SizedBox(height: 20),
+              Text(
+                card.maskedNumber,
+                style: const TextStyle(
+                  color: Colors.white,
+                  letterSpacing: 2,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
                 ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Text('Muddati',
-                      style: theme.textTheme.bodySmall?.copyWith(color: Colors.white70)),
-                    Text(card.expiryDate,
-                      style: theme.textTheme.bodyMedium?.copyWith(color: Colors.white)),
-                  ],
-                ),
-              ],
-            ),
-          ],
+              ),
+              const SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Karta egasi',
+                        style: TextStyle(color: Colors.white.withValues(alpha: 0.75), fontSize: 12),
+                      ),
+                      Text(card.cardHolder, style: const TextStyle(color: Colors.white)),
+                    ],
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(
+                        'Muddati',
+                        style: TextStyle(color: Colors.white.withValues(alpha: 0.75), fontSize: 12),
+                      ),
+                      Text(card.expiryDate, style: const TextStyle(color: Colors.white)),
+                    ],
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

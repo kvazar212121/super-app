@@ -6,54 +6,42 @@ import '../widgets/search_bar_widget.dart';
 import '../widgets/services_grid_widget.dart';
 import 'provider_registration/provider_onboarding_screen.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import '../widgets/glass/glass_surface.dart';
+import '../theme/glass_tokens.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(height: 18),
-              HomeHeaderWidget(),
-              SizedBox(height: 22),
-              SearchBarWidget(),
-              SizedBox(height: 22),
-              ActiveOrderBanner(),
-              const ServicesGridWidget(),
-              const SizedBox(height: 24),
-              _buildProviderCard(context),
-              const SizedBox(height: 28),
-              const HomePromoSection(),
-              SizedBox(height: 90),
-            ],
-          ),
+    return SafeArea(
+      bottom: false,
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.fromLTRB(20, 12, 20, 100),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const HomeHeaderWidget(),
+            const SizedBox(height: 22),
+            const SearchBarWidget(),
+            const SizedBox(height: 22),
+            const ActiveOrderBanner(),
+            const ServicesGridWidget(),
+            const SizedBox(height: 24),
+            _buildProviderCard(context),
+            const SizedBox(height: 28),
+            const HomePromoSection(),
+          ],
         ),
       ),
     );
   }
 
   Widget _buildProviderCard(BuildContext context) {
-    final theme = Theme.of(context);
-    return Container(
+    return GlassSurface(
       padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: theme.colorScheme.surface,
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
+      borderRadius: GlassTokens.radiusLg,
+      opacity: 0.62,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -62,26 +50,38 @@ class HomeScreen extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF6366F1).withValues(alpha: 0.1),
+                  color: const Color(0xFF6366F1).withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: const Color(0xFF6366F1).withValues(alpha: 0.25),
+                  ),
                 ),
-                child: const Icon(LucideIcons.briefcase, color: Color(0xFF6366F1), size: 28),
+                child: const Icon(
+                  LucideIcons.briefcase,
+                  color: Color(0xFF6366F1),
+                  size: 26,
+                ),
               ),
               const SizedBox(width: 16),
               Expanded(
                 child: Text(
                   'Siz qaysi soha egasisiz?',
-                  style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 16,
+                    color: GlassTokens.primaryText(context),
+                  ),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 14),
           Text(
             'Biz sizni ushbu platformaga qo\'shamiz — mijozlar sizni topadi, buyurtmalar keladi.',
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
-              height: 1.4,
+            style: TextStyle(
+              color: GlassTokens.secondaryText(context),
+              height: 1.45,
+              fontSize: 14,
             ),
           ),
           const SizedBox(height: 20),
@@ -91,16 +91,11 @@ class HomeScreen extends StatelessWidget {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const ProviderOnboardingScreen()),
+                  MaterialPageRoute(
+                    builder: (context) => const ProviderOnboardingScreen(),
+                  ),
                 );
               },
-              style: FilledButton.styleFrom(
-                backgroundColor: const Color(0xFF6366F1),
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
-              ),
               child: const Text('Usta / xizmat sifatida qo\'shilish'),
             ),
           ),

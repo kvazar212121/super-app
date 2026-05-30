@@ -255,7 +255,24 @@ class UserOut(BaseModel):
     is_admin: bool
     created_at: Optional[str] = None
 
-    model_config = {"from_attributes": True}
+    model_config = {"from_attributes": False}
+
+    @classmethod
+    def from_user(cls, u: "User") -> "UserOut":
+        created = u.created_at.isoformat() if getattr(u, "created_at", None) else None
+        return cls(
+            id=u.id,
+            name=u.name,
+            surname=u.surname,
+            phone=u.phone,
+            avatar_url=u.avatar_url,
+            telegram_username=u.telegram_username,
+            balance=u.balance,
+            cashback=u.cashback,
+            is_premium=u.is_premium,
+            is_admin=u.is_admin,
+            created_at=created,
+        )
 
 
 class UserUpdate(BaseModel):
@@ -322,7 +339,7 @@ async def list_users(
 
     pages = (total + per_page - 1) // per_page
     return PaginatedResponse(
-        items=[UserOut.model_validate(u) for u in items],
+        items=[UserOut.from_user(u) for u in items],
         total=total, page=page, per_page=per_page, pages=pages,
     )
 
@@ -337,7 +354,7 @@ async def get_user(
     user = result.scalar_one_or_none()
     if not user:
         raise HTTPException(status_code=404, detail="Foydalanuvchi topilmadi")
-    return user
+    return UserOut.from_user(user)
 
 
 @router.patch("/users/{user_id}", response_model=UserOut)
@@ -358,7 +375,7 @@ async def update_user(
 
     await db.flush()
     await db.refresh(user)
-    return user
+    return UserOut.from_user(user)
 
 
 @router.patch("/users/{user_id}/block", response_model=UserOut)
@@ -379,7 +396,7 @@ async def block_user(
     user.is_active = not data.is_blocked
     await db.flush()
     await db.refresh(user)
-    return user
+    return UserOut.from_user(user)
 
 
 @router.delete("/users/{user_id}", status_code=204)

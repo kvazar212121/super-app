@@ -30,6 +30,7 @@ class Provider(Base):
         return {
             "id": self.id,
             "category_id": self.category_id,
+            "category_key": self.category.key if self.category else None,
             "name": self.name,
             "address": self.address,
             "phone": self.phone,

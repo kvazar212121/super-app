@@ -66,6 +66,22 @@ class DisinfectionService {
     this.isCertified = false,
   });
 
+  factory DisinfectionService.fromProviderJson(Map<String, dynamic> json) {
+    return DisinfectionService(
+      id: json['id']?.toString() ?? '',
+      name: json['name'] ?? '',
+      latitude: (json['lat'] as num?)?.toDouble() ?? 41.31,
+      longitude: (json['lng'] as num?)?.toDouble() ?? 69.25,
+      rating: (json['rating'] as num?)?.toDouble() ?? 0,
+      reviewCount: json['review_count'] ?? 0,
+      phoneNumber: json['phone'] ?? '',
+      areaTypes: const [AreaType.apartment, AreaType.office],
+      prices: const {'Kvartira': 150000, 'Ofis': 200000},
+      chemicals: const [],
+      isCertified: true,
+    );
+  }
+
   static List<DisinfectionService> demoServices = [
     DisinfectionService(
       id: 'd1',

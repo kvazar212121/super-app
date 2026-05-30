@@ -59,6 +59,22 @@ class CourierService {
     this.isExpress = false,
   });
 
+  factory CourierService.fromProviderJson(Map<String, dynamic> json) {
+    return CourierService(
+      id: json['id']?.toString() ?? '',
+      name: json['name'] ?? '',
+      latitude: (json['lat'] as num?)?.toDouble() ?? 41.31,
+      longitude: (json['lng'] as num?)?.toDouble() ?? 69.25,
+      rating: (json['rating'] as num?)?.toDouble() ?? 0,
+      reviewCount: json['review_count'] ?? 0,
+      phoneNumber: json['phone'] ?? '',
+      deliveryTypes: const [DeliveryType.document, DeliveryType.package, DeliveryType.food],
+      prices: const {'Shahar ichi (5km)': 25000, 'Shahar tashqari': 80000},
+      maxWeight: 15,
+      isExpress: true,
+    );
+  }
+
   static List<CourierService> demoCouriers = [
     CourierService(
       id: 'c1',

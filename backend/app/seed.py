@@ -1,277 +1,46 @@
+"""To'liq demo ma'lumotlarni DB ga yuklash."""
 import asyncio
 import logging
+from datetime import datetime, timedelta, timezone
+
+from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 
 from app.core.config import settings
-from app.db.base import Base
+from app.core.security import hash_password
 from app.models.category import Category, CategoryVariant
 from app.models.provider import Provider
+from app.models.user import User
+from app.models.order import Order, OrderStatus
+from app.models.review import Review
+from app.models.payment import PaymentCard
+from app.models.setting import PlatformSetting
+from app.models.notification import Notification
+from app.seed_data import (
+    USERS,
+    PROVIDERS,
+    ORDERS,
+    REVIEWS,
+    PLATFORM_SETTINGS,
+    PAYMENT_CARDS,
+    NOTIFICATIONS,
+)
+from app.categories_data import CATEGORIES_DATA
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Categories and their details
-CATEGORIES_DATA = [
-    {
-        "key": "sartarosh",
-        "title_uz": "Sartarosh",
-        "subtitle_uz": "Yaqin atrofdagi sartaroshlar va band qilish",
-        "icon": "scissors",
-        "accent_color": "#2196F3",
-        "variants": [
-            {"label_uz": "Erkaklar kesimi", "base_price": 50000},
-            {"label_uz": "Soqol olish", "base_price": 25000},
-            {"label_uz": "Bolalar kesimi", "base_price": 35000},
-            {"label_uz": "Styling", "base_price": 60000},
-        ],
-    },
-    {
-        "key": "salon",
-        "title_uz": "Salon",
-        "subtitle_uz": "Salonda vaqt bron qilish",
-        "icon": "sparkles",
-        "accent_color": "#E91E63",
-        "variants": [
-            {"label_uz": "Manikyur", "base_price": 70000},
-            {"label_uz": "Pedikyur", "base_price": 90000},
-            {"label_uz": "Soch turmagi", "base_price": 80000},
-            {"label_uz": "Make-up", "base_price": 150000},
-        ],
-    },
-    {
-        "key": "futbol",
-        "title_uz": "Futbol",
-        "subtitle_uz": "Futbol maydonini band qilish",
-        "icon": "trophy",
-        "accent_color": "#4CAF50",
-        "variants": [
-            {"label_uz": "1 soat (kichik maydon)", "base_price": 200000},
-            {"label_uz": "1 soat (katta maydon)", "base_price": 350000},
-            {"label_uz": "2 soat (kichik maydon)", "base_price": 380000},
-            {"label_uz": "2 soat (katta maydon)", "base_price": 650000},
-        ],
-    },
-    {
-        "key": "ishchi",
-        "title_uz": "Ishchi",
-        "subtitle_uz": "Ishchi yollash va kunlik ishlar",
-        "icon": "users",
-        "accent_color": "#FF9800",
-        "variants": [
-            {"label_uz": "Yuk kotoruvchi (1 kishi)", "base_price": 150000},
-            {"label_uz": "Yuk kotoruvchi (2 kishi)", "base_price": 280000},
-            {"label_uz": "Qora ish - 4 soat", "base_price": 200000},
-            {"label_uz": "Qora ish - kunlik", "base_price": 400000},
-        ],
-    },
-    {
-        "key": "usta",
-        "title_uz": "Usta",
-        "subtitle_uz": "Usta chaqirish va tamlash",
-        "icon": "wrench",
-        "accent_color": "#009688",
-        "variants": [
-            {"label_uz": "Mebel yigish", "base_price": 150000},
-            {"label_uz": "Eshik/oyna tamiri", "base_price": 120000},
-            {"label_uz": "Devorga osish/biriktirish", "base_price": 80000},
-            {"label_uz": "Boshqa tamlash", "base_price": 100000},
-        ],
-    },
-    {
-        "key": "elektrik",
-        "title_uz": "Elektrik",
-        "subtitle_uz": "Elektr montaj va favqulodda chaqiruv",
-        "icon": "zap",
-        "accent_color": "#D97706",
-        "variants": [
-            {"label_uz": "Rozetka/lyustra montaj", "base_price": 100000},
-            {"label_uz": "Simlash", "base_price": 250000},
-            {"label_uz": "Shoshilinch chaqiruv", "base_price": 200000},
-            {"label_uz": "Uy elektr tekshiruvi", "base_price": 180000},
-        ],
-    },
-    {
-        "key": "santexnik",
-        "title_uz": "Santexnik",
-        "subtitle_uz": "Santexnik va suv oqimi",
-        "icon": "droplets",
-        "accent_color": "#03A9F4",
-        "variants": [
-            {"label_uz": "Smesitel almashtirish", "base_price": 120000},
-            {"label_uz": "Toshma/probka tozalash", "base_price": 150000},
-            {"label_uz": "Quvur ulash", "base_price": 200000},
-            {"label_uz": "Shoshilinch chaqiruv", "base_price": 250000},
-        ],
-    },
-    {
-        "key": "tozalash",
-        "title_uz": "Tozalash",
-        "subtitle_uz": "Uy yoki ofis tozalash xizmati",
-        "icon": "sprayCan",
-        "accent_color": "#00BCD4",
-        "variants": [
-            {"label_uz": "1 xonali kvartira", "base_price": 200000},
-            {"label_uz": "2 xonali kvartira", "base_price": 320000},
-            {"label_uz": "3 xonali kvartira", "base_price": 450000},
-            {"label_uz": "Ofis (50 m²)", "base_price": 400000},
-        ],
-    },
-    {
-        "key": "avtoYordam",
-        "title_uz": "Avto-yordam",
-        "subtitle_uz": "Evakuator, akkumulyator, yol yordami",
-        "icon": "car",
-        "accent_color": "#FF5722",
-        "variants": [
-            {"label_uz": "Evakuator", "base_price": 250000},
-            {"label_uz": "Akkumulyator quvvatlash", "base_price": 80000},
-            {"label_uz": "Shinopola (1 gildirak)", "base_price": 70000},
-            {"label_uz": "Yol ustasi", "base_price": 150000},
-        ],
-    },
-    {
-        "key": "konditsioner",
-        "title_uz": "Konditsioner",
-        "subtitle_uz": "Konditsioner montaj va profilaktika",
-        "icon": "wind",
-        "accent_color": "#3F51B5",
-        "variants": [
-            {"label_uz": "Montaj", "base_price": 600000},
-            {"label_uz": "Demontaj", "base_price": 250000},
-            {"label_uz": "Profilaktika tozalash", "base_price": 180000},
-            {"label_uz": "Gaz toldirish", "base_price": 350000},
-        ],
-    },
-    {
-        "key": "enaga",
-        "title_uz": "Enaga",
-        "subtitle_uz": "Bola qarovchi va enaga",
-        "icon": "baby",
-        "accent_color": "#9C27B0",
-        "variants": [
-            {"label_uz": "Soatlik (3 soat)", "base_price": 120000},
-            {"label_uz": "Yarim kun (5 soat)", "base_price": 200000},
-            {"label_uz": "Toliq kun (10 soat)", "base_price": 380000},
-            {"label_uz": "Tunda (8 soat)", "base_price": 350000},
-        ],
-    },
-    {
-        "key": "repetitor",
-        "title_uz": "Repetitor",
-        "subtitle_uz": "Repetitor va oqituvchi xizmati",
-        "icon": "bookOpen",
-        "accent_color": "#673AB7",
-        "variants": [
-            {"label_uz": "Matematika (1 dars)", "base_price": 120000},
-            {"label_uz": "Ingliz tili (1 dars)", "base_price": 100000},
-            {"label_uz": "Fizika (1 dars)", "base_price": 130000},
-            {"label_uz": "Test tayyorlov (1 dars)", "base_price": 150000},
-        ],
-    },
-    {
-        "key": "dezinfeksiya",
-        "title_uz": "Dezinfeksiya",
-        "subtitle_uz": "Uy, ofis va mashina dezinfeksiyasi",
-        "icon": "shieldCheck",
-        "accent_color": "#10B981",
-        "variants": [
-            {"label_uz": "Kvartira dezinfeksiyasi", "base_price": 150000},
-            {"label_uz": "Ofis dezinfeksiyasi", "base_price": 250000},
-            {"label_uz": "Mashina dezinfeksiyasi", "base_price": 100000},
-            {"label_uz": "Maktab/bogcha", "base_price": 400000},
-        ],
-    },
-    {
-        "key": "texnikaUstasi",
-        "title_uz": "Texnika ustasi",
-        "subtitle_uz": "Kir yuvish, muzlatgich, TV tamlash",
-        "icon": "monitor",
-        "accent_color": "#607D8B",
-        "variants": [
-            {"label_uz": "Kir yuvish mashinasi", "base_price": 150000},
-            {"label_uz": "Muzlatgich tamlash", "base_price": 180000},
-            {"label_uz": "Televizor tamlash", "base_price": 120000},
-            {"label_uz": "Mikroto`lqinli pech", "base_price": 80000},
-        ],
-    },
-    {
-        "key": "kuryerlik",
-        "title_uz": "Kuryerlik",
-        "subtitle_uz": "Hujjat va sovgalarni tezkor yetkazish",
-        "icon": "bike",
-        "accent_color": "#FFC107",
-        "variants": [
-            {"label_uz": "Hujjat yetkazish", "base_price": 30000},
-            {"label_uz": "Sovga yetkazish", "base_price": 50000},
-            {"label_uz": "Kichik yuk (5 kg)", "base_price": 40000},
-            {"label_uz": "Katta yuk (20 kg)", "base_price": 80000},
-        ],
-    },
-    {
-        "key": "massajHijoma",
-        "title_uz": "Massaj va Hijoma",
-        "subtitle_uz": "Massaj va Hijoma xizmatlari",
-        "icon": "hand",
-        "accent_color": "#795548",
-        "variants": [
-            {"label_uz": "Massaj (60 daqiqa)", "base_price": 150000},
-            {"label_uz": "Hijoma (erkaklar)", "base_price": 200000},
-            {"label_uz": "Hijoma (ayollar)", "base_price": 200000},
-            {"label_uz": "Spa paket", "base_price": 350000},
-        ],
-    },
-    {
-        "key": "hamshira",
-        "title_uz": "Hamshira",
-        "subtitle_uz": "Uyga hamshira chaqirish",
-        "icon": "heartPulse",
-        "accent_color": "#FF5252",
-        "variants": [
-            {"label_uz": "Uyga hamshira (3 soat)", "base_price": 100000},
-            {"label_uz": "In`ektsiya", "base_price": 30000},
-            {"label_uz": "Qon tahlili (uyda)", "base_price": 120000},
-            {"label_uz": "Tun bo`yi hamshira", "base_price": 300000},
-        ],
-    },
-    {
-        "key": "tadbirlar",
-        "title_uz": "Tadbirlar",
-        "subtitle_uz": "Tadbirlar, marosimlar va dam olish joylari",
-        "icon": "partyPopper",
-        "accent_color": "#E91E63",
-        "variants": [
-            {"label_uz": "Toy rejissyor", "base_price": 2000000},
-            {"label_uz": "Tug`ilgan kun", "base_price": 500000},
-            {"label_uz": "Dam olish joyi bron", "base_price": 300000},
-            {"label_uz": "Korporativ tadbir", "base_price": 1500005},
-        ],
-    },
-    {
-        "key": "yana",
-        "title_uz": "Yana xizmatlar",
-        "subtitle_uz": "Boshqa xizmatlar va yordam",
-        "icon": "moreHorizontal",
-        "accent_color": "#90A4AE",
-        "variants": [
-            {"label_uz": "Boshqa xizmat", "base_price": 100000},
-        ],
-    },
-]
 
 async def seed():
-    engine = create_async_engine(settings.database_url, echo=True)
+    engine = create_async_engine(settings.database_url, echo=False)
     async_session = async_sessionmaker(engine, expire_on_commit=False)
 
     async with async_session() as db:
-        logger.info("Seeding categories...")
-        for cat_info in CATEGORIES_DATA:
-            # Check if category already exists
-            res = await db.execute(
-                Category.__table__.select().where(Category.key == cat_info["key"])
-            )
-            cat_db = res.first()
-            if not cat_db:
-                # Add category
+        # Kategoriyalar bo'sh bo'lsa yuklash
+        cat_count = (await db.execute(select(func.count(Category.id)))).scalar() or 0
+        if cat_count == 0:
+            logger.info("Kategoriyalar yuklanmoqda...")
+            for cat_info in CATEGORIES_DATA:
                 category = Category(
                     key=cat_info["key"],
                     title_uz=cat_info["title_uz"],
@@ -281,31 +50,186 @@ async def seed():
                 )
                 db.add(category)
                 await db.flush()
-
-                # Add variants
                 for var_info in cat_info["variants"]:
-                    variant = CategoryVariant(
-                        category_id=category.id,
-                        label_uz=var_info["label_uz"],
-                        base_price=var_info["base_price"],
+                    db.add(
+                        CategoryVariant(
+                            category_id=category.id,
+                            label_uz=var_info["label_uz"],
+                            base_price=var_info["base_price"],
+                        )
                     )
-                    db.add(variant)
+            await db.commit()
+            logger.info("Kategoriyalar yuklandi: %d", len(CATEGORIES_DATA))
+        else:
+            logger.info("Kategoriyalar allaqachon mavjud: %d", cat_count)
 
-                # Add a dummy provider for this category
+        # Kategoriya map
+        result = await db.execute(select(Category))
+        categories = {c.key: c for c in result.scalars().all()}
+
+        # Foydalanuvchilar
+        user_map: dict[str, User] = {}
+        for u in USERS:
+            res = await db.execute(select(User).where(User.phone == u["phone"]))
+            existing = res.scalar_one_or_none()
+            if existing:
+                user_map[u["phone"]] = existing
+                continue
+            user = User(
+                name=u["name"],
+                surname=u["surname"],
+                phone=u["phone"],
+                hashed_password=hash_password(u["password"]),
+                balance=u.get("balance", 0),
+                cashback=u.get("cashback", 0),
+                is_premium=u.get("is_premium", False),
+                is_active=True,
+            )
+            db.add(user)
+            await db.flush()
+            user_map[u["phone"]] = user
+        await db.commit()
+        logger.info("Foydalanuvchilar: %d", len(user_map))
+
+        # Provayderlar
+        provider_map: dict[str, Provider] = {}
+        prov_count = (await db.execute(select(func.count(Provider.id)))).scalar() or 0
+        if prov_count == 0:
+            for p in PROVIDERS:
+                cat = categories.get(p["category_key"])
+                if not cat:
+                    logger.warning("Kategoriya topilmadi: %s", p["category_key"])
+                    continue
                 provider = Provider(
-                    category_id=category.id,
-                    name=f"Usta Pro ({cat_info['title_uz']})",
-                    address="Toshkent shahri, Amir Temur ko'chasi 12",
-                    phone="+998901234567",
-                    lat=41.311081,
-                    lng=69.279737,
-                    rating=4.8,
-                    review_count=15,
+                    category_id=cat.id,
+                    name=p["name"],
+                    address=p["address"],
+                    phone=p["phone"],
+                    lat=p["lat"],
+                    lng=p["lng"],
+                    rating=p["rating"],
+                    review_count=p["review_count"],
+                    metadata_json=p.get("metadata"),
                     is_active=True,
                 )
                 db.add(provider)
+                await db.flush()
+                provider_map[p["name"]] = provider
+            await db.commit()
+            logger.info("Provayderlar yuklandi: %d", len(provider_map))
+        else:
+            result = await db.execute(select(Provider))
+            for p in result.scalars().all():
+                provider_map[p.name] = p
+            logger.info("Provayderlar allaqachon mavjud: %d", prov_count)
+
+        # Buyurtmalar
+        order_count = (await db.execute(select(func.count(Order.id)))).scalar() or 0
+        if order_count == 0:
+            now = datetime.utcnow()
+            for o in ORDERS:
+                user = user_map.get(o["user_phone"])
+                provider = provider_map.get(o["provider_name"])
+                cat = categories.get(o["category_key"])
+                if not user or not provider or not cat:
+                    continue
+                db.add(
+                    Order(
+                        user_id=user.id,
+                        category_id=cat.id,
+                        provider_id=provider.id,
+                        service_name=o["service_name"],
+                        service_icon=cat.icon,
+                        address="Toshkent",
+                        date=now + timedelta(days=1),
+                        price=o["price"],
+                        cashback_earned=round(o["price"] * 0.01, 2),
+                        status=OrderStatus(o["status"]),
+                        created_at=now - timedelta(days=o["days_ago"]),
+                    )
+                )
+            await db.commit()
+            logger.info("Buyurtmalar yuklandi: %d", len(ORDERS))
+
+        # Sharhlar
+        review_count = (await db.execute(select(func.count(Review.id)))).scalar() or 0
+        if review_count == 0:
+            for r in REVIEWS:
+                user = user_map.get(r["user_phone"])
+                provider = provider_map.get(r["provider_name"])
+                if not user or not provider:
+                    continue
+                db.add(
+                    Review(
+                        user_id=user.id,
+                        provider_id=provider.id,
+                        rating=r["rating"],
+                        comment=r["comment"],
+                    )
+                )
+            await db.commit()
+            logger.info("Sharhlar yuklandi: %d", len(REVIEWS))
+
+        # Sozlamalar
+        for s in PLATFORM_SETTINGS:
+            res = await db.execute(
+                select(PlatformSetting).where(PlatformSetting.key == s["key"])
+            )
+            if not res.scalar_one_or_none():
+                db.add(
+                    PlatformSetting(
+                        key=s["key"],
+                        value=s["value"],
+                        description=s.get("description"),
+                    )
+                )
         await db.commit()
-    logger.info("Database seeded successfully!")
+
+        # Kartalar
+        for c in PAYMENT_CARDS:
+            user = user_map.get(c["user_phone"])
+            if not user:
+                continue
+            res = await db.execute(
+                select(PaymentCard).where(
+                    PaymentCard.user_id == user.id,
+                    PaymentCard.masked_number == c["masked_number"],
+                )
+            )
+            if res.scalar_one_or_none():
+                continue
+            db.add(
+                PaymentCard(
+                    user_id=user.id,
+                    masked_number=c["masked_number"],
+                    bank=c["bank"],
+                    card_type=c["card_type"],
+                    exp_month=c["exp_month"],
+                    exp_year=c["exp_year"],
+                    is_default=c.get("is_default", False),
+                )
+            )
+        await db.commit()
+
+        # Bildirishnomalar
+        for n in NOTIFICATIONS:
+            user = user_map.get(n["user_phone"])
+            if not user:
+                continue
+            db.add(
+                Notification(
+                    user_id=user.id,
+                    type=n["type"],
+                    title=n["title"],
+                    message=n["message"],
+                    is_read=False,
+                )
+            )
+        await db.commit()
+
+    logger.info("Seed muvaffaqiyatli yakunlandi!")
+    await engine.dispose()
+
 
 if __name__ == "__main__":
     asyncio.run(seed())

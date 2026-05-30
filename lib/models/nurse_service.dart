@@ -71,6 +71,22 @@ class NurseService {
     required this.qualifications,
   });
 
+  factory NurseService.fromProviderJson(Map<String, dynamic> json) {
+    return NurseService(
+      id: json['id']?.toString() ?? '',
+      name: json['name'] ?? '',
+      latitude: (json['lat'] as num?)?.toDouble() ?? 41.31,
+      longitude: (json['lng'] as num?)?.toDouble() ?? 69.25,
+      rating: (json['rating'] as num?)?.toDouble() ?? 0,
+      reviewCount: json['review_count'] ?? 0,
+      phoneNumber: json['phone'] ?? '',
+      medicalServices: const [MedicalService.injection, MedicalService.bloodTest, MedicalService.drip],
+      prices: const {'Ukol': 30000, 'Qon tahlili': 50000},
+      homeVisit: true,
+      qualifications: 'Litsenziyalangan hamshira',
+    );
+  }
+
   static List<NurseService> demoServices = [
     NurseService(
       id: 'ns1',

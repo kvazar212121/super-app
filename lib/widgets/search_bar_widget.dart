@@ -1,25 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import '../theme/glass_tokens.dart';
+import 'glass/glass_surface.dart';
 
 class SearchBarWidget extends StatelessWidget {
   const SearchBarWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(15),
-        boxShadow: [
-          BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 10)
-        ],
-      ),
-      child: const TextField(
+    return GlassSurface(
+      padding: const EdgeInsets.symmetric(horizontal: 4),
+      borderRadius: GlassTokens.radiusLg,
+      opacity: 0.6,
+      blur: GlassTokens.blurHeavy,
+      child: TextField(
+        style: TextStyle(color: GlassTokens.primaryText(context)),
         decoration: InputDecoration(
-          hintText: "Xizmatlarni qidirish...",
+          hintText: 'Xizmatlarni qidirish...',
           border: InputBorder.none,
-          icon: Icon(LucideIcons.search, color: Colors.grey),
+          enabledBorder: InputBorder.none,
+          focusedBorder: InputBorder.none,
+          filled: false,
+          icon: Icon(LucideIcons.search, color: GlassTokens.secondaryText(context)),
+          hintStyle: TextStyle(color: GlassTokens.secondaryText(context)),
         ),
       ),
     );

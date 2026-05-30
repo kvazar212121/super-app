@@ -4,6 +4,8 @@ import 'package:provider/provider.dart';
 import '../models/service_hub_kind.dart';
 import '../models/service_order.dart';
 import '../providers/app_provider.dart';
+import '../theme/glass_tokens.dart';
+import 'glass/glass_surface.dart';
 
 class OrdersListWidget extends StatelessWidget {
   final String filter;
@@ -31,11 +33,21 @@ class OrdersListWidget extends StatelessWidget {
     final orders = _apply(provider);
     if (orders.isEmpty) {
       return Center(
-        child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-          Icon(LucideIcons.inbox, size: 64, color: Colors.grey[300]),
-          const SizedBox(height: 16),
-          Text("Buyurtmalar topilmadi", style: TextStyle(color: Colors.grey[600])),
-        ]),
+        child: GlassSurface(
+          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 28),
+          opacity: 0.5,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(LucideIcons.inbox, size: 48, color: GlassTokens.secondaryText(context)),
+              const SizedBox(height: 12),
+              Text(
+                'Buyurtmalar topilmadi',
+                style: TextStyle(color: GlassTokens.secondaryText(context)),
+              ),
+            ],
+          ),
+        ),
       );
     }
     return ListView.builder(
@@ -62,80 +74,101 @@ class _OrderCard extends StatelessWidget {
     final dateStr =
         "${two(order.date.day)}.${two(order.date.month)}.${order.date.year}  ${two(order.date.hour)}:${two(order.date.minute)}";
 
-    return Card(
-      margin: const EdgeInsets.only(bottom: 16),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+    return GlassSurface(
+      margin: const EdgeInsets.only(bottom: 14),
+      padding: const EdgeInsets.all(16),
+      borderRadius: GlassTokens.radiusLg,
+      opacity: 0.55,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(children: [
+            Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                color: accent.withValues(alpha: 0.15),
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: accent.withValues(alpha: 0.2)),
+              ),
+              child: Icon(icon, color: accent),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    order.serviceName,
+                    style: TextStyle(
+                      fontWeight: FontWeight.w800,
+                      fontSize: 16,
+                      color: GlassTokens.primaryText(context),
+                    ),
+                  ),
+                  Text(
+                    order.providerName,
+                    style: TextStyle(color: GlassTokens.secondaryText(context)),
+                  ),
+                ],
+              ),
+            ),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: statusColor.withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: statusColor.withValues(alpha: 0.25)),
+              ),
+              child: Text(
+                order.statusText,
+                style: TextStyle(color: statusColor, fontWeight: FontWeight.w600),
+              ),
+            ),
+          ]),
+          if (order.address.isNotEmpty) ...[
+            const SizedBox(height: 10),
             Row(children: [
-              Container(
-                width: 44,
-                height: 44,
-                decoration: BoxDecoration(
-                  color: accent.withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Icon(icon, color: accent),
-              ),
-              const SizedBox(width: 12),
+              Icon(LucideIcons.mapPin, size: 14, color: GlassTokens.secondaryText(context)),
+              const SizedBox(width: 4),
               Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(order.serviceName,
-                        style: const TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 16)),
-                    Text(order.providerName,
-                        style: const TextStyle(color: Colors.grey)),
-                  ],
-                ),
-              ),
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  color: statusColor.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(20),
-                ),
                 child: Text(
-                  order.statusText,
-                  style: TextStyle(
-                      color: statusColor, fontWeight: FontWeight.w500),
+                  order.address,
+                  style: TextStyle(fontSize: 12, color: GlassTokens.secondaryText(context)),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
             ]),
-            if (order.address.isNotEmpty) ...[
-              const SizedBox(height: 10),
+          ],
+          Divider(
+            height: 24,
+            color: GlassTokens.glassBorder(context).withValues(alpha: 0.5),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
               Row(children: [
-                Icon(LucideIcons.mapPin, size: 14, color: Colors.grey[600]),
+                Icon(LucideIcons.calendar, size: 14, color: GlassTokens.secondaryText(context)),
                 const SizedBox(width: 4),
-                Expanded(
-                  child: Text(
-                    order.address,
-                    style: TextStyle(fontSize: 12, color: Colors.grey[700]),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+                Text(
+                  dateStr,
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: GlassTokens.secondaryText(context),
                   ),
                 ),
               ]),
+              Text(
+                "${order.price.toStringAsFixed(0)} so'm",
+                style: TextStyle(
+                  fontWeight: FontWeight.w800,
+                  color: GlassTokens.primaryText(context),
+                ),
+              ),
             ],
-            const Divider(height: 24),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(children: [
-                  Icon(LucideIcons.calendar, size: 14, color: Colors.grey[700]),
-                  const SizedBox(width: 4),
-                  Text(dateStr, style: const TextStyle(fontSize: 12)),
-                ]),
-                Text("${order.price.toStringAsFixed(0)} so'm",
-                    style: const TextStyle(fontWeight: FontWeight.bold)),
-              ],
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

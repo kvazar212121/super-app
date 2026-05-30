@@ -65,6 +65,22 @@ class EventPlanning {
     required this.venues,
   });
 
+  factory EventPlanning.fromProviderJson(Map<String, dynamic> json) {
+    return EventPlanning(
+      id: json['id']?.toString() ?? '',
+      name: json['name'] ?? '',
+      latitude: (json['lat'] as num?)?.toDouble() ?? 41.31,
+      longitude: (json['lng'] as num?)?.toDouble() ?? 69.25,
+      rating: (json['rating'] as num?)?.toDouble() ?? 0,
+      reviewCount: json['review_count'] ?? 0,
+      phoneNumber: json['phone'] ?? '',
+      eventTypes: const [EventType.wedding, EventType.birthday, EventType.corporate],
+      prices: const {'To\'y (to\'liq tashkilot)': 5000000, 'Tug\'ilgan kun': 800000},
+      maxGuests: 500,
+      venues: const ['Restoran', 'Bog\'', 'Dam olish maskani'],
+    );
+  }
+
   static List<EventPlanning> demoPlanners = [
     EventPlanning(
       id: 'ep1',

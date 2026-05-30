@@ -57,6 +57,25 @@ class ApplianceRepair {
     required this.brands,
   });
 
+  factory ApplianceRepair.fromProviderJson(Map<String, dynamic> json) {
+    return ApplianceRepair(
+      id: json['id']?.toString() ?? '',
+      name: json['name'] ?? '',
+      latitude: (json['lat'] as num?)?.toDouble() ?? 41.31,
+      longitude: (json['lng'] as num?)?.toDouble() ?? 69.25,
+      rating: (json['rating'] as num?)?.toDouble() ?? 0,
+      reviewCount: json['review_count'] ?? 0,
+      phoneNumber: json['phone'] ?? '',
+      applianceTypes: const [
+        ApplianceType.washingMachine,
+        ApplianceType.refrigerator,
+        ApplianceType.conditioner,
+      ],
+      prices: const {'Diagnostika': 50000, 'Ta\'mirlash': 150000},
+      brands: const ['Samsung', 'LG', 'Artel'],
+    );
+  }
+
   static List<ApplianceRepair> demoRepairs = [
     ApplianceRepair(
       id: 'ar1',

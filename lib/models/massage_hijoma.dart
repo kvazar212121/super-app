@@ -86,6 +86,22 @@ class MassageHijoma {
     this.homeVisit = false,
   });
 
+  factory MassageHijoma.fromProviderJson(Map<String, dynamic> json) {
+    return MassageHijoma(
+      id: json['id']?.toString() ?? '',
+      name: json['name'] ?? '',
+      latitude: (json['lat'] as num?)?.toDouble() ?? 41.31,
+      longitude: (json['lng'] as num?)?.toDouble() ?? 69.25,
+      rating: (json['rating'] as num?)?.toDouble() ?? 0,
+      reviewCount: json['review_count'] ?? 0,
+      phoneNumber: json['phone'] ?? '',
+      serviceTypes: const [ServiceType.classicMassage, ServiceType.hijoma],
+      prices: const {'Klassik massaj (60 min)': 120000, 'Hijoma': 80000},
+      gender: GenderType.both,
+      homeVisit: true,
+    );
+  }
+
   static List<MassageHijoma> demoCenters = [
     MassageHijoma(
       id: 'mh1',

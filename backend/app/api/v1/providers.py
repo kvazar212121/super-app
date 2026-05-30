@@ -14,6 +14,7 @@ router = APIRouter(prefix="/providers", tags=["providers"])
 @router.get("", response_model=PaginatedResponse)
 async def list_providers(
     category_id: int | None = Query(None),
+    category_key: str | None = Query(None),
     page: int = Query(1, ge=1),
     per_page: int = Query(20, ge=1, le=100),
     lat: float | None = Query(None),
@@ -21,11 +22,11 @@ async def list_providers(
     db: AsyncSession = Depends(get_db),
 ):
     items, total = await ProviderService.list_providers(
-        db, category_id, page, per_page, lat, lng
+        db, category_id, category_key, page, per_page, lat, lng
     )
     pages = (total + per_page - 1) // per_page
     return PaginatedResponse(
-        items=[ProviderOut.model_validate(p) for p in items],
+        items=[ProviderOut.from_provider(p) for p in items],
         total=total,
         page=page,
         per_page=per_page,
@@ -36,7 +37,7 @@ async def list_providers(
 @router.get("/{provider_id}", response_model=ProviderOut)
 async def get_provider(provider_id: int, db: AsyncSession = Depends(get_db)):
     p = await ProviderService.get_by_id(db, provider_id)
-    return p
+    return ProviderOut.from_provider(p)
 
 
 @router.get("/{provider_id}/reviews", response_model=PaginatedResponse)

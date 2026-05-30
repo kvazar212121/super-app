@@ -15,17 +15,27 @@ class ProviderService:
     async def list_providers(
         db: AsyncSession,
         category_id: int | None = None,
+        category_key: str | None = None,
         page: int = 1,
         per_page: int = 20,
         lat: float | None = None,
         lng: float | None = None,
     ) -> tuple[list[Provider], int]:
-        base = select(Provider).where(Provider.is_active == True)
+        from sqlalchemy.orm import selectinload
+
+        base = (
+            select(Provider)
+            .options(selectinload(Provider.category))
+            .where(Provider.is_active == True)
+        )
         count_base = select(func.count(Provider.id)).where(Provider.is_active == True)
 
         if category_id:
             base = base.where(Provider.category_id == category_id)
             count_base = count_base.where(Provider.category_id == category_id)
+        elif category_key:
+            base = base.join(Category).where(Category.key == category_key)
+            count_base = count_base.join(Category).where(Category.key == category_key)
 
         total = (await db.execute(count_base)).scalar() or 0
 

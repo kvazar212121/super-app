@@ -5,6 +5,9 @@ import '../providers/app_provider.dart';
 import '../providers/auth_provider.dart';
 import '../widgets/card_item_widget.dart';
 import '../widgets/cashback_card_widget.dart';
+import '../widgets/glass/glass_scaffold.dart';
+import '../widgets/glass/glass_surface.dart';
+import '../theme/glass_tokens.dart';
 import 'auth/login_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -14,24 +17,23 @@ class ProfileScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final provider = Provider.of<AppProvider>(context);
     final user = provider.user;
-    final theme = Theme.of(context);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Profil'),
-        actions: [
-          IconButton(
-            icon: Icon(provider.isDarkMode 
-              ? Icons.light_mode : Icons.dark_mode),
-            onPressed: () => provider.toggleTheme(),
+    return GlassScaffold(
+      title: 'Profil',
+      actions: [
+        IconButton(
+          icon: Icon(
+            provider.isDarkMode ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
+            color: GlassTokens.primaryText(context),
           ),
-        ],
-      ),
+          onPressed: () => provider.toggleTheme(),
+        ),
+      ],
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.fromLTRB(16, 8, 16, 100),
         child: Column(
           children: [
-            _buildProfileHeader(user, theme),
+            _buildProfileHeader(context, user),
             const SizedBox(height: 20),
             CashbackCardWidget(
               balance: user.balance,
@@ -47,35 +49,50 @@ class ProfileScreen extends StatelessWidget {
                 label: const Text('Hisobni to\'ldirish'),
               ),
             ),
-            const SizedBox(height: 8),
-            Text(
-              'Karta yoki boshqa to‘lov usullari orqali (demo)',
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.onSurface.withValues(alpha: 0.65),
-              ),
-              textAlign: TextAlign.center,
-            ),
             const SizedBox(height: 20),
-            _buildSectionTitle('Mening kartalarim', theme),
-            ...provider.cards.map((card) => Padding(
-              padding: const EdgeInsets.only(bottom: 12),
-              child: CardItemWidget(card: card),
-            )),
-            ListTile(
-              leading: const Icon(Icons.add_circle_outline),
-              title: const Text('Karta qo\'shish'),
+            _sectionTitle(context, 'Mening kartalarim'),
+            ...provider.cards.map(
+              (card) => Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: CardItemWidget(card: card),
+              ),
+            ),
+            GlassSurface(
               onTap: () => _showAddCardDialog(context, provider),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+              opacity: 0.5,
+              child: Row(
+                children: [
+                  Icon(Icons.add_circle_outline, color: GlassTokens.primaryText(context)),
+                  const SizedBox(width: 12),
+                  Text(
+                    'Karta qo\'shish',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      color: GlassTokens.primaryText(context),
+                    ),
+                  ),
+                ],
+              ),
             ),
-            const Divider(),
-            ListTile(
-              leading: const Icon(Icons.logout, color: Colors.red),
-              title: const Text('Chiqish'),
+            const SizedBox(height: 16),
+            GlassSurface(
               onTap: () => _showLogoutDialog(context),
-            ),
-            ListTile(
-              leading: const Icon(Icons.delete_forever, color: Colors.red),
-              title: const Text('Hisobni o\'chirish'),
-              onTap: () => _showDeleteDialog(context),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+              opacity: 0.48,
+              child: Row(
+                children: const [
+                  Icon(Icons.logout_rounded, color: Color(0xFFEF4444)),
+                  SizedBox(width: 12),
+                  Text(
+                    'Chiqish',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xFFEF4444),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ],
         ),
@@ -83,174 +100,169 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildProfileHeader(UserProfile user, ThemeData theme) {
-    return Row(
-      children: [
-        CircleAvatar(
-          radius: 40,
-          backgroundColor: theme.colorScheme.primaryContainer,
-          child: user.avatarUrl != null
-            ? ClipOval(child: Image.network(user.avatarUrl!))
-            : Text(user.name[0], style: theme.textTheme.headlineMedium),
-        ),
-        const SizedBox(width: 16),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('${user.name} ${user.surname}',
-                style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
-              Text(user.phone, style: theme.textTheme.bodyMedium),
-              if (user.telegramUsername != null)
-                Text(user.telegramUsername!,
-                  style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.primary)),
-            ],
+  Widget _buildProfileHeader(BuildContext context, UserProfile user) {
+    return GlassSurface(
+      padding: const EdgeInsets.all(18),
+      borderRadius: GlassTokens.radiusLg,
+      opacity: 0.55,
+      child: Row(
+        children: [
+          Container(
+            width: 72,
+            height: 72,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: LinearGradient(
+                colors: [
+                  const Color(0xFF6366F1).withValues(alpha: 0.3),
+                  const Color(0xFFA855F7).withValues(alpha: 0.2),
+                ],
+              ),
+              border: Border.all(color: Colors.white.withValues(alpha: 0.4), width: 2),
+            ),
+            child: user.avatarUrl != null
+                ? ClipOval(child: Image.network(user.avatarUrl!, fit: BoxFit.cover))
+                : Center(
+                    child: Text(
+                      user.name.isNotEmpty ? user.name[0].toUpperCase() : '?',
+                      style: TextStyle(
+                        fontSize: 28,
+                        fontWeight: FontWeight.w800,
+                        color: GlassTokens.primaryText(context),
+                      ),
+                    ),
+                  ),
           ),
-        ),
-      ],
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '${user.name} ${user.surname}'.trim(),
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w800,
+                    color: GlassTokens.primaryText(context),
+                  ),
+                ),
+                Text(user.phone, style: TextStyle(color: GlassTokens.secondaryText(context))),
+                if (user.telegramUsername != null)
+                  Text(
+                    user.telegramUsername!,
+                    style: const TextStyle(color: Color(0xFF6366F1), fontWeight: FontWeight.w600),
+                  ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 
-  Widget _buildSectionTitle(String title, ThemeData theme) {
+  Widget _sectionTitle(BuildContext context, String title) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Text(title,
-        style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
+      padding: const EdgeInsets.only(bottom: 12, top: 4),
+      child: Align(
+        alignment: Alignment.centerLeft,
+        child: Text(
+          title,
+          style: TextStyle(
+            fontWeight: FontWeight.w800,
+            fontSize: 16,
+            color: GlassTokens.primaryText(context),
+          ),
+        ),
+      ),
     );
   }
 
   void _showTopUpSheet(BuildContext context, AppProvider provider) {
-    final ctrl = TextEditingController();
-    const amounts = [50000.0, 100000.0, 200000.0, 500000.0];
+    final controller = TextEditingController();
     showModalBottomSheet<void>(
       context: context,
-      showDragHandle: true,
       isScrollControlled: true,
+      backgroundColor: Colors.transparent,
       builder: (ctx) => Padding(
-        padding: EdgeInsets.only(
-          left: 20,
-          right: 20,
-          top: 8,
-          bottom: MediaQuery.viewInsetsOf(ctx).bottom + 24,
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Hisobni to\'ldirish',
-              style: Theme.of(ctx).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Summani kiriting yoki tezkor tugmalardan tanlang',
-              style: Theme.of(ctx).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(ctx).colorScheme.onSurface.withValues(alpha: 0.7),
-                  ),
-            ),
-            const SizedBox(height: 16),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: amounts.map((a) {
-                return ActionChip(
-                  label: Text('${a.toStringAsFixed(0)} so‘m'),
-                  onPressed: () {
-                    ctrl.text = a.toStringAsFixed(0);
-                  },
-                );
-              }).toList(),
-            ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: ctrl,
-              keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
-                labelText: 'Summa (so‘m)',
-                prefixIcon: Icon(Icons.payments_outlined),
-                border: OutlineInputBorder(),
+        padding: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(ctx).bottom),
+        child: GlassSurface(
+          margin: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(24),
+          borderRadius: GlassTokens.radiusXl,
+          opacity: 0.88,
+          blur: GlassTokens.blurHeavy,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                'Hisobni to\'ldirish',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w800,
+                  color: GlassTokens.primaryText(ctx),
+                ),
               ),
-            ),
-            const SizedBox(height: 20),
-            SizedBox(
-              width: double.infinity,
-              child: FilledButton(
-                onPressed: () {
-                  final raw = ctrl.text.replaceAll(RegExp(r'\s'), '');
-                  final v = double.tryParse(raw);
-                  if (v == null || v < 1000) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('To‘g‘ri summa kiriting (min 1000)')),
-                    );
-                    return;
+              const SizedBox(height: 16),
+              TextField(
+                controller: controller,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(hintText: 'Summa (so\'m)'),
+              ),
+              const SizedBox(height: 16),
+              FilledButton(
+                onPressed: () async {
+                  final amount = double.tryParse(controller.text);
+                  if (amount != null && amount > 0) {
+                    await provider.topUpBalance(amount);
+                    if (ctx.mounted) Navigator.pop(ctx);
                   }
-                  provider.topUpBalance(v);
-                  Navigator.pop(ctx);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Balans +${v.toStringAsFixed(0)} so‘m (demo)'),
-                      behavior: SnackBarBehavior.floating,
-                    ),
-                  );
                 },
-                child: const Text('To‘ldirish'),
+                child: const Text('To\'ldirish'),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
-    ).whenComplete(ctrl.dispose);
+    );
   }
 
   void _showAddCardDialog(BuildContext context, AppProvider provider) {
-    showDialog(context: context, builder: (_) => AlertDialog(
-      title: const Text('Karta qo\'shish'),
-      content: const Text('Karta ma\'lumotlarini kiriting'),
-      actions: [
-        TextButton(onPressed: () => Navigator.pop(context),
-          child: const Text('Bekor qilish')),
-        ElevatedButton(onPressed: () {
-          Navigator.pop(context);
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Karta qo\'shildi')));
-        }, child: const Text('Qo\'shish')),
-      ],
-    ));
+    showDialog<void>(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text('Karta qo\'shish'),
+        content: const Text('Tez orada qo\'shiladi'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('OK')),
+        ],
+      ),
+    );
   }
 
   void _showLogoutDialog(BuildContext context) {
-    showDialog(context: context, builder: (_) => AlertDialog(
-      title: const Text('Chiqish'),
-      content: const Text('Haqiqatan chiqasizmi?'),
-      actions: [
-        TextButton(onPressed: () => Navigator.pop(context),
-          child: const Text('Yo\'q')),
-        ElevatedButton(onPressed: () async {
-          Navigator.pop(context);
-          await context.read<AuthProvider>().logout();
-          if (context.mounted) {
-            Navigator.of(context).pushAndRemoveUntil(
-              MaterialPageRoute(builder: (_) => const LoginScreen()),
-              (route) => false,
-            );
-          }
-        },
-          child: const Text('Ha')),
-      ],
-    ));
-  }
-
-  void _showDeleteDialog(BuildContext context) {
-    showDialog(context: context, builder: (_) => AlertDialog(
-      title: const Text('Hisobni o\'chirish'),
-      content: const Text('Bu amal qaytarilmaydi! Davom etasizmi?'),
-      actions: [
-        TextButton(onPressed: () => Navigator.pop(context),
-          child: const Text('Bekor qilish')),
-        ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-          onPressed: () => Navigator.pop(context),
-          child: const Text('O\'chirish')),
-      ],
-    ));
+    showDialog<void>(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text('Chiqish'),
+        content: const Text('Haqiqatan chiqasizmi?'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Yo\'q')),
+          FilledButton(
+            onPressed: () async {
+              Navigator.pop(context);
+              await context.read<AuthProvider>().logout();
+              if (context.mounted) {
+                Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(builder: (_) => const LoginScreen()),
+                  (route) => false,
+                );
+              }
+            },
+            child: const Text('Ha'),
+          ),
+        ],
+      ),
+    );
   }
 }

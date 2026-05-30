@@ -63,5 +63,5 @@ class AuthService:
         return TokenResponse(
             access_token=create_access_token(user.id),
             refresh_token=create_refresh_token(user.id),
-            user=UserOut.model_validate(user),
+            user=UserOut.from_user(user),
         )

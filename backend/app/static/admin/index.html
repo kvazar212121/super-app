@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <title>Super App &mdash; Boshqaruv Paneli</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
     <style>
@@ -763,16 +764,31 @@
         // ===== AUTH TOKEN =====
         let authToken = localStorage.getItem('at');
         if (!authToken) {
-            location.assign('/admin/login');
+            location.replace('/admin/login');
+            throw new Error('auth_required');
         }
-        const authHeaders = { 'Authorization': 'Bearer ' + authToken, 'Content-Type': 'application/json' };
+
+        function getAuthHeaders() {
+            const token = localStorage.getItem('at');
+            if (!token) return null;
+            return { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' };
+        }
 
         async function api(url, opts) {
             opts = opts || {};
-            opts.headers = Object.assign({}, authHeaders, opts.headers || {});
+            const headers = getAuthHeaders();
+            if (!headers) {
+                location.replace('/admin/login');
+                return null;
+            }
+            opts.headers = Object.assign({}, headers, opts.headers || {});
             try {
                 const r = await fetch(url, opts);
-                if (r.status === 401) { localStorage.removeItem('at'); location.assign('/admin/login'); }
+                if (r.status === 401) {
+                    localStorage.removeItem('at');
+                    localStorage.removeItem('rt');
+                    location.replace('/admin/login');
+                }
                 return r;
             } catch(e) {
                 console.error('API error:', e);
@@ -782,7 +798,8 @@
 
         function logout() {
             localStorage.removeItem('at');
-            location.assign('/admin/login');
+            localStorage.removeItem('rt');
+            location.replace('/admin/login');
         }
 
         // ===== MOCK DATA (fallback) =====
@@ -993,7 +1010,7 @@
             };
             if (renderers[page]) {
                 await renderers[page]();
-                if (page === 'dashboard') setTimeout(initDashboardCharts, 50);
+                if (page === 'dashboard') setTimeout(function() { initDashboardCharts(); }, 50);
             }
         }
 
@@ -1005,6 +1022,23 @@
                 const r = await api(API_BASE + '/stats');
                 if (r && r.ok) s = await r.json();
             } catch(e) { console.warn('Stats fallback to default', e); }
+
+            var recentOrders = mockData.orders.slice(0, 5);
+            var topProviders = mockData.providers.filter(function(p) { return p.status === 'active'; }).sort(function(a, b) { return b.rating - a.rating; }).slice(0, 5);
+            try {
+                const or = await api(API_BASE + '/orders?page=1&per_page=5');
+                if (or && or.ok) {
+                    var od = await or.json();
+                    recentOrders = (od.items || []).map(function(o) {
+                        return { id: o.id, service: o.service_name || o.service, price: o.price, status: o.status };
+                    });
+                }
+                const pr = await api(API_BASE + '/providers?page=1&per_page=5');
+                if (pr && pr.ok) {
+                    var pd = await pr.json();
+                    topProviders = (pd.items || []).sort(function(a, b) { return (b.rating || 0) - (a.rating || 0); }).slice(0, 5);
+                }
+            } catch(e) { console.warn('Dashboard lists fallback', e); }
 
             mainContent.innerHTML =
                 '<div class="page-header">' +
@@ -1076,7 +1110,7 @@
                                 '<table class="data-table">' +
                                     '<thead><tr><th>ID</th><th>Xizmat</th><th>Narx</th><th>Holat</th></tr></thead>' +
                                     '<tbody>' +
-                                        mockData.orders.slice(0, 5).map(function(o) {
+                                        recentOrders.map(function(o) {
                             return '<tr><td>#' + o.id + '</td><td>' + o.service + '</td><td>' + formatMoney(o.price) + '</td><td>' + statusBadge(o.status) + '</td></tr>';
                         }).join('') +
                                     '</tbody>' +
@@ -1091,8 +1125,8 @@
                                 '<table class="data-table">' +
                                     '<thead><tr><th>#</th><th>Nomi</th><th>Reyting</th><th>Buyurtmalar</th></tr></thead>' +
                                     '<tbody>' +
-                                        mockData.providers.filter(function(p) { return p.status === 'active'; }).sort(function(a, b) { return b.rating - a.rating; }).slice(0, 5).map(function(p, i) {
-                            return '<tr><td>' + (i + 1) + '</td><td><div class="table-user"><div class="table-avatar">' + getInitials(p.name) + '</div><span>' + p.name + '</span></div></td><td>' + renderStars(Math.round(p.rating)) + ' ' + p.rating + '</td><td>' + p.orders + '</td></tr>';
+                                        topProviders.map(function(p, i) {
+                            return '<tr><td>' + (i + 1) + '</td><td><div class="table-user"><div class="table-avatar">' + getInitials(p.name) + '</div><span>' + p.name + '</span></div></td><td>' + renderStars(Math.round(p.rating || 0)) + ' ' + (p.rating || 0) + '</td><td>' + (p.review_count || p.orders || 0) + '</td></tr>';
                         }).join('') +
                                     '</tbody>' +
                                 '</table>' +
@@ -1104,19 +1138,41 @@
 
         var revenueChartInstance = null;
         var categoryChartInstance = null;
+        var chartDataCache = null;
 
-        function initDashboardCharts() {
+        async function initDashboardCharts() {
             var revenueCtx = document.getElementById('revenueChart');
             if (!revenueCtx) return;
             if (revenueChartInstance) revenueChartInstance.destroy();
 
             var labels = [];
             var data = [];
-            for (var i = 29; i >= 0; i--) {
-                var d = new Date();
-                d.setDate(d.getDate() - i);
-                labels.push(d.toLocaleDateString('uz-UZ', { day: 'numeric', month: 'short' }));
-                data.push(Math.floor(Math.random() * 500000) + 150000);
+            var catLabels = mockData.categories.map(function(c) { return c.title_uz; });
+            var catData = [320, 245, 180, 410, 156];
+
+            try {
+                const r = await api(API_BASE + '/chart-data?days=30');
+                if (r && r.ok) {
+                    chartDataCache = await r.json();
+                    labels = chartDataCache.revenue.map(function(p) {
+                        var d = new Date(p.label);
+                        return d.toLocaleDateString('uz-UZ', { day: 'numeric', month: 'short' });
+                    });
+                    data = chartDataCache.revenue.map(function(p) { return p.value; });
+                    if (chartDataCache.top_categories && chartDataCache.top_categories.length) {
+                        catLabels = chartDataCache.top_categories.map(function(c) { return c.label; });
+                        catData = chartDataCache.top_categories.map(function(c) { return c.value; });
+                    }
+                }
+            } catch(e) { console.warn('Chart data fallback', e); }
+
+            if (labels.length === 0) {
+                for (var i = 29; i >= 0; i--) {
+                    var d = new Date();
+                    d.setDate(d.getDate() - i);
+                    labels.push(d.toLocaleDateString('uz-UZ', { day: 'numeric', month: 'short' }));
+                    data.push(Math.floor(Math.random() * 500000) + 150000);
+                }
             }
 
             revenueChartInstance = new Chart(revenueCtx, {
@@ -1153,10 +1209,10 @@
             categoryChartInstance = new Chart(catCtx, {
                 type: 'bar',
                 data: {
-                    labels: mockData.categories.map(function(c) { return c.title_uz; }),
+                    labels: catLabels,
                     datasets: [{
                         label: 'Buyurtmalar',
-                        data: [320, 245, 180, 410, 156],
+                        data: catData,
                         backgroundColor: ['#F59E0B', '#3B82F6', '#10B981', '#EC4899', '#8B5CF6'],
                         borderRadius: 6,
                         borderSkipped: false,
@@ -1414,28 +1470,56 @@
         }
 
         // ===== PAGE: PROVIDERS =====
-        function renderProviders() {
+        let providersPage = 1;
+        let providersData = { items: [], total: 0, pages: 1 };
+        let categoriesCache = [];
+
+        async function loadCategoriesCache() {
+            try {
+                const r = await api(API_BASE + '/categories');
+                if (r && r.ok) categoriesCache = await r.json();
+            } catch(e) {
+                categoriesCache = mockData.categories;
+            }
+            return categoriesCache;
+        }
+
+        async function renderProviders(page) {
+            if (page === undefined) page = 1;
+            providersPage = page;
+            await loadCategoriesCache();
+
+            var search = '';
+            var searchEl = document.getElementById('providerSearch');
+            if (searchEl) search = searchEl.value;
+
+            let url = API_BASE + '/providers?page=' + page + '&per_page=20';
+            if (search) url += '&search=' + encodeURIComponent(search);
+
+            try {
+                const r = await api(url);
+                if (r && r.ok) providersData = await r.json();
+            } catch(e) {
+                providersData = { items: mockData.providers.map(function(p) {
+                    return { id: p.id, name: p.name, category_title: p.category, phone: p.phone, rating: p.rating, is_active: p.status === 'active', review_count: p.orders };
+                }), total: mockData.providers.length, pages: 1 };
+            }
+
             mainContent.innerHTML =
                 '<div class="page-header">' +
                     '<h1 class="page-title">Soha egalari</h1>' +
-                    '<p class="page-subtitle">Xizmat ko\'rsatuvchilarni boshqarish</p>' +
+                    '<p class="page-subtitle">Xizmat ko\'rsatuvchilarni boshqarish (' + providersData.total + ' ta)</p>' +
                 '</div>' +
                 '<div class="card">' +
                     '<div class="card-header">' +
                         '<div class="filters-bar" style="margin-bottom:0; width:100%;">' +
                             '<div class="filter-search">' +
                                 '<span class="search-icon">&#128269;</span>' +
-                                '<input type="text" placeholder="Nomi yoki telefon bo\'yicha qidirish..." id="providerSearch">' +
+                                '<input type="text" placeholder="Nomi yoki telefon bo\'yicha qidirish..." id="providerSearch" value="' + (search || '') + '">' +
                             '</div>' +
                             '<select class="filter-select" id="providerCategoryFilter">' +
                                 '<option value="all">Barcha kategoriyalar</option>' +
-                                mockData.categories.map(function(c) { return '<option value="' + c.key + '">' + c.title_uz + '</option>'; }).join('') +
-                            '</select>' +
-                            '<select class="filter-select" id="providerStatusFilter">' +
-                                '<option value="all">Barcha holatlar</option>' +
-                                '<option value="active">Faol</option>' +
-                                '<option value="pending">Kutilmoqda</option>' +
-                                '<option value="blocked">Bloklangan</option>' +
+                                categoriesCache.map(function(c) { return '<option value="' + c.key + '">' + c.title_uz + '</option>'; }).join('') +
                             '</select>' +
                         '</div>' +
                     '</div>' +
@@ -1443,101 +1527,80 @@
                         '<div class="table-container">' +
                             '<table class="data-table" id="providersTable">' +
                                 '<thead><tr><th>ID</th><th>Nomi</th><th>Kategoriya</th><th>Telefon</th><th>Reyting</th><th>Holat</th><th>Amallar</th></tr></thead>' +
-                                '<tbody id="providersTableBody">' + renderProviderRows(mockData.providers) + '</tbody>' +
+                                '<tbody id="providersTableBody">' + renderProviderRowsApi(providersData.items) + '</tbody>' +
                             '</table>' +
                         '</div>' +
                     '</div>' +
                     '<div class="pagination">' +
-                        '<span class="pagination-info">1-' + mockData.providers.length + ' dan ' + mockData.providers.length + ' ta ko\'rsatilmoqda</span>' +
-                        '<div class="pagination-buttons">' +
-                            '<button class="pagination-btn" disabled>&#8592;</button>' +
-                            '<button class="pagination-btn active">1</button>' +
-                            '<button class="pagination-btn" disabled>&#8594;</button>' +
-                        '</div>' +
+                        '<span class="pagination-info">' + providersData.total + ' ta soha egasi</span>' +
+                        '<div class="pagination-buttons" id="providersPagination">' + renderPagination(providersData.pages, providersPage, 'renderProviders') + '</div>' +
                     '</div>' +
                 '</div>';
 
-            document.getElementById('providerSearch').addEventListener('input', filterProviders);
-            document.getElementById('providerCategoryFilter').addEventListener('change', filterProviders);
-            document.getElementById('providerStatusFilter').addEventListener('change', filterProviders);
+            var providerSearchEl = document.getElementById('providerSearch');
+            var searchTimeout;
+            providerSearchEl.addEventListener('input', function() {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(function() { renderProviders(1); }, 400);
+            });
         }
 
-        function renderProviderRows(providers) {
+        function providerStatus(isActive) {
+            return isActive ? 'active' : 'blocked';
+        }
+
+        function renderProviderRowsApi(providers) {
             return providers.map(function(p) {
+                var status = providerStatus(p.is_active !== false);
                 return '<tr>' +
                     '<td>' + p.id + '</td>' +
                     '<td><div class="table-user"><div class="table-avatar">' + getInitials(p.name) + '</div><span>' + p.name + '</span></div></td>' +
-                    '<td>' + p.category + '</td>' +
+                    '<td>' + (p.category_title || p.category_key || '-') + '</td>' +
                     '<td>' + p.phone + '</td>' +
-                    '<td>' + renderStars(Math.round(p.rating)) + ' ' + p.rating + '</td>' +
-                    '<td>' + statusBadge(p.status) + '</td>' +
+                    '<td>' + renderStars(Math.round(p.rating || 0)) + ' ' + (p.rating || 0) + '</td>' +
+                    '<td>' + statusBadge(status) + '</td>' +
                     '<td><div class="action-group">' +
-                        (p.status === 'pending' ? '<button class="btn-icon success" title="Tasdiqlash" onclick="approveProvider(' + p.id + ')">&#9989;</button>' : '') +
-                        (p.status === 'pending' ? '<button class="btn-icon danger" title="Rad etish" onclick="rejectProvider(' + p.id + ')">&#10060;</button>' : '') +
                         '<button class="btn-icon" title="Ko\'rish" onclick="viewProvider(' + p.id + ')">&#128065;</button>' +
-                        '<button class="btn-icon success" title="Tahrirlash" onclick="editProvider(' + p.id + ')">&#9998;</button>' +
                         '<button class="btn-icon danger" title="O\'chirish" onclick="deleteProvider(' + p.id + ')">&#128465;</button>' +
                     '</div></td>' +
                 '</tr>';
             }).join('');
         }
 
-        function filterProviders() {
-            var search = document.getElementById('providerSearch').value.toLowerCase();
-            var category = document.getElementById('providerCategoryFilter').value;
-            var status = document.getElementById('providerStatusFilter').value;
-
-            var filtered = mockData.providers.filter(function(p) {
-                if (search && p.name.toLowerCase().indexOf(search) === -1 && p.phone.indexOf(search) === -1) return false;
-                if (category !== 'all' && p.category.toLowerCase() !== category) return false;
-                if (status !== 'all' && p.status !== status) return false;
-                return true;
-            });
-
-            document.getElementById('providersTableBody').innerHTML = renderProviderRows(filtered);
+        function renderProviderRows(providers) {
+            return renderProviderRowsApi(providers.map(function(p) {
+                return { id: p.id, name: p.name, category_title: p.category, phone: p.phone, rating: p.rating, is_active: p.status === 'active' };
+            }));
         }
 
-        function viewProvider(id) {
-            var p = mockData.providers.find(function(x) { return x.id === id; });
-            if (!p) return;
+        function filterProviders() {
+            renderProviders(1);
+        }
+
+        async function viewProvider(id) {
+            var p = providersData.items.find(function(x) { return x.id === id; });
+            if (!p) {
+                p = mockData.providers.find(function(x) { return x.id === id; });
+                if (!p) return;
+            }
             openModal('Soha egasi ma\'lumotlari',
                 '<div class="detail-grid">' +
                     '<div class="detail-item"><div class="detail-label">ID</div><div class="detail-value">' + p.id + '</div></div>' +
                     '<div class="detail-item"><div class="detail-label">Nomi</div><div class="detail-value">' + p.name + '</div></div>' +
-                    '<div class="detail-item"><div class="detail-label">Kategoriya</div><div class="detail-value">' + p.category + '</div></div>' +
+                    '<div class="detail-item"><div class="detail-label">Kategoriya</div><div class="detail-value">' + (p.category_title || p.category || '-') + '</div></div>' +
                     '<div class="detail-item"><div class="detail-label">Telefon</div><div class="detail-value">' + p.phone + '</div></div>' +
-                    '<div class="detail-item"><div class="detail-label">Reyting</div><div class="detail-value">' + p.rating + ' ' + renderStars(Math.round(p.rating)) + '</div></div>' +
-                    '<div class="detail-item"><div class="detail-label">Buyurtmalar</div><div class="detail-value">' + p.orders + '</div></div>' +
-                    '<div class="detail-item"><div class="detail-label">Holat</div><div class="detail-value">' + statusBadge(p.status) + '</div></div>' +
-                    '<div class="detail-item"><div class="detail-label">Qo\'shilgan</div><div class="detail-value">' + formatDate(p.created_at) + '</div></div>' +
+                    '<div class="detail-item"><div class="detail-label">Reyting</div><div class="detail-value">' + (p.rating || 0) + ' ' + renderStars(Math.round(p.rating || 0)) + '</div></div>' +
+                    '<div class="detail-item"><div class="detail-label">Sharhlar</div><div class="detail-value">' + (p.review_count || p.orders || 0) + '</div></div>' +
                 '</div>',
                 '<button class="btn btn-secondary" onclick="closeModal()">Yopish</button>');
         }
 
         function editProvider(id) {
-            var p = mockData.providers.find(function(x) { return x.id === id; });
-            if (!p) return;
-            openModal('Soha egasini tahrirlash',
-                '<div class="form-group"><label class="form-label">Nomi</label><input type="text" class="form-input" id="editProviderName" value="' + p.name + '"></div>' +
-                '<div class="form-row">' +
-                    '<div class="form-group"><label class="form-label">Telefon</label><input type="text" class="form-input" id="editProviderPhone" value="' + p.phone + '"></div>' +
-                    '<div class="form-group"><label class="form-label">Kategoriya</label><select class="form-input" id="editProviderCategory">' +
-                        mockData.categories.map(function(c) { return '<option value="' + c.key + '"' + (c.key === p.category.toLowerCase() ? ' selected' : '') + '>' + c.title_uz + '</option>'; }).join('') +
-                    '</select></div>' +
-                '</div>',
-                '<button class="btn btn-secondary" onclick="closeModal()">Bekor qilish</button>' +
-                '<button class="btn btn-primary" onclick="saveProvider(' + id + ')">Saqlash</button>');
+            viewProvider(id);
         }
 
         function saveProvider(id) {
-            var p = mockData.providers.find(function(x) { return x.id === id; });
-            if (p) {
-                p.name = document.getElementById('editProviderName').value;
-                p.phone = document.getElementById('editProviderPhone').value;
-                showToast('Soha egasi muvaffaqiyatli yangilandi');
-                closeModal();
-                renderProviders();
-            }
+            closeModal();
         }
 
         async function approveProvider(id) {
@@ -1742,45 +1805,48 @@
         }
 
         // ===== PAGE: CATEGORIES =====
-        function renderCategories() {
+        async function renderCategories() {
+            await loadCategoriesCache();
+            var cats = categoriesCache.length ? categoriesCache : mockData.categories;
+
             var html =
                 '<div class="page-header">' +
                     '<h1 class="page-title">Kategoriyalar</h1>' +
-                    '<p class="page-subtitle">Xizmat kategoriyalarini boshqarish</p>' +
+                    '<p class="page-subtitle">Xizmat kategoriyalarini boshqarish (' + cats.length + ' ta)</p>' +
                 '</div>' +
                 '<div style="display:flex; justify-content:flex-end; margin-bottom:16px;">' +
                     '<button class="btn btn-primary" onclick="addCategoryModal()">&#43; Yangi kategoriya</button>' +
                 '</div>' +
                 '<div id="categoriesList">';
 
-            mockData.categories.forEach(function(c, ci) {
+            cats.forEach(function(c, ci) {
+                var variants = c.variants || [];
                 html += '<div class="category-item" id="category-' + ci + '">' +
                     '<div class="category-header" onclick="toggleCategory(' + ci + ')">' +
-                        '<div class="category-icon" style="background:' + c.accent_color + '20; color:' + c.accent_color + ';">' + c.icon + '</div>' +
+                        '<div class="category-icon" style="background:' + (c.accent_color || '#6366F1') + '20; color:' + (c.accent_color || '#6366F1') + ';">' + (c.icon || '&#128194;') + '</div>' +
                         '<div class="category-info">' +
                             '<div class="category-name">' + c.title_uz + '</div>' +
                             '<div class="category-key">' + c.key + '</div>' +
                         '</div>' +
-                        '<span class="category-variants-count">' + c.variants.length + ' ta variant</span>' +
+                        '<span class="category-variants-count">' + variants.length + ' ta variant</span>' +
                         '<div class="action-group">' +
                             '<button class="btn-icon" title="Tahrirlash" onclick="event.stopPropagation(); editCategoryModal(' + ci + ')">&#9998;</button>' +
-                            '<button class="btn-icon danger" title="O\'chirish" onclick="event.stopPropagation(); deleteCategory(' + ci + ')">&#128465;</button>' +
+                            '<button class="btn-icon danger" title="O\'chirish" onclick="event.stopPropagation(); deleteCategory(' + ci + ', ' + (c.id || 0) + ')">&#128465;</button>' +
                         '</div>' +
                         '<span class="category-expand">&#9660;</span>' +
                     '</div>' +
                     '<div class="category-variants">' +
                         '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">' +
                             '<strong style="font-size:14px;">Variantlar</strong>' +
-                            '<button class="btn btn-sm btn-primary" onclick="addVariantModal(' + ci + ')">&#43; Variant qo\'shish</button>' +
+                            '<button class="btn btn-sm btn-primary" onclick="addVariantModal(' + ci + ', ' + (c.id || 0) + ')">&#43; Variant qo\'shish</button>' +
                         '</div>';
-                c.variants.forEach(function(v) {
+                variants.forEach(function(v) {
                     html += '<div class="variant-item">' +
-                        '<div><span class="variant-label">' + v.label + '</span></div>' +
+                        '<div><span class="variant-label">' + (v.label_uz || v.label) + '</span></div>' +
                         '<div style="display:flex; align-items:center; gap:12px;">' +
                             '<span class="variant-price">' + formatMoney(v.base_price) + '</span>' +
                             '<div class="action-group">' +
-                                '<button class="btn-icon" title="Tahrirlash" onclick="editVariantModal(' + ci + ', ' + v.id + ')">&#9998;</button>' +
-                                '<button class="btn-icon danger" title="O\'chirish" onclick="deleteVariant(' + ci + ', ' + v.id + ')">&#128465;</button>' +
+                                '<button class="btn-icon danger" title="O\'chirish" onclick="deleteVariant(' + ci + ', ' + (c.id || 0) + ', ' + v.id + ')">&#128465;</button>' +
                             '</div>' +
                         '</div>' +
                     '</div>';
@@ -1907,59 +1973,49 @@
         }
 
         // ===== PAGE: REVIEWS =====
-        function renderReviews() {
+        let reviewsData = { items: [], total: 0, pages: 1 };
+
+        async function renderReviews(page) {
+            if (page === undefined) page = 1;
+            let url = API_BASE + '/reviews?page=' + page + '&per_page=20';
+            try {
+                const r = await api(url);
+                if (r && r.ok) reviewsData = await r.json();
+            } catch(e) {
+                reviewsData = { items: mockData.reviews.map(function(r) {
+                    return { id: r.id, user_name: r.user, provider_name: r.provider, rating: r.rating, comment: r.text, created_at: r.created_at };
+                }), total: mockData.reviews.length, pages: 1 };
+            }
+
             mainContent.innerHTML =
                 '<div class="page-header">' +
                     '<h1 class="page-title">Sharhlar</h1>' +
-                    '<p class="page-subtitle">Foydalanuvchi sharhlarini moderatsiya qilish</p>' +
+                    '<p class="page-subtitle">Foydalanuvchi sharhlarini moderatsiya qilish (' + reviewsData.total + ' ta)</p>' +
                 '</div>' +
                 '<div class="card">' +
-                    '<div class="card-header">' +
-                        '<div class="filters-bar" style="margin-bottom:0; width:100%;">' +
-                            '<div class="filter-search">' +
-                                '<span class="search-icon">&#128269;</span>' +
-                                '<input type="text" placeholder="Sharh bo\'yicha qidirish..." id="reviewSearch">' +
-                            '</div>' +
-                            '<select class="filter-select" id="reviewRatingFilter">' +
-                                '<option value="all">Barcha reytinglar</option>' +
-                                '<option value="5">&#9733;&#9733;&#9733;&#9733;&#9733; (5)</option>' +
-                                '<option value="4">&#9733;&#9733;&#9733;&#9733; (4)</option>' +
-                                '<option value="3">&#9733;&#9733;&#9733; (3)</option>' +
-                                '<option value="2">&#9733;&#9733; (2)</option>' +
-                                '<option value="1">&#9733; (1)</option>' +
-                            '</select>' +
-                        '</div>' +
-                    '</div>' +
                     '<div class="card-body no-padding">' +
                         '<div class="table-container">' +
                             '<table class="data-table" id="reviewsTable">' +
                                 '<thead><tr><th>ID</th><th>Foydalanuvchi</th><th>Provider</th><th>Reyting</th><th>Sharh</th><th>Sana</th><th>Amallar</th></tr></thead>' +
-                                '<tbody id="reviewsTableBody">' + renderReviewRows(mockData.reviews) + '</tbody>' +
+                                '<tbody id="reviewsTableBody">' + renderReviewRowsApi(reviewsData.items) + '</tbody>' +
                             '</table>' +
                         '</div>' +
                     '</div>' +
                     '<div class="pagination">' +
-                        '<span class="pagination-info">1-' + mockData.reviews.length + ' dan ' + mockData.reviews.length + ' ta ko\'rsatilmoqda</span>' +
-                        '<div class="pagination-buttons">' +
-                            '<button class="pagination-btn" disabled>&#8592;</button>' +
-                            '<button class="pagination-btn active">1</button>' +
-                            '<button class="pagination-btn" disabled>&#8594;</button>' +
-                        '</div>' +
+                        '<span class="pagination-info">' + reviewsData.total + ' ta sharh</span>' +
+                        '<div class="pagination-buttons" id="reviewsPagination">' + renderPagination(reviewsData.pages, page, 'renderReviews') + '</div>' +
                     '</div>' +
                 '</div>';
-
-            document.getElementById('reviewSearch').addEventListener('input', filterReviews);
-            document.getElementById('reviewRatingFilter').addEventListener('change', filterReviews);
         }
 
-        function renderReviewRows(reviews) {
+        function renderReviewRowsApi(reviews) {
             return reviews.map(function(r) {
                 return '<tr>' +
                     '<td>' + r.id + '</td>' +
-                    '<td><div class="table-user"><div class="table-avatar">' + getInitials(r.user) + '</div><span>' + r.user + '</span></div></td>' +
-                    '<td>' + r.provider + '</td>' +
+                    '<td><div class="table-user"><div class="table-avatar">' + getInitials(r.user_name || r.user || '?') + '</div><span>' + (r.user_name || r.user || '-') + '</span></div></td>' +
+                    '<td>' + (r.provider_name || r.provider || '-') + '</td>' +
                     '<td>' + renderStars(r.rating) + '</td>' +
-                    '<td style="max-width:300px;">' + r.text + '</td>' +
+                    '<td style="max-width:300px;">' + (r.comment || r.text || '') + '</td>' +
                     '<td>' + formatDate(r.created_at) + '</td>' +
                     '<td><div class="action-group">' +
                         '<button class="btn-icon danger" title="O\'chirish" onclick="deleteReview(' + r.id + ')">&#128465;</button>' +
@@ -1968,17 +2024,12 @@
             }).join('');
         }
 
+        function renderReviewRows(reviews) {
+            return renderReviewRowsApi(reviews);
+        }
+
         function filterReviews() {
-            var search = document.getElementById('reviewSearch').value.toLowerCase();
-            var rating = document.getElementById('reviewRatingFilter').value;
-
-            var filtered = mockData.reviews.filter(function(r) {
-                if (search && r.text.toLowerCase().indexOf(search) === -1 && r.user.toLowerCase().indexOf(search) === -1 && r.provider.toLowerCase().indexOf(search) === -1) return false;
-                if (rating !== 'all' && r.rating !== parseInt(rating)) return false;
-                return true;
-            });
-
-            document.getElementById('reviewsTableBody').innerHTML = renderReviewRows(filtered);
+            renderReviews(1);
         }
 
         function deleteReview(id) {

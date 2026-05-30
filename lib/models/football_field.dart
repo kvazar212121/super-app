@@ -161,6 +161,38 @@ class FootballField {
     this.weeklySlots = const {},
   });
 
+  factory FootballField.fromProviderJson(Map<String, dynamic> json) {
+    final meta = json['metadata'] as Map<String, dynamic>? ?? {};
+    FieldSize parseSize(String? s) => switch (s) {
+          'small' => FieldSize.small,
+          'medium' => FieldSize.medium,
+          'large' => FieldSize.large,
+          _ => FieldSize.medium,
+        };
+    FieldSurface parseSurface(String? s) => switch (s) {
+          'natural' => FieldSurface.natural,
+          'artificial' => FieldSurface.artificial,
+          'parquet' => FieldSurface.parquet,
+          _ => FieldSurface.artificial,
+        };
+    return FootballField(
+      id: json['id']?.toString() ?? '',
+      name: json['name'] ?? '',
+      address: json['address'] ?? '',
+      latitude: (json['lat'] as num?)?.toDouble() ?? 41.31,
+      longitude: (json['lng'] as num?)?.toDouble() ?? 69.25,
+      size: parseSize(meta['size'] as String?),
+      surface: parseSurface(meta['surface'] as String?),
+      rating: (json['rating'] as num?)?.toDouble() ?? 0,
+      reviewCount: json['review_count'] ?? 0,
+      basePricePerHour: (meta['base_price_per_hour'] as num?)?.toDouble() ?? 200000,
+      phoneNumber: json['phone'] ?? '',
+      hasLighting: true,
+      hasParking: true,
+      hasShowers: true,
+    );
+  }
+
   /// Berilgan sana uchun slotlarni qaytaradi
   List<TimeSlot> getSlotsForDate(DateTime date) {
     final weekday = date.weekday; // 1=dushanba..7=yakshanba

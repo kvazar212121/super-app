@@ -16,6 +16,7 @@ import '../models/massage_hijoma.dart';
 import '../models/nurse_service.dart';
 import '../models/event_planning.dart';
 import '../models/service_hub_kind.dart';
+import '../services/hub_data_service.dart';
 import '../widgets/hub_map_preview.dart';
 import '../widgets/service_hub_widgets.dart';
 import 'all_categories_screen.dart';
@@ -32,7 +33,7 @@ import 'massage_booking_screen.dart';
 import 'nurse_booking_screen.dart';
 import 'event_booking_screen.dart';
 
-class ServiceHubScreen extends StatelessWidget {
+class ServiceHubScreen extends StatefulWidget {
   final ServiceHubKind kind;
   final Color accentColor;
 
@@ -43,18 +44,40 @@ class ServiceHubScreen extends StatelessWidget {
   });
 
   @override
+  State<ServiceHubScreen> createState() => _ServiceHubScreenState();
+}
+
+class _ServiceHubScreenState extends State<ServiceHubScreen> {
+  late Future<HubScreenData> _dataFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _dataFuture = HubDataService().loadFor(widget.kind);
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(kind.title),
-        backgroundColor: accentColor.withValues(alpha: 0.1),
-        foregroundColor: accentColor,
+        title: Text(widget.kind.title),
+        backgroundColor: widget.accentColor.withValues(alpha: 0.1),
+        foregroundColor: widget.accentColor,
       ),
-      body: Column(
-        children: [
-          _MapSection(kind: kind, accentColor: accentColor),
-          Expanded(child: _ActionList(kind: kind, accentColor: accentColor)),
-        ],
+      body: FutureBuilder<HubScreenData>(
+        future: _dataFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          final data = snapshot.data ?? HubScreenData();
+          return Column(
+            children: [
+              _MapSection(kind: widget.kind, accentColor: widget.accentColor, data: data),
+              Expanded(child: _ActionList(kind: widget.kind, accentColor: widget.accentColor, data: data)),
+            ],
+          );
+        },
       ),
     );
   }
@@ -63,8 +86,9 @@ class ServiceHubScreen extends StatelessWidget {
 class _MapSection extends StatelessWidget {
   final ServiceHubKind kind;
   final Color accentColor;
+  final HubScreenData data;
 
-  const _MapSection({required this.kind, required this.accentColor});
+  const _MapSection({required this.kind, required this.accentColor, required this.data});
 
   @override
   Widget build(BuildContext context) {
@@ -76,7 +100,7 @@ class _MapSection extends StatelessWidget {
         markers: _buildMarkers(context),
         onExpand: () => Navigator.push(
           context,
-          MaterialPageRoute(builder: (_) => BarberMapScreen(shops: BarberShop.demoShops)),
+          MaterialPageRoute(builder: (_) => BarberMapScreen(shops: data.barberShops.isNotEmpty ? data.barberShops : BarberShop.demoShops)),
         ),
       ),
     );
@@ -106,7 +130,7 @@ class _MapSection extends StatelessWidget {
 
     switch (kind) {
       case ServiceHubKind.sartarosh:
-        markers.addAll(BarberShop.demoShops.map((shop) => Marker(
+        markers.addAll(data.barberShops.map((shop) => Marker(
           point: LatLng(shop.latitude, shop.longitude),
           child: _MapPin(
             icon: LucideIcons.scissors,
@@ -116,7 +140,7 @@ class _MapSection extends StatelessWidget {
         )));
         break;
       case ServiceHubKind.salon:
-        markers.addAll(BeautySalon.demoSalons.map((salon) => Marker(
+        markers.addAll(data.salons.map((salon) => Marker(
           point: LatLng(salon.latitude, salon.longitude),
           child: _MapPin(
             icon: LucideIcons.sparkles,
@@ -126,7 +150,7 @@ class _MapSection extends StatelessWidget {
         )));
         break;
       case ServiceHubKind.futbol:
-        markers.addAll(FootballField.demoFields.map((field) => Marker(
+        markers.addAll(data.footballFields.map((field) => Marker(
           point: LatLng(field.latitude, field.longitude),
           child: _MapPin(
             icon: LucideIcons.trophy,
@@ -157,8 +181,8 @@ class _MapSection extends StatelessWidget {
                                 ? 'Enaga' 
                                 : (kind == ServiceHubKind.repetitor ? 'Repetitor' : null))))));
         final filteredMasters = specialty != null 
-            ? Master.demoMasters.where((m) => m.specialty == specialty).toList() 
-            : Master.demoMasters;
+            ? data.masters.where((m) => m.specialty == specialty).toList() 
+            : data.masters;
             
         markers.addAll(filteredMasters.map((master) => Marker(
           point: LatLng(master.latitude, master.longitude),
@@ -171,7 +195,7 @@ class _MapSection extends StatelessWidget {
 
         // Add physical workshops for auto/master or education centers
         if (kind == ServiceHubKind.avtoYordam || kind == ServiceHubKind.usta) {
-          markers.addAll(AutoWorkshop.demoWorkshops.map((ws) => Marker(
+          markers.addAll(data.workshops.map((ws) => Marker(
             point: LatLng(ws.latitude, ws.longitude),
             child: _MapPin(
               icon: LucideIcons.home,
@@ -180,7 +204,7 @@ class _MapSection extends StatelessWidget {
             ),
           )));
         } else if (kind == ServiceHubKind.repetitor) {
-          markers.addAll(EducationCenter.demoCenters.map((ec) => Marker(
+          markers.addAll(data.educationCenters.map((ec) => Marker(
             point: LatLng(ec.latitude, ec.longitude),
             child: _MapPin(
               icon: LucideIcons.graduationCap,
@@ -191,7 +215,7 @@ class _MapSection extends StatelessWidget {
         }
         break;
       case ServiceHubKind.ishchi:
-        markers.addAll(Worker.demoWorkers.map((worker) => Marker(
+        markers.addAll(data.workers.map((worker) => Marker(
           point: LatLng(worker.latitude, worker.longitude),
           child: _MapPin(
             icon: LucideIcons.users,
@@ -202,7 +226,7 @@ class _MapSection extends StatelessWidget {
         break;
       // 6 ta YANGI:
       case ServiceHubKind.dezinfeksiya:
-        markers.addAll(DisinfectionService.demoServices.map((s) => Marker(
+        markers.addAll(data.disinfection.map((s) => Marker(
           point: LatLng(s.latitude, s.longitude),
           child: _MapPin(
             icon: LucideIcons.shieldCheck,
@@ -212,7 +236,7 @@ class _MapSection extends StatelessWidget {
         )));
         break;
       case ServiceHubKind.texnikaUstasi:
-        markers.addAll(ApplianceRepair.demoRepairs.map((s) => Marker(
+        markers.addAll(data.appliance.map((s) => Marker(
           point: LatLng(s.latitude, s.longitude),
           child: _MapPin(
             icon: LucideIcons.monitor,
@@ -222,7 +246,7 @@ class _MapSection extends StatelessWidget {
         )));
         break;
       case ServiceHubKind.kuryerlik:
-        markers.addAll(CourierService.demoCouriers.map((s) => Marker(
+        markers.addAll(data.couriers.map((s) => Marker(
           point: LatLng(s.latitude, s.longitude),
           child: _MapPin(
             icon: LucideIcons.bike,
@@ -232,7 +256,7 @@ class _MapSection extends StatelessWidget {
         )));
         break;
       case ServiceHubKind.massajHijoma:
-        markers.addAll(MassageHijoma.demoCenters.map((s) => Marker(
+        markers.addAll(data.massage.map((s) => Marker(
           point: LatLng(s.latitude, s.longitude),
           child: _MapPin(
             icon: LucideIcons.hand,
@@ -242,7 +266,7 @@ class _MapSection extends StatelessWidget {
         )));
         break;
       case ServiceHubKind.hamshira:
-        markers.addAll(NurseService.demoServices.map((s) => Marker(
+        markers.addAll(data.nurses.map((s) => Marker(
           point: LatLng(s.latitude, s.longitude),
           child: _MapPin(
             icon: LucideIcons.heartPulse,
@@ -252,7 +276,7 @@ class _MapSection extends StatelessWidget {
         )));
         break;
       case ServiceHubKind.tadbirlar:
-        markers.addAll(EventPlanning.demoPlanners.map((s) => Marker(
+        markers.addAll(data.events.map((s) => Marker(
           point: LatLng(s.latitude, s.longitude),
           child: _MapPin(
             icon: LucideIcons.partyPopper,
@@ -294,8 +318,9 @@ class _MapPin extends StatelessWidget {
 class _ActionList extends StatelessWidget {
   final ServiceHubKind kind;
   final Color accentColor;
+  final HubScreenData data;
 
-  const _ActionList({required this.kind, required this.accentColor});
+  const _ActionList({required this.kind, required this.accentColor, required this.data});
 
   @override
   Widget build(BuildContext context) {
@@ -304,9 +329,9 @@ class _ActionList extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.symmetric(vertical: 16),
       children: [
-        if (kind == ServiceHubKind.sartarosh) _buildSection(context, "Yaqin sartaroshxonalar", BarberShop.demoShops.map((s) => ShopSmallCard(shop: s, accentColor: accentColor)).toList()),
-        if (kind == ServiceHubKind.salon) _buildSection(context, "Yaqin salonlar", BeautySalon.demoSalons.map((s) => SalonSmallCard(salon: s)).toList()),
-        if (kind == ServiceHubKind.futbol) _buildSection(context, "Yaqin futbol maydonlari", FootballField.demoFields.map((f) => FieldSmallCard(field: f)).toList()),
+        if (kind == ServiceHubKind.sartarosh) _buildSection(context, "Yaqin sartaroshxonalar", data.barberShops.map((s) => ShopSmallCard(shop: s, accentColor: accentColor)).toList()),
+        if (kind == ServiceHubKind.salon) _buildSection(context, "Yaqin salonlar", data.salons.map((s) => SalonSmallCard(salon: s)).toList()),
+        if (kind == ServiceHubKind.futbol) _buildSection(context, "Yaqin futbol maydonlari", data.footballFields.map((f) => FieldSmallCard(field: f)).toList()),
         if (kind == ServiceHubKind.usta || kind == ServiceHubKind.elektrik || kind == ServiceHubKind.santexnik || kind == ServiceHubKind.tozalash || kind == ServiceHubKind.avtoYordam || kind == ServiceHubKind.konditsioner || kind == ServiceHubKind.enaga || kind == ServiceHubKind.repetitor) ...[
           const Padding(
             padding: EdgeInsets.fromLTRB(20, 0, 20, 8),
@@ -317,12 +342,9 @@ class _ActionList extends StatelessWidget {
             child: ListView.separated(
               scrollDirection: Axis.horizontal,
               padding: const EdgeInsets.symmetric(horizontal: 20),
-              itemCount: Master.demoMasters.where((m) => kind == ServiceHubKind.usta || m.specialty == (kind == ServiceHubKind.avtoYordam ? 'Avto-yordam' : kind.title)).length,
+              itemCount: _filteredMasters().length,
               separatorBuilder: (_, __) => const SizedBox(width: 12),
-              itemBuilder: (_, i) {
-                final filtered = Master.demoMasters.where((m) => kind == ServiceHubKind.usta || m.specialty == (kind == ServiceHubKind.avtoYordam ? 'Avto-yordam' : kind.title)).toList();
-                return MasterSmallCard(master: filtered[i]);
-              },
+              itemBuilder: (_, i) => MasterSmallCard(master: _filteredMasters()[i]),
             ),
           ),
           const SizedBox(height: 16),
@@ -338,9 +360,9 @@ class _ActionList extends StatelessWidget {
             child: ListView.separated(
               scrollDirection: Axis.horizontal,
               padding: const EdgeInsets.symmetric(horizontal: 20),
-              itemCount: EducationCenter.demoCenters.length,
+              itemCount: data.educationCenters.length,
               separatorBuilder: (_, __) => const SizedBox(width: 12),
-              itemBuilder: (_, i) => EducationCenterSmallCard(center: EducationCenter.demoCenters[i]),
+              itemBuilder: (_, i) => EducationCenterSmallCard(center: data.educationCenters[i]),
             ),
           ),
           const SizedBox(height: 16),
@@ -356,20 +378,20 @@ class _ActionList extends StatelessWidget {
             child: ListView.separated(
               scrollDirection: Axis.horizontal,
               padding: const EdgeInsets.symmetric(horizontal: 20),
-              itemCount: AutoWorkshop.demoWorkshops.length,
+              itemCount: data.workshops.length,
               separatorBuilder: (_, __) => const SizedBox(width: 12),
-              itemBuilder: (_, i) => WorkshopSmallCard(workshop: AutoWorkshop.demoWorkshops[i]),
+              itemBuilder: (_, i) => WorkshopSmallCard(workshop: data.workshops[i]),
             ),
           ),
           const SizedBox(height: 16),
         ],
-        if (kind == ServiceHubKind.ishchi) _buildSection(context, "Yaqin ishchilar", Worker.demoWorkers.map((w) => WorkerSmallCard(worker: w)).toList()),
-        if (kind == ServiceHubKind.dezinfeksiya) _buildSection(context, "Dezinfeksiya xizmatlari", DisinfectionService.demoServices.map((s) => DisinfectionSmallCard(service: s)).toList()),
-        if (kind == ServiceHubKind.texnikaUstasi) _buildSection(context, "Texnika ustalari", ApplianceRepair.demoRepairs.map((s) => ApplianceSmallCard(service: s)).toList()),
-        if (kind == ServiceHubKind.kuryerlik) _buildSection(context, "Kuryer xizmatlari", CourierService.demoCouriers.map((s) => CourierSmallCard(service: s)).toList()),
-        if (kind == ServiceHubKind.massajHijoma) _buildSection(context, "Massaj va Hijoma", MassageHijoma.demoCenters.map((s) => MassageSmallCard(service: s)).toList()),
-        if (kind == ServiceHubKind.hamshira) _buildSection(context, "Hamshira xizmatlari", NurseService.demoServices.map((s) => NurseSmallCard(service: s)).toList()),
-        if (kind == ServiceHubKind.tadbirlar) _buildSection(context, "Tadbir tashkilotchilar", EventPlanning.demoPlanners.map((s) => EventSmallCard(service: s)).toList()),
+        if (kind == ServiceHubKind.ishchi) _buildSection(context, "Yaqin ishchilar", data.workers.map((w) => WorkerSmallCard(worker: w)).toList()),
+        if (kind == ServiceHubKind.dezinfeksiya) _buildSection(context, "Dezinfeksiya xizmatlari", data.disinfection.map((s) => DisinfectionSmallCard(service: s)).toList()),
+        if (kind == ServiceHubKind.texnikaUstasi) _buildSection(context, "Texnika ustalari", data.appliance.map((s) => ApplianceSmallCard(service: s)).toList()),
+        if (kind == ServiceHubKind.kuryerlik) _buildSection(context, "Kuryer xizmatlari", data.couriers.map((s) => CourierSmallCard(service: s)).toList()),
+        if (kind == ServiceHubKind.massajHijoma) _buildSection(context, "Massaj va Hijoma", data.massage.map((s) => MassageSmallCard(service: s)).toList()),
+        if (kind == ServiceHubKind.hamshira) _buildSection(context, "Hamshira xizmatlari", data.nurses.map((s) => NurseSmallCard(service: s)).toList()),
+        if (kind == ServiceHubKind.tadbirlar) _buildSection(context, "Tadbir tashkilotchilar", data.events.map((s) => EventSmallCard(service: s)).toList()),
         
         Padding(
           padding: const EdgeInsets.all(16),
@@ -382,6 +404,26 @@ class _ActionList extends StatelessWidget {
         ),
       ],
     );
+  }
+
+  List<Master> _filteredMasters() {
+    if (kind == ServiceHubKind.usta) return data.masters;
+    if (kind == ServiceHubKind.avtoYordam) {
+      return data.masters.where((m) => m.specialty == 'Avto-yordam' || m.specialty == "Ko'chirish").toList();
+    }
+    final specialty = switch (kind) {
+      ServiceHubKind.elektrik => 'Elektrik',
+      ServiceHubKind.santexnik => 'Santexnik',
+      ServiceHubKind.tozalash => 'Tozalash',
+      ServiceHubKind.konditsioner => 'Konditsioner',
+      ServiceHubKind.enaga => 'Enaga',
+      ServiceHubKind.repetitor => 'Repetitor',
+      _ => null,
+    };
+    if (specialty != null) {
+      return data.masters.where((m) => m.specialty == specialty).toList();
+    }
+    return data.masters;
   }
 
   Widget _buildSection(BuildContext context, String title, List<Widget> items) {

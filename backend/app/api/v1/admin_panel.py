@@ -18,13 +18,19 @@ ADMIN_DIR = Path(__file__).resolve().parents[2] / "static" / "admin"
 @router.get("/login")
 @limiter.limit("50/minute")
 async def admin_login_page(request: Request) -> FileResponse:
-    return FileResponse(ADMIN_DIR / "login.html")
+    response = FileResponse(ADMIN_DIR / "login.html")
+    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    response.headers["Pragma"] = "no-cache"
+    return response
 
 
 @router.get("")
 @limiter.limit("50/minute")
 async def admin_dashboard_page(request: Request) -> FileResponse:
-    return FileResponse(ADMIN_DIR / "index.html")
+    response = FileResponse(ADMIN_DIR / "index.html")
+    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    response.headers["Pragma"] = "no-cache"
+    return response
 
 
 @router.get("/static/{filename}")

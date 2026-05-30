@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Optional
 from pydantic import BaseModel, Field
 
@@ -5,6 +6,7 @@ from pydantic import BaseModel, Field
 class ProviderOut(BaseModel):
     id: int
     category_id: int
+    category_key: Optional[str] = None
     name: str
     address: str
     phone: str
@@ -16,7 +18,25 @@ class ProviderOut(BaseModel):
     metadata: Optional[dict] = None
     is_active: bool
 
-    model_config = {"from_attributes": True}
+    model_config = {"from_attributes": False}
+
+    @classmethod
+    def from_provider(cls, p) -> "ProviderOut":
+        return cls(
+            id=p.id,
+            category_id=p.category_id,
+            category_key=p.category.key if getattr(p, "category", None) else None,
+            name=p.name,
+            address=p.address,
+            phone=p.phone,
+            lat=p.lat,
+            lng=p.lng,
+            rating=p.rating,
+            review_count=p.review_count,
+            cover_image=p.cover_image,
+            metadata=p.metadata_json,
+            is_active=p.is_active,
+        )
 
 
 class ProviderCreate(BaseModel):
@@ -49,8 +69,25 @@ class ReviewOut(BaseModel):
     comment: Optional[str] = None
     created_at: Optional[str] = None
     user_name: Optional[str] = None
+    provider_name: Optional[str] = None
 
-    model_config = {"from_attributes": True}
+    model_config = {"from_attributes": False}
+
+    @classmethod
+    def from_review(cls, r) -> "ReviewOut":
+        user = getattr(r, "user", None)
+        provider = getattr(r, "provider", None)
+        created = r.created_at.isoformat() if getattr(r, "created_at", None) else None
+        return cls(
+            id=r.id,
+            user_id=r.user_id,
+            provider_id=r.provider_id,
+            rating=r.rating,
+            comment=r.comment,
+            created_at=created,
+            user_name=f"{user.name} {user.surname}".strip() if user else None,
+            provider_name=provider.name if provider else None,
+        )
 
 
 class ReviewCreate(BaseModel):

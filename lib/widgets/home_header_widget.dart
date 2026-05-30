@@ -3,6 +3,8 @@ import 'package:lucide_icons/lucide_icons.dart';
 import 'package:provider/provider.dart';
 import '../providers/app_provider.dart';
 import '../screens/notifications_screen.dart';
+import '../theme/glass_tokens.dart';
+import 'glass/glass_surface.dart';
 
 class HomeHeaderWidget extends StatelessWidget {
   const HomeHeaderWidget({super.key});
@@ -18,32 +20,42 @@ class HomeHeaderWidget extends StatelessWidget {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text("Assalomu alaykum,",
-                style: Theme.of(context).textTheme.bodyMedium),
-            Text(provider.user.name,
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+            Text(
+              'Assalomu alaykum,',
+              style: TextStyle(
+                fontSize: 14,
+                color: GlassTokens.secondaryText(context),
+              ),
+            ),
+            Text(
+              provider.user.name,
+              style: TextStyle(
+                fontSize: 26,
+                fontWeight: FontWeight.w800,
+                letterSpacing: -0.6,
+                color: GlassTokens.primaryText(context),
+              ),
+            ),
           ],
         ),
         Stack(
           clipBehavior: Clip.none,
           children: [
-            Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(15),
-                boxShadow: [
-                  BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.04),
-                      blurRadius: 10)
-                ],
-              ),
+            GlassSurface(
+              padding: EdgeInsets.zero,
+              borderRadius: GlassTokens.radiusMd,
+              opacity: 0.58,
               child: IconButton(
-                icon: const Icon(LucideIcons.bell),
+                icon: Icon(
+                  LucideIcons.bell,
+                  color: GlassTokens.primaryText(context),
+                ),
                 onPressed: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => const NotificationsScreen()),
+                      builder: (context) => const NotificationsScreen(),
+                    ),
                   );
                 },
               ),
@@ -54,14 +66,12 @@ class HomeHeaderWidget extends StatelessWidget {
                 top: -2,
                 child: Container(
                   padding: const EdgeInsets.all(4),
-                  decoration: const BoxDecoration(
-                    color: Colors.red,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFEF4444),
                     shape: BoxShape.circle,
+                    border: Border.all(color: Colors.white, width: 1.5),
                   ),
-                  constraints: const BoxConstraints(
-                    minWidth: 18,
-                    minHeight: 18,
-                  ),
+                  constraints: const BoxConstraints(minWidth: 18, minHeight: 18),
                   child: Text(
                     unreadCount.toString(),
                     style: const TextStyle(
