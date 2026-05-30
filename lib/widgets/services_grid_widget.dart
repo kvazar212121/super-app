@@ -5,7 +5,7 @@ import '../screens/all_categories_screen.dart';
 import '../screens/service_hub_screen.dart';
 
 /// Asosiy ekrandagi soddalashtirilgan xizmatlar bloki.
-/// 4 ta eng ommabop kategoriya + "Barcha xizmatlar" keng tugmasi.
+/// 6 ta eng ommabop kategoriya + "Barcha xizmatlar" keng tugmasi.
 class ServicesGridWidget extends StatelessWidget {
   const ServicesGridWidget({super.key});
 
@@ -14,6 +14,8 @@ class ServicesGridWidget extends StatelessWidget {
     ServiceHubKind.usta,
     ServiceHubKind.tozalash,
     ServiceHubKind.futbol,
+    ServiceHubKind.texnikaUstasi,
+    ServiceHubKind.kuryerlik,
   ];
 
   void _openHub(BuildContext context, ServiceHubKind kind) {

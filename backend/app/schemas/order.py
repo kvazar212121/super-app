@@ -29,10 +29,11 @@ class OrderOut(BaseModel):
     price: float
     cashback_earned: float
     status: str
+    category_key: Optional[str] = None
+    provider_name: Optional[str] = None
     created_at: Optional[str] = None
-
     model_config = {"from_attributes": True}
 
 
 class OrderStatusUpdate(BaseModel):
-    status: str = Field(..., pattern=r"^(confirmed|in_progress|completed|cancelled)$")
+    status: str = Field(..., pattern=r"^(pending|confirmed|in_progress|completed|cancelled)$")

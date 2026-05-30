@@ -11,12 +11,18 @@ enum ServiceHubKind {
   usta,
   elektrik,
   santexnik,
-  // 5 ta yangi:
   tozalash,
   avtoYordam,
   konditsioner,
   enaga,
   repetitor,
+  // 6 ta YANGI:
+  dezinfeksiya,
+  texnikaUstasi,
+  kuryerlik,
+  massajHijoma,
+  hamshira,
+  tadbirlar,
   yana,
 }
 
@@ -34,6 +40,12 @@ extension ServiceHubKindX on ServiceHubKind {
         ServiceHubKind.konditsioner => 'Konditsioner',
         ServiceHubKind.enaga => 'Enaga',
         ServiceHubKind.repetitor => 'Repetitor',
+        ServiceHubKind.dezinfeksiya => 'Dezinfeksiya',
+        ServiceHubKind.texnikaUstasi => 'Texnika ustasi',
+        ServiceHubKind.kuryerlik => 'Kuryerlik',
+        ServiceHubKind.massajHijoma => 'Massaj va Hijoma',
+        ServiceHubKind.hamshira => 'Hamshira',
+        ServiceHubKind.tadbirlar => 'Tadbirlar',
         ServiceHubKind.yana => 'Yana xizmatlar',
       };
 
@@ -42,14 +54,20 @@ extension ServiceHubKindX on ServiceHubKind {
         ServiceHubKind.salon => 'Salonda vaqt bron qilish',
         ServiceHubKind.futbol => 'Futbol maydonini band qilish',
         ServiceHubKind.ishchi => 'Ishchi yollash va kunlik ishlar',
-        ServiceHubKind.usta => 'Usta chaqirish va ta’mirlash',
+        ServiceHubKind.usta => 'Usta chaqirish va tamlash',
         ServiceHubKind.elektrik => 'Elektr montaj va favqulodda chaqiruv',
         ServiceHubKind.santexnik => 'Santexnik va suv oqimi',
         ServiceHubKind.tozalash => 'Uy yoki ofis tozalash xizmati',
-        ServiceHubKind.avtoYordam => 'Evakuator, akkumulyator, yo‘l yordami',
+        ServiceHubKind.avtoYordam => 'Evakuator, akkumulyator, yol yordami',
         ServiceHubKind.konditsioner => 'Konditsioner montaj va profilaktika',
         ServiceHubKind.enaga => 'Bola qarovchi va enaga',
-        ServiceHubKind.repetitor => 'Repetitor va o‘qituvchi xizmati',
+        ServiceHubKind.repetitor => 'Repetitor va oqituvchi xizmati',
+        ServiceHubKind.dezinfeksiya => 'Uy, ofis va mashina dezinfeksiyasi',
+        ServiceHubKind.texnikaUstasi => 'Kir yuvish, muzlatgich, TV tamlash',
+        ServiceHubKind.kuryerlik => 'Hujjat va sovgalarni tezkor yetkazish',
+        ServiceHubKind.massajHijoma => 'Massaj va Hijoma xizmatlari',
+        ServiceHubKind.hamshira => 'Uyga hamshira chaqirish',
+        ServiceHubKind.tadbirlar => 'Tadbirlar, marosimlar va dam olish joylari',
         ServiceHubKind.yana => 'Boshqa xizmatlar va yordam',
       };
 
@@ -60,12 +78,18 @@ extension ServiceHubKindX on ServiceHubKind {
         ServiceHubKind.ishchi => LucideIcons.users,
         ServiceHubKind.usta => LucideIcons.wrench,
         ServiceHubKind.elektrik => LucideIcons.zap,
-        ServiceHubKind.santexnik => LucideIcons.droplet,
+        ServiceHubKind.santexnik => LucideIcons.droplets,
         ServiceHubKind.tozalash => LucideIcons.sprayCan,
         ServiceHubKind.avtoYordam => LucideIcons.car,
         ServiceHubKind.konditsioner => LucideIcons.wind,
         ServiceHubKind.enaga => LucideIcons.baby,
         ServiceHubKind.repetitor => LucideIcons.bookOpen,
+        ServiceHubKind.dezinfeksiya => LucideIcons.shieldCheck,
+        ServiceHubKind.texnikaUstasi => LucideIcons.monitor,
+        ServiceHubKind.kuryerlik => LucideIcons.bike,
+        ServiceHubKind.massajHijoma => LucideIcons.hand,
+        ServiceHubKind.hamshira => LucideIcons.heartPulse,
+        ServiceHubKind.tadbirlar => LucideIcons.partyPopper,
         ServiceHubKind.yana => LucideIcons.moreHorizontal,
       };
 
@@ -82,11 +106,15 @@ extension ServiceHubKindX on ServiceHubKind {
         ServiceHubKind.konditsioner => Colors.indigo,
         ServiceHubKind.enaga => Colors.purple,
         ServiceHubKind.repetitor => Colors.deepPurple,
+        ServiceHubKind.dezinfeksiya => const Color(0xFF10B981),
+        ServiceHubKind.texnikaUstasi => Colors.blueGrey,
+        ServiceHubKind.kuryerlik => Colors.amber,
+        ServiceHubKind.massajHijoma => const Color(0xFF795548),
+        ServiceHubKind.hamshira => Colors.redAccent,
+        ServiceHubKind.tadbirlar => const Color(0xFFE91E63),
         ServiceHubKind.yana => Colors.blueGrey,
       };
 
-  /// Universal booking formasidagi variantlar (oststur).
-  /// Birinchi qator — variant nomi, ikkinchisi — taxminiy minimal narx (so'm).
   List<({String label, double basePrice})> get variants => switch (this) {
         ServiceHubKind.sartarosh => const [
             (label: 'Erkaklar kesimi', basePrice: 50000),
@@ -107,16 +135,16 @@ extension ServiceHubKindX on ServiceHubKind {
             (label: '2 soat (katta maydon)', basePrice: 650000),
           ],
         ServiceHubKind.ishchi => const [
-            (label: 'Yuk ko‘taruvchi (1 kishi)', basePrice: 150000),
-            (label: 'Yuk ko‘taruvchi (2 kishi)', basePrice: 280000),
-            (label: 'Qora ish — 4 soat', basePrice: 200000),
-            (label: 'Qora ish — kunlik', basePrice: 400000),
+            (label: 'Yuk kotoruvchi (1 kishi)', basePrice: 150000),
+            (label: 'Yuk kotoruvchi (2 kishi)', basePrice: 280000),
+            (label: 'Qora ish - 4 soat', basePrice: 200000),
+            (label: 'Qora ish - kunlik', basePrice: 400000),
           ],
         ServiceHubKind.usta => const [
-            (label: 'Mebel yig‘ish', basePrice: 150000),
-            (label: 'Eshik/oyna ta’miri', basePrice: 120000),
+            (label: 'Mebel yigish', basePrice: 150000),
+            (label: 'Eshik/oyna tamiri', basePrice: 120000),
             (label: 'Devorga osish/biriktirish', basePrice: 80000),
-            (label: 'Boshqa ta’mirlash', basePrice: 100000),
+            (label: 'Boshqa tamlash', basePrice: 100000),
           ],
         ServiceHubKind.elektrik => const [
             (label: 'Rozetka/lyustra montaj', basePrice: 100000),
@@ -139,19 +167,19 @@ extension ServiceHubKindX on ServiceHubKind {
         ServiceHubKind.avtoYordam => const [
             (label: 'Evakuator', basePrice: 250000),
             (label: 'Akkumulyator quvvatlash', basePrice: 80000),
-            (label: 'Shinopo‘la (1 g‘ildirak)', basePrice: 70000),
-            (label: 'Yo‘l ustasi', basePrice: 150000),
+            (label: 'Shinopola (1 gildirak)', basePrice: 70000),
+            (label: 'Yol ustasi', basePrice: 150000),
           ],
         ServiceHubKind.konditsioner => const [
             (label: 'Montaj', basePrice: 600000),
             (label: 'Demontaj', basePrice: 250000),
             (label: 'Profilaktika tozalash', basePrice: 180000),
-            (label: 'Gaz to‘ldirish', basePrice: 350000),
+            (label: 'Gaz toldirish', basePrice: 350000),
           ],
         ServiceHubKind.enaga => const [
             (label: 'Soatlik (3 soat)', basePrice: 120000),
             (label: 'Yarim kun (5 soat)', basePrice: 200000),
-            (label: 'To‘liq kun (10 soat)', basePrice: 380000),
+            (label: 'Toliq kun (10 soat)', basePrice: 380000),
             (label: 'Tunda (8 soat)', basePrice: 350000),
           ],
         ServiceHubKind.repetitor => const [
@@ -159,6 +187,42 @@ extension ServiceHubKindX on ServiceHubKind {
             (label: 'Ingliz tili (1 dars)', basePrice: 100000),
             (label: 'Fizika (1 dars)', basePrice: 130000),
             (label: 'Test tayyorlov (1 dars)', basePrice: 150000),
+          ],
+        ServiceHubKind.dezinfeksiya => const [
+            (label: 'Kvartira dezinfeksiyasi', basePrice: 150000),
+            (label: 'Ofis dezinfeksiyasi', basePrice: 250000),
+            (label: 'Mashina dezinfeksiyasi', basePrice: 100000),
+            (label: 'Maktab/bogcha', basePrice: 400000),
+          ],
+        ServiceHubKind.texnikaUstasi => const [
+            (label: 'Kir yuvish mashinasi', basePrice: 150000),
+            (label: 'Muzlatgich tamlash', basePrice: 180000),
+            (label: 'Televizor tamlash', basePrice: 120000),
+            (label: 'Mikroto`lqinli pech', basePrice: 80000),
+          ],
+        ServiceHubKind.kuryerlik => const [
+            (label: 'Hujjat yetkazish', basePrice: 30000),
+            (label: 'Sovga yetkazish', basePrice: 50000),
+            (label: 'Kichik yuk (5 kg)', basePrice: 40000),
+            (label: 'Katta yuk (20 kg)', basePrice: 80000),
+          ],
+        ServiceHubKind.massajHijoma => const [
+            (label: 'Massaj (60 daqiqa)', basePrice: 150000),
+            (label: 'Hijoma (erkaklar)', basePrice: 200000),
+            (label: 'Hijoma (ayollar)', basePrice: 200000),
+            (label: 'Spa paket', basePrice: 350000),
+          ],
+        ServiceHubKind.hamshira => const [
+            (label: 'Uyga hamshira (3 soat)', basePrice: 100000),
+            (label: 'In`ektsiya', basePrice: 30000),
+            (label: 'Qon tahlili (uyda)', basePrice: 120000),
+            (label: 'Tun bo`yi hamshira', basePrice: 300000),
+          ],
+        ServiceHubKind.tadbirlar => const [
+            (label: 'Toy rejissyor', basePrice: 2000000),
+            (label: 'Tug`ilgan kun', basePrice: 500000),
+            (label: 'Dam olish joyi bron', basePrice: 300000),
+            (label: 'Korporativ tadbir', basePrice: 1500000),
           ],
         ServiceHubKind.yana => const [
             (label: 'Boshqa xizmat', basePrice: 100000),

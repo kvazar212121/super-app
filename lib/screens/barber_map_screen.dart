@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import '../models/barber_shop.dart';
+import 'barber_booking_screen.dart';
 
 class BarberMapScreen extends StatelessWidget {
   final List<BarberShop> shops;
@@ -153,9 +154,17 @@ class BarberMapScreen extends StatelessWidget {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton.icon(
-                  onPressed: () => _bookService(context, shop),
-                  icon: const Icon(Icons.calendar_today),
-                  label: const Text("Band qilish"),
+                  onPressed: () {
+                    Navigator.pop(context);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => BarberBookingScreen(shop: shop),
+                      ),
+                    );
+                  },
+                  icon: const Icon(Icons.arrow_forward),
+                  label: const Text("Xizmatlarni ko'rish"),
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.all(16),
                   ),
@@ -175,94 +184,6 @@ class BarberMapScreen extends StatelessWidget {
         const SizedBox(width: 8),
         Expanded(child: Text(text)),
       ],
-    );
-  }
-
-  void _bookService(BuildContext context, BarberShop shop) {
-    Navigator.pop(context);
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      builder: (context) => Padding(
-        padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom,
-          left: 20,
-          right: 20,
-          top: 20,
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text("Xizmatni tanlang", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 16),
-            ...shop.services.map((service) => ListTile(
-              title: Text(service),
-              subtitle: Text("${shop.prices[service]!.toStringAsFixed(0)} so'm"),
-              trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-              onTap: () => _selectDateTime(context, shop, service),
-            )),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _selectDateTime(BuildContext context, BarberShop shop, String service) {
-    Navigator.pop(context);
-    showDatePicker(
-      context: context,
-      initialDate: DateTime.now().add(const Duration(days: 1)),
-      firstDate: DateTime.now(),
-      lastDate: DateTime.now().add(const Duration(days: 30)),
-    ).then((date) {
-      if (date != null) {
-        showTimePicker(
-          context: context,
-          initialTime: TimeOfDay.now().replacing(hour: 10),
-        ).then((time) {
-          if (time != null) {
-            final dateTime = DateTime(date.year, date.month, date.day, time.hour, time.minute);
-            _confirmBooking(context, shop, service, dateTime);
-          }
-        });
-      }
-    });
-  }
-
-  void _confirmBooking(BuildContext context, BarberShop shop, String service, DateTime dateTime) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text("Buyurtmani tasdiqlash"),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text("Sartarosh: ${shop.name}"),
-            Text("Xizmat: $service"),
-            Text("Narx: ${shop.prices[service]!.toStringAsFixed(0)} so'm"),
-            Text("Sana: ${dateTime.day}.${dateTime.month}.${dateTime.year}"),
-            Text("Vaqt: ${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}"),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text("Bekor qilish"),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context);
-              Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text("$service uchun band qilish muvaffaqiyatli amalga oshirildi!")),
-              );
-            },
-            child: const Text("Tasdiqlash"),
-          ),
-        ],
-      ),
     );
   }
 }

@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'theme/app_theme.dart';
 import 'providers/app_provider.dart';
-import 'screens/main_screen.dart';
+import 'providers/auth_provider.dart';
+import 'screens/auth/splash_screen.dart';
 
 void main() {
-  runApp(const MyApp());
+  initializeDateFormatting('uz_UZ', null).then((_) {
+    runApp(const MyApp());
+  });
 }
 
 class MyApp extends StatelessWidget {
@@ -13,17 +17,20 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => AppProvider(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => AppProvider()),
+      ],
       child: Consumer<AppProvider>(
-        builder: (context, provider, _) {
+        builder: (context, appProvider, _) {
           return MaterialApp(
             title: 'Super App',
             debugShowCheckedModeBanner: false,
             theme: AppTheme.lightTheme,
             darkTheme: AppTheme.darkTheme,
-            themeMode: provider.isDarkMode ? ThemeMode.dark : ThemeMode.light,
-            home: const MainScreen(),
+            themeMode: appProvider.isDarkMode ? ThemeMode.dark : ThemeMode.light,
+            home: const SplashScreen(),
           );
         },
       ),

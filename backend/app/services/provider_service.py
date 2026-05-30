@@ -1,11 +1,12 @@
 from math import ceil
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func
-from fastapi import HTTPException
+from fastapi import HTTPException, status
 
 from app.models.provider import Provider
 from app.models.review import Review
 from app.models.category import Category
+from app.models.order import Order, OrderStatus
 
 
 class ProviderService:
@@ -69,6 +70,34 @@ class ProviderService:
         db: AsyncSession, user_id: int, provider_id: int, rating: int, comment: str | None
     ) -> Review:
         provider = await ProviderService.get_by_id(db, provider_id)
+
+        # Foydalanuvchi allaqachon ushbu provayderga baho berganligini tekshirish
+        existing = await db.execute(
+            select(Review).where(
+                Review.user_id == user_id,
+                Review.provider_id == provider_id,
+            )
+        )
+        if existing.scalar_one_or_none():
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Siz ushbu provayderga allaqachon baho bergansiz",
+            )
+
+        # Foydalanuvchi ushbu provayder bilan yakunlangan buyurtmaga ega bo'lishi kerak
+        completed_order = await db.execute(
+            select(Order).where(
+                Order.user_id == user_id,
+                Order.provider_id == provider_id,
+                Order.status == OrderStatus.completed,
+            ).limit(1)
+        )
+        if not completed_order.scalar_one_or_none():
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Baho berish uchun ushbu provayder bilan yakunlangan buyurtma bo'lishi kerak",
+            )
+
         review = Review(
             user_id=user_id,
             provider_id=provider_id,

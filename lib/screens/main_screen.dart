@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:provider/provider.dart';
+import '../providers/app_provider.dart';
 import 'home_screen.dart';
 import 'search_screen.dart';
 import 'orders_screen.dart';
@@ -14,6 +16,14 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<AppProvider>().fetchInitialData();
+    });
+  }
 
   final List<Widget> _screens = [
     const HomeScreen(),

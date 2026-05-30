@@ -1,4 +1,3 @@
-```
 # Flutter/Dart specific
 .dart_tool/
 .packages
@@ -12,9 +11,18 @@ build/
 *.ipa
 *.app
 
+# Android / Gradle caches (never commit)
+.gradle/
+**/.gradle/
+.gradle_home/
+**/.gradle_home/
+android/.gradle/
+android/.gradle_home/
+
 # IDE
 .idea/
 .vscode/
+.qwen/
 *.swp
 *.swo
 
@@ -89,4 +97,3 @@ venv/
 *.tar.bz2
 *.tar.xz
 *.tar.zst
-```

@@ -22,6 +22,7 @@ class User(Base):
     cashback: Mapped[float] = mapped_column(Float, default=0.0)
     is_premium: Mapped[bool] = mapped_column(Boolean, default=False)
     is_admin: Mapped[bool] = mapped_column(Boolean, default=False)
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
     )
@@ -29,6 +30,8 @@ class User(Base):
     payment_cards = relationship("PaymentCard", back_populates="user", lazy="selectin")
     orders = relationship("Order", back_populates="user", lazy="selectin")
     reviews = relationship("Review", back_populates="user", lazy="selectin")
+    notifications = relationship("Notification", back_populates="user", lazy="selectin", cascade="all, delete-orphan")
+    transactions = relationship("Transaction", back_populates="user", lazy="selectin", cascade="all, delete-orphan")
 
     def to_dict(self) -> dict:
         return {
@@ -42,5 +45,6 @@ class User(Base):
             "cashback": self.cashback,
             "is_premium": self.is_premium,
             "is_admin": self.is_admin,
+            "is_active": self.is_active,
             "created_at": self.created_at,
         }

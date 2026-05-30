@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/user_profile.dart';
 import '../providers/app_provider.dart';
+import '../providers/auth_provider.dart';
 import '../widgets/card_item_widget.dart';
 import '../widgets/cashback_card_widget.dart';
+import 'auth/login_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -223,7 +225,16 @@ class ProfileScreen extends StatelessWidget {
       actions: [
         TextButton(onPressed: () => Navigator.pop(context),
           child: const Text('Yo\'q')),
-        ElevatedButton(onPressed: () => Navigator.pop(context),
+        ElevatedButton(onPressed: () async {
+          Navigator.pop(context);
+          await context.read<AuthProvider>().logout();
+          if (context.mounted) {
+            Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(builder: (_) => const LoginScreen()),
+              (route) => false,
+            );
+          }
+        },
           child: const Text('Ha')),
       ],
     ));

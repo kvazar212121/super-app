@@ -4,14 +4,33 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 
 import '../models/barber_shop.dart';
+import '../models/beauty_salon.dart';
 import '../models/football_field.dart';
+import '../models/master_worker.dart';
+import '../models/auto_workshop.dart';
+import '../models/education_center.dart';
+import '../models/disinfection_service.dart';
+import '../models/appliance_repair.dart';
+import '../models/courier_service.dart';
+import '../models/massage_hijoma.dart';
+import '../models/nurse_service.dart';
+import '../models/event_planning.dart';
 import '../models/service_hub_kind.dart';
 import '../widgets/hub_map_preview.dart';
+import '../widgets/service_hub_widgets.dart';
 import 'all_categories_screen.dart';
+import 'barber_booking_screen.dart';
 import 'barber_map_screen.dart';
+import 'salon_booking_screen.dart';
+import 'master_dispatch_screen.dart';
 import 'football_field_booking_screen.dart';
-import 'football_field_map_screen.dart';
 import 'universal_booking_screen.dart';
+import 'disinfection_booking_screen.dart';
+import 'appliance_booking_screen.dart';
+import 'courier_booking_screen.dart';
+import 'massage_booking_screen.dart';
+import 'nurse_booking_screen.dart';
+import 'event_booking_screen.dart';
 
 class ServiceHubScreen extends StatelessWidget {
   final ServiceHubKind kind;
@@ -27,313 +46,246 @@ class ServiceHubScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(kind.title),
-            Text(
-              kind.hubSubtitle,
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.72),
-                  ),
-            ),
-          ],
-        ),
+        title: Text(kind.title),
+        backgroundColor: accentColor.withValues(alpha: 0.1),
+        foregroundColor: accentColor,
       ),
       body: Column(
         children: [
-          Expanded(
-            child: ClipRRect(
-              borderRadius: const BorderRadius.vertical(bottom: Radius.circular(20)),
-              child: HubMapPreview(
-                markers: _buildMarkers(context),
-              ),
-            ),
-          ),
-          Expanded(
-            child: _ActionList(kind: kind, accentColor: accentColor),
-          ),
+          _MapSection(kind: kind, accentColor: accentColor),
+          Expanded(child: _ActionList(kind: kind, accentColor: accentColor)),
         ],
+      ),
+    );
+  }
+}
+
+class _MapSection extends StatelessWidget {
+  final ServiceHubKind kind;
+  final Color accentColor;
+
+  const _MapSection({required this.kind, required this.accentColor});
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 250,
+      child: HubMapPreview(
+        center: const LatLng(41.311081, 69.240562),
+        zoom: 13,
+        markers: _buildMarkers(context),
+        onExpand: () => Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => BarberMapScreen(shops: BarberShop.demoShops)),
+        ),
       ),
     );
   }
 
   List<Marker> _buildMarkers(BuildContext context) {
-    switch (kind) {
-      case ServiceHubKind.sartarosh:
-        return BarberShop.demoShops.map((shop) {
-          return Marker(
-            width: 88,
-            height: 88,
-            point: LatLng(shop.latitude, shop.longitude),
-            child: GestureDetector(
-              onTap: () => _openShopPeek(context, shop),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.2),
-                          blurRadius: 6,
-                        ),
-                      ],
-                    ),
-                    child: Icon(LucideIcons.scissors, color: accentColor, size: 22),
-                  ),
-                  const SizedBox(height: 4),
-                  Material(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(6),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                      child: Text(
-                        shop.name,
-                        style: const TextStyle(fontSize: 9, fontWeight: FontWeight.w600),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+    final markers = <Marker>[
+      Marker(
+        point: const LatLng(41.311081, 69.240562),
+        width: 40,
+        height: 40,
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.blue.withValues(alpha: 0.2),
+            shape: BoxShape.circle,
+          ),
+          child: Center(
+            child: Container(
+              width: 12,
+              height: 12,
+              decoration: const BoxDecoration(color: Colors.blue, shape: BoxShape.circle),
             ),
-          );
-        }).toList();
-
-      case ServiceHubKind.futbol:
-        return FootballField.demoFields.map((field) {
-          return Marker(
-            width: 120,
-            height: 72,
-            point: LatLng(field.latitude, field.longitude),
-            child: GestureDetector(
-              onTap: () => _openFieldPeek(context, field),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
-                    decoration: BoxDecoration(
-                      color: field.surface.color,
-                      borderRadius: BorderRadius.circular(8),
-                      boxShadow: [
-                        BoxShadow(
-                          color: field.surface.color.withValues(alpha: 0.4),
-                          blurRadius: 6,
-                        ),
-                      ],
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(field.surface.icon, color: Colors.white, size: 14),
-                        const SizedBox(width: 4),
-                        Flexible(
-                          child: Text(
-                            field.name,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 10,
-                              fontWeight: FontWeight.w700,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Material(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(4),
-                    elevation: 2,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                      child: Text(
-                        '${field.basePricePerHour ~/ 1000}k soʻm/soat',
-                        style: const TextStyle(fontSize: 8, fontWeight: FontWeight.w600, color: Color(0xFF4CAF50)),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        }).toList();
-
-      default:
-        return _genericPins(context);
-    }
-  }
-
-  List<Marker> _genericPins(BuildContext context) {
-    final pts = [
-      (const LatLng(41.3115, 69.2495), '1'),
-      (const LatLng(41.302, 69.235), '2'),
-      (const LatLng(41.318, 69.262), '3'),
-    ];
-    return pts.map((e) {
-      final (p, id) = e;
-      return Marker(
-        width: 56,
-        height: 56,
-        point: p,
-        child: GestureDetector(
-          onTap: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Nuqta $id — ${kind.title} (demo)')),
-            );
-          },
-          child: Container(
-            decoration: BoxDecoration(
-              color: accentColor,
-              shape: BoxShape.circle,
-              boxShadow: [
-                BoxShadow(color: Colors.black.withValues(alpha: 0.2), blurRadius: 5),
-              ],
-            ),
-            child: Icon(LucideIcons.mapPin, color: Colors.white, size: 22),
           ),
         ),
-      );
-    }).toList();
-  }
-
-  void _openShopPeek(BuildContext context, BarberShop shop) {
-    showModalBottomSheet<void>(
-      context: context,
-      showDragHandle: true,
-      builder: (ctx) => Padding(
-        padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(shop.name, style: Theme.of(ctx).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                Icon(Icons.star, size: 18, color: Colors.amber[700]),
-                Text(' ${shop.rating}  ·  ${shop.reviewCount} sharh'),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Text(shop.address, style: TextStyle(color: Colors.grey[700])),
-            const SizedBox(height: 16),
-            Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed: () => Navigator.pop(ctx),
-                    child: const Text('Yopish'),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: FilledButton(
-                    onPressed: () {
-                      Navigator.pop(ctx);
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute<void>(
-                          builder: (_) => BarberMapScreen(shops: BarberShop.demoShops),
-                        ),
-                      );
-                    },
-                    child: const Text('To‘liq xarita'),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
       ),
-    );
-  }
+    ];
 
-  void _openFieldPeek(BuildContext context, FootballField field) {
-    showModalBottomSheet<void>(
-      context: context,
-      showDragHandle: true,
-      builder: (ctx) => Padding(
-        padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: field.surface.color.withValues(alpha: 0.12),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Icon(field.surface.icon, color: field.surface.color, size: 28),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(field.name, style: Theme.of(ctx).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
-                      const SizedBox(height: 4),
-                      Text(field.size.shortLabel, style: TextStyle(fontSize: 14, color: field.surface.color, fontWeight: FontWeight.w600)),
-                    ],
-                  ),
-                ),
-              ],
+    switch (kind) {
+      case ServiceHubKind.sartarosh:
+        markers.addAll(BarberShop.demoShops.map((shop) => Marker(
+          point: LatLng(shop.latitude, shop.longitude),
+          child: _MapPin(
+            icon: LucideIcons.scissors,
+            color: accentColor,
+            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => BarberBookingScreen(shop: shop))),
+          ),
+        )));
+        break;
+      case ServiceHubKind.salon:
+        markers.addAll(BeautySalon.demoSalons.map((salon) => Marker(
+          point: LatLng(salon.latitude, salon.longitude),
+          child: _MapPin(
+            icon: LucideIcons.sparkles,
+            color: const Color(0xFFE91E63),
+            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => SalonBookingScreen(salon: salon))),
+          ),
+        )));
+        break;
+      case ServiceHubKind.futbol:
+        markers.addAll(FootballField.demoFields.map((field) => Marker(
+          point: LatLng(field.latitude, field.longitude),
+          child: _MapPin(
+            icon: LucideIcons.trophy,
+            color: const Color(0xFF4CAF50),
+            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => FootballFieldBookingScreen(field: field))),
+          ),
+        )));
+        break;
+      case ServiceHubKind.usta:
+      case ServiceHubKind.elektrik:
+      case ServiceHubKind.santexnik:
+      case ServiceHubKind.tozalash:
+      case ServiceHubKind.avtoYordam:
+      case ServiceHubKind.konditsioner:
+      case ServiceHubKind.enaga:
+      case ServiceHubKind.repetitor:
+        final specialty = kind == ServiceHubKind.elektrik 
+            ? 'Elektrik' 
+            : (kind == ServiceHubKind.santexnik 
+                ? 'Santexnik' 
+                : (kind == ServiceHubKind.tozalash 
+                    ? 'Tozalash' 
+                    : (kind == ServiceHubKind.avtoYordam 
+                        ? 'Avto-yordam' 
+                        : (kind == ServiceHubKind.konditsioner 
+                            ? 'Konditsioner' 
+                            : (kind == ServiceHubKind.enaga 
+                                ? 'Enaga' 
+                                : (kind == ServiceHubKind.repetitor ? 'Repetitor' : null))))));
+        final filteredMasters = specialty != null 
+            ? Master.demoMasters.where((m) => m.specialty == specialty).toList() 
+            : Master.demoMasters;
+            
+        markers.addAll(filteredMasters.map((master) => Marker(
+          point: LatLng(master.latitude, master.longitude),
+          child: _MapPin(
+            icon: LucideIcons.wrench,
+            color: accentColor,
+            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => MasterDispatchScreen(master: master))),
+          ),
+        )));
+
+        // Add physical workshops for auto/master or education centers
+        if (kind == ServiceHubKind.avtoYordam || kind == ServiceHubKind.usta) {
+          markers.addAll(AutoWorkshop.demoWorkshops.map((ws) => Marker(
+            point: LatLng(ws.latitude, ws.longitude),
+            child: _MapPin(
+              icon: LucideIcons.home,
+              color: const Color(0xFF334155),
+              onTap: () => ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${ws.name} ustaxonasi'))),
             ),
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                Icon(Icons.star, size: 18, color: Colors.amber[700]),
-                Text(' ${field.rating}  ·  ${field.reviewCount} sharh'),
-                const Spacer(),
-                Text(
-                  '${field.basePricePerHour ~/ 1000}k soʻm / soat',
-                  style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15, color: Color(0xFF4CAF50)),
-                ),
-              ],
+          )));
+        } else if (kind == ServiceHubKind.repetitor) {
+          markers.addAll(EducationCenter.demoCenters.map((ec) => Marker(
+            point: LatLng(ec.latitude, ec.longitude),
+            child: _MapPin(
+              icon: LucideIcons.graduationCap,
+              color: const Color(0xFF6366F1),
+              onTap: () => ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${ec.name} o‘quv markazi'))),
             ),
-            const SizedBox(height: 8),
-            Text(field.address, style: TextStyle(color: Colors.grey[700])),
-            const SizedBox(height: 16),
-            Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed: () => Navigator.pop(ctx),
-                    child: const Text('Yopish'),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: FilledButton.icon(
-                    style: FilledButton.styleFrom(backgroundColor: const Color(0xFF4CAF50)),
-                    onPressed: () {
-                      Navigator.pop(ctx);
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute<void>(
-                          builder: (_) => FootballFieldBookingScreen(field: field),
-                        ),
-                      );
-                    },
-                    icon: const Icon(Icons.calendar_month, size: 18),
-                    label: const Text('Bron qilish'),
-                  ),
-                ),
-              ],
-            ),
-          ],
+          )));
+        }
+        break;
+      case ServiceHubKind.ishchi:
+        markers.addAll(Worker.demoWorkers.map((worker) => Marker(
+          point: LatLng(worker.latitude, worker.longitude),
+          child: _MapPin(
+            icon: LucideIcons.users,
+            color: Colors.orange[800]!,
+            onTap: () => ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${worker.name} chaqirilmoqda...'))),
+          ),
+        )));
+        break;
+      // 6 ta YANGI:
+      case ServiceHubKind.dezinfeksiya:
+        markers.addAll(DisinfectionService.demoServices.map((s) => Marker(
+          point: LatLng(s.latitude, s.longitude),
+          child: _MapPin(
+            icon: LucideIcons.shieldCheck,
+            color: accentColor,
+            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => DisinfectionBookingScreen(service: s))),
+          ),
+        )));
+        break;
+      case ServiceHubKind.texnikaUstasi:
+        markers.addAll(ApplianceRepair.demoRepairs.map((s) => Marker(
+          point: LatLng(s.latitude, s.longitude),
+          child: _MapPin(
+            icon: LucideIcons.monitor,
+            color: accentColor,
+            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => ApplianceBookingScreen(service: s))),
+          ),
+        )));
+        break;
+      case ServiceHubKind.kuryerlik:
+        markers.addAll(CourierService.demoCouriers.map((s) => Marker(
+          point: LatLng(s.latitude, s.longitude),
+          child: _MapPin(
+            icon: LucideIcons.bike,
+            color: accentColor,
+            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => CourierBookingScreen(service: s))),
+          ),
+        )));
+        break;
+      case ServiceHubKind.massajHijoma:
+        markers.addAll(MassageHijoma.demoCenters.map((s) => Marker(
+          point: LatLng(s.latitude, s.longitude),
+          child: _MapPin(
+            icon: LucideIcons.hand,
+            color: accentColor,
+            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => MassageBookingScreen(service: s))),
+          ),
+        )));
+        break;
+      case ServiceHubKind.hamshira:
+        markers.addAll(NurseService.demoServices.map((s) => Marker(
+          point: LatLng(s.latitude, s.longitude),
+          child: _MapPin(
+            icon: LucideIcons.heartPulse,
+            color: accentColor,
+            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => NurseBookingScreen(service: s))),
+          ),
+        )));
+        break;
+      case ServiceHubKind.tadbirlar:
+        markers.addAll(EventPlanning.demoPlanners.map((s) => Marker(
+          point: LatLng(s.latitude, s.longitude),
+          child: _MapPin(
+            icon: LucideIcons.partyPopper,
+            color: accentColor,
+            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => EventBookingScreen(service: s))),
+          ),
+        )));
+        break;
+      default: break;
+    }
+    return markers;
+  }
+}
+
+class _MapPin extends StatelessWidget {
+  final IconData icon;
+  final Color color;
+  final VoidCallback onTap;
+
+  const _MapPin({required this.icon, required this.color, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        decoration: BoxDecoration(
+          color: color,
+          shape: BoxShape.circle,
+          border: Border.all(color: Colors.white, width: 2),
+          boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 4)],
         ),
+        child: Icon(icon, color: Colors.white, size: 18),
       ),
     );
   }
@@ -348,156 +300,198 @@ class _ActionList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final actions = _actions(context);
-    return ListView.separated(
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
-      itemCount: actions.length,
-      separatorBuilder: (_, index) => const SizedBox(height: 10),
-      itemBuilder: (ctx, i) => _HubActionCard(
-        title: actions[i].title,
-        subtitle: actions[i].subtitle,
-        icon: actions[i].icon,
-        accentColor: accentColor,
-        onTap: actions[i].onTap,
-      ),
+
+    return ListView(
+      padding: const EdgeInsets.symmetric(vertical: 16),
+      children: [
+        if (kind == ServiceHubKind.sartarosh) _buildSection(context, "Yaqin sartaroshxonalar", BarberShop.demoShops.map((s) => ShopSmallCard(shop: s, accentColor: accentColor)).toList()),
+        if (kind == ServiceHubKind.salon) _buildSection(context, "Yaqin salonlar", BeautySalon.demoSalons.map((s) => SalonSmallCard(salon: s)).toList()),
+        if (kind == ServiceHubKind.futbol) _buildSection(context, "Yaqin futbol maydonlari", FootballField.demoFields.map((f) => FieldSmallCard(field: f)).toList()),
+        if (kind == ServiceHubKind.usta || kind == ServiceHubKind.elektrik || kind == ServiceHubKind.santexnik || kind == ServiceHubKind.tozalash || kind == ServiceHubKind.avtoYordam || kind == ServiceHubKind.konditsioner || kind == ServiceHubKind.enaga || kind == ServiceHubKind.repetitor) ...[
+          const Padding(
+            padding: EdgeInsets.fromLTRB(20, 0, 20, 8),
+            child: Text("Yaqin mutaxassislar va jamoalar", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          ),
+          SizedBox(
+            height: 185,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              itemCount: Master.demoMasters.where((m) => kind == ServiceHubKind.usta || m.specialty == (kind == ServiceHubKind.avtoYordam ? 'Avto-yordam' : kind.title)).length,
+              separatorBuilder: (_, __) => const SizedBox(width: 12),
+              itemBuilder: (_, i) {
+                final filtered = Master.demoMasters.where((m) => kind == ServiceHubKind.usta || m.specialty == (kind == ServiceHubKind.avtoYordam ? 'Avto-yordam' : kind.title)).toList();
+                return MasterSmallCard(master: filtered[i]);
+              },
+            ),
+          ),
+          const SizedBox(height: 16),
+        ],
+        
+        if (kind == ServiceHubKind.repetitor) ...[
+          const Padding(
+            padding: EdgeInsets.fromLTRB(20, 0, 20, 8),
+            child: Text("Yaqin o'quv markazlari", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          ),
+          SizedBox(
+            height: 185,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              itemCount: EducationCenter.demoCenters.length,
+              separatorBuilder: (_, __) => const SizedBox(width: 12),
+              itemBuilder: (_, i) => EducationCenterSmallCard(center: EducationCenter.demoCenters[i]),
+            ),
+          ),
+          const SizedBox(height: 16),
+        ],
+        
+        if (kind == ServiceHubKind.avtoYordam || kind == ServiceHubKind.usta) ...[
+          const Padding(
+            padding: EdgeInsets.fromLTRB(20, 0, 20, 8),
+            child: Text("Yaqin ustaxonalar", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          ),
+          SizedBox(
+            height: 185,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              itemCount: AutoWorkshop.demoWorkshops.length,
+              separatorBuilder: (_, __) => const SizedBox(width: 12),
+              itemBuilder: (_, i) => WorkshopSmallCard(workshop: AutoWorkshop.demoWorkshops[i]),
+            ),
+          ),
+          const SizedBox(height: 16),
+        ],
+        if (kind == ServiceHubKind.ishchi) _buildSection(context, "Yaqin ishchilar", Worker.demoWorkers.map((w) => WorkerSmallCard(worker: w)).toList()),
+        if (kind == ServiceHubKind.dezinfeksiya) _buildSection(context, "Dezinfeksiya xizmatlari", DisinfectionService.demoServices.map((s) => DisinfectionSmallCard(service: s)).toList()),
+        if (kind == ServiceHubKind.texnikaUstasi) _buildSection(context, "Texnika ustalari", ApplianceRepair.demoRepairs.map((s) => ApplianceSmallCard(service: s)).toList()),
+        if (kind == ServiceHubKind.kuryerlik) _buildSection(context, "Kuryer xizmatlari", CourierService.demoCouriers.map((s) => CourierSmallCard(service: s)).toList()),
+        if (kind == ServiceHubKind.massajHijoma) _buildSection(context, "Massaj va Hijoma", MassageHijoma.demoCenters.map((s) => MassageSmallCard(service: s)).toList()),
+        if (kind == ServiceHubKind.hamshira) _buildSection(context, "Hamshira xizmatlari", NurseService.demoServices.map((s) => NurseSmallCard(service: s)).toList()),
+        if (kind == ServiceHubKind.tadbirlar) _buildSection(context, "Tadbir tashkilotchilar", EventPlanning.demoPlanners.map((s) => EventSmallCard(service: s)).toList()),
+        
+        Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            children: actions.map((a) => Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: HubActionCard(title: a.title, subtitle: a.subtitle, icon: a.icon, accentColor: accentColor, onTap: a.onTap),
+            )).toList(),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSection(BuildContext context, String title, List<Widget> items) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),
+          child: Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+        ),
+        SizedBox(
+          height: 185,
+          child: ListView.separated(
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            itemCount: items.length,
+            separatorBuilder: (_, __) => const SizedBox(width: 12),
+            itemBuilder: (_, i) => items[i],
+          ),
+        ),
+        const SizedBox(height: 16),
+      ],
     );
   }
 
   List<_HubActionSpec> _actions(BuildContext context) {
-    void toast(String m) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(m)));
-    }
-
-    void openBooking() {
-      Navigator.push(
-        context,
-        MaterialPageRoute<void>(
-          builder: (_) => UniversalBookingScreen(kind: kind),
-        ),
-      );
-    }
-
-    final book = _HubActionSpec(
-      LucideIcons.calendarCheck,
-      '${kind.title} bron qilish',
-      'Variant, manzil va vaqt — bir sahifada',
-      openBooking,
-    );
+    void toast(String m) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(m)));
 
     return switch (kind) {
       ServiceHubKind.sartarosh => [
-        book,
-        _HubActionSpec(
-          LucideIcons.map,
-          'Kengaytirilgan xarita',
-          'Barcha sartaroshlar ro‘yxati',
-          () {
-            Navigator.push(
-              context,
-              MaterialPageRoute<void>(
-                builder: (_) => BarberMapScreen(shops: BarberShop.demoShops),
-              ),
-            );
-          },
-        ),
         _HubActionSpec(LucideIcons.bookmark, 'Saqlangan joylar', 'Tez orada', () => toast('Saqlanganlar — demo')),
+        _HubActionSpec(LucideIcons.home, 'Sartaroshni uyga chaqirish', 'Premium xizmat', () => toast('Uyga chaqirish — demo')),
       ],
       ServiceHubKind.salon => [
-        book,
-        _HubActionSpec(LucideIcons.sparkles, 'Kosmetik xizmatlar', 'Manikyur, fen va boshqalar', () => toast('Kosmetik — demo')),
-        _HubActionSpec(LucideIcons.home, 'Uyga xizmat', 'Mobil brigada chaqirish', () => toast('Uyga salon — demo')),
+        _HubActionSpec(LucideIcons.bookmark, 'Saqlangan joylar', 'Tez orada', () => toast('Saqlanganlar — demo')),
+        _HubActionSpec(LucideIcons.sparkles, 'Kosmetik xizmatlar', 'Manikyur, fen...', () => toast('Kosmetik — demo')),
       ],
       ServiceHubKind.futbol => [
-        book,
-        _HubActionSpec(
-          LucideIcons.map,
-          'Kengaytirilgan xarita',
-          'Barcha futbol maydonlari ro‘yxati',
-          () {
-            Navigator.push(
-              context,
-              MaterialPageRoute<void>(
-                builder: (_) => FootballFieldMapScreen(fields: FootballField.demoFields),
-              ),
-            );
-          },
-        ),
-        _HubActionSpec(LucideIcons.users, 'Jamoa o‘yini', 'Bir necha soat bandlov', () {
-          Navigator.push(
-            context,
-            MaterialPageRoute<void>(
-              builder: (_) => UniversalBookingScreen(kind: ServiceHubKind.futbol),
-            ),
-          );
-        }),
-      ],
-      ServiceHubKind.ishchi => [
-        book,
-        _HubActionSpec(LucideIcons.package, 'Yuk ko‘tarish / yuklash', 'Kunlik yordamchi', () => toast('Yuk xizmati — demo')),
-        _HubActionSpec(
-          LucideIcons.briefcase,
-          'Kunlik oddiy ish',
-          'Qurilish yordami, tozalash va hokazo',
-          () => toast('Kunlik ish — demo'),
-        ),
-      ],
-      ServiceHubKind.usta => [
-        book,
-        _HubActionSpec(LucideIcons.messageSquare, 'Ta’mirlash bo‘yicha so‘rov', 'Rasm yuborish tez kunda', () => toast('Konsultatsiya — demo')),
-        _HubActionSpec(LucideIcons.hammer, 'Uy-ro‘zg‘or ta’mirlash', 'Deraza, eshik, mebel', () => toast('Ta’mirlash — demo')),
+        _HubActionSpec(LucideIcons.bookmark, 'Saqlangan polyalar', 'Tez orada', () => toast('Saqlangan polyalar — demo')),
+        _HubActionSpec(LucideIcons.users, 'Jamoa o‘yini', 'Bir necha soat bandlov', () => Navigator.push(context, MaterialPageRoute(builder: (_) => UniversalBookingScreen(kind: kind)))),
       ],
       ServiceHubKind.elektrik => [
-        book,
-        _HubActionSpec(LucideIcons.alertTriangle, 'Shoshilinch chaqiruv', 'Uzilish / isitish ', () => toast('Favqulodda — demo')),
-        _HubActionSpec(LucideIcons.clipboardList, 'Uy elektr tekshiruvi', 'Hisobot bilan', () => toast('Tekshiruv — demo')),
+        _HubActionSpec(LucideIcons.bookmark, 'Saqlangan elektriklar', 'Tez orada', () => toast('Saqlanganlar — demo')),
+        _HubActionSpec(LucideIcons.zap, 'Favqulodda yordam', 'Qisqa tutashuv va h.k.', () => toast('SOS — demo')),
       ],
       ServiceHubKind.santexnik => [
-        book,
-        _HubActionSpec(LucideIcons.wrench, 'Toshma va probka', 'Shoshilinch ta’mir', () => toast('Toshma — demo')),
-        _HubActionSpec(LucideIcons.clock, 'Navbatga yozilish', 'Aniqlashtirilgan vaqt', () => toast('Navbat — demo')),
+        _HubActionSpec(LucideIcons.bookmark, 'Saqlangan santexniklar', 'Tez orada', () => toast('Saqlanganlar — demo')),
+        _HubActionSpec(LucideIcons.droplet, 'Suv oqishi', 'Tezkor bartaraf etish', () => toast('SOS — demo')),
       ],
       ServiceHubKind.tozalash => [
-        book,
-        _HubActionSpec(LucideIcons.home, 'Uy tozalash', 'Standart kvartira', openBooking),
-        _HubActionSpec(LucideIcons.briefcase, 'Ofis tozalash', 'Davriy yoki bir martalik', openBooking),
+        _HubActionSpec(LucideIcons.bookmark, 'Saqlangan xizmatlar', 'Tez orada', () => toast('Saqlanganlar — demo')),
+        _HubActionSpec(LucideIcons.sprayCan, 'General tozalash', 'Katta ko‘lamli ishlar', () => toast('Tozalash — demo')),
       ],
       ServiceHubKind.avtoYordam => [
-        book,
-        _HubActionSpec(LucideIcons.alertTriangle, 'Shoshilinch chaqiruv', 'Yo‘l ustasi', openBooking),
-        _HubActionSpec(LucideIcons.car, 'Evakuator', 'Qisqa va uzoq masofa', openBooking),
+        _HubActionSpec(LucideIcons.car, 'Evakuator chaqirish', 'Eng yaqin texnika', () => toast('Evakuator yo‘lda — demo')),
+        _HubActionSpec(LucideIcons.fuel, 'Benzin yetkazish', 'AI-92, AI-95 va h.k.', () => toast('Benzin buyurtma qilindi — demo')),
+        _HubActionSpec(LucideIcons.wrench, 'Joyida ta’mirlash', 'Mobil usta jamoasi', () => toast('Usta jamoasi chaqirildi — demo')),
       ],
       ServiceHubKind.konditsioner => [
-        book,
-        _HubActionSpec(LucideIcons.wrench, 'Profilaktika tozalash', 'Filtr va plata', openBooking),
-        _HubActionSpec(LucideIcons.zap, 'Gaz to‘ldirish', 'Hajmga qarab', openBooking),
+        _HubActionSpec(LucideIcons.wind, 'Profilaktika xizmati', 'Tozalash va tekshirish', () => toast('Profilaktika — demo')),
+        _HubActionSpec(LucideIcons.snowflake, 'Freon quyish', 'Gaz to‘ldirish xizmati', () => toast('Gaz quyish — demo')),
       ],
       ServiceHubKind.enaga => [
-        book,
-        _HubActionSpec(LucideIcons.clock, 'Soatlik enaga', 'Tezkor chaqiruv', openBooking),
-        _HubActionSpec(LucideIcons.heart, 'Doimiy enaga', 'Uzoq muddatli', openBooking),
+        _HubActionSpec(LucideIcons.clock, 'Soatbay enaga', 'Bir necha soatga qarash', () => toast('Soatbay — demo')),
+        _HubActionSpec(LucideIcons.home, 'Doimiy enaga', 'Haftalik yoki oylik ish', () => toast('Hiring — demo')),
       ],
       ServiceHubKind.repetitor => [
-        book,
-        _HubActionSpec(LucideIcons.bookOpen, 'Maktab fanlari', 'Matematika/Fizika/Til', openBooking),
-        _HubActionSpec(LucideIcons.graduationCap, 'Test tayyorlov', 'DTM va xalqaro', openBooking),
+        _HubActionSpec(LucideIcons.bookOpen, 'Individual darslar', 'Uyga chaqirish yoki onlayn', () => toast('Repetitor — demo')),
+        _HubActionSpec(LucideIcons.graduationCap, 'O‘quv markazlari', 'Guruh darslari va kurslar', () => toast('Markazlar — demo')),
       ],
-      ServiceHubKind.yana => [
-        _HubActionSpec(
-          LucideIcons.layoutGrid,
-          'Barcha xizmatlar',
-          'To‘liq katalog',
-          () {
-            Navigator.push(
-              context,
-              MaterialPageRoute<void>(
-                builder: (_) => const AllCategoriesScreen(),
-              ),
-            );
-          },
-        ),
-        _HubActionSpec(LucideIcons.helpCircle, 'Qo‘llanma', 'Ilovadan foydalanish', () => toast('Yordam — demo')),
-        _HubActionSpec(LucideIcons.headphones, 'Qo‘llab-quvvatlash', 'Chat yoki qo‘ng‘iroq', () => toast('Support — demo')),
+      ServiceHubKind.ishchi => [
+        _HubActionSpec(LucideIcons.bookmark, 'Saqlangan ustalar', 'Tez orada', () => toast('Saqlanganlar — demo')),
+        _HubActionSpec(LucideIcons.package, 'Yuk ko‘tarish', 'Kunlik yordamchi', () => toast('Yuk xizmati — demo')),
       ],
-    };
+      ServiceHubKind.usta => [
+        _HubActionSpec(LucideIcons.bookmark, 'Saqlangan ustalar', 'Tez orada', () => toast('Saqlanganlar — demo')),
+        _HubActionSpec(LucideIcons.hammer, 'Uy-rozgor tamirlash', 'Mebel, eshik...', () => toast('Tamirlash — demo')),
+      ],
+      // 6 ta YANGI:
+      ServiceHubKind.dezinfeksiya => [
+        _HubActionSpec(LucideIcons.shieldCheck, 'Uy dezinfeksiyasi', 'Kvartira, ofis, maktab', () => Navigator.push(context, MaterialPageRoute(builder: (_) => UniversalBookingScreen(kind: kind)))),
+        _HubActionSpec(LucideIcons.car, 'Mashina dezinfeksiyasi', 'Antibakterial ishlov', () => Navigator.push(context, MaterialPageRoute(builder: (_) => UniversalBookingScreen(kind: kind)))),
+      ],
+      ServiceHubKind.texnikaUstasi => [
+        _HubActionSpec(LucideIcons.monitor, 'Texnika tamlash', 'Kir yuvish, muzlatgich, TV', () => Navigator.push(context, MaterialPageRoute(builder: (_) => UniversalBookingScreen(kind: kind)))),
+        _HubActionSpec(LucideIcons.wrench, 'Diagnostika', 'Muammoni aniqlash', () => Navigator.push(context, MaterialPageRoute(builder: (_) => UniversalBookingScreen(kind: kind)))),
+      ],
+      ServiceHubKind.kuryerlik => [
+        _HubActionSpec(LucideIcons.bike, 'Tezkor yetkazish', 'Hujjat, sovga', () => Navigator.push(context, MaterialPageRoute(builder: (_) => UniversalBookingScreen(kind: kind)))),
+        _HubActionSpec(LucideIcons.package, 'Yuk yetkazish', 'Kichik va katta yuk', () => Navigator.push(context, MaterialPageRoute(builder: (_) => UniversalBookingScreen(kind: kind)))),
+      ],
+      ServiceHubKind.massajHijoma => [
+        _HubActionSpec(LucideIcons.hand, 'Massaj', 'Klassik, Tailand, Sport', () => Navigator.push(context, MaterialPageRoute(builder: (_) => UniversalBookingScreen(kind: kind)))),
+        _HubActionSpec(LucideIcons.heart, 'Hijoma', 'Erkaklar va Ayollar', () => Navigator.push(context, MaterialPageRoute(builder: (_) => UniversalBookingScreen(kind: kind)))),
+      ],
+      ServiceHubKind.hamshira => [
+        _HubActionSpec(LucideIcons.heartPulse, 'Uyga hamshira', 'In`ektsiya, tahlil, tomchi', () => Navigator.push(context, MaterialPageRoute(builder: (_) => UniversalBookingScreen(kind: kind)))),
+        _HubActionSpec(LucideIcons.clock, 'Tun bo`yi hamshira', '24 soat kuzatuv', () => Navigator.push(context, MaterialPageRoute(builder: (_) => UniversalBookingScreen(kind: kind)))),
+      ],
+      ServiceHubKind.tadbirlar => [
+        _HubActionSpec(LucideIcons.partyPopper, 'To\'y va marosim', 'Rejissyorlik xizmati', () => Navigator.push(context, MaterialPageRoute(builder: (_) => UniversalBookingScreen(kind: kind)))),
+        _HubActionSpec(LucideIcons.mapPin, 'Dam olish joyi bron', 'Bog\'s, damlanma', () => Navigator.push(context, MaterialPageRoute(builder: (_) => UniversalBookingScreen(kind: kind)))),
+      ],
+      _ => [
+        _HubActionSpec(LucideIcons.calendarCheck, '${kind.title} bron qilish', 'Variant, manzil va vaqt', () => Navigator.push(context, MaterialPageRoute(builder: (_) => UniversalBookingScreen(kind: kind)))),
+      ],
+    } + [
+      _HubActionSpec(LucideIcons.layoutGrid, 'Barcha xizmatlar', 'To‘liq katalog', () => Navigator.push(context, MaterialPageRoute(builder: (_) => AllCategoriesScreen()))),
+      _HubActionSpec(LucideIcons.headphones, 'Qo‘llab-quvvatlash', 'Chat yoki qo‘ng‘iroq', () => toast('Support — demo')),
+    ];
   }
 }
 
@@ -506,64 +500,5 @@ class _HubActionSpec {
   final String title;
   final String subtitle;
   final VoidCallback onTap;
-
   _HubActionSpec(this.icon, this.title, this.subtitle, this.onTap);
-}
-
-class _HubActionCard extends StatelessWidget {
-  final String title;
-  final String subtitle;
-  final IconData icon;
-  final Color accentColor;
-  final VoidCallback onTap;
-
-  const _HubActionCard({
-    required this.title,
-    required this.subtitle,
-    required this.icon,
-    required this.accentColor,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: accentColor.withValues(alpha: 0.08),
-      borderRadius: BorderRadius.circular(16),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-          child: Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: accentColor.withValues(alpha: 0.18),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Icon(icon, color: accentColor, size: 24),
-              ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(title, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16)),
-                    const SizedBox(height: 4),
-                    Text(
-                      subtitle,
-                      style: TextStyle(fontSize: 12, color: Colors.grey[700]),
-                    ),
-                  ],
-                ),
-              ),
-              Icon(Icons.chevron_right, color: Colors.grey[500]),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
 }

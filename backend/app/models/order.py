@@ -48,6 +48,15 @@ class Order(Base):
     user = relationship("User", back_populates="orders")
     provider = relationship("Provider", back_populates="orders")
     category = relationship("Category")
+    transactions = relationship("Transaction", back_populates="order", cascade="all, delete-orphan")
+
+    @property
+    def category_key(self) -> str:
+        return self.category.key if self.category else ""
+
+    @property
+    def provider_name(self) -> str:
+        return self.provider.name if self.provider else ""
 
     def to_dict(self) -> dict:
         return {

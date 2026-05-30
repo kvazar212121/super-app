@@ -7,6 +7,7 @@ from app.models.order import Order, OrderStatus
 from app.models.provider import Provider
 from app.models.user import User
 from app.schemas.order import OrderCreate, OrderStatusUpdate
+from app.core.config import settings
 
 
 class OrderService:
@@ -17,7 +18,7 @@ class OrderService:
         if not provider:
             raise HTTPException(status_code=404, detail="Provayder topilmadi")
 
-        cashback_earned = round(data.price * 0.01, 2)
+        cashback_earned = round(data.price * (settings.cashback_rate / 100), 2)
 
         order = Order(
             user_id=user.id,
@@ -36,7 +37,13 @@ class OrderService:
         db.add(order)
         user.cashback += cashback_earned
         await db.flush()
-        await db.refresh(order)
+        from sqlalchemy.orm import selectinload
+        q = (
+            select(Order)
+            .options(selectinload(Order.category), selectinload(Order.provider))
+            .where(Order.id == order.id)
+        )
+        order = (await db.execute(q)).scalar_one()
         return order
 
     @staticmethod
@@ -46,8 +53,10 @@ class OrderService:
         count_q = select(func.count(Order.id)).where(Order.user_id == user_id)
         total = (await db.execute(count_q)).scalar() or 0
 
+        from sqlalchemy.orm import selectinload
         q = (
             select(Order)
+            .options(selectinload(Order.category), selectinload(Order.provider))
             .where(Order.user_id == user_id)
             .order_by(Order.created_at.desc())
             .offset((page - 1) * per_page)
@@ -58,8 +67,11 @@ class OrderService:
 
     @staticmethod
     async def get_by_id(db: AsyncSession, user_id: int, order_id: int) -> Order:
+        from sqlalchemy.orm import selectinload
         result = await db.execute(
-            select(Order).where(Order.id == order_id, Order.user_id == user_id)
+            select(Order)
+            .options(selectinload(Order.category), selectinload(Order.provider))
+            .where(Order.id == order_id, Order.user_id == user_id)
         )
         order = result.scalar_one_or_none()
         if not order:
@@ -71,9 +83,27 @@ class OrderService:
         db: AsyncSession, user_id: int, order_id: int, data: OrderStatusUpdate
     ) -> Order:
         order = await OrderService.get_by_id(db, user_id, order_id)
-        order.status = OrderStatus(data.status)
+        old_status = order.status
+        new_status = OrderStatus(data.status)
+        order.status = new_status
         await db.flush()
         await db.refresh(order)
+
+        if old_status != new_status:
+            from app.services.notification_service import NotificationService
+            status_translations = {
+                OrderStatus.pending: "kutilmoqda",
+                OrderStatus.accepted: "qabul qilindi",
+                OrderStatus.completed: "yakunlandi",
+                OrderStatus.cancelled: "bekor qilindi"
+            }
+            status_str = status_translations.get(new_status, new_status.value)
+            NotificationService.send_notification(
+                user_id=order.user_id,
+                ntype="order_status_changed",
+                title="Buyurtma holati o'zgardi",
+                message=f"Sizning #{order.id} raqamli buyurtmangiz holati '{status_str}' ga o'zgardi."
+            )
         return order
 
     @staticmethod

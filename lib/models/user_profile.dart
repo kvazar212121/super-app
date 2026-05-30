@@ -40,7 +40,18 @@ class UserProfile {
       isPremium: isPremium ?? this.isPremium,
     );
   }
-
+  factory UserProfile.fromJson(Map<String, dynamic> json) {
+    return UserProfile(
+      name: json['name'] ?? '',
+      surname: json['surname'] ?? '',
+      phone: json['phone'] ?? '',
+      avatarUrl: json['avatar_url'],
+      telegramUsername: json['telegram_username'],
+      balance: (json['balance'] as num?)?.toDouble() ?? 0.0,
+      cashback: (json['cashback'] as num?)?.toDouble() ?? 0.0,
+      isPremium: json['is_premium'] ?? false,
+    );
+  }
   static UserProfile demo = UserProfile(
     name: "Kudratulloh",
     surname: "Rahimov",

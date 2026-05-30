@@ -6,7 +6,7 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: superapp
     ports:
-      - "5434:5432"
+      - "5435:5432"
     volumes:
       - superapp_pg:/var/lib/postgresql/data
 
@@ -26,6 +26,8 @@ services:
       - redis
     volumes:
       - ./app:/app/app
+      - ./alembic:/app/alembic
+      - ./alembic.ini:/app/alembic.ini
 
 volumes:
   superapp_pg:

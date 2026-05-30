@@ -52,6 +52,86 @@ class ServiceOrder {
         createdAt: createdAt,
       );
 
+  factory ServiceOrder.fromJson(Map<String, dynamic> json) {
+    OrderStatus status = OrderStatus.pending;
+    switch (json['status']) {
+      case 'pending':
+        status = OrderStatus.pending;
+        break;
+      case 'confirmed':
+        status = OrderStatus.accepted;
+        break;
+      case 'in_progress':
+        status = OrderStatus.inProgress;
+        break;
+      case 'completed':
+        status = OrderStatus.completed;
+        break;
+      case 'cancelled':
+        status = OrderStatus.cancelled;
+        break;
+    }
+
+    final categoryKey = json['category_key'] ?? '';
+    final category = ServiceHubKind.values.firstWhere(
+      (e) => e.name == categoryKey,
+      orElse: () {
+        final catId = json['category_id'] as int?;
+        if (catId != null && catId > 0 && catId <= ServiceHubKind.values.length) {
+          return ServiceHubKind.values[catId - 1];
+        }
+        return ServiceHubKind.yana;
+      },
+    );
+
+    return ServiceOrder(
+      id: json['id']?.toString() ?? '',
+      category: category,
+      serviceName: json['service_name'] ?? '',
+      providerName: json['provider_name'] ?? 'Usta',
+      variant: json['variant_label'] ?? '',
+      address: json['address'] ?? '',
+      notes: json['notes'] ?? '',
+      date: json['date'] != null ? DateTime.parse(json['date']) : DateTime.now(),
+      price: (json['price'] as num?)?.toDouble() ?? 0.0,
+      status: status,
+      createdAt: json['created_at'] != null ? DateTime.parse(json['created_at']) : DateTime.now(),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    String statusStr = 'pending';
+    switch (status) {
+      case OrderStatus.pending:
+        statusStr = 'pending';
+        break;
+      case OrderStatus.accepted:
+        statusStr = 'confirmed';
+        break;
+      case OrderStatus.inProgress:
+        statusStr = 'in_progress';
+        break;
+      case OrderStatus.completed:
+        statusStr = 'completed';
+        break;
+      case OrderStatus.cancelled:
+        statusStr = 'cancelled';
+        break;
+    }
+    return {
+      'id': id,
+      'category_key': category.name,
+      'service_name': serviceName,
+      'provider_name': providerName,
+      'address': address,
+      'notes': notes,
+      'date': date.toIso8601String(),
+      'price': price,
+      'status': statusStr,
+      'created_at': createdAt.toIso8601String(),
+    };
+  }
+
   static List<ServiceOrder> demoOrders = [
     ServiceOrder(
       id: "1",

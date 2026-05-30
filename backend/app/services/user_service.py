@@ -27,6 +27,13 @@ class UserService:
 
     @staticmethod
     async def top_up(db: AsyncSession, user: User, amount: float) -> User:
+        # Maksimal to'ldirish limiti: 10 000 000 UZS
+        MAX_TOP_UP = 10_000_000.0
+        if amount > MAX_TOP_UP:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"To'ldirish summasi juda katta. Maksimal: {MAX_TOP_UP:,.0f} UZS",
+            )
         user.balance += amount
         await db.flush()
         await db.refresh(user)

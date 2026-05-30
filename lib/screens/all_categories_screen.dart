@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../models/service_hub_kind.dart';
 import 'service_hub_screen.dart';
 
-/// Barcha 13 ta xizmat kategoriyasini ro'yxat ko'rinishida ko'rsatadi.
+/// Barcha 19 ta xizmat kategoriyasini ro'yxat ko'rinishida ko'rsatadi.
 /// "Yana" bandidan ochiladi.
 class AllCategoriesScreen extends StatelessWidget {
   const AllCategoriesScreen({super.key});
@@ -21,6 +21,13 @@ class AllCategoriesScreen extends StatelessWidget {
     ServiceHubKind.konditsioner,
     ServiceHubKind.enaga,
     ServiceHubKind.repetitor,
+    // 6 ta YANGI:
+    ServiceHubKind.dezinfeksiya,
+    ServiceHubKind.texnikaUstasi,
+    ServiceHubKind.kuryerlik,
+    ServiceHubKind.massajHijoma,
+    ServiceHubKind.hamshira,
+    ServiceHubKind.tadbirlar,
   ];
 
   @override
