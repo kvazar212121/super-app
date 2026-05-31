@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:lucide_icons/lucide_icons.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
+import '../theme/glass_tokens.dart';
+import 'glass/glass_surface.dart';
 
 class RecentSearchesWidget extends StatelessWidget {
   final List<String> searches;
@@ -21,7 +23,13 @@ class RecentSearchesWidget extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text("So'nggi qidiruvlar", style: TextStyle(fontWeight: FontWeight.bold)),
+            Text(
+              "So'nggi qidiruvlar",
+              style: TextStyle(
+                fontWeight: FontWeight.w800,
+                color: GlassTokens.primaryText(context),
+              ),
+            ),
             TextButton(onPressed: onClear, child: const Text("Tozalash")),
           ],
         ),
@@ -29,11 +37,34 @@ class RecentSearchesWidget extends StatelessWidget {
         Wrap(
           spacing: 8,
           runSpacing: 8,
-          children: searches.map((s) => Chip(
-            label: Text(s),
-            deleteIcon: const Icon(LucideIcons.x, size: 18),
-            onDeleted: () => onRemove(s),
-          )).toList(),
+          children: searches.map((s) {
+            return GlassSurface(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              borderRadius: 20,
+              showShadow: false,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    s,
+                    style: TextStyle(
+                      color: GlassTokens.primaryText(context),
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const SizedBox(width: 6),
+                  GestureDetector(
+                    onTap: () => onRemove(s),
+                    child: Icon(
+                      LucideIcons.x,
+                      size: 16,
+                      color: GlassTokens.secondaryText(context),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }).toList(),
         ),
       ],
     );

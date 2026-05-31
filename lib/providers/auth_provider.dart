@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
+import '../config/app_config.dart';
 import '../services/api_service.dart';
+import '../services/demo_auth_service.dart';
 
 /// Auth holati — login/register/logout va token boshqarish.
 class AuthProvider extends ChangeNotifier {
@@ -15,9 +17,15 @@ class AuthProvider extends ChangeNotifier {
   bool get isAuthenticated => _isAuthenticated;
   String? get error => _error;
   Map<String, dynamic>? get user => _user;
+  bool get isOfflineDemo => !AppConfig.useBackend;
+
+  String get displayName {
+    if (!_isAuthenticated || _user == null) return 'Mehmon';
+    final name = (_user!['name'] as String?)?.trim() ?? '';
+    return name.isEmpty ? 'Foydalanuvchi' : name;
+  }
 
   AuthProvider() {
-    // Token muddati tugaganda logout
     _api.onTokenExpired = () {
       _isAuthenticated = false;
       _user = null;
@@ -25,20 +33,25 @@ class AuthProvider extends ChangeNotifier {
     };
   }
 
-  /// Ilova boshlanganda saqlangan tokenni tekshirish
   Future<bool> tryAutoLogin() async {
+    if (!AppConfig.useBackend) {
+      final user = await DemoAuthService.loadSession();
+      if (user == null) return false;
+      _user = user;
+      _isAuthenticated = true;
+      notifyListeners();
+      return true;
+    }
+
     try {
       await _api.loadTokens();
       if (!_api.hasToken) return false;
-
-      // Token bilan foydalanuvchi ma'lumotlarini olishga urinish
       final userData = await _api.getMe();
       _user = userData;
       _isAuthenticated = true;
       notifyListeners();
       return true;
     } catch (e) {
-      // Token eskirgan yoki yaroqsiz
       await _api.clearTokens();
       _isAuthenticated = false;
       _user = null;
@@ -47,16 +60,32 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  /// Ro'yxatdan o'tish
   Future<bool> register({
     required String name,
     required String surname,
     required String phone,
     required String password,
+    String? pin,
   }) async {
     _isLoading = true;
     _error = null;
     notifyListeners();
+
+    if (!AppConfig.useBackend) {
+      await Future.delayed(const Duration(milliseconds: 350));
+      final user = DemoAuthService.register(
+        name: name.trim(),
+        surname: surname.trim(),
+        phone: phone,
+        pin: pin,
+      );
+      await DemoAuthService.saveSession(user);
+      _user = user;
+      _isAuthenticated = true;
+      _isLoading = false;
+      notifyListeners();
+      return true;
+    }
 
     try {
       final data = await _api.register(
@@ -78,7 +107,6 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  /// Login
   Future<bool> login({
     required String phone,
     required String password,
@@ -86,6 +114,23 @@ class AuthProvider extends ChangeNotifier {
     _isLoading = true;
     _error = null;
     notifyListeners();
+
+    if (!AppConfig.useBackend) {
+      await Future.delayed(const Duration(milliseconds: 350));
+      final user = await DemoAuthService.tryLogin(phone, password);
+      if (user == null) {
+        _error = 'Telefon yoki parol/PIN noto\'g\'ri';
+        _isLoading = false;
+        notifyListeners();
+        return false;
+      }
+      await DemoAuthService.saveSession(user);
+      _user = user;
+      _isAuthenticated = true;
+      _isLoading = false;
+      notifyListeners();
+      return true;
+    }
 
     try {
       final data = await _api.login(phone: phone, password: password);
@@ -102,28 +147,28 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  /// Logout
   Future<void> logout() async {
-    await _api.clearTokens();
+    if (!AppConfig.useBackend) {
+      await DemoAuthService.clearSession();
+    } else {
+      await _api.clearTokens();
+    }
     _isAuthenticated = false;
     _user = null;
     _error = null;
     notifyListeners();
   }
 
-  /// Profil ma'lumotlarini yangilash (auth providerda ham)
   void updateUserData(Map<String, dynamic> newData) {
     _user = newData;
     notifyListeners();
   }
 
-  /// Xato xabarini tozalash
   void clearError() {
     _error = null;
     notifyListeners();
   }
 
-  /// Xatolik xabarini olish
   String _extractError(dynamic e) {
     if (e is DioException) {
       final data = e.response?.data;

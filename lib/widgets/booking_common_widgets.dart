@@ -1,5 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import '../theme/glass_tokens.dart';
+
+/// Booking ekranlari uchun umumiy ranglar.
+/// Kartalar har doim OQ fonda, shuning uchun ulardagi matn qat'iy qora.
+/// Mesh fon ustidagi matnlar esa [GlassTokens] orqali temaga moslashadi.
+const kBookingInk = Color(0xFF0F172A);
+const kBookingSub = Color(0xFF64748B);
+const kBookingCard = Colors.white;
+const kBookingBorder = Color(0xFFE2E8F0);
 
 class SectionTitle extends StatelessWidget {
   final String title;
@@ -9,7 +18,481 @@ class SectionTitle extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       title,
-      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+      style: TextStyle(
+        fontSize: 18,
+        fontWeight: FontWeight.bold,
+        color: GlassTokens.primaryText(context),
+      ),
+    );
+  }
+}
+
+/// Ranglar gradientli SliverAppBar (xizmat ikonkasi bilan).
+class BookingSliverAppBar extends StatelessWidget {
+  final Color color;
+  final IconData icon;
+  final double expandedHeight;
+
+  const BookingSliverAppBar({
+    super.key,
+    required this.color,
+    required this.icon,
+    this.expandedHeight = 180,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SliverAppBar(
+      expandedHeight: expandedHeight,
+      pinned: true,
+      backgroundColor: color,
+      foregroundColor: Colors.white,
+      flexibleSpace: FlexibleSpaceBar(
+        background: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [color, color.withValues(alpha: 0.7)],
+            ),
+          ),
+          child: Center(
+            child: Icon(icon, size: 64, color: Colors.white.withValues(alpha: 0.2)),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Xizmat sarlavhasi: nom + reyting + telefon.
+class ServiceProfileHeader extends StatelessWidget {
+  final String name;
+  final double rating;
+  final String phone;
+  final Color accent;
+  final Widget? extra;
+
+  const ServiceProfileHeader({
+    super.key,
+    required this.name,
+    required this.rating,
+    required this.phone,
+    required this.accent,
+    this.extra,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: Text(
+                name,
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: GlassTokens.primaryText(context),
+                ),
+              ),
+            ),
+            const SizedBox(width: 8),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+              decoration: BoxDecoration(
+                color: accent.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.star, size: 16, color: accent),
+                  const SizedBox(width: 4),
+                  Text(
+                    rating.toString(),
+                    style: TextStyle(fontWeight: FontWeight.bold, color: accent),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 6),
+        Row(
+          children: [
+            Icon(Icons.phone, size: 14, color: GlassTokens.secondaryText(context)),
+            const SizedBox(width: 4),
+            Flexible(
+              child: Text(
+                phone,
+                style: TextStyle(
+                    color: GlassTokens.secondaryText(context), fontSize: 14),
+              ),
+            ),
+          ],
+        ),
+        if (extra != null) ...[const SizedBox(height: 8), extra!],
+      ],
+    );
+  }
+}
+
+/// Ikonka + matnli, tanlanadigan 2 ustunli grid (overflow'siz).
+/// [T] — har qanday tur (enum yoki model), faqat ikon va label kerak.
+class SelectableIconGrid<T> extends StatelessWidget {
+  final List<T> items;
+  final T? selected;
+  final IconData Function(T) iconOf;
+  final String Function(T) labelOf;
+  final ValueChanged<T> onSelect;
+  final Color accent;
+  final int crossAxisCount;
+  final double childAspectRatio;
+
+  const SelectableIconGrid({
+    super.key,
+    required this.items,
+    required this.selected,
+    required this.iconOf,
+    required this.labelOf,
+    required this.onSelect,
+    required this.accent,
+    this.crossAxisCount = 2,
+    this.childAspectRatio = 2.4,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GridView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: crossAxisCount,
+        crossAxisSpacing: 12,
+        mainAxisSpacing: 12,
+        childAspectRatio: childAspectRatio,
+      ),
+      itemCount: items.length,
+      itemBuilder: (context, index) {
+        final item = items[index];
+        final isSelected = selected == item;
+        return GestureDetector(
+          onTap: () => onSelect(item),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            decoration: BoxDecoration(
+              color: isSelected ? accent.withValues(alpha: 0.1) : kBookingCard,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: isSelected ? accent : kBookingBorder,
+                width: 1.5,
+              ),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(iconOf(item),
+                    color: isSelected ? accent : kBookingSub, size: 20),
+                const SizedBox(width: 8),
+                Flexible(
+                  child: Text(
+                    labelOf(item),
+                    maxLines: 2,
+                    softWrap: true,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontWeight:
+                          isSelected ? FontWeight.bold : FontWeight.normal,
+                      color: isSelected ? accent : kBookingInk,
+                      height: 1.1,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+/// Tanlanadigan chiplar (brend / variant) — Wrap, overflow'siz.
+class SelectableChips extends StatelessWidget {
+  final List<String> items;
+  final String? selected;
+  final ValueChanged<String> onSelect;
+  final Color accent;
+
+  const SelectableChips({
+    super.key,
+    required this.items,
+    required this.selected,
+    required this.onSelect,
+    required this.accent,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Wrap(
+      spacing: 8,
+      runSpacing: 8,
+      children: items.map((item) {
+        final isSelected = selected == item;
+        return GestureDetector(
+          onTap: () => onSelect(item),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            decoration: BoxDecoration(
+              color: isSelected ? accent.withValues(alpha: 0.1) : kBookingCard,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: isSelected ? accent : kBookingBorder,
+                width: 1.5,
+              ),
+            ),
+            child: Text(
+              item,
+              style: TextStyle(
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                color: isSelected ? accent : kBookingInk,
+              ),
+            ),
+          ),
+        );
+      }).toList(),
+    );
+  }
+}
+
+/// Narx variantlari ro'yxati (nom + narx, tanlanadigan).
+class PriceOptionList extends StatelessWidget {
+  final Map<String, double> prices;
+  final String? selected;
+  final ValueChanged<String> onSelect;
+  final Color accent;
+  final NumberFormat format;
+
+  const PriceOptionList({
+    super.key,
+    required this.prices,
+    required this.selected,
+    required this.onSelect,
+    required this.accent,
+    required this.format,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final options = prices.keys.toList();
+    return Column(
+      children: options.map((option) {
+        final isSelected = selected == option;
+        return GestureDetector(
+          onTap: () => onSelect(option),
+          child: Container(
+            margin: const EdgeInsets.only(bottom: 8),
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(
+              color: isSelected ? accent.withValues(alpha: 0.06) : kBookingCard,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: isSelected ? accent : kBookingBorder,
+                width: 1.5,
+              ),
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    option,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: kBookingInk,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  format.format(prices[option]),
+                  style: TextStyle(fontWeight: FontWeight.bold, color: accent),
+                ),
+              ],
+            ),
+          ),
+        );
+      }).toList(),
+    );
+  }
+}
+
+/// Ko'p qatorli matn maydoni (muammo tavsifi / izoh).
+class BookingTextArea extends StatelessWidget {
+  final TextEditingController controller;
+  final String hint;
+  final IconData icon;
+  final Color accent;
+  final int maxLines;
+
+  const BookingTextArea({
+    super.key,
+    required this.controller,
+    required this.hint,
+    required this.icon,
+    required this.accent,
+    this.maxLines = 3,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return TextField(
+      controller: controller,
+      maxLines: maxLines,
+      style: const TextStyle(color: kBookingInk),
+      decoration: InputDecoration(
+        hintText: hint,
+        hintStyle: const TextStyle(color: kBookingSub),
+        filled: true,
+        fillColor: kBookingCard,
+        prefixIcon: Icon(icon, color: kBookingSub),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: kBookingBorder),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: kBookingBorder),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: accent, width: 2),
+        ),
+      ),
+    );
+  }
+}
+
+/// Bitta qatorli matn maydoni (manzil / vazn va h.k.).
+class BookingInputField extends StatelessWidget {
+  final TextEditingController controller;
+  final String hint;
+  final IconData icon;
+  final Color accent;
+  final TextInputType keyboardType;
+  final String? suffixText;
+
+  const BookingInputField({
+    super.key,
+    required this.controller,
+    required this.hint,
+    required this.icon,
+    required this.accent,
+    this.keyboardType = TextInputType.text,
+    this.suffixText,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return TextField(
+      controller: controller,
+      keyboardType: keyboardType,
+      style: const TextStyle(color: kBookingInk),
+      decoration: InputDecoration(
+        hintText: hint,
+        hintStyle: const TextStyle(color: kBookingSub),
+        suffixText: suffixText,
+        filled: true,
+        fillColor: kBookingCard,
+        prefixIcon: Icon(icon, color: kBookingSub),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: kBookingBorder),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: kBookingBorder),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: accent, width: 2),
+        ),
+      ),
+    );
+  }
+}
+
+/// Asosiy + ikkilamchi (qo'ng'iroq) tugmalar.
+/// Tugma matni uzun bo'lsa avtomatik kichrayadi (overflow'siz).
+class BookingActionBar extends StatelessWidget {
+  final String primaryLabel;
+  final VoidCallback? onPrimary;
+  final Color accent;
+  final String? secondaryLabel;
+  final IconData? secondaryIcon;
+  final VoidCallback? onSecondary;
+
+  const BookingActionBar({
+    super.key,
+    required this.primaryLabel,
+    required this.onPrimary,
+    required this.accent,
+    this.secondaryLabel,
+    this.secondaryIcon,
+    this.onSecondary,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        SizedBox(
+          width: double.infinity,
+          height: 56,
+          child: ElevatedButton(
+            onPressed: onPrimary,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: accent,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16)),
+              disabledBackgroundColor: Colors.grey[300],
+            ),
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(
+                primaryLabel,
+                maxLines: 1,
+                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+            ),
+          ),
+        ),
+        if (secondaryLabel != null) ...[
+          const SizedBox(height: 12),
+          SizedBox(
+            width: double.infinity,
+            height: 56,
+            child: OutlinedButton.icon(
+              onPressed: onSecondary,
+              icon: Icon(secondaryIcon ?? Icons.phone),
+              label: FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Text(secondaryLabel!, maxLines: 1),
+              ),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: accent,
+                side: BorderSide(color: accent),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16)),
+              ),
+            ),
+          ),
+        ],
+      ],
     );
   }
 }
@@ -26,11 +509,15 @@ class DetailRow extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: TextStyle(color: Colors.grey[600])),
+          Text(label, style: TextStyle(color: GlassTokens.secondaryText(context))),
+          const SizedBox(width: 12),
           Flexible(
             child: Text(
               value,
-              style: const TextStyle(fontWeight: FontWeight.bold),
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: GlassTokens.primaryText(context),
+              ),
               textAlign: TextAlign.end,
             ),
           ),

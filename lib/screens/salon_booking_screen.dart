@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:lucide_icons/lucide_icons.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../models/beauty_salon.dart';
 import '../models/service_hub_kind.dart';
 import '../models/service_order.dart';
 import '../providers/app_provider.dart';
+import '../utils/auth_guard.dart';
 import '../widgets/booking_common_widgets.dart';
+import '../widgets/glass/mesh_background.dart';
+import '../theme/glass_tokens.dart';
 
 class SalonBookingScreen extends StatefulWidget {
   final BeautySalon salon;
@@ -32,11 +35,12 @@ class _SalonBookingScreenState extends State<SalonBookingScreen> {
     final accentColor = const Color(0xFFE91E63); // Pink for Salon
     final currencyFormat = NumberFormat.currency(locale: 'uz_UZ', symbol: 'so\'m', decimalDigits: 0);
 
-    return Scaffold(
-      backgroundColor: Colors.white,
+    return GlassBackdrop(
+      child: Scaffold(
+      backgroundColor: Colors.transparent,
       body: CustomScrollView(
         slivers: [
-          _buildSliverAppBar(accentColor),
+          BookingSliverAppBar(color: accentColor, icon: LucideIcons.sparkles),
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.all(20.0),
@@ -47,7 +51,13 @@ class _SalonBookingScreenState extends State<SalonBookingScreen> {
                   const SizedBox(height: 24),
                   const SectionTitle("Xizmatni tanlang"),
                   const SizedBox(height: 12),
-                  _buildServicesList(currencyFormat, accentColor),
+                  PriceOptionList(
+                    prices: widget.salon.prices,
+                    selected: _selectedService,
+                    onSelect: (s) => setState(() => _selectedService = s),
+                    accent: accentColor,
+                    format: currencyFormat,
+                  ),
                   const SizedBox(height: 24),
                   const SectionTitle("Mutaxassisni tanlang"),
                   const SizedBox(height: 12),
@@ -73,7 +83,25 @@ class _SalonBookingScreenState extends State<SalonBookingScreen> {
                     crossAxisCount: 5,
                   ),
                   const SizedBox(height: 32),
-                  _buildActionButtons(accentColor),
+                  Builder(builder: (context) {
+                    final canBook = _selectedService != null &&
+                        _selectedStaff != null &&
+                        _selectedTimeSlot != null;
+                    return BookingActionBar(
+                      accent: accentColor,
+                      primaryLabel: "Band qilish",
+                      onPrimary: canBook ? _confirmBooking : null,
+                      secondaryLabel: "Salon bilan bog'lanish",
+                      secondaryIcon: LucideIcons.phone,
+                      onSecondary: () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                              content: Text(
+                                  "${widget.salon.phoneNumber} raqamiga bog'lanilmoqda...")),
+                        );
+                      },
+                    );
+                  }),
                   const SizedBox(height: 40),
                 ],
               ),
@@ -81,31 +109,6 @@ class _SalonBookingScreenState extends State<SalonBookingScreen> {
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildSliverAppBar(Color color) {
-    return SliverAppBar(
-      expandedHeight: 180,
-      pinned: true,
-      backgroundColor: color,
-      flexibleSpace: FlexibleSpaceBar(
-        background: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [color, color.withValues(alpha: 0.7)],
-            ),
-          ),
-          child: Center(
-            child: Icon(
-              LucideIcons.sparkles,
-              size: 64,
-              color: Colors.white.withValues(alpha: 0.2),
-            ),
-          ),
-        ),
       ),
     );
   }
@@ -120,7 +123,10 @@ class _SalonBookingScreenState extends State<SalonBookingScreen> {
             Expanded(
               child: Text(
                 widget.salon.name,
-                style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                    fontSize: 26,
+                    fontWeight: FontWeight.bold,
+                    color: GlassTokens.primaryText(context)),
               ),
             ),
             Container(
@@ -145,40 +151,10 @@ class _SalonBookingScreenState extends State<SalonBookingScreen> {
         const SizedBox(height: 4),
         Text(
           widget.salon.address,
-          style: TextStyle(color: Colors.grey[600], fontSize: 14),
+          style: TextStyle(
+              color: GlassTokens.secondaryText(context), fontSize: 14),
         ),
       ],
-    );
-  }
-
-  Widget _buildServicesList(NumberFormat format, Color color) {
-    return Column(
-      children: widget.salon.services.map((service) {
-        final isSelected = _selectedService == service;
-        return GestureDetector(
-          onTap: () => setState(() => _selectedService = service),
-          child: Container(
-            margin: const EdgeInsets.only(bottom: 8),
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: isSelected ? color.withValues(alpha: 0.05) : Colors.white,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: isSelected ? color : Colors.grey[200]!,
-                width: 1.5,
-              ),
-            ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Text(service, style: const TextStyle(fontWeight: FontWeight.bold)),
-                ),
-                Text(format.format(widget.salon.prices[service]), style: TextStyle(fontWeight: FontWeight.bold, color: color)),
-              ],
-            ),
-          ),
-        );
-      }).toList(),
     );
   }
 
@@ -207,7 +183,7 @@ class _SalonBookingScreenState extends State<SalonBookingScreen> {
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                    color: isSelected ? color : Colors.black,
+                    color: isSelected ? color : GlassTokens.primaryText(context),
                   ),
                 ),
               ],
@@ -218,49 +194,9 @@ class _SalonBookingScreenState extends State<SalonBookingScreen> {
     );
   }
 
-  Widget _buildActionButtons(Color color) {
-    final bool canBook = _selectedService != null && _selectedStaff != null && _selectedTimeSlot != null;
-
-    return Column(
-      children: [
-        SizedBox(
-          width: double.infinity,
-          height: 56,
-          child: ElevatedButton(
-            onPressed: canBook ? _confirmBooking : null,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: color,
-              foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-              disabledBackgroundColor: Colors.grey[200],
-            ),
-            child: const Text("Band qilish", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-          ),
-        ),
-        const SizedBox(height: 12),
-        SizedBox(
-          width: double.infinity,
-          height: 56,
-          child: OutlinedButton.icon(
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text("${widget.salon.phoneNumber} raqamiga bog'lanilmoqda...")),
-              );
-            },
-            icon: const Icon(LucideIcons.phone),
-            label: const Text("Salon bilan bog'lanish"),
-            style: OutlinedButton.styleFrom(
-              foregroundColor: color,
-              side: BorderSide(color: color),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  void _confirmBooking() {
+  void _confirmBooking() async {
+    if (!await ensureAuthenticated(context)) return;
+    if (!mounted) return;
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,

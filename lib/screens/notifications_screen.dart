@@ -1,48 +1,40 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:lucide_icons/lucide_icons.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:intl/intl.dart';
 import '../providers/app_provider.dart';
+import '../widgets/glass/glass_scaffold.dart';
 
 class NotificationsScreen extends StatelessWidget {
   const NotificationsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final provider = Provider.of<AppProvider>(context);
     final notifications = provider.notifications;
 
-    return Scaffold(
-      backgroundColor: Colors.grey[50],
-      appBar: AppBar(
-        title: const Text(
-          "Bildirishnomalar",
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-        ),
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
-        elevation: 0.5,
-        actions: [
-          if (provider.unreadCount > 0)
-            TextButton(
-              onPressed: () async {
-                for (var n in notifications) {
-                  if (n['is_read'] == false) {
-                    await provider.markNotificationRead(n['id']);
-                  }
+    return GlassScaffold(
+      showBackButton: true,
+      title: "Bildirishnomalar",
+      actions: [
+        if (provider.unreadCount > 0)
+          TextButton(
+            onPressed: () async {
+              for (var n in notifications) {
+                if (n['is_read'] == false) {
+                  await provider.markNotificationRead(n['id']);
                 }
-              },
-              child: const Text(
-                "Hammasini o'qish",
-                style: TextStyle(
-                  color: Color(0xFF6366F1),
-                  fontWeight: FontWeight.bold,
-                ),
+              }
+            },
+            child: const Text(
+              "Hammasini o'qish",
+              style: TextStyle(
+                color: Color(0xFF6366F1),
+                fontWeight: FontWeight.bold,
               ),
             ),
-        ],
-      ),
+          ),
+      ],
       body: RefreshIndicator(
         onRefresh: () => provider.fetchNotifications(),
         color: const Color(0xFF6366F1),

@@ -1,14 +1,16 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:lucide_icons/lucide_icons.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
+import '../../providers/app_provider.dart';
+import '../../services/demo_auth_service.dart';
 import '../../theme/glass_tokens.dart';
+import '../../widgets/auth/uz_phone_field.dart';
 import '../../widgets/glass/glass_surface.dart';
 import '../../widgets/glass/mesh_background.dart';
-import '../main_screen.dart';
-import 'register_screen.dart';
+import 'auth_gate_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -50,16 +52,19 @@ class _LoginScreenState extends State<LoginScreen>
 
     final auth = context.read<AuthProvider>();
     final success = await auth.login(
-      phone: _phoneController.text.trim(),
+      phone: UzPhoneField.fullPhone(_phoneController),
       password: _passwordController.text,
     );
 
     if (!mounted) return;
 
     if (success) {
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => const MainScreen()),
-      );
+      if (auth.user != null) {
+        context.read<AppProvider>().applyAuthUser(auth.user!);
+      }
+      await context.read<AppProvider>().fetchInitialData();
+      if (!mounted) return;
+      Navigator.of(context).pop(true);
       return;
     }
 
@@ -83,6 +88,14 @@ class _LoginScreenState extends State<LoginScreen>
         MeshBackground(isDark: isDark),
         Scaffold(
           backgroundColor: Colors.transparent,
+          appBar: AppBar(
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            leading: IconButton(
+              icon: Icon(LucideIcons.arrowLeft, color: GlassTokens.primaryText(context)),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+          ),
           body: SafeArea(
             child: Center(
               child: SingleChildScrollView(
@@ -118,23 +131,14 @@ class _LoginScreenState extends State<LoginScreen>
                                 style: TextStyle(color: GlassTokens.secondaryText(context)),
                               ),
                               const SizedBox(height: 28),
-                              TextFormField(
-                                controller: _phoneController,
-                                keyboardType: TextInputType.phone,
-                                decoration: const InputDecoration(
-                                  labelText: 'Telefon raqam',
-                                  hintText: '+998901234567',
-                                  prefixIcon: Icon(LucideIcons.phone, size: 20),
-                                ),
-                                validator: (v) =>
-                                    v == null || v.trim().isEmpty ? 'Telefon kiriting' : null,
-                              ),
+                              UzPhoneField(controller: _phoneController),
                               const SizedBox(height: 18),
                               TextFormField(
                                 controller: _passwordController,
                                 obscureText: _obscurePassword,
+                                keyboardType: TextInputType.number,
                                 decoration: InputDecoration(
-                                  labelText: 'Parol',
+                                  labelText: 'Parol yoki PIN',
                                   prefixIcon: const Icon(LucideIcons.lock, size: 20),
                                   suffixIcon: IconButton(
                                     icon: Icon(
@@ -146,7 +150,15 @@ class _LoginScreenState extends State<LoginScreen>
                                   ),
                                 ),
                                 validator: (v) =>
-                                    v == null || v.isEmpty ? 'Parolni kiriting' : null,
+                                    v == null || v.isEmpty ? 'Parol yoki PIN kiriting' : null,
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                'Demo parol: ${DemoAuthService.demoPassword}',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: GlassTokens.secondaryText(context),
+                                ),
                               ),
                               const SizedBox(height: 28),
                               SizedBox(
@@ -168,7 +180,10 @@ class _LoginScreenState extends State<LoginScreen>
                                 child: GestureDetector(
                                   onTap: () => Navigator.push(
                                     context,
-                                    MaterialPageRoute(builder: (_) => const RegisterScreen()),
+                                    MaterialPageRoute(
+                                      fullscreenDialog: true,
+                                      builder: (_) => const AuthGateScreen(),
+                                    ),
                                   ),
                                   child: RichText(
                                     text: TextSpan(

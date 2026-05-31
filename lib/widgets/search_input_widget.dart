@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:lucide_icons/lucide_icons.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../theme/glass_tokens.dart';
 import 'glass/glass_surface.dart';
 
@@ -20,8 +20,6 @@ class SearchInputWidget extends StatelessWidget {
     return GlassSurface(
       padding: const EdgeInsets.symmetric(horizontal: 4),
       borderRadius: GlassTokens.radiusLg,
-      opacity: 0.58,
-      blur: GlassTokens.blurHeavy,
       child: TextField(
         controller: controller,
         onChanged: (_) => onChanged(),

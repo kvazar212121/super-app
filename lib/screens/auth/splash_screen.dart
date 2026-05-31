@@ -1,14 +1,13 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:lucide_icons/lucide_icons.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:provider/provider.dart';
 import '../../providers/app_provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../theme/glass_tokens.dart';
 import '../../widgets/glass/mesh_background.dart';
 import '../main_screen.dart';
-import 'login_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -52,17 +51,14 @@ class _SplashScreenState extends State<SplashScreen>
 
     if (!mounted) return;
 
-    if (loggedIn) {
-      await context.read<AppProvider>().fetchInitialData();
-      if (!mounted) return;
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => const MainScreen()),
-      );
-    } else {
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => const LoginScreen()),
-      );
+    if (loggedIn && auth.user != null) {
+      context.read<AppProvider>().applyAuthUser(auth.user!);
     }
+    await context.read<AppProvider>().fetchInitialData();
+    if (!mounted) return;
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(builder: (_) => const MainScreen()),
+    );
   }
 
   @override

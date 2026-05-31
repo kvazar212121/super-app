@@ -17,41 +17,71 @@ class GlassBottomBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final fill = GlassTokens.glassFill(context);
+    final border = GlassTokens.glassBorder(context);
+    final highlight = GlassTokens.glassHighlight(context);
+
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 20),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(GlassTokens.radiusXl),
         child: BackdropFilter(
           filter: ImageFilter.blur(
-            sigmaX: GlassTokens.blurHeavy,
-            sigmaY: GlassTokens.blurHeavy,
+            sigmaX: GlassTokens.glassBlur,
+            sigmaY: GlassTokens.glassBlur,
           ),
           child: DecoratedBox(
             decoration: BoxDecoration(
-              color: GlassTokens.glassFill(context, opacity: 0.65),
               borderRadius: BorderRadius.circular(GlassTokens.radiusXl),
-              border: Border.all(
-                color: GlassTokens.glassBorder(context),
-                width: 1.2,
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  fill,
+                  Color.lerp(fill, Colors.transparent, 0.12) ?? fill,
+                ],
               ),
+              border: Border.all(color: border, width: 1.2),
               boxShadow: GlassTokens.glassShadow(context),
             ),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: List.generate(items.length, (i) {
-                  final item = items[i];
-                  final selected = i == currentIndex;
-                  return Expanded(
-                    child: _NavButton(
-                      item: item,
-                      selected: selected,
-                      onTap: () => onTap(i),
+            child: Stack(
+              children: [
+                Positioned(
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  height: GlassTokens.radiusXl,
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      borderRadius: const BorderRadius.vertical(
+                        top: Radius.circular(GlassTokens.radiusXl),
+                      ),
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [highlight, Colors.transparent],
+                      ),
                     ),
-                  );
-                }),
-              ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: List.generate(items.length, (i) {
+                      final item = items[i];
+                      final selected = i == currentIndex;
+                      return Expanded(
+                        child: _NavButton(
+                          item: item,
+                          selected: selected,
+                          onTap: () => onTap(i),
+                        ),
+                      );
+                    }),
+                  ),
+                ),
+              ],
             ),
           ),
         ),
@@ -80,7 +110,7 @@ class _NavButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final activeColor = const Color(0xFF6366F1);
+    const activeColor = Color(0xFF6366F1);
     final inactive = GlassTokens.secondaryText(context);
 
     return Material(

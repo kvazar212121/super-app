@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
+import '../provider_side/provider_theme.dart';
 import 'provider_success_screen.dart';
 
 class ProviderDataEntryScreen extends StatefulWidget {
   final String categoryId;
   final String categoryName;
-  final int? categoryDbId; // Backend database ID
+  final int? categoryDbId; // Backend database ID (offline rejimda ishlatilmaydi)
 
   const ProviderDataEntryScreen({
     super.key,
@@ -20,10 +19,6 @@ class ProviderDataEntryScreen extends StatefulWidget {
 }
 
 class _ProviderDataEntryScreenState extends State<ProviderDataEntryScreen> {
-  final _formKey = GlobalKey<FormState>();
-  bool _isLoading = false;
-
-  // Form controllers
   final _nameCtrl = TextEditingController();
   final _addressCtrl = TextEditingController();
   final _phoneCtrl = TextEditingController();
@@ -42,128 +37,80 @@ class _ProviderDataEntryScreenState extends State<ProviderDataEntryScreen> {
     super.dispose();
   }
 
-  // Backend API
-  static const _baseUrl = 'http://10.0.2.2:8000/api/v1';
-
-  Future<void> _submitProvider() async {
-    if (!_formKey.currentState!.validate()) return;
-    if (widget.categoryDbId == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Xatolik: Kategoriya topilmadi')),
-      );
-      return;
-    }
-
-    setState(() => _isLoading = true);
-
-    try {
-      final response = await http.post(
-        Uri.parse('$_baseUrl/admin/providers'),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          'category_id': widget.categoryDbId,
-          'name': _nameCtrl.text,
-          'address': _addressCtrl.text,
-          'phone': _phoneCtrl.text,
-          'lat': 41.2995,
-          'lng': 69.2401,
-          'metadata_json': {
-            'hours': _hoursCtrl.text,
-            'price': _priceCtrl.text,
-            'extra': _extraCtrl.text,
-            'category_key': widget.categoryId,
-          },
-        }),
-      );
-
-      if (response.statusCode == 201 || response.statusCode == 200) {
-        if (!mounted) return;
-        Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ProviderSuccessScreen(
-              providerName: _nameCtrl.text,
-              categoryName: widget.categoryName,
-              categoryId: widget.categoryId,
-            ),
-          ),
-          (route) => false,
-        );
-      } else {
-        final error = jsonDecode(response.body);
-        if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Xatolik: ${error['detail'] ?? 'Noma\'lum xatolik'}')),
-        );
-      }
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Tarmoq xatosi: $e')),
-      );
-    } finally {
-      setState(() => _isLoading = false);
-    }
+  void _submitProvider() {
+    // Demo rejimi: maydonlar ixtiyoriy, to'ldirmasdan ham davom etish mumkin.
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ProviderSuccessScreen(
+          providerName: _nameCtrl.text.trim(),
+          categoryName: widget.categoryName,
+          categoryId: widget.categoryId,
+        ),
+      ),
+      (route) => false,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
+    return ProviderTheme(child: Builder(builder: (context) {
     final theme = Theme.of(context);
 
     return Scaffold(
       appBar: AppBar(
         title: Text('${widget.categoryName} sifatida ro\'yxatdan o\'tish'),
       ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : SingleChildScrollView(
-              padding: const EdgeInsets.all(24.0),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Malumotlaringizni to\'ldiring',
-                      style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 24),
-                    _buildTextField(_nameCtrl, 'Ish joyi nomi / Ismingiz', Icons.person_outline),
-                    const SizedBox(height: 16),
-                    _buildTextField(_addressCtrl, 'Manzil', Icons.location_on_outlined),
-                    const SizedBox(height: 16),
-                    _buildTextField(_phoneCtrl, 'Telefon raqam', Icons.phone, type: TextInputType.phone),
-                    const SizedBox(height: 16),
-                    _buildTextField(_hoursCtrl, 'Ish vaqti (Masalan: 09:00 - 18:00)', Icons.access_time),
-                    const SizedBox(height: 16),
-
-                    // Category specific fields
-                    if (widget.categoryId == 'barber' || widget.categoryId == 'salon')
-                      _buildTextField(_priceCtrl, 'Xizmat narxi (min)', Icons.payments_outlined, type: TextInputType.number),
-                    if (widget.categoryId == 'tutor')
-                      _buildTextField(_extraCtrl, 'Fan nomi', Icons.book_outlined),
-                    if (widget.categoryId == 'futbol')
-                      _buildTextField(_extraCtrl, 'Maydonlar soni', Icons.sports_soccer, type: TextInputType.number),
-
-                    const SizedBox(height: 32),
-                    SizedBox(
-                      width: double.infinity,
-                      child: FilledButton(
-                        onPressed: _submitProvider,
-                        style: FilledButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                        ),
-                        child: const Text('Ro\'yxatdan o\'tish'),
-                      ),
-                    ),
-                  ],
-                ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(24.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Malumotlaringizni to\'ldiring',
+              style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              'Maydonlar ixtiyoriy — keyinroq to\'ldirsangiz ham bo\'ladi.',
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
               ),
             ),
+            const SizedBox(height: 24),
+            _buildTextField(_nameCtrl, 'Ish joyi nomi / Ismingiz', Icons.person_outline),
+            const SizedBox(height: 16),
+            _buildTextField(_addressCtrl, 'Manzil', Icons.location_on_outlined),
+            const SizedBox(height: 16),
+            _buildTextField(_phoneCtrl, 'Telefon raqam', Icons.phone, type: TextInputType.phone),
+            const SizedBox(height: 16),
+            _buildTextField(_hoursCtrl, 'Ish vaqti (Masalan: 09:00 - 18:00)', Icons.access_time),
+            const SizedBox(height: 16),
+            if (widget.categoryId == 'barber' || widget.categoryId == 'salon')
+              _buildTextField(_priceCtrl, 'Xizmat narxi (min)', Icons.payments_outlined, type: TextInputType.number),
+            if (widget.categoryId == 'tutor')
+              _buildTextField(_extraCtrl, 'Fan nomi', Icons.book_outlined),
+            if (widget.categoryId == 'futbol')
+              _buildTextField(_extraCtrl, 'Maydonlar soni', Icons.sports_soccer, type: TextInputType.number),
+            const SizedBox(height: 32),
+            SizedBox(
+              width: double.infinity,
+              child: FilledButton(
+                onPressed: _submitProvider,
+                style: FilledButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                ),
+                child: const Text('Ro\'yxatdan o\'tish'),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
+    }));
   }
 
   Widget _buildTextField(
@@ -186,12 +133,6 @@ class _ProviderDataEntryScreenState extends State<ProviderDataEntryScreen> {
           borderSide: BorderSide(color: Colors.grey.withValues(alpha: 0.2)),
         ),
       ),
-      validator: (value) {
-        if (value == null || value.isEmpty) {
-          return 'Iltimos, ushbu maydonni to\'ldiring';
-        }
-        return null;
-      },
     );
   }
 }

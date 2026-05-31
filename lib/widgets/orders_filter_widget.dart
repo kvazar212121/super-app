@@ -17,7 +17,6 @@ class OrdersFilterWidget extends StatelessWidget {
     return GlassSurface(
       padding: const EdgeInsets.all(6),
       borderRadius: GlassTokens.radiusLg,
-      opacity: 0.52,
       showShadow: false,
       child: Row(
         children: [

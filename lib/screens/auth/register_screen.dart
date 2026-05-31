@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:lucide_icons/lucide_icons.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../providers/auth_provider.dart';
+import '../../providers/app_provider.dart';
+import '../main_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -58,8 +60,15 @@ class _RegisterScreenState extends State<RegisterScreen>
 
     if (mounted) {
       if (success) {
-        // Auto-login bo'ldi, main.dart Navigator.pushReplacement qiladi
-        Navigator.of(context).popUntil((route) => route.isFirst);
+        if (auth.user != null) {
+          context.read<AppProvider>().applyAuthUser(auth.user!);
+        }
+        await context.read<AppProvider>().fetchInitialData();
+        if (!mounted) return;
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (_) => const MainScreen()),
+          (_) => false,
+        );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(

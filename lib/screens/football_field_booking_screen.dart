@@ -6,7 +6,9 @@ import '../models/football_field.dart';
 import '../models/service_hub_kind.dart';
 import '../models/service_order.dart';
 import '../providers/app_provider.dart';
+import '../utils/auth_guard.dart';
 import '../widgets/football_field_widgets.dart';
+import '../widgets/glass/mesh_background.dart';
 
 /// Optimallashtirilgan futbol maydoni bron qilish ekrani
 class FootballFieldBookingScreen extends StatefulWidget {
@@ -57,7 +59,7 @@ class _FootballFieldBookingScreenState extends State<FootballFieldBookingScreen>
     return price;
   }
 
-  void _submitBooking() {
+  void _submitBooking() async {
     if (_selectedSlot == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -93,36 +95,25 @@ class _FootballFieldBookingScreenState extends State<FootballFieldBookingScreen>
       status: OrderStatus.pending,
     );
 
-    // Call addOrder (which calls backend API now!)
-    context.read<AppProvider>().addOrder(order).then((_) {
-      if (!mounted) return;
-      Navigator.pop(context, true);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('${field.name} maydoni bron qilindi!'),
-          behavior: SnackBarBehavior.floating,
-          backgroundColor: const Color(0xFF4CAF50),
-        ),
-      );
-    }).catchError((e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Xatolik yuz berdi: $e'),
-          behavior: SnackBarBehavior.floating,
-          backgroundColor: Colors.red,
-        ),
-      );
-    });
+    if (!await ensureAuthenticated(context)) return;
+    if (!mounted) return;
+    await context.read<AppProvider>().addOrder(order);
+    if (!mounted) return;
+    Navigator.pop(context, true);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('${field.name} band qilindi'), behavior: SnackBarBehavior.floating),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     final accent = const Color(0xFF4CAF50); // futbol yashil
-    return Scaffold(
+    return GlassBackdrop(
+      child: Scaffold(
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
         title: Text(field.name),
-        backgroundColor: accent.withValues(alpha: 0.1),
+        backgroundColor: Colors.transparent,
         foregroundColor: accent,
         actions: [
           IconButton(
@@ -287,6 +278,7 @@ class _FootballFieldBookingScreenState extends State<FootballFieldBookingScreen>
             const SizedBox(height: 10),
           ],
         ),
+      ),
       ),
     );
   }

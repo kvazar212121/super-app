@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
+import '../screens/provider_registration/provider_onboarding_screen.dart';
+import '../theme/glass_tokens.dart';
 import '../widgets/active_order_banner.dart';
+import '../widgets/glass/glass_surface.dart';
 import '../widgets/home_promo_section.dart';
 import '../widgets/home_header_widget.dart';
 import '../widgets/search_bar_widget.dart';
 import '../widgets/services_grid_widget.dart';
-import 'provider_registration/provider_onboarding_screen.dart';
-import 'package:lucide_icons/lucide_icons.dart';
-import '../widgets/glass/glass_surface.dart';
-import '../theme/glass_tokens.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -27,7 +27,7 @@ class HomeScreen extends StatelessWidget {
             const SizedBox(height: 22),
             const ActiveOrderBanner(),
             const ServicesGridWidget(),
-            const SizedBox(height: 24),
+            const SizedBox(height: 4),
             _buildProviderCard(context),
             const SizedBox(height: 28),
             const HomePromoSection(),
@@ -41,7 +41,6 @@ class HomeScreen extends StatelessWidget {
     return GlassSurface(
       padding: const EdgeInsets.all(20),
       borderRadius: GlassTokens.radiusLg,
-      opacity: 0.62,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

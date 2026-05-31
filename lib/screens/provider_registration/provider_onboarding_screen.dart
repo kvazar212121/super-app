@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:lucide_icons/lucide_icons.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
+import '../provider_side/provider_theme.dart';
 import 'provider_category_selection_screen.dart';
 
 class ProviderOnboardingScreen extends StatelessWidget {
@@ -7,12 +8,12 @@ class ProviderOnboardingScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return ProviderTheme(child: Builder(builder: (context) {
     final theme = Theme.of(context);
-    
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Xizmat ko\'rsatish'),
-        backgroundColor: Colors.transparent,
         elevation: 0,
       ),
       body: SafeArea(
@@ -91,6 +92,7 @@ class ProviderOnboardingScreen extends StatelessWidget {
         ),
       ),
     );
+    }));
   }
 
   Widget _buildFeatureItem(BuildContext context, IconData icon, String title, String description) {

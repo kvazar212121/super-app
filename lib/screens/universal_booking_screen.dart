@@ -4,6 +4,8 @@ import 'package:provider/provider.dart';
 import '../models/service_hub_kind.dart';
 import '../models/service_order.dart';
 import '../providers/app_provider.dart';
+import '../utils/auth_guard.dart';
+import '../widgets/glass/mesh_background.dart';
 
 /// Yagona-sahifa universal bron formasi.
 /// Har bir xizmat hubidan ochiladi, [kind] bo'yicha variantlarni ko'rsatadi.
@@ -55,7 +57,7 @@ class _UniversalBookingScreenState extends State<UniversalBookingScreen> {
     if (picked != null) setState(() => _time = picked);
   }
 
-  void _submit() {
+  void _submit() async {
     if (!_formKey.currentState!.validate()) return;
 
     final dateTime = DateTime(
@@ -79,7 +81,9 @@ class _UniversalBookingScreenState extends State<UniversalBookingScreen> {
       status: OrderStatus.pending,
     );
 
-    context.read<AppProvider>().addOrder(order);
+    if (!await ensureAuthenticated(context)) return;
+    if (!mounted) return;
+    await context.read<AppProvider>().addOrder(order);
 
     Navigator.pop(context, true);
     ScaffoldMessenger.of(context).showSnackBar(
@@ -93,10 +97,12 @@ class _UniversalBookingScreenState extends State<UniversalBookingScreen> {
   @override
   Widget build(BuildContext context) {
     final accent = kind.accent;
-    return Scaffold(
+    return GlassBackdrop(
+      child: Scaffold(
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
         title: Text('${kind.title} — bron'),
-        backgroundColor: accent.withValues(alpha: 0.1),
+        backgroundColor: Colors.transparent,
         foregroundColor: accent,
       ),
       body: Form(
@@ -192,6 +198,7 @@ class _UniversalBookingScreenState extends State<UniversalBookingScreen> {
             ),
           ],
         ),
+      ),
       ),
     );
   }

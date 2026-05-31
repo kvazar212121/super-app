@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:lucide_icons/lucide_icons.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../models/appliance_repair.dart';
 import '../models/service_hub_kind.dart';
 import '../models/service_order.dart';
 import '../providers/app_provider.dart';
+import '../utils/auth_guard.dart';
 import '../widgets/booking_common_widgets.dart';
+import '../widgets/glass/mesh_background.dart';
 
 class ApplianceBookingScreen extends StatefulWidget {
   final ApplianceRepair service;
@@ -51,34 +53,69 @@ class _ApplianceBookingScreenState extends State<ApplianceBookingScreen> {
     final currencyFormat =
         NumberFormat.currency(locale: 'uz_UZ', symbol: "so'm", decimalDigits: 0);
 
-    return Scaffold(
-      backgroundColor: Colors.white,
+    final canBook = _selectedApplianceType != null &&
+        _selectedPriceOption != null &&
+        _selectedTimeSlot != null;
+    final totalPrice =
+        _selectedPriceOption != null ? widget.service.prices[_selectedPriceOption] : null;
+
+    return GlassBackdrop(
+      child: Scaffold(
+      backgroundColor: Colors.transparent,
       body: CustomScrollView(
         slivers: [
-          _buildSliverAppBar(accentColor),
+          BookingSliverAppBar(color: accentColor, icon: LucideIcons.wrench),
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.all(20.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildServiceHeader(accentColor),
+                  ServiceProfileHeader(
+                    name: widget.service.name,
+                    rating: widget.service.rating,
+                    phone: widget.service.phoneNumber,
+                    accent: accentColor,
+                  ),
                   const SizedBox(height: 24),
                   const SectionTitle("Texnika turini tanlang"),
                   const SizedBox(height: 12),
-                  _buildApplianceTypeGrid(accentColor),
+                  SelectableIconGrid<ApplianceType>(
+                    items: widget.service.applianceTypes,
+                    selected: _selectedApplianceType,
+                    iconOf: (t) => t.icon,
+                    labelOf: (t) => t.label,
+                    onSelect: (t) => setState(() => _selectedApplianceType = t),
+                    accent: accentColor,
+                  ),
                   const SizedBox(height: 24),
                   const SectionTitle("Brendni tanlang"),
                   const SizedBox(height: 12),
-                  _buildBrandChips(accentColor),
+                  SelectableChips(
+                    items: widget.service.brands,
+                    selected: _selectedBrand,
+                    onSelect: (b) => setState(() => _selectedBrand = b),
+                    accent: accentColor,
+                  ),
                   const SizedBox(height: 24),
                   const SectionTitle("Xizmat turi"),
                   const SizedBox(height: 12),
-                  _buildPriceOptionsList(currencyFormat, accentColor),
+                  PriceOptionList(
+                    prices: widget.service.prices,
+                    selected: _selectedPriceOption,
+                    onSelect: (o) => setState(() => _selectedPriceOption = o),
+                    accent: accentColor,
+                    format: currencyFormat,
+                  ),
                   const SizedBox(height: 24),
                   const SectionTitle("Muammo tavsifi"),
                   const SizedBox(height: 12),
-                  _buildProblemInput(),
+                  BookingTextArea(
+                    controller: _problemController,
+                    hint: "Muammoni batafsil yozing...",
+                    icon: LucideIcons.messageSquare,
+                    accent: accentColor,
+                  ),
                   const SizedBox(height: 24),
                   const SectionTitle("Sana"),
                   const SizedBox(height: 12),
@@ -100,7 +137,22 @@ class _ApplianceBookingScreenState extends State<ApplianceBookingScreen> {
                     crossAxisCount: 5,
                   ),
                   const SizedBox(height: 32),
-                  _buildActionButtons(accentColor, currencyFormat),
+                  BookingActionBar(
+                    accent: accentColor,
+                    primaryLabel: canBook
+                        ? "Band qilish — ${currencyFormat.format(totalPrice)}"
+                        : "Band qilish",
+                    onPrimary: canBook ? () => _confirmBooking(currencyFormat) : null,
+                    secondaryLabel: "Usta bilan bog'lanish",
+                    secondaryIcon: LucideIcons.phone,
+                    onSecondary: () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                            content: Text(
+                                "${widget.service.phoneNumber} raqamiga bog'lanilmoqda...")),
+                      );
+                    },
+                  ),
                   const SizedBox(height: 40),
                 ],
               ),
@@ -108,277 +160,13 @@ class _ApplianceBookingScreenState extends State<ApplianceBookingScreen> {
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildSliverAppBar(Color color) {
-    return SliverAppBar(
-      expandedHeight: 180,
-      pinned: true,
-      backgroundColor: color,
-      flexibleSpace: FlexibleSpaceBar(
-        background: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [color, color.withValues(alpha: 0.7)],
-            ),
-          ),
-          child: Center(
-            child: Icon(
-              LucideIcons.wrench,
-              size: 64,
-              color: Colors.white.withValues(alpha: 0.2),
-            ),
-          ),
-        ),
       ),
     );
   }
 
-  Widget _buildServiceHeader(Color color) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Expanded(
-              child: Text(
-                widget.service.name,
-                style:
-                    const TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
-              ),
-            ),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-              decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Row(
-                children: [
-                  Icon(LucideIcons.star, size: 16, color: color),
-                  const SizedBox(width: 4),
-                  Text(
-                    widget.service.rating.toString(),
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold, color: color),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 4),
-        Row(
-          children: [
-            Icon(LucideIcons.phone, size: 14, color: Colors.grey[600]),
-            const SizedBox(width: 4),
-            Text(
-              widget.service.phoneNumber,
-              style: TextStyle(color: Colors.grey[600], fontSize: 14),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
-  Widget _buildApplianceTypeGrid(Color color) {
-    final availableTypes = widget.service.applianceTypes;
-    return GridView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        crossAxisSpacing: 12,
-        mainAxisSpacing: 12,
-        childAspectRatio: 2.2,
-      ),
-      itemCount: availableTypes.length,
-      itemBuilder: (context, index) {
-        final type = availableTypes[index];
-        final isSelected = _selectedApplianceType == type;
-        return GestureDetector(
-          onTap: () => setState(() => _selectedApplianceType = type),
-          child: Container(
-            decoration: BoxDecoration(
-              color: isSelected ? color.withValues(alpha: 0.1) : Colors.white,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: isSelected ? color : Colors.grey[200]!,
-                width: 1.5,
-              ),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(type.icon,
-                    color: isSelected ? color : Colors.grey[500], size: 20),
-                const SizedBox(width: 8),
-                Text(
-                  type.label,
-                  style: TextStyle(
-                    fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                    color: isSelected ? color : Colors.black87,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildBrandChips(Color color) {
-    return Wrap(
-      spacing: 8,
-      runSpacing: 8,
-      children: widget.service.brands.map((brand) {
-        final isSelected = _selectedBrand == brand;
-        return GestureDetector(
-          onTap: () => setState(() => _selectedBrand = brand),
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-            decoration: BoxDecoration(
-              color: isSelected ? color.withValues(alpha: 0.1) : Colors.white,
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(
-                color: isSelected ? color : Colors.grey[200]!,
-                width: 1.5,
-              ),
-            ),
-            child: Text(
-              brand,
-              style: TextStyle(
-                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                color: isSelected ? color : Colors.black87,
-              ),
-            ),
-          ),
-        );
-      }).toList(),
-    );
-  }
-
-  Widget _buildPriceOptionsList(NumberFormat format, Color color) {
-    final options = widget.service.prices.keys.toList();
-    return Column(
-      children: options.map((option) {
-        final isSelected = _selectedPriceOption == option;
-        return GestureDetector(
-          onTap: () => setState(() => _selectedPriceOption = option),
-          child: Container(
-            margin: const EdgeInsets.only(bottom: 8),
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: isSelected ? color.withValues(alpha: 0.05) : Colors.white,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: isSelected ? color : Colors.grey[200]!,
-                width: 1.5,
-              ),
-            ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Text(option,
-                      style: const TextStyle(fontWeight: FontWeight.bold)),
-                ),
-                Text(
-                  format.format(widget.service.prices[option]),
-                  style:
-                      TextStyle(fontWeight: FontWeight.bold, color: color),
-                ),
-              ],
-            ),
-          ),
-        );
-      }).toList(),
-    );
-  }
-
-  Widget _buildProblemInput() {
-    return TextField(
-      controller: _problemController,
-      maxLines: 3,
-      decoration: InputDecoration(
-        hintText: "Muammoni batafsil yozing...",
-        prefixIcon: Icon(LucideIcons.messageSquare, color: Colors.grey[400]),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.grey[300]!),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Color(0xFFF59E0B), width: 2),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildActionButtons(Color color, NumberFormat currencyFormat) {
-    final bool canBook = _selectedApplianceType != null &&
-        _selectedPriceOption != null &&
-        _selectedTimeSlot != null;
-
-    double? totalPrice;
-    if (_selectedPriceOption != null) {
-      totalPrice = widget.service.prices[_selectedPriceOption];
-    }
-
-    return Column(
-      children: [
-        SizedBox(
-          width: double.infinity,
-          height: 56,
-          child: ElevatedButton(
-            onPressed: canBook ? () => _confirmBooking(currencyFormat) : null,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: color,
-              foregroundColor: Colors.white,
-              shape:
-                  RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-              disabledBackgroundColor: Colors.grey[200],
-            ),
-            child: Text(
-              canBook
-                  ? "Band qilish — ${currencyFormat.format(totalPrice)}"
-                  : "Band qilish",
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-          ),
-        ),
-        const SizedBox(height: 12),
-        SizedBox(
-          width: double.infinity,
-          height: 56,
-          child: OutlinedButton.icon(
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                    content: Text(
-                        "${widget.service.phoneNumber} raqamiga bog'lanilmoqda...")),
-              );
-            },
-            icon: const Icon(LucideIcons.phone),
-            label: const Text("Usta bilan bog'lanish"),
-            style: OutlinedButton.styleFrom(
-              foregroundColor: color,
-              side: BorderSide(color: color),
-              shape:
-                  RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  void _confirmBooking(NumberFormat currencyFormat) {
+  void _confirmBooking(NumberFormat currencyFormat) async {
+    if (!await ensureAuthenticated(context)) return;
+    if (!mounted) return;
     final totalPrice = widget.service.prices[_selectedPriceOption];
 
     showModalBottomSheet(

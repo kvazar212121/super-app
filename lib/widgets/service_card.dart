@@ -22,7 +22,6 @@ class ServiceCard extends StatelessWidget {
       onTap: onTap,
       padding: const EdgeInsets.all(16),
       borderRadius: GlassTokens.radiusLg,
-      opacity: 0.52,
       tint: color.withValues(alpha: 0.06),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,

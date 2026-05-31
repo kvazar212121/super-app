@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:lucide_icons/lucide_icons.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'widgets/auto_help_calendar_widget.dart';
 import 'widgets/auto_help_reports_widget.dart';
 

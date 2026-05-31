@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:lucide_icons/lucide_icons.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../models/barber_shop.dart';
 import '../models/beauty_salon.dart';
 import '../models/football_field.dart';
@@ -12,6 +12,8 @@ import '../models/courier_service.dart';
 import '../models/massage_hijoma.dart';
 import '../models/nurse_service.dart';
 import '../models/event_planning.dart';
+import '../theme/glass_tokens.dart';
+import '../widgets/glass/glass_surface.dart';
 import '../screens/barber_booking_screen.dart';
 import '../screens/salon_booking_screen.dart';
 import '../screens/football_field_booking_screen.dart';
@@ -22,6 +24,10 @@ import '../screens/courier_booking_screen.dart';
 import '../screens/massage_booking_screen.dart';
 import '../screens/nurse_booking_screen.dart';
 import '../screens/event_booking_screen.dart';
+
+/// Oq kartalardagi matnlar (har doim oq fonda, shuning uchun qat'iy qora).
+const _cardTitleColor = Color(0xFF0F172A);
+const _cardSubColor = Color(0xFF64748B);
 
 class ShopSmallCard extends StatelessWidget {
   final BarberShop shop;
@@ -58,12 +64,12 @@ class ShopSmallCard extends StatelessWidget {
                 child: Center(child: Icon(LucideIcons.scissors, color: accentColor)),
               ),
               const SizedBox(height: 8),
-              Text(shop.name, style: const TextStyle(fontWeight: FontWeight.bold), maxLines: 1),
+              Text(shop.name, style: const TextStyle(fontWeight: FontWeight.bold, color: _cardTitleColor), maxLines: 1),
               Row(
                 children: [
                   const Icon(Icons.star, size: 14, color: Colors.amber),
                   const SizedBox(width: 4),
-                  Text(shop.rating.toString(), style: const TextStyle(fontSize: 12)),
+                  Text(shop.rating.toString(), style: const TextStyle(fontSize: 12, color: _cardSubColor)),
                 ],
               ),
             ],
@@ -109,12 +115,12 @@ class SalonSmallCard extends StatelessWidget {
                 child: const Center(child: Icon(LucideIcons.sparkles, color: accentColor)),
               ),
               const SizedBox(height: 8),
-              Text(salon.name, style: const TextStyle(fontWeight: FontWeight.bold), maxLines: 1),
+              Text(salon.name, style: const TextStyle(fontWeight: FontWeight.bold, color: _cardTitleColor), maxLines: 1),
               Row(
                 children: [
                   const Icon(Icons.star, size: 14, color: Colors.amber),
                   const SizedBox(width: 4),
-                  Text(salon.rating.toString(), style: const TextStyle(fontSize: 12)),
+                  Text(salon.rating.toString(), style: const TextStyle(fontSize: 12, color: _cardSubColor)),
                 ],
               ),
             ],
@@ -160,12 +166,12 @@ class FieldSmallCard extends StatelessWidget {
                 child: const Center(child: Icon(LucideIcons.trophy, color: accentColor)),
               ),
               const SizedBox(height: 8),
-              Text(field.name, style: const TextStyle(fontWeight: FontWeight.bold), maxLines: 1),
+              Text(field.name, style: const TextStyle(fontWeight: FontWeight.bold, color: _cardTitleColor), maxLines: 1),
               Row(
                 children: [
                   const Icon(Icons.star, size: 14, color: Colors.amber),
                   const SizedBox(width: 4),
-                  Text(field.rating.toString(), style: const TextStyle(fontSize: 12)),
+                  Text(field.rating.toString(), style: const TextStyle(fontSize: 12, color: _cardSubColor)),
                 ],
               ),
             ],
@@ -206,7 +212,7 @@ class MasterSmallCard extends StatelessWidget {
                 child: const Icon(LucideIcons.user, color: Color(0xFF0F172A)),
               ),
               const SizedBox(height: 8),
-              Text(master.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13), maxLines: 1),
+              Text(master.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: _cardTitleColor), maxLines: 1),
               Text(master.specialty, style: TextStyle(fontSize: 11, color: Colors.blue[700])),
             ],
           ),
@@ -245,7 +251,7 @@ class WorkerSmallCard extends StatelessWidget {
                 child: Icon(LucideIcons.user, color: Colors.orange[800]),
               ),
               const SizedBox(height: 8),
-              Text(worker.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+              Text(worker.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: _cardTitleColor)),
               Text(worker.type, style: TextStyle(fontSize: 10, color: Colors.grey[600])),
             ],
           ),
@@ -273,43 +279,46 @@ class HubActionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: Colors.white,
-      borderRadius: BorderRadius.circular(16),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
-        child: Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: Colors.grey[100]!),
+    return GlassSurface(
+      padding: const EdgeInsets.all(16),
+      borderRadius: 16,
+      onTap: onTap,
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: accentColor.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(icon, color: accentColor, size: 24),
           ),
-          child: Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: accentColor.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(12),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    color: GlassTokens.primaryText(context),
+                  ),
                 ),
-                child: Icon(icon, color: accentColor, size: 24),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                    const SizedBox(height: 2),
-                    Text(subtitle, style: TextStyle(fontSize: 12, color: Colors.grey[600])),
-                  ],
+                const SizedBox(height: 2),
+                Text(
+                  subtitle,
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: GlassTokens.secondaryText(context),
+                  ),
                 ),
-              ),
-              Icon(LucideIcons.chevronRight, color: Colors.grey[400], size: 20),
-            ],
+              ],
+            ),
           ),
-        ),
+          Icon(LucideIcons.chevronRight, color: GlassTokens.secondaryText(context), size: 20),
+        ],
       ),
     );
   }
@@ -349,14 +358,14 @@ class WorkshopSmallCard extends StatelessWidget {
                 child: const Center(child: Icon(LucideIcons.home, color: accentColor)),
               ),
               const SizedBox(height: 8),
-              Text(workshop.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13), maxLines: 1),
+              Text(workshop.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: _cardTitleColor), maxLines: 1),
               Text(workshop.specializations.join(", "), style: TextStyle(fontSize: 10, color: Colors.grey[600]), maxLines: 1, overflow: TextOverflow.ellipsis),
               const Spacer(),
               Row(
                 children: [
                   const Icon(Icons.star, size: 14, color: Colors.amber),
                   const SizedBox(width: 4),
-                  Text(workshop.rating.toString(), style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                  Text(workshop.rating.toString(), style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: _cardTitleColor)),
                 ],
               ),
             ],
@@ -401,14 +410,14 @@ class EducationCenterSmallCard extends StatelessWidget {
                 child: const Center(child: Icon(LucideIcons.bookOpen, color: accentColor)),
               ),
               const SizedBox(height: 8),
-              Text(center.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13), maxLines: 1),
+              Text(center.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: _cardTitleColor), maxLines: 1),
               Text(center.courses.join(", "), style: TextStyle(fontSize: 10, color: Colors.grey[600]), maxLines: 1, overflow: TextOverflow.ellipsis),
               const Spacer(),
               Row(
                 children: [
                   const Icon(Icons.star, size: 14, color: Colors.amber),
                   const SizedBox(width: 4),
-                  Text(center.rating.toString(), style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                  Text(center.rating.toString(), style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: _cardTitleColor)),
                 ],
               ),
             ],
@@ -455,12 +464,12 @@ class DisinfectionSmallCard extends StatelessWidget {
                 child: const Center(child: Icon(LucideIcons.shieldCheck, color: accentColor)),
               ),
               const SizedBox(height: 8),
-              Text(service.name, style: const TextStyle(fontWeight: FontWeight.bold), maxLines: 1),
+              Text(service.name, style: const TextStyle(fontWeight: FontWeight.bold, color: _cardTitleColor), maxLines: 1),
               Row(
                 children: [
                   const Icon(Icons.star, size: 14, color: Colors.amber),
                   const SizedBox(width: 4),
-                  Text(service.rating.toString(), style: const TextStyle(fontSize: 12)),
+                  Text(service.rating.toString(), style: const TextStyle(fontSize: 12, color: _cardSubColor)),
                 ],
               ),
             ],
@@ -506,12 +515,12 @@ class ApplianceSmallCard extends StatelessWidget {
                 child: const Center(child: Icon(LucideIcons.monitor, color: accentColor)),
               ),
               const SizedBox(height: 8),
-              Text(service.name, style: const TextStyle(fontWeight: FontWeight.bold), maxLines: 1),
+              Text(service.name, style: const TextStyle(fontWeight: FontWeight.bold, color: _cardTitleColor), maxLines: 1),
               Row(
                 children: [
                   const Icon(Icons.star, size: 14, color: Colors.amber),
                   const SizedBox(width: 4),
-                  Text(service.rating.toString(), style: const TextStyle(fontSize: 12)),
+                  Text(service.rating.toString(), style: const TextStyle(fontSize: 12, color: _cardSubColor)),
                 ],
               ),
             ],
@@ -557,12 +566,12 @@ class CourierSmallCard extends StatelessWidget {
                 child: const Center(child: Icon(LucideIcons.bike, color: accentColor)),
               ),
               const SizedBox(height: 8),
-              Text(service.name, style: const TextStyle(fontWeight: FontWeight.bold), maxLines: 1),
+              Text(service.name, style: const TextStyle(fontWeight: FontWeight.bold, color: _cardTitleColor), maxLines: 1),
               Row(
                 children: [
                   const Icon(Icons.star, size: 14, color: Colors.amber),
                   const SizedBox(width: 4),
-                  Text(service.rating.toString(), style: const TextStyle(fontSize: 12)),
+                  Text(service.rating.toString(), style: const TextStyle(fontSize: 12, color: _cardSubColor)),
                 ],
               ),
             ],
@@ -608,12 +617,12 @@ class MassageSmallCard extends StatelessWidget {
                 child: const Center(child: Icon(LucideIcons.hand, color: accentColor)),
               ),
               const SizedBox(height: 8),
-              Text(service.name, style: const TextStyle(fontWeight: FontWeight.bold), maxLines: 1),
+              Text(service.name, style: const TextStyle(fontWeight: FontWeight.bold, color: _cardTitleColor), maxLines: 1),
               Row(
                 children: [
                   const Icon(Icons.star, size: 14, color: Colors.amber),
                   const SizedBox(width: 4),
-                  Text(service.rating.toString(), style: const TextStyle(fontSize: 12)),
+                  Text(service.rating.toString(), style: const TextStyle(fontSize: 12, color: _cardSubColor)),
                 ],
               ),
             ],
@@ -659,12 +668,12 @@ class NurseSmallCard extends StatelessWidget {
                 child: const Center(child: Icon(LucideIcons.heartPulse, color: accentColor)),
               ),
               const SizedBox(height: 8),
-              Text(service.name, style: const TextStyle(fontWeight: FontWeight.bold), maxLines: 1),
+              Text(service.name, style: const TextStyle(fontWeight: FontWeight.bold, color: _cardTitleColor), maxLines: 1),
               Row(
                 children: [
                   const Icon(Icons.star, size: 14, color: Colors.amber),
                   const SizedBox(width: 4),
-                  Text(service.rating.toString(), style: const TextStyle(fontSize: 12)),
+                  Text(service.rating.toString(), style: const TextStyle(fontSize: 12, color: _cardSubColor)),
                 ],
               ),
             ],
@@ -710,12 +719,12 @@ class EventSmallCard extends StatelessWidget {
                 child: const Center(child: Icon(LucideIcons.partyPopper, color: accentColor)),
               ),
               const SizedBox(height: 8),
-              Text(service.name, style: const TextStyle(fontWeight: FontWeight.bold), maxLines: 1),
+              Text(service.name, style: const TextStyle(fontWeight: FontWeight.bold, color: _cardTitleColor), maxLines: 1),
               Row(
                 children: [
                   const Icon(Icons.star, size: 14, color: Colors.amber),
                   const SizedBox(width: 4),
-                  Text(service.rating.toString(), style: const TextStyle(fontSize: 12)),
+                  Text(service.rating.toString(), style: const TextStyle(fontSize: 12, color: _cardSubColor)),
                 ],
               ),
             ],

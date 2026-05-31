@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:lucide_icons/lucide_icons.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:provider/provider.dart';
 import '../providers/app_provider.dart';
 import '../widgets/glass/glass_bottom_bar.dart';
@@ -52,10 +52,7 @@ class _MainScreenState extends State<MainScreen> {
         Scaffold(
           backgroundColor: Colors.transparent,
           extendBody: true,
-          body: IndexedStack(
-            index: _selectedIndex,
-            children: _screens,
-          ),
+          body: _screens[_selectedIndex],
           bottomNavigationBar: GlassBottomBar(
             currentIndex: _selectedIndex,
             onTap: (i) => setState(() => _selectedIndex = i),

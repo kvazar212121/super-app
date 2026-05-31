@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:lucide_icons/lucide_icons.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../models/master_worker.dart';
 import '../models/service_hub_kind.dart';
 import '../models/service_order.dart';
 import '../providers/app_provider.dart';
+import '../utils/auth_guard.dart';
 import '../widgets/booking_common_widgets.dart';
+import '../widgets/glass/mesh_background.dart';
 
 class MasterDispatchScreen extends StatefulWidget {
   final Master master;
@@ -31,8 +33,9 @@ class _MasterDispatchScreenState extends State<MasterDispatchScreen> {
     final theme = Theme.of(context);
     final currencyFormat = NumberFormat.currency(locale: 'uz_UZ', symbol: 'so\'m', decimalDigits: 0);
 
-    return Scaffold(
-      backgroundColor: Colors.white,
+    return GlassBackdrop(
+      child: Scaffold(
+      backgroundColor: Colors.transparent,
       body: CustomScrollView(
         slivers: [
           _buildSliverAppBar(),
@@ -75,6 +78,7 @@ class _MasterDispatchScreenState extends State<MasterDispatchScreen> {
             ),
           ),
         ],
+      ),
       ),
     );
   }
@@ -219,7 +223,9 @@ class _MasterDispatchScreenState extends State<MasterDispatchScreen> {
     );
   }
 
-  void _confirmDispatch() {
+  void _confirmDispatch() async {
+    if (!await ensureAuthenticated(context)) return;
+    if (!mounted) return;
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,

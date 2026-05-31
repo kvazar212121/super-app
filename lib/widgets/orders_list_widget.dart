@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:lucide_icons/lucide_icons.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:provider/provider.dart';
 import '../models/service_hub_kind.dart';
 import '../models/service_order.dart';
@@ -35,7 +35,6 @@ class OrdersListWidget extends StatelessWidget {
       return Center(
         child: GlassSurface(
           padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 28),
-          opacity: 0.5,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -78,7 +77,6 @@ class _OrderCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 14),
       padding: const EdgeInsets.all(16),
       borderRadius: GlassTokens.radiusLg,
-      opacity: 0.55,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

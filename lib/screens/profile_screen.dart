@@ -8,7 +8,7 @@ import '../widgets/cashback_card_widget.dart';
 import '../widgets/glass/glass_scaffold.dart';
 import '../widgets/glass/glass_surface.dart';
 import '../theme/glass_tokens.dart';
-import 'auth/login_screen.dart';
+import 'auth/auth_gate_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -16,9 +16,11 @@ class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<AppProvider>(context);
+    final auth = Provider.of<AuthProvider>(context);
     final user = provider.user;
 
     return GlassScaffold(
+      embeddedInShell: true,
       title: 'Profil',
       actions: [
         IconButton(
@@ -33,74 +35,127 @@ class ProfileScreen extends StatelessWidget {
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 100),
         child: Column(
           children: [
-            _buildProfileHeader(context, user),
+            if (!auth.isAuthenticated) ...[
+              _buildGuestCard(context),
+              const SizedBox(height: 20),
+            ],
+            _buildProfileHeader(context, user, auth.isAuthenticated),
             const SizedBox(height: 20),
-            CashbackCardWidget(
-              balance: user.balance,
-              cashback: user.cashback,
-              isPremium: user.isPremium,
-            ),
-            const SizedBox(height: 12),
-            SizedBox(
-              width: double.infinity,
-              child: FilledButton.icon(
-                onPressed: () => _showTopUpSheet(context, provider),
-                icon: const Icon(Icons.account_balance_wallet_outlined),
-                label: const Text('Hisobni to\'ldirish'),
+            if (auth.isAuthenticated) ...[
+              CashbackCardWidget(
+                balance: user.balance,
+                cashback: user.cashback,
+                isPremium: user.isPremium,
               ),
-            ),
-            const SizedBox(height: 20),
-            _sectionTitle(context, 'Mening kartalarim'),
-            ...provider.cards.map(
-              (card) => Padding(
-                padding: const EdgeInsets.only(bottom: 12),
-                child: CardItemWidget(card: card),
+              const SizedBox(height: 12),
+              SizedBox(
+                width: double.infinity,
+                child: FilledButton.icon(
+                  onPressed: () => _showTopUpSheet(context, provider),
+                  icon: const Icon(Icons.account_balance_wallet_outlined),
+                  label: const Text('Hisobni to\'ldirish'),
+                ),
               ),
-            ),
-            GlassSurface(
-              onTap: () => _showAddCardDialog(context, provider),
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-              opacity: 0.5,
-              child: Row(
-                children: [
-                  Icon(Icons.add_circle_outline, color: GlassTokens.primaryText(context)),
-                  const SizedBox(width: 12),
-                  Text(
-                    'Karta qo\'shish',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      color: GlassTokens.primaryText(context),
+              const SizedBox(height: 20),
+              _sectionTitle(context, 'Mening kartalarim'),
+              ...provider.cards.map(
+                (card) => Padding(
+                  padding: const EdgeInsets.only(bottom: 12),
+                  child: CardItemWidget(card: card),
+                ),
+              ),
+              GlassSurface(
+                onTap: () => _showAddCardDialog(context, provider),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                opacity: 0.5,
+                child: Row(
+                  children: [
+                    Icon(Icons.add_circle_outline, color: GlassTokens.primaryText(context)),
+                    const SizedBox(width: 12),
+                    Text(
+                      'Karta qo\'shish',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        color: GlassTokens.primaryText(context),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-            const SizedBox(height: 16),
-            GlassSurface(
-              onTap: () => _showLogoutDialog(context),
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-              opacity: 0.48,
-              child: Row(
-                children: const [
-                  Icon(Icons.logout_rounded, color: Color(0xFFEF4444)),
-                  SizedBox(width: 12),
-                  Text(
-                    'Chiqish',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      color: Color(0xFFEF4444),
+              const SizedBox(height: 16),
+              GlassSurface(
+                onTap: () => _showLogoutDialog(context),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                opacity: 0.48,
+                child: Row(
+                  children: const [
+                    Icon(Icons.logout_rounded, color: Color(0xFFEF4444)),
+                    SizedBox(width: 12),
+                    Text(
+                      'Chiqish',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xFFEF4444),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
+            ],
           ],
         ),
       ),
     );
   }
 
-  Widget _buildProfileHeader(BuildContext context, UserProfile user) {
+  Widget _buildGuestCard(BuildContext context) {
+    return GlassSurface(
+      padding: const EdgeInsets.all(20),
+      borderRadius: GlassTokens.radiusLg,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Mehmon rejimi',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w800,
+              color: GlassTokens.primaryText(context),
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Ilovani ko\'rib chiqing. Buyurtma berish yoki balansdan foydalanish uchun kiring.',
+            style: TextStyle(color: GlassTokens.secondaryText(context), height: 1.4),
+          ),
+          const SizedBox(height: 16),
+          SizedBox(
+            width: double.infinity,
+            child: FilledButton(
+              onPressed: () async {
+                final ok = await Navigator.of(context).push<bool>(
+                  MaterialPageRoute(
+                    fullscreenDialog: true,
+                    builder: (_) => const AuthGateScreen(),
+                  ),
+                );
+                if (ok == true && context.mounted) {
+                  final auth = context.read<AuthProvider>();
+                  if (auth.user != null) {
+                    context.read<AppProvider>().applyAuthUser(auth.user!);
+                    await context.read<AppProvider>().fetchInitialData();
+                  }
+                }
+              },
+              child: const Text('Kirish / Ro\'yxatdan o\'tish'),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildProfileHeader(BuildContext context, UserProfile user, bool isLoggedIn) {
     return GlassSurface(
       padding: const EdgeInsets.all(18),
       borderRadius: GlassTokens.radiusLg,
@@ -120,11 +175,13 @@ class ProfileScreen extends StatelessWidget {
               ),
               border: Border.all(color: Colors.white.withValues(alpha: 0.4), width: 2),
             ),
-            child: user.avatarUrl != null
+            child: isLoggedIn && user.avatarUrl != null
                 ? ClipOval(child: Image.network(user.avatarUrl!, fit: BoxFit.cover))
                 : Center(
                     child: Text(
-                      user.name.isNotEmpty ? user.name[0].toUpperCase() : '?',
+                      isLoggedIn
+                          ? (user.name.isNotEmpty ? user.name[0].toUpperCase() : '?')
+                          : 'M',
                       style: TextStyle(
                         fontSize: 28,
                         fontWeight: FontWeight.w800,
@@ -139,15 +196,18 @@ class ProfileScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  '${user.name} ${user.surname}'.trim(),
+                  isLoggedIn ? '${user.name} ${user.surname}'.trim() : 'Mehmon',
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w800,
                     color: GlassTokens.primaryText(context),
                   ),
                 ),
-                Text(user.phone, style: TextStyle(color: GlassTokens.secondaryText(context))),
-                if (user.telegramUsername != null)
+                Text(
+                  isLoggedIn ? user.phone : 'Buyurtma uchun kiring',
+                  style: TextStyle(color: GlassTokens.secondaryText(context)),
+                ),
+                if (isLoggedIn && user.telegramUsername != null)
                   Text(
                     user.telegramUsername!,
                     style: const TextStyle(color: Color(0xFF6366F1), fontWeight: FontWeight.w600),
@@ -252,12 +312,6 @@ class ProfileScreen extends StatelessWidget {
             onPressed: () async {
               Navigator.pop(context);
               await context.read<AuthProvider>().logout();
-              if (context.mounted) {
-                Navigator.of(context).pushAndRemoveUntil(
-                  MaterialPageRoute(builder: (_) => const LoginScreen()),
-                  (route) => false,
-                );
-              }
             },
             child: const Text('Ha'),
           ),

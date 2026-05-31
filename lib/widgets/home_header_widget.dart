@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:lucide_icons/lucide_icons.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:provider/provider.dart';
 import '../providers/app_provider.dart';
+import '../providers/auth_provider.dart';
 import '../screens/notifications_screen.dart';
 import '../theme/glass_tokens.dart';
 import 'glass/glass_surface.dart';
@@ -12,7 +13,9 @@ class HomeHeaderWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<AppProvider>(context);
+    final auth = Provider.of<AuthProvider>(context);
     final unreadCount = provider.unreadCount;
+    final greetingName = auth.isAuthenticated ? provider.user.name : auth.displayName;
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -28,7 +31,7 @@ class HomeHeaderWidget extends StatelessWidget {
               ),
             ),
             Text(
-              provider.user.name,
+              greetingName,
               style: TextStyle(
                 fontSize: 26,
                 fontWeight: FontWeight.w800,
@@ -44,7 +47,6 @@ class HomeHeaderWidget extends StatelessWidget {
             GlassSurface(
               padding: EdgeInsets.zero,
               borderRadius: GlassTokens.radiusMd,
-              opacity: 0.58,
               child: IconButton(
                 icon: Icon(
                   LucideIcons.bell,

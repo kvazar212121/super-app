@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:lucide_icons/lucide_icons.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../main_screen.dart';
 import '../provider_side/barber_dashboard_screen.dart';
 import '../provider_side/salon_dashboard_screen.dart';
@@ -20,6 +20,7 @@ import '../provider_side/courier_dashboard_screen.dart';
 import '../provider_side/massage_dashboard_screen.dart';
 import '../provider_side/nurse_dashboard_screen.dart';
 import '../provider_side/events_dashboard_screen.dart';
+import '../provider_side/provider_theme.dart';
 
 class ProviderSuccessScreen extends StatelessWidget {
   final String providerName;
@@ -34,7 +35,7 @@ class ProviderSuccessScreen extends StatelessWidget {
   });
 
   Widget _getDashboard() {
-    return switch (categoryId) {
+    final dashboard = switch (categoryId) {
       'barber' => const BarberDashboardScreen(),
       'salon' => const SalonDashboardScreen(),
       'plumber' => const PlumberDashboardScreen(),
@@ -56,10 +57,14 @@ class ProviderSuccessScreen extends StatelessWidget {
       'events' => const EventsDashboardScreen(),
       _ => const MainScreen(),
     };
+    // MainScreen — mijoz ilovasi, uni provider light temaga o'rab bo'lmaydi.
+    if (dashboard is MainScreen) return dashboard;
+    return ProviderTheme(child: dashboard);
   }
 
   @override
   Widget build(BuildContext context) {
+    return ProviderTheme(child: Builder(builder: (context) {
     final theme = Theme.of(context);
 
     return Scaffold(
@@ -135,5 +140,6 @@ class ProviderSuccessScreen extends StatelessWidget {
         ),
       ),
     );
+    }));
   }
 }

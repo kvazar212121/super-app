@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:lucide_icons/lucide_icons.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../models/service_hub_kind.dart';
 import '../screens/all_categories_screen.dart';
 import '../screens/service_hub_screen.dart';
@@ -40,55 +40,61 @@ class ServicesGridWidget extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Text(
-              'Xizmatlar',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w800,
-                letterSpacing: -0.4,
-                color: GlassTokens.primaryText(context),
+            Expanded(
+              child: Text(
+                'Xizmatlar',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: -0.4,
+                  color: GlassTokens.primaryText(context),
+                ),
               ),
             ),
-            TextButton(
-              onPressed: () => _openAll(context),
-              child: const Text('Barchasi'),
+            GlassSurface(
+              onTap: () => _openAll(context),
+              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+              borderRadius: GlassTokens.radiusMd,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    LucideIcons.layoutGrid,
+                    size: 16,
+                    color: GlassTokens.primaryText(context),
+                  ),
+                  const SizedBox(width: 6),
+                  Text(
+                    'Barcha xizmatlar',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w700,
+                      fontSize: 13,
+                      color: GlassTokens.primaryText(context),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ],
         ),
         const SizedBox(height: 12),
-        GridView.count(
+        GridView.builder(
           shrinkWrap: true,
+          padding: EdgeInsets.zero,
           physics: const NeverScrollableScrollPhysics(),
-          crossAxisCount: 2,
-          crossAxisSpacing: 12,
-          mainAxisSpacing: 12,
-          childAspectRatio: 1.55,
-          children: _popular
-              .map((k) => _ServiceItem(kind: k, onTap: () => _openHub(context, k)))
-              .toList(),
-        ),
-        const SizedBox(height: 14),
-        GlassSurface(
-          onTap: () => _openAll(context),
-          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
-          borderRadius: GlassTokens.radiusLg,
-          opacity: 0.5,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(LucideIcons.layoutGrid, color: GlassTokens.primaryText(context)),
-              const SizedBox(width: 10),
-              Text(
-                'Barcha xizmatlar',
-                style: TextStyle(
-                  fontWeight: FontWeight.w700,
-                  color: GlassTokens.primaryText(context),
-                ),
-              ),
-            ],
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            crossAxisSpacing: 12,
+            mainAxisSpacing: 10,
+            mainAxisExtent: 68,
           ),
+          itemCount: _popular.length,
+          itemBuilder: (context, index) {
+            final k = _popular[index];
+            return _ServiceItem(kind: k, onTap: () => _openHub(context, k));
+          },
         ),
       ],
     );
@@ -106,10 +112,10 @@ class _ServiceItem extends StatelessWidget {
     final accent = kind.accent;
     return GlassSurface(
       onTap: onTap,
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       borderRadius: GlassTokens.radiusMd,
-      opacity: 0.52,
       tint: accent.withValues(alpha: 0.08),
+      showShadow: false,
       child: Row(
         children: [
           Container(

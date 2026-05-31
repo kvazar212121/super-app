@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:lucide_icons/lucide_icons.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../models/barber_shop.dart';
 import '../models/service_hub_kind.dart';
 import '../models/service_order.dart';
 import '../providers/app_provider.dart';
+import '../utils/auth_guard.dart';
 import '../widgets/booking_common_widgets.dart';
+import '../widgets/glass/mesh_background.dart';
 
 class BarberBookingScreen extends StatefulWidget {
   final BarberShop shop;
@@ -34,7 +36,9 @@ class _BarberBookingScreenState extends State<BarberBookingScreen> {
     final theme = Theme.of(context);
     final currencyFormat = NumberFormat.currency(locale: 'uz_UZ', symbol: 'so\'m', decimalDigits: 0);
 
-    return Scaffold(
+    return GlassBackdrop(
+      child: Scaffold(
+      backgroundColor: Colors.transparent,
       body: CustomScrollView(
         slivers: [
           _buildSliverAppBar(context),
@@ -82,6 +86,7 @@ class _BarberBookingScreenState extends State<BarberBookingScreen> {
             ),
           ),
         ],
+      ),
       ),
     );
   }
@@ -366,7 +371,9 @@ class _BarberBookingScreenState extends State<BarberBookingScreen> {
     );
   }
 
-  void _confirmBooking() {
+  void _confirmBooking() async {
+    if (!await ensureAuthenticated(context)) return;
+    if (!mounted) return;
     showDialog(
       context: context,
       builder: (context) => AlertDialog(

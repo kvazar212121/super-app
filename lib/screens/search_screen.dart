@@ -18,9 +18,9 @@ class _SearchScreenState extends State<SearchScreen> {
   @override
   Widget build(BuildContext context) {
     return GlassScaffold(
-      title: 'Qidiruv',
+      embeddedInShell: true,
       body: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 90),
+        padding: const EdgeInsets.fromLTRB(16, 0, 16, 90),
         child: Column(
           children: [
             SearchInputWidget(

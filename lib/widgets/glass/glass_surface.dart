@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import '../../theme/glass_tokens.dart';
 
 /// iOS Control Center uslubidagi shaffof/yozilgan panel.
+/// [enableBlur] — standart holatda O'CHIQ (tezlik uchun). Faqat asosiy
+/// ekran chrome'ida (masalan pastki panel) blur ishlatiladi.
 class GlassSurface extends StatelessWidget {
   final Widget child;
   final EdgeInsetsGeometry? padding;
@@ -15,6 +17,7 @@ class GlassSurface extends StatelessWidget {
   final VoidCallback? onTap;
   final bool showBorder;
   final bool showShadow;
+  final bool enableBlur;
 
   const GlassSurface({
     super.key,
@@ -22,12 +25,13 @@ class GlassSurface extends StatelessWidget {
     this.padding,
     this.margin,
     this.borderRadius = GlassTokens.radiusMd,
-    this.blur = GlassTokens.blurLight,
-    this.opacity = 0.55,
+    this.blur = GlassTokens.glassBlur,
+    this.opacity = GlassTokens.glassOpacity,
     this.tint,
     this.onTap,
     this.showBorder = true,
     this.showShadow = true,
+    this.enableBlur = false,
   });
 
   @override
@@ -36,54 +40,56 @@ class GlassSurface extends StatelessWidget {
     final border = GlassTokens.glassBorder(context);
     final highlight = GlassTokens.glassHighlight(context);
 
-    Widget content = ClipRRect(
-      borderRadius: BorderRadius.circular(borderRadius),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: blur, sigmaY: blur),
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(borderRadius),
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                fill,
-                Color.lerp(fill, Colors.transparent, 0.15) ?? fill,
-              ],
-            ),
-            border: showBorder
-                ? Border.all(color: border, width: 1.2)
-                : null,
-            boxShadow: showShadow ? GlassTokens.glassShadow(context) : null,
-          ),
-          child: Stack(
-            children: [
-              Positioned(
-                top: 0,
-                left: 0,
-                right: 0,
-                height: borderRadius,
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.vertical(
-                      top: Radius.circular(borderRadius),
-                    ),
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [highlight, Colors.transparent],
-                    ),
-                  ),
+    final panel = DecoratedBox(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(borderRadius),
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            fill,
+            Color.lerp(fill, Colors.transparent, 0.15) ?? fill,
+          ],
+        ),
+        border: showBorder ? Border.all(color: border, width: 1.2) : null,
+        boxShadow: showShadow ? GlassTokens.glassShadow(context) : null,
+      ),
+      child: Stack(
+        children: [
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            height: borderRadius,
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.vertical(
+                  top: Radius.circular(borderRadius),
+                ),
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [highlight, Colors.transparent],
                 ),
               ),
-              Padding(
-                padding: padding ?? EdgeInsets.zero,
-                child: child,
-              ),
-            ],
+            ),
           ),
-        ),
+          Padding(
+            padding: padding ?? EdgeInsets.zero,
+            child: child,
+          ),
+        ],
       ),
+    );
+
+    Widget content = ClipRRect(
+      borderRadius: BorderRadius.circular(borderRadius),
+      child: enableBlur
+          ? BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: blur, sigmaY: blur),
+              child: panel,
+            )
+          : panel,
     );
 
     if (margin != null) {

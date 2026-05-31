@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:lucide_icons/lucide_icons.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
+import '../provider_side/provider_theme.dart';
 import 'provider_data_entry_screen.dart';
 
 class ProviderCategorySelectionScreen extends StatefulWidget {
@@ -20,6 +21,7 @@ class _ProviderCategorySelectionScreenState extends State<ProviderCategorySelect
     {'id': 'cleaner', 'name': 'Tozalash xizmati', 'icon': LucideIcons.sprayCan},
     {'id': 'builder', 'name': 'Quruvchi / Usta', 'icon': LucideIcons.hammer},
     {'id': 'worker', 'name': 'Ishchi / Yuk', 'icon': LucideIcons.users},
+    {'id': 'futbol', 'name': 'Futbol maydoni', 'icon': LucideIcons.trophy},
     {'id': 'tutor', 'name': 'Repetitor', 'icon': LucideIcons.graduationCap},
     {'id': 'auto', 'name': 'Avto-yordam', 'icon': LucideIcons.car},
     {'id': 'ac', 'name': 'Konditsioner', 'icon': LucideIcons.wind},
@@ -35,6 +37,7 @@ class _ProviderCategorySelectionScreenState extends State<ProviderCategorySelect
 
   @override
   Widget build(BuildContext context) {
+    return ProviderTheme(child: Builder(builder: (context) {
     final theme = Theme.of(context);
 
     return Scaffold(
@@ -143,5 +146,6 @@ class _ProviderCategorySelectionScreenState extends State<ProviderCategorySelect
         ),
       ),
     );
+    }));
   }
 }

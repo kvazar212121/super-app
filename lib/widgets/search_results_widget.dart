@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:lucide_icons/lucide_icons.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../models/barber_shop.dart';
 import '../screens/barber_map_screen.dart';
+import '../theme/glass_tokens.dart';
+import 'glass/glass_surface.dart';
 
 class _ServiceEntry {
   final String name;
@@ -32,7 +34,14 @@ class SearchResultsWidget extends StatelessWidget {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text("Yaqin atrofdagi sartaroshlar", style: TextStyle(fontWeight: FontWeight.bold)),
+          Text(
+            "Yaqin atrofdagi sartaroshlar",
+            style: TextStyle(
+              fontWeight: FontWeight.w800,
+              fontSize: 16,
+              color: GlassTokens.primaryText(context),
+            ),
+          ),
           const SizedBox(height: 10),
           Expanded(
             child: ListView.builder(
@@ -44,20 +53,43 @@ class SearchResultsWidget extends StatelessWidget {
       );
     }
 
-    final filtered = services.where((s) => s.name.toLowerCase().contains(query.toLowerCase())).toList();
+    final filtered = services
+        .where((s) => s.name.toLowerCase().contains(query.toLowerCase()))
+        .toList();
     return ListView.builder(
       itemCount: filtered.length,
       itemBuilder: (ctx, i) {
         final s = filtered[i];
-        return ListTile(
-        leading: Container(
-          width: 40, height: 40,
-          decoration: BoxDecoration(color: s.color.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(10)),
-          child: Icon(s.icon, color: s.color),
-        ),
-        title: Text(s.name),
-        trailing: const Icon(LucideIcons.chevronRight),
-        onTap: () {},
+        return GlassSurface(
+          margin: const EdgeInsets.only(bottom: 10),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+          borderRadius: GlassTokens.radiusMd,
+          onTap: () {},
+          child: Row(
+            children: [
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: s.color.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: s.color.withValues(alpha: 0.2)),
+                ),
+                child: Icon(s.icon, color: s.color, size: 20),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  s.name,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    color: GlassTokens.primaryText(context),
+                  ),
+                ),
+              ),
+              Icon(LucideIcons.chevronRight, color: GlassTokens.secondaryText(context), size: 18),
+            ],
+          ),
         );
       },
     );
@@ -70,21 +102,77 @@ class _ShopListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
+    return GlassSurface(
       margin: const EdgeInsets.only(bottom: 12),
-      child: ListTile(
-        leading: CircleAvatar(backgroundColor: Theme.of(context).colorScheme.primaryContainer, child: const Icon(Icons.cut)),
-        title: Text(shop.name),
-        subtitle: Text(shop.address),
-        trailing: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            Row(mainAxisSize: MainAxisSize.min, children: [const Icon(Icons.star, size: 14, color: Colors.amber), Text(" ${shop.rating}")]),
-            Text("${shop.reviewCount} sharh", style: const TextStyle(fontSize: 10)),
-          ],
-        ),
-        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => BarberMapScreen(shops: [shop]))),
+      padding: const EdgeInsets.all(14),
+      borderRadius: GlassTokens.radiusLg,
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => BarberMapScreen(shops: [shop])),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 48,
+            height: 48,
+            decoration: BoxDecoration(
+              color: const Color(0xFF6366F1).withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: const Color(0xFF6366F1).withValues(alpha: 0.2)),
+            ),
+            child: const Icon(LucideIcons.scissors, color: Color(0xFF6366F1)),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  shop.name,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w700,
+                    color: GlassTokens.primaryText(context),
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  shop.address,
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: GlassTokens.secondaryText(context),
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.star_rounded, size: 16, color: Colors.amber),
+                  Text(
+                    ' ${shop.rating}',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w700,
+                      color: GlassTokens.primaryText(context),
+                    ),
+                  ),
+                ],
+              ),
+              Text(
+                '${shop.reviewCount} sharh',
+                style: TextStyle(
+                  fontSize: 11,
+                  color: GlassTokens.secondaryText(context),
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }

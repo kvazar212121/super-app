@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-
 import '../models/service_hub_kind.dart';
+import '../theme/glass_tokens.dart';
+import '../widgets/glass/glass_scaffold.dart';
+import '../widgets/glass/glass_surface.dart';
 import 'service_hub_screen.dart';
 
 /// Barcha 19 ta xizmat kategoriyasini ro'yxat ko'rinishida ko'rsatadi.
-/// "Yana" bandidan ochiladi.
 class AllCategoriesScreen extends StatelessWidget {
   const AllCategoriesScreen({super.key});
 
@@ -21,7 +22,6 @@ class AllCategoriesScreen extends StatelessWidget {
     ServiceHubKind.konditsioner,
     ServiceHubKind.enaga,
     ServiceHubKind.repetitor,
-    // 6 ta YANGI:
     ServiceHubKind.dezinfeksiya,
     ServiceHubKind.texnikaUstasi,
     ServiceHubKind.kuryerlik,
@@ -32,46 +32,63 @@ class AllCategoriesScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Barcha xizmatlar')),
+    return GlassScaffold(
+      showBackButton: true,
+      title: 'Barcha xizmatlar',
       body: ListView.separated(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
         itemCount: _all.length,
-        separatorBuilder: (_, __) => const SizedBox(height: 8),
+        separatorBuilder: (_, __) => const SizedBox(height: 10),
         itemBuilder: (ctx, i) {
           final k = _all[i];
-          return Material(
-            color: k.accent.withValues(alpha: 0.08),
-            borderRadius: BorderRadius.circular(14),
-            child: ListTile(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(14),
+          return GlassSurface(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+            borderRadius: GlassTokens.radiusLg,
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute<void>(
+                builder: (_) => ServiceHubScreen(kind: k, accentColor: k.accent),
               ),
-              leading: Container(
-                width: 44,
-                height: 44,
-                decoration: BoxDecoration(
-                  color: k.accent.withValues(alpha: 0.18),
-                  borderRadius: BorderRadius.circular(12),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  width: 44,
+                  height: 44,
+                  decoration: BoxDecoration(
+                    color: k.accent.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: k.accent.withValues(alpha: 0.22)),
+                  ),
+                  child: Icon(k.icon, color: k.accent, size: 22),
                 ),
-                child: Icon(k.icon, color: k.accent),
-              ),
-              title: Text(
-                k.title,
-                style: const TextStyle(fontWeight: FontWeight.w600),
-              ),
-              subtitle: Text(
-                k.hubSubtitle,
-                style: const TextStyle(fontSize: 12),
-              ),
-              trailing: const Icon(Icons.chevron_right),
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute<void>(
-                  builder: (_) =>
-                      ServiceHubScreen(kind: k, accentColor: k.accent),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        k.title,
+                        style: TextStyle(
+                          fontWeight: FontWeight.w700,
+                          color: GlassTokens.primaryText(context),
+                        ),
+                      ),
+                      Text(
+                        k.hubSubtitle,
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: GlassTokens.secondaryText(context),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
+                Icon(
+                  Icons.chevron_right_rounded,
+                  color: GlassTokens.secondaryText(context),
+                ),
+              ],
             ),
           );
         },

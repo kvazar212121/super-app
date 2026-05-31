@@ -10,6 +10,10 @@ abstract final class GlassTokens {
   static const blurLight = 18.0;
   static const blurHeavy = 28.0;
 
+  /// Barcha shaffof panellar uchun bir xil qiymatlar (xiralashgan glass).
+  static const glassOpacity = 0.52;
+  static const glassBlur = blurLight;
+
   static List<Color> meshColorsLight(bool isDark) => isDark
       ? const [
           Color(0xFF0B0B1A),
@@ -38,11 +42,12 @@ abstract final class GlassTokens {
           const Color(0xFFEC4899).withValues(alpha: 0.14),
         ];
 
-  static Color glassFill(BuildContext context, {double opacity = 0.55}) {
+  static Color glassFill(BuildContext context, {double opacity = glassOpacity}) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    // Blur'siz ham zamonaviy ko'rinishi uchun ancha to'q (solid) fill.
     return isDark
-        ? Colors.white.withValues(alpha: opacity * 0.12)
-        : Colors.white.withValues(alpha: opacity * 0.72);
+        ? Colors.white.withValues(alpha: 0.07 + opacity * 0.10)
+        : Colors.white.withValues(alpha: 0.55 + opacity * 0.42);
   }
 
   static Color glassBorder(BuildContext context) {

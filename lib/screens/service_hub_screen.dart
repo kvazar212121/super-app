@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:lucide_icons/lucide_icons.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 
@@ -19,6 +19,8 @@ import '../models/service_hub_kind.dart';
 import '../services/hub_data_service.dart';
 import '../widgets/hub_map_preview.dart';
 import '../widgets/service_hub_widgets.dart';
+import '../widgets/glass/glass_scaffold.dart';
+import '../theme/glass_tokens.dart';
 import 'all_categories_screen.dart';
 import 'barber_booking_screen.dart';
 import 'barber_map_screen.dart';
@@ -58,12 +60,9 @@ class _ServiceHubScreenState extends State<ServiceHubScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.kind.title),
-        backgroundColor: widget.accentColor.withValues(alpha: 0.1),
-        foregroundColor: widget.accentColor,
-      ),
+    return GlassScaffold(
+      showBackButton: true,
+      title: widget.kind.title,
       body: FutureBuilder<HubScreenData>(
         future: _dataFuture,
         builder: (context, snapshot) {
@@ -333,9 +332,16 @@ class _ActionList extends StatelessWidget {
         if (kind == ServiceHubKind.salon) _buildSection(context, "Yaqin salonlar", data.salons.map((s) => SalonSmallCard(salon: s)).toList()),
         if (kind == ServiceHubKind.futbol) _buildSection(context, "Yaqin futbol maydonlari", data.footballFields.map((f) => FieldSmallCard(field: f)).toList()),
         if (kind == ServiceHubKind.usta || kind == ServiceHubKind.elektrik || kind == ServiceHubKind.santexnik || kind == ServiceHubKind.tozalash || kind == ServiceHubKind.avtoYordam || kind == ServiceHubKind.konditsioner || kind == ServiceHubKind.enaga || kind == ServiceHubKind.repetitor) ...[
-          const Padding(
-            padding: EdgeInsets.fromLTRB(20, 0, 20, 8),
-            child: Text("Yaqin mutaxassislar va jamoalar", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),
+            child: Text(
+              "Yaqin mutaxassislar va jamoalar",
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w800,
+                color: GlassTokens.primaryText(context),
+              ),
+            ),
           ),
           SizedBox(
             height: 185,
@@ -351,9 +357,16 @@ class _ActionList extends StatelessWidget {
         ],
         
         if (kind == ServiceHubKind.repetitor) ...[
-          const Padding(
-            padding: EdgeInsets.fromLTRB(20, 0, 20, 8),
-            child: Text("Yaqin o'quv markazlari", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),
+            child: Text(
+              "Yaqin o'quv markazlari",
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w800,
+                color: GlassTokens.primaryText(context),
+              ),
+            ),
           ),
           SizedBox(
             height: 185,
@@ -369,9 +382,16 @@ class _ActionList extends StatelessWidget {
         ],
         
         if (kind == ServiceHubKind.avtoYordam || kind == ServiceHubKind.usta) ...[
-          const Padding(
-            padding: EdgeInsets.fromLTRB(20, 0, 20, 8),
-            child: Text("Yaqin ustaxonalar", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),
+            child: Text(
+              "Yaqin ustaxonalar",
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w800,
+                color: GlassTokens.primaryText(context),
+              ),
+            ),
           ),
           SizedBox(
             height: 185,
@@ -432,7 +452,14 @@ class _ActionList extends StatelessWidget {
       children: [
         Padding(
           padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),
-          child: Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          child: Text(
+            title,
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w800,
+              color: GlassTokens.primaryText(context),
+            ),
+          ),
         ),
         SizedBox(
           height: 185,

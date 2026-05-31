@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
+import '../config/app_config.dart';
 import '../models/user_profile.dart';
 import '../models/payment_card.dart';
 import '../models/service_order.dart';
-import '../models/service_hub_kind.dart';
 import '../services/api_service.dart';
 
 class AppProvider extends ChangeNotifier {
@@ -42,8 +42,51 @@ class AppProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Auth dan kelgan foydalanuvchini profilga sinxronlash (demo rejim).
+  void applyAuthUser(Map<String, dynamic> data) {
+    _user = UserProfile.fromJson(data);
+    notifyListeners();
+  }
+
+  void _loadDemoNotifications() {
+    if (_notifications.isNotEmpty) return;
+    final now = DateTime.now();
+    _notifications = [
+      {
+        'id': '1',
+        'title': 'Xush kelibsiz!',
+        'message': 'Super App demo rejimida ishlamoqda. Server ulanishi hozircha yo\'q.',
+        'type': 'info',
+        'is_read': false,
+        'created_at': now.subtract(const Duration(hours: 1)).toIso8601String(),
+      },
+      {
+        'id': '2',
+        'title': 'Buyurtma qabul qilindi',
+        'message': 'Sartarosh xizmati uchun buyurtmangiz ko\'rib chiqilmoqda.',
+        'type': 'order',
+        'is_read': false,
+        'created_at': now.subtract(const Duration(hours: 3)).toIso8601String(),
+      },
+      {
+        'id': '3',
+        'title': 'Cashback',
+        'message': 'Oxirgi buyurtmangiz uchun 2 500 so\'m cashback qo\'shildi.',
+        'type': 'payment',
+        'is_read': true,
+        'created_at': now.subtract(const Duration(days: 1)).toIso8601String(),
+      },
+    ];
+    _unreadCount = _notifications.where((n) => n['is_read'] != true).length;
+  }
+
   /// API orqali dastlabki ma'lumotlarni yuklash
   Future<void> fetchInitialData() async {
+    if (!AppConfig.useBackend) {
+      _loadDemoNotifications();
+      notifyListeners();
+      return;
+    }
     if (!_api.hasToken) return;
     try {
       // 1. Profilni yuklash
@@ -75,6 +118,11 @@ class AppProvider extends ChangeNotifier {
 
   /// Yangi karta qo'shish (API)
   Future<void> addCard(PaymentCard card) async {
+    if (!AppConfig.useBackend) {
+      _cards.add(card);
+      notifyListeners();
+      return;
+    }
     try {
       final payload = card.toJson();
       final newCardData = await _api.addCard(payload);
@@ -88,6 +136,11 @@ class AppProvider extends ChangeNotifier {
 
   /// Kartani o'chirish (API)
   Future<void> removeCard(String cardId) async {
+    if (!AppConfig.useBackend) {
+      _cards.removeWhere((c) => c.id == cardId);
+      notifyListeners();
+      return;
+    }
     try {
       final id = int.tryParse(cardId);
       if (id != null) {
@@ -104,6 +157,11 @@ class AppProvider extends ChangeNotifier {
   /// Balansni to'ldirish (API)
   Future<void> topUpBalance(double amount) async {
     if (amount <= 0) return;
+    if (!AppConfig.useBackend) {
+      _user = _user.copyWith(balance: _user.balance + amount);
+      notifyListeners();
+      return;
+    }
     try {
       final response = await _api.topUpBalance(amount);
       _user = UserProfile.fromJson(response);
@@ -116,6 +174,14 @@ class AppProvider extends ChangeNotifier {
 
   /// Yangi buyurtma yaratish va profilni yangilash (API)
   Future<void> addOrder(ServiceOrder order) async {
+    if (!AppConfig.useBackend) {
+      _orders.insert(0, order);
+      if (_user.balance >= order.price) {
+        _user = _user.copyWith(balance: _user.balance - order.price);
+      }
+      notifyListeners();
+      return;
+    }
     try {
       final categoryId = order.category.index + 1;
       
@@ -158,6 +224,14 @@ class AppProvider extends ChangeNotifier {
 
   /// Buyurtmani bekor qilish (API)
   Future<void> cancelOrder(String id) async {
+    if (!AppConfig.useBackend) {
+      final i = _orders.indexWhere((o) => o.id == id);
+      if (i != -1) {
+        _orders[i] = _orders[i].copyWith(status: OrderStatus.cancelled);
+        notifyListeners();
+      }
+      return;
+    }
     try {
       final orderId = int.tryParse(id);
       if (orderId != null) {
@@ -181,6 +255,11 @@ class AppProvider extends ChangeNotifier {
 
   /// Bildirishnomalarni API orqali yangilash
   Future<void> fetchNotifications() async {
+    if (!AppConfig.useBackend) {
+      _loadDemoNotifications();
+      notifyListeners();
+      return;
+    }
     if (!_api.hasToken) return;
     try {
       final notifData = await _api.getNotifications();
@@ -206,6 +285,15 @@ class AppProvider extends ChangeNotifier {
 
   /// Bildirishnomani o'qilgan deb belgilash
   Future<void> markNotificationRead(String id) async {
+    if (!AppConfig.useBackend) {
+      final index = _notifications.indexWhere((n) => n['id'] == id);
+      if (index != -1 && _notifications[index]['is_read'] != true) {
+        _notifications[index]['is_read'] = true;
+        if (_unreadCount > 0) _unreadCount--;
+        notifyListeners();
+      }
+      return;
+    }
     try {
       await _api.markNotificationRead(id);
       final index = _notifications.indexWhere((n) => n['id'] == id);
@@ -223,6 +311,7 @@ class AppProvider extends ChangeNotifier {
 
   /// Real-time sinxronizatsiya uchun pollingni boshlash (har 10 soniyada)
   void startNotificationPolling() {
+    if (!AppConfig.useBackend) return;
     _notificationTimer?.cancel();
     _notificationTimer = Timer.periodic(const Duration(seconds: 10), (timer) async {
       await fetchNotifications();

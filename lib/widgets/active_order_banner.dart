@@ -1,12 +1,13 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:lucide_icons/lucide_icons.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:provider/provider.dart';
 
 import '../models/service_hub_kind.dart';
 import '../models/service_order.dart';
 import '../providers/app_provider.dart';
+import '../theme/glass_tokens.dart';
 
 /// Asosiy ekrandagi "joriy buyurtma" — shaffof gradient glass karta.
 class ActiveOrderBanner extends StatelessWidget {
@@ -35,7 +36,10 @@ class ActiveOrderBanner extends StatelessWidget {
     return ClipRRect(
       borderRadius: BorderRadius.circular(24),
       child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+        filter: ImageFilter.blur(
+          sigmaX: GlassTokens.glassBlur,
+          sigmaY: GlassTokens.glassBlur,
+        ),
         child: Container(
           margin: const EdgeInsets.only(bottom: 18),
           padding: const EdgeInsets.all(18),
@@ -50,13 +54,6 @@ class ActiveOrderBanner extends StatelessWidget {
             ),
             borderRadius: BorderRadius.circular(24),
             border: Border.all(color: Colors.white.withValues(alpha: 0.35)),
-            boxShadow: [
-              BoxShadow(
-                color: accent.withValues(alpha: 0.35),
-                blurRadius: 20,
-                offset: const Offset(0, 10),
-              ),
-            ],
           ),
           child: Row(
             children: [
