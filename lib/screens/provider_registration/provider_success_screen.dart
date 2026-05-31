@@ -1,26 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../main_screen.dart';
-import '../provider_side/barber_dashboard_screen.dart';
-import '../provider_side/salon_dashboard_screen.dart';
-import '../provider_side/plumber_dashboard_screen.dart';
-import '../provider_side/electrician_dashboard_screen.dart';
-import '../provider_side/cleaning_dashboard_screen.dart';
-import '../provider_side/auto_workshop_dashboard_screen.dart';
-import '../provider_side/football_dashboard_screen.dart';
-import '../provider_side/education_dashboard_screen.dart';
-import '../provider_side/master_dashboard_screen.dart';
-import '../provider_side/worker_dashboard_screen.dart';
-import '../provider_side/ac_dashboard_screen.dart';
-import '../provider_side/nanny_dashboard_screen.dart';
-import '../provider_side/tutor_dashboard_screen.dart';
-import '../provider_side/disinfection_dashboard_screen.dart';
-import '../provider_side/appliance_dashboard_screen.dart';
-import '../provider_side/courier_dashboard_screen.dart';
-import '../provider_side/massage_dashboard_screen.dart';
-import '../provider_side/nurse_dashboard_screen.dart';
-import '../provider_side/events_dashboard_screen.dart';
-import '../provider_side/provider_theme.dart';
+import '../../config/provider_category_config.dart';
+import '../provider_side/unified_provider_dashboard_screen.dart';
+import 'provider_theme.dart';
 
 class ProviderSuccessScreen extends StatelessWidget {
   final String providerName;
@@ -35,31 +18,9 @@ class ProviderSuccessScreen extends StatelessWidget {
   });
 
   Widget _getDashboard() {
-    final dashboard = switch (categoryId) {
-      'barber' => const BarberDashboardScreen(),
-      'salon' => const SalonDashboardScreen(),
-      'plumber' => const PlumberDashboardScreen(),
-      'electrician' => const ElectricianDashboardScreen(),
-      'cleaner' => const CleaningDashboardScreen(),
-      'auto' => const AutoWorkshopDashboardScreen(),
-      'futbol' => const FootballDashboardScreen(),
-      'education' => const EducationDashboardScreen(),
-      'builder' => const MasterDashboardScreen(),
-      'worker' => const WorkerDashboardScreen(),
-      'ac' => const AcDashboardScreen(),
-      'nanny' => const NannyDashboardScreen(),
-      'tutor' => const TutorDashboardScreen(),
-      'disinfection' => const DisinfectionDashboardScreen(),
-      'appliance' => const ApplianceDashboardScreen(),
-      'courier' => const CourierDashboardScreen(),
-      'massage' => const MassageDashboardScreen(),
-      'nurse' => const NurseDashboardScreen(),
-      'events' => const EventsDashboardScreen(),
-      _ => const MainScreen(),
-    };
-    // MainScreen — mijoz ilovasi, uni provider light temaga o'rab bo'lmaydi.
-    if (dashboard is MainScreen) return dashboard;
-    return ProviderTheme(child: dashboard);
+    final config = ProviderCategoryConfig.byRegistrationId(categoryId);
+    if (config == null) return const MainScreen();
+    return UnifiedProviderDashboardScreen(config: config);
   }
 
   @override

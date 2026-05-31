@@ -1,9 +1,10 @@
-"""To'liq demo ma'lumotlarni DB ga yuklash."""
+"""To'liq demo ma'lumotlarni DB ga yuklash yoki o'chirish."""
+import argparse
 import asyncio
 import logging
 from datetime import datetime, timedelta, timezone
 
-from sqlalchemy import select, func
+from sqlalchemy import select, func, delete
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 
 from app.core.config import settings
@@ -29,6 +30,39 @@ from app.categories_data import CATEGORIES_DATA
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+DEMO_PHONES = {u["phone"] for u in USERS}
+
+
+async def clear_demo():
+    """Seed qilingan demo ma'lumotlarni o'chirish (kategoriyalar va admin qoladi)."""
+    engine = create_async_engine(settings.database_url, echo=False)
+    async_session = async_sessionmaker(engine, expire_on_commit=False)
+
+    async with async_session() as db:
+        result = await db.execute(select(User).where(User.phone.in_(DEMO_PHONES)))
+        demo_users = list(result.scalars().all())
+        demo_user_ids = [u.id for u in demo_users]
+
+        if demo_user_ids:
+            await db.execute(
+                delete(Notification).where(Notification.user_id.in_(demo_user_ids))
+            )
+            await db.execute(
+                delete(PaymentCard).where(PaymentCard.user_id.in_(demo_user_ids))
+            )
+            for u in demo_users:
+                await db.delete(u)
+            logger.info("Demo foydalanuvchilar o'chirildi: %d", len(demo_users))
+
+        await db.execute(delete(Review))
+        await db.execute(delete(Order))
+        await db.execute(delete(Provider))
+        await db.commit()
+        logger.info("Buyurtmalar, sharhlar va provayderlar o'chirildi")
+
+    logger.info("Demo ma'lumotlar tozalandi. Kategoriyalar va admin saqlanadi.")
+    await engine.dispose()
 
 
 async def seed():
@@ -211,10 +245,38 @@ async def seed():
             )
         await db.commit()
 
-        # Bildirishnomalar
+        # Provider egalari — foydalanuvchilar bilan bog'lash
+        result = await db.execute(select(Provider))
+        phone_to_user = {u.phone: u for u in user_map.values()}
+        for p in result.scalars().all():
+            if p.owner_user_id is None and p.phone in phone_to_user:
+                p.owner_user_id = phone_to_user[p.phone].id
+        demo = user_map.get("+998901112233")
+        if demo:
+            res = await db.execute(
+                select(Provider)
+                .join(Category)
+                .where(Category.key == "sartarosh")
+                .order_by(Provider.id)
+                .limit(1)
+            )
+            barber = res.scalar_one_or_none()
+            if barber:
+                barber.owner_user_id = demo.id
+        await db.commit()
+
+        # Bildirishnomalar (takrorlanmasin)
         for n in NOTIFICATIONS:
             user = user_map.get(n["user_phone"])
             if not user:
+                continue
+            existing = await db.execute(
+                select(Notification).where(
+                    Notification.user_id == user.id,
+                    Notification.title == n["title"],
+                )
+            )
+            if existing.scalar_one_or_none():
                 continue
             db.add(
                 Notification(
@@ -232,4 +294,14 @@ async def seed():
 
 
 if __name__ == "__main__":
-    asyncio.run(seed())
+    parser = argparse.ArgumentParser(description="Demo ma'lumotlarni yuklash yoki o'chirish")
+    parser.add_argument(
+        "--clear",
+        action="store_true",
+        help="Demo foydalanuvchilar, provayderlar, buyurtmalar va sharhlarni o'chirish",
+    )
+    args = parser.parse_args()
+    if args.clear:
+        asyncio.run(clear_demo())
+    else:
+        asyncio.run(seed())

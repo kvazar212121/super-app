@@ -99,7 +99,7 @@ class _MapSection extends StatelessWidget {
         markers: _buildMarkers(context),
         onExpand: () => Navigator.push(
           context,
-          MaterialPageRoute(builder: (_) => BarberMapScreen(shops: data.barberShops.isNotEmpty ? data.barberShops : BarberShop.demoShops)),
+          MaterialPageRoute(builder: (_) => BarberMapScreen(shops: data.barberShops)),
         ),
       ),
     );
@@ -481,53 +481,53 @@ class _ActionList extends StatelessWidget {
 
     return switch (kind) {
       ServiceHubKind.sartarosh => [
-        _HubActionSpec(LucideIcons.bookmark, 'Saqlangan joylar', 'Tez orada', () => toast('Saqlanganlar — demo')),
-        _HubActionSpec(LucideIcons.home, 'Sartaroshni uyga chaqirish', 'Premium xizmat', () => toast('Uyga chaqirish — demo')),
+        _HubActionSpec(LucideIcons.bookmark, 'Saqlangan joylar', 'Tez orada', () => toast('Saqlanganlar — tez orada')),
+        _HubActionSpec(LucideIcons.home, 'Sartaroshni uyga chaqirish', 'Premium xizmat', () => toast('Uyga chaqirish — tez orada')),
       ],
       ServiceHubKind.salon => [
-        _HubActionSpec(LucideIcons.bookmark, 'Saqlangan joylar', 'Tez orada', () => toast('Saqlanganlar — demo')),
-        _HubActionSpec(LucideIcons.sparkles, 'Kosmetik xizmatlar', 'Manikyur, fen...', () => toast('Kosmetik — demo')),
+        _HubActionSpec(LucideIcons.bookmark, 'Saqlangan joylar', 'Tez orada', () => toast('Saqlanganlar — tez orada')),
+        _HubActionSpec(LucideIcons.sparkles, 'Kosmetik xizmatlar', 'Manikyur, fen...', () => toast('Kosmetik — tez orada')),
       ],
       ServiceHubKind.futbol => [
-        _HubActionSpec(LucideIcons.bookmark, 'Saqlangan polyalar', 'Tez orada', () => toast('Saqlangan polyalar — demo')),
+        _HubActionSpec(LucideIcons.bookmark, 'Saqlangan polyalar', 'Tez orada', () => toast('Saqlangan polyalar — tez orada')),
         _HubActionSpec(LucideIcons.users, 'Jamoa o‘yini', 'Bir necha soat bandlov', () => Navigator.push(context, MaterialPageRoute(builder: (_) => UniversalBookingScreen(kind: kind)))),
       ],
       ServiceHubKind.elektrik => [
-        _HubActionSpec(LucideIcons.bookmark, 'Saqlangan elektriklar', 'Tez orada', () => toast('Saqlanganlar — demo')),
-        _HubActionSpec(LucideIcons.zap, 'Favqulodda yordam', 'Qisqa tutashuv va h.k.', () => toast('SOS — demo')),
+        _HubActionSpec(LucideIcons.bookmark, 'Saqlangan elektriklar', 'Tez orada', () => toast('Saqlanganlar — tez orada')),
+        _HubActionSpec(LucideIcons.zap, 'Favqulodda yordam', 'Qisqa tutashuv va h.k.', () => toast('SOS — tez orada')),
       ],
       ServiceHubKind.santexnik => [
-        _HubActionSpec(LucideIcons.bookmark, 'Saqlangan santexniklar', 'Tez orada', () => toast('Saqlanganlar — demo')),
-        _HubActionSpec(LucideIcons.droplet, 'Suv oqishi', 'Tezkor bartaraf etish', () => toast('SOS — demo')),
+        _HubActionSpec(LucideIcons.bookmark, 'Saqlangan santexniklar', 'Tez orada', () => toast('Saqlanganlar — tez orada')),
+        _HubActionSpec(LucideIcons.droplet, 'Suv oqishi', 'Tezkor bartaraf etish', () => toast('SOS — tez orada')),
       ],
       ServiceHubKind.tozalash => [
-        _HubActionSpec(LucideIcons.bookmark, 'Saqlangan xizmatlar', 'Tez orada', () => toast('Saqlanganlar — demo')),
-        _HubActionSpec(LucideIcons.sprayCan, 'General tozalash', 'Katta ko‘lamli ishlar', () => toast('Tozalash — demo')),
+        _HubActionSpec(LucideIcons.bookmark, 'Saqlangan xizmatlar', 'Tez orada', () => toast('Saqlanganlar — tez orada')),
+        _HubActionSpec(LucideIcons.sprayCan, 'General tozalash', 'Katta ko‘lamli ishlar', () => toast('Tozalash — tez orada')),
       ],
       ServiceHubKind.avtoYordam => [
-        _HubActionSpec(LucideIcons.car, 'Evakuator chaqirish', 'Eng yaqin texnika', () => toast('Evakuator yo‘lda — demo')),
-        _HubActionSpec(LucideIcons.fuel, 'Benzin yetkazish', 'AI-92, AI-95 va h.k.', () => toast('Benzin buyurtma qilindi — demo')),
-        _HubActionSpec(LucideIcons.wrench, 'Joyida ta’mirlash', 'Mobil usta jamoasi', () => toast('Usta jamoasi chaqirildi — demo')),
+        _HubActionSpec(LucideIcons.car, 'Evakuator chaqirish', 'Eng yaqin texnika', () => toast('Evakuator yo‘lda — tez orada')),
+        _HubActionSpec(LucideIcons.fuel, 'Benzin yetkazish', 'AI-92, AI-95 va h.k.', () => toast('Benzin buyurtma qilindi — tez orada')),
+        _HubActionSpec(LucideIcons.wrench, 'Joyida ta’mirlash', 'Mobil usta jamoasi', () => toast('Usta jamoasi chaqirildi — tez orada')),
       ],
       ServiceHubKind.konditsioner => [
-        _HubActionSpec(LucideIcons.wind, 'Profilaktika xizmati', 'Tozalash va tekshirish', () => toast('Profilaktika — demo')),
-        _HubActionSpec(LucideIcons.snowflake, 'Freon quyish', 'Gaz to‘ldirish xizmati', () => toast('Gaz quyish — demo')),
+        _HubActionSpec(LucideIcons.wind, 'Profilaktika xizmati', 'Tozalash va tekshirish', () => toast('Profilaktika — tez orada')),
+        _HubActionSpec(LucideIcons.snowflake, 'Freon quyish', 'Gaz to‘ldirish xizmati', () => toast('Gaz quyish — tez orada')),
       ],
       ServiceHubKind.enaga => [
-        _HubActionSpec(LucideIcons.clock, 'Soatbay enaga', 'Bir necha soatga qarash', () => toast('Soatbay — demo')),
-        _HubActionSpec(LucideIcons.home, 'Doimiy enaga', 'Haftalik yoki oylik ish', () => toast('Hiring — demo')),
+        _HubActionSpec(LucideIcons.clock, 'Soatbay enaga', 'Bir necha soatga qarash', () => toast('Soatbay — tez orada')),
+        _HubActionSpec(LucideIcons.home, 'Doimiy enaga', 'Haftalik yoki oylik ish', () => toast('Hiring — tez orada')),
       ],
       ServiceHubKind.repetitor => [
-        _HubActionSpec(LucideIcons.bookOpen, 'Individual darslar', 'Uyga chaqirish yoki onlayn', () => toast('Repetitor — demo')),
-        _HubActionSpec(LucideIcons.graduationCap, 'O‘quv markazlari', 'Guruh darslari va kurslar', () => toast('Markazlar — demo')),
+        _HubActionSpec(LucideIcons.bookOpen, 'Individual darslar', 'Uyga chaqirish yoki onlayn', () => toast('Repetitor — tez orada')),
+        _HubActionSpec(LucideIcons.graduationCap, 'O‘quv markazlari', 'Guruh darslari va kurslar', () => toast('Markazlar — tez orada')),
       ],
       ServiceHubKind.ishchi => [
-        _HubActionSpec(LucideIcons.bookmark, 'Saqlangan ustalar', 'Tez orada', () => toast('Saqlanganlar — demo')),
-        _HubActionSpec(LucideIcons.package, 'Yuk ko‘tarish', 'Kunlik yordamchi', () => toast('Yuk xizmati — demo')),
+        _HubActionSpec(LucideIcons.bookmark, 'Saqlangan ustalar', 'Tez orada', () => toast('Saqlanganlar — tez orada')),
+        _HubActionSpec(LucideIcons.package, 'Yuk ko‘tarish', 'Kunlik yordamchi', () => toast('Yuk xizmati — tez orada')),
       ],
       ServiceHubKind.usta => [
-        _HubActionSpec(LucideIcons.bookmark, 'Saqlangan ustalar', 'Tez orada', () => toast('Saqlanganlar — demo')),
-        _HubActionSpec(LucideIcons.hammer, 'Uy-rozgor tamirlash', 'Mebel, eshik...', () => toast('Tamirlash — demo')),
+        _HubActionSpec(LucideIcons.bookmark, 'Saqlangan ustalar', 'Tez orada', () => toast('Saqlanganlar — tez orada')),
+        _HubActionSpec(LucideIcons.hammer, 'Uy-rozgor tamirlash', 'Mebel, eshik...', () => toast('Tamirlash — tez orada')),
       ],
       // 6 ta YANGI:
       ServiceHubKind.dezinfeksiya => [
@@ -559,7 +559,7 @@ class _ActionList extends StatelessWidget {
       ],
     } + [
       _HubActionSpec(LucideIcons.layoutGrid, 'Barcha xizmatlar', 'To‘liq katalog', () => Navigator.push(context, MaterialPageRoute(builder: (_) => AllCategoriesScreen()))),
-      _HubActionSpec(LucideIcons.headphones, 'Qo‘llab-quvvatlash', 'Chat yoki qo‘ng‘iroq', () => toast('Support — demo')),
+      _HubActionSpec(LucideIcons.headphones, 'Qo‘llab-quvvatlash', 'Chat yoki qo‘ng‘iroq', () => toast('Support — tez orada')),
     ];
   }
 }

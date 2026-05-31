@@ -7,6 +7,7 @@ import '../widgets/card_item_widget.dart';
 import '../widgets/cashback_card_widget.dart';
 import '../widgets/glass/glass_scaffold.dart';
 import '../widgets/glass/glass_surface.dart';
+import '../widgets/provider_portal_entry.dart';
 import '../theme/glass_tokens.dart';
 import 'auth/auth_gate_screen.dart';
 
@@ -57,6 +58,9 @@ class ProfileScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 20),
+              _sectionTitle(context, 'Soha egasi'),
+              const ProviderPortalEntry(compact: true),
+              const SizedBox(height: 16),
               _sectionTitle(context, 'Mening kartalarim'),
               ...provider.cards.map(
                 (card) => Padding(

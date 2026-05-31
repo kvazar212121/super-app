@@ -1,6 +1,6 @@
 from math import ceil
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, func
+from sqlalchemy import select, func, or_
 from fastapi import HTTPException, status
 
 from app.models.provider import Provider
@@ -16,6 +16,7 @@ class ProviderService:
         db: AsyncSession,
         category_id: int | None = None,
         category_key: str | None = None,
+        search: str | None = None,
         page: int = 1,
         per_page: int = 20,
         lat: float | None = None,
@@ -36,6 +37,16 @@ class ProviderService:
         elif category_key:
             base = base.join(Category).where(Category.key == category_key)
             count_base = count_base.join(Category).where(Category.key == category_key)
+
+        if search:
+            term = f"%{search.strip()}%"
+            search_filter = or_(
+                Provider.name.ilike(term),
+                Provider.address.ilike(term),
+                Provider.phone.ilike(term),
+            )
+            base = base.where(search_filter)
+            count_base = count_base.where(search_filter)
 
         total = (await db.execute(count_base)).scalar() or 0
 

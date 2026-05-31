@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
-import '../config/app_config.dart';
 import '../services/api_service.dart';
-import '../services/demo_auth_service.dart';
+import '../utils/phone_utils.dart';
 
-/// Auth holati — login/register/logout va token boshqarish.
+/// Auth holati — OTP orqali login/register.
 class AuthProvider extends ChangeNotifier {
   final ApiService _api = ApiService();
 
@@ -17,7 +16,6 @@ class AuthProvider extends ChangeNotifier {
   bool get isAuthenticated => _isAuthenticated;
   String? get error => _error;
   Map<String, dynamic>? get user => _user;
-  bool get isOfflineDemo => !AppConfig.useBackend;
 
   String get displayName {
     if (!_isAuthenticated || _user == null) return 'Mehmon';
@@ -34,15 +32,6 @@ class AuthProvider extends ChangeNotifier {
   }
 
   Future<bool> tryAutoLogin() async {
-    if (!AppConfig.useBackend) {
-      final user = await DemoAuthService.loadSession();
-      if (user == null) return false;
-      _user = user;
-      _isAuthenticated = true;
-      notifyListeners();
-      return true;
-    }
-
     try {
       await _api.loadTokens();
       if (!_api.hasToken) return false;
@@ -60,32 +49,60 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
+  Future<Map<String, dynamic>?> sendOtp({
+    required String phone,
+    String purpose = 'auth',
+  }) async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+    try {
+      final data = await _api.sendOtp(phone: normalizeUzPhone(phone), purpose: purpose);
+      _isLoading = false;
+      notifyListeners();
+      return data;
+    } catch (e) {
+      _error = _extractError(e);
+      _isLoading = false;
+      notifyListeners();
+      return null;
+    }
+  }
+
+  Future<Map<String, dynamic>?> verifyOtp({
+    required String phone,
+    required String code,
+  }) async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+    try {
+      final data = await _api.verifyOtp(phone: phone, code: code);
+      if (data['user_exists'] == true && data['user'] != null) {
+        _user = Map<String, dynamic>.from(data['user'] as Map);
+        _isAuthenticated = true;
+      }
+      _isLoading = false;
+      notifyListeners();
+      return data;
+    } catch (e) {
+      _error = _extractError(e);
+      _isLoading = false;
+      notifyListeners();
+      return null;
+    }
+  }
+
   Future<bool> register({
     required String name,
     required String surname,
     required String phone,
     required String password,
-    String? pin,
+    required String verificationToken,
   }) async {
     _isLoading = true;
     _error = null;
     notifyListeners();
-
-    if (!AppConfig.useBackend) {
-      await Future.delayed(const Duration(milliseconds: 350));
-      final user = DemoAuthService.register(
-        name: name.trim(),
-        surname: surname.trim(),
-        phone: phone,
-        pin: pin,
-      );
-      await DemoAuthService.saveSession(user);
-      _user = user;
-      _isAuthenticated = true;
-      _isLoading = false;
-      notifyListeners();
-      return true;
-    }
 
     try {
       final data = await _api.register(
@@ -93,6 +110,7 @@ class AuthProvider extends ChangeNotifier {
         surname: surname,
         phone: phone,
         password: password,
+        verificationToken: verificationToken,
       );
       _user = data['user'];
       _isAuthenticated = true;
@@ -107,6 +125,7 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
+  /// Eski parol login — faqat maxsus holatlar uchun (admin).
   Future<bool> login({
     required String phone,
     required String password,
@@ -115,26 +134,10 @@ class AuthProvider extends ChangeNotifier {
     _error = null;
     notifyListeners();
 
-    if (!AppConfig.useBackend) {
-      await Future.delayed(const Duration(milliseconds: 350));
-      final user = await DemoAuthService.tryLogin(phone, password);
-      if (user == null) {
-        _error = 'Telefon yoki parol/PIN noto\'g\'ri';
-        _isLoading = false;
-        notifyListeners();
-        return false;
-      }
-      await DemoAuthService.saveSession(user);
-      _user = user;
-      _isAuthenticated = true;
-      _isLoading = false;
-      notifyListeners();
-      return true;
-    }
-
     try {
-      final data = await _api.login(phone: phone, password: password);
-      _user = data['user'];
+      await _api.login(phone: phone, password: password);
+      final userData = await _api.getMe();
+      _user = userData;
       _isAuthenticated = true;
       _isLoading = false;
       notifyListeners();
@@ -148,38 +151,25 @@ class AuthProvider extends ChangeNotifier {
   }
 
   Future<void> logout() async {
-    if (!AppConfig.useBackend) {
-      await DemoAuthService.clearSession();
-    } else {
-      await _api.clearTokens();
-    }
+    await _api.clearTokens();
     _isAuthenticated = false;
     _user = null;
     _error = null;
     notifyListeners();
   }
 
-  void updateUserData(Map<String, dynamic> newData) {
-    _user = newData;
-    notifyListeners();
-  }
-
-  void clearError() {
-    _error = null;
-    notifyListeners();
-  }
-
-  String _extractError(dynamic e) {
+  String _extractError(Object e) {
     if (e is DioException) {
       final data = e.response?.data;
-      if (data is Map && data.containsKey('detail')) {
-        return data['detail'].toString();
+      if (data is Map && data['detail'] != null) {
+        final detail = data['detail'];
+        if (detail is String) return detail;
+        if (detail is List && detail.isNotEmpty) {
+          return detail.first['msg']?.toString() ?? 'Xatolik yuz berdi';
+        }
       }
-      if (e.type == DioExceptionType.connectionTimeout ||
-          e.type == DioExceptionType.connectionError) {
-        return 'Server bilan aloqa yo\'q. Internet yoki serverni tekshiring.';
-      }
+      return e.message ?? 'Tarmoq xatoligi';
     }
-    return 'Xatolik yuz berdi. Qayta urinib ko\'ring.';
+    return e.toString();
   }
 }

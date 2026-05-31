@@ -1,41 +1,98 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../models/barber_shop.dart';
+import '../models/service_hub_kind.dart';
 import '../screens/barber_map_screen.dart';
+import '../services/api_service.dart';
 import '../theme/glass_tokens.dart';
 import 'glass/glass_surface.dart';
 
-class _ServiceEntry {
-  final String name;
-  final IconData icon;
-  final Color color;
-  const _ServiceEntry({required this.name, required this.icon, required this.color});
-}
-
-class SearchResultsWidget extends StatelessWidget {
+class SearchResultsWidget extends StatefulWidget {
   final String query;
   const SearchResultsWidget({super.key, required this.query});
 
   @override
-  Widget build(BuildContext context) {
-    const services = <_ServiceEntry>[
-      _ServiceEntry(name: "Sartarosh", icon: LucideIcons.scissors, color: Colors.blue),
-      _ServiceEntry(name: "Salon", icon: LucideIcons.sparkles, color: Colors.pink),
-      _ServiceEntry(name: "Futbol", icon: LucideIcons.trophy, color: Colors.green),
-      _ServiceEntry(name: "Ishchi", icon: LucideIcons.users, color: Colors.orange),
-      _ServiceEntry(name: "Usta", icon: LucideIcons.wrench, color: Colors.teal),
-      _ServiceEntry(name: "Elektrik", icon: LucideIcons.zap, color: Color(0xFFF59E0B)),
-      _ServiceEntry(name: "Santexnik", icon: LucideIcons.droplet, color: Colors.lightBlue),
-      _ServiceEntry(name: "Oshpaz", icon: LucideIcons.utensils, color: Colors.brown),
-      _ServiceEntry(name: "Haydovchi", icon: LucideIcons.car, color: Colors.indigo),
-    ];
+  State<SearchResultsWidget> createState() => _SearchResultsWidgetState();
+}
 
-    if (query.isEmpty) {
+class _SearchResultsWidgetState extends State<SearchResultsWidget> {
+  final _api = ApiService();
+  List<BarberShop> _providers = [];
+  List<Map<String, dynamic>> _categories = [];
+  bool _loading = true;
+  String? _error;
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  @override
+  void didUpdateWidget(covariant SearchResultsWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.query != widget.query) _load();
+  }
+
+  Future<void> _load() async {
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
+    try {
+      if (widget.query.isEmpty) {
+        final res = await _api.getProviders(categoryKey: 'sartarosh', perPage: 20);
+        final items = (res['items'] as List<dynamic>? ?? [])
+            .cast<Map<String, dynamic>>();
+        _providers = items.map(BarberShop.fromProviderJson).toList();
+        _categories = [];
+      } else {
+        final cats = await _api.getCategories();
+        _categories = cats.cast<Map<String, dynamic>>().where((c) {
+          final title = (c['title_uz'] as String? ?? '').toLowerCase();
+          return title.contains(widget.query.toLowerCase());
+        }).toList();
+
+        final res = await _api.getProviders(search: widget.query, perPage: 30);
+        final items = (res['items'] as List<dynamic>? ?? [])
+            .cast<Map<String, dynamic>>();
+        _providers = items.map(BarberShop.fromProviderJson).toList();
+      }
+    } catch (e) {
+      _error = 'Ma\'lumotlarni yuklab bo\'lmadi';
+      _providers = [];
+      _categories = [];
+    }
+    if (mounted) {
+      setState(() => _loading = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_loading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+    if (_error != null) {
+      return Center(
+        child: Text(_error!, style: TextStyle(color: GlassTokens.secondaryText(context))),
+      );
+    }
+
+    if (widget.query.isEmpty) {
+      if (_providers.isEmpty) {
+        return Center(
+          child: Text(
+            'Provayderlar topilmadi',
+            style: TextStyle(color: GlassTokens.secondaryText(context)),
+          ),
+        );
+      }
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            "Yaqin atrofdagi sartaroshlar",
+            'Yaqin atrofdagi xizmatlar',
             style: TextStyle(
               fontWeight: FontWeight.w800,
               fontSize: 16,
@@ -45,53 +102,93 @@ class SearchResultsWidget extends StatelessWidget {
           const SizedBox(height: 10),
           Expanded(
             child: ListView.builder(
-              itemCount: BarberShop.demoShops.length,
-              itemBuilder: (ctx, i) => _ShopListItem(shop: BarberShop.demoShops[i]),
+              itemCount: _providers.length,
+              itemBuilder: (ctx, i) => _ShopListItem(shop: _providers[i]),
             ),
           ),
         ],
       );
     }
 
-    final filtered = services
-        .where((s) => s.name.toLowerCase().contains(query.toLowerCase()))
-        .toList();
-    return ListView.builder(
-      itemCount: filtered.length,
-      itemBuilder: (ctx, i) {
-        final s = filtered[i];
-        return GlassSurface(
-          margin: const EdgeInsets.only(bottom: 10),
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-          borderRadius: GlassTokens.radiusMd,
-          onTap: () {},
-          child: Row(
-            children: [
-              Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: s.color.withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: s.color.withValues(alpha: 0.2)),
-                ),
-                child: Icon(s.icon, color: s.color, size: 20),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Text(
-                  s.name,
-                  style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    color: GlassTokens.primaryText(context),
-                  ),
-                ),
-              ),
-              Icon(LucideIcons.chevronRight, color: GlassTokens.secondaryText(context), size: 18),
-            ],
+    final categoryTiles = _categories.map((c) {
+      final key = c['key'] as String? ?? '';
+      final kind = ServiceHubKind.values.where((e) => e.name == key).firstOrNull;
+      return _CategoryTile(
+        title: c['title_uz'] as String? ?? key,
+        icon: kind?.icon ?? LucideIcons.layoutGrid,
+        color: _parseColor(c['accent_color'] as String?),
+      );
+    }).toList();
+
+    if (categoryTiles.isEmpty && _providers.isEmpty) {
+      return Center(
+        child: Text(
+          'Natija topilmadi',
+          style: TextStyle(color: GlassTokens.secondaryText(context)),
+        ),
+      );
+    }
+
+    return ListView(
+      children: [
+        ...categoryTiles,
+        ..._providers.map((p) => _ShopListItem(shop: p)),
+      ],
+    );
+  }
+
+  Color _parseColor(String? hex) {
+    if (hex == null || hex.isEmpty) return const Color(0xFF6366F1);
+    try {
+      final h = hex.replaceFirst('#', '');
+      return Color(int.parse('FF$h', radix: 16));
+    } catch (_) {
+      return const Color(0xFF6366F1);
+    }
+  }
+}
+
+class _CategoryTile extends StatelessWidget {
+  final String title;
+  final IconData icon;
+  final Color color;
+
+  const _CategoryTile({
+    required this.title,
+    required this.icon,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GlassSurface(
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+      borderRadius: GlassTokens.radiusMd,
+      child: Row(
+        children: [
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: color.withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: color.withValues(alpha: 0.2)),
+            ),
+            child: Icon(icon, color: color, size: 20),
           ),
-        );
-      },
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              title,
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                color: GlassTokens.primaryText(context),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

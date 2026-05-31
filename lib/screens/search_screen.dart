@@ -13,7 +13,7 @@ class SearchScreen extends StatefulWidget {
 
 class _SearchScreenState extends State<SearchScreen> {
   final _controller = TextEditingController();
-  final List<String> _recentSearches = ['Sartarosh', 'Elektrik', 'Usta'];
+  final List<String> _recentSearches = [];
 
   @override
   Widget build(BuildContext context) {

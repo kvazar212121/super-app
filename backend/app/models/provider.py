@@ -21,6 +21,9 @@ class Provider(Base):
     cover_image: Mapped[str | None] = mapped_column(String(500), nullable=True)
     metadata_json: Mapped[dict | None] = mapped_column(JSON, nullable=True)
     is_active: Mapped[bool] = mapped_column(default=True)
+    owner_user_id: Mapped[int | None] = mapped_column(
+        Integer, ForeignKey("users.id"), nullable=True, index=True
+    )
 
     category = relationship("Category", back_populates="providers")
     orders = relationship("Order", back_populates="provider", lazy="selectin")

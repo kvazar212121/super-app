@@ -51,24 +51,4 @@ class PaymentCard {
     };
   }
 
-  static List<PaymentCard> demoCards = [
-    PaymentCard(
-      id: '1',
-      cardNumber: '8600123456789012',
-      cardHolder: 'KUDRATULLOH RAHIMOV',
-      expiryDate: '12/26',
-      cardType: 'uzcard',
-      balance: 250000,
-      isDefault: true,
-    ),
-    PaymentCard(
-      id: '2',
-      cardNumber: '9860123456789012',
-      cardHolder: 'KUDRATULLOH RAHIMOV',
-      expiryDate: '08/25',
-      cardType: 'humo',
-      balance: 180000,
-      isDefault: false,
-    ),
-  ];
 }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
-import '../../services/demo_auth_service.dart';
+import '../../utils/phone_utils.dart';
 
 /// +998 prefiksi oldindan, foydalanuvchi faqat 9 raqam kiritadi.
 class UzPhoneField extends StatelessWidget {
@@ -22,7 +22,7 @@ class UzPhoneField extends StatelessWidget {
       text.replaceAll(RegExp(r'\D'), '');
 
   static String fullPhone(TextEditingController c) =>
-      DemoAuthService.normalizePhone(digitsOnly(c.text));
+      normalizeUzPhone(digitsOnly(c.text));
 
   static String? validateNineDigits(String? value) {
     final d = digitsOnly(value ?? '');

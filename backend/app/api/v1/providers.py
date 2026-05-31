@@ -15,6 +15,7 @@ router = APIRouter(prefix="/providers", tags=["providers"])
 async def list_providers(
     category_id: int | None = Query(None),
     category_key: str | None = Query(None),
+    search: str | None = Query(None),
     page: int = Query(1, ge=1),
     per_page: int = Query(20, ge=1, le=100),
     lat: float | None = Query(None),
@@ -22,7 +23,7 @@ async def list_providers(
     db: AsyncSession = Depends(get_db),
 ):
     items, total = await ProviderService.list_providers(
-        db, category_id, category_key, page, per_page, lat, lng
+        db, category_id, category_key, search, page, per_page, lat, lng
     )
     pages = (total + per_page - 1) // per_page
     return PaginatedResponse(

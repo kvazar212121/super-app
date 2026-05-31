@@ -1,8 +1,8 @@
-"""Demo/mock ma'lumotlar — Flutter va admin panel mockData dan."""
+"""Seed ma'lumotlar — PostgreSQL ga yuklash uchun."""
 
 from datetime import datetime, timedelta, timezone
 
-# ── Foydalanuvchilar (admin mock + Flutter demo) ─────────────────────────────
+# ── Foydalanuvchilar (seed) ─────────────────────────────────────────────
 USERS = [
     {"name": "Kudratulloh", "surname": "Rahimov", "phone": "+998901112233", "balance": 250000, "cashback": 18500, "is_premium": True, "password": "demo1234"},
     {"name": "Abdulloh", "surname": "Karimov", "phone": "+998901234567", "balance": 150000, "cashback": 12500, "is_premium": True, "password": "demo1234"},

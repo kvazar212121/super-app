@@ -65,6 +65,7 @@ sudo certbot renew --dry-run
 
 echo ""
 echo "Tayyor! HTTPS manzillar:"
+echo "  https://hubservis.uz/"
 echo "  https://hubservis.uz/admin/login"
 echo "  https://api.hubservis.uz/api/v1/health"
 echo "  https://api.hubservis.uz/docs"

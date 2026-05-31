@@ -132,41 +132,6 @@ class ServiceOrder {
     };
   }
 
-  static List<ServiceOrder> demoOrders = [
-    ServiceOrder(
-      id: "1",
-      category: ServiceHubKind.sartarosh,
-      serviceName: "Sartarosh xizmati",
-      providerName: "Barber Pro",
-      variant: 'Erkaklar kesimi',
-      address: 'Toshkent, Amir Temur ko‘chasi 15',
-      date: DateTime.now().subtract(const Duration(days: 1)),
-      price: 50000,
-      status: OrderStatus.completed,
-    ),
-    ServiceOrder(
-      id: "2",
-      category: ServiceHubKind.elektrik,
-      serviceName: "Elektrik xizmati",
-      providerName: "Elektrik servis",
-      variant: 'Rozetka/lyustra montaj',
-      address: 'Toshkent, Chilonzor 5-mavze',
-      date: DateTime.now(),
-      price: 120000,
-      status: OrderStatus.inProgress,
-    ),
-    ServiceOrder(
-      id: "3",
-      category: ServiceHubKind.santexnik,
-      serviceName: "Santexnik xizmati",
-      providerName: "Suv oqimi",
-      variant: 'Smesitel almashtirish',
-      address: 'Toshkent, Yunusobod 14',
-      date: DateTime.now().add(const Duration(days: 2)),
-      price: 80000,
-      status: OrderStatus.pending,
-    ),
-  ];
 
   String get statusText {
     switch (status) {

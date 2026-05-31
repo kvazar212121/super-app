@@ -6,11 +6,11 @@ from pathlib import Path
 
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
-from sqlalchemy import select
+from sqlalchemy import select, text
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 from starlette.responses import Response
 
@@ -129,9 +129,15 @@ async def lifespan(app: FastAPI):
     root_logger = logging.getLogger()
     root_logger.addFilter(request_id_filter)
 
-    # Create tables
+    # Create tables + yangi ustunlar
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
+        await conn.execute(text(
+            "ALTER TABLE providers ADD COLUMN IF NOT EXISTS owner_user_id INTEGER REFERENCES users(id)"
+        ))
+        await conn.execute(text(
+            "CREATE INDEX IF NOT EXISTS ix_providers_owner_user_id ON providers (owner_user_id)"
+        ))
 
     # Seed admin user
     async with async_session() as db:
@@ -168,8 +174,12 @@ def create_app() -> FastAPI:
     # So'rovlarni loglash middleware
     app.add_middleware(RequestLoggingMiddleware)
 
+    LANDING_HTML = Path(__file__).resolve().parent / "static" / "landing" / "index.html"
+
     @app.get("/")
     async def root():
+        if LANDING_HTML.is_file():
+            return FileResponse(LANDING_HTML, media_type="text/html")
         return {
             "name": settings.app_name,
             "docs": "/docs",

@@ -8,8 +8,9 @@ class Settings(BaseSettings):
     )
 
     app_name: str = "super-app-api"
-    debug: bool = True  # Development: parolsiz kirish uchun True
-    bypass_auth: bool = True  # Development: auth bypass
+    debug: bool = True  # Development
+    bypass_auth: bool = False  # Production: faqat OTP orqali kirish
+    require_otp_auth: bool = True  # Login/register uchun SMS OTP majburiy
     api_v1_prefix: str = "/api/v1"
 
     database_url: str = (
@@ -41,6 +42,22 @@ class Settings(BaseSettings):
     # Admin
     admin_default_phone: str = "admin"
     admin_default_password: str = "admin123"
+
+    # SMS OTP
+    otp_length: int = 6
+    otp_expire_seconds: int = 300
+    otp_max_attempts: int = 5
+    otp_verification_token_minutes: int = 10
+    otp_dev_expose: bool = False  # Production: kodni API javobida ko'rsatmaslik
+    sms_provider: str = "console"  # console | devsms | eskiz
+    devsms_base_url: str = "https://devsms.uz/api"
+    devsms_token: str = ""
+    devsms_sender: str = "4546"
+    devsms_callback_url: str = ""
+    sms_otp_template: str = "PROWORKER mobil ilovasidan ro'yxatdan o'tish uchun tasdiqlash kodi: {code}"
+    eskiz_email: str = ""
+    eskiz_password: str = ""
+    eskiz_sender: str = "4546"
 
 
 @lru_cache

@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../../config/provider_category_config.dart';
+import '../../providers/auth_provider.dart';
+import '../../services/api_service.dart';
+import '../../services/provider_portal_service.dart';
+import '../../utils/phone_utils.dart';
 import '../provider_side/provider_theme.dart';
 import 'provider_success_screen.dart';
 
 class ProviderDataEntryScreen extends StatefulWidget {
   final String categoryId;
   final String categoryName;
-  final int? categoryDbId; // Backend database ID (offline rejimda ishlatilmaydi)
+  final int? categoryDbId;
 
   const ProviderDataEntryScreen({
     super.key,
@@ -25,6 +31,7 @@ class _ProviderDataEntryScreenState extends State<ProviderDataEntryScreen> {
   final _hoursCtrl = TextEditingController();
   final _priceCtrl = TextEditingController();
   final _extraCtrl = TextEditingController();
+  bool _submitting = false;
 
   @override
   void dispose() {
@@ -37,13 +44,66 @@ class _ProviderDataEntryScreenState extends State<ProviderDataEntryScreen> {
     super.dispose();
   }
 
-  void _submitProvider() {
-    // Demo rejimi: maydonlar ixtiyoriy, to'ldirmasdan ham davom etish mumkin.
+  Future<void> _submitProvider() async {
+    if (_submitting) return;
+    setState(() => _submitting = true);
+
+    final auth = context.read<AuthProvider>();
+    final user = auth.user;
+    final name = _nameCtrl.text.trim().isNotEmpty
+        ? _nameCtrl.text.trim()
+        : '${user?['name'] ?? ''} ${user?['surname'] ?? ''}'.trim();
+    final address = _addressCtrl.text.trim().isNotEmpty
+        ? _addressCtrl.text.trim()
+        : 'Toshkent shahri';
+    final phone = _phoneCtrl.text.trim().isNotEmpty
+        ? normalizeUzPhone(_phoneCtrl.text.replaceAll(RegExp(r'\D'), ''))
+        : (user?['phone'] as String? ?? '');
+
+    int? categoryId = widget.categoryDbId;
+    final regConfig = ProviderCategoryConfig.byRegistrationId(widget.categoryId);
+    if (categoryId == null) {
+      try {
+        final cats = await ApiService().getCategories();
+        final lookupKey = regConfig?.categoryKey ?? widget.categoryId;
+        for (final c in cats) {
+          if (c['key'] == lookupKey) {
+            categoryId = c['id'] as int?;
+            break;
+          }
+        }
+      } catch (_) {}
+    }
+
+    if (categoryId != null && auth.isAuthenticated) {
+      try {
+        await ProviderPortalService().register(
+          categoryId: categoryId,
+          name: name.isNotEmpty ? name : widget.categoryName,
+          address: address,
+          phone: phone,
+          metadata: {
+            if (_hoursCtrl.text.trim().isNotEmpty) 'hours': _hoursCtrl.text.trim(),
+            if (_priceCtrl.text.trim().isNotEmpty) 'price_note': _priceCtrl.text.trim(),
+            if (_extraCtrl.text.trim().isNotEmpty) 'extra': _extraCtrl.text.trim(),
+          },
+        );
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Xatolik: $e')),
+          );
+        }
+      }
+    }
+
+    if (!mounted) return;
+    setState(() => _submitting = false);
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(
         builder: (context) => ProviderSuccessScreen(
-          providerName: _nameCtrl.text.trim(),
+          providerName: name,
           categoryName: widget.categoryName,
           categoryId: widget.categoryId,
         ),
@@ -72,38 +132,31 @@ class _ProviderDataEntryScreenState extends State<ProviderDataEntryScreen> {
             ),
             const SizedBox(height: 6),
             Text(
-              'Maydonlar ixtiyoriy — keyinroq to\'ldirsangiz ham bo\'ladi.',
+              'Ma\'lumotlar serverga yuboriladi. Admin tasdiqlagach ko\'rinadi.',
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
               ),
             ),
             const SizedBox(height: 24),
-            _buildTextField(_nameCtrl, 'Ish joyi nomi / Ismingiz', Icons.person_outline),
+            TextField(controller: _nameCtrl, decoration: const InputDecoration(labelText: 'Nomi / Salon nomi')),
             const SizedBox(height: 16),
-            _buildTextField(_addressCtrl, 'Manzil', Icons.location_on_outlined),
+            TextField(controller: _addressCtrl, decoration: const InputDecoration(labelText: 'Manzil')),
             const SizedBox(height: 16),
-            _buildTextField(_phoneCtrl, 'Telefon raqam', Icons.phone, type: TextInputType.phone),
+            TextField(controller: _phoneCtrl, decoration: const InputDecoration(labelText: 'Telefon')),
             const SizedBox(height: 16),
-            _buildTextField(_hoursCtrl, 'Ish vaqti (Masalan: 09:00 - 18:00)', Icons.access_time),
+            TextField(controller: _hoursCtrl, decoration: const InputDecoration(labelText: 'Ish vaqti')),
             const SizedBox(height: 16),
-            if (widget.categoryId == 'barber' || widget.categoryId == 'salon')
-              _buildTextField(_priceCtrl, 'Xizmat narxi (min)', Icons.payments_outlined, type: TextInputType.number),
-            if (widget.categoryId == 'tutor')
-              _buildTextField(_extraCtrl, 'Fan nomi', Icons.book_outlined),
-            if (widget.categoryId == 'futbol')
-              _buildTextField(_extraCtrl, 'Maydonlar soni', Icons.sports_soccer, type: TextInputType.number),
+            TextField(controller: _priceCtrl, decoration: const InputDecoration(labelText: 'Narxlar (ixtiyoriy)')),
+            const SizedBox(height: 16),
+            TextField(controller: _extraCtrl, decoration: const InputDecoration(labelText: 'Qo\'shimcha ma\'lumot')),
             const SizedBox(height: 32),
             SizedBox(
               width: double.infinity,
               child: FilledButton(
-                onPressed: _submitProvider,
-                style: FilledButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                ),
-                child: const Text('Ro\'yxatdan o\'tish'),
+                onPressed: _submitting ? null : _submitProvider,
+                child: _submitting
+                    ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2))
+                    : const Text('Yuborish'),
               ),
             ),
           ],
@@ -111,28 +164,5 @@ class _ProviderDataEntryScreenState extends State<ProviderDataEntryScreen> {
       ),
     );
     }));
-  }
-
-  Widget _buildTextField(
-    TextEditingController controller,
-    String label,
-    IconData icon, {
-    TextInputType type = TextInputType.text,
-  }) {
-    return TextFormField(
-      controller: controller,
-      keyboardType: type,
-      decoration: InputDecoration(
-        labelText: label,
-        prefixIcon: Icon(icon),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.grey.withValues(alpha: 0.2)),
-        ),
-      ),
-    );
   }
 }

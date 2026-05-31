@@ -1,6 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../config/app_config.dart';
+
 /// Markaziy API xizmati — barcha backend so'rovlari shu orqali o'tadi.
 class ApiService {
   static final ApiService _instance = ApiService._internal();
@@ -13,15 +15,12 @@ class ApiService {
   // Callback: token muddati tugaganda auth providerga xabar berish
   void Function()? onTokenExpired;
 
-  /// ⚠️ Development uchun: backend Docker'dagi host
-  /// Android emulator: 10.0.2.2
-  /// iOS simulator / Web / Physical device: localhost yoki real IP
-  static const String baseUrl = 'http://localhost:8000';
+  static String get baseUrl => AppConfig.apiBaseUrl;
 
   ApiService._internal() {
     _dio = Dio(
       BaseOptions(
-        baseUrl: '$baseUrl/api/v1',
+        baseUrl: '${AppConfig.apiBaseUrl}/api/v1',
         connectTimeout: const Duration(seconds: 15),
         receiveTimeout: const Duration(seconds: 15),
         headers: {
@@ -105,18 +104,48 @@ class ApiService {
 
   // ─────────────── AUTH ───────────────
 
+  /// SMS OTP yuborish
+  Future<Map<String, dynamic>> sendOtp({
+    required String phone,
+    String purpose = 'auth',
+  }) async {
+    final response = await _dio.post('/auth/otp/send', data: {
+      'phone': phone,
+      'purpose': purpose,
+    });
+    return Map<String, dynamic>.from(response.data as Map);
+  }
+
+  /// SMS OTP tasdiqlash
+  Future<Map<String, dynamic>> verifyOtp({
+    required String phone,
+    required String code,
+  }) async {
+    final response = await _dio.post('/auth/otp/verify', data: {
+      'phone': phone,
+      'code': code,
+    });
+    final data = Map<String, dynamic>.from(response.data as Map);
+    if (data['access_token'] != null && data['refresh_token'] != null) {
+      await saveTokens(data['access_token'], data['refresh_token']);
+    }
+    return data;
+  }
+
   /// Ro'yxatdan o'tish
   Future<Map<String, dynamic>> register({
     required String name,
     required String surname,
     required String phone,
     required String password,
+    required String verificationToken,
   }) async {
     final response = await _dio.post('/auth/register', data: {
       'name': name,
       'surname': surname,
       'phone': phone,
       'password': password,
+      'verification_token': verificationToken,
     });
     final data = response.data;
     await saveTokens(data['access_token'], data['refresh_token']);
@@ -212,6 +241,7 @@ class ApiService {
   Future<Map<String, dynamic>> getProviders({
     int? categoryId,
     String? categoryKey,
+    String? search,
     int page = 1,
     int perPage = 20,
     double? lat,
@@ -223,6 +253,7 @@ class ApiService {
     };
     if (categoryId != null) params['category_id'] = categoryId;
     if (categoryKey != null) params['category_key'] = categoryKey;
+    if (search != null && search.isNotEmpty) params['search'] = search;
     if (lat != null) params['lat'] = lat;
     if (lng != null) params['lng'] = lng;
 
@@ -342,7 +373,7 @@ class ApiService {
 
   // ─────────────── PROVIDER REGISTRATION ───────────────
 
-  /// O'zini provayder sifatida ro'yxatdan o'tkazish
+  /// Soha egasi sifatida ro'yxatdan o'tish
   Future<Map<String, dynamic>> registerAsProvider({
     required int categoryId,
     required String name,
@@ -364,8 +395,74 @@ class ApiService {
     if (coverImage != null) data['cover_image'] = coverImage;
     if (metadata != null) data['metadata_json'] = metadata;
 
-    // Admin API orqali yaratish (hozircha)
-    final response = await _dio.post('/admin/providers', data: data);
+    final response = await _dio.post('/provider/register', data: data);
     return response.data;
+  }
+
+  // ─────────────── PROVIDER PORTAL ───────────────
+
+  Future<List<Map<String, dynamic>>> getMyProviders() async {
+    final response = await _dio.get('/provider/mine');
+    return (response.data as List<dynamic>).cast<Map<String, dynamic>>();
+  }
+
+  Future<Map<String, dynamic>> getProviderMe(String categoryKey) async {
+    final response = await _dio.get(
+      '/provider/me',
+      queryParameters: {'category_key': categoryKey},
+    );
+    return response.data;
+  }
+
+  Future<Map<String, dynamic>> getProviderStats(String categoryKey) async {
+    final response = await _dio.get(
+      '/provider/stats',
+      queryParameters: {'category_key': categoryKey},
+    );
+    return response.data;
+  }
+
+  Future<Map<String, dynamic>> getProviderCalendar(
+    String categoryKey,
+    DateTime day,
+  ) async {
+    final d =
+        '${day.year}-${day.month.toString().padLeft(2, '0')}-${day.day.toString().padLeft(2, '0')}';
+    final response = await _dio.get(
+      '/provider/calendar',
+      queryParameters: {'category_key': categoryKey, 'day': d},
+    );
+    return response.data;
+  }
+
+  Future<Map<String, dynamic>> getProviderReport(
+    String categoryKey,
+    String period,
+  ) async {
+    final response = await _dio.get(
+      '/provider/reports',
+      queryParameters: {'category_key': categoryKey, 'period': period},
+    );
+    return response.data;
+  }
+
+  Future<void> setProviderActive(String categoryKey, bool active) async {
+    await _dio.patch(
+      '/provider/me',
+      queryParameters: {'category_key': categoryKey},
+      data: {'is_active': active},
+    );
+  }
+
+  Future<void> updateProviderOrderStatus(
+    String categoryKey,
+    int orderId,
+    String status,
+  ) async {
+    await _dio.patch(
+      '/provider/orders/$orderId/status',
+      queryParameters: {'category_key': categoryKey},
+      data: {'status': status},
+    );
   }
 }

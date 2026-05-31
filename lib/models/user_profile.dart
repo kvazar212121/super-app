@@ -52,14 +52,4 @@ class UserProfile {
       isPremium: json['is_premium'] ?? false,
     );
   }
-  static UserProfile demo = UserProfile(
-    name: "Kudratulloh",
-    surname: "Rahimov",
-    phone: "+998 90 123 45 67",
-    avatarUrl: null,
-    telegramUsername: "@kudratulloh",
-    balance: 150000,
-    cashback: 12500,
-    isPremium: true,
-  );
 }

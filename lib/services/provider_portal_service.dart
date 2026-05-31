@@ -1,0 +1,52 @@
+import '../services/api_service.dart';
+
+/// Soha egasi paneli API.
+class ProviderPortalService {
+  static final ProviderPortalService _instance = ProviderPortalService._();
+  factory ProviderPortalService() => _instance;
+  ProviderPortalService._();
+
+  final ApiService _api = ApiService();
+
+  Future<List<Map<String, dynamic>>> listMine() => _api.getMyProviders();
+
+  Future<Map<String, dynamic>> getMe(String categoryKey) =>
+      _api.getProviderMe(categoryKey);
+
+  Future<Map<String, dynamic>> getStats(String categoryKey) =>
+      _api.getProviderStats(categoryKey);
+
+  Future<List<Map<String, dynamic>>> getTodayOrders(String categoryKey) async {
+    final data = await _api.getProviderCalendar(categoryKey, DateTime.now());
+    return (data['orders'] as List<dynamic>? ?? []).cast<Map<String, dynamic>>();
+  }
+
+  Future<Map<String, dynamic>> getCalendar(String categoryKey, DateTime day) =>
+      _api.getProviderCalendar(categoryKey, day);
+
+  Future<Map<String, dynamic>> getReport(String categoryKey, String period) =>
+      _api.getProviderReport(categoryKey, period);
+
+  Future<void> setActive(String categoryKey, bool active) =>
+      _api.setProviderActive(categoryKey, active);
+
+  Future<void> updateOrderStatus(
+    String categoryKey,
+    int orderId,
+    String status,
+  ) => _api.updateProviderOrderStatus(categoryKey, orderId, status);
+
+  Future<Map<String, dynamic>> register({
+    required int categoryId,
+    required String name,
+    required String address,
+    required String phone,
+    Map<String, dynamic>? metadata,
+  }) => _api.registerAsProvider(
+        categoryId: categoryId,
+        name: name,
+        address: address,
+        phone: phone,
+        metadata: metadata,
+      );
+}

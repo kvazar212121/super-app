@@ -802,107 +802,13 @@
             location.replace('/admin/login');
         }
 
-        // ===== MOCK DATA (fallback) =====
-        const mockData = {
-            users: [
-                { id: 1, name: 'Abdulloh Karimov', phone: '+998 90 123 45 67', balance: 150000, cashback: 12500, premium: true, created_at: '2025-01-15', status: 'active' },
-                { id: 2, name: 'Nilufar Rustamova', phone: '+998 91 234 56 78', balance: 85000, cashback: 7200, premium: false, created_at: '2025-02-20', status: 'active' },
-                { id: 3, name: 'Sardor Aliyev', phone: '+998 93 345 67 89', balance: 230000, cashback: 18900, premium: true, created_at: '2025-03-10', status: 'active' },
-                { id: 4, name: 'Dilnoza Hakimova', phone: '+998 94 456 78 90', balance: 45000, cashback: 3200, premium: false, created_at: '2025-04-05', status: 'blocked' },
-                { id: 5, name: 'Jasur Bekmurodov', phone: '+998 95 567 89 01', balance: 320000, cashback: 25600, premium: true, created_at: '2025-04-12', status: 'active' },
-                { id: 6, name: 'Malika Tursunova', phone: '+998 97 678 90 12', balance: 67000, cashback: 5400, premium: false, created_at: '2025-05-01', status: 'active' },
-                { id: 7, name: 'Bobur Normurodov', phone: '+998 99 789 01 23', balance: 190000, cashback: 14300, premium: true, created_at: '2025-05-08', status: 'active' },
-                { id: 8, name: 'Zarina Soliyeva', phone: '+998 90 890 12 34', balance: 12000, cashback: 800, premium: false, created_at: '2025-05-12', status: 'active' },
-            ],
-            providers: [
-                { id: 1, name: 'Usta Elektrik Pro', category: 'Elektrik', phone: '+998 90 111 22 33', rating: 4.8, orders: 156, status: 'active', created_at: '2024-11-01' },
-                { id: 2, name: 'Toza Klaster', category: 'Tozalash', phone: '+998 91 222 33 44', rating: 4.5, orders: 89, status: 'active', created_at: '2024-12-15' },
-                { id: 3, name: 'Santexnik Master', category: 'Santexnika', phone: '+998 93 333 44 55', rating: 4.9, orders: 203, status: 'active', created_at: '2025-01-05' },
-                { id: 4, name: 'Repair Plus', category: 'Taqmirlash', phone: '+998 94 444 55 66', rating: 3.8, orders: 45, status: 'pending', created_at: '2025-04-20' },
-                { id: 5, name: 'Quick Move', category: 'Ko\'chirish', phone: '+998 95 555 66 77', rating: 4.2, orders: 67, status: 'active', created_at: '2025-02-10' },
-                { id: 6, name: 'Beauty Salon Lux', category: 'Go\'zallik', phone: '+998 97 666 77 88', rating: 4.7, orders: 134, status: 'active', created_at: '2025-03-01' },
-                { id: 7, name: 'Green Garden', category: 'Bog\'bonlik', phone: '+998 99 777 88 99', rating: 4.0, orders: 28, status: 'blocked', created_at: '2025-01-20' },
-            ],
-            orders: [
-                { id: 1001, service: 'Elektrik ta\'mirlash', user: 'Abdulloh Karimov', provider: 'Usta Elektrik Pro', price: 250000, status: 'completed', created_at: '2025-05-14' },
-                { id: 1002, service: 'Uy tozalash', user: 'Nilufar Rustamova', provider: 'Toza Klaster', price: 180000, status: 'in_progress', created_at: '2025-05-15' },
-                { id: 1003, service: 'Santexnik xizmati', user: 'Sardor Aliyev', provider: 'Santexnik Master', price: 320000, status: 'confirmed', created_at: '2025-05-15' },
-                { id: 1004, service: 'Telefon ta\'mirlash', user: 'Dilnoza Hakimova', provider: 'Repair Plus', price: 95000, status: 'pending', created_at: '2025-05-15' },
-                { id: 1005, service: 'Ko\'chirish xizmati', user: 'Jasur Bekmurodov', provider: 'Quick Move', price: 450000, status: 'completed', created_at: '2025-05-13' },
-                { id: 1006, service: 'Soch turmagi', user: 'Malika Tursunova', provider: 'Beauty Salon Lux', price: 75000, status: 'completed', created_at: '2025-05-12' },
-                { id: 1007, service: 'Konditsioner o\'rnatish', user: 'Bobur Normurodov', provider: 'Usta Elektrik Pro', price: 380000, status: 'cancelled', created_at: '2025-05-11' },
-                { id: 1008, service: 'Kran ta\'mirlash', user: 'Zarina Soliyeva', provider: 'Santexnik Master', price: 120000, status: 'confirmed', created_at: '2025-05-15' },
-            ],
-            categories: [
-                {
-                    key: 'elektrik', title_uz: 'Elektrik xizmatlari', icon: '&#9889;', accent_color: '#F59E0B',
-                    variants: [
-                        { id: 1, label: 'Rozetka o\'rnatish', base_price: 50000 },
-                        { id: 2, label: 'Lyustra osish', base_price: 120000 },
-                        { id: 3, label: 'Elektrik ta\'mirlash', base_price: 200000 },
-                    ]
-                },
-                {
-                    key: 'santexnika', title_uz: 'Santexnika xizmatlari', icon: '&#128701;', accent_color: '#3B82F6',
-                    variants: [
-                        { id: 4, label: 'Kran ta\'mirlash', base_price: 80000 },
-                        { id: 5, label: 'Unitaz o\'rnatish', base_price: 250000 },
-                        { id: 6, label: 'Quvur ta\'mirlash', base_price: 300000 },
-                    ]
-                },
-                {
-                    key: 'tozalash', title_uz: 'Tozalash xizmatlari', icon: '&#129522;', accent_color: '#10B981',
-                    variants: [
-                        { id: 7, label: 'Uy tozalash', base_price: 150000 },
-                        { id: 8, label: 'Ofis tozalash', base_price: 200000 },
-                    ]
-                },
-                {
-                    key: 'gozallik', title_uz: 'Go\'zallik xizmatlari', icon: '&#128133;', accent_color: '#EC4899',
-                    variants: [
-                        { id: 9, label: 'Soch turmagi', base_price: 50000 },
-                        { id: 10, label: 'Manikyur', base_price: 40000 },
-                        { id: 11, label: 'Makiyaj', base_price: 80000 },
-                    ]
-                },
-                {
-                    key: 'kochirish', title_uz: 'Ko\'chirish xizmatlari', icon: '&#128666;', accent_color: '#8B5CF6',
-                    variants: [
-                        { id: 12, label: 'Xonadon ko\'chirish', base_price: 400000 },
-                        { id: 13, label: 'Ofis ko\'chirish', base_price: 600000 },
-                    ]
-                },
-            ],
-            reviews: [
-                { id: 1, user: 'Abdulloh Karimov', provider: 'Usta Elektrik Pro', rating: 5, text: 'Juda yaxshi ish qildi, tavsiya qilaman!', created_at: '2025-05-14' },
-                { id: 2, user: 'Nilufar Rustamova', provider: 'Toza Klaster', rating: 4, text: 'Toza va tez ishlashdi, lekin kechikib kelishdi.', created_at: '2025-05-13' },
-                { id: 3, user: 'Sardor Aliyev', provider: 'Santexnik Master', rating: 5, text: 'Professional usta, muammoni tez hal qildi.', created_at: '2025-05-12' },
-                { id: 4, user: 'Jasur Bekmurodov', provider: 'Quick Move', rating: 3, text: 'O\'rtacha, ba\'zi narsalar shikastlangan.', created_at: '2025-05-11' },
-                { id: 5, user: 'Malika Tursunova', provider: 'Beauty Salon Lux', rating: 5, text: 'Ajoyib natija, albatta qayta boraman!', created_at: '2025-05-10' },
-                { id: 6, user: 'Bobur Normurodov', provider: 'Usta Elektrik Pro', rating: 2, text: 'Narx juda qimmat edi, sifati ham yaxshi emas.', created_at: '2025-05-09' },
-            ],
-            notifications: [
-                { id: 1, type: 'push', title: 'Yangi chegirma!', message: 'Elektrik xizmatlarida 20% chegirma', target: 'all', sent_at: '2025-05-14 10:30', status: 'sent', count: 1250 },
-                { id: 2, type: 'email', title: 'Haftalik hisobot', message: 'Sizning haftalik faoliyat hisobingiz tayyor', target: 'users', sent_at: '2025-05-13 08:00', status: 'sent', count: 890 },
-                { id: 3, type: 'sms', title: 'Tizim yangilandi', message: 'Yangi funksiyalar qo\'shildi', target: 'all', sent_at: '2025-05-12 14:00', status: 'sent', count: 2100 },
-            ],
-            finance: {
-                total_revenue: 12580000,
-                commission: 1887000,
-                cashback_given: 251600,
-                platform_balance: 8750000,
-                commission_rate: 15,
-                cashback_rate: 2,
-                currency: 'UZS',
-                transactions: [
-                    { id: 1, type: 'income', description: 'Buyurtma #1001 - Komissiya', amount: 37500, date: '2025-05-14' },
-                    { id: 2, type: 'payout', description: 'To\'lov - Santexnik Master', amount: -272000, date: '2025-05-14' },
-                    { id: 3, type: 'income', description: 'Buyurtma #1002 - Komissiya', amount: 27000, date: '2025-05-15' },
-                    { id: 4, type: 'cashback', description: 'Cashback - Abdulloh K.', amount: -3600, date: '2025-05-15' },
-                    { id: 5, type: 'income', description: 'Buyurtma #1005 - Komissiya', amount: 67500, date: '2025-05-13' },
-                ]
-            }
-        };
+        function emptyPage() {
+            return { items: [], total: 0, pages: 1 };
+        }
+
+        function apiError(msg) {
+            showToast(msg || 'API xatoligi', 'error');
+        }
 
         // ===== UTILITY FUNCTIONS =====
         function formatMoney(amount) {
@@ -1021,10 +927,10 @@
             try {
                 const r = await api(API_BASE + '/stats');
                 if (r && r.ok) s = await r.json();
-            } catch(e) { console.warn('Stats fallback to default', e); }
+            } catch(e) { console.warn('Stats load error', e); apiError('Statistikani yuklab bo\'lmadi'); }
 
-            var recentOrders = mockData.orders.slice(0, 5);
-            var topProviders = mockData.providers.filter(function(p) { return p.status === 'active'; }).sort(function(a, b) { return b.rating - a.rating; }).slice(0, 5);
+            var recentOrders = [];
+            var topProviders = [];
             try {
                 const or = await api(API_BASE + '/orders?page=1&per_page=5');
                 if (or && or.ok) {
@@ -1147,10 +1053,13 @@
 
             var labels = [];
             var data = [];
-            var catLabels = mockData.categories.map(function(c) { return c.title_uz; });
-            var catData = [320, 245, 180, 410, 156];
+            var catLabels = [];
+            var catData = [];
 
             try {
+                await loadCategoriesCache();
+                catLabels = categoriesCache.map(function(c) { return c.title_uz; });
+                catData = categoriesCache.map(function() { return 0; });
                 const r = await api(API_BASE + '/chart-data?days=30');
                 if (r && r.ok) {
                     chartDataCache = await r.json();
@@ -1164,15 +1073,15 @@
                         catData = chartDataCache.top_categories.map(function(c) { return c.value; });
                     }
                 }
-            } catch(e) { console.warn('Chart data fallback', e); }
+            } catch(e) { console.warn('Chart data error', e); }
 
             if (labels.length === 0) {
-                for (var i = 29; i >= 0; i--) {
-                    var d = new Date();
-                    d.setDate(d.getDate() - i);
-                    labels.push(d.toLocaleDateString('uz-UZ', { day: 'numeric', month: 'short' }));
-                    data.push(Math.floor(Math.random() * 500000) + 150000);
-                }
+                labels = ['—'];
+                data = [0];
+            }
+            if (catLabels.length === 0) {
+                catLabels = ['—'];
+                catData = [0];
             }
 
             revenueChartInstance = new Chart(revenueCtx, {
@@ -1249,7 +1158,7 @@
                 const r = await api(url);
                 if (r && r.ok) usersData = await r.json();
             } catch(e) {
-                usersData = { items: mockData.users.map(function(u) { return { id: u.id, name: u.name, surname: '', phone: u.phone, balance: u.balance, cashback: u.cashback, is_premium: u.premium, is_admin: false, created_at: u.created_at }; }), total: mockData.users.length, pages: 1 };
+                usersData = emptyPage(); apiError('Foydalanuvchilarni yuklab bo\'lmadi');
             }
 
             mainContent.innerHTML =
@@ -1360,114 +1269,6 @@
             } catch(e) { showToast('Xatolik', 'error'); }
         }
 
-        function renderUserRows(users) {
-            return users.map(function(u) {
-                return '<tr>' +
-                    '<td>' + u.id + '</td>' +
-                    '<td><div class="table-user"><div class="table-avatar">' + getInitials(u.name) + '</div><span>' + u.name + '</span></div></td>' +
-                    '<td>' + u.phone + '</td>' +
-                    '<td>' + formatMoney(u.balance) + '</td>' +
-                    '<td>' + formatMoney(u.cashback) + '</td>' +
-                    '<td>' + (u.premium ? '<span class="badge-status confirmed">Premium</span>' : '<span class="badge-status pending">Oddiy</span>') + '</td>' +
-                    '<td>' + formatDate(u.created_at) + '</td>' +
-                    '<td><div class="action-group">' +
-                        '<button class="btn-icon" title="Ko\'rish" onclick="viewUser(' + u.id + ')">&#128065;</button>' +
-                        '<button class="btn-icon success" title="Tahrirlash" onclick="editUser(' + u.id + ')">&#9998;</button>' +
-                        '<button class="btn-icon warning" title="Bloklash" onclick="blockUser(' + u.id + ')">&#128274;</button>' +
-                        '<button class="btn-icon danger" title="O\'chirish" onclick="deleteUser(' + u.id + ')">&#128465;</button>' +
-                    '</div></td>' +
-                '</tr>';
-            }).join('');
-        }
-
-        function filterUsers() {
-            var search = document.getElementById('userSearch').value.toLowerCase();
-            var premium = document.getElementById('userPremiumFilter').value;
-            var status = document.getElementById('userStatusFilter').value;
-
-            var filtered = mockData.users.filter(function(u) {
-                if (search && u.name.toLowerCase().indexOf(search) === -1 && u.phone.indexOf(search) === -1) return false;
-                if (premium === 'premium' && !u.premium) return false;
-                if (premium === 'free' && u.premium) return false;
-                if (status !== 'all' && u.status !== status) return false;
-                return true;
-            });
-
-            document.getElementById('usersTableBody').innerHTML = renderUserRows(filtered);
-        }
-
-        function viewUser(id) {
-            var u = mockData.users.find(function(x) { return x.id === id; });
-            if (!u) return;
-            openModal('Foydalanuvchi ma\'lumotlari',
-                '<div class="detail-grid">' +
-                    '<div class="detail-item"><div class="detail-label">ID</div><div class="detail-value">' + u.id + '</div></div>' +
-                    '<div class="detail-item"><div class="detail-label">Ism</div><div class="detail-value">' + u.name + '</div></div>' +
-                    '<div class="detail-item"><div class="detail-label">Telefon</div><div class="detail-value">' + u.phone + '</div></div>' +
-                    '<div class="detail-item"><div class="detail-label">Balans</div><div class="detail-value">' + formatMoney(u.balance) + '</div></div>' +
-                    '<div class="detail-item"><div class="detail-label">Cashback</div><div class="detail-value">' + formatMoney(u.cashback) + '</div></div>' +
-                    '<div class="detail-item"><div class="detail-label">Premium</div><div class="detail-value">' + (u.premium ? 'Ha' : 'Yo\'q') + '</div></div>' +
-                    '<div class="detail-item"><div class="detail-label">Holat</div><div class="detail-value">' + statusBadge(u.status) + '</div></div>' +
-                    '<div class="detail-item"><div class="detail-label">Ro\'yxatdan o\'tgan</div><div class="detail-value">' + formatDate(u.created_at) + '</div></div>' +
-                '</div>',
-                '<button class="btn btn-secondary" onclick="closeModal()">Yopish</button>');
-        }
-
-        function editUser(id) {
-            var u = mockData.users.find(function(x) { return x.id === id; });
-            if (!u) return;
-            openModal('Foydalanuvchini tahrirlash',
-                '<div class="form-group"><label class="form-label">Ism</label><input type="text" class="form-input" id="editUserName" value="' + u.name + '"></div>' +
-                '<div class="form-row">' +
-                    '<div class="form-group"><label class="form-label">Balans (so\'m)</label><input type="number" class="form-input" id="editUserBalance" value="' + u.balance + '"></div>' +
-                    '<div class="form-group"><label class="form-label">Cashback (so\'m)</label><input type="number" class="form-input" id="editUserCashback" value="' + u.cashback + '"></div>' +
-                '</div>' +
-                '<div class="form-group">' +
-                    '<div class="form-checkbox">' +
-                        '<input type="checkbox" id="editUserPremium" ' + (u.premium ? 'checked' : '') + '>' +
-                        '<label for="editUserPremium">Premium a\'zolik</label>' +
-                    '</div>' +
-                '</div>',
-                '<button class="btn btn-secondary" onclick="closeModal()">Bekor qilish</button>' +
-                '<button class="btn btn-primary" onclick="saveUser(' + id + ')">Saqlash</button>');
-        }
-
-        function saveUser(id) {
-            var u = mockData.users.find(function(x) { return x.id === id; });
-            if (u) {
-                u.name = document.getElementById('editUserName').value;
-                u.balance = parseInt(document.getElementById('editUserBalance').value);
-                u.cashback = parseInt(document.getElementById('editUserCashback').value);
-                u.premium = document.getElementById('editUserPremium').checked;
-                showToast('Foydalanuvchi muvaffaqiyatli yangilandi');
-                closeModal();
-                renderUsers();
-            }
-        }
-
-        function blockUser(id) {
-            var u = mockData.users.find(function(x) { return x.id === id; });
-            if (!u) return;
-            if (u.status === 'blocked') {
-                u.status = 'active';
-                showToast('Foydalanuvchi blokdan chiqarildi', 'info');
-            } else {
-                u.status = 'blocked';
-                showToast('Foydalanuvchi bloklandi', 'warning');
-            }
-            renderUsers();
-        }
-
-        function deleteUser(id) {
-            if (confirm('Rostdan ham bu foydalanuvchini o\'chirmoqchimisiz?')) {
-                var idx = mockData.users.findIndex(function(x) { return x.id === id; });
-                if (idx > -1) {
-                    mockData.users.splice(idx, 1);
-                    showToast('Foydalanuvchi o\'chirildi', 'error');
-                    renderUsers();
-                }
-            }
-        }
 
         // ===== PAGE: PROVIDERS =====
         let providersPage = 1;
@@ -1479,7 +1280,7 @@
                 const r = await api(API_BASE + '/categories');
                 if (r && r.ok) categoriesCache = await r.json();
             } catch(e) {
-                categoriesCache = mockData.categories;
+                categoriesCache = []; apiError('Kategoriyalarni yuklab bo\'lmadi');
             }
             return categoriesCache;
         }
@@ -1500,9 +1301,7 @@
                 const r = await api(url);
                 if (r && r.ok) providersData = await r.json();
             } catch(e) {
-                providersData = { items: mockData.providers.map(function(p) {
-                    return { id: p.id, name: p.name, category_title: p.category, phone: p.phone, rating: p.rating, is_active: p.status === 'active', review_count: p.orders };
-                }), total: mockData.providers.length, pages: 1 };
+                providersData = emptyPage(); apiError('Provayderlarni yuklab bo\'lmadi');
             }
 
             mainContent.innerHTML =
@@ -1580,7 +1379,7 @@
         async function viewProvider(id) {
             var p = providersData.items.find(function(x) { return x.id === id; });
             if (!p) {
-                p = mockData.providers.find(function(x) { return x.id === id; });
+                p = null;
                 if (!p) return;
             }
             openModal('Soha egasi ma\'lumotlari',
@@ -1644,7 +1443,7 @@
                 const r = await api(url);
                 if (r && r.ok) ordersData = await r.json();
             } catch(e) {
-                ordersData = { items: mockData.orders, total: mockData.orders.length, pages: 1 };
+                ordersData = emptyPage(); apiError('Buyurtmalarni yuklab bo\'lmadi');
             }
 
             mainContent.innerHTML =
@@ -1715,99 +1514,10 @@
             } catch(e) { showToast('Xatolik', 'error'); }
         }
 
-        function renderOrderRows(orders) {
-            return orders.map(function(o) {
-                return '<tr>' +
-                    '<td>#' + o.id + '</td>' +
-                    '<td>' + o.service + '</td>' +
-                    '<td>' + o.user + '</td>' +
-                    '<td>' + o.provider + '</td>' +
-                    '<td>' + formatMoney(o.price) + '</td>' +
-                    '<td>' + statusBadge(o.status) + '</td>' +
-                    '<td>' + formatDate(o.created_at) + '</td>' +
-                    '<td><div class="action-group">' +
-                        '<button class="btn-icon" title="Ko\'rish" onclick="viewOrder(' + o.id + ')">&#128065;</button>' +
-                        '<button class="btn-icon success" title="Status o\'zgartirish" onclick="changeOrderStatus(' + o.id + ')">&#128260;</button>' +
-                        '<button class="btn-icon danger" title="O\'chirish" onclick="deleteOrder(' + o.id + ')">&#128465;</button>' +
-                    '</div></td>' +
-                '</tr>';
-            }).join('');
-        }
-
-        function filterOrders() {
-            var search = document.getElementById('orderSearch').value.toLowerCase();
-            var status = document.getElementById('orderStatusFilter').value;
-
-            var filtered = mockData.orders.filter(function(o) {
-                if (search && o.service.toLowerCase().indexOf(search) === -1 && o.user.toLowerCase().indexOf(search) === -1 && o.provider.toLowerCase().indexOf(search) === -1) return false;
-                if (status !== 'all' && o.status !== status) return false;
-                return true;
-            });
-
-            document.getElementById('ordersTableBody').innerHTML = renderOrderRows(filtered);
-        }
-
-        function viewOrder(id) {
-            var o = mockData.orders.find(function(x) { return x.id === id; });
-            if (!o) return;
-            var commission = Math.round(o.price * 0.15);
-            openModal('Buyurtma ma\'lumotlari',
-                '<div class="detail-grid">' +
-                    '<div class="detail-item"><div class="detail-label">Buyurtma ID</div><div class="detail-value">#' + o.id + '</div></div>' +
-                    '<div class="detail-item"><div class="detail-label">Xizmat</div><div class="detail-value">' + o.service + '</div></div>' +
-                    '<div class="detail-item"><div class="detail-label">Foydalanuvchi</div><div class="detail-value">' + o.user + '</div></div>' +
-                    '<div class="detail-item"><div class="detail-label">Provider</div><div class="detail-value">' + o.provider + '</div></div>' +
-                    '<div class="detail-item"><div class="detail-label">Narx</div><div class="detail-value">' + formatMoney(o.price) + '</div></div>' +
-                    '<div class="detail-item"><div class="detail-label">Komissiya (15%)</div><div class="detail-value">' + formatMoney(commission) + '</div></div>' +
-                    '<div class="detail-item"><div class="detail-label">Holat</div><div class="detail-value">' + statusBadge(o.status) + '</div></div>' +
-                    '<div class="detail-item"><div class="detail-label">Sana</div><div class="detail-value">' + formatDate(o.created_at) + '</div></div>' +
-                '</div>',
-                '<button class="btn btn-secondary" onclick="closeModal()">Yopish</button>');
-        }
-
-        function changeOrderStatus(id) {
-            var o = mockData.orders.find(function(x) { return x.id === id; });
-            if (!o) return;
-            openModal('Buyurtma holatini o\'zgartirish',
-                '<div class="form-group">' +
-                    '<label class="form-label">Buyurtma: #' + o.id + ' - ' + o.service + '</label>' +
-                    '<select class="form-input" id="newOrderStatus">' +
-                        '<option value="pending"' + (o.status === 'pending' ? ' selected' : '') + '>Kutilmoqda</option>' +
-                        '<option value="confirmed"' + (o.status === 'confirmed' ? ' selected' : '') + '>Tasdiqlangan</option>' +
-                        '<option value="in_progress"' + (o.status === 'in_progress' ? ' selected' : '') + '>Jarayonda</option>' +
-                        '<option value="completed"' + (o.status === 'completed' ? ' selected' : '') + '>Tugallangan</option>' +
-                        '<option value="cancelled"' + (o.status === 'cancelled' ? ' selected' : '') + '>Bekor qilingan</option>' +
-                    '</select>' +
-                '</div>',
-                '<button class="btn btn-secondary" onclick="closeModal()">Bekor qilish</button>' +
-                '<button class="btn btn-primary" onclick="saveOrderStatus(' + id + ')">Saqlash</button>');
-        }
-
-        function saveOrderStatus(id) {
-            var o = mockData.orders.find(function(x) { return x.id === id; });
-            if (o) {
-                o.status = document.getElementById('newOrderStatus').value;
-                showToast('Buyurtma holati yangilandi');
-                closeModal();
-                renderOrders();
-            }
-        }
-
-        function deleteOrder(id) {
-            if (confirm('Rostdan ham bu buyurtmani o\'chirmoqchimisiz?')) {
-                var idx = mockData.orders.findIndex(function(x) { return x.id === id; });
-                if (idx > -1) {
-                    mockData.orders.splice(idx, 1);
-                    showToast('Buyurtma o\'chirildi', 'error');
-                    renderOrders();
-                }
-            }
-        }
-
         // ===== PAGE: CATEGORIES =====
         async function renderCategories() {
             await loadCategoriesCache();
-            var cats = categoriesCache.length ? categoriesCache : mockData.categories;
+            var cats = categoriesCache;
 
             var html =
                 '<div class="page-header">' +
@@ -1880,14 +1590,23 @@
             var icon = document.getElementById('catIcon').value || '&#128194;';
             var color = document.getElementById('catColor').value;
             if (!key || !title) { showToast('Kalit va nomi majburiy', 'error'); return; }
-            mockData.categories.push({ key: key, title_uz: title, icon: icon, accent_color: color, variants: [] });
-            showToast('Kategoriya qo\'shildi');
-            closeModal();
-            renderCategories();
+            api(API_BASE + '/categories', {
+                method: 'POST',
+                body: JSON.stringify({ key: key, title_uz: title, icon: icon, accent_color: color })
+            }).then(function(r) {
+                if (r && r.ok) {
+                    showToast('Kategoriya qo\'shildi');
+                    closeModal();
+                    renderCategories();
+                } else {
+                    showToast('Xatolik yuz berdi', 'error');
+                }
+            });
         }
 
         function editCategoryModal(idx) {
-            var c = mockData.categories[idx];
+            var c = categoriesCache[idx];
+            if (!c) return;
             openModal('Kategoriyani tahrirlash',
                 '<div class="form-group"><label class="form-label">Kalit (key)</label><input type="text" class="form-input" id="catKey" value="' + c.key + '"></div>' +
                 '<div class="form-group"><label class="form-label">Nomi (o\'zbekcha)</label><input type="text" class="form-input" id="catTitle" value="' + c.title_uz + '"></div>' +
@@ -1896,79 +1615,111 @@
                     '<div class="form-group"><label class="form-label">Rang</label><input type="color" class="form-input" id="catColor" value="' + c.accent_color + '" style="height:40px; padding:4px;"></div>' +
                 '</div>',
                 '<button class="btn btn-secondary" onclick="closeModal()">Bekor qilish</button>' +
-                '<button class="btn btn-primary" onclick="updateCategory(' + idx + ')">Saqlash</button>');
+                '<button class="btn btn-primary" onclick="updateCategory(' + idx + ', ' + c.id + ')">Saqlash</button>');
         }
 
-        function updateCategory(idx) {
-            mockData.categories[idx].key = document.getElementById('catKey').value.trim();
-            mockData.categories[idx].title_uz = document.getElementById('catTitle').value.trim();
-            mockData.categories[idx].icon = document.getElementById('catIcon').value;
-            mockData.categories[idx].accent_color = document.getElementById('catColor').value;
-            showToast('Kategoriya yangilandi');
-            closeModal();
-            renderCategories();
+        function updateCategory(idx, catId) {
+            var payload = {
+                key: document.getElementById('catKey').value.trim(),
+                title_uz: document.getElementById('catTitle').value.trim(),
+                icon: document.getElementById('catIcon').value,
+                accent_color: document.getElementById('catColor').value
+            };
+            api(API_BASE + '/categories/' + catId, {
+                method: 'PATCH',
+                body: JSON.stringify(payload)
+            }).then(function(r) {
+                if (r && r.ok) {
+                    showToast('Kategoriya yangilandi');
+                    closeModal();
+                    renderCategories();
+                } else {
+                    showToast('Xatolik yuz berdi', 'error');
+                }
+            });
         }
 
-        function deleteCategory(idx) {
+        function deleteCategory(idx, catId) {
+            if (!catId) { showToast('Kategoriya ID topilmadi', 'error'); return; }
             if (confirm('Bu kategoriyani o\'chirmoqchimisiz?')) {
-                mockData.categories.splice(idx, 1);
-                showToast('Kategoriya o\'chirildi', 'error');
-                renderCategories();
+                api(API_BASE + '/categories/' + catId, { method: 'DELETE' }).then(function(r) {
+                    if (r && (r.ok || r.status === 204)) {
+                        showToast('Kategoriya o\'chirildi', 'error');
+                        renderCategories();
+                    } else {
+                        showToast('O\'chirib bo\'lmadi', 'error');
+                    }
+                });
             }
         }
 
-        function addVariantModal(catIdx) {
+        function addVariantModal(catIdx, catId) {
             openModal('Yangi variant qo\'shish',
                 '<div class="form-group"><label class="form-label">Variant nomi</label><input type="text" class="form-input" id="varLabel" placeholder="masalan: Rozetka o\'rnatish"></div>' +
                 '<div class="form-group"><label class="form-label">Boshlang\'ich narx (so\'m)</label><input type="number" class="form-input" id="varPrice" placeholder="50000"></div>',
                 '<button class="btn btn-secondary" onclick="closeModal()">Bekor qilish</button>' +
-                '<button class="btn btn-primary" onclick="saveVariant(' + catIdx + ')">Saqlash</button>');
+                '<button class="btn btn-primary" onclick="saveVariant(' + catIdx + ', ' + catId + ')">Saqlash</button>');
         }
 
-        function saveVariant(catIdx) {
+        function saveVariant(catIdx, catId) {
             var label = document.getElementById('varLabel').value.trim();
             var price = parseInt(document.getElementById('varPrice').value);
             if (!label || !price) { showToast('Nomi va narx majburiy', 'error'); return; }
-            var maxId = 0;
-            mockData.categories.forEach(function(cat) {
-                cat.variants.forEach(function(v) { if (v.id > maxId) maxId = v.id; });
+            api(API_BASE + '/categories/' + catId + '/variants', {
+                method: 'POST',
+                body: JSON.stringify({ label_uz: label, base_price: price })
+            }).then(function(r) {
+                if (r && r.ok) {
+                    showToast('Variant qo\'shildi');
+                    closeModal();
+                    renderCategories();
+                } else {
+                    showToast('Xatolik yuz berdi', 'error');
+                }
             });
-            mockData.categories[catIdx].variants.push({ id: maxId + 1, label: label, base_price: price });
-            showToast('Variant qo\'shildi');
-            closeModal();
-            renderCategories();
         }
 
         function editVariantModal(catIdx, varId) {
-            var cat = mockData.categories[catIdx];
-            var v = cat.variants.find(function(x) { return x.id === varId; });
+            var cat = categoriesCache[catIdx];
+            if (!cat) return;
+            var v = (cat.variants || []).find(function(x) { return x.id === varId; });
             if (!v) return;
             openModal('Variantni tahrirlash',
-                '<div class="form-group"><label class="form-label">Variant nomi</label><input type="text" class="form-input" id="varLabel" value="' + v.label + '"></div>' +
+                '<div class="form-group"><label class="form-label">Variant nomi</label><input type="text" class="form-input" id="varLabel" value="' + (v.label_uz || v.label) + '"></div>' +
                 '<div class="form-group"><label class="form-label">Boshlang\'ich narx (so\'m)</label><input type="number" class="form-input" id="varPrice" value="' + v.base_price + '"></div>',
                 '<button class="btn btn-secondary" onclick="closeModal()">Bekor qilish</button>' +
-                '<button class="btn btn-primary" onclick="updateVariant(' + catIdx + ', ' + varId + ')">Saqlash</button>');
+                '<button class="btn btn-primary" onclick="updateVariant(' + catIdx + ', ' + cat.id + ', ' + varId + ')">Saqlash</button>');
         }
 
-        function updateVariant(catIdx, varId) {
-            var cat = mockData.categories[catIdx];
-            var v = cat.variants.find(function(x) { return x.id === varId; });
-            if (v) {
-                v.label = document.getElementById('varLabel').value.trim();
-                v.base_price = parseInt(document.getElementById('varPrice').value);
-                showToast('Variant yangilandi');
-                closeModal();
-                renderCategories();
-            }
+        function updateVariant(catIdx, catId, varId) {
+            var payload = {
+                label_uz: document.getElementById('varLabel').value.trim(),
+                base_price: parseInt(document.getElementById('varPrice').value)
+            };
+            api(API_BASE + '/categories/' + catId + '/variants/' + varId, {
+                method: 'PATCH',
+                body: JSON.stringify(payload)
+            }).then(function(r) {
+                if (r && r.ok) {
+                    showToast('Variant yangilandi');
+                    closeModal();
+                    renderCategories();
+                } else {
+                    showToast('Xatolik yuz berdi', 'error');
+                }
+            });
         }
 
-        function deleteVariant(catIdx, varId) {
+        function deleteVariant(catIdx, catId, varId) {
             if (confirm('Bu variantni o\'chirmoqchimisiz?')) {
-                var cat = mockData.categories[catIdx];
-                var idx = cat.variants.findIndex(function(x) { return x.id === varId; });
-                if (idx > -1) cat.variants.splice(idx, 1);
-                showToast('Variant o\'chirildi', 'error');
-                renderCategories();
+                api(API_BASE + '/categories/' + catId + '/variants/' + varId, { method: 'DELETE' }).then(function(r) {
+                    if (r && (r.ok || r.status === 204)) {
+                        showToast('Variant o\'chirildi', 'error');
+                        renderCategories();
+                    } else {
+                        showToast('O\'chirib bo\'lmadi', 'error');
+                    }
+                });
             }
         }
 
@@ -1982,9 +1733,7 @@
                 const r = await api(url);
                 if (r && r.ok) reviewsData = await r.json();
             } catch(e) {
-                reviewsData = { items: mockData.reviews.map(function(r) {
-                    return { id: r.id, user_name: r.user, provider_name: r.provider, rating: r.rating, comment: r.text, created_at: r.created_at };
-                }), total: mockData.reviews.length, pages: 1 };
+                reviewsData = emptyPage(); apiError('Sharhlarni yuklab bo\'lmadi');
             }
 
             mainContent.innerHTML =
@@ -2034,18 +1783,43 @@
 
         function deleteReview(id) {
             if (confirm('Bu sharhni o\'chirmoqchimisiz?')) {
-                var idx = mockData.reviews.findIndex(function(x) { return x.id === id; });
-                if (idx > -1) {
-                    mockData.reviews.splice(idx, 1);
-                    showToast('Sharh o\'chirildi', 'error');
-                    renderReviews();
-                }
+                api(API_BASE + '/reviews/' + id, { method: 'DELETE' }).then(function(r) {
+                    if (r && (r.ok || r.status === 204)) {
+                        showToast('Sharh o\'chirildi', 'error');
+                        renderReviews();
+                    } else {
+                        showToast('O\'chirib bo\'lmadi', 'error');
+                    }
+                });
             }
         }
 
         // ===== PAGE: FINANCE =====
-        function renderFinance() {
-            var f = mockData.finance;
+        async function renderFinance() {
+            var f = { total_revenue: 0, total_commission: 0, total_cashback_given: 0, platform_balance: 0, commission_rate: 15, transactions: [] };
+            try {
+                const r = await api(API_BASE + '/finance/stats');
+                if (r && r.ok) {
+                    var stats = await r.json();
+                    f.total_revenue = stats.total_revenue || 0;
+                    f.total_commission = stats.total_commission || 0;
+                    f.total_cashback_given = stats.total_cashback_given || 0;
+                    f.platform_balance = stats.platform_balance || 0;
+                    f.commission_rate = stats.commission_rate || 15;
+                }
+            } catch(e) {}
+
+            await loadCategoriesCache();
+            var providerOptions = '';
+            try {
+                const pr = await api(API_BASE + '/providers?per_page=100');
+                if (pr && pr.ok) {
+                    var pdata = await pr.json();
+                    providerOptions = (pdata.items || []).filter(function(p) { return p.is_active; }).map(function(p) {
+                        return '<option value="' + p.id + '">' + p.name + '</option>';
+                    }).join('');
+                }
+            } catch(e) {}
             mainContent.innerHTML =
                 '<div class="page-header">' +
                     '<h1 class="page-title">Moliya</h1>' +
@@ -2058,14 +1832,14 @@
                             '<div class="stat-card-icon green">&#128200;</div>' +
                         '</div>' +
                         '<div class="stat-card-value">' + formatMoney(f.total_revenue) + '</div>' +
-                        '<span class="stat-card-change up">&#8593; Bu oy</span>' +
+                        '<span class="stat-card-change up">&#8593; Bajarilgan buyurtmalar</span>' +
                     '</div>' +
                     '<div class="stat-card">' +
                         '<div class="stat-card-header">' +
                             '<span class="stat-card-label">Komissiya (' + f.commission_rate + '%)</span>' +
                             '<div class="stat-card-icon purple">&#128176;</div>' +
                         '</div>' +
-                        '<div class="stat-card-value">' + formatMoney(f.commission) + '</div>' +
+                        '<div class="stat-card-value">' + formatMoney(f.total_commission) + '</div>' +
                         '<span class="stat-card-change up">Platforma daromadi</span>' +
                     '</div>' +
                     '<div class="stat-card">' +
@@ -2073,7 +1847,7 @@
                             '<span class="stat-card-label">Cashback berilgan</span>' +
                             '<div class="stat-card-icon orange">&#127873;</div>' +
                         '</div>' +
-                        '<div class="stat-card-value">' + formatMoney(f.cashback_given) + '</div>' +
+                        '<div class="stat-card-value">' + formatMoney(f.total_cashback_given) + '</div>' +
                         '<span class="stat-card-change down">Foydalanuvchilarga</span>' +
                     '</div>' +
                     '<div class="stat-card">' +
@@ -2093,7 +1867,7 @@
                                 '<label class="form-label">Provider</label>' +
                                 '<select class="form-input" id="payoutProvider">' +
                                     '<option value="">Tanlang...</option>' +
-                                    mockData.providers.filter(function(p) { return p.status === 'active'; }).map(function(p) { return '<option value="' + p.id + '">' + p.name + '</option>'; }).join('') +
+                                    providerOptions +
                                 '</select>' +
                             '</div>' +
                             '<div class="form-group">' +
@@ -2119,43 +1893,51 @@
                     '</div>' +
                 '</div>' +
                 '<div class="card" style="margin-top:24px;">' +
-                    '<div class="card-header"><h3 class="card-title">Oxirgi tranzaksiyalar</h3></div>' +
-                    '<div class="card-body no-padding">' +
-                        '<div class="table-container">' +
-                            '<table class="data-table">' +
-                                '<thead><tr><th>ID</th><th>Tur</th><th>Tavsif</th><th>Summa</th><th>Sana</th></tr></thead>' +
-                                '<tbody>' +
-                                    f.transactions.map(function(t) {
-                                        var typeBadge = t.type === 'income' ? '<span class="badge-status active">Daromad</span>' : t.type === 'payout' ? '<span class="badge-status confirmed">To\'lov</span>' : '<span class="badge-status pending">Cashback</span>';
-                                        var amountStr = (t.amount > 0 ? '+' : '') + formatMoney(Math.abs(t.amount));
-                                        var amountColor = t.amount > 0 ? 'var(--success)' : 'var(--danger)';
-                                        return '<tr><td>' + t.id + '</td><td>' + typeBadge + '</td><td>' + t.description + '</td><td style="color:' + amountColor + '; font-weight:600;">' + amountStr + '</td><td>' + formatDate(t.date) + '</td></tr>';
-                                    }).join('') +
-                                '</tbody>' +
-                            '</table>' +
-                        '</div>' +
-                    '</div>' +
+                    '<div class="card-header"><h3 class="card-title">Moliyaviy ma\'lumotlar API dan yuklanadi</h3></div>' +
+                    '<div class="card-body"><p style="color:var(--text-muted);">Tranzaksiyalar tarixi tez orada qo\'shiladi.</p></div>' +
                 '</div>';
         }
 
         function processPayout() {
             var provider = document.getElementById('payoutProvider').value;
             var amount = document.getElementById('payoutAmount').value;
+            var note = document.getElementById('payoutNote').value;
             if (!provider || !amount) { showToast('Provider va summa majburiy', 'error'); return; }
-            showToast(formatMoney(parseInt(amount)) + ' to\'lov amalga oshirildi');
-            document.getElementById('payoutAmount').value = '';
-            document.getElementById('payoutNote').value = '';
+            api(API_BASE + '/finance/payout', {
+                method: 'POST',
+                body: JSON.stringify({ provider_id: parseInt(provider), amount: parseFloat(amount), note: note || null })
+            }).then(function(r) {
+                if (r && r.ok) {
+                    showToast(formatMoney(parseInt(amount)) + ' to\'lov amalga oshirildi');
+                    document.getElementById('payoutAmount').value = '';
+                    document.getElementById('payoutNote').value = '';
+                } else {
+                    showToast('To\'lov amalga oshmadi', 'error');
+                }
+            });
         }
 
         function updateCommissionRate() {
-            var rate = document.getElementById('commissionRate').value;
-            mockData.finance.commission_rate = parseInt(rate);
-            showToast('Komissiya stavkasi ' + rate + '% ga yangilandi');
+            var rate = parseFloat(document.getElementById('commissionRate').value);
+            api(API_BASE + '/finance/commission', {
+                method: 'PATCH',
+                body: JSON.stringify({ rate: rate })
+            }).then(function(r) {
+                if (r && r.ok) {
+                    showToast('Komissiya stavkasi ' + rate + '% ga yangilandi');
+                } else {
+                    showToast('Yangilab bo\'lmadi', 'error');
+                }
+            });
         }
 
         // ===== PAGE: SETTINGS =====
-        function renderSettings() {
-            var f = mockData.finance;
+        async function renderSettings() {
+            var f = { commission_rate: 15, cashback_rate: 2, currency: 'UZS', min_withdrawal: 100000, maintenance_mode: false, registration_open: true, support_phone: '+998 71 200 00 00', support_telegram: '@superapp_support' };
+            try {
+                const r = await api(API_BASE + '/settings');
+                if (r && r.ok) f = await r.json();
+            } catch(e) {}
             mainContent.innerHTML =
                 '<div class="page-header">' +
                     '<h1 class="page-title">Sozlamalar</h1>' +
@@ -2202,7 +1984,7 @@
                                     '<div class="setting-description">Provider minimal yechib olish summasi</div>' +
                                 '</div>' +
                                 '<div class="setting-control">' +
-                                    '<input type="number" class="form-input" id="settingMinWithdraw" value="100000" style="width:140px;">' +
+                                    '<input type="number" class="form-input" id="settingMinWithdraw" value="' + (f.min_withdrawal || 100000) + '" style="width:140px;">' +
                                 '</div>' +
                             '</div>' +
                         '</div>' +
@@ -2215,7 +1997,7 @@
                                 '</div>' +
                                 '<div class="setting-control">' +
                                     '<label class="toggle-switch">' +
-                                        '<input type="checkbox" id="settingMaintenance">' +
+                                        '<input type="checkbox" id="settingMaintenance"' + (f.maintenance_mode ? ' checked' : '') + '>' +
                                         '<span class="toggle-slider"></span>' +
                                     '</label>' +
                                 '</div>' +
@@ -2227,7 +2009,7 @@
                                 '</div>' +
                                 '<div class="setting-control">' +
                                     '<label class="toggle-switch">' +
-                                        '<input type="checkbox" id="settingRegistration" checked>' +
+                                        '<input type="checkbox" id="settingRegistration"' + (f.registration_open !== false ? ' checked' : '') + '>' +
                                         '<span class="toggle-slider"></span>' +
                                     '</label>' +
                                 '</div>' +
@@ -2241,7 +2023,7 @@
                                     '<div class="setting-description">Mijozlar uchun qo\'llab-quvvatlash raqami</div>' +
                                 '</div>' +
                                 '<div class="setting-control">' +
-                                    '<input type="text" class="form-input" id="settingSupportPhone" value="+998 71 200 00 00" style="width:200px;">' +
+                                    '<input type="text" class="form-input" id="settingSupportPhone" value="' + (f.support_phone || '+998 71 200 00 00') + '" style="width:200px;">' +
                                 '</div>' +
                             '</div>' +
                             '<div class="setting-row">' +
@@ -2250,7 +2032,7 @@
                                     '<div class="setting-description">Telegram support kanali yoki bot</div>' +
                                 '</div>' +
                                 '<div class="setting-control">' +
-                                    '<input type="text" class="form-input" id="settingSupportTelegram" value="@superapp_support" style="width:200px;">' +
+                                    '<input type="text" class="form-input" id="settingSupportTelegram" value="' + (f.support_telegram || '@superapp_support') + '" style="width:200px;">' +
                                 '</div>' +
                             '</div>' +
                         '</div>' +
@@ -2262,14 +2044,39 @@
         }
 
         function saveSettings() {
-            mockData.finance.commission_rate = parseInt(document.getElementById('settingCommission').value);
-            mockData.finance.cashback_rate = parseInt(document.getElementById('settingCashback').value);
-            mockData.finance.currency = document.getElementById('settingCurrency').value;
-            showToast('Sozlamalar muvaffaqiyatli saqlandi');
+            var payload = {
+                commission_rate: parseFloat(document.getElementById('settingCommission').value),
+                cashback_rate: parseFloat(document.getElementById('settingCashback').value),
+                currency: document.getElementById('settingCurrency').value,
+                min_withdrawal: parseFloat(document.getElementById('settingMinWithdraw').value),
+                maintenance_mode: document.getElementById('settingMaintenance').checked,
+                registration_open: document.getElementById('settingRegistration').checked,
+                support_phone: document.getElementById('settingSupportPhone').value,
+                support_telegram: document.getElementById('settingSupportTelegram').value
+            };
+            api(API_BASE + '/settings', {
+                method: 'PATCH',
+                body: JSON.stringify(payload)
+            }).then(function(r) {
+                if (r && r.ok) {
+                    showToast('Sozlamalar muvaffaqiyatli saqlandi');
+                } else {
+                    showToast('Saqlab bo\'lmadi', 'error');
+                }
+            });
         }
 
         // ===== PAGE: NOTIFICATIONS =====
-        function renderNotifications() {
+        async function renderNotifications() {
+            var notifItems = [];
+            try {
+                const r = await api(API_BASE + '/notifications');
+                if (r && r.ok) {
+                    var data = await r.json();
+                    notifItems = data.items || [];
+                }
+            } catch(e) {}
+
             var html =
                 '<div class="page-header">' +
                     '<h1 class="page-title">Bildirishnomalar</h1>' +
@@ -2315,16 +2122,16 @@
                                     '<thead><tr><th>ID</th><th>Tur</th><th>Sarlavha</th><th>Kimlarga</th><th>Soni</th><th>Sana</th></tr></thead>' +
                                     '<tbody>';
 
-            mockData.notifications.forEach(function(n) {
+            notifItems.forEach(function(n) {
                 var typeClass = n.type === 'push' ? 'confirmed' : n.type === 'email' ? 'active' : n.type === 'sms' ? 'in_progress' : 'pending';
                 var targetLabel = n.target === 'all' ? 'Barcha' : n.target === 'users' ? 'Foydalanuvchilar' : 'Providerlar';
                 html += '<tr>' +
-                    '<td>' + n.id + '</td>' +
-                    '<td><span class="badge-status ' + typeClass + '">' + n.type.toUpperCase() + '</span></td>' +
-                    '<td>' + n.title + '</td>' +
+                    '<td>' + (n.id || '-') + '</td>' +
+                    '<td><span class="badge-status ' + typeClass + '">' + (n.type || 'in_app').toUpperCase() + '</span></td>' +
+                    '<td>' + (n.title || '') + '</td>' +
                     '<td>' + targetLabel + '</td>' +
-                    '<td>' + n.count.toLocaleString() + '</td>' +
-                    '<td>' + n.sent_at + '</td>' +
+                    '<td>' + (n.count || 0).toLocaleString() + '</td>' +
+                    '<td>' + (n.sent_at || n.created_at || '-') + '</td>' +
                 '</tr>';
             });
 
@@ -2346,20 +2153,21 @@
 
             if (!title || !message) { showToast('Sarlavha va xabar majburiy', 'error'); return; }
 
-            var newNotif = {
-                id: mockData.notifications.length + 1,
-                type: type, title: title, message: message, target: target,
-                sent_at: new Date().toISOString().slice(0, 10) + ' ' + new Date().toTimeString().slice(0, 5),
-                status: 'sent',
-                count: Math.floor(Math.random() * 2000) + 500
-            };
-            mockData.notifications.unshift(newNotif);
-            showToast('"' + title + '" bildirishnomasi yuborildi');
-            renderNotifications();
+            api(API_BASE + '/notifications/send', {
+                method: 'POST',
+                body: JSON.stringify({ type: type, title: title, message: message, target: target })
+            }).then(function(r) {
+                if (r && r.ok) {
+                    showToast('"' + title + '" bildirishnomasi yuborildi');
+                    renderNotifications();
+                } else {
+                    showToast('Yuborib bo\'lmadi', 'error');
+                }
+            });
         }
 
         // ===== PAGE: REPORTS =====
-        function renderReports() {
+        async function renderReports() {
             mainContent.innerHTML =
                 '<div class="page-header">' +
                     '<h1 class="page-title">Hisobotlar</h1>' +
@@ -2388,42 +2196,42 @@
                             '<span class="stat-card-label">Jami buyurtmalar</span>' +
                             '<div class="stat-card-icon purple">&#128230;</div>' +
                         '</div>' +
-                        '<div class="stat-card-value" id="reportTotalOrders">1,247</div>' +
+                        '<div class="stat-card-value" id="reportTotalOrders">0</div>' +
                     '</div>' +
                     '<div class="stat-card">' +
                         '<div class="stat-card-header">' +
                             '<span class="stat-card-label">Tugallangan</span>' +
                             '<div class="stat-card-icon green">&#9989;</div>' +
                         '</div>' +
-                        '<div class="stat-card-value" id="reportCompleted">1,089</div>' +
+                        '<div class="stat-card-value" id="reportCompleted">0</div>' +
                     '</div>' +
                     '<div class="stat-card">' +
                         '<div class="stat-card-header">' +
                             '<span class="stat-card-label">Bekor qilingan</span>' +
                             '<div class="stat-card-icon red">&#10060;</div>' +
                         '</div>' +
-                        '<div class="stat-card-value" id="reportCancelled">158</div>' +
+                        '<div class="stat-card-value" id="reportCancelled">0</div>' +
                     '</div>' +
                     '<div class="stat-card">' +
                         '<div class="stat-card-header">' +
                             '<span class="stat-card-label">Jami tushum</span>' +
                             '<div class="stat-card-icon yellow">&#128176;</div>' +
                         '</div>' +
-                        '<div class="stat-card-value" id="reportRevenue">' + formatMoney(8450000) + '</div>' +
+                        '<div class="stat-card-value" id="reportRevenue">' + formatMoney(0) + '</div>' +
                     '</div>' +
                     '<div class="stat-card">' +
                         '<div class="stat-card-header">' +
                             '<span class="stat-card-label">Komissiya</span>' +
                             '<div class="stat-card-icon blue">&#128178;</div>' +
                         '</div>' +
-                        '<div class="stat-card-value" id="reportCommission">' + formatMoney(1267500) + '</div>' +
+                        '<div class="stat-card-value" id="reportCommission">' + formatMoney(0) + '</div>' +
                     '</div>' +
                     '<div class="stat-card">' +
                         '<div class="stat-card-header">' +
                             '<span class="stat-card-label">Yangi foydalanuvchilar</span>' +
                             '<div class="stat-card-icon orange">&#128101;</div>' +
                         '</div>' +
-                        '<div class="stat-card-value" id="reportNewUsers">342</div>' +
+                        '<div class="stat-card-value" id="reportNewUsers">0</div>' +
                     '</div>' +
                 '</div>' +
                 '<div class="card">' +
@@ -2432,6 +2240,7 @@
                         '<div class="chart-container"><canvas id="reportChart"></canvas></div>' +
                     '</div>' +
                 '</div>';
+            await generateReport();
             setTimeout(initReportChart, 50);
         }
 
@@ -2440,26 +2249,27 @@
             el.classList.add('active');
         }
 
-        function generateReport() {
-            showToast('Hisobot yangilandi');
-            document.getElementById('reportTotalOrders').textContent = (Math.floor(Math.random() * 500) + 800).toLocaleString();
-            document.getElementById('reportCompleted').textContent = (Math.floor(Math.random() * 400) + 600).toLocaleString();
-            document.getElementById('reportCancelled').textContent = (Math.floor(Math.random() * 100) + 50).toLocaleString();
+        async function generateReport() {
+            var periodEl = document.querySelector('#reportPeriodSelector .period-btn.active');
+            var period = periodEl ? periodEl.dataset.period : 'monthly';
+            try {
+                const r = await api(API_BASE + '/reports?period=' + period);
+                if (!r || !r.ok) { apiError('Hisobot yuklanmadi'); return; }
+                var rep = await r.json();
+                document.getElementById('reportTotalOrders').textContent = rep.total_orders.toLocaleString();
+                document.getElementById('reportCompleted').textContent = rep.completed_orders.toLocaleString();
+                document.getElementById('reportCancelled').textContent = rep.cancelled_orders.toLocaleString();
+                document.getElementById('reportRevenue').textContent = formatMoney(rep.total_revenue);
+                document.getElementById('reportCommission').textContent = formatMoney(rep.total_commission);
+                document.getElementById('reportNewUsers').textContent = rep.new_users.toLocaleString();
+                showToast('Hisobot yangilandi');
+            } catch(e) { apiError('Hisobot yuklanmadi'); }
         }
 
         function exportCSV() {
-            var headers = ['ID', 'Xizmat', 'Foydalanuvchi', 'Provider', 'Narx', 'Holat', 'Sana'];
-            var rows = mockData.orders.map(function(o) { return [o.id, o.service, o.user, o.provider, o.price, o.status, o.created_at]; });
-            var csv = headers.join(',') + '\n';
-            rows.forEach(function(r) { csv += r.join(',') + '\n'; });
-            var blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
-            var url = URL.createObjectURL(blob);
-            var a = document.createElement('a');
-            a.href = url;
-            a.download = 'hisobot_' + new Date().toISOString().slice(0, 10) + '.csv';
-            a.click();
-            URL.revokeObjectURL(url);
-            showToast('CSV fayl yuklab olindi');
+            var periodEl = document.querySelector('#reportPeriodSelector .period-btn.active');
+            var period = periodEl ? periodEl.dataset.period : 'monthly';
+            window.open(API_BASE + '/reports/export/csv?period=' + period, '_blank');
         }
 
         var reportChartInstance = null;
