@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+
 import '../models/barber_shop.dart';
 import '../models/beauty_salon.dart';
 import '../models/football_field.dart';
@@ -36,7 +38,8 @@ class HubDataService {
           .cast<Map<String, dynamic>>();
       _cache[key] = items;
       return items;
-    } catch (_) {
+    } catch (e) {
+      debugPrint('fetchProviders($key) error: $e');
       return [];
     }
   }
