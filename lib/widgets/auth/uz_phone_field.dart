@@ -27,10 +27,16 @@ class UzPhoneField extends StatelessWidget {
   static String? validateNineDigits(String? value) {
     final d = digitsOnly(value ?? '');
     if (d.length != 9) {
-      return '9 ta raqam kiriting (masalan: 901234567)';
+      return '9 ta raqam kiriting (masalan: 901234567 yoki 200163068)';
     }
-    if (!d.startsWith('9')) {
-      return 'Raqam 9 bilan boshlanishi kerak';
+    // O'zbekiston mobil operator prefikslari (2 xona)
+    const validPrefixes = [
+      '90', '91', '93', '94', '95', '97', '98', '99', // Asosiy
+      '33', '88', '77', '20', '50', // Uzmobile, Ucell, Mobiuz, Humans, ...
+    ];
+    final prefix = d.substring(0, 2);
+    if (!validPrefixes.contains(prefix)) {
+      return 'Telefon raqam formati noto\'g\'ri';
     }
     return null;
   }
