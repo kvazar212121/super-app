@@ -22,6 +22,7 @@ enum ServiceHubKind {
   kuryerlik,
   massajHijoma,
   hamshira,
+  stomatologiya,
   tadbirlar,
   yana,
 }
@@ -45,6 +46,7 @@ extension ServiceHubKindX on ServiceHubKind {
         ServiceHubKind.kuryerlik => 'Kuryerlik',
         ServiceHubKind.massajHijoma => 'Massaj va Hijoma',
         ServiceHubKind.hamshira => 'Hamshira',
+        ServiceHubKind.stomatologiya => 'Stomatologiya',
         ServiceHubKind.tadbirlar => 'Tadbirlar',
         ServiceHubKind.yana => 'Yana xizmatlar',
       };
@@ -67,7 +69,8 @@ extension ServiceHubKindX on ServiceHubKind {
         ServiceHubKind.kuryerlik => 'Hujjat va sovgalarni tezkor yetkazish',
         ServiceHubKind.massajHijoma => 'Massaj va Hijoma xizmatlari',
         ServiceHubKind.hamshira => 'Uyga hamshira chaqirish',
-        ServiceHubKind.tadbirlar => 'Tadbirlar, marosimlar va dam olish joylari',
+        ServiceHubKind.stomatologiya => 'Tish davolash — klinikada vaqt bron',
+        ServiceHubKind.tadbirlar => 'Guruhlar — sahna, ovoz, qishloq va to\'y',
         ServiceHubKind.yana => 'Boshqa xizmatlar va yordam',
       };
 
@@ -89,6 +92,7 @@ extension ServiceHubKindX on ServiceHubKind {
         ServiceHubKind.kuryerlik => LucideIcons.bike,
         ServiceHubKind.massajHijoma => LucideIcons.hand,
         ServiceHubKind.hamshira => LucideIcons.heartPulse,
+        ServiceHubKind.stomatologiya => LucideIcons.smile,
         ServiceHubKind.tadbirlar => LucideIcons.partyPopper,
         ServiceHubKind.yana => LucideIcons.moreHorizontal,
       };
@@ -110,7 +114,8 @@ extension ServiceHubKindX on ServiceHubKind {
         ServiceHubKind.texnikaUstasi => Colors.blueGrey,
         ServiceHubKind.kuryerlik => Colors.amber,
         ServiceHubKind.massajHijoma => const Color(0xFF795548),
-        ServiceHubKind.hamshira => Colors.redAccent,
+        ServiceHubKind.hamshira => const Color(0xFFEF4444),
+        ServiceHubKind.stomatologiya => const Color(0xFF0EA5E9),
         ServiceHubKind.tadbirlar => const Color(0xFFE91E63),
         ServiceHubKind.yana => Colors.blueGrey,
       };
@@ -217,6 +222,12 @@ extension ServiceHubKindX on ServiceHubKind {
             (label: 'In`ektsiya', basePrice: 30000),
             (label: 'Qon tahlili (uyda)', basePrice: 120000),
             (label: 'Tun bo`yi hamshira', basePrice: 300000),
+          ],
+        ServiceHubKind.stomatologiya => const [
+            (label: 'Ko\'rik va maslahat', basePrice: 80000),
+            (label: 'Professional tozalash', basePrice: 150000),
+            (label: 'Plomba', basePrice: 200000),
+            (label: 'Oqartirish', basePrice: 350000),
           ],
         ServiceHubKind.tadbirlar => const [
             (label: 'Toy rejissyor', basePrice: 2000000),

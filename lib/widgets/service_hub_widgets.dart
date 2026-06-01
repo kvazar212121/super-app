@@ -6,23 +6,29 @@ import '../models/football_field.dart';
 import '../models/master_worker.dart';
 import '../models/auto_workshop.dart';
 import '../models/education_center.dart';
+import '../screens/education_center_booking_screen.dart';
 import '../models/disinfection_service.dart';
 import '../models/appliance_repair.dart';
 import '../models/courier_service.dart';
 import '../models/massage_hijoma.dart';
 import '../models/nurse_service.dart';
+import '../models/dental_clinic.dart';
 import '../models/event_planning.dart';
+import '../models/service_hub_kind.dart';
 import '../theme/glass_tokens.dart';
 import '../widgets/glass/glass_surface.dart';
 import '../screens/barber_booking_screen.dart';
 import '../screens/salon_booking_screen.dart';
 import '../screens/football_field_booking_screen.dart';
+import '../screens/provider_profile_screen.dart';
 import '../screens/master_dispatch_screen.dart';
 import '../screens/disinfection_booking_screen.dart';
 import '../screens/appliance_booking_screen.dart';
 import '../screens/courier_booking_screen.dart';
+import '../screens/auto_workshop_booking_screen.dart';
 import '../screens/massage_booking_screen.dart';
 import '../screens/nurse_booking_screen.dart';
+import '../screens/dental_booking_screen.dart';
 import '../screens/event_booking_screen.dart';
 
 /// Oq kartalardagi matnlar (har doim oq fonda, shuning uchun qat'iy qora).
@@ -184,8 +190,13 @@ class FieldSmallCard extends StatelessWidget {
 
 class MasterSmallCard extends StatelessWidget {
   final Master master;
+  final ServiceHubKind category;
 
-  const MasterSmallCard({super.key, required this.master});
+  const MasterSmallCard({
+    super.key,
+    required this.master,
+    this.category = ServiceHubKind.usta,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -199,7 +210,12 @@ class MasterSmallCard extends StatelessWidget {
       child: InkWell(
         onTap: () => Navigator.push(
           context,
-          MaterialPageRoute(builder: (_) => MasterDispatchScreen(master: master)),
+          MaterialPageRoute(
+            builder: (_) => ProviderProfileScreen(
+              master: master,
+              category: category,
+            ),
+          ),
         ),
         borderRadius: BorderRadius.circular(16),
         child: Padding(
@@ -340,8 +356,11 @@ class WorkshopSmallCard extends StatelessWidget {
         border: Border.all(color: Colors.grey[200]!),
       ),
       child: InkWell(
-        onTap: () => ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("${workshop.name} ustaxonasi haqida ma'lumot...")),
+        onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => AutoWorkshopBookingScreen(workshop: workshop),
+          ),
         ),
         borderRadius: BorderRadius.circular(16),
         child: Padding(
@@ -392,8 +411,11 @@ class EducationCenterSmallCard extends StatelessWidget {
         border: Border.all(color: Colors.grey[200]!),
       ),
       child: InkWell(
-        onTap: () => ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("${center.name} haqida ma'lumot...")),
+        onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => EducationCenterBookingScreen(center: center),
+          ),
         ),
         borderRadius: BorderRadius.circular(16),
         child: Padding(
@@ -589,7 +611,7 @@ class MassageSmallCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const accentColor = Color(0xFF795548);
+    const accentColor = Color(0xFFE11D48);
     return Container(
       width: 150,
       decoration: BoxDecoration(
@@ -614,10 +636,16 @@ class MassageSmallCard extends StatelessWidget {
                   color: accentColor.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: const Center(child: Icon(LucideIcons.hand, color: accentColor)),
+                child: const Center(child: Icon(LucideIcons.heartPulse, color: accentColor)),
               ),
               const SizedBox(height: 8),
               Text(service.name, style: const TextStyle(fontWeight: FontWeight.bold, color: _cardTitleColor), maxLines: 1),
+              Text(
+                service.visitModesLabel,
+                style: const TextStyle(fontSize: 10, color: _cardSubColor),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
               Row(
                 children: [
                   const Icon(Icons.star, size: 14, color: Colors.amber),
@@ -669,11 +697,74 @@ class NurseSmallCard extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               Text(service.name, style: const TextStyle(fontWeight: FontWeight.bold, color: _cardTitleColor), maxLines: 1),
+              Text(
+                service.visitLabel,
+                style: const TextStyle(fontSize: 10, color: _cardSubColor),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
               Row(
                 children: [
                   const Icon(Icons.star, size: 14, color: Colors.amber),
                   const SizedBox(width: 4),
                   Text(service.rating.toString(), style: const TextStyle(fontSize: 12, color: _cardSubColor)),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class DentalSmallCard extends StatelessWidget {
+  final DentalClinic clinic;
+
+  const DentalSmallCard({super.key, required this.clinic});
+
+  @override
+  Widget build(BuildContext context) {
+    const accentColor = Color(0xFF0EA5E9);
+    return Container(
+      width: 150,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.grey[200]!),
+      ),
+      child: InkWell(
+        onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => DentalBookingScreen(clinic: clinic)),
+        ),
+        borderRadius: BorderRadius.circular(16),
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                height: 80,
+                decoration: BoxDecoration(
+                  color: accentColor.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Center(child: Icon(LucideIcons.smile, color: accentColor)),
+              ),
+              const SizedBox(height: 8),
+              Text(clinic.name, style: const TextStyle(fontWeight: FontWeight.bold, color: _cardTitleColor), maxLines: 1),
+              Text(
+                'Klinikada vaqt bron',
+                style: const TextStyle(fontSize: 10, color: _cardSubColor),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+              Row(
+                children: [
+                  const Icon(Icons.star, size: 14, color: Colors.amber),
+                  const SizedBox(width: 4),
+                  Text(clinic.rating.toString(), style: const TextStyle(fontSize: 12, color: _cardSubColor)),
                 ],
               ),
             ],
@@ -720,6 +811,14 @@ class EventSmallCard extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               Text(service.name, style: const TextStyle(fontWeight: FontWeight.bold, color: _cardTitleColor), maxLines: 1),
+              Text(
+                service.teamSize > 1
+                    ? '${service.teamSize} kishi · ${service.capabilitiesLabel}'
+                    : service.capabilitiesLabel,
+                style: const TextStyle(fontSize: 10, color: _cardSubColor),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
               Row(
                 children: [
                   const Icon(Icons.star, size: 14, color: Colors.amber),

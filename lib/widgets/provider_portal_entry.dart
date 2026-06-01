@@ -6,7 +6,11 @@ import '../config/provider_category_config.dart';
 import '../providers/auth_provider.dart';
 import '../screens/provider_registration/provider_onboarding_screen.dart';
 import '../screens/provider_side/unified_provider_dashboard_screen.dart';
+import '../screens/provider_registration/barber/barber_pending_screen.dart';
+import '../screens/provider_registration/salon/salon_pending_screen.dart';
 import '../services/provider_portal_service.dart';
+import '../services/barber_portal_service.dart';
+import '../services/salon_portal_service.dart';
 import '../theme/glass_tokens.dart';
 import 'glass/glass_surface.dart';
 
@@ -22,7 +26,11 @@ class ProviderPortalEntry extends StatefulWidget {
 
 class _ProviderPortalEntryState extends State<ProviderPortalEntry> {
   final _portal = ProviderPortalService();
+  final _barberPortal = BarberPortalService();
+  final _salonPortal = SalonPortalService();
   List<Map<String, dynamic>> _providers = [];
+  Map<String, dynamic>? _barberStatus;
+  Map<String, dynamic>? _salonStatus;
   bool _loading = true;
 
   @override
@@ -39,6 +47,10 @@ class _ProviderPortalEntryState extends State<ProviderPortalEntry> {
     }
     try {
       _providers = await _portal.listMine();
+      if (_providers.isEmpty) {
+        _barberStatus = await _barberPortal.getMyStatus();
+        _salonStatus = await _salonPortal.getMyStatus();
+      }
     } catch (_) {
       _providers = [];
     }
@@ -106,8 +118,34 @@ class _ProviderPortalEntryState extends State<ProviderPortalEntry> {
     );
   }
 
-  void _onTap() {
+  void _onTap() async {
     if (_providers.isEmpty) {
+      final status = _barberStatus?['status']?.toString();
+      final role = _barberStatus?['role']?.toString();
+      if (role == 'shop_employee' && status == 'pending') {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => BarberPendingScreen(
+              shopName: _barberStatus?['shop_name']?.toString() ?? 'Sartaroshxona',
+            ),
+          ),
+        );
+        return;
+      }
+      final salonRole = _salonStatus?['role']?.toString();
+      final salonStatus = _salonStatus?['status']?.toString();
+      if (salonRole == 'salon_employee' && salonStatus == 'pending') {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => SalonPendingScreen(
+              salonName: _salonStatus?['salon_name']?.toString() ?? 'Salon',
+            ),
+          ),
+        );
+        return;
+      }
       _openOnboarding();
       return;
     }

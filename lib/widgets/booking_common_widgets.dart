@@ -276,6 +276,8 @@ class PriceOptionList extends StatelessWidget {
   final ValueChanged<String> onSelect;
   final Color accent;
   final NumberFormat format;
+  /// Har bir variant ostidagi qo'shimcha matn (masalan: "30-45 daqiqa").
+  final String? Function(String option)? subtitleOf;
 
   const PriceOptionList({
     super.key,
@@ -284,6 +286,7 @@ class PriceOptionList extends StatelessWidget {
     required this.onSelect,
     required this.accent,
     required this.format,
+    this.subtitleOf,
   });
 
   @override
@@ -308,12 +311,28 @@ class PriceOptionList extends StatelessWidget {
             child: Row(
               children: [
                 Expanded(
-                  child: Text(
-                    option,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: kBookingInk,
-                    ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        option,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: kBookingInk,
+                        ),
+                      ),
+                      if (subtitleOf != null &&
+                          (subtitleOf!(option)?.isNotEmpty ?? false)) ...[
+                        const SizedBox(height: 2),
+                        Text(
+                          subtitleOf!(option)!,
+                          style: const TextStyle(
+                            color: kBookingSub,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
+                    ],
                   ),
                 ),
                 const SizedBox(width: 8),
@@ -525,6 +544,227 @@ class DetailRow extends StatelessWidget {
       ),
     );
   }
+}
+
+/// Mutaxassis / xodim tanlash — salon, sartarosh va boshqa sohalar uchun.
+class BookingStaffOption {
+  final String id;
+  final String name;
+  final String? subtitle;
+
+  const BookingStaffOption({
+    required this.id,
+    required this.name,
+    this.subtitle,
+  });
+}
+
+class SelectableStaffRow extends StatelessWidget {
+  final List<BookingStaffOption> staff;
+  final String? selectedId;
+  final ValueChanged<String> onSelect;
+  final Color accent;
+  final bool showAnyOption;
+  final String anyOptionId;
+  final String anyOptionLabel;
+
+  const SelectableStaffRow({
+    super.key,
+    required this.staff,
+    required this.selectedId,
+    required this.onSelect,
+    required this.accent,
+    this.showAnyOption = true,
+    this.anyOptionId = '__any_staff__',
+    this.anyOptionLabel = 'Har qanday bo\'sh mutaxassis',
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final items = [
+      if (showAnyOption)
+        BookingStaffOption(id: anyOptionId, name: anyOptionLabel),
+      ...staff,
+    ];
+
+    if (items.isEmpty) {
+      return Text(
+        'Mutaxassislar ro\'yxati tez orada qo\'shiladi',
+        style: TextStyle(color: GlassTokens.secondaryText(context)),
+      );
+    }
+
+    return SizedBox(
+      height: 96,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        itemCount: items.length,
+        separatorBuilder: (_, __) => const SizedBox(width: 14),
+        itemBuilder: (context, index) {
+          final item = items[index];
+          final isAny = item.id == anyOptionId;
+          final isSelected = selectedId == item.id;
+          return GestureDetector(
+            onTap: () => onSelect(item.id),
+            child: SizedBox(
+              width: isAny ? 88 : 72,
+              child: Column(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(2),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: isSelected ? accent : Colors.transparent,
+                        width: 2,
+                      ),
+                    ),
+                    child: CircleAvatar(
+                      radius: 28,
+                      backgroundColor:
+                          isSelected ? accent.withValues(alpha: 0.15) : kBookingCard,
+                      child: Icon(
+                        isAny ? Icons.groups_outlined : Icons.person_outline,
+                        color: isSelected ? accent : kBookingSub,
+                        size: isAny ? 26 : 24,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    item.name,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                      color: isSelected ? accent : kBookingInk,
+                      height: 1.15,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+/// Buyurtma tasdiqlash pastki paneli — barcha sohalar uchun.
+Future<bool> showBookingConfirmSheet(
+  BuildContext context, {
+  required String title,
+  required List<MapEntry<String, String>> details,
+  required String totalLabel,
+  required String totalValue,
+  required Color accent,
+  String confirmLabel = 'Tasdiqlash',
+}) async {
+  final result = await showModalBottomSheet<bool>(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: kBookingCard,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+    ),
+    builder: (ctx) => Padding(
+      padding: EdgeInsets.fromLTRB(
+        24,
+        20,
+        24,
+        24 + MediaQuery.of(ctx).padding.bottom,
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Center(
+            child: Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: kBookingBorder,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            title,
+            style: const TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.w800,
+              color: kBookingInk,
+            ),
+          ),
+          const SizedBox(height: 16),
+          ...details.map(
+            (d) => Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    flex: 2,
+                    child: Text(d.key, style: const TextStyle(color: kBookingSub)),
+                  ),
+                  Expanded(
+                    flex: 3,
+                    child: Text(
+                      d.value,
+                      textAlign: TextAlign.end,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w700,
+                        color: kBookingInk,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const Divider(height: 24),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(totalLabel, style: const TextStyle(color: kBookingSub, fontSize: 15)),
+              Text(
+                totalValue,
+                style: TextStyle(
+                  fontWeight: FontWeight.w800,
+                  fontSize: 18,
+                  color: accent,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 20),
+          SizedBox(
+            width: double.infinity,
+            height: 52,
+            child: ElevatedButton(
+              onPressed: () => Navigator.pop(ctx, true),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: accent,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
+              ),
+              child: Text(
+                confirmLabel,
+                style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
+              ),
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
+  return result ?? false;
 }
 
 class HorizontalDatePicker extends StatelessWidget {

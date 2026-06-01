@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../providers/app_provider.dart';
 import '../widgets/orders_filter_widget.dart';
 import '../widgets/orders_list_widget.dart';
 import '../widgets/glass/glass_scaffold.dart';
@@ -15,6 +17,8 @@ class _OrdersScreenState extends State<OrdersScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final provider = context.read<AppProvider>();
+
     return GlassScaffold(
       embeddedInShell: true,
       title: 'Buyurtmalarim',
@@ -28,7 +32,13 @@ class _OrdersScreenState extends State<OrdersScreen> {
             ),
           ),
           const SizedBox(height: 8),
-          Expanded(child: OrdersListWidget(filter: _filter)),
+          Expanded(
+            child: RefreshIndicator(
+              onRefresh: () => provider.fetchOrders(),
+              color: const Color(0xFF6366F1),
+              child: OrdersListWidget(filter: _filter),
+            ),
+          ),
         ],
       ),
     );

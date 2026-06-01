@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../utils/geo_utils.dart';
+
 /// Futbol maydoni qoplama turi
 enum FieldSurface {
   natural, // tabiiy maysa
@@ -161,6 +163,9 @@ class FootballField {
     this.weeklySlots = const {},
   });
 
+  /// Backend provider ID.
+  int get providerId => int.tryParse(id) ?? 0;
+
   factory FootballField.fromProviderJson(Map<String, dynamic> json) {
     final meta = json['metadata'] as Map<String, dynamic>? ?? {};
     FieldSize parseSize(String? s) => switch (s) {
@@ -175,6 +180,11 @@ class FootballField {
           'parquet' => FieldSurface.parquet,
           _ => FieldSurface.artificial,
         };
+    final basePrice = (meta['base_price_per_hour'] as num?)?.toDouble() ?? 200000;
+    final slotHours = (meta['time_slots'] as List<dynamic>?)
+        ?.map((e) => e.toString())
+        .toList();
+
     return FootballField(
       id: json['id']?.toString() ?? '',
       name: json['name'] ?? '',
@@ -185,28 +195,79 @@ class FootballField {
       surface: parseSurface(meta['surface'] as String?),
       rating: (json['rating'] as num?)?.toDouble() ?? 0,
       reviewCount: json['review_count'] ?? 0,
-      basePricePerHour: (meta['base_price_per_hour'] as num?)?.toDouble() ?? 200000,
+      basePricePerHour: basePrice,
       phoneNumber: json['phone'] ?? '',
-      hasLighting: true,
-      hasParking: true,
-      hasShowers: true,
+      hasLighting: meta['has_lighting'] != false,
+      hasParking: meta['has_parking'] != false,
+      hasShowers: meta['has_showers'] != false,
+      hasCafe: meta['has_cafe'] == true,
+      weeklySlots: slotHours != null && slotHours.isNotEmpty
+          ? {for (var d = 1; d <= 7; d++) d: _slotsFromHours(slotHours, basePrice, json['id']?.toString() ?? '')}
+          : const {},
     );
   }
 
+  static List<TimeSlot> _slotsFromHours(
+    List<String> hours,
+    double basePrice,
+    String fieldId, {
+    Set<String> booked = const {},
+  }) {
+    final slots = <TimeSlot>[];
+    for (var i = 0; i < hours.length; i++) {
+      final parts = hours[i].split(':');
+      final h = int.tryParse(parts[0]) ?? 9;
+      final key = '${h.toString().padLeft(2, '0')}:00';
+      final endH = i + 1 < hours.length
+          ? int.tryParse(hours[i + 1].split(':').first) ?? (h + 1)
+          : h + 1;
+      slots.add(TimeSlot(
+        id: '${fieldId}_$key',
+        start: TimeOfDay(hour: h, minute: 0),
+        end: TimeOfDay(hour: endH, minute: 0),
+        isAvailable: !booked.contains(key) && !booked.contains(hours[i]),
+        price: basePrice,
+      ));
+    }
+    return slots;
+  }
+
+  double distanceKmFrom(double userLat, double userLng) =>
+      distanceKm(userLat, userLng, latitude, longitude);
+
+  bool isOpenNow([DateTime? now]) {
+    final t = now ?? DateTime.now();
+    return t.hour >= 8 && t.hour < 23;
+  }
+
+  String get priceLabel => '${basePricePerHour.round()} so\'m/soat';
+
+  String get sizeSurfaceLabel => '${size.shortLabel} · ${surface.label}';
+
   /// Berilgan sana uchun slotlarni qaytaradi
-  List<TimeSlot> getSlotsForDate(DateTime date) {
+  List<TimeSlot> getSlotsForDate(DateTime date, {Set<String> booked = const {}}) {
     final weekday = date.weekday; // 1=dushanba..7=yakshanba
     final isWeekend = weekday == 6 || weekday == 7;
 
     // Agar weeklySlots bo'sh bo'lsa, default slotlarni generatsiya qilamiz
     if (weeklySlots.isEmpty) {
-      return _defaultSlots(isWeekend);
+      return _defaultSlots(isWeekend, booked: booked);
     }
 
-    return weeklySlots[weekday] ?? _defaultSlots(isWeekend);
+    final base = weeklySlots[weekday] ?? _defaultSlots(isWeekend, booked: booked);
+    if (booked.isEmpty) return base;
+    return base
+        .map((s) => s.copyWith(
+              isAvailable: s.isAvailable &&
+                  !booked.contains(_slotKey(s.start)),
+            ))
+        .toList();
   }
 
-  List<TimeSlot> _defaultSlots(bool isWeekend) {
+  String _slotKey(TimeOfDay t) =>
+      '${t.hour.toString().padLeft(2, '0')}:${t.minute.toString().padLeft(2, '0')}';
+
+  List<TimeSlot> _defaultSlots(bool isWeekend, {Set<String> booked = const {}}) {
     final slots = <TimeSlot>[];
     final startHours = [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22];
     final multiplier = isWeekend ? 1.3 : 1.0; // dam olish kunlari narx yuqori
@@ -214,7 +275,8 @@ class FootballField {
     for (var i = 0; i < startHours.length - 1; i++) {
       final h = startHours[i];
       final nextH = startHours[i + 1];
-      final isAvailable = (h + (int.tryParse(id) ?? 0)) % 3 != 0;
+      final key = '${h.toString().padLeft(2, '0')}:00';
+      final isAvailable = !booked.contains(key);
       slots.add(TimeSlot(
         id: '${id}_${h}00',
         start: TimeOfDay(hour: h, minute: 0),

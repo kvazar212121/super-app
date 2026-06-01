@@ -14,6 +14,7 @@ class ServiceOrder {
   final double price;
   final OrderStatus status;
   final DateTime createdAt;
+  final int? providerId;
 
   ServiceOrder({
     required this.id,
@@ -27,6 +28,7 @@ class ServiceOrder {
     required this.price,
     required this.status,
     DateTime? createdAt,
+    this.providerId,
   }) : createdAt = createdAt ?? DateTime.now();
 
   /// Eski kod `serviceIcon` (string) ishlatardi — `category.icon` mos keladi.
@@ -50,6 +52,7 @@ class ServiceOrder {
         price: price,
         status: status ?? this.status,
         createdAt: createdAt,
+        providerId: providerId,
       );
 
   factory ServiceOrder.fromJson(Map<String, dynamic> json) {

@@ -2,6 +2,22 @@ import 'package:flutter/material.dart';
 import '../../config/provider_category_config.dart';
 import '../../services/api_service.dart';
 import '../provider_side/provider_theme.dart';
+import 'barber/barber_role_selection_screen.dart';
+import 'cleaning/cleaning_role_selection_screen.dart';
+import 'master/master_role_selection_screen.dart';
+import 'salon/salon_role_selection_screen.dart';
+import 'electrician/electrician_solo_screen.dart';
+import 'plumber/plumber_solo_screen.dart';
+import 'ac/ac_solo_screen.dart';
+import 'courier/courier_solo_screen.dart';
+import 'auto/auto_role_selection_screen.dart';
+import 'nanny/nanny_registration_screen.dart';
+import 'tutor/tutor_role_selection_screen.dart';
+import 'disinfection/disinfection_registration_screen.dart';
+import 'massage/massage_registration_screen.dart';
+import 'nurse/nurse_registration_screen.dart';
+import 'dental/dental_registration_screen.dart';
+import 'event/event_registration_screen.dart';
 import 'provider_data_entry_screen.dart';
 
 class ProviderCategorySelectionScreen extends StatefulWidget {
@@ -187,11 +203,63 @@ class _ProviderCategorySelectionScreenState
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => ProviderDataEntryScreen(
-                                    categoryId: cat['id'] as String,
-                                    categoryName: cat['name'] as String,
-                                    categoryDbId: cat['dbId'] as int?,
-                                  ),
+                                  builder: (context) {
+                                    if (cat['id'] == 'barber') {
+                                      return BarberRoleSelectionScreen(
+                                        categoryDbId: cat['dbId'] as int?,
+                                      );
+                                    }
+                                    if (cat['id'] == 'cleaner') {
+                                      return const CleaningRoleSelectionScreen();
+                                    }
+                                    if (cat['id'] == 'builder') {
+                                      return const MasterRoleSelectionScreen();
+                                    }
+                                    if (cat['id'] == 'salon') {
+                                      return const SalonRoleSelectionScreen();
+                                    }
+                                    if (cat['id'] == 'electrician') {
+                                      return const ElectricianSoloScreen();
+                                    }
+                                    if (cat['id'] == 'plumber') {
+                                      return const PlumberSoloScreen();
+                                    }
+                                    if (cat['id'] == 'courier') {
+                                      return const CourierSoloScreen();
+                                    }
+                                    if (cat['id'] == 'auto') {
+                                      return const AutoRoleSelectionScreen();
+                                    }
+                                    if (cat['id'] == 'ac') {
+                                      return const AcSoloScreen();
+                                    }
+                                    if (cat['id'] == 'nanny') {
+                                      return const NannyRegistrationScreen();
+                                    }
+                                    if (cat['id'] == 'tutor') {
+                                      return const TutorRoleSelectionScreen();
+                                    }
+                                    if (cat['id'] == 'disinfection') {
+                                      return const DisinfectionRegistrationScreen();
+                                    }
+                                    if (cat['id'] == 'massage') {
+                                      return const MassageRegistrationScreen();
+                                    }
+                                    if (cat['id'] == 'nurse') {
+                                      return const NurseRegistrationScreen();
+                                    }
+                                    if (cat['id'] == 'dental') {
+                                      return const DentalRegistrationScreen();
+                                    }
+                                    if (cat['id'] == 'events') {
+                                      return const EventRegistrationScreen();
+                                    }
+                                    return ProviderDataEntryScreen(
+                                      categoryId: cat['id'] as String,
+                                      categoryName: cat['name'] as String,
+                                      categoryDbId: cat['dbId'] as int?,
+                                    );
+                                  },
                                 ),
                               );
                             },

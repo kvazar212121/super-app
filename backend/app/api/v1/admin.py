@@ -495,6 +495,31 @@ async def approve_provider(
     if not p:
         raise HTTPException(status_code=404, detail="Provayder topilmadi")
     p.is_active = True
+    meta = dict(p.metadata_json or {})
+    if meta.get("type") == "nanny":
+        meta["verification_status"] = "verified"
+        meta["nanny_role"] = "verified"
+        docs = dict(meta.get("documents") or {})
+        if docs.get("medical_cert_url"):
+            docs["medical_cert"] = True
+        if docs.get("id_url"):
+            docs["id_verified"] = True
+        if docs.get("criminal_record_url"):
+            docs["criminal_record"] = True
+        meta["documents"] = docs
+        p.metadata_json = meta
+    elif meta.get("type") in ("tutor", "education_center"):
+        meta["verification_status"] = "verified"
+        p.metadata_json = meta
+    elif meta.get("type") == "disinfection":
+        meta["verification_status"] = "verified"
+        p.metadata_json = meta
+    elif meta.get("type") == "massage":
+        meta["verification_status"] = "verified"
+        p.metadata_json = meta
+    elif meta.get("type") in ("nurse", "dental_clinic", "event_organizer"):
+        meta["verification_status"] = "verified"
+        p.metadata_json = meta
     await db.flush()
     return {"message": "Provayder tasdiqlandi", "provider_id": provider_id}
 
@@ -511,6 +536,23 @@ async def reject_provider(
     if not p:
         raise HTTPException(status_code=404, detail="Provayder topilmadi")
     p.is_active = False
+    meta = dict(p.metadata_json or {})
+    if meta.get("type") == "nanny":
+        meta["verification_status"] = "rejected"
+        meta["nanny_role"] = "rejected"
+        p.metadata_json = meta
+    elif meta.get("type") in ("tutor", "education_center"):
+        meta["verification_status"] = "rejected"
+        p.metadata_json = meta
+    elif meta.get("type") == "disinfection":
+        meta["verification_status"] = "rejected"
+        p.metadata_json = meta
+    elif meta.get("type") == "massage":
+        meta["verification_status"] = "rejected"
+        p.metadata_json = meta
+    elif meta.get("type") in ("nurse", "dental_clinic", "event_organizer"):
+        meta["verification_status"] = "rejected"
+        p.metadata_json = meta
     await db.flush()
     return {"message": "Provayder rad etildi", "provider_id": provider_id}
 

@@ -25,7 +25,7 @@ class MyApp extends StatelessWidget {
       child: Consumer<AppProvider>(
         builder: (context, appProvider, _) {
           return MaterialApp(
-            title: 'Super App',
+            title: 'HubServis',
             debugShowCheckedModeBanner: false,
             theme: AppTheme.lightTheme,
             darkTheme: AppTheme.darkTheme,

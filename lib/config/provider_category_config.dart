@@ -20,7 +20,7 @@ class ProviderCategoryConfig {
   static const all = [
     barber, salon, plumber, electrician, cleaner, auto, futbol,
     education, builder, worker, ac, nanny, tutor, disinfection,
-    appliance, courier, massage, nurse, events,
+    appliance, courier, massage, nurse, dental, events,
   ];
 
   static ProviderCategoryConfig? byRegistrationId(String id) {
@@ -162,6 +162,13 @@ class ProviderCategoryConfig {
     title: 'Hamshira',
     icon: LucideIcons.stethoscope,
     accentColor: Color(0xFFEF4444),
+  );
+  static const dental = ProviderCategoryConfig(
+    registrationId: 'dental',
+    categoryKey: 'stomatologiya',
+    title: 'Stomatologiya',
+    icon: LucideIcons.smile,
+    accentColor: Color(0xFF0EA5E9),
   );
   static const events = ProviderCategoryConfig(
     registrationId: 'events',

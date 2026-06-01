@@ -8,6 +8,7 @@ import '../services/api_service.dart';
 class AppProvider extends ChangeNotifier {
   final ApiService _api = ApiService();
   Timer? _notificationTimer;
+  Timer? _orderPollTimer;
 
   UserProfile _user = UserProfile(name: '', surname: '', phone: '');
   final List<PaymentCard> _cards = [];
@@ -15,6 +16,8 @@ class AppProvider extends ChangeNotifier {
   final List<ServiceOrder> _orders = [];
   List<dynamic> _notifications = [];
   int _unreadCount = 0;
+  final Map<String, OrderStatus> _knownOrderStatuses = {};
+  String? _statusToastMessage;
 
   UserProfile get user => _user;
   List<PaymentCard> get cards => _cards;
@@ -23,6 +26,13 @@ class AppProvider extends ChangeNotifier {
   double get cashback => _user.cashback;
   List<dynamic> get notifications => _notifications;
   int get unreadCount => _unreadCount;
+
+  /// Buyurtma holati o'zgarganda SnackBar uchun xabar (bir marta o'qiladi).
+  String? consumeStatusToast() {
+    final msg = _statusToastMessage;
+    _statusToastMessage = null;
+    return msg;
+  }
 
   List<ServiceOrder> get orders => List.unmodifiable(_orders);
 
@@ -78,9 +88,11 @@ class AppProvider extends ChangeNotifier {
       final items = ordersResponse['items'] as List<dynamic>? ?? [];
       _orders.clear();
       _orders.addAll(items.map((o) => ServiceOrder.fromJson(o)));
+      _seedOrderStatuses();
 
       await fetchNotifications();
       startNotificationPolling();
+      startOrderPolling();
       notifyListeners();
     } catch (e) {
       debugPrint('Error fetching initial data: $e');
@@ -132,17 +144,20 @@ class AppProvider extends ChangeNotifier {
       final categoryId =
           _categoryIds[categoryKey] ?? order.category.index + 1;
 
-      int providerId = 1;
-      try {
-        final providersRes =
-            await _api.getProviders(categoryKey: categoryKey, perPage: 1);
-        final List<dynamic> providers = providersRes['items'] ?? [];
-        if (providers.isNotEmpty) {
-          providerId = providers.first['id'] as int;
+      int providerId = order.providerId ?? 0;
+      if (providerId <= 0) {
+        try {
+          final providersRes =
+              await _api.getProviders(categoryKey: categoryKey, perPage: 1);
+          final List<dynamic> providers = providersRes['items'] ?? [];
+          if (providers.isNotEmpty) {
+            providerId = providers.first['id'] as int;
+          }
+        } catch (e) {
+          debugPrint('Error fetching provider for order: $e');
         }
-      } catch (e) {
-        debugPrint('Error fetching provider for order: $e');
       }
+      if (providerId <= 0) providerId = 1;
 
       final payload = {
         'category_id': categoryId,
@@ -157,6 +172,7 @@ class AppProvider extends ChangeNotifier {
       final newOrderData = await _api.createOrder(payload);
       final newOrder = ServiceOrder.fromJson(newOrderData);
       _orders.insert(0, newOrder);
+      _knownOrderStatuses[newOrder.id] = newOrder.status;
 
       final profile = await _api.getMe();
       _user = UserProfile.fromJson(profile);
@@ -175,6 +191,7 @@ class AppProvider extends ChangeNotifier {
         final i = _orders.indexWhere((o) => o.id == id);
         if (i != -1) {
           _orders[i] = _orders[i].copyWith(status: OrderStatus.cancelled);
+          _knownOrderStatuses[id] = OrderStatus.cancelled;
         }
         final profile = await _api.getMe();
         _user = UserProfile.fromJson(profile);
@@ -183,6 +200,43 @@ class AppProvider extends ChangeNotifier {
     } catch (e) {
       debugPrint('Error cancelling order: $e');
       rethrow;
+    }
+  }
+
+  Future<void> fetchOrders({bool detectChanges = true}) async {
+    if (!_api.hasToken) return;
+    try {
+      final ordersResponse = await _api.getMyOrders();
+      final items = ordersResponse['items'] as List<dynamic>? ?? [];
+      final fresh = items.map((o) => ServiceOrder.fromJson(o)).toList();
+
+      if (detectChanges) {
+        for (final order in fresh) {
+          final prev = _knownOrderStatuses[order.id];
+          if (prev != null && prev != order.status) {
+            _statusToastMessage = '${order.serviceName}: ${order.statusText}';
+          }
+          _knownOrderStatuses[order.id] = order.status;
+        }
+      } else {
+        _seedOrderStatusesFrom(fresh);
+      }
+
+      _orders
+        ..clear()
+        ..addAll(fresh);
+      notifyListeners();
+    } catch (e) {
+      debugPrint('Error fetching orders: $e');
+    }
+  }
+
+  void _seedOrderStatuses() => _seedOrderStatusesFrom(_orders);
+
+  void _seedOrderStatusesFrom(List<ServiceOrder> orders) {
+    _knownOrderStatuses.clear();
+    for (final o in orders) {
+      _knownOrderStatuses[o.id] = o.status;
     }
   }
 
@@ -196,10 +250,7 @@ class AppProvider extends ChangeNotifier {
       _unreadCount = await _api.getUnreadCount();
 
       if (_unreadCount > prevUnreadCount) {
-        final ordersResponse = await _api.getMyOrders();
-        final items = ordersResponse['items'] as List<dynamic>? ?? [];
-        _orders.clear();
-        _orders.addAll(items.map((o) => ServiceOrder.fromJson(o)));
+        await fetchOrders();
       }
 
       notifyListeners();
@@ -224,6 +275,13 @@ class AppProvider extends ChangeNotifier {
     }
   }
 
+  void startOrderPolling() {
+    _orderPollTimer?.cancel();
+    _orderPollTimer = Timer.periodic(const Duration(seconds: 15), (_) async {
+      await fetchOrders();
+    });
+  }
+
   void startNotificationPolling() {
     _notificationTimer?.cancel();
     _notificationTimer = Timer.periodic(const Duration(seconds: 10), (_) async {
@@ -234,6 +292,7 @@ class AppProvider extends ChangeNotifier {
   @override
   void dispose() {
     _notificationTimer?.cancel();
+    _orderPollTimer?.cancel();
     super.dispose();
   }
 }

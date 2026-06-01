@@ -302,8 +302,27 @@ async def update_order_status(
     order = result.scalar_one_or_none()
     if not order:
         raise HTTPException(status_code=404, detail="Buyurtma topilmadi")
+    old_status = order.status
     order.status = OrderStatus(data.status)
     await db.flush()
+
+    if old_status != order.status:
+        from app.models.order import OrderStatus as OS
+        from app.services.notification_service import NotificationService
+        labels = {
+            OS.pending: "kutilmoqda",
+            OS.confirmed: "qabul qilindi",
+            OS.in_progress: "jarayonda",
+            OS.completed: "yakunlandi",
+            OS.cancelled: "bekor qilindi",
+        }
+        label = labels.get(order.status, order.status.value)
+        NotificationService.notify_order_status(
+            user_id=order.user_id,
+            order_id=order.id,
+            status_label=label,
+        )
+
     return {"message": "Status yangilandi", "status": data.status}
 
 

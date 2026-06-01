@@ -84,29 +84,33 @@ class OtpCodeFieldState extends State<OtpCodeField> {
   @override
   Widget build(BuildContext context) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: List.generate(widget.length, (i) {
-        return SizedBox(
-          width: 46,
-          child: TextField(
-            controller: _controllers[i],
-            focusNode: _focusNodes[i],
-            enabled: widget.enabled,
-            textAlign: TextAlign.center,
-            keyboardType: TextInputType.number,
-            maxLength: 1,
-            style: TextStyle(
-              fontSize: 22,
-              fontWeight: FontWeight.w800,
-              color: GlassTokens.primaryText(context),
+        return Expanded(
+          child: Padding(
+            padding: EdgeInsets.only(left: i == 0 ? 0 : 5),
+            child: TextField(
+              controller: _controllers[i],
+              focusNode: _focusNodes[i],
+              enabled: widget.enabled,
+              textAlign: TextAlign.center,
+              keyboardType: TextInputType.number,
+              maxLength: 1,
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w800,
+                color: GlassTokens.primaryText(context),
+              ),
+              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+              decoration: InputDecoration(
+                counterText: '',
+                isDense: true,
+                contentPadding: const EdgeInsets.symmetric(vertical: 10),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              onChanged: (v) => _onDigit(i, v),
             ),
-            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-            decoration: InputDecoration(
-              counterText: '',
-              contentPadding: const EdgeInsets.symmetric(vertical: 14),
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
-            ),
-            onChanged: (v) => _onDigit(i, v),
           ),
         );
       }),

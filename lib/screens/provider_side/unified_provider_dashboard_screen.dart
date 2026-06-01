@@ -1,10 +1,39 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../config/provider_category_config.dart';
 import '../../services/provider_portal_service.dart';
 import 'widgets/provider_calendar_widget.dart';
+import 'widgets/provider_barber_team_widget.dart';
+import 'widgets/provider_salon_team_widget.dart';
+import 'widgets/provider_football_settings_widget.dart';
+import 'widgets/provider_cleaning_settings_widget.dart';
+import 'widgets/provider_master_settings_widget.dart';
+import 'widgets/provider_electrician_settings_widget.dart';
+import 'widgets/provider_plumber_settings_widget.dart';
+import 'widgets/provider_courier_settings_widget.dart';
+import 'widgets/provider_auto_settings_widget.dart';
+import 'widgets/provider_auto_workshop_settings_widget.dart';
+import 'widgets/provider_ac_settings_widget.dart';
+import 'widgets/provider_nanny_settings_widget.dart';
+import 'widgets/provider_tutor_settings_widget.dart';
+import 'widgets/provider_pending_orders_widget.dart';
+import '../provider_registration/nanny/nanny_pending_screen.dart';
+import '../provider_registration/tutor/tutor_pending_screen.dart';
+import '../provider_registration/disinfection/disinfection_pending_screen.dart';
+import '../provider_registration/massage/massage_pending_screen.dart';
+import '../provider_registration/nurse/nurse_pending_screen.dart';
+import '../provider_registration/dental/dental_pending_screen.dart';
+import '../provider_registration/event/event_pending_screen.dart';
+import 'widgets/provider_disinfection_settings_widget.dart';
+import 'widgets/provider_massage_settings_widget.dart';
+import 'widgets/provider_nurse_settings_widget.dart';
+import 'widgets/provider_dental_settings_widget.dart';
+import 'widgets/provider_event_settings_widget.dart';
 import 'widgets/provider_reports_widget.dart';
+import 'widgets/provider_venue_settings_widget.dart';
 
 /// Barcha soha egasi panellari — DB/API dan ma'lumot oladi.
 class UnifiedProviderDashboardScreen extends StatefulWidget {
@@ -23,19 +52,82 @@ class UnifiedProviderDashboardScreen extends StatefulWidget {
 class _UnifiedProviderDashboardScreenState
     extends State<UnifiedProviderDashboardScreen> {
   final _portal = ProviderPortalService();
+  final _pendingKey = GlobalKey<ProviderPendingOrdersWidgetState>();
+
   int _selectedIndex = 0;
   bool _loading = true;
   String? _error;
+  int _pendingCount = 0;
+  Timer? _pollTimer;
 
   Map<String, dynamic>? _provider;
   Map<String, dynamic>? _stats;
   List<Map<String, dynamic>> _todayOrders = [];
   bool _isActive = true;
 
+  bool get _hasVenueSettings {
+    final k = widget.config.categoryKey;
+    return k == 'sartarosh' || k == 'salon' || k == 'futbol' || k == 'tozalash' || k == 'usta' || k == 'elektrik' || k == 'santexnik' || k == 'kuryerlik' || k == 'avtoYordam' || k == 'konditsioner' || k == 'enaga' || k == 'repetitor' || k == 'dezinfeksiya' || k == 'massajHijoma' || k == 'hamshira' || k == 'stomatologiya' || k == 'tadbirlar';
+  }
+
+  bool get _isBarberShopOwner {
+    if (widget.config.categoryKey != 'sartarosh') return false;
+    final meta = _provider?['metadata'] as Map<String, dynamic>? ??
+        _provider?['metadata_json'] as Map<String, dynamic>?;
+    final role = meta?['barber_role'];
+    return role == 'shop_owner' ||
+        (role == null && meta?['type'] == 'barber_shop');
+  }
+
+  String? get _barberInviteCode {
+    final meta = _provider?['metadata'] as Map<String, dynamic>? ??
+        _provider?['metadata_json'] as Map<String, dynamic>?;
+    return meta?['invite_code']?.toString();
+  }
+
+  bool get _isSalonOwner {
+    if (widget.config.categoryKey != 'salon') return false;
+    final meta = _provider?['metadata'] as Map<String, dynamic>? ??
+        _provider?['metadata_json'] as Map<String, dynamic>?;
+    final role = meta?['salon_role'];
+    return role == 'salon_owner' ||
+        (role == null && meta?['type'] == 'beauty_salon');
+  }
+
+  String? get _salonInviteCode {
+    final meta = _provider?['metadata'] as Map<String, dynamic>? ??
+        _provider?['metadata_json'] as Map<String, dynamic>?;
+    return meta?['invite_code']?.toString();
+  }
+
+  bool get _isAutoWorkshop {
+    if (widget.config.categoryKey != 'avtoYordam') return false;
+    final meta = _provider?['metadata'] as Map<String, dynamic>? ??
+        _provider?['metadata_json'] as Map<String, dynamic>?;
+    return meta?['type'] == 'auto_workshop' || meta?['auto_role'] == 'workshop';
+  }
+
+  bool get _isEducationCenter {
+    if (widget.config.categoryKey != 'repetitor') return false;
+    final meta = _provider?['metadata'] as Map<String, dynamic>? ??
+        _provider?['metadata_json'] as Map<String, dynamic>?;
+    return meta?['type'] == 'education_center' || meta?['tutor_role'] == 'center';
+  }
+
+  int get _reportsIndex => _hasVenueSettings ? 3 : 2;
+  int get _settingsIndex => 2;
+
   @override
   void initState() {
     super.initState();
     _load();
+    _pollTimer = Timer.periodic(const Duration(seconds: 15), (_) => _pollPending());
+  }
+
+  @override
+  void dispose() {
+    _pollTimer?.cancel();
+    super.dispose();
   }
 
   Future<void> _load() async {
@@ -49,15 +141,44 @@ class _UnifiedProviderDashboardScreenState
         _portal.getMe(key),
         _portal.getStats(key),
         _portal.getTodayOrders(key),
+        _portal.getPendingOrders(key),
       ]);
       _provider = results[0] as Map<String, dynamic>;
       _stats = results[1] as Map<String, dynamic>;
       _todayOrders = results[2] as List<Map<String, dynamic>>;
+      _pendingCount = (results[3] as List).length;
       _isActive = _provider?['is_active'] == true;
     } catch (e) {
       _error = 'Ma\'lumotlarni yuklab bo\'lmadi.\nRo\'yxatdan o\'tganingizni tekshiring.';
     }
     if (mounted) setState(() => _loading = false);
+  }
+
+  Future<void> _pollPending() async {
+    if (!mounted) return;
+    try {
+      final prev = _pendingCount;
+      final pending = await _portal.getPendingOrders(widget.config.categoryKey);
+      if (!mounted) return;
+      if (pending.length > prev && prev >= 0) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('${pending.length - prev} ta yangi buyurtma!'),
+            action: SnackBarAction(
+              label: 'Ko\'rish',
+              onPressed: () => setState(() => _selectedIndex = 0),
+            ),
+          ),
+        );
+      }
+      setState(() => _pendingCount = pending.length);
+      _pendingKey.currentState?.load();
+    } catch (_) {}
+  }
+
+  Future<void> _refreshDashboard() async {
+    await _load();
+    _pendingKey.currentState?.load();
   }
 
   Future<void> _toggleActive(bool v) async {
@@ -107,6 +228,42 @@ class _UnifiedProviderDashboardScreenState
       );
     }
 
+    if (widget.config.categoryKey == 'enaga' && !_isActive) {
+      return NannyPendingScreen(
+        providerName: _provider?['name'] as String? ?? widget.config.title,
+      );
+    }
+    if (widget.config.categoryKey == 'repetitor' && !_isActive) {
+      return TutorPendingScreen(
+        providerName: _provider?['name'] as String? ?? widget.config.title,
+      );
+    }
+    if (widget.config.categoryKey == 'dezinfeksiya' && !_isActive) {
+      return DisinfectionPendingScreen(
+        providerName: _provider?['name'] as String? ?? widget.config.title,
+      );
+    }
+    if (widget.config.categoryKey == 'massajHijoma' && !_isActive) {
+      return MassagePendingScreen(
+        providerName: _provider?['name'] as String? ?? widget.config.title,
+      );
+    }
+    if (widget.config.categoryKey == 'hamshira' && !_isActive) {
+      return NursePendingScreen(
+        providerName: _provider?['name'] as String? ?? widget.config.title,
+      );
+    }
+    if (widget.config.categoryKey == 'stomatologiya' && !_isActive) {
+      return DentalPendingScreen(
+        providerName: _provider?['name'] as String? ?? widget.config.title,
+      );
+    }
+    if (widget.config.categoryKey == 'tadbirlar' && !_isActive) {
+      return EventPendingScreen(
+        providerName: _provider?['name'] as String? ?? widget.config.title,
+      );
+    }
+
     return Scaffold(
       backgroundColor: theme.colorScheme.surface,
       body: SafeArea(
@@ -120,14 +277,128 @@ class _UnifiedProviderDashboardScreenState
   }
 
   Widget _buildBody(ThemeData theme, Color accent) {
-    switch (_selectedIndex) {
-      case 1:
-        return ProviderCalendarWidget(categoryKey: widget.config.categoryKey);
-      case 2:
-        return ProviderReportsWidget(categoryKey: widget.config.categoryKey);
-      default:
-        return _buildDashboard(theme, accent);
+    if (_selectedIndex == 1) {
+      return ProviderCalendarWidget(
+        categoryKey: widget.config.categoryKey,
+        accent: accent,
+      );
     }
+    if (_hasVenueSettings && _selectedIndex == _settingsIndex) {
+      if (widget.config.categoryKey == 'futbol') {
+        return ProviderFootballSettingsWidget(
+          categoryKey: widget.config.categoryKey,
+          accent: accent,
+        );
+      }
+      if (widget.config.categoryKey == 'tozalash') {
+        return ProviderCleaningSettingsWidget(
+          categoryKey: widget.config.categoryKey,
+          accent: accent,
+        );
+      }
+      if (widget.config.categoryKey == 'usta') {
+        return ProviderMasterSettingsWidget(
+          categoryKey: widget.config.categoryKey,
+          accent: accent,
+        );
+      }
+      if (widget.config.categoryKey == 'elektrik') {
+        return ProviderElectricianSettingsWidget(
+          categoryKey: widget.config.categoryKey,
+          accent: accent,
+        );
+      }
+      if (widget.config.categoryKey == 'santexnik') {
+        return ProviderPlumberSettingsWidget(
+          categoryKey: widget.config.categoryKey,
+          accent: accent,
+        );
+      }
+      if (widget.config.categoryKey == 'kuryerlik') {
+        return ProviderCourierSettingsWidget(
+          categoryKey: widget.config.categoryKey,
+          accent: accent,
+        );
+      }
+      if (widget.config.categoryKey == 'avtoYordam') {
+        if (_isAutoWorkshop) {
+          return ProviderAutoWorkshopSettingsWidget(
+            categoryKey: widget.config.categoryKey,
+            accent: accent,
+          );
+        }
+        return ProviderAutoSettingsWidget(
+          categoryKey: widget.config.categoryKey,
+          accent: accent,
+        );
+      }
+      if (widget.config.categoryKey == 'konditsioner') {
+        return ProviderAcSettingsWidget(
+          categoryKey: widget.config.categoryKey,
+          accent: accent,
+        );
+      }
+      if (widget.config.categoryKey == 'enaga') {
+        return ProviderNannySettingsWidget(
+          categoryKey: widget.config.categoryKey,
+          accent: accent,
+        );
+      }
+      if (widget.config.categoryKey == 'repetitor') {
+        if (_isEducationCenter) {
+          return ProviderVenueSettingsWidget(
+            categoryKey: widget.config.categoryKey,
+            accent: accent,
+            staffLabel: 'O\'qituvchi',
+            staffMetadataKey: 'teachers',
+          );
+        }
+        return ProviderTutorSettingsWidget(
+          categoryKey: widget.config.categoryKey,
+          accent: accent,
+        );
+      }
+      if (widget.config.categoryKey == 'dezinfeksiya') {
+        return ProviderDisinfectionSettingsWidget(
+          categoryKey: widget.config.categoryKey,
+          accent: accent,
+        );
+      }
+      if (widget.config.categoryKey == 'massajHijoma') {
+        return ProviderMassageSettingsWidget(
+          categoryKey: widget.config.categoryKey,
+          accent: accent,
+        );
+      }
+      if (widget.config.categoryKey == 'hamshira') {
+        return ProviderNurseSettingsWidget(
+          categoryKey: widget.config.categoryKey,
+          accent: accent,
+        );
+      }
+      if (widget.config.categoryKey == 'stomatologiya') {
+        return ProviderDentalSettingsWidget(
+          categoryKey: widget.config.categoryKey,
+          accent: accent,
+        );
+      }
+      if (widget.config.categoryKey == 'tadbirlar') {
+        return ProviderEventSettingsWidget(
+          categoryKey: widget.config.categoryKey,
+          accent: accent,
+        );
+      }
+      return ProviderVenueSettingsWidget(
+        categoryKey: widget.config.categoryKey,
+        accent: accent,
+        staffLabel: widget.config.categoryKey == 'salon' ? 'Mutaxassis' : 'Usta',
+        staffMetadataKey: widget.config.categoryKey == 'salon' ? 'staff' : 'barbers',
+      );
+    }
+    if (_selectedIndex == _reportsIndex) {
+      return ProviderReportsWidget(categoryKey: widget.config.categoryKey);
+    }
+    return _buildDashboard(theme, accent);
   }
 
   Widget _buildDashboard(ThemeData theme, Color accent) {
@@ -166,7 +437,10 @@ class _UnifiedProviderDashboardScreenState
                 ],
               ),
             ),
-            IconButton(icon: const Icon(LucideIcons.refreshCw), onPressed: _load),
+            IconButton(
+              icon: const Icon(LucideIcons.refreshCw),
+              onPressed: _refreshDashboard,
+            ),
           ],
         ),
         const SizedBox(height: 24),
@@ -202,6 +476,21 @@ class _UnifiedProviderDashboardScreenState
           ),
         ),
         const SizedBox(height: 24),
+        ProviderPendingOrdersWidget(
+          key: _pendingKey,
+          categoryKey: widget.config.categoryKey,
+          accent: accent,
+          onChanged: _refreshDashboard,
+        ),
+        if (_pendingCount > 0) const SizedBox(height: 16),
+        if (_isBarberShopOwner) ...[
+          ProviderBarberTeamWidget(accent: accent, inviteCode: _barberInviteCode),
+          const SizedBox(height: 24),
+        ],
+        if (_isSalonOwner) ...[
+          ProviderSalonTeamWidget(accent: accent, inviteCode: _salonInviteCode),
+          const SizedBox(height: 24),
+        ],
         Row(
           children: [
             Expanded(
@@ -282,6 +571,7 @@ class _UnifiedProviderDashboardScreenState
     final time = o['date'] != null
         ? DateFormat('HH:mm').format(DateTime.parse(o['date'] as String))
         : '—';
+    final status = o['status'] as String? ?? '';
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -314,24 +604,67 @@ class _UnifiedProviderDashboardScreenState
               ],
             ),
           ),
-          Text(
-            '${NumberFormat('#,###').format((o['price'] as num?) ?? 0)} so\'m',
-            style: const TextStyle(fontWeight: FontWeight.bold),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                '${NumberFormat('#,###').format((o['price'] as num?) ?? 0)} so\'m',
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+              Text(_statusLabel(status), style: theme.textTheme.bodySmall),
+            ],
           ),
         ],
       ),
     );
   }
 
+  String _statusLabel(String status) {
+    switch (status) {
+      case 'pending':
+        return 'Kutilmoqda';
+      case 'confirmed':
+        return 'Tasdiqlangan';
+      case 'in_progress':
+        return 'Jarayonda';
+      case 'completed':
+        return 'Bajarildi';
+      case 'cancelled':
+        return 'Bekor qilindi';
+      default:
+        return status;
+    }
+  }
+
   Widget _buildBottomNav(Color accent) {
+    final destinations = <NavigationDestination>[
+      NavigationDestination(
+        icon: Badge(
+          isLabelVisible: _pendingCount > 0,
+          label: Text('$_pendingCount'),
+          child: const Icon(LucideIcons.layoutDashboard),
+        ),
+        label: 'Panel',
+      ),
+      const NavigationDestination(
+        icon: Icon(LucideIcons.calendarDays),
+        label: 'Kalendar',
+      ),
+      if (_hasVenueSettings)
+        const NavigationDestination(
+          icon: Icon(LucideIcons.settings),
+          label: 'Sozlamalar',
+        ),
+      const NavigationDestination(
+        icon: Icon(LucideIcons.chartBar),
+        label: 'Hisobot',
+      ),
+    ];
+
     return NavigationBar(
       selectedIndex: _selectedIndex,
       onDestinationSelected: (i) => setState(() => _selectedIndex = i),
-      destinations: const [
-        NavigationDestination(icon: Icon(LucideIcons.layoutDashboard), label: 'Panel'),
-        NavigationDestination(icon: Icon(LucideIcons.calendarDays), label: 'Kalendar'),
-        NavigationDestination(icon: Icon(LucideIcons.chartBar), label: 'Hisobot'),
-      ],
+      destinations: destinations,
       indicatorColor: accent.withValues(alpha: 0.15),
     );
   }

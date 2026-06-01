@@ -14,7 +14,8 @@ class ServicesGridWidget extends StatelessWidget {
     ServiceHubKind.usta,
     ServiceHubKind.tozalash,
     ServiceHubKind.futbol,
-    ServiceHubKind.texnikaUstasi,
+    ServiceHubKind.stomatologiya,
+    ServiceHubKind.hamshira,
     ServiceHubKind.kuryerlik,
   ];
 

@@ -6,11 +6,13 @@ import '../models/football_field.dart';
 import '../models/service_hub_kind.dart';
 import '../models/service_order.dart';
 import '../providers/app_provider.dart';
+import '../services/provider_availability_service.dart';
 import '../utils/auth_guard.dart';
+import '../widgets/booking_common_widgets.dart' hide SectionTitle, TimeSlotGrid;
 import '../widgets/football_field_widgets.dart';
 import '../widgets/glass/mesh_background.dart';
 
-/// Optimallashtirilgan futbol maydoni bron qilish ekrani
+/// Futbol maydoni bron qilish — API slotlari bilan.
 class FootballFieldBookingScreen extends StatefulWidget {
   final FootballField field;
 
@@ -24,18 +26,23 @@ class FootballFieldBookingScreen extends StatefulWidget {
 class _FootballFieldBookingScreenState extends State<FootballFieldBookingScreen> {
   FootballField get field => widget.field;
 
-  final _formKey = GlobalKey<FormState>();
+  final _availability = ProviderAvailabilityService();
   final _notesCtrl = TextEditingController();
   final _playersCtrl = TextEditingController();
 
   DateTime _selectedDate = DateTime.now().add(const Duration(days: 1));
   TimeSlot? _selectedSlot;
-  final Set<int> _selectedAmenities = {}; // amenity index bo'yicha
+  final Set<int> _selectedAmenities = {};
+  List<TimeSlot> _slots = [];
+  bool _loadingSlots = true;
+
+  Color get _accent => ServiceHubKind.futbol.accent;
 
   @override
   void initState() {
     super.initState();
     _playersCtrl.text = field.size.minPlayers.toString();
+    _loadSlots();
   }
 
   @override
@@ -45,30 +52,64 @@ class _FootballFieldBookingScreenState extends State<FootballFieldBookingScreen>
     super.dispose();
   }
 
-  List<TimeSlot> get _todaySlots => field.getSlotsForDate(_selectedDate);
+  Future<void> _loadSlots() async {
+    setState(() => _loadingSlots = true);
+    Set<String> booked = {};
+    if (field.providerId > 0) {
+      final avail = await _availability.fetch(
+        providerId: field.providerId,
+        date: _selectedDate,
+      );
+      booked = avail.booked.toSet();
+    }
+    if (mounted) {
+      setState(() {
+        _slots = field.getSlotsForDate(_selectedDate, booked: booked);
+        _loadingSlots = false;
+        if (_selectedSlot != null &&
+            !_slots.any((s) => s.id == _selectedSlot!.id && s.isAvailable)) {
+          _selectedSlot = null;
+        }
+      });
+    }
+  }
 
-  // Umumiy narx hisobi
   double get _totalPrice {
     double price = _selectedSlot?.price ?? 0;
     for (final i in _selectedAmenities) {
       final amenity = field.amenities[i];
-      if (amenity.price != null) {
-        price += amenity.price!;
-      }
+      if (amenity.price != null) price += amenity.price!;
     }
     return price;
   }
 
-  void _submitBooking() async {
+  Future<void> _submitBooking() async {
     if (_selectedSlot == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Iltimos, vaqt oralig‘ini tanlang'),
-          behavior: SnackBarBehavior.floating,
-        ),
+        const SnackBar(content: Text('Iltimos, vaqt oralig\'ini tanlang')),
       );
       return;
     }
+
+    if (!await ensureAuthenticated(context)) return;
+    if (!mounted) return;
+
+    final currency = NumberFormat.currency(locale: 'uz_UZ', symbol: 'so\'m', decimalDigits: 0);
+    final confirmed = await showBookingConfirmSheet(
+      context,
+      title: 'Bronni tasdiqlang',
+      details: [
+        MapEntry('Maydon', field.name),
+        MapEntry('Vaqt', '${DateFormat('dd.MM.yyyy').format(_selectedDate)} ${_selectedSlot!.formatted}'),
+        MapEntry('O\'yinchilar', _playersCtrl.text.trim()),
+        MapEntry('Manzil', field.address),
+      ],
+      totalLabel: 'Jami',
+      totalValue: currency.format(_totalPrice),
+      accent: _accent,
+      confirmLabel: 'Bron qilish',
+    );
+    if (!confirmed || !mounted) return;
 
     final dateTime = DateTime(
       _selectedDate.year,
@@ -78,9 +119,12 @@ class _FootballFieldBookingScreenState extends State<FootballFieldBookingScreen>
       _selectedSlot!.start.minute,
     );
 
-    final amenityNames = _selectedAmenities
-        .map((i) => field.amenities[i].name)
-        .toList();
+    final amenityNames = _selectedAmenities.map((i) => field.amenities[i].name).toList();
+    final notes = [
+      if (_playersCtrl.text.trim().isNotEmpty) 'O\'yinchilar: ${_playersCtrl.text.trim()}',
+      if (_notesCtrl.text.trim().isNotEmpty) _notesCtrl.text.trim(),
+      if (amenityNames.isNotEmpty) 'Qo\'shimcha: ${amenityNames.join(', ')}',
+    ].join('\n');
 
     final order = ServiceOrder(
       id: DateTime.now().microsecondsSinceEpoch.toString(),
@@ -89,86 +133,71 @@ class _FootballFieldBookingScreenState extends State<FootballFieldBookingScreen>
       providerName: field.name,
       variant: '${field.size.shortLabel} — ${_selectedSlot!.formatted}',
       address: field.address,
-      notes: '${_notesCtrl.text.trim()}${amenityNames.isNotEmpty ? '\nQoʻshimcha: ${amenityNames.join(', ')}' : ''}',
+      notes: notes,
       date: dateTime,
       price: _totalPrice,
       status: OrderStatus.pending,
+      providerId: field.providerId > 0 ? field.providerId : null,
     );
 
-    if (!await ensureAuthenticated(context)) return;
-    if (!mounted) return;
-    await context.read<AppProvider>().addOrder(order);
-    if (!mounted) return;
-    Navigator.pop(context, true);
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('${field.name} band qilindi'), behavior: SnackBarBehavior.floating),
-    );
+    try {
+      await context.read<AppProvider>().addOrder(order);
+      if (!mounted) return;
+      Navigator.pop(context, true);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('${field.name} band qilindi')),
+      );
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Bron qilib bo\'lmadi')),
+        );
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final accent = const Color(0xFF4CAF50); // futbol yashil
     return GlassBackdrop(
       child: Scaffold(
-      backgroundColor: Colors.transparent,
-      appBar: AppBar(
-        title: Text(field.name),
         backgroundColor: Colors.transparent,
-        foregroundColor: accent,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.map_outlined),
-            tooltip: 'Xaritada koʻrish',
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Xaritada koʻrilmoqda')),
-              );
-            },
-          ),
-        ],
-      ),
-      body: Form(
-        key: _formKey,
-        child: ListView(
+        appBar: AppBar(
+          title: Text(field.name),
+          backgroundColor: Colors.transparent,
+          foregroundColor: _accent,
+        ),
+        body: ListView(
           padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
           children: [
-            // === Vizual maydon sxemasi ===
-            FieldVisualWidget(
-              field: field,
-              accent: accent,
-            ),
+            FieldVisualWidget(field: field, accent: _accent),
             const SizedBox(height: 20),
-
-            // === Maydon haqida tezkor ma'lumot ===
             FieldInfoCard(field: field),
             const SizedBox(height: 20),
-
-            // === Sana tanlash ===
             const SectionTitle('Sana tanlang', Icons.calendar_month_outlined),
             const SizedBox(height: 8),
             DateChips(
               selectedDate: _selectedDate,
               onDateSelected: (d) {
-                setState(() {
-                  _selectedDate = d;
-                  _selectedSlot = null;
-                });
+                setState(() => _selectedDate = d);
+                _loadSlots();
               },
             ),
             const SizedBox(height: 20),
-
-            // === Vaqt slotlari ===
-            const SectionTitle('Vaqt oralig‘i', Icons.schedule),
+            const SectionTitle('Vaqt oralig\'i', Icons.schedule),
             const SizedBox(height: 8),
-            TimeSlotGrid(
-              slots: _todaySlots,
-              selectedSlot: _selectedSlot,
-              accent: accent,
-              onSlotSelected: (s) => setState(() => _selectedSlot = s),
-            ),
+            if (_loadingSlots)
+              const Padding(
+                padding: EdgeInsets.all(24),
+                child: Center(child: CircularProgressIndicator()),
+              )
+            else
+              TimeSlotGrid(
+                slots: _slots,
+                selectedSlot: _selectedSlot,
+                accent: _accent,
+                onSlotSelected: (s) => setState(() => _selectedSlot = s),
+              ),
             const SizedBox(height: 20),
-
-            // === O'yinchilar soni ===
             SectionTitle(
               "O'yinchilar soni (${field.size.minPlayers}—${field.size.maxPlayers})",
               Icons.people_outline,
@@ -178,96 +207,40 @@ class _FootballFieldBookingScreenState extends State<FootballFieldBookingScreen>
               controller: _playersCtrl,
               keyboardType: TextInputType.number,
               decoration: InputDecoration(
-                hintText: 'Nechta o‘yinchi?',
+                hintText: 'Nechta o\'yinchi?',
                 prefixIcon: const Icon(Icons.people),
                 border: const OutlineInputBorder(),
-                suffixText:
-                    'min ${field.size.minPlayers} / max ${field.size.maxPlayers}',
               ),
             ),
             const SizedBox(height: 20),
-
-            // === Qo'shimcha xizmatlar ===
-            if (field.amenities.isNotEmpty) ...[
-              const SectionTitle('Qo‘shimcha xizmatlar', Icons.workspace_premium),
-              const SizedBox(height: 8),
-              ...field.amenities.asMap().entries.map((e) {
-                final idx = e.key;
-                final amenity = e.value;
-                final selected = _selectedAmenities.contains(idx);
-                return CheckboxListTile(
-                  value: selected,
-                  onChanged: (v) {
-                    setState(() {
-                      if (v == true) {
-                        _selectedAmenities.add(idx);
-                      } else {
-                        _selectedAmenities.remove(idx);
-                      }
-                    });
-                  },
-                  title: Row(
-                    children: [
-                      Icon(amenity.icon, size: 20, color: accent),
-                      const SizedBox(width: 8),
-                      Text(amenity.name),
-                      if (amenity.price != null) ...[
-                        const Spacer(),
-                        Text(
-                          '${NumberFormat('#,###').format(amenity.price)} soʻm',
-                          style: TextStyle(
-                            color: accent,
-                            fontWeight: FontWeight.w600,
-                            fontSize: 13,
-                          ),
-                        ),
-                      ],
-                    ],
-                  ),
-                  activeColor: accent,
-                  dense: true,
-                  contentPadding: EdgeInsets.zero,
-                );
-              }),
-              const SizedBox(height: 20),
-            ],
-
-            // === Izoh ===
             const SectionTitle("Qo'shimcha izoh", Icons.note_outlined),
             const SizedBox(height: 8),
             TextFormField(
               controller: _notesCtrl,
               maxLines: 2,
               decoration: const InputDecoration(
-                hintText: 'Masalan: hakam kerak, formali o‘yin...',
+                hintText: 'Masalan: hakam kerak...',
                 border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.edit_note),
               ),
             ),
             const SizedBox(height: 20),
-
-            // === Narx kartasi ===
             PriceSummaryCard(
               field: field,
               selectedSlot: _selectedSlot,
               amenities: field.amenities,
               selectedAmenities: _selectedAmenities,
               totalPrice: _totalPrice,
-              accent: accent,
+              accent: _accent,
             ),
             const SizedBox(height: 20),
-
-            // === Bron tugmasi ===
             SizedBox(
               height: 54,
               child: FilledButton.icon(
                 style: FilledButton.styleFrom(
-                  backgroundColor: accent,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
-                  ),
+                  backgroundColor: _accent,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                 ),
-                onPressed: _submitBooking,
+                onPressed: _loadingSlots ? null : _submitBooking,
                 icon: const Icon(Icons.check_circle_outline, size: 22),
                 label: const Text(
                   'Maydonni bron qilish',
@@ -275,10 +248,8 @@ class _FootballFieldBookingScreenState extends State<FootballFieldBookingScreen>
                 ),
               ),
             ),
-            const SizedBox(height: 10),
           ],
         ),
-      ),
       ),
     );
   }

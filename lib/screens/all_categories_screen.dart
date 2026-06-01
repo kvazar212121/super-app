@@ -5,7 +5,7 @@ import '../widgets/glass/glass_scaffold.dart';
 import '../widgets/glass/glass_surface.dart';
 import 'service_hub_screen.dart';
 
-/// Barcha 19 ta xizmat kategoriyasini ro'yxat ko'rinishida ko'rsatadi.
+/// Barcha xizmat kategoriyalarini ro'yxat ko'rinishida ko'rsatadi.
 class AllCategoriesScreen extends StatelessWidget {
   const AllCategoriesScreen({super.key});
 
@@ -27,6 +27,7 @@ class AllCategoriesScreen extends StatelessWidget {
     ServiceHubKind.kuryerlik,
     ServiceHubKind.massajHijoma,
     ServiceHubKind.hamshira,
+    ServiceHubKind.stomatologiya,
     ServiceHubKind.tadbirlar,
   ];
 

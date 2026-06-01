@@ -3,7 +3,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../main_screen.dart';
 import '../../config/provider_category_config.dart';
 import '../provider_side/unified_provider_dashboard_screen.dart';
-import 'provider_theme.dart';
+import '../provider_side/provider_theme.dart';
 
 class ProviderSuccessScreen extends StatelessWidget {
   final String providerName;

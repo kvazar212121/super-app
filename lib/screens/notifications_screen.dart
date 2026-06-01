@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:intl/intl.dart';
 import '../providers/app_provider.dart';
+import '../screens/order_detail_screen.dart';
 import '../widgets/glass/glass_scaffold.dart';
 
 class NotificationsScreen extends StatelessWidget {
@@ -59,6 +60,7 @@ class NotificationsScreen extends StatelessWidget {
                       if (!isRead) {
                         provider.markNotificationRead(notif['id']);
                       }
+                      _openNotification(context, notif);
                     },
                     child: Container(
                       padding: const EdgeInsets.all(16),
@@ -143,6 +145,19 @@ class NotificationsScreen extends StatelessWidget {
                   );
                 },
               ),
+      ),
+    );
+  }
+
+  void _openNotification(BuildContext context, Map<dynamic, dynamic> notif) {
+    if (notif['type'] != 'order_status_changed') return;
+    final message = notif['message']?.toString() ?? '';
+    final match = RegExp(r'#(\d+)').firstMatch(message);
+    if (match == null) return;
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => OrderDetailScreen(orderId: match.group(1)!),
       ),
     );
   }
