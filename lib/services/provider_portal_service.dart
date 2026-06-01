@@ -36,6 +36,19 @@ class ProviderPortalService {
     String status,
   ) => _api.updateProviderOrderStatus(categoryKey, orderId, status);
 
+  Future<List<Map<String, dynamic>>> getPendingOrders(String categoryKey) =>
+      _api.getProviderOrders(categoryKey, status: 'pending');
+
+  Future<List<Map<String, dynamic>>> getOrders(
+    String categoryKey, {
+    String? status,
+  }) => _api.getProviderOrders(categoryKey, status: status);
+
+  Future<Map<String, dynamic>> updateMetadata(
+    String categoryKey,
+    Map<String, dynamic> metadata,
+  ) => _api.updateProviderMetadata(categoryKey, metadata);
+
   Future<Map<String, dynamic>> register({
     required int categoryId,
     required String name,

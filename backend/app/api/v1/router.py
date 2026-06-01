@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from app.api.v1 import health, auth, users, categories, providers, orders, admin, admin_panel, upload, notifications, provider_portal
+from app.api.v1 import health, auth, users, categories, providers, orders, admin, admin_panel, upload, notifications, provider_portal, barber_portal, cleaning_portal, master_portal, salon_portal, electrician_portal, plumber_portal, courier_portal, auto_help_portal, ac_portal, nanny_portal, tutor_portal, disinfection_portal, massage_portal, nurse_portal, dental_portal, event_portal
 
 api_router = APIRouter()
 api_router.include_router(health.router, tags=["health"])
@@ -9,6 +9,22 @@ api_router.include_router(users.router)
 api_router.include_router(categories.router)
 api_router.include_router(providers.router)
 api_router.include_router(provider_portal.router)
+api_router.include_router(barber_portal.router)
+api_router.include_router(cleaning_portal.router)
+api_router.include_router(master_portal.router)
+api_router.include_router(salon_portal.router)
+api_router.include_router(electrician_portal.router)
+api_router.include_router(plumber_portal.router)
+api_router.include_router(courier_portal.router)
+api_router.include_router(auto_help_portal.router)
+api_router.include_router(ac_portal.router)
+api_router.include_router(nanny_portal.router)
+api_router.include_router(tutor_portal.router)
+api_router.include_router(disinfection_portal.router)
+api_router.include_router(massage_portal.router)
+api_router.include_router(nurse_portal.router)
+api_router.include_router(dental_portal.router)
+api_router.include_router(event_portal.router)
 api_router.include_router(orders.router)
 api_router.include_router(admin.router)
 api_router.include_router(admin_panel.router)

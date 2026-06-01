@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import '../models/service_hub_kind.dart';
 import '../models/service_order.dart';
 import '../providers/app_provider.dart';
+import '../screens/order_detail_screen.dart';
 import '../theme/glass_tokens.dart';
 
 /// Asosiy ekrandagi "joriy buyurtma" — shaffof gradient glass karta.
@@ -33,9 +34,16 @@ class ActiveOrderBanner extends StatelessWidget {
     final dateStr =
         '${two(order.date.day)}.${two(order.date.month)}  ${two(order.date.hour)}:${two(order.date.minute)}';
 
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(24),
-      child: BackdropFilter(
+    return GestureDetector(
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => OrderDetailScreen(orderId: order.id),
+        ),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(24),
+        child: BackdropFilter(
         filter: ImageFilter.blur(
           sigmaX: GlassTokens.glassBlur,
           sigmaY: GlassTokens.glassBlur,
@@ -144,6 +152,7 @@ class ActiveOrderBanner extends StatelessWidget {
             ],
           ),
         ),
+      ),
       ),
     );
   }

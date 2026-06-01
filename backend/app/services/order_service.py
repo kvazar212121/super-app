@@ -44,6 +44,12 @@ class OrderService:
             .where(Order.id == order.id)
         )
         order = (await db.execute(q)).scalar_one()
+
+        from app.services.notification_service import NotificationService
+        owner_id = provider.owner_user_id
+        if owner_id:
+            NotificationService.notify_new_order_for_provider(owner_id, order.id)
+
         return order
 
     @staticmethod
@@ -93,16 +99,16 @@ class OrderService:
             from app.services.notification_service import NotificationService
             status_translations = {
                 OrderStatus.pending: "kutilmoqda",
-                OrderStatus.accepted: "qabul qilindi",
+                OrderStatus.confirmed: "qabul qilindi",
+                OrderStatus.in_progress: "jarayonda",
                 OrderStatus.completed: "yakunlandi",
-                OrderStatus.cancelled: "bekor qilindi"
+                OrderStatus.cancelled: "bekor qilindi",
             }
             status_str = status_translations.get(new_status, new_status.value)
-            NotificationService.send_notification(
+            NotificationService.notify_order_status(
                 user_id=order.user_id,
-                ntype="order_status_changed",
-                title="Buyurtma holati o'zgardi",
-                message=f"Sizning #{order.id} raqamli buyurtmangiz holati '{status_str}' ga o'zgardi."
+                order_id=order.id,
+                status_label=status_str,
             )
         return order
 

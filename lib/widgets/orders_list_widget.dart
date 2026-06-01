@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../models/service_hub_kind.dart';
 import '../models/service_order.dart';
 import '../providers/app_provider.dart';
+import '../screens/order_detail_screen.dart';
 import '../theme/glass_tokens.dart';
 import 'glass/glass_surface.dart';
 
@@ -77,7 +78,15 @@ class _OrderCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 14),
       padding: const EdgeInsets.all(16),
       borderRadius: GlassTokens.radiusLg,
-      child: Column(
+      child: InkWell(
+        onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => OrderDetailScreen(orderId: order.id),
+          ),
+        ),
+        borderRadius: BorderRadius.circular(GlassTokens.radiusLg),
+        child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(children: [
@@ -167,6 +176,7 @@ class _OrderCard extends StatelessWidget {
             ],
           ),
         ],
+        ),
       ),
     );
   }

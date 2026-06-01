@@ -12,8 +12,15 @@ import '../widgets/glass/mesh_background.dart';
 
 class DisinfectionBookingScreen extends StatefulWidget {
   final DisinfectionService service;
+  final AreaType? initialAreaType;
+  final String? initialPriceOption;
 
-  const DisinfectionBookingScreen({super.key, required this.service});
+  const DisinfectionBookingScreen({
+    super.key,
+    required this.service,
+    this.initialAreaType,
+    this.initialPriceOption,
+  });
 
   @override
   State<DisinfectionBookingScreen> createState() =>
@@ -21,8 +28,24 @@ class DisinfectionBookingScreen extends StatefulWidget {
 }
 
 class _DisinfectionBookingScreenState extends State<DisinfectionBookingScreen> {
-  AreaType? _selectedAreaType;
-  String? _selectedPriceOption;
+  late AreaType? _selectedAreaType;
+  late String? _selectedPriceOption;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedAreaType = widget.initialAreaType;
+    _selectedPriceOption = widget.initialPriceOption;
+    if (_selectedPriceOption == null && _selectedAreaType != null) {
+      for (final entry in widget.service.prices.entries) {
+        final label = _selectedAreaType!.label.toLowerCase();
+        if (entry.key.toLowerCase().contains(label)) {
+          _selectedPriceOption = entry.key;
+          break;
+        }
+      }
+    }
+  }
   ChemicalProduct? _selectedChemical;
   DateTime _selectedDate = DateTime.now().add(const Duration(days: 1));
   String? _selectedTimeSlot;

@@ -1,11 +1,12 @@
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.ext.asyncio import AsyncSession
+from datetime import date
 
 from app.db.session import get_db
 from app.api.dependencies import get_current_user
 from app.models.user import User
 from app.services.provider_service import ProviderService
-from app.schemas.provider import ProviderOut, ReviewOut, ReviewCreate
+from app.schemas.provider import ProviderOut, ReviewOut, ReviewCreate, ProviderAvailabilityOut
 from app.schemas.common import PaginatedResponse
 
 router = APIRouter(prefix="/providers", tags=["providers"])
@@ -39,6 +40,16 @@ async def list_providers(
 async def get_provider(provider_id: int, db: AsyncSession = Depends(get_db)):
     p = await ProviderService.get_by_id(db, provider_id)
     return ProviderOut.from_provider(p)
+
+
+@router.get("/{provider_id}/availability", response_model=ProviderAvailabilityOut)
+async def get_provider_availability(
+    provider_id: int,
+    day: date = Query(..., alias="date", description="YYYY-MM-DD"),
+    db: AsyncSession = Depends(get_db),
+):
+    data = await ProviderService.get_availability(db, provider_id, day)
+    return ProviderAvailabilityOut(**data)
 
 
 @router.get("/{provider_id}/reviews", response_model=PaginatedResponse)

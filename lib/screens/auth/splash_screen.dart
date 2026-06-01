@@ -1,12 +1,9 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
-import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:provider/provider.dart';
 import '../../providers/app_provider.dart';
 import '../../providers/auth_provider.dart';
-import '../../theme/glass_tokens.dart';
 import '../../widgets/glass/mesh_background.dart';
+import '../../widgets/hub_servis_brand.dart';
 import '../main_screen.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -17,33 +14,51 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
+    with TickerProviderStateMixin {
+  late AnimationController _mainController;
+  late AnimationController _pulseController;
   late Animation<double> _scaleAnim;
   late Animation<double> _fadeAnim;
+  late Animation<double> _slideAnim;
+  late Animation<double> _pulseAnim;
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
+    _mainController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1400),
+      duration: const Duration(milliseconds: 1600),
     );
-    _scaleAnim = Tween<double>(begin: 0.7, end: 1.0).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeOutBack),
+    _pulseController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1800),
+    )..repeat(reverse: true);
+
+    _scaleAnim = Tween<double>(begin: 0.65, end: 1.0).animate(
+      CurvedAnimation(parent: _mainController, curve: Curves.easeOutBack),
     );
     _fadeAnim = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
-        parent: _controller,
-        curve: const Interval(0.0, 0.65, curve: Curves.easeOut),
+        parent: _mainController,
+        curve: const Interval(0.0, 0.55, curve: Curves.easeOut),
       ),
     );
-    _controller.forward();
+    _slideAnim = Tween<double>(begin: 18, end: 0).animate(
+      CurvedAnimation(
+        parent: _mainController,
+        curve: const Interval(0.15, 0.75, curve: Curves.easeOutCubic),
+      ),
+    );
+    _pulseAnim = Tween<double>(begin: 0.92, end: 1.0).animate(
+      CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
+    );
+
+    _mainController.forward();
     _checkAuth();
   }
 
   Future<void> _checkAuth() async {
-    await Future.delayed(const Duration(milliseconds: 1800));
+    await Future.delayed(const Duration(milliseconds: 2200));
     if (!mounted) return;
 
     final auth = context.read<AuthProvider>();
@@ -63,7 +78,8 @@ class _SplashScreenState extends State<SplashScreen>
 
   @override
   void dispose() {
-    _controller.dispose();
+    _mainController.dispose();
+    _pulseController.dispose();
     super.dispose();
   }
 
@@ -77,65 +93,36 @@ class _SplashScreenState extends State<SplashScreen>
         MeshBackground(isDark: isDark),
         Scaffold(
           backgroundColor: Colors.transparent,
-          body: Center(
-            child: FadeTransition(
-              opacity: _fadeAnim,
-              child: ScaleTransition(
-                scale: _scaleAnim,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(32),
-                      child: BackdropFilter(
-                        filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-                        child: Container(
-                          width: 100,
-                          height: 100,
-                          decoration: BoxDecoration(
-                            color: Colors.white.withValues(alpha: isDark ? 0.1 : 0.5),
-                            borderRadius: BorderRadius.circular(32),
-                            border: Border.all(
-                              color: Colors.white.withValues(alpha: 0.45),
-                              width: 1.5,
-                            ),
-                          ),
-                          child: const Icon(
-                            LucideIcons.layers,
-                            color: Color(0xFF6366F1),
-                            size: 48,
-                          ),
+          body: SafeArea(
+            child: Center(
+              child: FadeTransition(
+                opacity: _fadeAnim,
+                child: AnimatedBuilder(
+                  animation: Listenable.merge([_scaleAnim, _slideAnim, _pulseAnim]),
+                  builder: (context, child) {
+                    return Transform.translate(
+                      offset: Offset(0, _slideAnim.value),
+                      child: Transform.scale(
+                        scale: _scaleAnim.value * _pulseAnim.value,
+                        child: child,
+                      ),
+                    );
+                  },
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const HubServisBrand(logoSize: 108, titleSize: 38),
+                      const SizedBox(height: 52),
+                      SizedBox(
+                        width: 32,
+                        height: 32,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2.5,
+                          color: const Color(0xFF6366F1).withValues(alpha: 0.85),
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 28),
-                    Text(
-                      'Super App',
-                      style: TextStyle(
-                        fontSize: 34,
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: -0.8,
-                        color: GlassTokens.primaryText(context),
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Barcha xizmatlar bir joyda',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: GlassTokens.secondaryText(context),
-                      ),
-                    ),
-                    const SizedBox(height: 48),
-                    SizedBox(
-                      width: 28,
-                      height: 28,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2.5,
-                        color: const Color(0xFF6366F1).withValues(alpha: 0.8),
-                      ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),

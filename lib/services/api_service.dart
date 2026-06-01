@@ -267,6 +267,22 @@ class ApiService {
     return response.data;
   }
 
+  /// Provayder band/bo'sh vaqt slotlari
+  Future<Map<String, dynamic>> getProviderAvailability(
+    int providerId, {
+    required DateTime date,
+  }) async {
+    final dateStr =
+        '${date.year.toString().padLeft(4, '0')}-'
+        '${date.month.toString().padLeft(2, '0')}-'
+        '${date.day.toString().padLeft(2, '0')}';
+    final response = await _dio.get(
+      '/providers/$providerId/availability',
+      queryParameters: {'date': dateStr},
+    );
+    return response.data as Map<String, dynamic>;
+  }
+
   /// Provayder sharhlari
   Future<Map<String, dynamic>> getProviderReviews(
     int providerId, {
@@ -464,5 +480,547 @@ class ApiService {
       queryParameters: {'category_key': categoryKey},
       data: {'status': status},
     );
+  }
+
+  Future<List<Map<String, dynamic>>> getProviderOrders(
+    String categoryKey, {
+    String? status,
+    int perPage = 20,
+  }) async {
+    final response = await _dio.get(
+      '/provider/orders',
+      queryParameters: {
+        'category_key': categoryKey,
+        if (status != null) 'status': status,
+        'per_page': perPage,
+      },
+    );
+    return (response.data['items'] as List<dynamic>? ?? [])
+        .cast<Map<String, dynamic>>();
+  }
+
+  Future<Map<String, dynamic>> updateProviderMetadata(
+    String categoryKey,
+    Map<String, dynamic> metadata,
+  ) async {
+    final response = await _dio.patch(
+      '/provider/me',
+      queryParameters: {'category_key': categoryKey},
+      data: {'metadata_json': metadata},
+    );
+    return response.data as Map<String, dynamic>;
+  }
+
+  // ─────────────── BARBER PORTAL ───────────────
+
+  Future<List<Map<String, dynamic>>> getBarberShops() async {
+    final response = await _dio.get('/provider/barber/shops');
+    return (response.data as List<dynamic>).cast<Map<String, dynamic>>();
+  }
+
+  Future<Map<String, dynamic>> getBarberMyStatus() async {
+    final response = await _dio.get('/provider/barber/my-status');
+    return response.data as Map<String, dynamic>;
+  }
+
+  Future<Map<String, dynamic>> registerBarberShopOwner({
+    required String name,
+    required String address,
+    required String phone,
+    required double lat,
+    required double lng,
+    required bool alsoWorksAsBarber,
+    String? hours,
+  }) async {
+    final response = await _dio.post('/provider/barber/register/shop-owner', data: {
+      'name': name,
+      'address': address,
+      'phone': phone,
+      'lat': lat,
+      'lng': lng,
+      'also_works_as_barber': alsoWorksAsBarber,
+      if (hours != null) 'hours': hours,
+    });
+    return response.data as Map<String, dynamic>;
+  }
+
+  Future<Map<String, dynamic>> registerBarberMobile({
+    required String name,
+    required String phone,
+    required String serviceArea,
+    String? address,
+  }) async {
+    final response = await _dio.post('/provider/barber/register/mobile', data: {
+      'name': name,
+      'phone': phone,
+      'service_area': serviceArea,
+      if (address != null) 'address': address,
+    });
+    return response.data as Map<String, dynamic>;
+  }
+
+  Future<Map<String, dynamic>> requestBarberJoin({
+    required String displayName,
+    int? shopId,
+    String? inviteCode,
+  }) async {
+    final response = await _dio.post('/provider/barber/join-request', data: {
+      'display_name': displayName,
+      if (shopId != null) 'shop_id': shopId,
+      if (inviteCode != null && inviteCode.isNotEmpty) 'invite_code': inviteCode,
+    });
+    return response.data as Map<String, dynamic>;
+  }
+
+  Future<Map<String, dynamic>> getBarberPendingMembers() async {
+    final response = await _dio.get('/provider/barber/pending-members');
+    return response.data as Map<String, dynamic>;
+  }
+
+  Future<void> approveBarberMember(int userId) async {
+    await _dio.post('/provider/barber/pending-members/$userId/approve');
+  }
+
+  Future<void> rejectBarberMember(int userId) async {
+    await _dio.post('/provider/barber/pending-members/$userId/reject');
+  }
+
+  Future<Map<String, dynamic>> regenerateBarberInvite() async {
+    final response = await _dio.post('/provider/barber/regenerate-invite');
+    return response.data as Map<String, dynamic>;
+  }
+
+  // ─────────────── CLEANING PORTAL ───────────────
+
+  Future<Map<String, dynamic>> registerCleaningSolo({
+    required String name,
+    required String phone,
+    required String serviceArea,
+    String? address,
+  }) async {
+    final response = await _dio.post('/provider/cleaning/register/solo', data: {
+      'name': name,
+      'phone': phone,
+      'service_area': serviceArea,
+      if (address != null) 'address': address,
+    });
+    return response.data as Map<String, dynamic>;
+  }
+
+  Future<Map<String, dynamic>> registerCleaningTeam({
+    required String name,
+    required String phone,
+    required String address,
+    required String serviceArea,
+    required int teamSize,
+    double lat = 41.2995,
+    double lng = 69.2401,
+  }) async {
+    final response = await _dio.post('/provider/cleaning/register/team', data: {
+      'name': name,
+      'phone': phone,
+      'address': address,
+      'service_area': serviceArea,
+      'team_size': teamSize,
+      'lat': lat,
+      'lng': lng,
+    });
+    return response.data as Map<String, dynamic>;
+  }
+
+  // ─────────────── MASTER PORTAL (Usta chaqirish) ───────────────
+
+  Future<Map<String, dynamic>> registerMasterSolo({
+    required String name,
+    required String phone,
+    required String serviceArea,
+    String? address,
+  }) async {
+    final response = await _dio.post('/provider/master/register/solo', data: {
+      'name': name,
+      'phone': phone,
+      'service_area': serviceArea,
+      if (address != null) 'address': address,
+    });
+    return response.data as Map<String, dynamic>;
+  }
+
+  Future<Map<String, dynamic>> registerMasterBrigade({
+    required String name,
+    required String phone,
+    required String address,
+    required String serviceArea,
+    required int teamSize,
+    double lat = 41.2995,
+    double lng = 69.2401,
+  }) async {
+    final response = await _dio.post('/provider/master/register/brigade', data: {
+      'name': name,
+      'phone': phone,
+      'address': address,
+      'service_area': serviceArea,
+      'team_size': teamSize,
+      'lat': lat,
+      'lng': lng,
+    });
+    return response.data as Map<String, dynamic>;
+  }
+
+  // ─────────────── SALON PORTAL ───────────────
+
+  Future<List<Map<String, dynamic>>> getSalonVenues() async {
+    final response = await _dio.get('/provider/salon/venues');
+    return (response.data as List<dynamic>).cast<Map<String, dynamic>>();
+  }
+
+  Future<Map<String, dynamic>> getSalonMyStatus() async {
+    final response = await _dio.get('/provider/salon/my-status');
+    return response.data as Map<String, dynamic>;
+  }
+
+  Future<Map<String, dynamic>> registerSalonOwner({
+    required String name,
+    required String address,
+    required String phone,
+    required double lat,
+    required double lng,
+    required bool alsoWorksAsStylist,
+    String? hours,
+  }) async {
+    final response = await _dio.post('/provider/salon/register/owner', data: {
+      'name': name,
+      'address': address,
+      'phone': phone,
+      'lat': lat,
+      'lng': lng,
+      'also_works_as_stylist': alsoWorksAsStylist,
+      if (hours != null) 'hours': hours,
+    });
+    return response.data as Map<String, dynamic>;
+  }
+
+  Future<Map<String, dynamic>> registerSalonMobile({
+    required String name,
+    required String phone,
+    required String serviceArea,
+    String? address,
+  }) async {
+    final response = await _dio.post('/provider/salon/register/mobile', data: {
+      'name': name,
+      'phone': phone,
+      'service_area': serviceArea,
+      if (address != null) 'address': address,
+    });
+    return response.data as Map<String, dynamic>;
+  }
+
+  Future<Map<String, dynamic>> requestSalonJoin({
+    required String displayName,
+    int? salonId,
+    String? inviteCode,
+  }) async {
+    final response = await _dio.post('/provider/salon/join-request', data: {
+      'display_name': displayName,
+      if (salonId != null) 'salon_id': salonId,
+      if (inviteCode != null && inviteCode.isNotEmpty) 'invite_code': inviteCode,
+    });
+    return response.data as Map<String, dynamic>;
+  }
+
+  Future<Map<String, dynamic>> getSalonPendingMembers() async {
+    final response = await _dio.get('/provider/salon/pending-members');
+    return response.data as Map<String, dynamic>;
+  }
+
+  Future<void> approveSalonMember(int userId) async {
+    await _dio.post('/provider/salon/pending-members/$userId/approve');
+  }
+
+  Future<void> rejectSalonMember(int userId) async {
+    await _dio.post('/provider/salon/pending-members/$userId/reject');
+  }
+
+  Future<Map<String, dynamic>> regenerateSalonInvite() async {
+    final response = await _dio.post('/provider/salon/regenerate-invite');
+    return response.data as Map<String, dynamic>;
+  }
+
+  // ─────────────── ELECTRICIAN PORTAL ───────────────
+
+  Future<Map<String, dynamic>> registerElectricianSolo({
+    required String name,
+    required String phone,
+    required String serviceArea,
+    String? address,
+  }) async {
+    final response = await _dio.post('/provider/electrician/register/solo', data: {
+      'name': name,
+      'phone': phone,
+      'service_area': serviceArea,
+      if (address != null) 'address': address,
+    });
+    return response.data as Map<String, dynamic>;
+  }
+
+  // ─────────────── PLUMBER PORTAL ───────────────
+
+  Future<Map<String, dynamic>> registerPlumberSolo({
+    required String name,
+    required String phone,
+    required String serviceArea,
+    String? address,
+  }) async {
+    final response = await _dio.post('/provider/plumber/register/solo', data: {
+      'name': name,
+      'phone': phone,
+      'service_area': serviceArea,
+      if (address != null) 'address': address,
+    });
+    return response.data as Map<String, dynamic>;
+  }
+
+  // ─────────────── COURIER PORTAL ───────────────
+
+  Future<Map<String, dynamic>> registerCourierSolo({
+    required String name,
+    required String phone,
+    required String serviceArea,
+    required String vehicleType,
+    String? address,
+  }) async {
+    final response = await _dio.post('/provider/courier/register/solo', data: {
+      'name': name,
+      'phone': phone,
+      'service_area': serviceArea,
+      'vehicle_type': vehicleType,
+      if (address != null) 'address': address,
+    });
+    return response.data as Map<String, dynamic>;
+  }
+
+  // ─────────────── AUTO HELP PORTAL ───────────────
+
+  Future<Map<String, dynamic>> registerAutoMobile({
+    required String name,
+    required String phone,
+    required String serviceArea,
+    required String vehicleType,
+    String? address,
+  }) async {
+    final response = await _dio.post('/provider/auto-help/register/mobile', data: {
+      'name': name,
+      'phone': phone,
+      'service_area': serviceArea,
+      'vehicle_type': vehicleType,
+      if (address != null) 'address': address,
+    });
+    return response.data as Map<String, dynamic>;
+  }
+
+  Future<Map<String, dynamic>> registerAutoWorkshop({
+    required String name,
+    required String phone,
+    required String address,
+    List<String>? specializations,
+  }) async {
+    final response = await _dio.post('/provider/auto-help/register/workshop', data: {
+      'name': name,
+      'phone': phone,
+      'address': address,
+      if (specializations != null && specializations.isNotEmpty)
+        'specializations': specializations,
+    });
+    return response.data as Map<String, dynamic>;
+  }
+
+  // ─────────────── AC PORTAL ───────────────
+
+  Future<Map<String, dynamic>> registerAcSolo({
+    required String name,
+    required String phone,
+    required String serviceArea,
+    String? address,
+  }) async {
+    final response = await _dio.post('/provider/ac/register/solo', data: {
+      'name': name,
+      'phone': phone,
+      'service_area': serviceArea,
+      if (address != null) 'address': address,
+    });
+    return response.data as Map<String, dynamic>;
+  }
+
+  // ─────────────── NANNY PORTAL ───────────────
+
+  Future<Map<String, dynamic>> registerNanny({
+    required String name,
+    required String phone,
+    required String serviceArea,
+    String? address,
+    int experienceYears = 0,
+    List<String> ageGroups = const [],
+    List<String> languages = const [],
+    List<String> serviceTypes = const [],
+    Map<String, dynamic>? documents,
+  }) async {
+    final response = await _dio.post('/provider/nanny/register', data: {
+      'name': name,
+      'phone': phone,
+      'service_area': serviceArea,
+      if (address != null) 'address': address,
+      'experience_years': experienceYears,
+      if (ageGroups.isNotEmpty) 'age_groups': ageGroups,
+      if (languages.isNotEmpty) 'languages': languages,
+      if (serviceTypes.isNotEmpty) 'service_types': serviceTypes,
+      if (documents != null) 'documents': documents,
+    });
+    return response.data as Map<String, dynamic>;
+  }
+
+  // ─────────────── TUTOR PORTAL ───────────────
+
+  Future<Map<String, dynamic>> registerTutorSolo({
+    required String name,
+    required String phone,
+    required String serviceArea,
+    String? address,
+    List<String> subjects = const [],
+    List<String> lessonModes = const [],
+    int experienceYears = 0,
+  }) async {
+    final response = await _dio.post('/provider/tutor/register/solo', data: {
+      'name': name,
+      'phone': phone,
+      'service_area': serviceArea,
+      if (address != null) 'address': address,
+      if (subjects.isNotEmpty) 'subjects': subjects,
+      if (lessonModes.isNotEmpty) 'lesson_modes': lessonModes,
+      'experience_years': experienceYears,
+    });
+    return response.data as Map<String, dynamic>;
+  }
+
+  Future<Map<String, dynamic>> registerTutorCenter({
+    required String name,
+    required String phone,
+    required String address,
+    List<String> courses = const [],
+  }) async {
+    final response = await _dio.post('/provider/tutor/register/center', data: {
+      'name': name,
+      'phone': phone,
+      'address': address,
+      if (courses.isNotEmpty) 'courses': courses,
+    });
+    return response.data as Map<String, dynamic>;
+  }
+
+  // ─────────────── DISINFECTION PORTAL ───────────────
+
+  Future<Map<String, dynamic>> registerDisinfection({
+    required String name,
+    required String phone,
+    required String serviceArea,
+    String? address,
+    List<String> areaTypes = const [],
+    bool isCertified = false,
+  }) async {
+    final response = await _dio.post('/provider/disinfection/register', data: {
+      'name': name,
+      'phone': phone,
+      'service_area': serviceArea,
+      if (address != null) 'address': address,
+      if (areaTypes.isNotEmpty) 'area_types': areaTypes,
+      'is_certified': isCertified,
+    });
+    return response.data as Map<String, dynamic>;
+  }
+
+  // ─────────────── MASSAGE PORTAL ───────────────
+
+  Future<Map<String, dynamic>> registerMassage({
+    required String name,
+    required String phone,
+    required String serviceArea,
+    String? address,
+    String massageRole = 'solo',
+    List<String> visitModes = const [],
+    List<String> serviceTypes = const [],
+    String gender = 'both',
+  }) async {
+    final response = await _dio.post('/provider/massage/register', data: {
+      'name': name,
+      'phone': phone,
+      'service_area': serviceArea,
+      if (address != null) 'address': address,
+      'massage_role': massageRole,
+      if (visitModes.isNotEmpty) 'visit_modes': visitModes,
+      if (serviceTypes.isNotEmpty) 'service_types': serviceTypes,
+      'gender': gender,
+    });
+    return response.data as Map<String, dynamic>;
+  }
+
+  // ─────────────── NURSE PORTAL ───────────────
+
+  Future<Map<String, dynamic>> registerNurse({
+    required String name,
+    required String phone,
+    required String serviceArea,
+    String? address,
+    List<String> medicalTypes = const [],
+    String? qualifications,
+  }) async {
+    final response = await _dio.post('/provider/nurse/register', data: {
+      'name': name,
+      'phone': phone,
+      'service_area': serviceArea,
+      if (address != null) 'address': address,
+      if (medicalTypes.isNotEmpty) 'medical_types': medicalTypes,
+      if (qualifications != null) 'qualifications': qualifications,
+    });
+    return response.data as Map<String, dynamic>;
+  }
+
+  // ─────────────── DENTAL PORTAL ───────────────
+
+  Future<Map<String, dynamic>> registerDentalClinic({
+    required String name,
+    required String phone,
+    required String address,
+    List<String> services = const [],
+  }) async {
+    final response = await _dio.post('/provider/dental/register', data: {
+      'name': name,
+      'phone': phone,
+      'address': address,
+      if (services.isNotEmpty) 'services': services,
+    });
+    return response.data as Map<String, dynamic>;
+  }
+
+  // ─────────────── EVENT PORTAL ───────────────
+
+  Future<Map<String, dynamic>> registerEventOrganizer({
+    required String name,
+    required String phone,
+    required String serviceArea,
+    String? address,
+    int teamSize = 3,
+    List<String> organizerTypes = const [],
+    List<String> eventTypes = const [],
+    List<String> venueTypes = const [],
+  }) async {
+    final response = await _dio.post('/provider/event/register', data: {
+      'name': name,
+      'phone': phone,
+      'service_area': serviceArea,
+      if (address != null) 'address': address,
+      'team_size': teamSize,
+      if (organizerTypes.isNotEmpty) 'organizer_types': organizerTypes,
+      if (eventTypes.isNotEmpty) 'event_types': eventTypes,
+      if (venueTypes.isNotEmpty) 'venue_types': venueTypes,
+    });
+    return response.data as Map<String, dynamic>;
   }
 }

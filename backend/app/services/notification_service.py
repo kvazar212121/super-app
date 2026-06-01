@@ -89,10 +89,23 @@ class NotificationService:
         return sum(1 for n in items if not n.is_read)
 
     @staticmethod
-    def notify_new_order(provider_id: int, order_id: int) -> Notification:
-        """Provayderga yangi buyurtma haqida bildirishnoma yuborish."""
+    def notify_order_status(user_id: int, order_id: int, status_label: str) -> Notification:
+        """Mijozga buyurtma holati o'zgarganda xabar."""
         return NotificationService.send_notification(
-            user_id=provider_id,
+            user_id=user_id,
+            ntype="order_status_changed",
+            title="Buyurtma holati o'zgardi",
+            message=(
+                f"Sizning #{order_id} raqamli buyurtmangiz holati "
+                f"'{status_label}' ga o'zgardi."
+            ),
+        )
+
+    @staticmethod
+    def notify_new_order_for_provider(user_id: int, order_id: int) -> Notification:
+        """Provayder egasiga yangi buyurtma haqida xabar."""
+        return NotificationService.send_notification(
+            user_id=user_id,
             ntype="new_order",
             title="Yangi buyurtma",
             message=f"Sizga #{order_id} raqamli yangi buyurtma keldi.",

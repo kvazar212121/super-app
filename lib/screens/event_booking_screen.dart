@@ -12,8 +12,15 @@ import '../widgets/glass/mesh_background.dart';
 
 class EventBookingScreen extends StatefulWidget {
   final EventPlanning service;
+  final EventType? initialEventType;
+  final OrganizerServiceType? initialOrganizerType;
 
-  const EventBookingScreen({super.key, required this.service});
+  const EventBookingScreen({
+    super.key,
+    required this.service,
+    this.initialEventType,
+    this.initialOrganizerType,
+  });
 
   @override
   State<EventBookingScreen> createState() => _EventBookingScreenState();
@@ -24,27 +31,39 @@ class _EventBookingScreenState extends State<EventBookingScreen> {
   String? _selectedPriceOption;
   String? _selectedVenue;
   final _guestCountController = TextEditingController();
+  final _addressController = TextEditingController();
   final _descriptionController = TextEditingController();
   DateTime _selectedDate = DateTime.now().add(const Duration(days: 7));
   String? _selectedTimeSlot;
 
-  final List<String> _timeSlots = [
-    "10:00",
-    "11:00",
-    "12:00",
-    "13:00",
-    "14:00",
-    "15:00",
-    "16:00",
-    "17:00",
-    "18:00",
-    "19:00",
-    "20:00",
-  ];
+  late List<String> _timeSlots;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedEventType = widget.initialEventType;
+    if (widget.initialOrganizerType != null) {
+      final match = widget.service.prices.keys.where((k) {
+        final label = widget.initialOrganizerType!.label.toLowerCase();
+        return k.toLowerCase().contains(label.split(' ').first);
+      });
+      if (match.isNotEmpty) {
+        _selectedPriceOption = match.first;
+      }
+    }
+    _timeSlots = widget.service.timeSlots.isNotEmpty
+        ? widget.service.timeSlots
+        : [
+            '10:00', '11:00', '12:00', '14:00', '15:00', '16:00',
+            '17:00', '18:00', '19:00', '20:00',
+          ];
+    _addressController.addListener(() => setState(() {}));
+  }
 
   @override
   void dispose() {
     _guestCountController.dispose();
+    _addressController.dispose();
     _descriptionController.dispose();
     super.dispose();
   }
@@ -57,126 +76,162 @@ class _EventBookingScreenState extends State<EventBookingScreen> {
 
     return GlassBackdrop(
       child: Scaffold(
-      backgroundColor: Colors.transparent,
-      body: CustomScrollView(
-        slivers: [
-          BookingSliverAppBar(color: accentColor, icon: LucideIcons.partyPopper),
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  ServiceProfileHeader(
-                    name: widget.service.name,
-                    rating: widget.service.rating,
-                    phone: widget.service.phoneNumber,
-                    accent: accentColor,
-                  ),
-                  const SizedBox(height: 24),
-                  const SectionTitle("Tadbir turi"),
-                  const SizedBox(height: 12),
-                  SelectableIconGrid(
-                    items: widget.service.eventTypes,
-                    selected: _selectedEventType,
-                    iconOf: (t) => t.icon,
-                    labelOf: (t) => t.label,
-                    onSelect: (t) => setState(() => _selectedEventType = t),
-                    accent: accentColor,
-                  ),
-                  const SizedBox(height: 24),
-                  const SectionTitle("Narx variantlari"),
-                  const SizedBox(height: 12),
-                  PriceOptionList(
-                    prices: widget.service.prices,
-                    selected: _selectedPriceOption,
-                    onSelect: (o) => setState(() => _selectedPriceOption = o),
-                    accent: accentColor,
-                    format: currencyFormat,
-                  ),
-                  const SizedBox(height: 24),
-                  const SectionTitle("Mehmonlar soni"),
-                  const SizedBox(height: 12),
-                  BookingInputField(
-                    controller: _guestCountController,
-                    hint: "Mehmonlar sonini kiriting",
-                    icon: LucideIcons.users,
-                    accent: accentColor,
-                    keyboardType: TextInputType.number,
-                    suffixText: "kishi",
-                  ),
-                  const SizedBox(height: 24),
-                  const SectionTitle("Joy tanlash"),
-                  const SizedBox(height: 12),
-                  _buildVenueSelector(accentColor),
-                  const SizedBox(height: 24),
-                  const SectionTitle("Qo'shimcha ma'lumot"),
-                  const SizedBox(height: 12),
-                  BookingTextArea(
-                    controller: _descriptionController,
-                    hint: "Tadbir haqida qo'shimcha ma'lumot...",
-                    icon: LucideIcons.messageSquare,
-                    accent: accentColor,
-                  ),
-                  const SizedBox(height: 24),
-                  const SectionTitle("Sana"),
-                  const SizedBox(height: 12),
-                  HorizontalDatePicker(
-                    selectedDate: _selectedDate,
-                    accentColor: accentColor,
-                    onDateSelected: (date) => setState(() => _selectedDate = date),
-                    daysCount: 14,
-                    startDaysOffset: 1,
-                  ),
-                  const SizedBox(height: 24),
-                  const SectionTitle("Vaqt"),
-                  const SizedBox(height: 12),
-                  TimeSlotGrid(
-                    timeSlots: _timeSlots,
-                    selectedTimeSlot: _selectedTimeSlot,
-                    accentColor: accentColor,
-                    onTimeSelected: (slot) => setState(() => _selectedTimeSlot = slot),
-                    crossAxisCount: 5,
-                  ),
-                  const SizedBox(height: 32),
-                  Builder(builder: (context) {
-                    final canBook = _selectedEventType != null &&
-                        _selectedPriceOption != null &&
-                        _selectedTimeSlot != null;
-                    final totalPrice = _selectedPriceOption != null
-                        ? widget.service.prices[_selectedPriceOption]
-                        : null;
-                    return BookingActionBar(
+        backgroundColor: Colors.transparent,
+        body: CustomScrollView(
+          slivers: [
+            BookingSliverAppBar(color: accentColor, icon: LucideIcons.partyPopper),
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    ServiceProfileHeader(
+                      name: widget.service.name,
+                      rating: widget.service.rating,
+                      phone: widget.service.phoneNumber,
                       accent: accentColor,
-                      primaryLabel: canBook
-                          ? "Buyurtma berish — ${currencyFormat.format(totalPrice)}"
-                          : "Buyurtma berish",
-                      onPrimary: canBook ? () => _confirmBooking(currencyFormat) : null,
-                      secondaryLabel: "Tashkilotchi bilan bog'lanish",
-                      secondaryIcon: LucideIcons.phone,
-                      onSecondary: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
+                    ),
+                    if (widget.service.serviceArea != null) ...[
+                      const SizedBox(height: 8),
+                      Row(
+                        children: [
+                          Icon(LucideIcons.mapPin, size: 16, color: accentColor),
+                          const SizedBox(width: 6),
+                          Expanded(
+                            child: Text(
+                              widget.service.serviceArea!,
+                              style: TextStyle(color: Colors.grey[700], fontSize: 13),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                    if (widget.service.teamSize > 1) ...[
+                      const SizedBox(height: 4),
+                      Text(
+                        'Jamoa: ${widget.service.teamSize} kishi · ${widget.service.capabilitiesLabel}',
+                        style: TextStyle(color: Colors.grey[600], fontSize: 13),
+                      ),
+                    ],
+                    const SizedBox(height: 24),
+                    const SectionTitle('Tadbir turi'),
+                    const SizedBox(height: 12),
+                    SelectableIconGrid(
+                      items: widget.service.eventTypes,
+                      selected: _selectedEventType,
+                      iconOf: (t) => t.icon,
+                      labelOf: (t) => t.label,
+                      onSelect: (t) => setState(() => _selectedEventType = t),
+                      accent: accentColor,
+                    ),
+                    const SizedBox(height: 24),
+                    const SectionTitle('Xizmat / narx'),
+                    const SizedBox(height: 12),
+                    PriceOptionList(
+                      prices: widget.service.prices,
+                      selected: _selectedPriceOption,
+                      onSelect: (o) => setState(() => _selectedPriceOption = o),
+                      accent: accentColor,
+                      format: currencyFormat,
+                    ),
+                    const SizedBox(height: 24),
+                    const SectionTitle('Mehmonlar soni'),
+                    const SizedBox(height: 12),
+                    BookingInputField(
+                      controller: _guestCountController,
+                      hint: 'Taxminiy mehmonlar soni',
+                      icon: LucideIcons.users,
+                      accent: accentColor,
+                      keyboardType: TextInputType.number,
+                      suffixText: 'kishi',
+                    ),
+                    const SizedBox(height: 24),
+                    const SectionTitle('Tadbir joyi'),
+                    const SizedBox(height: 12),
+                    _buildVenueSelector(accentColor),
+                    const SizedBox(height: 24),
+                    const SectionTitle('Aniq manzil (qishloq / hovli / maydon)'),
+                    const SizedBox(height: 12),
+                    BookingTextArea(
+                      controller: _addressController,
+                      hint: 'Viloyat, tuman, qishloq, ko\'cha yoki maydon nomi...',
+                      icon: LucideIcons.mapPin,
+                      accent: accentColor,
+                    ),
+                    const SizedBox(height: 24),
+                    const SectionTitle('Qo\'shimcha ma\'lumot'),
+                    const SizedBox(height: 12),
+                    BookingTextArea(
+                      controller: _descriptionController,
+                      hint: 'Sahna o\'lchami, dastur, maxsus talablar...',
+                      icon: LucideIcons.messageSquare,
+                      accent: accentColor,
+                    ),
+                    const SizedBox(height: 24),
+                    const SectionTitle('Sana'),
+                    const SizedBox(height: 12),
+                    HorizontalDatePicker(
+                      selectedDate: _selectedDate,
+                      accentColor: accentColor,
+                      onDateSelected: (date) => setState(() => _selectedDate = date),
+                      daysCount: 14,
+                      startDaysOffset: 1,
+                    ),
+                    const SizedBox(height: 24),
+                    const SectionTitle('Vaqt'),
+                    const SizedBox(height: 12),
+                    TimeSlotGrid(
+                      timeSlots: _timeSlots,
+                      selectedTimeSlot: _selectedTimeSlot,
+                      accentColor: accentColor,
+                      onTimeSelected: (slot) => setState(() => _selectedTimeSlot = slot),
+                      crossAxisCount: 5,
+                    ),
+                    const SizedBox(height: 32),
+                    Builder(builder: (context) {
+                      final addressOk = _addressController.text.trim().length >= 5;
+                      final canBook = _selectedEventType != null &&
+                          _selectedPriceOption != null &&
+                          _selectedTimeSlot != null &&
+                          _selectedVenue != null &&
+                          addressOk;
+                      final totalPrice = _selectedPriceOption != null
+                          ? widget.service.prices[_selectedPriceOption]
+                          : null;
+                      return BookingActionBar(
+                        accent: accentColor,
+                        primaryLabel: canBook
+                            ? "Buyurtma berish — ${currencyFormat.format(totalPrice)}"
+                            : 'Buyurtma berish',
+                        onPrimary: canBook ? () => _confirmBooking(currencyFormat) : null,
+                        secondaryLabel: 'Guruh bilan bog\'lanish',
+                        secondaryIcon: LucideIcons.phone,
+                        onSecondary: () {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
                               content: Text(
-                                  "${widget.service.phoneNumber} raqamiga bog'lanilmoqda...")),
-                        );
-                      },
-                    );
-                  }),
-                  const SizedBox(height: 40),
-                ],
+                                '${widget.service.phoneNumber} raqamiga bog\'lanilmoqda...',
+                              ),
+                            ),
+                          );
+                        },
+                      );
+                    }),
+                    const SizedBox(height: 40),
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
-      ),
+          ],
+        ),
       ),
     );
   }
 
   Widget _buildVenueSelector(Color color) {
     return Column(
-      children: widget.service.venues.map((venue) {
+      children: widget.service.venueLabels.map((venue) {
         final isSelected = _selectedVenue == venue;
         return GestureDetector(
           onTap: () => setState(() => _selectedVenue = venue),
@@ -193,16 +248,24 @@ class _EventBookingScreenState extends State<EventBookingScreen> {
             ),
             child: Row(
               children: [
-                Icon(LucideIcons.mapPin,
-                    color: isSelected ? color : Colors.grey[400], size: 20),
+                Icon(
+                  venue.toLowerCase().contains('qishloq') || venue.toLowerCase().contains('maydon')
+                      ? LucideIcons.trees
+                      : LucideIcons.mapPin,
+                  color: isSelected ? color : Colors.grey[400],
+                  size: 20,
+                ),
                 const SizedBox(width: 12),
                 Expanded(
-                  child: Text(venue,
-                      style: const TextStyle(
-                          fontWeight: FontWeight.bold, color: kBookingInk)),
+                  child: Text(
+                    venue,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: kBookingInk,
+                    ),
+                  ),
                 ),
-                if (isSelected)
-                  Icon(LucideIcons.check, color: color, size: 20),
+                if (isSelected) Icon(LucideIcons.check, color: color, size: 20),
               ],
             ),
           ),
@@ -220,42 +283,50 @@ class _EventBookingScreenState extends State<EventBookingScreen> {
       context: context,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
       builder: (context) => Padding(
         padding: const EdgeInsets.all(24.0),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text("Band qilishni tasdiqlang",
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+            const Text(
+              'Band qilishni tasdiqlang',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
             const SizedBox(height: 20),
-            DetailRow(label: "Tadbir", value: widget.service.name),
-            DetailRow(label: "Tadbir turi", value: _selectedEventType!.label),
-            DetailRow(label: "Turi", value: _selectedPriceOption!),
+            DetailRow(label: 'Guruh', value: widget.service.name),
+            DetailRow(label: 'Tadbir turi', value: _selectedEventType!.label),
+            DetailRow(label: 'Xizmat', value: _selectedPriceOption!),
             if (_guestCountController.text.isNotEmpty)
               DetailRow(
-                  label: "Mehmonlar", value: "${_guestCountController.text} kishi"),
-            if (_selectedVenue != null)
-              DetailRow(label: "Joy", value: _selectedVenue!),
+                label: 'Mehmonlar',
+                value: '${_guestCountController.text} kishi',
+              ),
+            if (_selectedVenue != null) DetailRow(label: 'Joy turi', value: _selectedVenue!),
+            DetailRow(label: 'Manzil', value: _addressController.text.trim()),
             if (_descriptionController.text.isNotEmpty)
-              DetailRow(label: "Izoh", value: _descriptionController.text),
+              DetailRow(label: 'Izoh', value: _descriptionController.text),
             DetailRow(
-                label: "Vaqt",
-                value: "${DateFormat('dd.MM.yyyy').format(_selectedDate)} $_selectedTimeSlot"),
+              label: 'Vaqt',
+              value: '${DateFormat('dd.MM.yyyy').format(_selectedDate)} $_selectedTimeSlot',
+            ),
             const Divider(height: 24),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text("Narxi:",
-                    style: TextStyle(
-                        fontSize: 16, fontWeight: FontWeight.bold)),
+                const Text(
+                  'Narxi:',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
                 Text(
                   currencyFormat.format(totalPrice),
-                  style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: const Color(0xFFEC4899)),
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFFEC4899),
+                  ),
                 ),
               ],
             ),
@@ -278,11 +349,17 @@ class _EventBookingScreenState extends State<EventBookingScreen> {
                   final order = ServiceOrder(
                     id: DateTime.now().microsecondsSinceEpoch.toString(),
                     category: ServiceHubKind.tadbirlar,
-                    serviceName: '${widget.service.name} — ${_selectedEventType!.label}',
+                    serviceName:
+                        '${widget.service.name} — ${_selectedEventType!.label}',
                     providerName: widget.service.name,
+                    providerId: widget.service.providerId > 0
+                        ? widget.service.providerId
+                        : null,
                     variant: _selectedPriceOption!,
-                    address: _selectedVenue ?? 'Mijoz belgilagan joy',
-                    notes: 'Mehmonlar soni: ${_guestCountController.text.trim()} kishi\nTavsif: ${_descriptionController.text.trim()}',
+                    address:
+                        '${_selectedVenue ?? ''}: ${_addressController.text.trim()}',
+                    notes:
+                        'Mehmonlar: ${_guestCountController.text.trim()} kishi\n${_descriptionController.text.trim()}',
                     date: dateTime,
                     price: totalPrice ?? 500000.0,
                     status: OrderStatus.pending,
@@ -294,18 +371,22 @@ class _EventBookingScreenState extends State<EventBookingScreen> {
                   Navigator.pop(context);
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
-                        content: Text("Muvaffaqiyatli band qilindi!"),
-                        backgroundColor: Colors.green),
+                      content: Text('Muvaffaqiyatli band qilindi!'),
+                      backgroundColor: Colors.green,
+                    ),
                   );
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.green[700],
                   foregroundColor: Colors.white,
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16)),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
                 ),
-                child: const Text("Tasdiqlash",
-                    style: TextStyle(fontWeight: FontWeight.bold)),
+                child: const Text(
+                  'Tasdiqlash',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
               ),
             ),
             const SizedBox(height: 12),

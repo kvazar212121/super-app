@@ -24,16 +24,7 @@ class UzPhoneField extends StatelessWidget {
   static String fullPhone(TextEditingController c) =>
       normalizeUzPhone(digitsOnly(c.text));
 
-  static String? validateNineDigits(String? value) {
-    final d = digitsOnly(value ?? '');
-    if (d.length != 9) {
-      return '9 ta raqam kiriting (masalan: 901234567)';
-    }
-    if (!d.startsWith('9')) {
-      return 'Raqam 9 bilan boshlanishi kerak';
-    }
-    return null;
-  }
+  static String? validateNineDigits(String? value) => validateUzMobileDigits(value);
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +38,7 @@ class UzPhoneField extends StatelessWidget {
       ],
       decoration: InputDecoration(
         labelText: label,
-        hintText: '901234567',
+        hintText: '901234567 yoki 200163068',
         prefixIcon: const Icon(LucideIcons.phone, size: 20),
         prefixIconConstraints: const BoxConstraints(minWidth: 0, minHeight: 0),
         prefix: Padding(

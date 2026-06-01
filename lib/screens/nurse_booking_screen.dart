@@ -12,8 +12,13 @@ import '../widgets/glass/mesh_background.dart';
 
 class NurseBookingScreen extends StatefulWidget {
   final NurseService service;
+  final MedicalService? initialMedicalService;
 
-  const NurseBookingScreen({super.key, required this.service});
+  const NurseBookingScreen({
+    super.key,
+    required this.service,
+    this.initialMedicalService,
+  });
 
   @override
   State<NurseBookingScreen> createState() => _NurseBookingScreenState();
@@ -28,19 +33,19 @@ class _NurseBookingScreenState extends State<NurseBookingScreen> {
   DateTime _selectedDate = DateTime.now().add(const Duration(days: 1));
   String? _selectedTimeSlot;
 
-  final List<String> _timeSlots = [
-    "08:00",
-    "09:00",
-    "10:00",
-    "11:00",
-    "12:00",
-    "13:00",
-    "14:00",
-    "15:00",
-    "16:00",
-    "17:00",
-    "18:00",
-  ];
+  late List<String> _timeSlots;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedMedicalService = widget.initialMedicalService;
+    _timeSlots = widget.service.timeSlots.isNotEmpty
+        ? widget.service.timeSlots
+        : const [
+            '08:00', '09:00', '10:00', '11:00', '12:00',
+            '14:00', '15:00', '16:00', '17:00', '18:00',
+          ];
+  }
 
   @override
   void dispose() {
@@ -72,6 +77,44 @@ class _NurseBookingScreenState extends State<NurseBookingScreen> {
                     rating: widget.service.rating,
                     phone: widget.service.phoneNumber,
                     accent: accentColor,
+                  ),
+                  if (widget.service.serviceArea != null) ...[
+                    const SizedBox(height: 8),
+                    Text(
+                      'Hudud: ${widget.service.serviceArea}',
+                      style: TextStyle(color: Colors.grey[600], fontSize: 13),
+                    ),
+                  ],
+                  const SizedBox(height: 12),
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(14),
+                    decoration: BoxDecoration(
+                      color: accentColor.withValues(alpha: 0.08),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: accentColor.withValues(alpha: 0.25)),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(LucideIcons.home, color: accentColor),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                widget.service.visitLabel,
+                                style: const TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                              Text(
+                                'Hamshira sizning manzilingizga keladi',
+                                style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                   const SizedBox(height: 24),
                   const SectionTitle("Tibbiy xizmat turi"),
@@ -107,18 +150,16 @@ class _NurseBookingScreenState extends State<NurseBookingScreen> {
                   const SectionTitle("Yosh guruhi"),
                   const SizedBox(height: 12),
                   _buildAgeGroupSelector(accentColor),
-                  if (widget.service.homeVisit) ...[
-                    const SizedBox(height: 24),
-                    const SectionTitle("Manzil (uyga chiqish)"),
-                    const SizedBox(height: 12),
-                    BookingTextArea(
-                      controller: _addressController,
-                      hint: "Manzilni kiriting...",
-                      icon: LucideIcons.mapPin,
-                      accent: accentColor,
-                      maxLines: 2,
-                    ),
-                  ],
+                  const SizedBox(height: 24),
+                  const SectionTitle('Manzil (uyga chaqirish)'),
+                  const SizedBox(height: 12),
+                  BookingTextArea(
+                    controller: _addressController,
+                    hint: 'Ko\'cha, uy, kvartira — to\'liq manzil',
+                    icon: LucideIcons.mapPin,
+                    accent: accentColor,
+                    maxLines: 2,
+                  ),
                   const SizedBox(height: 24),
                   const SectionTitle("Sana"),
                   const SizedBox(height: 12),
@@ -147,8 +188,7 @@ class _NurseBookingScreenState extends State<NurseBookingScreen> {
                             _patientNameController.text.isNotEmpty &&
                             _selectedAgeGroup != null &&
                             _selectedTimeSlot != null &&
-                            (!widget.service.homeVisit ||
-                                _addressController.text.isNotEmpty))
+                            _addressController.text.trim().length >= 5)
                         ? "Band qilish — ${currencyFormat.format(widget.service.prices[_selectedPriceOption])}"
                         : "Band qilish",
                     onPrimary: (_selectedMedicalService != null &&
@@ -156,8 +196,7 @@ class _NurseBookingScreenState extends State<NurseBookingScreen> {
                             _patientNameController.text.isNotEmpty &&
                             _selectedAgeGroup != null &&
                             _selectedTimeSlot != null &&
-                            (!widget.service.homeVisit ||
-                                _addressController.text.isNotEmpty))
+                            _addressController.text.trim().length >= 5)
                         ? () => _confirmBooking(currencyFormat)
                         : null,
                     secondaryLabel: "Hamshira bilan bog'lanish",
@@ -251,8 +290,8 @@ class _NurseBookingScreenState extends State<NurseBookingScreen> {
             DetailRow(label: "Narx varianti", value: _selectedPriceOption!),
             DetailRow(label: "Bemor", value: _patientNameController.text),
             DetailRow(label: "Yosh guruhi", value: _selectedAgeGroup!),
-            if (widget.service.homeVisit && _addressController.text.isNotEmpty)
-              DetailRow(label: "Manzil", value: _addressController.text),
+            DetailRow(label: 'Qabul', value: widget.service.visitLabel),
+            DetailRow(label: 'Manzil', value: _addressController.text),
             DetailRow(
                 label: "Vaqt",
                 value: "${DateFormat('dd.MM.yyyy').format(_selectedDate)} $_selectedTimeSlot"),
@@ -299,6 +338,9 @@ class _NurseBookingScreenState extends State<NurseBookingScreen> {
                     date: dateTime,
                     price: totalPrice ?? 100000.0,
                     status: OrderStatus.pending,
+                    providerId: widget.service.providerId > 0
+                        ? widget.service.providerId
+                        : null,
                   );
 
                   context.read<AppProvider>().addOrder(order);

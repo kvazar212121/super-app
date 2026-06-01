@@ -94,3 +94,9 @@ class ReviewCreate(BaseModel):
     provider_id: int
     rating: int = Field(..., ge=1, le=5)
     comment: Optional[str] = None
+
+
+class ProviderAvailabilityOut(BaseModel):
+    date: str
+    slots: list[str]
+    booked: list[str]

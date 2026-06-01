@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:provider/provider.dart';
@@ -9,6 +7,7 @@ import '../../theme/glass_tokens.dart';
 import '../../widgets/auth/otp_auth_panel.dart';
 import '../../widgets/glass/glass_surface.dart';
 import '../../widgets/glass/mesh_background.dart';
+import '../../widgets/hub_servis_brand.dart';
 import 'auth_gate_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -143,39 +142,6 @@ class _LoginScreenState extends State<LoginScreen>
   }
 
   Widget _buildLogo(bool isDark) {
-    return Column(
-      children: [
-        ClipRRect(
-          borderRadius: BorderRadius.circular(28),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
-            child: Container(
-              width: 88,
-              height: 88,
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: isDark ? 0.12 : 0.45),
-                borderRadius: BorderRadius.circular(28),
-                border: Border.all(color: Colors.white.withValues(alpha: 0.45)),
-              ),
-              child: const Icon(LucideIcons.layers, color: Color(0xFF6366F1), size: 42),
-            ),
-          ),
-        ),
-        const SizedBox(height: 16),
-        Text(
-          'Super App',
-          style: TextStyle(
-            fontSize: 32,
-            fontWeight: FontWeight.w800,
-            letterSpacing: -0.8,
-            color: GlassTokens.primaryText(context),
-          ),
-        ),
-        Text(
-          'Barcha xizmatlar bir joyda',
-          style: TextStyle(color: GlassTokens.secondaryText(context)),
-        ),
-      ],
-    );
+    return const HubServisBrand(logoSize: 88, titleSize: 30, compact: true);
   }
 }

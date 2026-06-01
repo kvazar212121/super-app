@@ -1,4 +1,6 @@
 from math import ceil
+from datetime import date, datetime, time
+
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func, or_
 from fastapi import HTTPException, status
@@ -7,6 +9,12 @@ from app.models.provider import Provider
 from app.models.review import Review
 from app.models.category import Category
 from app.models.order import Order, OrderStatus
+
+
+DEFAULT_TIME_SLOTS = [
+    "09:00", "10:00", "11:00", "12:00",
+    "14:00", "15:00", "16:00", "17:00", "18:00",
+]
 
 
 class ProviderService:
@@ -52,8 +60,11 @@ class ProviderService:
 
         query = base.offset((page - 1) * per_page).limit(per_page)
         providers = (await db.execute(query)).scalars().all()
-
-        return list(providers), total
+        filtered = [
+            p for p in providers
+            if (p.metadata_json or {}).get("barber_role") != "shop_employee"
+        ]
+        return filtered, total
 
     @staticmethod
     async def get_by_id(db: AsyncSession, provider_id: int) -> Provider:
@@ -137,3 +148,38 @@ class ProviderService:
         await db.flush()
         await db.refresh(review)
         return review
+
+    @staticmethod
+    async def get_availability(
+        db: AsyncSession, provider_id: int, day: date
+    ) -> dict:
+        """Kunlik band/bo'sh vaqt slotlari (buyurtmalar va metadata asosida)."""
+        provider = await ProviderService.get_by_id(db, provider_id)
+        meta = provider.metadata_json or {}
+        slots: list[str] = meta.get("time_slots") or DEFAULT_TIME_SLOTS
+
+        day_start = datetime.combine(day, time.min)
+        day_end = datetime.combine(day, time.max)
+
+        result = await db.execute(
+            select(Order).where(
+                Order.provider_id == provider_id,
+                Order.date >= day_start,
+                Order.date <= day_end,
+                Order.status != OrderStatus.cancelled,
+            )
+        )
+        orders = result.scalars().all()
+
+        booked_times = {
+            f"{o.date.hour:02d}:{o.date.minute:02d}"
+            for o in orders
+            if o.date is not None
+        }
+        booked = [s for s in slots if s in booked_times]
+
+        return {
+            "date": day.isoformat(),
+            "slots": slots,
+            "booked": booked,
+        }

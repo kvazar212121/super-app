@@ -13,6 +13,15 @@ flutter devices
 echo ""
 
 DEVICE="${1:-}"
+if [ -z "$DEVICE" ]; then
+  # Fizik telefonni emulator ustidan tanlash
+  PHYSICAL=$(adb devices | grep -v 'List\|emulator' | grep 'device$' | awk '{print $1}' | head -1)
+  if [ -n "$PHYSICAL" ]; then
+    DEVICE="$PHYSICAL"
+    echo "Fizik telefon tanlandi: $DEVICE"
+  fi
+fi
+
 if [ -n "$DEVICE" ]; then
   flutter run -d "$DEVICE"
 else
