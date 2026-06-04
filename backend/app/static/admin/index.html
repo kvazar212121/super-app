@@ -1435,14 +1435,14 @@
             if (meta.type === 'disinfection') {
                 var areas = (meta.area_types || []).join(', ');
                 extra = '<div class="detail-item"><div class="detail-label">Turi</div><div class="detail-value">Dezinfeksiya xizmati</div></div>' +
-                    (areas ? '<div class="detail-item"><div class="detail-label">Hudud turlari</div><div class="detail-value">' + areas + '</div></div>' +
+                    (areas ? '<div class="detail-item"><div class="detail-label">Hudud turlari</div><div class="detail-value">' + areas + '</div></div>' : '') +
                     '<div class="detail-item"><div class="detail-label">Sertifikat</div><div class="detail-value">' + (meta.is_certified ? 'Ha' : 'Yo\'q') + '</div></div>' +
                     '<div class="detail-item"><div class="detail-label">Tasdiqlash</div><div class="detail-value">' + (meta.verification_status || (p.is_active ? 'verified' : 'pending')) + '</div></div>';
             }
             if (meta.type === 'massage') {
                 var vm = (meta.visit_modes || []).join(', ');
                 extra = '<div class="detail-item"><div class="detail-label">Turi</div><div class="detail-value">' + (meta.massage_role === 'salon' ? 'Salon' : 'Yakka mutaxassis') + '</div></div>' +
-                    (vm ? '<div class="detail-item"><div class="detail-label">Qabul usuli</div><div class="detail-value">' + vm + '</div></div>' +
+                    (vm ? '<div class="detail-item"><div class="detail-label">Qabul usuli</div><div class="detail-value">' + vm + '</div></div>' : '') +
                     '<div class="detail-item"><div class="detail-label">Jinsiyat</div><div class="detail-value">' + (meta.gender || 'both') + '</div></div>' +
                     '<div class="detail-item"><div class="detail-label">Tasdiqlash</div><div class="detail-value">' + (meta.verification_status || (p.is_active ? 'verified' : 'pending')) + '</div></div>';
             }

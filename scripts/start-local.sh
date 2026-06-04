@@ -8,6 +8,11 @@ PG="$HOME/tools/postgresql-16.6.0-x86_64-unknown-linux-gnu"
 PGDATA="$ROOT/data/pg"
 ENV_FILE="$BACKEND/.env.local"
 
+if [[ ! -f "$ENV_FILE" ]]; then
+  cp "$BACKEND/.env.local.example" "$ENV_FILE"
+  echo "Yangi .env.local yaratildi — ADMIN_DEFAULT_PASSWORD va SECRET_KEY ni o'zgartiring."
+fi
+
 export PATH="$PG/bin:$PATH"
 
 mkdir -p "$ROOT/data"

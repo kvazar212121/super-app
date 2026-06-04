@@ -34,6 +34,7 @@ android/.gradle_home/
 .env.local
 *.env.*
 !backend/.env.example
+!backend/.env.local.example
 
 # Dependencies
 node_modules/

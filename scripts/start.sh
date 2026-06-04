@@ -30,13 +30,19 @@ run_docker() {
 cd "$BACKEND"
 
 if [[ ! -f "$BACKEND/.env" ]]; then
-  cp "$BACKEND/.env.production" "$BACKEND/.env"
+  cp "$BACKEND/.env.example" "$BACKEND/.env"
+  echo "Yangi .env yaratildi — ADMIN_DEFAULT_PASSWORD va SECRET_KEY ni o'zgartiring."
 fi
 
 run_docker "docker compose up -d --build db redis backend"
 
 echo ""
-echo "Tayyor!"
-echo "  Admin:  http://hubservis.uz/admin/login  (admin / admin123)"
-echo "  API:    http://api.hubservis.uz/api/v1/health"
-echo "  Docs:   http://api.hubservis.uz/docs"
+echo "Tayyor! (backend Docker da ishlayapti)"
+echo ""
+echo "Production domenlar uchun (bir marta, faqat HTTP nginx):"
+echo "  sudo bash $ROOT/scripts/apply-nginx.sh"
+echo ""
+echo "  Landing:  http://hubservis.uz/"
+echo "  Admin:    http://hubservis.uz/admin/login  (admin / admin123)"
+echo "  API:      http://api.hubservis.uz/api/v1/health"
+echo "  Docs:     http://api.hubservis.uz/docs"
