@@ -105,6 +105,25 @@ class ProfileScreen extends StatelessWidget {
                   ],
                 ),
               ),
+              const SizedBox(height: 16),
+              GlassSurface(
+                onTap: () => _showDeleteAccountDialog(context),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                opacity: 0.48,
+                child: Row(
+                  children: const [
+                    Icon(Icons.delete_forever_rounded, color: Color(0xFFEF4444)),
+                    SizedBox(width: 12),
+                    Text(
+                      'Hisobni o\'chirish',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xFFEF4444),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ],
           ],
         ),
@@ -323,4 +342,26 @@ class ProfileScreen extends StatelessWidget {
       ),
     );
   }
+
+  void _showDeleteAccountDialog(BuildContext context) {
+    showDialog<void>(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text('Hisobni o\'chirish'),
+        content: const Text('Haqiqatan ham hisobingizni butunlay o\'chirmoqchimisiz? Bu amalni ortga qaytarib bo\'lmaydi.'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Bekor qilish')),
+          FilledButton(
+            style: FilledButton.styleFrom(backgroundColor: const Color(0xFFEF4444)),
+            onPressed: () async {
+              Navigator.pop(context);
+              await context.read<AuthProvider>().deleteAccount();
+            },
+            child: const Text('O\'chirish'),
+          ),
+        ],
+      ),
+    );
+  }
 }
+

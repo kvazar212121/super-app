@@ -40,15 +40,22 @@ class ApiService {
           handler.next(options);
         },
         onError: (error, handler) async {
-          if (error.response?.statusCode == 401 && _refreshToken != null) {
-            // Token yangilashga urinish
+          final path = error.requestOptions.path;
+          // /auth/refresh endpointda 401 bo'lsa, refresh qilishga urinmaslik
+          // (infinite loop oldini olish)
+          if (error.response?.statusCode == 401 &&
+              _refreshToken != null &&
+              !path.contains('/auth/refresh')) {
             final refreshed = await _tryRefreshToken();
             if (refreshed) {
-              // Asl so'rovni qayta yuborish
               final opts = error.requestOptions;
               opts.headers['Authorization'] = 'Bearer $_accessToken';
-              final response = await _dio.fetch(opts);
-              return handler.resolve(response);
+              try {
+                final response = await _dio.fetch(opts);
+                return handler.resolve(response);
+              } catch (retryError) {
+                return handler.next(error);
+              }
             }
           }
           handler.next(error);
@@ -182,6 +189,11 @@ class ApiService {
   Future<Map<String, dynamic>> getMe() async {
     final response = await _dio.get('/users/me');
     return response.data;
+  }
+
+  /// Hisobni o'chirish
+  Future<void> deleteMe() async {
+    await _dio.delete('/users/me');
   }
 
   /// Profilni yangilash

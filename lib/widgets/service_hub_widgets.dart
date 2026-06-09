@@ -32,8 +32,8 @@ import '../screens/dental_booking_screen.dart';
 import '../screens/event_booking_screen.dart';
 
 /// Oq kartalardagi matnlar (har doim oq fonda, shuning uchun qat'iy qora).
-const _cardTitleColor = Color(0xFF0F172A);
-const _cardSubColor = Color(0xFF64748B);
+const _cardTitleColor = Colors.black;
+const _cardSubColor = Colors.black87;
 
 class ShopSmallCard extends StatelessWidget {
   final BarberShop shop;
@@ -48,7 +48,7 @@ class ShopSmallCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey[200]!),
+        border: Border.all(color: Colors.black26),
       ),
       child: InkWell(
         onTap: () => Navigator.push(
@@ -99,7 +99,7 @@ class SalonSmallCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey[200]!),
+        border: Border.all(color: Colors.black26),
       ),
       child: InkWell(
         onTap: () => Navigator.push(
@@ -150,7 +150,7 @@ class FieldSmallCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey[200]!),
+        border: Border.all(color: Colors.black26),
       ),
       child: InkWell(
         onTap: () => Navigator.push(
@@ -205,7 +205,7 @@ class MasterSmallCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey[200]!),
+        border: Border.all(color: Colors.black26),
       ),
       child: InkWell(
         onTap: () => Navigator.push(
@@ -250,7 +250,7 @@ class WorkerSmallCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey[200]!),
+        border: Border.all(color: Colors.black26),
       ),
       child: InkWell(
         onTap: () => ScaffoldMessenger.of(context).showSnackBar(
@@ -353,7 +353,7 @@ class WorkshopSmallCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey[200]!),
+        border: Border.all(color: Colors.black26),
       ),
       child: InkWell(
         onTap: () => Navigator.push(
@@ -408,7 +408,7 @@ class EducationCenterSmallCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey[200]!),
+        border: Border.all(color: Colors.black26),
       ),
       child: InkWell(
         onTap: () => Navigator.push(
@@ -464,7 +464,7 @@ class DisinfectionSmallCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey[200]!),
+        border: Border.all(color: Colors.black26),
       ),
       child: InkWell(
         onTap: () => Navigator.push(
@@ -515,7 +515,7 @@ class ApplianceSmallCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey[200]!),
+        border: Border.all(color: Colors.black26),
       ),
       child: InkWell(
         onTap: () => Navigator.push(
@@ -566,7 +566,7 @@ class CourierSmallCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey[200]!),
+        border: Border.all(color: Colors.black26),
       ),
       child: InkWell(
         onTap: () => Navigator.push(
@@ -617,7 +617,7 @@ class MassageSmallCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey[200]!),
+        border: Border.all(color: Colors.black26),
       ),
       child: InkWell(
         onTap: () => Navigator.push(
@@ -674,7 +674,7 @@ class NurseSmallCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey[200]!),
+        border: Border.all(color: Colors.black26),
       ),
       child: InkWell(
         onTap: () => Navigator.push(
@@ -731,7 +731,7 @@ class DentalSmallCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey[200]!),
+        border: Border.all(color: Colors.black26),
       ),
       child: InkWell(
         onTap: () => Navigator.push(
@@ -788,7 +788,7 @@ class EventSmallCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey[200]!),
+        border: Border.all(color: Colors.black26),
       ),
       child: InkWell(
         onTap: () => Navigator.push(

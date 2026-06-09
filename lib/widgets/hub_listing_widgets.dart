@@ -178,7 +178,10 @@ class VenueHubCard extends StatelessWidget {
       width: 168,
       child: Material(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(18),
+          side: const BorderSide(color: Colors.black26),
+        ),
         clipBehavior: Clip.antiAlias,
         child: InkWell(
           onTap: onTap,

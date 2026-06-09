@@ -40,11 +40,31 @@ class AuthProvider extends ChangeNotifier {
       _isAuthenticated = true;
       notifyListeners();
       return true;
-    } catch (e) {
-      await _api.clearTokens();
-      _isAuthenticated = false;
-      _user = null;
-      notifyListeners();
+    } on DioException catch (e) {
+      // 401 — token yaroqsiz va refresh ham ishlamadi (interceptor allaqachon
+      // refresh qilib ko'rgan). Faqat shu holatda tokenlarni tozalash kerak.
+      if (e.response?.statusCode == 401) {
+        await _api.clearTokens();
+        _isAuthenticated = false;
+        _user = null;
+        notifyListeners();
+        return false;
+      }
+      // Tarmoq xatoligi (internet yo'q, server o'chiq) — tokenlar saqlanadi,
+      // foydalanuvchi kirgan hisoblanadi. Keyingi ulanishda ishlaydi.
+      if (_api.hasToken) {
+        _isAuthenticated = true;
+        notifyListeners();
+        return true;
+      }
+      return false;
+    } catch (_) {
+      // Kutilmagan xatolik — agar token bor bo'lsa, kirgan deb hisoblaymiz
+      if (_api.hasToken) {
+        _isAuthenticated = true;
+        notifyListeners();
+        return true;
+      }
       return false;
     }
   }
@@ -156,6 +176,24 @@ class AuthProvider extends ChangeNotifier {
     _user = null;
     _error = null;
     notifyListeners();
+  }
+
+  Future<bool> deleteAccount() async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+    try {
+      await _api.deleteMe();
+      await logout();
+      _isLoading = false;
+      notifyListeners();
+      return true;
+    } catch (e) {
+      _error = _extractError(e);
+      _isLoading = false;
+      notifyListeners();
+      return false;
+    }
   }
 
   String _extractError(Object e) {

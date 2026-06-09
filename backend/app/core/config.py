@@ -22,8 +22,8 @@ class Settings(BaseSettings):
     redis_url: str = "redis://localhost:6379/0"
 
     secret_key: str = "super-app-secret-key-change-in-prod"
-    access_token_expire_minutes: int = 60
-    refresh_token_expire_days: int = 7
+    access_token_expire_minutes: int = 10080  # 7 kun (mobil ilova uchun)
+    refresh_token_expire_days: int = 365  # 1 yil
 
     cors_origins: str = "*"  # comma-separated: "http://localhost:3000,http://localhost:8080"
     cors_allow_all: bool = True  # Set False in production, use cors_origins list

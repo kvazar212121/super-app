@@ -26,6 +26,11 @@ class UserService:
         return user
 
     @staticmethod
+    async def delete(db: AsyncSession, user: User) -> None:
+        await db.delete(user)
+        await db.commit()
+
+    @staticmethod
     async def top_up(db: AsyncSession, user: User, amount: float) -> User:
         # Maksimal to'ldirish limiti: 10 000 000 UZS
         MAX_TOP_UP = 10_000_000.0

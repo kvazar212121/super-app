@@ -15,6 +15,14 @@ async def get_me(current_user: User = Depends(get_current_user)):
     return current_user
 
 
+@router.delete("/me", status_code=204)
+async def delete_me(
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    await UserService.delete(db, current_user)
+
+
 @router.patch("/me", response_model=UserOut)
 async def update_me(
     data: UserUpdate,
