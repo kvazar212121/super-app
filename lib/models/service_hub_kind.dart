@@ -24,6 +24,8 @@ enum ServiceHubKind {
   hamshira,
   stomatologiya,
   tadbirlar,
+  bozorchi,
+  oshxona,
   yana,
 }
 
@@ -48,6 +50,8 @@ extension ServiceHubKindX on ServiceHubKind {
         ServiceHubKind.hamshira => 'Hamshira',
         ServiceHubKind.stomatologiya => 'Stomatologiya',
         ServiceHubKind.tadbirlar => 'Tadbirlar',
+        ServiceHubKind.bozorchi => 'Bozorchi',
+        ServiceHubKind.oshxona => 'Oshxona',
         ServiceHubKind.yana => 'Yana xizmatlar',
       };
 
@@ -71,6 +75,8 @@ extension ServiceHubKindX on ServiceHubKind {
         ServiceHubKind.hamshira => 'Uyga hamshira chaqirish',
         ServiceHubKind.stomatologiya => 'Tish davolash — klinikada vaqt bron',
         ServiceHubKind.tadbirlar => 'Guruhlar — sahna, ovoz, qishloq va to\'y',
+        ServiceHubKind.bozorchi => 'Ro\'zg\'or xaridlari va yetkazib berish',
+        ServiceHubKind.oshxona => 'Stol bron qilish va ovqat buyurtma',
         ServiceHubKind.yana => 'Boshqa xizmatlar va yordam',
       };
 
@@ -94,6 +100,8 @@ extension ServiceHubKindX on ServiceHubKind {
         ServiceHubKind.hamshira => LucideIcons.heartPulse,
         ServiceHubKind.stomatologiya => LucideIcons.smile,
         ServiceHubKind.tadbirlar => LucideIcons.partyPopper,
+        ServiceHubKind.bozorchi => LucideIcons.shoppingCart,
+        ServiceHubKind.oshxona => LucideIcons.utensils,
         ServiceHubKind.yana => LucideIcons.moreHorizontal,
       };
 
@@ -117,6 +125,8 @@ extension ServiceHubKindX on ServiceHubKind {
         ServiceHubKind.hamshira => const Color(0xFFEF4444),
         ServiceHubKind.stomatologiya => const Color(0xFF0EA5E9),
         ServiceHubKind.tadbirlar => const Color(0xFFE91E63),
+        ServiceHubKind.bozorchi => const Color(0xFFFF9800),
+        ServiceHubKind.oshxona => const Color(0xFFF44336),
         ServiceHubKind.yana => Colors.blueGrey,
       };
 
@@ -234,6 +244,16 @@ extension ServiceHubKindX on ServiceHubKind {
             (label: 'Tug`ilgan kun', basePrice: 500000),
             (label: 'Dam olish joyi bron', basePrice: 300000),
             (label: 'Korporativ tadbir', basePrice: 1500000),
+          ],
+        ServiceHubKind.bozorchi => const [
+            (label: 'Oziq-ovqat xaridi', basePrice: 50000),
+            (label: 'Katta bozorlik', basePrice: 100000),
+            (label: 'Dori-darmon xaridi', basePrice: 40000),
+          ],
+        ServiceHubKind.oshxona => const [
+            (label: 'Stol bron qilish (2 kishilik)', basePrice: 50000),
+            (label: 'Stol bron qilish (4+ kishilik)', basePrice: 100000),
+            (label: 'VIP xona', basePrice: 200000),
           ],
         ServiceHubKind.yana => const [
             (label: 'Boshqa xizmat', basePrice: 100000),

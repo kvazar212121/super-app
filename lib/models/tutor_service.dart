@@ -4,7 +4,14 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 enum LessonMode {
   online,
   homeVisit,
-  atCenter,
+  atCenter;
+
+  static LessonMode? fromKey(String key) {
+    for (final m in LessonMode.values) {
+      if (m.key == key) return m;
+    }
+    return null;
+  }
 }
 
 extension LessonModeX on LessonMode {
@@ -25,13 +32,6 @@ extension LessonModeX on LessonMode {
         LessonMode.homeVisit => LucideIcons.home,
         LessonMode.atCenter => LucideIcons.school,
       };
-
-  static LessonMode? fromKey(String key) {
-    for (final m in LessonMode.values) {
-      if (m.key == key) return m;
-    }
-    return null;
-  }
 }
 
 /// Yakka repetitor modeli

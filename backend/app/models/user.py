@@ -32,6 +32,8 @@ class User(Base):
     reviews = relationship("Review", back_populates="user", lazy="selectin")
     notifications = relationship("Notification", back_populates="user", lazy="selectin", cascade="all, delete-orphan")
     transactions = relationship("Transaction", back_populates="user", lazy="selectin", cascade="all, delete-orphan")
+    todos = relationship("Todo", back_populates="user", lazy="selectin", cascade="all, delete-orphan")
+    shopping_lists = relationship("ShoppingList", back_populates="user", lazy="selectin", cascade="all, delete-orphan")
 
     def to_dict(self) -> dict:
         return {

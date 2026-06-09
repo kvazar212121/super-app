@@ -8,7 +8,15 @@ enum DeliveryType {
   food,
   cargo,
   flowers,
-  electronics,
+  electronics;
+
+  static DeliveryType? fromKey(String key) {
+    final k = key.toLowerCase();
+    for (final t in DeliveryType.values) {
+      if (t.key == k) return t;
+    }
+    return null;
+  }
 }
 
 extension DeliveryTypeX on DeliveryType {
@@ -38,17 +46,24 @@ extension DeliveryTypeX on DeliveryType {
         DeliveryType.flowers => LucideIcons.flower2,
         DeliveryType.electronics => LucideIcons.cpu,
       };
-
-  static DeliveryType? fromKey(String key) {
-    final k = key.toLowerCase();
-    for (final t in DeliveryType.values) {
-      if (t.key == k) return t;
-    }
-    return null;
-  }
 }
 
-enum VehicleType { bike, car, van }
+enum VehicleType {
+  bike,
+  car,
+  van;
+
+  static VehicleType fromKey(String? key) {
+    switch (key?.toLowerCase()) {
+      case 'car':
+        return VehicleType.car;
+      case 'van':
+        return VehicleType.van;
+      default:
+        return VehicleType.bike;
+    }
+  }
+}
 
 extension VehicleTypeX on VehicleType {
   String get key => switch (this) {
@@ -62,17 +77,6 @@ extension VehicleTypeX on VehicleType {
         VehicleType.car => 'Mashina',
         VehicleType.van => 'Furgon',
       };
-
-  static VehicleType fromKey(String? key) {
-    switch (key?.toLowerCase()) {
-      case 'car':
-        return VehicleType.car;
-      case 'van':
-        return VehicleType.van;
-      default:
-        return VehicleType.bike;
-    }
-  }
 }
 
 /// Kuryer xizmati modeli

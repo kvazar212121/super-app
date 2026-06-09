@@ -7,6 +7,9 @@ from app.models.review import Review
 from app.models.setting import PlatformSetting
 from app.models.notification import Notification
 from app.models.transaction import Transaction
+from app.models.todo import Todo
+from app.models.shopping_list import ShoppingList
+from app.models.product_catalog import ProductCatalog
 
 __all__ = [
     "User",
@@ -19,4 +22,7 @@ __all__ = [
     "PlatformSetting",
     "Notification",
     "Transaction",
+    "Todo",
+    "ShoppingList",
+    "ProductCatalog",
 ]

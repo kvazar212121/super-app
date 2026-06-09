@@ -364,6 +364,26 @@ class _MapSection extends StatelessWidget {
           ),
         )));
         break;
+      case ServiceHubKind.bozorchi:
+        markers.addAll(data.masters.map((s) => Marker(
+          point: LatLng(s.latitude, s.longitude),
+          child: _MapPin(
+            icon: LucideIcons.shoppingCart,
+            color: accentColor,
+            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => UniversalBookingScreen(kind: ServiceHubKind.bozorchi))),
+          ),
+        )));
+        break;
+      case ServiceHubKind.oshxona:
+        markers.addAll(data.masters.map((s) => Marker(
+          point: LatLng(s.latitude, s.longitude),
+          child: _MapPin(
+            icon: LucideIcons.utensils,
+            color: accentColor,
+            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => UniversalBookingScreen(kind: ServiceHubKind.oshxona))),
+          ),
+        )));
+        break;
       default: break;
     }
     return markers;
@@ -493,6 +513,8 @@ class _ActionList extends StatelessWidget {
         if (kind == ServiceHubKind.hamshira) _buildSection(context, "Hamshira xizmatlari", data.nurses.map((s) => NurseSmallCard(service: s)).toList()),
         if (kind == ServiceHubKind.stomatologiya) _buildSection(context, "Stomatologiya klinikalari", data.dentalClinics.map((c) => DentalSmallCard(clinic: c)).toList()),
         if (kind == ServiceHubKind.tadbirlar) _buildSection(context, "Tadbir tashkilotchilar", data.events.map((s) => EventSmallCard(service: s)).toList()),
+        if (kind == ServiceHubKind.bozorchi) _buildSection(context, "Bozorchi va kuryerlar", data.masters.map((m) => MasterSmallCard(master: m)).toList()),
+        if (kind == ServiceHubKind.oshxona) _buildSection(context, "Oshxona va Restoranlar", data.masters.map((m) => MasterSmallCard(master: m)).toList()),
         
         Padding(
           padding: const EdgeInsets.all(16),
@@ -845,6 +867,16 @@ class _ActionList extends StatelessWidget {
             context,
             MaterialPageRoute(builder: (_) => SalonBookingScreen(salon: data.salons.first)),
           );
+        }),
+      ],
+      ServiceHubKind.bozorchi => [
+        _HubActionSpec(LucideIcons.shoppingCart, 'Kuryer orqali xarid', 'Oziq-ovqat yetkazib berish', () {
+          Navigator.push(context, MaterialPageRoute(builder: (_) => const UniversalBookingScreen(kind: ServiceHubKind.bozorchi)));
+        }),
+      ],
+      ServiceHubKind.oshxona => [
+        _HubActionSpec(LucideIcons.utensils, 'Stol bron qilish', 'Oshxonadan joy band qilish', () {
+          Navigator.push(context, MaterialPageRoute(builder: (_) => const UniversalBookingScreen(kind: ServiceHubKind.oshxona)));
         }),
       ],
       ServiceHubKind.futbol => [

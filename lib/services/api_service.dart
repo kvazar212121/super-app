@@ -1023,4 +1023,64 @@ class ApiService {
     });
     return response.data as Map<String, dynamic>;
   }
+
+  // ─────────────── DAILIES & UTILITIES ───────────────
+
+  Future<Map<String, dynamic>> getWeather(String city) async {
+    final response = await _dio.get('/utilities/weather', queryParameters: {'city': city});
+    return response.data;
+  }
+
+  Future<Map<String, dynamic>> getCurrency() async {
+    final response = await _dio.get('/utilities/currency');
+    return response.data;
+  }
+
+  Future<Map<String, dynamic>> getPrayerTimes(String city) async {
+    final response = await _dio.get('/utilities/prayer-times', queryParameters: {'city': city});
+    return response.data;
+  }
+
+  Future<List<dynamic>> getTodos() async {
+    final response = await _dio.get('/todos/');
+    return response.data;
+  }
+
+  Future<Map<String, dynamic>> createTodo(String title, [String? description]) async {
+    final response = await _dio.post('/todos/', data: {
+      'title': title,
+      if (description != null) 'description': description,
+    });
+    return response.data;
+  }
+
+  Future<Map<String, dynamic>> updateTodo(String id, bool isCompleted) async {
+    final response = await _dio.put('/todos/$id', data: {
+      'is_completed': isCompleted,
+    });
+    return response.data;
+  }
+
+  Future<void> deleteTodo(String id) async {
+    await _dio.delete('/todos/$id');
+  }
+
+  Future<Map<String, dynamic>> calculateShoppingPrice(List<Map<String, dynamic>> items) async {
+    final response = await _dio.post('/shopping/calculate-price', data: {'items': items});
+    return response.data;
+  }
+
+  Future<List<dynamic>> getShoppingLists() async {
+    final response = await _dio.get('/shopping/');
+    return response.data;
+  }
+
+  Future<Map<String, dynamic>> createShoppingList(String title, List<Map<String, dynamic>> items, double totalPrice) async {
+    final response = await _dio.post('/shopping/', data: {
+      'title': title,
+      'items': items,
+      'total_estimated_price': totalPrice,
+    });
+    return response.data;
+  }
 }

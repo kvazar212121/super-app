@@ -12,6 +12,7 @@ from app.core.security import hash_password
 from app.models.category import Category, CategoryVariant
 from app.models.provider import Provider
 from app.models.user import User
+from app.models.product_catalog import ProductCatalog
 from app.models.order import Order, OrderStatus
 from app.models.review import Review
 from app.models.payment import PaymentCard
@@ -25,6 +26,7 @@ from app.seed_data import (
     PLATFORM_SETTINGS,
     PAYMENT_CARDS,
     NOTIFICATIONS,
+    PRODUCT_CATALOG,
 )
 from app.categories_data import CATEGORIES_DATA
 
@@ -218,6 +220,20 @@ async def seed():
                     )
                 )
         await db.commit()
+        
+        # Product Catalog
+        product_count = (await db.execute(select(func.count(ProductCatalog.id)))).scalar() or 0
+        if product_count == 0:
+            for item in PRODUCT_CATALOG:
+                db.add(
+                    ProductCatalog(
+                        name=item["name"],
+                        unit=item["unit"],
+                        average_price=item["average_price"],
+                    )
+                )
+            await db.commit()
+            logger.info("Product Catalog yuklandi: %d", len(PRODUCT_CATALOG))
 
         # Kartalar
         for c in PAYMENT_CARDS:

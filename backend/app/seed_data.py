@@ -80,26 +80,144 @@ PROVIDERS = [
     {"category_key": "usta", "name": "Usta Jamshid", "address": "Toshkent, Chilonzor", "phone": "+998944445566", "lat": 41.298, "lng": 69.252, "rating": 4.7, "review_count": 45, "metadata": {"type": "master", "master_role": "solo", "specialty": "Usta", "service_area": "Chilonzor, Sergeli", "services": ["Mebel yigish", "Eshik/oyna tamiri"], "prices": {"Mebel yigish": 140000, "Eshik/oyna tamiri": 110000}, "time_slots": ["09:00", "10:00", "11:00", "12:00", "14:00", "15:00", "16:00", "17:00"]}},
     {"category_key": "usta", "name": "Master Fix Brigada", "address": "Toshkent, Yunusobod", "phone": "+998935556677", "lat": 41.312, "lng": 69.268, "rating": 4.9, "review_count": 128, "metadata": {"type": "master", "master_role": "brigade", "team_size": 4, "specialty": "Usta", "service_area": "Butun Toshkent", "services": ["Mebel yigish", "Devorga osish/biriktirish", "Boshqa ta'mirlash"], "prices": {"Mebel yigish": 180000, "Devorga osish/biriktirish": 95000, "Boshqa ta'mirlash": 120000}, "time_slots": ["08:00", "09:00", "10:00", "11:00", "12:00", "14:00", "15:00", "16:00", "17:00", "18:00"]}},
     {"category_key": "salon", "name": "Beauty Salon Lux", "address": "Toshkent", "phone": "+998976667788", "lat": 41.312, "lng": 69.258, "rating": 4.7, "review_count": 134, "metadata": {"type": "beauty_salon", "salon_role": "salon_owner", "services": ["Fen", "Makiyaj"], "prices": {"Fen": 55000, "Makiyaj": 90000}, "staff": [{"name": "Laylo", "rating": 4.6}]}},
+    # Bozorchi
+    {"category_key": "bozorchi", "name": "Tezkor Bozorchi", "address": "Chorsu bozori", "phone": "+998901231234", "lat": 41.326, "lng": 69.239, "rating": 4.8, "review_count": 150, "metadata": {"type": "personal_shopper", "service_area": "Butun Toshkent", "services": ["Oziq-ovqat xaridi", "Katta bozorlik"], "prices": {"Oziq-ovqat xaridi": 50000, "Katta bozorlik": 100000}}},
+    {"category_key": "bozorchi", "name": "Savat.uz Kuryer", "address": "Toshkent, Yunusobod", "phone": "+998931231234", "lat": 41.350, "lng": 69.290, "rating": 4.6, "review_count": 80, "metadata": {"type": "personal_shopper", "service_area": "Yunusobod", "services": ["Oziq-ovqat xaridi", "Dori-darmon xaridi"], "prices": {"Oziq-ovqat xaridi": 40000, "Dori-darmon xaridi": 30000}}},
+    
+    # Oshxona / Restoran
+    {"category_key": "oshxona", "name": "Choyxona 'Osh Markazi'", "address": "Beshyog'och", "phone": "+998712345678", "lat": 41.305, "lng": 69.250, "rating": 4.9, "review_count": 320, "metadata": {"type": "restaurant", "tables": 20, "services": ["Stol bron qilish (2 kishilik)", "Stol bron qilish (4+ kishilik)", "VIP xona"], "prices": {"Stol bron qilish (2 kishilik)": 50000, "Stol bron qilish (4+ kishilik)": 100000, "VIP xona": 200000}, "time_slots": ["11:00", "12:00", "13:00", "14:00", "18:00", "19:00", "20:00"]}},
+    {"category_key": "oshxona", "name": "Evos Family", "address": "Chilonzor", "phone": "+998712003030", "lat": 41.280, "lng": 69.210, "rating": 4.5, "review_count": 500, "metadata": {"type": "restaurant", "tables": 15, "services": ["Stol bron qilish (2 kishilik)", "Stol bron qilish (4+ kishilik)"], "prices": {"Stol bron qilish (2 kishilik)": 30000, "Stol bron qilish (4+ kishilik)": 60000}, "time_slots": ["10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00"]}},
+    
+    # Yana xizmatlar
+    {"category_key": "yana", "name": "Universal Yordam", "address": "Toshkent, Yunusobod", "phone": "+998909998877", "lat": 41.31, "lng": 69.25, "rating": 4.5, "review_count": 12, "metadata": {"type": "other", "services": ["Boshqa xizmat"], "prices": {"Boshqa xizmat": 100000}, "time_slots": ["09:00", "10:00", "11:00", "12:00"]}},
 ]
 
 # Buyurtmalar — user_phone, provider_name, category_key, service_name, price, status, days_ago
 ORDERS = [
-    {"user_phone": "+998901234567", "provider_name": "Usta Elektrik Pro", "category_key": "elektrik", "service_name": "Elektrik ta'mirlash", "price": 250000, "status": "completed", "days_ago": 16},
-    {"user_phone": "+998912345678", "provider_name": "Toza Klaster", "category_key": "tozalash", "service_name": "Uy tozalash", "price": 180000, "status": "in_progress", "days_ago": 15},
-    {"user_phone": "+998933456789", "provider_name": "Santexnik Master", "category_key": "santexnik", "service_name": "Santexnik xizmati", "price": 320000, "status": "confirmed", "days_ago": 15},
-    {"user_phone": "+998944567890", "provider_name": "Usta Jamshid", "category_key": "usta", "service_name": "Mebel yigish", "price": 95000, "status": "pending", "days_ago": 15},
-    {"user_phone": "+998955678901", "provider_name": "Quick Move", "category_key": "avtoYordam", "service_name": "Ko'chirish xizmati", "price": 450000, "status": "completed", "days_ago": 17},
-    {"user_phone": "+998976789012", "provider_name": "Beauty Salon Lux", "category_key": "salon", "service_name": "Soch turmagi", "price": 75000, "status": "completed", "days_ago": 18},
-    {"user_phone": "+998997890123", "provider_name": "Usta Elektrik Pro", "category_key": "elektrik", "service_name": "Konditsioner o'rnatish", "price": 380000, "status": "cancelled", "days_ago": 19},
+    # 1. Sartarosh
     {"user_phone": "+998901112233", "provider_name": "Style Barbershop", "category_key": "sartarosh", "service_name": "Erkaklar kesimi", "price": 50000, "status": "completed", "days_ago": 1},
+    {"user_phone": "+998901234567", "provider_name": "Premium Cut", "category_key": "sartarosh", "service_name": "Styling", "price": 35000, "status": "confirmed", "days_ago": 2},
+    {"user_phone": "+998912345678", "provider_name": "Classic Barber", "category_key": "sartarosh", "service_name": "Soqol olish", "price": 22000, "status": "completed", "days_ago": 3},
+    {"user_phone": "+998933456789", "provider_name": "Aziz — mobil sartarosh", "category_key": "sartarosh", "service_name": "Erkaklar kesimi", "price": 35000, "status": "pending", "days_ago": 0},
+
+    # 2. Salon
+    {"user_phone": "+998976789012", "provider_name": "Beauty Salon Lux", "category_key": "salon", "service_name": "Soch turmagi", "price": 75000, "status": "completed", "days_ago": 18},
+    {"user_phone": "+998944567890", "provider_name": "Belleza Salon", "category_key": "salon", "service_name": "Manikyur", "price": 65000, "status": "completed", "days_ago": 4},
+    {"user_phone": "+998955678901", "provider_name": "Glow Up Studio", "category_key": "salon", "service_name": "Fen", "price": 45000, "status": "completed", "days_ago": 5},
+    {"user_phone": "+998997890123", "provider_name": "Zarina — uyga xizmat", "category_key": "salon", "service_name": "Makiyaj", "price": 95000, "status": "confirmed", "days_ago": 3},
+
+    # 3. Futbol
+    {"user_phone": "+998901112233", "provider_name": "Lokomotiv Stadium", "category_key": "futbol", "service_name": "1 soat (katta maydon)", "price": 450000, "status": "completed", "days_ago": 6},
+    {"user_phone": "+998901234567", "provider_name": "Bunyodkor Stadioni", "category_key": "futbol", "service_name": "1 soat (katta maydon)", "price": 550000, "status": "confirmed", "days_ago": 1},
+    {"user_phone": "+998912345678", "provider_name": "Champion's Field", "category_key": "futbol", "service_name": "1 soat (kichik maydon)", "price": 280000, "status": "pending", "days_ago": 0},
+    {"user_phone": "+998933456789", "provider_name": "Mini Arena Tashkent", "category_key": "futbol", "service_name": "1 soat (kichik maydon)", "price": 180000, "status": "cancelled", "days_ago": 7},
+
+    # 4. Ishchi
+    {"user_phone": "+998944567890", "provider_name": "Eshmat", "category_key": "ishchi", "service_name": "Yuk kotoruvchi (1 kishi)", "price": 150000, "status": "completed", "days_ago": 8},
+    {"user_phone": "+998955678901", "provider_name": "Toshmat", "category_key": "ishchi", "service_name": "Qora ish - 4 soat", "price": 200000, "status": "confirmed", "days_ago": 2},
+    {"user_phone": "+998976789012", "provider_name": "Eshmat", "category_key": "ishchi", "service_name": "Yuk kotoruvchi (2 kishi)", "price": 280000, "status": "in_progress", "days_ago": 0},
+    {"user_phone": "+998997890123", "provider_name": "Toshmat", "category_key": "ishchi", "service_name": "Qora ish - kunlik", "price": 400000, "status": "completed", "days_ago": 9},
+
+    # 5. Usta
+    {"user_phone": "+998944567890", "provider_name": "Usta Jamshid", "category_key": "usta", "service_name": "Mebel yigish", "price": 95000, "status": "pending", "days_ago": 15},
+    {"user_phone": "+998901112233", "provider_name": "Master Fix Brigada", "category_key": "usta", "service_name": "Mebel yigish", "price": 180000, "status": "completed", "days_ago": 10},
+    {"user_phone": "+998901234567", "provider_name": "Usta Jamshid", "category_key": "usta", "service_name": "Eshik/oyna tamiri", "price": 140000, "status": "completed", "days_ago": 11},
+    {"user_phone": "+998912345678", "provider_name": "Master Fix Brigada", "category_key": "usta", "service_name": "Devorga osish/biriktirish", "price": 120000, "status": "confirmed", "days_ago": 4},
+
+    # 6. Elektrik
+    {"user_phone": "+998901234567", "provider_name": "Usta Elektrik Pro", "category_key": "elektrik", "service_name": "Elektrik ta'mirlash", "price": 250000, "status": "completed", "days_ago": 16},
+    {"user_phone": "+998997890123", "provider_name": "Usta Elektrik Pro", "category_key": "elektrik", "service_name": "Konditsioner o'rnatish", "price": 380000, "status": "cancelled", "days_ago": 19},
     {"user_phone": "+998901112233", "provider_name": "Usta Vali", "category_key": "elektrik", "service_name": "Rozetka o'rnatish", "price": 120000, "status": "in_progress", "days_ago": 0},
+    {"user_phone": "+998933456789", "provider_name": "Usta Vali", "category_key": "elektrik", "service_name": "Simlarni almashtirish", "price": 60000, "status": "completed", "days_ago": 12},
+
+    # 7. Santexnik
+    {"user_phone": "+998933456789", "provider_name": "Santexnik Master", "category_key": "santexnik", "service_name": "Santexnik xizmati", "price": 320000, "status": "confirmed", "days_ago": 15},
+    {"user_phone": "+998944567890", "provider_name": "Usta Ali", "category_key": "santexnik", "service_name": "Kran tuzatish", "price": 80000, "status": "completed", "days_ago": 13},
+    {"user_phone": "+998955678901", "provider_name": "Santexnik Master", "category_key": "santexnik", "service_name": "Toshma/probka tozalash", "price": 120000, "status": "completed", "days_ago": 14},
+    {"user_phone": "+998976789012", "provider_name": "Usta Ali", "category_key": "santexnik", "service_name": "Quvur almashtirish", "price": 150000, "status": "pending", "days_ago": 1},
+
+    # 8. Tozalash
+    {"user_phone": "+998912345678", "provider_name": "Toza Klaster", "category_key": "tozalash", "service_name": "Uy tozalash", "price": 180000, "status": "in_progress", "days_ago": 15},
+    {"user_phone": "+998997890123", "provider_name": "Gulnora Tozalash", "category_key": "tozalash", "service_name": "1 xonali kvartira", "price": 180000, "status": "completed", "days_ago": 16},
+    {"user_phone": "+998901112233", "provider_name": "Toza Klaster", "category_key": "tozalash", "service_name": "General tozalash", "price": 320000, "status": "completed", "days_ago": 17},
+    {"user_phone": "+998901234567", "provider_name": "Gulnora Tozalash", "category_key": "tozalash", "service_name": "2 xonali kvartira", "price": 280000, "status": "confirmed", "days_ago": 2},
+
+    # 9. AvtoYordam
+    {"user_phone": "+998955678901", "provider_name": "Auto-SOS Jamoasi", "category_key": "avtoYordam", "service_name": "Evakuator", "price": 250000, "status": "completed", "days_ago": 17},
+    {"user_phone": "+998976789012", "provider_name": "RoadFix Mobil", "category_key": "avtoYordam", "service_name": "Joyida ta'mirlash", "price": 140000, "status": "completed", "days_ago": 18},
+    {"user_phone": "+998997890123", "provider_name": "Grand Auto Service", "category_key": "avtoYordam", "service_name": "Diagnostika", "price": 80000, "status": "confirmed", "days_ago": 3},
+    {"user_phone": "+998901112233", "provider_name": "Express Tuning", "category_key": "avtoYordam", "service_name": "Xodovoy remont", "price": 190000, "status": "pending", "days_ago": 1},
+
+    # 10. Konditsioner
+    {"user_phone": "+998901234567", "provider_name": "Akmal Konditsioner", "category_key": "konditsioner", "service_name": "Montaj", "price": 600000, "status": "completed", "days_ago": 19},
+    {"user_phone": "+998912345678", "provider_name": "Clima Pro", "category_key": "konditsioner", "service_name": "Montaj", "price": 550000, "status": "confirmed", "days_ago": 4},
+    {"user_phone": "+998933456789", "provider_name": "Akmal Konditsioner", "category_key": "konditsioner", "service_name": "Profilaktika tozalash", "price": 180000, "status": "completed", "days_ago": 20},
+    {"user_phone": "+998944567890", "provider_name": "Clima Pro", "category_key": "konditsioner", "service_name": "Gaz toldirish", "price": 170000, "status": "pending", "days_ago": 1},
+
+    # 11. Enaga
+    {"user_phone": "+998955678901", "provider_name": "Zuhra opa", "category_key": "enaga", "service_name": "Soatbay (3 soat)", "price": 90000, "status": "completed", "days_ago": 21},
+    {"user_phone": "+998976789012", "provider_name": "Malika opa", "category_key": "enaga", "service_name": "Soatbay (3 soat)", "price": 75000, "status": "completed", "days_ago": 22},
+    {"user_phone": "+998997890123", "provider_name": "Dilnoza opa", "category_key": "enaga", "service_name": "Tungi qarash", "price": 130000, "status": "confirmed", "days_ago": 5},
+    {"user_phone": "+998901112233", "provider_name": "Zuhra opa", "category_key": "enaga", "service_name": "Butun kun", "price": 300000, "status": "pending", "days_ago": 0},
+
+    # 12. Repetitor
+    {"user_phone": "+998901234567", "provider_name": "Jasur Tutor", "category_key": "repetitor", "service_name": "Matematika (1 soat)", "price": 120000, "status": "completed", "days_ago": 23},
+    {"user_phone": "+998912345678", "provider_name": "Dilnoza Repetitor", "category_key": "repetitor", "service_name": "Ingliz tili (1 soat)", "price": 100000, "status": "completed", "days_ago": 24},
+    {"user_phone": "+998933456789", "provider_name": "Najot Ta'lim", "category_key": "repetitor", "service_name": "Matematika (guruh)", "price": 200000, "status": "confirmed", "days_ago": 6},
+    {"user_phone": "+998944567890", "provider_name": "Cambridge Learning Center", "category_key": "repetitor", "service_name": "Individual dars", "price": 220000, "status": "pending", "days_ago": 2},
+
+    # 13. Dezinfeksiya
+    {"user_phone": "+998955678901", "provider_name": "Uy Tozalash Dez", "category_key": "dezinfeksiya", "service_name": "Kvartira dezinfeksiyasi", "price": 150000, "status": "completed", "days_ago": 25},
+    {"user_phone": "+998976789012", "provider_name": "Ofis Pro", "category_key": "dezinfeksiya", "service_name": "Ofis dezinfeksiyasi", "price": 250000, "status": "completed", "days_ago": 26},
+    {"user_phone": "+998997890123", "provider_name": "Saniter Xizmat", "category_key": "dezinfeksiya", "service_name": "Mashina dezinfeksiyasi", "price": 100000, "status": "confirmed", "days_ago": 7},
+    {"user_phone": "+998901112233", "provider_name": "Uy Tozalash Dez", "category_key": "dezinfeksiya", "service_name": "Ofis dezinfeksiyasi", "price": 250000, "status": "pending", "days_ago": 3},
+
+    # 14. Texnika ustasi
+    {"user_phone": "+998901234567", "provider_name": "Texnika Pro", "category_key": "texnikaUstasi", "service_name": "Kir yuvish mashinasi", "price": 150000, "status": "completed", "days_ago": 27},
+    {"user_phone": "+998912345678", "provider_name": "Master Fix", "category_key": "texnikaUstasi", "service_name": "Muzlatgich tamlash", "price": 180000, "status": "completed", "days_ago": 28},
+    {"user_phone": "+998933456789", "provider_name": "Texnika Pro", "category_key": "texnikaUstasi", "service_name": "Televizor tamlash", "price": 120000, "status": "confirmed", "days_ago": 8},
+    {"user_phone": "+998944567890", "provider_name": "Master Fix", "category_key": "texnikaUstasi", "service_name": "Mikroto`lqinli pech", "price": 80000, "status": "pending", "days_ago": 4},
+
+    # 15. Kuryerlik
+    {"user_phone": "+998955678901", "provider_name": "Tezkor Kuryer", "category_key": "kuryerlik", "service_name": "Hujjat yetkazish", "price": 30000, "status": "completed", "days_ago": 29},
+    {"user_phone": "+998976789012", "provider_name": "Express Post", "category_key": "kuryerlik", "service_name": "Sovga yetkazish", "price": 50000, "status": "completed", "days_ago": 30},
+    {"user_phone": "+998997890123", "provider_name": "Tezkor Kuryer", "category_key": "kuryerlik", "service_name": "Kichik yuk (5 kg)", "price": 25000, "status": "confirmed", "days_ago": 9},
+    {"user_phone": "+998901112233", "provider_name": "Express Post", "category_key": "kuryerlik", "service_name": "Katta yuk (20 kg)", "price": 40000, "status": "pending", "days_ago": 5},
+
+    # 16. Massaj & Hijoma
+    {"user_phone": "+998901234567", "provider_name": "Shifo Massaj", "category_key": "massajHijoma", "service_name": "Klassik massaj (60 min)", "price": 150000, "status": "completed", "days_ago": 11},
+    {"user_phone": "+998912345678", "provider_name": "Hijoma Markazi", "category_key": "massajHijoma", "service_name": "Hijoma", "price": 120000, "status": "completed", "days_ago": 12},
+    {"user_phone": "+998933456789", "provider_name": "Shifo Massaj", "category_key": "massajHijoma", "service_name": "Sport massaj (60 min)", "price": 180000, "status": "confirmed", "days_ago": 10},
+    {"user_phone": "+998944567890", "provider_name": "Hijoma Markazi", "category_key": "massajHijoma", "service_name": "Hijoma", "price": 150000, "status": "pending", "days_ago": 6},
+
+    # 17. Hamshira
+    {"user_phone": "+998955678901", "provider_name": "Tibbiyot Uyda", "category_key": "hamshira", "service_name": "Ukol (in'ektsiya)", "price": 35000, "status": "completed", "days_ago": 13},
+    {"user_phone": "+998976789012", "provider_name": "Sog'liq Xizmat", "category_key": "hamshira", "service_name": "Tomchilatma (kapelsnitsa)", "price": 40000, "status": "completed", "days_ago": 14},
+    {"user_phone": "+998997890123", "provider_name": "Tibbiyot Uyda", "category_key": "hamshira", "service_name": "Tomchilatma (kapelsnitsa)", "price": 150000, "status": "confirmed", "days_ago": 11},
+    {"user_phone": "+998901112233", "provider_name": "Sog'liq Xizmat", "category_key": "hamshira", "service_name": "Tun bo'yi hamshira (12 soat)", "price": 160000, "status": "pending", "days_ago": 7},
+
+    # 18. Stomatologiya
+    {"user_phone": "+998901234567", "provider_name": "Dent Art Klinika", "category_key": "stomatologiya", "service_name": "Ko'rik va maslahat", "price": 80000, "status": "completed", "days_ago": 15},
+    {"user_phone": "+998912345678", "provider_name": "Smile Dental", "category_key": "stomatologiya", "service_name": "Ko'rik va maslahat", "price": 70000, "status": "completed", "days_ago": 16},
+    {"user_phone": "+998933456789", "provider_name": "Dent Art Klinika", "category_key": "stomatologiya", "service_name": "Plomba", "price": 220000, "status": "confirmed", "days_ago": 12},
+    {"user_phone": "+998944567890", "provider_name": "Smile Dental", "category_key": "stomatologiya", "service_name": "Plomba", "price": 190000, "status": "pending", "days_ago": 8},
+
+    # 19. Tadbirlar
+    {"user_phone": "+998955678901", "provider_name": "Qishloq Sahna Guruhi", "category_key": "tadbirlar", "service_name": "Sahna va podiyom o'rnatish (qishloq / maydon)", "price": 2800000, "status": "completed", "days_ago": 17},
+    {"user_phone": "+998976789012", "provider_name": "Marosim Pro Tashkilot", "category_key": "tadbirlar", "service_name": "Tug'ilgan kun dasturi", "price": 3200000, "status": "completed", "days_ago": 18},
+    {"user_phone": "+998997890123", "provider_name": "Qishloq Sahna Guruhi", "category_key": "tadbirlar", "service_name": "Ovoz va yoritish (kolonka, lyuka)", "price": 1300000, "status": "confirmed", "days_ago": 13},
+    {"user_phone": "+998944567890", "provider_name": "Marosim Pro Tashkilot", "category_key": "tadbirlar", "service_name": "Dekoratsiya va bezak", "price": 900000, "status": "pending", "days_ago": 9},
+
+    # 20. Yana xizmatlar
+    {"user_phone": "+998901112233", "provider_name": "Universal Yordam", "category_key": "yana", "service_name": "Boshqa xizmat", "price": 100000, "status": "completed", "days_ago": 10},
+    {"user_phone": "+998901234567", "provider_name": "Universal Yordam", "category_key": "yana", "service_name": "Boshqa xizmat", "price": 100000, "status": "confirmed", "days_ago": 2},
+    {"user_phone": "+998912345678", "provider_name": "Universal Yordam", "category_key": "yana", "service_name": "Boshqa xizmat", "price": 100000, "status": "pending", "days_ago": 0},
 ]
 
 REVIEWS = [
     {"user_phone": "+998901234567", "provider_name": "Usta Elektrik Pro", "rating": 5, "comment": "Juda yaxshi ish qildi, tavsiya qilaman!"},
     {"user_phone": "+998912345678", "provider_name": "Toza Klaster", "rating": 4, "comment": "Toza va tez ishlashdi, lekin kechikib kelishdi."},
     {"user_phone": "+998933456789", "provider_name": "Santexnik Master", "rating": 5, "comment": "Professional usta, muammoni tez hal qildi."},
-    {"user_phone": "+998955678901", "provider_name": "Quick Move", "rating": 3, "comment": "O'rtacha, ba'zi narsalar shikastlangan."},
     {"user_phone": "+998976789012", "provider_name": "Beauty Salon Lux", "rating": 5, "comment": "Ajoyib natija, albatta qayta boraman!"},
 ]
 
@@ -117,4 +235,23 @@ PAYMENT_CARDS = [
 NOTIFICATIONS = [
     {"user_phone": "+998901112233", "type": "push", "title": "Buyurtma qabul qilindi", "message": "Elektrik xizmati buyurtmangiz tasdiqlandi"},
     {"user_phone": "+998901112233", "type": "push", "title": "Cashback qo'shildi", "message": "500 so'm cashback hisobingizga qo'shildi"},
+]
+
+PRODUCT_CATALOG = [
+    {"name": "Kartoshka", "unit": "kg", "average_price": 5000},
+    {"name": "Piyoz", "unit": "kg", "average_price": 3500},
+    {"name": "Sabzi", "unit": "kg", "average_price": 4000},
+    {"name": "Pomidor", "unit": "kg", "average_price": 18000},
+    {"name": "Bodring", "unit": "kg", "average_price": 15000},
+    {"name": "Go'sht (Mol)", "unit": "kg", "average_price": 85000},
+    {"name": "Go'sht (Qo'y)", "unit": "kg", "average_price": 95000},
+    {"name": "Tovuq", "unit": "kg", "average_price": 32000},
+    {"name": "Tuxum", "unit": "dona", "average_price": 1300},
+    {"name": "Yog' (O'simlik)", "unit": "litr", "average_price": 18000},
+    {"name": "Guruch", "unit": "kg", "average_price": 15000},
+    {"name": "Shakar", "unit": "kg", "average_price": 12000},
+    {"name": "Non", "unit": "dona", "average_price": 3500},
+    {"name": "Sut", "unit": "litr", "average_price": 9000},
+    {"name": "Olma", "unit": "kg", "average_price": 14000},
+    {"name": "Banan", "unit": "kg", "average_price": 22000},
 ]

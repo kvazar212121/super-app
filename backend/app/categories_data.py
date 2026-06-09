@@ -247,6 +247,30 @@ CATEGORIES_DATA = [
         ],
     },
     {
+        "key": "bozorchi",
+        "title_uz": "Bozorchi",
+        "subtitle_uz": "Ro'zg'or xaridlari va yetkazib berish",
+        "icon": "shoppingCart",
+        "accent_color": "#FF9800",
+        "variants": [
+            {"label_uz": "Oziq-ovqat xaridi", "base_price": 50000},
+            {"label_uz": "Katta bozorlik", "base_price": 100000},
+            {"label_uz": "Dori-darmon xaridi", "base_price": 40000},
+        ],
+    },
+    {
+        "key": "oshxona",
+        "title_uz": "Restoran va Kafe",
+        "subtitle_uz": "Stol bron qilish va ovqat buyurtma",
+        "icon": "utensils",
+        "accent_color": "#F44336",
+        "variants": [
+            {"label_uz": "Stol bron qilish (2 kishilik)", "base_price": 50000},
+            {"label_uz": "Stol bron qilish (4+ kishilik)", "base_price": 100000},
+            {"label_uz": "VIP xona", "base_price": 200000},
+        ],
+    },
+    {
         "key": "yana",
         "title_uz": "Yana xizmatlar",
         "subtitle_uz": "Boshqa xizmatlar va yordam",

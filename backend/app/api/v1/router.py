@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from app.api.v1 import health, auth, users, categories, providers, orders, admin, admin_panel, upload, notifications, provider_portal, barber_portal, cleaning_portal, master_portal, salon_portal, electrician_portal, plumber_portal, courier_portal, auto_help_portal, ac_portal, nanny_portal, tutor_portal, disinfection_portal, massage_portal, nurse_portal, dental_portal, event_portal
+from app.api.v1 import health, auth, users, categories, providers, orders, admin, admin_panel, upload, notifications, provider_portal, barber_portal, cleaning_portal, master_portal, salon_portal, electrician_portal, plumber_portal, courier_portal, auto_help_portal, ac_portal, nanny_portal, tutor_portal, disinfection_portal, massage_portal, nurse_portal, dental_portal, event_portal, todos, utilities, shopping
 
 api_router = APIRouter()
 api_router.include_router(health.router, tags=["health"])
@@ -30,3 +30,6 @@ api_router.include_router(admin.router)
 api_router.include_router(admin_panel.router)
 api_router.include_router(upload.router)
 api_router.include_router(notifications.router)
+api_router.include_router(todos.router)
+api_router.include_router(utilities.router)
+api_router.include_router(shopping.router)

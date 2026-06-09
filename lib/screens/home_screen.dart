@@ -5,6 +5,10 @@ import '../widgets/home_header_widget.dart';
 import '../widgets/provider_portal_entry.dart';
 import '../widgets/search_bar_widget.dart';
 import '../widgets/services_grid_widget.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
+import '../widgets/daily_utilities_widget.dart';
+import '../screens/todo_screen.dart';
+import '../screens/shopping_list_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -22,12 +26,73 @@ class HomeScreen extends StatelessWidget {
             const SizedBox(height: 22),
             const SearchBarWidget(),
             const SizedBox(height: 22),
+            const DailyUtilitiesWidget(),
+            const SizedBox(height: 22),
+            _buildDailiesRow(context),
+            const SizedBox(height: 22),
             const ActiveOrderBanner(),
             const ServicesGridWidget(),
             const SizedBox(height: 4),
             const ProviderPortalEntry(),
             const SizedBox(height: 28),
             const HomePromoSection(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDailiesRow(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          child: _DailyBtn(
+            icon: LucideIcons.checkSquare,
+            label: 'Rejalar',
+            color: Colors.blueAccent,
+            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const TodoScreen())),
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: _DailyBtn(
+            icon: LucideIcons.shoppingBag,
+            label: 'Savdo',
+            color: Colors.orangeAccent,
+            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ShoppingListScreen())),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _DailyBtn extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final Color color;
+  final VoidCallback onTap;
+
+  const _DailyBtn({required this.icon, required this.label, required this.color, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        decoration: BoxDecoration(
+          color: Colors.white.withValues(alpha: 0.1),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, color: color, size: 28),
+            const SizedBox(height: 8),
+            Text(label, style: const TextStyle(fontWeight: FontWeight.w600, color: Colors.white)),
           ],
         ),
       ),
