@@ -77,22 +77,27 @@ class _DailyBtn extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Import needed for GlassTokens
+    // It's already imported via daily_utilities_widget or we can just use Theme
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textColor = isDark ? Colors.white : Colors.black87;
+    
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(16),
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 16),
         decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.1),
+          color: color.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
+          border: Border.all(color: color.withValues(alpha: 0.2)),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(icon, color: color, size: 28),
             const SizedBox(height: 8),
-            Text(label, style: const TextStyle(fontWeight: FontWeight.w600, color: Colors.white)),
+            Text(label, style: TextStyle(fontWeight: FontWeight.w600, color: textColor)),
           ],
         ),
       ),

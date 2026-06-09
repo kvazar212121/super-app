@@ -38,15 +38,22 @@ class AllCategoriesScreen extends StatelessWidget {
     return GlassScaffold(
       showBackButton: true,
       title: 'Barcha xizmatlar',
-      body: ListView.separated(
+      body: GridView.builder(
         padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
         itemCount: _all.length,
-        separatorBuilder: (_, __) => const SizedBox(height: 10),
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          crossAxisSpacing: 12,
+          mainAxisSpacing: 10,
+          mainAxisExtent: 68,
+        ),
         itemBuilder: (ctx, i) {
           final k = _all[i];
           return GlassSurface(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-            borderRadius: GlassTokens.radiusLg,
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            borderRadius: GlassTokens.radiusMd,
+            tint: k.accent.withValues(alpha: 0.08),
+            showShadow: false,
             onTap: () => Navigator.push(
               context,
               MaterialPageRoute<void>(
@@ -59,37 +66,24 @@ class AllCategoriesScreen extends StatelessWidget {
                   width: 44,
                   height: 44,
                   decoration: BoxDecoration(
-                    color: k.accent.withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(12),
+                    color: k.accent.withValues(alpha: 0.18),
+                    borderRadius: BorderRadius.circular(14),
                     border: Border.all(color: k.accent.withValues(alpha: 0.22)),
                   ),
                   child: Icon(k.icon, color: k.accent, size: 22),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        k.title,
-                        style: TextStyle(
-                          fontWeight: FontWeight.w700,
-                          color: GlassTokens.primaryText(context),
-                        ),
-                      ),
-                      Text(
-                        k.hubSubtitle,
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: GlassTokens.secondaryText(context),
-                        ),
-                      ),
-                    ],
+                  child: Text(
+                    k.title,
+                    style: TextStyle(
+                      fontWeight: FontWeight.w700,
+                      fontSize: 14,
+                      color: GlassTokens.primaryText(context),
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                ),
-                Icon(
-                  Icons.chevron_right_rounded,
-                  color: GlassTokens.secondaryText(context),
                 ),
               ],
             ),
