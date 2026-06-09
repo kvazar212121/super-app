@@ -29,6 +29,8 @@ class AllCategoriesScreen extends StatelessWidget {
     ServiceHubKind.hamshira,
     ServiceHubKind.stomatologiya,
     ServiceHubKind.tadbirlar,
+    ServiceHubKind.bozorchi,
+    ServiceHubKind.oshxona,
   ];
 
   @override
