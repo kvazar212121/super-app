@@ -44,23 +44,17 @@ abstract final class GlassTokens {
 
   static Color glassFill(BuildContext context, {double opacity = glassOpacity}) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    // Blur'siz ham zamonaviy ko'rinishi uchun ancha to'q (solid) fill.
-    return isDark
-        ? Colors.white.withValues(alpha: 0.07 + opacity * 0.10)
-        : Colors.white.withValues(alpha: 0.55 + opacity * 0.42);
+    // Opaque and clear solid fill
+    return isDark ? const Color(0xFF1E293B) : Colors.white;
   }
 
   static Color glassBorder(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    return isDark
-        ? Colors.white.withValues(alpha: 0.18)
-        : Colors.white.withValues(alpha: 0.85);
+    return isDark ? Colors.white.withValues(alpha: 0.15) : Colors.black.withValues(alpha: 0.12);
   }
 
   static Color glassHighlight(BuildContext context) {
-    return Colors.white.withValues(
-      alpha: Theme.of(context).brightness == Brightness.dark ? 0.06 : 0.4,
-    );
+    return Colors.transparent;
   }
 
   static Color primaryText(BuildContext context) {
@@ -78,10 +72,10 @@ abstract final class GlassTokens {
   static List<BoxShadow> glassShadow(BuildContext context) => [
         BoxShadow(
           color: Colors.black.withValues(
-            alpha: Theme.of(context).brightness == Brightness.dark ? 0.35 : 0.08,
+            alpha: Theme.of(context).brightness == Brightness.dark ? 0.4 : 0.06,
           ),
-          blurRadius: 24,
-          offset: const Offset(0, 8),
+          blurRadius: 10,
+          offset: const Offset(0, 4),
         ),
       ];
 }

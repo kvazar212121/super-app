@@ -8,6 +8,7 @@ import 'home_screen.dart';
 import 'search_screen.dart';
 import 'orders_screen.dart';
 import 'profile_screen.dart';
+import 'all_categories_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -23,6 +24,7 @@ class _MainScreenState extends State<MainScreen> {
   static const _navItems = [
     GlassNavItem(icon: LucideIcons.home, label: 'Asosiy'),
     GlassNavItem(icon: LucideIcons.search, label: 'Qidiruv'),
+    GlassNavItem(icon: LucideIcons.layoutGrid, label: 'Xizmatlar'),
     GlassNavItem(icon: LucideIcons.briefcase, label: 'Buyurtmalar'),
     GlassNavItem(icon: LucideIcons.user, label: 'Profil'),
   ];
@@ -61,6 +63,7 @@ class _MainScreenState extends State<MainScreen> {
   final List<Widget> _screens = const [
     HomeScreen(),
     SearchScreen(),
+    AllCategoriesScreen(),
     OrdersScreen(),
     ProfileScreen(),
   ];

@@ -33,24 +33,16 @@ class HomePromoSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Aksiyalar',
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.w800,
-            letterSpacing: -0.4,
-            color: GlassTokens.primaryText(context),
-          ),
-        ),
-        const SizedBox(height: 12),
+
         CarouselSlider(
           options: CarouselOptions(
-            height: 118,
-            viewportFraction: 0.88,
-            enlargeCenterPage: true,
+            height: 130,
+            viewportFraction: 0.85,
+            padEnds: false,
+            enlargeCenterPage: false,
             autoPlay: true,
-            autoPlayInterval: const Duration(seconds: 5),
-            enlargeStrategy: CenterPageEnlargeStrategy.scale,
+            autoPlayInterval: const Duration(seconds: 4),
+            autoPlayAnimationDuration: const Duration(milliseconds: 800),
           ),
           items: _promos.map((p) {
             return Padding(

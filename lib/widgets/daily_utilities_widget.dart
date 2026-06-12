@@ -15,7 +15,6 @@ class _DailyUtilitiesWidgetState extends State<DailyUtilitiesWidget> {
   
   Map<String, dynamic>? weather;
   Map<String, dynamic>? currency;
-  Map<String, dynamic>? prayers;
 
   @override
   void initState() {
@@ -33,27 +32,16 @@ class _DailyUtilitiesWidgetState extends State<DailyUtilitiesWidget> {
       final c = await _api.getCurrency();
       setState(() => currency = c);
     } catch (_) {}
-
-    try {
-      final p = await _api.getPrayerTimes('Tashkent');
-      setState(() => prayers = p);
-    } catch (_) {}
   }
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      physics: const BouncingScrollPhysics(),
-      child: Row(
-        children: [
-          _buildWeatherCard(),
-          const SizedBox(width: 12),
-          _buildCurrencyCard(),
-          const SizedBox(width: 12),
-          _buildPrayerCard(),
-        ],
-      ),
+    return Row(
+      children: [
+        Expanded(child: _buildWeatherCard()),
+        const SizedBox(width: 8),
+        Expanded(child: _buildCurrencyCard()),
+      ],
     );
   }
 
@@ -80,8 +68,33 @@ class _DailyUtilitiesWidgetState extends State<DailyUtilitiesWidget> {
       subtitle: txt,
     );
   }
+}
 
-  Widget _buildPrayerCard() {
+class PrayerWidget extends StatefulWidget {
+  const PrayerWidget({super.key});
+  @override
+  State<PrayerWidget> createState() => _PrayerWidgetState();
+}
+
+class _PrayerWidgetState extends State<PrayerWidget> {
+  final ApiService _api = ApiService();
+  Map<String, dynamic>? prayers;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadData();
+  }
+
+  Future<void> _loadData() async {
+    try {
+      final p = await _api.getPrayerTimes('Tashkent');
+      setState(() => prayers = p);
+    } catch (_) {}
+  }
+
+  @override
+  Widget build(BuildContext context) {
     String txt = 'Yuklanmoqda...';
     if (prayers != null && prayers!.containsKey('Bomdod')) {
       txt = 'Bomdod: ${prayers!['Bomdod']} • Peshin: ${prayers!['Peshin']}';
@@ -89,7 +102,7 @@ class _DailyUtilitiesWidgetState extends State<DailyUtilitiesWidget> {
     return _BaseCard(
       icon: LucideIcons.moon,
       color: Colors.deepPurpleAccent,
-      title: 'Namoz',
+      title: 'Namoz vaqtlari',
       subtitle: txt,
     );
   }
@@ -110,25 +123,25 @@ class _BaseCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
-      width: 200,
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.1),
+        color: isDark ? Color.lerp(const Color(0xFF1E293B), color, 0.15) : Color.lerp(Colors.white, color, 0.1),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: color.withValues(alpha: 0.2)),
+        border: Border.all(color: isDark ? color.withValues(alpha: 0.4) : color.withValues(alpha: 0.3)),
       ),
       child: Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(10),
+            padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
               color: color.withValues(alpha: 0.2),
               shape: BoxShape.circle,
             ),
-            child: Icon(icon, color: color, size: 20),
+            child: Icon(icon, color: color, size: 18),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: 8),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -139,17 +152,19 @@ class _BaseCard extends StatelessWidget {
                   style: TextStyle(
                     color: GlassTokens.primaryText(context),
                     fontWeight: FontWeight.bold,
-                    fontSize: 14,
+                    fontSize: 12,
                   ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 2),
                 Text(
                   subtitle,
                   style: TextStyle(
                     color: GlassTokens.secondaryText(context),
-                    fontSize: 12,
+                    fontSize: 10,
                   ),
-                  maxLines: 2,
+                  maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
               ],

@@ -43,14 +43,7 @@ class GlassSurface extends StatelessWidget {
     final panel = DecoratedBox(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(borderRadius),
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            fill,
-            Color.lerp(fill, Colors.transparent, 0.15) ?? fill,
-          ],
-        ),
+        color: fill,
         border: showBorder ? Border.all(color: border, width: 1.2) : null,
         boxShadow: showShadow ? GlassTokens.glassShadow(context) : null,
       ),
@@ -66,11 +59,7 @@ class GlassSurface extends StatelessWidget {
                 borderRadius: BorderRadius.vertical(
                   top: Radius.circular(borderRadius),
                 ),
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [highlight, Colors.transparent],
-                ),
+                color: highlight,
               ),
             ),
           ),

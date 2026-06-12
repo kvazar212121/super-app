@@ -6,6 +6,7 @@ import '../providers/auth_provider.dart';
 import '../screens/notifications_screen.dart';
 import '../theme/glass_tokens.dart';
 import 'glass/glass_surface.dart';
+import 'daily_utilities_widget.dart';
 
 class HomeHeaderWidget extends StatelessWidget {
   const HomeHeaderWidget({super.key});
@@ -20,27 +21,8 @@ class HomeHeaderWidget extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Assalomu alaykum,',
-              style: TextStyle(
-                fontSize: 14,
-                color: GlassTokens.secondaryText(context),
-              ),
-            ),
-            Text(
-              greetingName,
-              style: TextStyle(
-                fontSize: 26,
-                fontWeight: FontWeight.w800,
-                letterSpacing: -0.6,
-                color: GlassTokens.primaryText(context),
-              ),
-            ),
-          ],
-        ),
+        const Expanded(child: DailyUtilitiesWidget()),
+        const SizedBox(width: 12),
         Stack(
           clipBehavior: Clip.none,
           children: [
