@@ -15,93 +15,441 @@ class TodoScreen extends StatefulWidget {
 class _TodoScreenState extends State<TodoScreen> {
   final ApiService _api = ApiService();
   bool _isLoading = true;
-  List<TodoItem> _todos = [];
-  final TextEditingController _taskController = TextEditingController();
+  List<PlanItem> _plans = [];
+  DateTime _selectedDate = DateTime.now();
+  
+  late final ScrollController _calendarScrollController;
+  late final List<DateTime> _calendarDays;
 
   @override
   void initState() {
     super.initState();
-    _loadTodos();
+    _calendarScrollController = ScrollController();
+    
+    // Generate 45 days: 7 days in the past, today, and 37 days in the future
+    final today = DateTime.now();
+    _calendarDays = List.generate(45, (index) {
+      return DateTime(today.year, today.month, today.day).subtract(const Duration(days: 7)).add(Duration(days: index));
+    });
+
+    _loadPlans();
+
+    // Scroll to today's date in calendar strip after frame layout
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_calendarScrollController.hasClients) {
+        // Spacing: card width is 64 + horizontal margins 12 (6 on each side) = 76.
+        // Today is at index 7. Let's center it.
+        const cardWidth = 76.0;
+        final screenWidth = MediaQuery.of(context).size.width;
+        final offset = (7 * cardWidth) - (screenWidth / 2) + (cardWidth / 2);
+        _calendarScrollController.animateTo(
+          offset > 0 ? offset : 0,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+        );
+      }
+    });
   }
 
-  Future<void> _loadTodos() async {
+  @override
+  void dispose() {
+    _calendarScrollController.dispose();
+    super.dispose();
+  }
+
+  String formatDateForApi(DateTime date) {
+    return "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}";
+  }
+
+  String _getMonthName(int month) {
+    const months = ['Yanvar', 'Fevral', 'Mart', 'Aprel', 'May', 'Iyun', 'Iyul', 'Avgust', 'Sentabr', 'Oktabr', 'Noyabr', 'Dekabr'];
+    return months[month - 1];
+  }
+
+  String _getMonthNameShort(int month) {
+    const months = ['Yan', 'Fev', 'Mar', 'Apr', 'May', 'Iyun', 'Iyul', 'Avg', 'Sen', 'Okt', 'Noy', 'Dek'];
+    return months[month - 1];
+  }
+
+  String _getWeekdayName(int weekday) {
+    const days = ['Dushanba', 'Seshanba', 'Chorshanba', 'Payshanba', 'Juma', 'Shanba', 'Yakshanba'];
+    return days[weekday - 1];
+  }
+
+  String _getWeekdayNameShort(int weekday) {
+    const days = ['Du', 'Se', 'Ch', 'Pa', 'Ju', 'Sh', 'Ya'];
+    return days[weekday - 1];
+  }
+
+  bool _isSameDay(DateTime a, DateTime b) {
+    return a.year == b.year && a.month == b.month && a.day == b.day;
+  }
+
+  Future<void> _loadPlans() async {
     setState(() => _isLoading = true);
     try {
-      final data = await _api.getTodos();
+      final data = await _api.getPlans(date: formatDateForApi(_selectedDate));
       setState(() {
-        _todos = data.map((e) => TodoItem.fromJson(e)).toList();
+        _plans = data.map((e) => PlanItem.fromJson(e)).toList();
       });
     } catch (e) {
-      debugPrint("Error loading todos: $e");
+      debugPrint("Error loading plans: $e");
     } finally {
       setState(() => _isLoading = false);
     }
   }
 
-  Future<void> _addTodo() async {
-    final title = _taskController.text.trim();
-    if (title.isEmpty) return;
-    _taskController.clear();
-
-    try {
-      final res = await _api.createTodo(title);
-      setState(() {
-        _todos.insert(0, TodoItem.fromJson(res));
-      });
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Xatolik yuz berdi')));
-    }
-  }
-
-  Future<void> _toggleTodo(TodoItem item, bool val) async {
-    final index = _todos.indexWhere((e) => e.id == item.id);
+  Future<void> _togglePlan(PlanItem item, bool val) async {
+    final index = _plans.indexWhere((e) => e.id == item.id);
     if (index == -1) return;
 
+    final updatedItem = PlanItem(
+      id: item.id,
+      title: item.title,
+      description: item.description,
+      dueDate: item.dueDate,
+      isCompleted: val,
+    );
+
     setState(() {
-      _todos[index] = TodoItem(id: item.id, title: item.title, description: item.description, isCompleted: val);
+      _plans[index] = updatedItem;
     });
 
     try {
-      await _api.updateTodo(item.id, val);
+      await _api.updatePlan(item.id, isCompleted: val);
     } catch (e) {
       // Revert if error
       setState(() {
-        _todos[index] = item;
+        _plans[index] = item;
       });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Xatolik yuz berdi. Iltimos qayta urining.')),
+      );
     }
   }
 
-  Future<void> _deleteTodo(String id) async {
-    final prev = List<TodoItem>.from(_todos);
+  Future<void> _deletePlan(int id) async {
+    final prev = List<PlanItem>.from(_plans);
     setState(() {
-      _todos.removeWhere((e) => e.id == id);
+      _plans.removeWhere((e) => e.id == id);
     });
     try {
-      await _api.deleteTodo(id);
+      await _api.deletePlan(id);
     } catch (e) {
-      setState(() => _todos = prev);
+      setState(() => _plans = prev);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("O'chirishda xatolik yuz berdi")),
+      );
     }
+  }
+
+  Future<void> _showAddPlanDialog() async {
+    final titleController = TextEditingController();
+    final descController = TextEditingController();
+    DateTime chosenDate = _selectedDate;
+    TimeOfDay chosenTime = TimeOfDay.now();
+
+    await showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return AlertDialog(
+              backgroundColor: Colors.grey[900]?.withValues(alpha: 0.95),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(GlassTokens.radiusMd),
+                side: BorderSide(color: Colors.white.withValues(alpha: 0.15)),
+              ),
+              title: const Text(
+                "Yangi reja yaratish",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
+                ),
+              ),
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    TextField(
+                      controller: titleController,
+                      style: const TextStyle(color: Colors.white),
+                      decoration: InputDecoration(
+                        labelText: "Reja nomi",
+                        labelStyle: TextStyle(color: Colors.white.withValues(alpha: 0.6)),
+                        enabledBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.3)),
+                        ),
+                        focusedBorder: const UnderlineInputBorder(
+                          borderSide: BorderSide(color: Colors.blueAccent),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    TextField(
+                      controller: descController,
+                      style: const TextStyle(color: Colors.white),
+                      decoration: InputDecoration(
+                        labelText: "Tavsif (ixtiyoriy)",
+                        labelStyle: TextStyle(color: Colors.white.withValues(alpha: 0.6)),
+                        enabledBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.3)),
+                        ),
+                        focusedBorder: const UnderlineInputBorder(
+                          borderSide: BorderSide(color: Colors.blueAccent),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    // Date picker row
+                    InkWell(
+                      onTap: () async {
+                        final picked = await showDatePicker(
+                          context: context,
+                          initialDate: chosenDate,
+                          firstDate: DateTime.now().subtract(const Duration(days: 365)),
+                          lastDate: DateTime.now().add(const Duration(days: 365 * 2)),
+                        );
+                        if (picked != null) {
+                          setDialogState(() => chosenDate = picked);
+                        }
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8.0),
+                        child: Row(
+                          children: [
+                            const Icon(LucideIcons.calendar, color: Colors.blueAccent, size: 20),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "Sana",
+                                    style: TextStyle(color: Colors.white.withValues(alpha: 0.5), fontSize: 12),
+                                  ),
+                                  Text(
+                                    "${chosenDate.day}-${_getMonthName(chosenDate.month)} ${chosenDate.year}-yil",
+                                    style: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w500),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const Icon(LucideIcons.chevronRight, color: Colors.white54, size: 16),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const Divider(color: Colors.white24, height: 16),
+                    // Time picker row
+                    InkWell(
+                      onTap: () async {
+                        final picked = await showTimePicker(
+                          context: context,
+                          initialTime: chosenTime,
+                        );
+                        if (picked != null) {
+                          setDialogState(() => chosenTime = picked);
+                        }
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8.0),
+                        child: Row(
+                          children: [
+                            const Icon(LucideIcons.clock, color: Colors.blueAccent, size: 20),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "Vaqt",
+                                    style: TextStyle(color: Colors.white.withValues(alpha: 0.5), fontSize: 12),
+                                  ),
+                                  Text(
+                                    "${chosenTime.hour.toString().padLeft(2, '0')}:${chosenTime.minute.toString().padLeft(2, '0')}",
+                                    style: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w500),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const Icon(LucideIcons.chevronRight, color: Colors.white54, size: 16),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text("Bekor qilish", style: TextStyle(color: Colors.grey)),
+                ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blueAccent,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  onPressed: () async {
+                    final title = titleController.text.trim();
+                    if (title.isEmpty) return;
+
+                    final due = DateTime(
+                      chosenDate.year,
+                      chosenDate.month,
+                      chosenDate.day,
+                      chosenTime.hour,
+                      chosenTime.minute,
+                    );
+
+                    Navigator.pop(context);
+                    
+                    try {
+                      final res = await _api.createPlan(
+                        title, 
+                        due, 
+                        descController.text.trim().isEmpty ? null : descController.text.trim()
+                      );
+                      final newPlan = PlanItem.fromJson(res);
+                      
+                      final selectedDateStr = formatDateForApi(_selectedDate);
+                      final newPlanDateStr = formatDateForApi(newPlan.dueDate);
+                      if (selectedDateStr == newPlanDateStr) {
+                        setState(() {
+                          _plans.add(newPlan);
+                          _plans.sort((a, b) => a.dueDate.compareTo(b.dueDate));
+                        });
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text("Reja ${newPlan.dueDate.day}-${_getMonthName(newPlan.dueDate.month)} kuniga qo'shildi!"),
+                            action: SnackBarAction(
+                              label: "O'tish",
+                              onPressed: () {
+                                setState(() {
+                                  _selectedDate = newPlan.dueDate;
+                                });
+                                _loadPlans();
+                              },
+                            ),
+                          ),
+                        );
+                      }
+                    } catch (e) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text("Reja yaratishda xatolik yuz berdi")),
+                      );
+                    }
+                  },
+                  child: const Text("Saqlash", style: TextStyle(color: Colors.white)),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
+    final today = DateTime.now();
+    final isSelectedToday = _isSameDay(_selectedDate, today);
+    
     return GlassScaffold(
       showBackButton: true,
       title: 'Rejalarim',
       body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildInputArea(),
+          // Gorizontal Kalendar Lentasi
+          _buildCalendarStrip(),
+          
+          // Tanlangan kun sarlavhasi
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      isSelectedToday 
+                          ? "Bugun" 
+                          : "${_selectedDate.day}-${_getMonthName(_selectedDate.month)}",
+                      style: TextStyle(
+                        color: GlassTokens.primaryText(context),
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      _getWeekdayName(_selectedDate.weekday),
+                      style: TextStyle(
+                        color: GlassTokens.secondaryText(context),
+                        fontSize: 14,
+                      ),
+                    ),
+                  ],
+                ),
+                // Reja qo'shish tugmasi
+                ElevatedButton.icon(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blueAccent.withValues(alpha: 0.8),
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                  ),
+                  onPressed: _showAddPlanDialog,
+                  icon: const Icon(LucideIcons.plus, size: 18),
+                  label: const Text(
+                    "Reja qo'shish",
+                    style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          
+          // Rejalar ro'yxati
           Expanded(
             child: _isLoading
                 ? const Center(child: CircularProgressIndicator())
-                : _todos.isEmpty
-                    ? const Center(child: Text("Hozircha rejalar yo'q"))
+                : _plans.isEmpty
+                    ? Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              LucideIcons.calendarX2, 
+                              size: 48, 
+                              color: GlassTokens.secondaryText(context).withValues(alpha: 0.5)
+                            ),
+                            const SizedBox(height: 12),
+                            Text(
+                              "Bu kunga rejalar yo'q",
+                              style: TextStyle(
+                                color: GlassTokens.secondaryText(context),
+                                fontSize: 16,
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
                     : ListView.builder(
                         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                        itemCount: _todos.length,
+                        itemCount: _plans.length,
                         itemBuilder: (context, index) {
-                          final item = _todos[index];
-                          return _buildTodoCard(item);
+                          final item = _plans[index];
+                          return _buildPlanCard(item);
                         },
                       ),
           ),
@@ -110,68 +458,220 @@ class _TodoScreenState extends State<TodoScreen> {
     );
   }
 
-  Widget _buildInputArea() {
-    return Padding(
-      padding: const EdgeInsets.all(20),
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.1),
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
-        ),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        child: Row(
-          children: [
-            Expanded(
-              child: TextField(
-                controller: _taskController,
-                decoration: InputDecoration(
-                  hintText: 'Yangi vazifa...',
-                  hintStyle: TextStyle(color: GlassTokens.secondaryText(context)),
-                  border: InputBorder.none,
+  Widget _buildCalendarStrip() {
+    return SizedBox(
+      height: 94,
+      child: ListView.builder(
+        controller: _calendarScrollController,
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+        itemCount: _calendarDays.length,
+        itemBuilder: (context, index) {
+          final date = _calendarDays[index];
+          final isSelected = _isSameDay(date, _selectedDate);
+          final isToday = _isSameDay(date, DateTime.now());
+          
+          return GestureDetector(
+            onTap: () {
+              setState(() {
+                _selectedDate = date;
+              });
+              _loadPlans();
+            },
+            child: Container(
+              width: 64,
+              margin: const EdgeInsets.symmetric(horizontal: 6),
+              decoration: BoxDecoration(
+                color: isSelected 
+                    ? Colors.blueAccent.withValues(alpha: 0.25)
+                    : isToday 
+                        ? Colors.white.withValues(alpha: 0.12)
+                        : Colors.white.withValues(alpha: 0.04),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: isSelected 
+                      ? Colors.blueAccent.withValues(alpha: 0.6)
+                      : isToday 
+                          ? Colors.white.withValues(alpha: 0.3)
+                          : Colors.white.withValues(alpha: 0.08),
+                  width: isSelected ? 1.5 : 1.0,
                 ),
-                style: TextStyle(color: GlassTokens.primaryText(context)),
-                onSubmitted: (_) => _addTodo(),
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    _getWeekdayNameShort(date.weekday),
+                    style: TextStyle(
+                      color: isSelected 
+                          ? Colors.white 
+                          : GlassTokens.secondaryText(context),
+                      fontSize: 12,
+                      fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    date.day.toString(),
+                    style: TextStyle(
+                      color: isSelected 
+                          ? Colors.white 
+                          : GlassTokens.primaryText(context),
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    _getMonthNameShort(date.month),
+                    style: TextStyle(
+                      color: isSelected 
+                          ? Colors.white.withValues(alpha: 0.8)
+                          : GlassTokens.secondaryText(context),
+                      fontSize: 10,
+                    ),
+                  ),
+                ],
               ),
             ),
-            IconButton(
-              icon: const Icon(LucideIcons.plusCircle, color: Colors.blue),
-              onPressed: _addTodo,
-            ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }
 
-  Widget _buildTodoCard(TodoItem item) {
+  Widget _buildPlanCard(PlanItem item) {
+    final timeStr = "${item.dueDate.hour.toString().padLeft(2, '0')}:${item.dueDate.minute.toString().padLeft(2, '0')}";
+    final hasDesc = item.description != null && item.description!.isNotEmpty;
+    
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
         color: Colors.white.withValues(alpha: 0.05),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
       ),
-      child: ListTile(
-        leading: Checkbox(
-          value: item.isCompleted,
-          onChanged: (val) {
-            if (val != null) _toggleTodo(item, val);
-          },
-          activeColor: Colors.blue,
-        ),
-        title: Text(
-          item.title,
-          style: TextStyle(
-            color: GlassTokens.primaryText(context),
-            decoration: item.isCompleted ? TextDecoration.lineThrough : null,
-          ),
-        ),
-        trailing: IconButton(
-          icon: const Icon(LucideIcons.trash2, color: Colors.redAccent, size: 20),
-          onPressed: () => _deleteTodo(item.id),
-        ),
-      ),
+      child: hasDesc
+          ? ClipRRect(
+              borderRadius: BorderRadius.circular(16),
+              child: Theme(
+                data: Theme.of(context).copyWith(
+                  dividerColor: Colors.transparent,
+                ),
+                child: ExpansionTile(
+                  tilePadding: const EdgeInsets.only(left: 8, right: 12, top: 4, bottom: 4),
+                  leading: Checkbox(
+                    value: item.isCompleted,
+                    onChanged: (val) {
+                      if (val != null) _togglePlan(item, val);
+                    },
+                    activeColor: Colors.blueAccent,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                  ),
+                  title: Text(
+                    item.title,
+                    style: TextStyle(
+                      color: GlassTokens.primaryText(context),
+                      fontWeight: FontWeight.w600,
+                      fontSize: 15,
+                      decoration: item.isCompleted ? TextDecoration.lineThrough : null,
+                    ),
+                  ),
+                  subtitle: Padding(
+                    padding: const EdgeInsets.only(top: 4.0),
+                    child: Row(
+                      children: [
+                        const Icon(LucideIcons.clock, size: 13, color: Colors.blueAccent),
+                        const SizedBox(width: 4),
+                        Text(
+                          timeStr,
+                          style: const TextStyle(
+                            color: Colors.blueAccent,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        LucideIcons.chevronDown, 
+                        size: 18, 
+                        color: GlassTokens.secondaryText(context).withValues(alpha: 0.6)
+                      ),
+                      IconButton(
+                        icon: const Icon(LucideIcons.trash2, color: Colors.redAccent, size: 18),
+                        onPressed: () => _deletePlan(item.id),
+                      ),
+                    ],
+                  ),
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(left: 56.0, right: 16.0, bottom: 16.0),
+                      child: Align(
+                        alignment: Alignment.topLeft,
+                        child: Text(
+                          item.description!,
+                          style: TextStyle(
+                            color: GlassTokens.secondaryText(context),
+                            fontSize: 14,
+                            height: 1.4,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            )
+          : ListTile(
+              contentPadding: const EdgeInsets.only(left: 8, right: 12, top: 4, bottom: 4),
+              leading: Checkbox(
+                value: item.isCompleted,
+                onChanged: (val) {
+                  if (val != null) _togglePlan(item, val);
+                },
+                activeColor: Colors.blueAccent,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(4),
+                ),
+              ),
+              title: Text(
+                item.title,
+                style: TextStyle(
+                  color: GlassTokens.primaryText(context),
+                  fontWeight: FontWeight.w600,
+                  fontSize: 15,
+                  decoration: item.isCompleted ? TextDecoration.lineThrough : null,
+                ),
+              ),
+              subtitle: Padding(
+                padding: const EdgeInsets.only(top: 4.0),
+                child: Row(
+                  children: [
+                    const Icon(LucideIcons.clock, size: 13, color: Colors.blueAccent),
+                    const SizedBox(width: 4),
+                    Text(
+                      timeStr,
+                      style: const TextStyle(
+                        color: Colors.blueAccent,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              trailing: IconButton(
+                icon: const Icon(LucideIcons.trash2, color: Colors.redAccent, size: 18),
+                onPressed: () => _deletePlan(item.id),
+              ),
+            ),
     );
   }
 }

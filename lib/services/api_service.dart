@@ -90,6 +90,8 @@ class ApiService {
 
   bool get hasToken => _accessToken != null;
 
+  Future<String?> getToken() async => _accessToken;
+
   Future<bool> _tryRefreshToken() async {
     try {
       final response = await Dio(
@@ -1048,6 +1050,11 @@ class ApiService {
     return response.data;
   }
 
+  Future<List<dynamic>> getPromos() async {
+    final response = await _dio.get('/promos');
+    return response.data;
+  }
+
   Future<Map<String, dynamic>> getPrayerTimes(String city) async {
     final response = await _dio.get('/utilities/prayer-times', queryParameters: {'city': city});
     return response.data;
@@ -1077,8 +1084,42 @@ class ApiService {
     await _dio.delete('/todos/$id');
   }
 
+  Future<List<dynamic>> getPlans({String? date}) async {
+    final response = await _dio.get('/plans/', queryParameters: {
+      if (date != null) 'date': date,
+    });
+    return response.data;
+  }
+
+  Future<Map<String, dynamic>> createPlan(String title, DateTime dueDate, [String? description]) async {
+    final response = await _dio.post('/plans/', data: {
+      'title': title,
+      'due_date': dueDate.toUtc().toIso8601String(),
+      if (description != null) 'description': description,
+    });
+    return response.data;
+  }
+
+  Future<Map<String, dynamic>> updatePlan(int id, {String? title, DateTime? dueDate, bool? isCompleted}) async {
+    final Map<String, dynamic> data = {};
+    if (title != null) data['title'] = title;
+    if (dueDate != null) data['due_date'] = dueDate.toUtc().toIso8601String();
+    if (isCompleted != null) data['is_completed'] = isCompleted;
+
+    final response = await _dio.patch('/plans/$id', data: data);
+    return response.data;
+  }
+
+  Future<void> deletePlan(int id) async {
+    await _dio.delete('/plans/$id');
+  }
+
   Future<Map<String, dynamic>> calculateShoppingPrice(List<Map<String, dynamic>> items) async {
-    final response = await _dio.post('/shopping/calculate-price', data: {'items': items});
+    final response = await _dio.post('/shopping/calculate-price', data: {
+      'items': items.map((e) {
+        return {'name': e['name'], 'qty': e['qty'] ?? e['quantity'] ?? 1.0, 'unit': e['unit'] ?? 'dona'};
+      }).toList(),
+    });
     return response.data;
   }
 
@@ -1087,12 +1128,133 @@ class ApiService {
     return response.data;
   }
 
-  Future<Map<String, dynamic>> createShoppingList(String title, List<Map<String, dynamic>> items, double totalPrice) async {
+  Future<Map<String, dynamic>> createShoppingList(String name, List<Map<String, dynamic>> items) async {
     final response = await _dio.post('/shopping/', data: {
-      'title': title,
-      'items': items,
-      'total_estimated_price': totalPrice,
+      'name': name,
+      'items': items.map((e) {
+        return {'name': e['name'], 'qty': e['qty'] ?? e['quantity'] ?? 1.0, 'unit': e['unit'] ?? 'dona'};
+      }).toList(),
     });
     return response.data;
+  }
+
+  Future<Map<String, dynamic>> updateShoppingList(int id, Map<String, dynamic> data) async {
+    final response = await _dio.put('/shopping/$id', data: data);
+    return response.data;
+  }
+
+  Future<Map<String, dynamic>> updateShoppingItem(int listId, int itemIndex, {double? actualPrice, bool? isBought}) async {
+    final data = <String, dynamic>{'item_index': itemIndex};
+    if (actualPrice != null) data['actual_price'] = actualPrice;
+    if (isBought != null) data['is_bought'] = isBought;
+    final response = await _dio.patch('/shopping/$listId/item', data: data);
+    return response.data;
+  }
+
+  Future<void> deleteShoppingList(int id) async {
+    await _dio.delete('/shopping/$id');
+  }
+
+  Future<List<dynamic>> getFinanceRecords({String? month}) async {
+    final response = await _dio.get('/finance/', queryParameters: {
+      if (month != null) 'month': month,
+    });
+    return response.data;
+  }
+
+  Future<Map<String, dynamic>> getFinanceStats({String? month}) async {
+    final response = await _dio.get('/finance/stats', queryParameters: {
+      if (month != null) 'month': month,
+    });
+    return response.data;
+  }
+
+  Future<Map<String, dynamic>> createFinanceRecord({
+    required String type,
+    required double amount,
+    required String category,
+    String? description,
+    required DateTime date,
+  }) async {
+    final response = await _dio.post('/finance/', data: {
+      'type': type,
+      'amount': amount,
+      'category': category,
+      if (description != null) 'description': description,
+      'date': date.toUtc().toIso8601String(),
+    });
+    return response.data;
+  }
+
+  Future<Map<String, dynamic>> updateFinanceRecord(
+    int id, {
+    String? type,
+    double? amount,
+    String? category,
+    String? description,
+    DateTime? date,
+  }) async {
+    final Map<String, dynamic> data = {};
+    if (type != null) data['type'] = type;
+    if (amount != null) data['amount'] = amount;
+    if (category != null) data['category'] = category;
+    if (description != null) data['description'] = description;
+    if (date != null) data['date'] = date.toUtc().toIso8601String();
+
+    final response = await _dio.patch('/finance/$id', data: data);
+    return response.data;
+  }
+
+  Future<void> deleteFinanceRecord(int id) async {
+    await _dio.delete('/finance/$id');
+  }
+
+  Future<List<dynamic>> getPlannedPayments() async {
+    final response = await _dio.get('/finance/planned');
+    return response.data;
+  }
+
+  Future<Map<String, dynamic>> createPlannedPayment({
+    required String title,
+    required double amount,
+    required String category,
+    required DateTime dueDate,
+    required bool isRecurring,
+  }) async {
+    final response = await _dio.post('/finance/planned', data: {
+      'title': title,
+      'amount': amount,
+      'category': category,
+      'due_date': dueDate.toUtc().toIso8601String(),
+      'is_recurring': isRecurring,
+    });
+    return response.data;
+  }
+
+  Future<Map<String, dynamic>> updatePlannedPayment(
+    int id, {
+    String? title,
+    double? amount,
+    String? category,
+    DateTime? dueDate,
+    bool? isRecurring,
+    bool? isPaid,
+    bool? isNotified,
+  }) async {
+    final Map<String, dynamic> data = {};
+    if (title != null) data['title'] = title;
+    if (amount != null) data['amount'] = amount;
+    if (category != null) data['category'] = category;
+    if (dueDate != null) data['due_date'] = dueDate.toUtc().toIso8601String();
+    if (isRecurring != null) data['is_recurring'] = isRecurring;
+    if (isPaid != null) data['is_paid'] = isPaid;
+    if (isNotified != null) data['is_notified'] = isNotified;
+
+    final response = await _dio.patch('/finance/planned/$id', data: data);
+    return response.data;
+  }
+
+  Future<void> deletePlannedPayment(int id) async {
+    await _dio.delete('/finance/planned/$id');
   }
 }

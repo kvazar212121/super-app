@@ -90,12 +90,22 @@ class ProviderPendingOrdersWidgetState
       children: [
         Row(
           children: [
-            Icon(LucideIcons.bellRing, color: widget.accent, size: 20),
+            const Icon(LucideIcons.bellRing, color: Colors.black, size: 20),
             const SizedBox(width: 8),
-            Text(
-              'Yangi buyurtmalar (${_orders.length})',
-              style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
+            const Text(
+              'Yangi buyurtmalar',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: Colors.black),
+            ),
+            const SizedBox(width: 8),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+              decoration: BoxDecoration(
+                color: Colors.black,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Text(
+                '${_orders.length}',
+                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),
               ),
             ),
           ],
@@ -118,9 +128,12 @@ class ProviderPendingOrdersWidgetState
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: widget.accent.withValues(alpha: 0.35)),
-        color: widget.accent.withValues(alpha: 0.04),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.black, width: 2),
+        boxShadow: const [
+          BoxShadow(color: Colors.black, offset: Offset(2, 2)),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -133,27 +146,26 @@ class ProviderPendingOrdersWidgetState
                   children: [
                     Text(
                       o['user_name'] as String? ?? 'Mijoz',
-                      style: const TextStyle(fontWeight: FontWeight.bold),
+                      style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 18, color: Colors.black),
                     ),
                     Text(
                       '${o['service_name'] ?? ''} · $time',
-                      style: theme.textTheme.bodySmall,
+                      style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black87),
                     ),
                     if ((o['notes'] as String?)?.isNotEmpty == true)
                       Text(
                         o['notes'] as String,
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          fontStyle: FontStyle.italic,
-                        ),
+                        style: const TextStyle(fontStyle: FontStyle.italic, color: Colors.black87),
                       ),
                   ],
                 ),
               ),
               Text(
                 '${NumberFormat('#,###').format(price)} so\'m',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: widget.accent,
+                style: const TextStyle(
+                  fontWeight: FontWeight.w900,
+                  fontSize: 16,
+                  color: Colors.black,
                 ),
               ),
             ],
@@ -164,7 +176,12 @@ class ProviderPendingOrdersWidgetState
               Expanded(
                 child: OutlinedButton(
                   onPressed: acting ? null : () => _respond(id, 'cancelled'),
-                  child: const Text('Rad etish'),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: Colors.black,
+                    side: const BorderSide(color: Colors.black, width: 2),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  ),
+                  child: const Text('Rad etish', style: TextStyle(fontWeight: FontWeight.bold)),
                 ),
               ),
               const SizedBox(width: 12),
@@ -172,15 +189,17 @@ class ProviderPendingOrdersWidgetState
                 child: FilledButton(
                   onPressed: acting ? null : () => _respond(id, 'confirmed'),
                   style: FilledButton.styleFrom(
-                    backgroundColor: widget.accent,
+                    backgroundColor: Colors.black,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                   ),
                   child: acting
                       ? const SizedBox(
                           width: 18,
                           height: 18,
-                          child: CircularProgressIndicator(strokeWidth: 2),
+                          child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                         )
-                      : const Text('Qabul qilish'),
+                      : const Text('Qabul qilish', style: TextStyle(fontWeight: FontWeight.bold)),
                 ),
               ),
             ],

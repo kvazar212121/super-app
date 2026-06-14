@@ -4,6 +4,7 @@ import '../models/user_profile.dart';
 import '../models/payment_card.dart';
 import '../models/service_order.dart';
 import '../services/api_service.dart';
+import '../services/call_service.dart';
 
 class AppProvider extends ChangeNotifier {
   final ApiService _api = ApiService();
@@ -12,7 +13,7 @@ class AppProvider extends ChangeNotifier {
 
   UserProfile _user = UserProfile(name: '', surname: '', phone: '');
   final List<PaymentCard> _cards = [];
-  bool _isDarkMode = false;
+  bool _isDarkMode = true;
   final List<ServiceOrder> _orders = [];
   List<dynamic> _notifications = [];
   int _unreadCount = 0;
@@ -93,6 +94,10 @@ class AppProvider extends ChangeNotifier {
       await fetchNotifications();
       startNotificationPolling();
       startOrderPolling();
+      
+      // Init WebRTC Signaling
+      CallService().connectWebSocket();
+      
       notifyListeners();
     } catch (e) {
       debugPrint('Error fetching initial data: $e');

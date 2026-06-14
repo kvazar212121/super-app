@@ -13,8 +13,8 @@ class ProviderTheme extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const ink = Color(0xFF0F172A);
-    const primary = Color(0xFF6366F1);
+    const ink = Colors.black;
+    const primary = Colors.black;
     final base = ThemeData.light(useMaterial3: true);
 
     final textTheme = GoogleFonts.interTextTheme(base.textTheme).apply(
@@ -24,12 +24,13 @@ class ProviderTheme extends StatelessWidget {
 
     return Theme(
       data: base.copyWith(
-        scaffoldBackgroundColor: const Color(0xFFF4F6FB),
+        scaffoldBackgroundColor: Colors.white,
         colorScheme: base.colorScheme.copyWith(
           primary: primary,
           surface: Colors.white,
           onSurface: ink,
-          outlineVariant: const Color(0xFFE2E8F0),
+          outline: Colors.black,
+          outlineVariant: Colors.black54,
         ),
         textTheme: textTheme,
         iconTheme: const IconThemeData(color: ink),

@@ -110,11 +110,11 @@ class _ProviderCalendarWidgetState extends State<ProviderCalendarWidget> {
             ),
             const Spacer(),
             IconButton(
-              icon: Icon(LucideIcons.refreshCw, color: widget.accent),
+              icon: const Icon(LucideIcons.refreshCw, color: Colors.black),
               onPressed: _load,
             ),
             IconButton(
-              icon: Icon(LucideIcons.calendarDays, color: widget.accent),
+              icon: const Icon(LucideIcons.calendarDays, color: Colors.black),
               onPressed: () async {
                 final picked = await showDatePicker(
                   context: context,
@@ -150,12 +150,11 @@ class _ProviderCalendarWidgetState extends State<ProviderCalendarWidget> {
                   duration: const Duration(milliseconds: 200),
                   width: 60,
                   decoration: BoxDecoration(
-                    color: isSelected ? widget.accent : theme.colorScheme.surface,
+                    color: isSelected ? Colors.black : Colors.white,
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
-                      color: isSelected
-                          ? widget.accent
-                          : Colors.grey.withValues(alpha: 0.2),
+                      color: isSelected ? Colors.black : Colors.black54,
+                      width: 1.5,
                     ),
                   ),
                   child: Column(
@@ -172,8 +171,8 @@ class _ProviderCalendarWidgetState extends State<ProviderCalendarWidget> {
                         '${date.day}',
                         style: TextStyle(
                           fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: isSelected ? Colors.white : theme.colorScheme.onSurface,
+                          fontWeight: FontWeight.w900,
+                          color: isSelected ? Colors.white : Colors.black,
                         ),
                       ),
                     ],
@@ -184,9 +183,9 @@ class _ProviderCalendarWidgetState extends State<ProviderCalendarWidget> {
           ),
         ),
         const SizedBox(height: 24),
-        Text(
+        const Text(
           'Ish vaqtlari',
-          style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: Colors.black),
         ),
         const SizedBox(height: 16),
         GridView.builder(
@@ -204,22 +203,19 @@ class _ProviderCalendarWidgetState extends State<ProviderCalendarWidget> {
             final isBusy = _isBusy(slot);
             return Container(
               decoration: BoxDecoration(
-                color: isBusy
-                    ? widget.accent.withValues(alpha: 0.1)
-                    : theme.colorScheme.surface,
+                color: isBusy ? Colors.black : Colors.white,
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(
-                  color: isBusy
-                      ? widget.accent
-                      : Colors.grey.withValues(alpha: 0.2),
+                  color: Colors.black,
+                  width: 1.5,
                 ),
               ),
               child: Center(
                 child: Text(
                   slot,
                   style: TextStyle(
-                    fontWeight: isBusy ? FontWeight.bold : FontWeight.normal,
-                    color: isBusy ? widget.accent : theme.colorScheme.onSurface,
+                    fontWeight: FontWeight.bold,
+                    color: isBusy ? Colors.white : Colors.black,
                   ),
                 ),
               ),
@@ -228,9 +224,9 @@ class _ProviderCalendarWidgetState extends State<ProviderCalendarWidget> {
         ),
         if (_orders.isNotEmpty) ...[
           const SizedBox(height: 28),
-          Text(
+          const Text(
             'Kun buyurtmalari',
-            style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: Colors.black),
           ),
           const SizedBox(height: 12),
           ..._orders.map((o) => _orderCard(o, theme)),
@@ -251,23 +247,34 @@ class _ProviderCalendarWidgetState extends State<ProviderCalendarWidget> {
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
+        color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5)),
+        border: Border.all(color: Colors.black, width: 1.5),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Text(time, style: TextStyle(fontWeight: FontWeight.bold, color: widget.accent)),
+              Text(time, style: const TextStyle(fontWeight: FontWeight.w900, color: Colors.black, fontSize: 16)),
               const SizedBox(width: 12),
               Expanded(
                 child: Text(
                   o['user_name'] as String? ?? 'Mijoz',
-                  style: const TextStyle(fontWeight: FontWeight.bold),
+                  style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
                 ),
               ),
-              Text(_statusLabel(status), style: theme.textTheme.bodySmall),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                decoration: BoxDecoration(
+                  color: Colors.black,
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: Text(
+                  _statusLabel(status),
+                  style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                ),
+              ),
             ],
           ),
           Text(
@@ -281,15 +288,24 @@ class _ProviderCalendarWidgetState extends State<ProviderCalendarWidget> {
                 Expanded(
                   child: OutlinedButton(
                     onPressed: acting ? null : () => _updateStatus(id, 'cancelled'),
-                    child: const Text('Rad'),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: Colors.black,
+                      side: const BorderSide(color: Colors.black, width: 2),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    ),
+                    child: const Text('Rad', style: TextStyle(fontWeight: FontWeight.bold)),
                   ),
                 ),
                 const SizedBox(width: 8),
                 Expanded(
                   child: FilledButton(
                     onPressed: acting ? null : () => _updateStatus(id, 'confirmed'),
-                    style: FilledButton.styleFrom(backgroundColor: widget.accent),
-                    child: const Text('Qabul'),
+                    style: FilledButton.styleFrom(
+                      backgroundColor: Colors.black,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    ),
+                    child: const Text('Qabul', style: TextStyle(fontWeight: FontWeight.bold)),
                   ),
                 ),
               ],
@@ -300,7 +316,12 @@ class _ProviderCalendarWidgetState extends State<ProviderCalendarWidget> {
               width: double.infinity,
               child: OutlinedButton(
                 onPressed: acting ? null : () => _updateStatus(id, 'completed'),
-                child: const Text('Bajarildi deb belgilash'),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: Colors.black,
+                  side: const BorderSide(color: Colors.black, width: 2),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                ),
+                child: const Text('Bajarildi deb belgilash', style: TextStyle(fontWeight: FontWeight.bold)),
               ),
             ),
           ],

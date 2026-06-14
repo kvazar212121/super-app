@@ -40,7 +40,7 @@ class TutorRoleSelectionScreen extends StatelessWidget {
               icon: LucideIcons.school,
               title: 'O\'quv markazi',
               subtitle: 'Markazda guruh yoki individual kurslar',
-              color: const Color(0xFF6366F1),
+              color: Colors.black,
               onTap: () => Navigator.push(
                 context,
                 MaterialPageRoute(builder: (_) => const TutorCenterScreen()),

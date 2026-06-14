@@ -21,6 +21,9 @@ class ProviderCategoryConfig {
     barber, salon, plumber, electrician, cleaner, auto, futbol,
     education, builder, worker, ac, nanny, tutor, disinfection,
     appliance, courier, massage, nurse, dental, events,
+    bozorchi, oshxona,
+    gameZona, sportMaydon,
+    kompUsta, boshqa,
   ];
 
   static ProviderCategoryConfig? byRegistrationId(String id) {
@@ -176,5 +179,47 @@ class ProviderCategoryConfig {
     title: 'Tadbirlar',
     icon: LucideIcons.partyPopper,
     accentColor: Color(0xFFA855F7),
+  );
+  static const bozorchi = ProviderCategoryConfig(
+    registrationId: 'bozorchi',
+    categoryKey: 'bozorchi',
+    title: 'Bozorchi',
+    icon: LucideIcons.shoppingCart,
+    accentColor: Color(0xFFFF9800),
+  );
+  static const oshxona = ProviderCategoryConfig(
+    registrationId: 'oshxona',
+    categoryKey: 'oshxona',
+    title: 'Oshxona',
+    icon: LucideIcons.utensils,
+    accentColor: Color(0xFFF44336),
+  );
+  static const gameZona = ProviderCategoryConfig(
+    registrationId: 'game_zona',
+    categoryKey: 'game_zona',
+    title: 'Game Zona',
+    icon: LucideIcons.gamepad2,
+    accentColor: Color(0xFF673AB7),
+  );
+  static const sportMaydon = ProviderCategoryConfig(
+    registrationId: 'sport_maydon',
+    categoryKey: 'sport_maydon',
+    title: 'Sport Maydonlari',
+    icon: Icons.sports_soccer,
+    accentColor: Color(0xFF4CAF50),
+  );
+  static const kompUsta = ProviderCategoryConfig(
+    registrationId: 'kompyuter_usta',
+    categoryKey: 'kompyuter_usta',
+    title: 'Kompyuter Ustasi',
+    icon: LucideIcons.monitor,
+    accentColor: Color(0xFF607D8B),
+  );
+  static const boshqa = ProviderCategoryConfig(
+    registrationId: 'boshqa_xizmatlar',
+    categoryKey: 'boshqa_xizmatlar',
+    title: 'Boshqa Xizmatlar',
+    icon: LucideIcons.layoutGrid,
+    accentColor: Color(0xFF9E9E9E),
   );
 }

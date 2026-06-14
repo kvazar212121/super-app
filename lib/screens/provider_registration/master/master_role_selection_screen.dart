@@ -52,7 +52,7 @@ class MasterRoleSelectionScreen extends StatelessWidget {
                   icon: LucideIcons.users,
                   title: 'Ustalar brigadasi',
                   subtitle: 'Bir necha usta bilan katta ta\'mirlash va montaj ishlar',
-                  color: const Color(0xFF6366F1),
+                  color: Colors.black,
                   onTap: () => _open(context, MasterRegistrationRole.brigade),
                 ),
               ],

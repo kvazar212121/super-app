@@ -26,6 +26,10 @@ enum ServiceHubKind {
   tadbirlar,
   bozorchi,
   oshxona,
+  gameZona,
+  sportMaydon,
+  kompUsta,
+  boshqa,
   yana,
 }
 
@@ -52,6 +56,10 @@ extension ServiceHubKindX on ServiceHubKind {
         ServiceHubKind.tadbirlar => 'Tadbirlar',
         ServiceHubKind.bozorchi => 'Bozorchi',
         ServiceHubKind.oshxona => 'Oshxona',
+        ServiceHubKind.gameZona => 'Game Zona',
+        ServiceHubKind.sportMaydon => 'Sport maydonlari',
+        ServiceHubKind.kompUsta => 'Komp Usta',
+        ServiceHubKind.boshqa => 'Boshqa Xizmatlar',
         ServiceHubKind.yana => 'Yana xizmatlar',
       };
 
@@ -76,8 +84,12 @@ extension ServiceHubKindX on ServiceHubKind {
         ServiceHubKind.stomatologiya => 'Tish davolash — klinikada vaqt bron',
         ServiceHubKind.tadbirlar => 'Guruhlar — sahna, ovoz, qishloq va to\'y',
         ServiceHubKind.bozorchi => 'Ro\'zg\'or xaridlari va yetkazib berish',
-        ServiceHubKind.oshxona => 'Stol bron qilish va ovqat buyurtma',
-        ServiceHubKind.yana => 'Boshqa xizmatlar va yordam',
+        ServiceHubKind.oshxona => 'Restoranlar, kafelar va ovqatlanish joylari.',
+        ServiceHubKind.gameZona => 'PS5, PC, VR klublari va o\'yin xonalari.',
+        ServiceHubKind.sportMaydon => 'Futbol, tennis va boshqa sport maydonlari.',
+        ServiceHubKind.kompUsta => 'Kompyuter va IT xizmatlari.',
+        ServiceHubKind.boshqa => 'Aralash va boshqa turdagi xizmatlar.',
+        ServiceHubKind.yana => 'Tez kunda qo\'shimcha xizmatlar qo\'shiladi...',
       };
 
   IconData get icon => switch (this) {
@@ -102,6 +114,10 @@ extension ServiceHubKindX on ServiceHubKind {
         ServiceHubKind.tadbirlar => LucideIcons.partyPopper,
         ServiceHubKind.bozorchi => LucideIcons.shoppingCart,
         ServiceHubKind.oshxona => LucideIcons.utensils,
+        ServiceHubKind.gameZona => LucideIcons.gamepad2,
+        ServiceHubKind.sportMaydon => Icons.sports_soccer,
+        ServiceHubKind.kompUsta => LucideIcons.monitor,
+        ServiceHubKind.boshqa => LucideIcons.layoutGrid,
         ServiceHubKind.yana => LucideIcons.moreHorizontal,
       };
 
@@ -127,7 +143,11 @@ extension ServiceHubKindX on ServiceHubKind {
         ServiceHubKind.tadbirlar => const Color(0xFFE91E63),
         ServiceHubKind.bozorchi => const Color(0xFFFF9800),
         ServiceHubKind.oshxona => const Color(0xFFF44336),
-        ServiceHubKind.yana => Colors.blueGrey,
+        ServiceHubKind.gameZona => const Color(0xFF673AB7),
+        ServiceHubKind.sportMaydon => const Color(0xFF4CAF50),
+        ServiceHubKind.kompUsta => const Color(0xFF607D8B),
+        ServiceHubKind.boshqa => const Color(0xFF9E9E9E),
+        ServiceHubKind.yana => const Color(0xFF9E9E9E),
       };
 
   List<({String label, double basePrice})> get variants => switch (this) {
@@ -254,6 +274,24 @@ extension ServiceHubKindX on ServiceHubKind {
             (label: 'Stol bron qilish (2 kishilik)', basePrice: 50000),
             (label: 'Stol bron qilish (4+ kishilik)', basePrice: 100000),
             (label: 'VIP xona', basePrice: 200000),
+          ],
+        ServiceHubKind.gameZona => const [
+            (label: 'PS5 xonasi (1 soat)', basePrice: 30000),
+            (label: 'PC hududi (1 soat)', basePrice: 20000),
+            (label: 'VR o\'yinlar (30 min)', basePrice: 40000),
+          ],
+        ServiceHubKind.sportMaydon => const [
+            (label: 'Tennis korti (1 soat)', basePrice: 100000),
+            (label: 'Basketbol maydoni', basePrice: 80000),
+            (label: 'Voleybol maydoni', basePrice: 80000),
+          ],
+        ServiceHubKind.kompUsta => const [
+            (label: 'Windows o\'rnatish', basePrice: 70000),
+            (label: 'Format qilish', basePrice: 50000),
+            (label: 'PC terish', basePrice: 150000),
+          ],
+        ServiceHubKind.boshqa => const [
+            (label: 'Xizmat haqi', basePrice: 100000),
           ],
         ServiceHubKind.yana => const [
             (label: 'Boshqa xizmat', basePrice: 100000),

@@ -217,8 +217,8 @@ class _ProviderPlumberSettingsWidgetState extends State<ProviderPlumberSettingsW
                   }
                 });
               },
-              selectedColor: widget.accent.withValues(alpha: 0.2),
-              checkmarkColor: widget.accent,
+              selectedColor: Colors.black12,
+              checkmarkColor: Colors.black,
             );
           }).toList(),
         ),
@@ -227,7 +227,7 @@ class _ProviderPlumberSettingsWidgetState extends State<ProviderPlumberSettingsW
           width: double.infinity,
           child: FilledButton(
             onPressed: _saving ? null : _save,
-            style: FilledButton.styleFrom(backgroundColor: widget.accent, padding: const EdgeInsets.symmetric(vertical: 16)),
+            style: FilledButton.styleFrom(backgroundColor: Colors.black, foregroundColor: Colors.white, padding: const EdgeInsets.symmetric(vertical: 16)),
             child: _saving
                 ? const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
                 : const Text('Saqlash'),

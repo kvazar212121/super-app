@@ -274,7 +274,7 @@ class _ProviderNannySettingsWidgetState extends State<ProviderNannySettingsWidge
           width: double.infinity,
           child: FilledButton(
             onPressed: _saving ? null : _save,
-            style: FilledButton.styleFrom(backgroundColor: widget.accent),
+            style: FilledButton.styleFrom(backgroundColor: Colors.black, foregroundColor: Colors.white),
             child: _saving
                 ? const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2))
                 : const Text('Saqlash'),

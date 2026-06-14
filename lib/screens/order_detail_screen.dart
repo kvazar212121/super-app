@@ -5,7 +5,9 @@ import 'package:provider/provider.dart';
 import '../models/service_hub_kind.dart';
 import '../models/service_order.dart';
 import '../providers/app_provider.dart';
+import '../services/call_service.dart';
 import '../theme/glass_tokens.dart';
+import 'calls/call_screen.dart';
 import '../widgets/glass/glass_scaffold.dart';
 import '../widgets/glass/glass_surface.dart';
 import '../widgets/order_status_timeline.dart';
@@ -150,6 +152,18 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                       ],
                     ),
                   ),
+                  if (order.providerId != null)
+                    IconButton(
+                      icon: const Icon(LucideIcons.phone, color: Colors.green),
+                      onPressed: () {
+                        CallService().startCall(order.providerId!, order.providerName);
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => const CallScreen(isIncoming: false),
+                          ),
+                        );
+                      },
+                    ),
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                     decoration: BoxDecoration(

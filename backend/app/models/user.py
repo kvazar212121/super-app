@@ -33,6 +33,9 @@ class User(Base):
     notifications = relationship("Notification", back_populates="user", lazy="selectin", cascade="all, delete-orphan")
     transactions = relationship("Transaction", back_populates="user", lazy="selectin", cascade="all, delete-orphan")
     todos = relationship("Todo", back_populates="user", lazy="selectin", cascade="all, delete-orphan")
+    plans = relationship("Plan", back_populates="user", lazy="selectin", cascade="all, delete-orphan")
+    finance_records = relationship("FinanceRecord", back_populates="user", lazy="selectin", cascade="all, delete-orphan")
+    planned_payments = relationship("PlannedPayment", back_populates="user", lazy="selectin", cascade="all, delete-orphan")
     shopping_lists = relationship("ShoppingList", back_populates="user", lazy="selectin", cascade="all, delete-orphan")
 
     def to_dict(self) -> dict:

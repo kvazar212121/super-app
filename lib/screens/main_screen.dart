@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:provider/provider.dart';
 import '../providers/app_provider.dart';
+import '../services/call_service.dart';
 import '../widgets/glass/glass_bottom_bar.dart';
 import '../widgets/glass/mesh_background.dart';
 import 'home_screen.dart';
@@ -9,6 +10,7 @@ import 'search_screen.dart';
 import 'orders_screen.dart';
 import 'profile_screen.dart';
 import 'all_categories_screen.dart';
+import 'calls/call_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -36,6 +38,19 @@ class _MainScreenState extends State<MainScreen> {
       _appProvider = context.read<AppProvider>();
       _appProvider!.addListener(_onAppChanged);
       _appProvider!.fetchInitialData();
+      
+      CallService().connectWebSocket();
+      CallService().onIncomingCall = (data) {
+        if (!mounted) return;
+        Navigator.of(context, rootNavigator: true).push(
+          MaterialPageRoute(
+            builder: (_) => CallScreen(
+              isIncoming: true,
+              incomingData: data,
+            ),
+          ),
+        );
+      };
     });
   }
 

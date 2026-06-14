@@ -10,6 +10,10 @@ from app.models.transaction import Transaction
 from app.models.todo import Todo
 from app.models.shopping_list import ShoppingList
 from app.models.product_catalog import ProductCatalog
+from app.models.promo import Promo
+from app.models.plan import Plan
+from app.models.finance_record import FinanceRecord
+from app.models.planned_payment import PlannedPayment
 
 __all__ = [
     "User",
@@ -25,4 +29,8 @@ __all__ = [
     "Todo",
     "ShoppingList",
     "ProductCatalog",
+    "Promo",
+    "Plan",
+    "FinanceRecord",
+    "PlannedPayment",
 ]

@@ -25,7 +25,7 @@ class ProviderOnboardingScreen extends StatelessWidget {
               const Icon(
                 LucideIcons.briefcase,
                 size: 64,
-                color: Color(0xFF6366F1),
+                color: Colors.black,
               ),
               const SizedBox(height: 24),
               Text(
@@ -102,10 +102,10 @@ class ProviderOnboardingScreen extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: const Color(0xFF6366F1).withValues(alpha: 0.1),
+            color: Colors.black12,
             borderRadius: BorderRadius.circular(12),
           ),
-          child: Icon(icon, color: const Color(0xFF6366F1), size: 24),
+          child: Icon(icon, color: Colors.black, size: 24),
         ),
         const SizedBox(width: 16),
         Expanded(

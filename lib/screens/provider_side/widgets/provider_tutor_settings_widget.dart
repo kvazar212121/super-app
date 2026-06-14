@@ -224,8 +224,8 @@ class _ProviderTutorSettingsWidgetState extends State<ProviderTutorSettingsWidge
                   _subjects.remove(s);
                 }
               }),
-              selectedColor: widget.accent.withValues(alpha: 0.2),
-              checkmarkColor: widget.accent,
+              selectedColor: Colors.black12,
+              checkmarkColor: Colors.black,
             );
           }).toList(),
         ),
@@ -247,8 +247,8 @@ class _ProviderTutorSettingsWidgetState extends State<ProviderTutorSettingsWidge
                   _lessonModeKeys.remove(m.key);
                 }
               }),
-              selectedColor: widget.accent.withValues(alpha: 0.2),
-              checkmarkColor: widget.accent,
+              selectedColor: Colors.black12,
+              checkmarkColor: Colors.black,
             );
           }).toList(),
         ),
@@ -323,8 +323,8 @@ class _ProviderTutorSettingsWidgetState extends State<ProviderTutorSettingsWidge
                   }
                 });
               },
-              selectedColor: widget.accent.withValues(alpha: 0.2),
-              checkmarkColor: widget.accent,
+              selectedColor: Colors.black12,
+              checkmarkColor: Colors.black,
             );
           }).toList(),
         ),
@@ -334,7 +334,7 @@ class _ProviderTutorSettingsWidgetState extends State<ProviderTutorSettingsWidge
           child: FilledButton(
             onPressed: _saving ? null : _save,
             style: FilledButton.styleFrom(
-              backgroundColor: widget.accent,
+              backgroundColor: Colors.black, foregroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(vertical: 16),
             ),
             child: _saving

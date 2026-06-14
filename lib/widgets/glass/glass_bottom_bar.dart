@@ -22,7 +22,7 @@ class GlassBottomBar extends StatelessWidget {
     final highlight = GlassTokens.glassHighlight(context);
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 0, 16, 20),
+      padding: const EdgeInsets.fromLTRB(8, 0, 8, 20),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(GlassTokens.radiusXl),
         child: BackdropFilter(
@@ -65,7 +65,7 @@ class GlassBottomBar extends StatelessWidget {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+                  padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 10),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: List.generate(items.length, (i) {
@@ -137,12 +137,15 @@ class _NavButton extends StatelessWidget {
                 color: selected ? activeColor : inactive,
               ),
               const SizedBox(height: 4),
-              Text(
-                item.label,
-                style: TextStyle(
-                  fontSize: 11,
-                  fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
-                  color: selected ? activeColor : inactive,
+              FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Text(
+                  item.label,
+                  style: TextStyle(
+                    fontSize: 10.5,
+                    fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+                    color: selected ? activeColor : inactive,
+                  ),
                 ),
               ),
             ],

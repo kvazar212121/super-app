@@ -45,6 +45,7 @@ import 'event_booking_screen.dart';
 import 'nanny_profile_screen.dart';
 import 'tutor_profile_screen.dart';
 import 'education_center_booking_screen.dart';
+import 'simple_call_booking_screen.dart';
 
 class ServiceHubScreen extends StatefulWidget {
   final ServiceHubKind kind;
@@ -381,6 +382,21 @@ class _MapSection extends StatelessWidget {
             icon: LucideIcons.utensils,
             color: accentColor,
             onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => UniversalBookingScreen(kind: ServiceHubKind.oshxona))),
+          ),
+        )));
+        break;
+      case ServiceHubKind.gameZona:
+      case ServiceHubKind.sportMaydon:
+      case ServiceHubKind.bozorchi:
+      case ServiceHubKind.oshxona:
+      case ServiceHubKind.kompUsta:
+      case ServiceHubKind.boshqa:
+        markers.addAll(data.genericProviders.map((p) => Marker(
+          point: LatLng(p['lat'] as double? ?? 41.31, p['lng'] as double? ?? 69.24),
+          child: _MapPin(
+            icon: kind.icon,
+            color: accentColor,
+            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => SimpleCallBookingScreen(kind: kind, provider: p, accentColor: accentColor))),
           ),
         )));
         break;
@@ -1354,6 +1370,42 @@ class _ActionList extends StatelessWidget {
         }),
         _HubActionSpec(LucideIcons.heart, 'To\'y — to\'liq tashkilot', 'Sahna, ovoz, dekor', () {
           openEvent(organizer: OrganizerServiceType.fullOrganization, eventType: EventType.wedding);
+        }),
+      ],
+      ServiceHubKind.gameZona || ServiceHubKind.sportMaydon || ServiceHubKind.bozorchi || ServiceHubKind.oshxona || ServiceHubKind.kompUsta || ServiceHubKind.boshqa => [
+        _HubActionSpec(kind.icon, '${kind.title} tanlash', 'Ro\'yxatdan kerakli joyni tanlang', () {
+          if (data.genericProviders.isEmpty) {
+            toast('${kind.title} hozircha mavjud emas.');
+            return;
+          }
+          if (data.genericProviders.length == 1) {
+            Navigator.push(context, MaterialPageRoute(builder: (_) => SimpleCallBookingScreen(kind: kind, provider: data.genericProviders.first, accentColor: accentColor)));
+            return;
+          }
+          showModalBottomSheet<void>(
+            context: context,
+            builder: (ctx) => SafeArea(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Text('${kind.title} tanlang', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                  ),
+                  ...data.genericProviders.map((p) => ListTile(
+                    leading: Icon(kind.icon, color: accentColor),
+                    title: Text(p['name'] ?? 'Nomsiz'),
+                    subtitle: Text(p['address'] ?? ''),
+                    trailing: const Icon(LucideIcons.phoneCall, color: Colors.green),
+                    onTap: () {
+                      Navigator.pop(ctx);
+                      Navigator.push(context, MaterialPageRoute(builder: (_) => SimpleCallBookingScreen(kind: kind, provider: p, accentColor: accentColor)));
+                    },
+                  )),
+                ],
+              ),
+            ),
+          );
         }),
       ],
       _ => [

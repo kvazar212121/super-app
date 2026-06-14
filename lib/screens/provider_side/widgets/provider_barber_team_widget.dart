@@ -119,15 +119,15 @@ class _ProviderBarberTeamWidgetState extends State<ProviderBarberTeamWidget> {
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: widget.accent.withValues(alpha: 0.35)),
-              color: widget.accent.withValues(alpha: 0.06),
+              border: Border.all(color: Colors.black.withValues(alpha: 0.35)),
+              color: Colors.black.withValues(alpha: 0.06),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
                   children: [
-                    Icon(LucideIcons.link, color: widget.accent, size: 20),
+                    Icon(LucideIcons.link, color: Colors.black, size: 20),
                     const SizedBox(width: 8),
                     const Text('Taklif kodi', style: TextStyle(fontWeight: FontWeight.bold)),
                   ],
@@ -147,7 +147,7 @@ class _ProviderBarberTeamWidgetState extends State<ProviderBarberTeamWidget> {
                           fontSize: 22,
                           fontWeight: FontWeight.w800,
                           letterSpacing: 2,
-                          color: widget.accent,
+                          color: Colors.black,
                         ),
                       ),
                     ),
@@ -202,7 +202,7 @@ class _ProviderBarberTeamWidgetState extends State<ProviderBarberTeamWidget> {
                       Expanded(
                         child: FilledButton(
                           onPressed: acting ? null : () => _respond(uid, true),
-                          style: FilledButton.styleFrom(backgroundColor: widget.accent),
+                          style: FilledButton.styleFrom(backgroundColor: Colors.black, foregroundColor: Colors.white),
                           child: acting
                               ? const SizedBox(
                                   width: 18, height: 18,

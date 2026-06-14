@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../theme/glass_tokens.dart';
+import '../screens/chat_screen.dart';
 
 class AIAssistantBanner extends StatelessWidget {
   const AIAssistantBanner({super.key});
@@ -76,9 +77,9 @@ class AIAssistantBanner extends StatelessWidget {
               Expanded(
                 child: InkWell(
                   onTap: () {
-                    // TODO: Open chat interface
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Chat paneli ochiladi...')),
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const ChatScreen()),
                     );
                   },
                   borderRadius: BorderRadius.circular(12),

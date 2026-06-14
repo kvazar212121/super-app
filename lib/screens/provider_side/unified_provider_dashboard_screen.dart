@@ -203,24 +203,38 @@ class _UnifiedProviderDashboardScreenState
 
     if (_loading) {
       return Scaffold(
-        body: Center(child: CircularProgressIndicator(color: accent)),
+        backgroundColor: Colors.white,
+        body: const Center(child: CircularProgressIndicator(color: Colors.black)),
       );
     }
 
     if (_error != null) {
       return Scaffold(
-        appBar: AppBar(title: Text('${widget.config.title} paneli')),
+        backgroundColor: Colors.white,
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          foregroundColor: Colors.black,
+          title: Text('${widget.config.title} paneli'),
+          elevation: 0,
+        ),
         body: Center(
           child: Padding(
             padding: const EdgeInsets.all(24),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(LucideIcons.circleAlert, size: 48, color: accent),
+                const Icon(LucideIcons.circleAlert, size: 48, color: Colors.black),
                 const SizedBox(height: 16),
-                Text(_error!, textAlign: TextAlign.center),
+                Text(_error!, textAlign: TextAlign.center, style: const TextStyle(color: Colors.black)),
                 const SizedBox(height: 16),
-                FilledButton(onPressed: _load, child: const Text('Qayta urinish')),
+                FilledButton(
+                  onPressed: _load,
+                  style: FilledButton.styleFrom(
+                    backgroundColor: Colors.black,
+                    foregroundColor: Colors.white,
+                  ),
+                  child: const Text('Qayta urinish'),
+                ),
               ],
             ),
           ),
@@ -264,15 +278,29 @@ class _UnifiedProviderDashboardScreenState
       );
     }
 
-    return Scaffold(
-      backgroundColor: theme.colorScheme.surface,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(20),
-          child: _buildBody(theme, accent),
+    return Theme(
+      data: ThemeData.light().copyWith(
+        scaffoldBackgroundColor: Colors.white,
+        colorScheme: const ColorScheme.light(
+          primary: Colors.black,
+          onPrimary: Colors.white,
+          surface: Colors.white,
+          onSurface: Colors.black,
+          outline: Colors.black,
+          outlineVariant: Colors.black54,
         ),
+        textTheme: Typography.material2021().black,
       ),
-      bottomNavigationBar: _buildBottomNav(accent),
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        body: SafeArea(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(20),
+            child: _buildBody(theme, Colors.black),
+          ),
+        ),
+        bottomNavigationBar: _buildBottomNav(Colors.black),
+      ),
     );
   }
 
@@ -413,10 +441,15 @@ class _UnifiedProviderDashboardScreenState
       children: [
         Row(
           children: [
-            CircleAvatar(
-              radius: 30,
-              backgroundColor: accent.withValues(alpha: 0.1),
-              child: Icon(widget.config.icon, color: accent, size: 30),
+            Container(
+              width: 60,
+              height: 60,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                shape: BoxShape.circle,
+                border: Border.all(color: Colors.black, width: 2),
+              ),
+              child: Icon(widget.config.icon, color: Colors.black, size: 28),
             ),
             const SizedBox(width: 16),
             Expanded(
@@ -425,21 +458,27 @@ class _UnifiedProviderDashboardScreenState
                 children: [
                   Text(
                     name,
-                    style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                    style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: Colors.black),
                   ),
                   Row(
                     children: [
-                      const Icon(Icons.star, color: Colors.amber, size: 16),
+                      const Icon(Icons.star, color: Colors.black, size: 16),
                       const SizedBox(width: 4),
-                      Text('$rating ($reviews sharh)', style: theme.textTheme.bodySmall),
+                      Text('$rating ($reviews sharh)', style: const TextStyle(color: Colors.black87, fontWeight: FontWeight.w500)),
                     ],
                   ),
                 ],
               ),
             ),
-            IconButton(
-              icon: const Icon(LucideIcons.refreshCw),
-              onPressed: _refreshDashboard,
+            Container(
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.black, width: 1.5),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: IconButton(
+                icon: const Icon(LucideIcons.refreshCw, color: Colors.black),
+                onPressed: _refreshDashboard,
+              ),
             ),
           ],
         ),
@@ -447,30 +486,30 @@ class _UnifiedProviderDashboardScreenState
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
           decoration: BoxDecoration(
-            color: _isActive
-                ? const Color(0xFF10B981).withValues(alpha: 0.1)
-                : Colors.grey.withValues(alpha: 0.1),
+            color: Colors.white,
             borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: Colors.black, width: 1.5),
           ),
           child: Row(
             children: [
               Icon(
                 _isActive ? LucideIcons.checkCircle2 : LucideIcons.pauseCircle,
-                color: _isActive ? const Color(0xFF10B981) : Colors.grey,
+                color: Colors.black,
               ),
               const SizedBox(width: 12),
               Text(
                 _isActive ? 'Hozir ishlayapman' : 'Tanaffusda',
-                style: TextStyle(
+                style: const TextStyle(
                   fontWeight: FontWeight.bold,
-                  color: _isActive ? const Color(0xFF10B981) : Colors.grey,
+                  color: Colors.black,
                 ),
               ),
               const Spacer(),
               Switch(
                 value: _isActive,
                 onChanged: _toggleActive,
-                activeColor: const Color(0xFF10B981),
+                activeColor: Colors.black,
+                activeTrackColor: Colors.black12,
               ),
             ],
           ),
@@ -517,7 +556,7 @@ class _UnifiedProviderDashboardScreenState
         const SizedBox(height: 32),
         Text(
           'Bugungi buyurtmalar',
-          style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Colors.black),
         ),
         const SizedBox(height: 16),
         if (_todayOrders.isEmpty)
@@ -552,16 +591,20 @@ class _UnifiedProviderDashboardScreenState
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5)),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.black, width: 2),
+        boxShadow: const [
+          BoxShadow(color: Colors.black, offset: Offset(2, 2)),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, color: accent, size: 24),
+          Icon(icon, color: Colors.black, size: 24),
           const SizedBox(height: 12),
-          Text(value, style: theme.textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold)),
-          Text(title, style: theme.textTheme.bodySmall),
+          Text(value, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w900, color: Colors.black)),
+          Text(title, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.black87)),
         ],
       ),
     );
@@ -575,18 +618,20 @@ class _UnifiedProviderDashboardScreenState
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5)),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.black, width: 1.5),
       ),
       child: Row(
         children: [
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: accent.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(14),
+              color: Colors.white,
+              border: Border.all(color: Colors.black, width: 1.5),
+              borderRadius: BorderRadius.circular(12),
             ),
-            child: Text(time, style: TextStyle(fontWeight: FontWeight.bold, color: accent)),
+            child: Text(time, style: const TextStyle(fontWeight: FontWeight.w900, color: Colors.black)),
           ),
           const SizedBox(width: 16),
           Expanded(
@@ -595,11 +640,11 @@ class _UnifiedProviderDashboardScreenState
               children: [
                 Text(
                   o['user_name'] as String? ?? 'Mijoz',
-                  style: const TextStyle(fontWeight: FontWeight.bold),
+                  style: const TextStyle(fontWeight: FontWeight.w800, color: Colors.black, fontSize: 16),
                 ),
                 Text(
                   o['service_name'] as String? ?? '',
-                  style: theme.textTheme.bodySmall,
+                  style: const TextStyle(color: Colors.black87, fontWeight: FontWeight.w600),
                 ),
               ],
             ),
@@ -609,9 +654,20 @@ class _UnifiedProviderDashboardScreenState
             children: [
               Text(
                 '${NumberFormat('#,###').format((o['price'] as num?) ?? 0)} so\'m',
-                style: const TextStyle(fontWeight: FontWeight.bold),
+                style: const TextStyle(fontWeight: FontWeight.w900, color: Colors.black, fontSize: 15),
               ),
-              Text(_statusLabel(status), style: theme.textTheme.bodySmall),
+              Container(
+                margin: const EdgeInsets.only(top: 4),
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                decoration: BoxDecoration(
+                  color: Colors.black,
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: Text(
+                  _statusLabel(status),
+                  style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                ),
+              ),
             ],
           ),
         ],
@@ -665,7 +721,8 @@ class _UnifiedProviderDashboardScreenState
       selectedIndex: _selectedIndex,
       onDestinationSelected: (i) => setState(() => _selectedIndex = i),
       destinations: destinations,
-      indicatorColor: accent.withValues(alpha: 0.15),
+      backgroundColor: Colors.white,
+      indicatorColor: Colors.black12,
     );
   }
 }

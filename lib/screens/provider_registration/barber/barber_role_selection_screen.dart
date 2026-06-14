@@ -48,7 +48,7 @@ class BarberRoleSelectionScreen extends StatelessWidget {
                   icon: LucideIcons.store,
                   title: 'Sartarosh xona egasi',
                   subtitle: 'O\'z xonangiz, joylashuv, ustalar va taklif kodi',
-                  color: const Color(0xFF6366F1),
+                  color: Colors.black,
                   onTap: () => _open(context, BarberRegistrationRole.shopOwner),
                 ),
                 const SizedBox(height: 16),

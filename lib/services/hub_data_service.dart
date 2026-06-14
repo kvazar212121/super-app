@@ -216,6 +216,7 @@ class HubScreenData {
   List<EventPlanning> events = [];
   List<Master> mobileBarbers = [];
   List<Master> mobileStylists = [];
+  List<Map<String, dynamic>> genericProviders = [];
 }
 
 extension HubDataLoader on HubDataService {
@@ -257,6 +258,13 @@ extension HubDataLoader on HubDataService {
       case ServiceHubKind.usta:
         d.masters = await getMasters(kind);
         d.workshops = await getAutoWorkshops();
+      case ServiceHubKind.gameZona:
+      case ServiceHubKind.sportMaydon:
+      case ServiceHubKind.bozorchi:
+      case ServiceHubKind.oshxona:
+      case ServiceHubKind.kompUsta:
+      case ServiceHubKind.boshqa:
+        d.genericProviders = await fetchProviders(kind);
       default:
         d.masters = await getMasters(kind);
     }

@@ -312,8 +312,8 @@ class _ProviderDentalSettingsWidgetState extends State<ProviderDentalSettingsWid
                   }
                 });
               },
-              selectedColor: widget.accent.withValues(alpha: 0.2),
-              checkmarkColor: widget.accent,
+              selectedColor: Colors.black12,
+              checkmarkColor: Colors.black,
             );
           }).toList(),
         ),
@@ -323,7 +323,7 @@ class _ProviderDentalSettingsWidgetState extends State<ProviderDentalSettingsWid
           child: FilledButton(
             onPressed: _saving ? null : _save,
             style: FilledButton.styleFrom(
-              backgroundColor: widget.accent,
+              backgroundColor: Colors.black, foregroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(vertical: 16),
             ),
             child: _saving

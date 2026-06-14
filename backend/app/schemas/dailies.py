@@ -25,22 +25,57 @@ class TodoOut(TodoBase):
     class Config:
         from_attributes = True
 
-class ShoppingItem(BaseModel):
+
+# ── Shopping ────────────────────────────────────────────────────────────────
+
+class ShoppingItemIn(BaseModel):
     name: str
-    qty: float
-    unit: str
+    qty: float = 1.0
+    unit: str = "dona"
+
+class ShoppingItemFull(BaseModel):
+    name: str
+    qty: float = 1.0
+    unit: str = "dona"
     estimated_price: float = 0.0
+    unit_price: float = 0.0
+    actual_price: Optional[float] = None
+    is_bought: bool = False
 
 class ShoppingListCreate(BaseModel):
-    items: List[ShoppingItem]
+    name: str = "Bozorlik"
+    items: List[ShoppingItemIn]
+
+class ShoppingListUpdate(BaseModel):
+    name: Optional[str] = None
+    items: Optional[List[dict]] = None
+    total_estimated_price: Optional[float] = None
+    total_actual_price: Optional[float] = None
+    is_completed: Optional[bool] = None
+
+class ShoppingItemPriceUpdate(BaseModel):
+    item_index: int
+    actual_price: Optional[float] = None
+    is_bought: Optional[bool] = None
+
+class ShoppingPriceEstimateRequest(BaseModel):
+    items: List[ShoppingItemIn]
+
+class ShoppingPriceEstimateResponse(BaseModel):
+    items: List[dict]
+    total_estimated_price: float
 
 class ShoppingListOut(BaseModel):
     id: int
     user_id: int
+    name: str
     items: List[dict]
     total_estimated_price: float
+    total_actual_price: float
+    is_completed: bool
     is_ordered: bool
     created_at: datetime
+    updated_at: Optional[datetime] = None
     
     class Config:
         from_attributes = True

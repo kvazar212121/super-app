@@ -148,17 +148,17 @@ class _BarberEmployeeJoinScreenState extends State<BarberEmployeeJoinScreen>
                                 return Card(
                                   margin: const EdgeInsets.only(bottom: 10),
                                   color: selected
-                                      ? const Color(0xFF6366F1).withValues(alpha: 0.08)
+                                      ? Colors.black.withValues(alpha: 0.08)
                                       : null,
                                   child: ListTile(
                                     leading: Icon(
                                       LucideIcons.store,
-                                      color: selected ? const Color(0xFF6366F1) : null,
+                                      color: selected ? Colors.black : null,
                                     ),
                                     title: Text(s['name']?.toString() ?? ''),
                                     subtitle: Text(s['address']?.toString() ?? ''),
                                     trailing: selected
-                                        ? const Icon(Icons.check_circle, color: Color(0xFF6366F1))
+                                        ? const Icon(Icons.check_circle, color: Colors.black)
                                         : null,
                                     onTap: () => setState(() => _selectedShopId = id),
                                   ),

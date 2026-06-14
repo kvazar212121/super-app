@@ -1,13 +1,22 @@
 import 'dart:ui';
-
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import '../services/api_service.dart';
 import '../theme/glass_tokens.dart';
 
-class HomePromoSection extends StatelessWidget {
+class HomePromoSection extends StatefulWidget {
   const HomePromoSection({super.key});
 
-  static final _promos = <_PromoItem>[
+  @override
+  State<HomePromoSection> createState() => _HomePromoSectionState();
+}
+
+class _HomePromoSectionState extends State<HomePromoSection> {
+  final ApiService _api = ApiService();
+  List<_PromoItem> _promos = [];
+  bool _isLoading = true;
+
+  static final List<_PromoItem> _fallbackPromos = [
     _PromoItem(
       title: 'Sartarosh — 25% chegirma',
       subtitle: 'Dushanba–chorshanba, barcha xizmatlar',
@@ -29,11 +38,71 @@ class HomePromoSection extends StatelessWidget {
   ];
 
   @override
+  void initState() {
+    super.initState();
+    _loadPromos();
+  }
+
+  Future<void> _loadPromos() async {
+    try {
+      final data = await _api.getPromos();
+      final List<_PromoItem> loaded = [];
+      for (final item in data) {
+        final title = item['title'] ?? '';
+        final subtitle = item['subtitle'] ?? '';
+        final badge = item['badge'] ?? '';
+        final colorsStr = item['colors'] ?? '#6366F1,#A855F7';
+        
+        final List<Color> parsedColors = [];
+        for (final c in colorsStr.split(',')) {
+          final cleanHex = c.trim().replaceAll('#', '');
+          if (cleanHex.length == 6) {
+            parsedColors.add(Color(int.parse('FF$cleanHex', radix: 16)));
+          }
+        }
+        if (parsedColors.length < 2) {
+          parsedColors.addAll([const Color(0xFF6366F1), const Color(0xFFA855F7)]);
+        }
+
+        loaded.add(_PromoItem(
+          title: title,
+          subtitle: subtitle,
+          badge: badge,
+          colors: parsedColors,
+        ));
+      }
+      if (mounted) {
+        setState(() {
+          _promos = loaded.isNotEmpty ? loaded : _fallbackPromos;
+          _isLoading = false;
+        });
+      }
+    } catch (_) {
+      if (mounted) {
+        setState(() {
+          _promos = _fallbackPromos;
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return const SizedBox(
+        height: 130,
+        child: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
+
+    if (_promos.isEmpty) return const SizedBox.shrink();
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-
         CarouselSlider(
           options: CarouselOptions(
             height: 130,
@@ -117,6 +186,7 @@ class HomePromoSection extends StatelessWidget {
                               ],
                             ),
                           ),
+                          const SizedBox(width: 8),
                           Container(
                             padding: const EdgeInsets.symmetric(
                               horizontal: 10,

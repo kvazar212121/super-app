@@ -5,4 +5,8 @@ class AppConfig {
   /// Android emulator: `http://10.0.2.2:8000`
   /// Lokal dev: `http://192.168.101.49:8000`
   static const String apiBaseUrl = 'https://hubservis.uz';
+  
+  /// Groq API kaliti (MVP uchun vaqtinchalik ilova ichida saqlanadi).
+  /// Foydalanishdan oldin bu yerga haqiqiy Groq API kalitini qo'ying.
+  static const String groqApiKey = 'YOUR_GROQ_API_KEY';
 }

@@ -53,7 +53,7 @@ class SalonRoleSelectionScreen extends StatelessWidget {
                   icon: LucideIcons.sparkles,
                   title: 'Salonda ishlayman',
                   subtitle: 'Mavjud salonni tanlang yoki taklif kodi bilan qo\'shiling',
-                  color: const Color(0xFF6366F1),
+                  color: Colors.black,
                   onTap: () => _open(context, SalonRegistrationRole.employee),
                 ),
                 const SizedBox(height: 16),

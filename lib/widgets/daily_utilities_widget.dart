@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../services/api_service.dart';
@@ -14,23 +15,43 @@ class _DailyUtilitiesWidgetState extends State<DailyUtilitiesWidget> {
   final ApiService _api = ApiService();
   
   Map<String, dynamic>? weather;
-  Map<String, dynamic>? currency;
+  List<dynamic>? currencies;
+  
+  int _currentCurrencyIndex = 0;
+  Timer? _timer;
 
   @override
   void initState() {
     super.initState();
     _loadData();
+    _timer = Timer.periodic(const Duration(seconds: 4), (timer) {
+      if (currencies != null && currencies!.isNotEmpty) {
+        if (mounted) {
+          setState(() {
+            _currentCurrencyIndex = (_currentCurrencyIndex + 1) % currencies!.length;
+          });
+        }
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
   }
 
   Future<void> _loadData() async {
     try {
       final w = await _api.getWeather('Tashkent');
-      setState(() => weather = w);
+      if (mounted) setState(() => weather = w);
     } catch (_) {}
 
     try {
       final c = await _api.getCurrency();
-      setState(() => currency = c);
+      if (c.containsKey('rates')) {
+        if (mounted) setState(() => currencies = c['rates']);
+      }
     } catch (_) {}
   }
 
@@ -46,26 +67,68 @@ class _DailyUtilitiesWidgetState extends State<DailyUtilitiesWidget> {
   }
 
   Widget _buildWeatherCard() {
+    String txt = 'Yuklanmoqda...';
+    if (weather != null) {
+      final temp = weather!['temperature_celsius'] ?? weather!['temperature'] ?? '';
+      final cond = weather!['condition'] ?? '';
+      txt = '$temp°C • $cond';
+    }
     return _BaseCard(
       icon: LucideIcons.cloudSun,
       color: Colors.blueAccent,
       title: 'Ob-havo',
-      subtitle: weather != null 
-        ? '${weather!['temperature']}°C • ${weather!['condition']}' 
-        : 'Yuklanmoqda...',
+      customSubtitle: Text(
+        txt,
+        style: TextStyle(
+          color: GlassTokens.secondaryText(context),
+          fontSize: 10,
+        ),
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+      ),
     );
   }
 
   Widget _buildCurrencyCard() {
     String txt = 'Yuklanmoqda...';
-    if (currency != null && currency!.containsKey('USD')) {
-      txt = '1\$ = ${currency!['USD']['rate']} so\'m';
+    if (currencies != null && currencies!.isNotEmpty) {
+      final cur = currencies![_currentCurrencyIndex];
+      final ccy = cur['Ccy'];
+      final rate = cur['Rate'];
+      txt = '1 $ccy = $rate UZS';
     }
+    
     return _BaseCard(
       icon: LucideIcons.circleDollarSign,
       color: Colors.greenAccent,
-      title: 'Valyuta',
-      subtitle: txt,
+      title: 'Valyuta kurslari',
+      customSubtitle: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 500),
+        switchInCurve: Curves.easeOut,
+        switchOutCurve: Curves.easeIn,
+        transitionBuilder: (Widget child, Animation<double> animation) {
+          return FadeTransition(
+            opacity: animation,
+            child: SlideTransition(
+              position: Tween<Offset>(
+                begin: const Offset(0.0, 0.5),
+                end: Offset.zero,
+              ).animate(animation),
+              child: child,
+            ),
+          );
+        },
+        child: Text(
+          txt,
+          key: ValueKey<int>(_currentCurrencyIndex),
+          style: TextStyle(
+            color: GlassTokens.secondaryText(context),
+            fontSize: 10,
+          ),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+      ),
     );
   }
 }
@@ -89,21 +152,30 @@ class _PrayerWidgetState extends State<PrayerWidget> {
   Future<void> _loadData() async {
     try {
       final p = await _api.getPrayerTimes('Tashkent');
-      setState(() => prayers = p);
+      if (mounted) setState(() => prayers = p);
     } catch (_) {}
   }
 
   @override
   Widget build(BuildContext context) {
     String txt = 'Yuklanmoqda...';
-    if (prayers != null && prayers!.containsKey('Bomdod')) {
-      txt = 'Bomdod: ${prayers!['Bomdod']} • Peshin: ${prayers!['Peshin']}';
+    if (prayers != null && prayers!.containsKey('timings')) {
+      final timings = prayers!['timings'];
+      txt = 'Bomdod: ${timings['Fajr']} • Peshin: ${timings['Dhuhr']}';
     }
     return _BaseCard(
       icon: LucideIcons.moon,
       color: Colors.deepPurpleAccent,
       title: 'Namoz vaqtlari',
-      subtitle: txt,
+      customSubtitle: Text(
+        txt,
+        style: TextStyle(
+          color: GlassTokens.secondaryText(context),
+          fontSize: 10,
+        ),
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+      ),
     );
   }
 }
@@ -112,13 +184,13 @@ class _BaseCard extends StatelessWidget {
   final IconData icon;
   final Color color;
   final String title;
-  final String subtitle;
+  final Widget customSubtitle;
 
   const _BaseCard({
     required this.icon,
     required this.color,
     required this.title,
-    required this.subtitle,
+    required this.customSubtitle,
   });
 
   @override
@@ -133,6 +205,7 @@ class _BaseCard extends StatelessWidget {
       ),
       child: Row(
         children: [
+          /* Icon removed to save space
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
@@ -142,6 +215,7 @@ class _BaseCard extends StatelessWidget {
             child: Icon(icon, color: color, size: 18),
           ),
           const SizedBox(width: 8),
+          */
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -158,15 +232,7 @@ class _BaseCard extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                 ),
                 const SizedBox(height: 2),
-                Text(
-                  subtitle,
-                  style: TextStyle(
-                    color: GlassTokens.secondaryText(context),
-                    fontSize: 10,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
+                customSubtitle,
               ],
             ),
           )

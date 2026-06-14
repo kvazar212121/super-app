@@ -1,3 +1,4 @@
+import asyncio
 import logging
 import time
 import traceback
@@ -10,7 +11,7 @@ from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
-from sqlalchemy import select, text
+from sqlalchemy import select, text, func
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 from starlette.responses import Response
 
@@ -27,6 +28,7 @@ from app.core.security import hash_password
 from app.db.base import Base
 from app.db.session import async_session, engine
 from app.models.user import User
+from app.models.promo import Promo
 
 logger = logging.getLogger(__name__)
 
@@ -59,7 +61,7 @@ class RequestLoggingMiddleware(BaseHTTPMiddleware):
     """Har bir HTTP so'rovni log qiladi va request ID qo'shadi."""
 
     async def dispatch(
-        self, request: Request, call_next: RequestResponseEndpoint
+        request: Request, call_next: RequestResponseEndpoint
     ) -> Response:
         # Request ID yaratish yoki mavjudini olish
         request_id = request.headers.get("X-Request-ID", get_request_id())
@@ -122,6 +124,157 @@ class RequestLoggingMiddleware(BaseHTTPMiddleware):
             )
 
 
+async def plan_reminder_scheduler():
+    logger.info("Plan reminder scheduler starting...")
+    while True:
+        try:
+            await asyncio.sleep(15)  # Check every 15 seconds
+            from datetime import datetime, timezone
+            now = datetime.now(timezone.utc)
+            
+            async with async_session() as db:
+                from app.models.plan import Plan
+                from app.services.notification_service import NotificationService
+                
+                stmt = select(Plan).where(
+                    Plan.is_completed == False,
+                    Plan.is_notified == False,
+                    Plan.due_date <= now
+                )
+                result = await db.execute(stmt)
+                plans = result.scalars().all()
+                
+                if plans:
+                    logger.info(f"Reminder scheduler found {len(plans)} plans to notify.")
+                    for plan in plans:
+                        NotificationService.send_notification(
+                            user_id=plan.user_id,
+                            ntype="plan_reminder",
+                            title="Reja eslatmasi ⏰",
+                            message=f"Siz shu soatda shuni qilishingiz kerak edi: {plan.title}",
+                        )
+                        plan.is_notified = True
+                    await db.commit()
+        except asyncio.CancelledError:
+            logger.info("Plan reminder scheduler cancelled.")
+            break
+        except Exception as e:
+            logger.error(f"Error in plan reminder scheduler: {e}")
+
+
+async def finance_reminder_scheduler():
+    logger.info("Finance reminder and AI advisor scheduler starting...")
+    while True:
+        try:
+            await asyncio.sleep(30)  # Check every 30 seconds
+            from datetime import datetime, timezone, timedelta
+            now = datetime.now(timezone.utc)
+            tomorrow = now + timedelta(days=1)
+            
+            async with async_session() as db:
+                from app.models.planned_payment import PlannedPayment
+                from app.models.finance_record import FinanceRecord
+                from app.services.notification_service import NotificationService
+                from app.models.user import User
+                
+                # 1. Planned Payment Reminders
+                stmt = select(PlannedPayment).where(
+                    PlannedPayment.is_paid == False,
+                    PlannedPayment.is_notified == False,
+                    PlannedPayment.due_date <= tomorrow
+                )
+                result = await db.execute(stmt)
+                payments = result.scalars().all()
+                
+                if payments:
+                    logger.info(f"Finance scheduler found {len(payments)} planned payments to notify.")
+                    for p in payments:
+                        due_time_str = p.due_date.astimezone().strftime("%d-%B %H:%M")
+                        amt_str = f"{int(p.amount):,}".replace(",", " ")
+                        
+                        NotificationService.send_notification(
+                            user_id=p.user_id,
+                            ntype="planned_payment_reminder",
+                            title="To'lov eslatmasi 💸",
+                            message=f"Siz yaqin orada (muddat: {due_time_str}) '{p.title}' to'lovini amalga oshirishingiz kerak. Summa: {amt_str} UZS.",
+                        )
+                        p.is_notified = True
+                    await db.commit()
+                
+                # 2. AI Spending Advice
+                user_stmt = select(User).where(User.is_active == True)
+                user_res = await db.execute(user_stmt)
+                users = user_res.scalars().all()
+                
+                for u in users:
+                    from app.services.notification_service import _notification_store
+                    user_notifs = _notification_store.get(u.id, [])
+                    recent_ai_notifs = [
+                        n for n in user_notifs 
+                        if n.type == "ai_spending_advice" and (now - n.created_at).days < 7
+                    ]
+                    
+                    if not recent_ai_notifs:
+                        start_of_month = datetime(now.year, now.month, 1, tzinfo=timezone.utc)
+                        records_stmt = select(FinanceRecord).where(
+                            FinanceRecord.user_id == u.id,
+                            FinanceRecord.date >= start_of_month
+                        )
+                        records_res = await db.execute(records_stmt)
+                        records = records_res.scalars().all()
+                        
+                        total_income = 0.0
+                        total_expense = 0.0
+                        category_totals = {}
+                        
+                        for r in records:
+                            if r.type == "income":
+                                total_income += r.amount
+                            elif r.type == "expense":
+                                total_expense += r.amount
+                                category_totals[r.category] = category_totals.get(r.category, 0.0) + r.amount
+                                
+                        if total_expense > 50000:
+                            advice_msg = None
+                            
+                            if total_expense > total_income and total_income > 0:
+                                advice_msg = (
+                                    f"Diqqat! Ushbu oyda xarajatlaringiz daromadingizdan oshib ketdi. "
+                                    f"Tejashni boshlash tavsiya etiladi. Jami xarajat: {int(total_expense):,} UZS, "
+                                    f"Daromad: {int(total_income):,} UZS."
+                                ).replace(",", " ")
+                            elif total_income > 0 and (total_expense / total_income) > 0.8:
+                                advice_msg = (
+                                    f"Ehtiyot bo'ling! Xarajatlaringiz daromadingizning 80% idan oshib ketdi. "
+                                    f"Budjetingizni qayta ko'rib chiqing. Jami xarajat: {int(total_expense):,} UZS."
+                                ).replace(",", " ")
+                            elif category_totals:
+                                max_cat = max(category_totals, key=category_totals.get)
+                                max_amt = category_totals[max_cat]
+                                pct = (max_amt / total_expense) * 100
+                                if pct > 40:
+                                    advice_msg = (
+                                        f"Siz eng ko'p mablag'ni '{max_cat}' toifasiga sarflayapsiz. "
+                                        f"Bu oylik xarajatlaringizning {pct:.1f}% qismini tashkil qilmoqda. "
+                                        f"Kafe va restoranlar yoki shaxsiy xaridlarni biroz qisqartirishni maslahat beramiz."
+                                    )
+                                    
+                            if advice_msg:
+                                NotificationService.send_notification(
+                                    user_id=u.id,
+                                    ntype="ai_spending_advice",
+                                    title="Aqlli AI Maslahatchi 🧠",
+                                    message=advice_msg,
+                                )
+                                logger.info(f"Sent AI spending advice to user {u.id}")
+                                
+        except asyncio.CancelledError:
+            logger.info("Finance reminder scheduler cancelled.")
+            break
+        except Exception as e:
+            logger.error(f"Error in finance reminder scheduler: {e}")
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Loggingni sozlash
@@ -138,8 +291,21 @@ async def lifespan(app: FastAPI):
         await conn.execute(text(
             "CREATE INDEX IF NOT EXISTS ix_providers_owner_user_id ON providers (owner_user_id)"
         ))
+        await conn.execute(text(
+            "ALTER TABLE plans ADD COLUMN IF NOT EXISTS is_notified BOOLEAN DEFAULT FALSE"
+        ))
+        # Shopping list new columns
+        await conn.execute(text(
+            "ALTER TABLE shopping_lists ADD COLUMN IF NOT EXISTS name VARCHAR(255) DEFAULT 'Bozorlik'"
+        ))
+        await conn.execute(text(
+            "ALTER TABLE shopping_lists ADD COLUMN IF NOT EXISTS total_actual_price FLOAT DEFAULT 0.0"
+        ))
+        await conn.execute(text(
+            "ALTER TABLE shopping_lists ADD COLUMN IF NOT EXISTS is_completed BOOLEAN DEFAULT FALSE"
+        ))
 
-    # Seed admin user
+    # Seed admin user & default promos
     async with async_session() as db:
         result = await db.execute(
             select(User).where(User.phone == settings.admin_default_phone)
@@ -155,7 +321,51 @@ async def lifespan(app: FastAPI):
             )
             db.add(admin)
             await db.commit()
+
+        # Seed default promos if empty
+        promo_count = (await db.execute(select(func.count(Promo.id)))).scalar() or 0
+        if promo_count == 0:
+            default_promos = [
+                Promo(
+                    title="Sartarosh — 25% chegirma",
+                    subtitle="Dushanba–chorshanba, barcha xizmatlar",
+                    badge="-25%",
+                    colors="#6366F1,#A855F7"
+                ),
+                Promo(
+                    title="Tozalash — birinchi buyurtma",
+                    subtitle="30% gacha chegirma, kod: TOZA30",
+                    badge="AKSIYA",
+                    colors="#0D9488,#06B6D4"
+                ),
+                Promo(
+                    title="Avto-yordam tungi tarif",
+                    subtitle="Evakuator 20% arzonroq 22:00 dan keyin",
+                    badge="-20%",
+                    colors="#EA580C,#F59E0B"
+                )
+            ]
+            db.add_all(default_promos)
+            await db.commit()
+            
+    # Start the background tasks
+    reminder_task = asyncio.create_task(plan_reminder_scheduler())
+    finance_task = asyncio.create_task(finance_reminder_scheduler())
+    
     yield
+    
+    # Cancel the background tasks
+    reminder_task.cancel()
+    finance_task.cancel()
+    try:
+        await reminder_task
+    except asyncio.CancelledError:
+        pass
+    try:
+        await finance_task
+    except asyncio.CancelledError:
+        pass
+        
     await engine.dispose()
 
 

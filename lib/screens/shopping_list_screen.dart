@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'dart:async';
 import '../models/daily_models.dart';
@@ -13,29 +14,36 @@ class ShoppingListScreen extends StatefulWidget {
   State<ShoppingListScreen> createState() => _ShoppingListScreenState();
 }
 
-class _ShoppingListScreenState extends State<ShoppingListScreen> {
+class _ShoppingListScreenState extends State<ShoppingListScreen> with SingleTickerProviderStateMixin {
   final ApiService _api = ApiService();
+  late TabController _tabController;
   bool _isLoading = true;
   List<ShoppingListModel> _lists = [];
-  
+
+  // New list builder state
   final List<ShoppingListItem> _currentItems = [];
   final TextEditingController _itemController = TextEditingController();
   final TextEditingController _qtyController = TextEditingController();
-  Timer? _debounce;
+  final TextEditingController _listNameController = TextEditingController();
+  String _selectedUnit = 'kg';
   double _currentTotal = 0;
   bool _isCalculating = false;
+
+  static const List<String> _units = ['kg', 'dona', 'litr', 'bog\'', 'qadoq'];
 
   @override
   void initState() {
     super.initState();
+    _tabController = TabController(length: 2, vsync: this);
     _loadLists();
   }
 
   @override
   void dispose() {
-    _debounce?.cancel();
+    _tabController.dispose();
     _itemController.dispose();
     _qtyController.dispose();
+    _listNameController.dispose();
     super.dispose();
   }
 
@@ -44,7 +52,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
     try {
       final data = await _api.getShoppingLists();
       setState(() {
-        _lists = data.map((e) => ShoppingListModel.fromJson(e)).toList();
+        _lists = data.map((e) => ShoppingListModel.fromJson(e as Map<String, dynamic>)).toList();
       });
     } catch (e) {
       debugPrint("Error loading shopping lists: $e");
@@ -53,77 +61,798 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
     }
   }
 
-  Future<void> _calculateItemPrice() async {
-    if (_itemController.text.trim().isEmpty) return;
-    
+  Future<void> _addItem() async {
+    final name = _itemController.text.trim();
+    if (name.isEmpty) return;
+
     setState(() => _isCalculating = true);
     try {
       final qty = double.tryParse(_qtyController.text) ?? 1.0;
-      final tempItem = {'name': _itemController.text.trim(), 'quantity': qty};
-      
-      final res = await _api.calculateShoppingPrice([tempItem]);
+      final res = await _api.calculateShoppingPrice([
+        {'name': name, 'qty': qty, 'unit': _selectedUnit}
+      ]);
       final calcItems = res['items'] as List;
       if (calcItems.isNotEmpty) {
-        final estPrice = (calcItems[0]['estimated_price'] as num).toDouble();
+        final item = calcItems[0] as Map<String, dynamic>;
         setState(() {
-          _currentItems.add(ShoppingListItem(
-            name: _itemController.text.trim(),
-            quantity: qty,
-            estimatedPrice: estPrice,
-          ));
-          _currentTotal += estPrice;
+          _currentItems.add(ShoppingListItem.fromJson(item));
+          _currentTotal += (item['estimated_price'] as num).toDouble();
           _itemController.clear();
           _qtyController.clear();
         });
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Xatolik yuz berdi')));
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Narx hisoblashda xatolik'),
+            backgroundColor: Colors.red.shade700,
+          ),
+        );
+      }
     } finally {
       setState(() => _isCalculating = false);
     }
   }
 
+  void _removeItem(int index) {
+    setState(() {
+      _currentTotal -= _currentItems[index].estimatedPrice;
+      _currentItems.removeAt(index);
+    });
+  }
+
   Future<void> _saveList() async {
     if (_currentItems.isEmpty) return;
+    final name = _listNameController.text.trim().isNotEmpty
+        ? _listNameController.text.trim()
+        : 'Bozorlik ${DateTime.now().day}.${DateTime.now().month}';
     try {
       final itemsMap = _currentItems.map((e) => e.toJson()).toList();
-      final res = await _api.createShoppingList('Mening bozorligim ${DateTime.now().day}', itemsMap, _currentTotal);
+      final res = await _api.createShoppingList(name, itemsMap);
       setState(() {
         _lists.insert(0, ShoppingListModel.fromJson(res));
         _currentItems.clear();
         _currentTotal = 0;
+        _listNameController.clear();
       });
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Ro\'yxat saqlandi!')));
+      _tabController.animateTo(1);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Ro\'yxat saqlandi! ✅'),
+            backgroundColor: Colors.green.shade700,
+          ),
+        );
+      }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Saqlashda xatolik')));
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Saqlashda xatolik'),
+            backgroundColor: Colors.red.shade700,
+          ),
+        );
+      }
     }
+  }
+
+  Future<void> _toggleBought(int listIndex, int itemIndex) async {
+    final list = _lists[listIndex];
+    final item = list.items[itemIndex];
+    try {
+      final updated = await _api.updateShoppingItem(
+        list.id,
+        itemIndex,
+        isBought: !item.isBought,
+      );
+      setState(() {
+        _lists[listIndex] = ShoppingListModel.fromJson(updated);
+      });
+    } catch (e) {
+      debugPrint("Error toggling item: $e");
+    }
+  }
+
+  Future<void> _setActualPrice(int listIndex, int itemIndex) async {
+    final list = _lists[listIndex];
+    final item = list.items[itemIndex];
+
+    final controller = TextEditingController(
+      text: item.actualPrice?.toStringAsFixed(0) ?? item.estimatedPrice.toStringAsFixed(0),
+    );
+
+    final result = await showDialog<double>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: GlassTokens.glassFill(ctx),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text('Haqiqiy narx', style: TextStyle(color: GlassTokens.primaryText(ctx))),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              '${item.name} (${item.qty} ${item.unit})',
+              style: TextStyle(color: GlassTokens.secondaryText(ctx)),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: controller,
+              keyboardType: TextInputType.number,
+              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+              decoration: InputDecoration(
+                suffixText: 'so\'m',
+                hintText: 'Narxni kiriting',
+                filled: true,
+                fillColor: Colors.white.withValues(alpha: 0.1),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide.none,
+                ),
+              ),
+              style: TextStyle(color: GlassTokens.primaryText(ctx), fontSize: 18),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text('Bekor', style: TextStyle(color: GlassTokens.secondaryText(ctx))),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.orange),
+            onPressed: () {
+              final v = double.tryParse(controller.text) ?? 0.0;
+              Navigator.pop(ctx, v);
+            },
+            child: const Text('Saqlash'),
+          ),
+        ],
+      ),
+    );
+
+    if (result != null) {
+      try {
+        final updated = await _api.updateShoppingItem(list.id, itemIndex, actualPrice: result, isBought: true);
+        setState(() {
+          _lists[listIndex] = ShoppingListModel.fromJson(updated);
+        });
+      } catch (e) {
+        debugPrint("Error updating price: $e");
+      }
+    }
+  }
+
+  Future<void> _deleteList(int index) async {
+    final list = _lists[index];
+    try {
+      await _api.deleteShoppingList(list.id);
+      setState(() => _lists.removeAt(index));
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('O\'chirildi'),
+            backgroundColor: Colors.red.shade700,
+          ),
+        );
+      }
+    } catch (e) {
+      debugPrint("Error deleting list: $e");
+    }
+  }
+
+  String _formatPrice(double price) {
+    if (price == 0) return '—';
+    final p = price.toInt();
+    final s = p.toString();
+    final buf = StringBuffer();
+    for (int i = 0; i < s.length; i++) {
+      if (i > 0 && (s.length - i) % 3 == 0) buf.write(' ');
+      buf.write(s[i]);
+    }
+    return '${buf.toString()} so\'m';
   }
 
   @override
   Widget build(BuildContext context) {
     return GlassScaffold(
       showBackButton: true,
-      title: 'Aqlli Savdo',
-      body: DefaultTabController(
-        length: 2,
-        child: Column(
-          children: [
-            TabBar(
-              indicatorColor: Colors.orange,
-              labelColor: Colors.orange,
-              unselectedLabelColor: GlassTokens.secondaryText(context),
-              tabs: const [
-                Tab(text: 'Yangi ro\'yxat'),
-                Tab(text: 'Saqlanganlar'),
+      title: '🛒 Aqlli Savdo',
+      bottom: PreferredSize(
+        preferredSize: const Size.fromHeight(48),
+        child: TabBar(
+          controller: _tabController,
+          indicatorColor: Colors.orange,
+          indicatorWeight: 3,
+          labelColor: Colors.orange,
+          unselectedLabelColor: GlassTokens.secondaryText(context),
+          labelStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14),
+          tabs: const [
+            Tab(text: '+ Yangi ro\'yxat'),
+            Tab(text: '📋 Saqlanganlar'),
+          ],
+        ),
+      ),
+      body: TabBarView(
+        controller: _tabController,
+        children: [
+          _buildNewListTab(),
+          _buildSavedListsTab(),
+        ],
+      ),
+    );
+  }
+
+  // ══════════════════════════════════════════════════════════
+  // TAB 1: New List Builder
+  // ══════════════════════════════════════════════════════════
+
+  Widget _buildNewListTab() {
+    return Column(
+      children: [
+        _buildListNameInput(),
+        _buildInputArea(),
+        Expanded(
+          child: _currentItems.isEmpty
+              ? _buildEmptyNewList()
+              : _buildCurrentItemsList(),
+        ),
+        if (_currentItems.isNotEmpty) _buildTotalBar(),
+      ],
+    );
+  }
+
+  Widget _buildListNameInput() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+      child: TextField(
+        controller: _listNameController,
+        decoration: InputDecoration(
+          hintText: 'Ro\'yxat nomi (masalan: "Haftalik bozorlik")',
+          hintStyle: TextStyle(color: GlassTokens.secondaryText(context), fontSize: 13),
+          filled: true,
+          fillColor: Colors.white.withValues(alpha: 0.07),
+          prefixIcon: Icon(LucideIcons.tag, color: Colors.orange.shade300, size: 18),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(14),
+            borderSide: BorderSide.none,
+          ),
+        ),
+        style: TextStyle(color: GlassTokens.primaryText(context), fontSize: 14),
+      ),
+    );
+  }
+
+  Widget _buildInputArea() {
+    return Container(
+      margin: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.06),
+        borderRadius: BorderRadius.circular(GlassTokens.radiusMd),
+        border: Border.all(color: Colors.orange.withValues(alpha: 0.2)),
+      ),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Expanded(
+                flex: 5,
+                child: TextField(
+                  controller: _itemController,
+                  textInputAction: TextInputAction.next,
+                  decoration: InputDecoration(
+                    hintText: 'Mahsulot nomi...',
+                    hintStyle: TextStyle(color: GlassTokens.secondaryText(context)),
+                    filled: true,
+                    fillColor: Colors.white.withValues(alpha: 0.08),
+                    prefixIcon: Icon(LucideIcons.search, color: GlassTokens.secondaryText(context), size: 18),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide.none,
+                    ),
+                  ),
+                  style: TextStyle(color: GlassTokens.primaryText(context)),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Row(
+            children: [
+              Expanded(
+                flex: 2,
+                child: TextField(
+                  controller: _qtyController,
+                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  decoration: InputDecoration(
+                    hintText: 'Soni',
+                    hintStyle: TextStyle(color: GlassTokens.secondaryText(context), fontSize: 13),
+                    filled: true,
+                    fillColor: Colors.white.withValues(alpha: 0.08),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide.none,
+                    ),
+                  ),
+                  style: TextStyle(color: GlassTokens.primaryText(context)),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.08),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: DropdownButtonHideUnderline(
+                  child: DropdownButton<String>(
+                    value: _selectedUnit,
+                    dropdownColor: GlassTokens.glassFill(context),
+                    style: TextStyle(color: GlassTokens.primaryText(context), fontSize: 14),
+                    icon: Icon(LucideIcons.chevronDown, color: GlassTokens.secondaryText(context), size: 16),
+                    items: _units.map((u) => DropdownMenuItem(value: u, child: Text(u))).toList(),
+                    onChanged: (v) => setState(() => _selectedUnit = v ?? 'kg'),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    colors: [Color(0xFFF97316), Color(0xFFEF4444)],
+                  ),
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.orange.withValues(alpha: 0.3),
+                      blurRadius: 8,
+                      offset: const Offset(0, 3),
+                    ),
+                  ],
+                ),
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(12),
+                    onTap: _isCalculating ? null : _addItem,
+                    child: Padding(
+                      padding: const EdgeInsets.all(12),
+                      child: _isCalculating
+                          ? const SizedBox(
+                              width: 22,
+                              height: 22,
+                              child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                            )
+                          : const Icon(LucideIcons.plus, color: Colors.white, size: 22),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEmptyNewList() {
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(LucideIcons.shoppingBasket, size: 64, color: Colors.orange.withValues(alpha: 0.3)),
+          const SizedBox(height: 16),
+          Text(
+            'Mahsulotlar qo\'shing',
+            style: TextStyle(color: GlassTokens.secondaryText(context), fontSize: 16),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'AI narxlarni taxmin qiladi 🤖',
+            style: TextStyle(color: GlassTokens.secondaryText(context).withValues(alpha: 0.6), fontSize: 13),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCurrentItemsList() {
+    return ListView.builder(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      itemCount: _currentItems.length,
+      itemBuilder: (context, index) {
+        final item = _currentItems[index];
+        return Dismissible(
+          key: ValueKey('new_item_$index'),
+          direction: DismissDirection.endToStart,
+          background: Container(
+            margin: const EdgeInsets.only(bottom: 8),
+            decoration: BoxDecoration(
+              color: Colors.red.shade800,
+              borderRadius: BorderRadius.circular(14),
+            ),
+            alignment: Alignment.centerRight,
+            padding: const EdgeInsets.only(right: 20),
+            child: const Icon(LucideIcons.trash2, color: Colors.white),
+          ),
+          onDismissed: (_) => _removeItem(index),
+          child: Container(
+            margin: const EdgeInsets.only(bottom: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.06),
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: GlassTokens.glassBorder(context)),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [Colors.orange.withValues(alpha: 0.3), Colors.deepOrange.withValues(alpha: 0.2)],
+                    ),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Center(
+                    child: Text(
+                      _getItemEmoji(item.name),
+                      style: const TextStyle(fontSize: 20),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        item.name,
+                        style: TextStyle(
+                          color: GlassTokens.primaryText(context),
+                          fontWeight: FontWeight.w600,
+                          fontSize: 15,
+                        ),
+                      ),
+                      Text(
+                        '${item.qty} ${item.unit}${item.unitPrice > 0 ? ' × ${_formatPrice(item.unitPrice)}' : ''}',
+                        style: TextStyle(color: GlassTokens.secondaryText(context), fontSize: 12),
+                      ),
+                    ],
+                  ),
+                ),
+                Text(
+                  _formatPrice(item.estimatedPrice),
+                  style: const TextStyle(
+                    color: Colors.greenAccent,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                  ),
+                ),
               ],
             ),
-            Expanded(
-              child: TabBarView(
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildTotalBar() {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [Colors.black.withValues(alpha: 0.0), Colors.black.withValues(alpha: 0.5)],
+        ),
+        border: Border(top: BorderSide(color: Colors.white.withValues(alpha: 0.08))),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Taxminiy jami:',
+                  style: TextStyle(color: GlassTokens.secondaryText(context), fontSize: 12),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  _formatPrice(_currentTotal),
+                  style: const TextStyle(
+                    color: Colors.orange,
+                    fontSize: 22,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                Text(
+                  '${_currentItems.length} mahsulot',
+                  style: TextStyle(color: GlassTokens.secondaryText(context), fontSize: 11),
+                ),
+              ],
+            ),
+          ),
+          Container(
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                colors: [Color(0xFFF97316), Color(0xFFEF4444)],
+              ),
+              borderRadius: BorderRadius.circular(14),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.orange.withValues(alpha: 0.4),
+                  blurRadius: 12,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                borderRadius: BorderRadius.circular(14),
+                onTap: _saveList,
+                child: const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(LucideIcons.save, color: Colors.white, size: 18),
+                      SizedBox(width: 8),
+                      Text(
+                        'Saqlash',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 15,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ══════════════════════════════════════════════════════════
+  // TAB 2: Saved Lists
+  // ══════════════════════════════════════════════════════════
+
+  Widget _buildSavedListsTab() {
+    if (_isLoading) {
+      return const Center(child: CircularProgressIndicator(color: Colors.orange));
+    }
+    if (_lists.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(LucideIcons.clipboardList, size: 64, color: Colors.orange.withValues(alpha: 0.3)),
+            const SizedBox(height: 16),
+            Text(
+              'Saqlangan ro\'yxatlar yo\'q',
+              style: TextStyle(color: GlassTokens.secondaryText(context), fontSize: 16),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return ListView.builder(
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
+      itemCount: _lists.length,
+      itemBuilder: (context, index) => _buildSavedListCard(index),
+    );
+  }
+
+  Widget _buildSavedListCard(int listIndex) {
+    final list = _lists[listIndex];
+    final progress = list.items.isEmpty ? 0.0 : list.boughtCount / list.items.length;
+    final isDone = list.isCompleted;
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.06),
+        borderRadius: BorderRadius.circular(GlassTokens.radiusMd),
+        border: Border.all(
+          color: isDone ? Colors.green.withValues(alpha: 0.4) : GlassTokens.glassBorder(context),
+        ),
+        boxShadow: GlassTokens.glassShadow(context),
+      ),
+      child: Theme(
+        data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+        child: ExpansionTile(
+          tilePadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+          childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+          leading: Container(
+            width: 44,
+            height: 44,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: isDone
+                    ? [Colors.green.withValues(alpha: 0.3), Colors.teal.withValues(alpha: 0.2)]
+                    : [Colors.orange.withValues(alpha: 0.3), Colors.deepOrange.withValues(alpha: 0.2)],
+              ),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Center(
+              child: Text(isDone ? '✅' : '🛒', style: const TextStyle(fontSize: 22)),
+            ),
+          ),
+          title: Text(
+            list.name,
+            style: TextStyle(
+              color: GlassTokens.primaryText(context),
+              fontWeight: FontWeight.w700,
+              fontSize: 15,
+              decoration: isDone ? TextDecoration.lineThrough : null,
+            ),
+          ),
+          subtitle: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 4),
+              Row(
                 children: [
-                  _buildNewListTab(),
-                  _buildSavedListsTab(),
+                  Text(
+                    'Taxminiy: ${_formatPrice(list.totalEstimatedPrice)}',
+                    style: TextStyle(color: GlassTokens.secondaryText(context), fontSize: 12),
+                  ),
+                  if (list.totalActualPrice > 0) ...[
+                    const SizedBox(width: 8),
+                    Text(
+                      'Haqiqiy: ${_formatPrice(list.totalActualPrice)}',
+                      style: const TextStyle(color: Colors.greenAccent, fontSize: 12, fontWeight: FontWeight.w600),
+                    ),
+                  ],
                 ],
               ),
+              const SizedBox(height: 6),
+              Row(
+                children: [
+                  Expanded(
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(4),
+                      child: LinearProgressIndicator(
+                        value: progress,
+                        backgroundColor: Colors.white.withValues(alpha: 0.1),
+                        valueColor: AlwaysStoppedAnimation(isDone ? Colors.green : Colors.orange),
+                        minHeight: 4,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    '${list.boughtCount}/${list.items.length}',
+                    style: TextStyle(color: GlassTokens.secondaryText(context), fontSize: 11, fontWeight: FontWeight.w600),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          trailing: IconButton(
+            icon: Icon(LucideIcons.trash2, color: Colors.red.shade400, size: 18),
+            onPressed: () => _confirmDelete(listIndex),
+          ),
+          children: [
+            ...list.items.asMap().entries.map((entry) {
+              final itemIndex = entry.key;
+              final item = entry.value;
+              return _buildSavedItemRow(listIndex, itemIndex, item);
+            }),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSavedItemRow(int listIndex, int itemIndex, ShoppingListItem item) {
+    return GestureDetector(
+      onLongPress: () => _setActualPrice(listIndex, itemIndex),
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 6),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        decoration: BoxDecoration(
+          color: item.isBought
+              ? Colors.green.withValues(alpha: 0.08)
+              : Colors.white.withValues(alpha: 0.04),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: item.isBought
+                ? Colors.green.withValues(alpha: 0.2)
+                : Colors.transparent,
+          ),
+        ),
+        child: Row(
+          children: [
+            // Checkbox
+            GestureDetector(
+              onTap: () => _toggleBought(listIndex, itemIndex),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                width: 28,
+                height: 28,
+                decoration: BoxDecoration(
+                  color: item.isBought ? Colors.green : Colors.transparent,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: item.isBought ? Colors.green : GlassTokens.secondaryText(context).withValues(alpha: 0.4),
+                    width: 2,
+                  ),
+                ),
+                child: item.isBought
+                    ? const Icon(Icons.check, color: Colors.white, size: 18)
+                    : null,
+              ),
+            ),
+            const SizedBox(width: 12),
+            // Emoji
+            Text(_getItemEmoji(item.name), style: const TextStyle(fontSize: 18)),
+            const SizedBox(width: 10),
+            // Info
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    item.name,
+                    style: TextStyle(
+                      color: GlassTokens.primaryText(context),
+                      fontWeight: FontWeight.w600,
+                      fontSize: 14,
+                      decoration: item.isBought ? TextDecoration.lineThrough : null,
+                    ),
+                  ),
+                  Text(
+                    '${item.qty} ${item.unit}',
+                    style: TextStyle(color: GlassTokens.secondaryText(context), fontSize: 11),
+                  ),
+                ],
+              ),
+            ),
+            // Price
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                if (item.actualPrice != null) ...[
+                  Text(
+                    _formatPrice(item.actualPrice!),
+                    style: const TextStyle(
+                      color: Colors.greenAccent,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 13,
+                    ),
+                  ),
+                  Text(
+                    _formatPrice(item.estimatedPrice),
+                    style: TextStyle(
+                      color: GlassTokens.secondaryText(context),
+                      fontSize: 10,
+                      decoration: TextDecoration.lineThrough,
+                    ),
+                  ),
+                ] else
+                  Text(
+                    _formatPrice(item.estimatedPrice),
+                    style: TextStyle(
+                      color: item.estimatedPrice > 0 ? Colors.orange : GlassTokens.secondaryText(context),
+                      fontWeight: FontWeight.w600,
+                      fontSize: 13,
+                    ),
+                  ),
+              ],
             ),
           ],
         ),
@@ -131,125 +860,73 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
     );
   }
 
-  Widget _buildNewListTab() {
-    return Column(
-      children: [
-        _buildInputArea(),
-        Expanded(
-          child: _currentItems.isEmpty
-              ? const Center(child: Text("Mahsulotlar qo'shing"))
-              : ListView.builder(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                  itemCount: _currentItems.length,
-                  itemBuilder: (context, index) {
-                    final item = _currentItems[index];
-                    return ListTile(
-                      title: Text(item.name, style: TextStyle(color: GlassTokens.primaryText(context))),
-                      subtitle: Text('${item.quantity} miqdor', style: TextStyle(color: GlassTokens.secondaryText(context))),
-                      trailing: Text('${item.estimatedPrice} so\'m', style: TextStyle(color: Colors.greenAccent, fontWeight: FontWeight.bold)),
-                    );
-                  },
-                ),
+  void _confirmDelete(int index) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: GlassTokens.glassFill(ctx),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text('O\'chirish', style: TextStyle(color: GlassTokens.primaryText(ctx))),
+        content: Text(
+          'Bu ro\'yxatni o\'chirmoqchimisiz?',
+          style: TextStyle(color: GlassTokens.secondaryText(ctx)),
         ),
-        if (_currentItems.isNotEmpty)
-          Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: Colors.black45,
-              border: Border(top: BorderSide(color: Colors.white.withValues(alpha: 0.1))),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Taxminiy jami:', style: TextStyle(color: GlassTokens.secondaryText(context))),
-                    Text('$_currentTotal so\'m', style: const TextStyle(color: Colors.orange, fontSize: 20, fontWeight: FontWeight.bold)),
-                  ],
-                ),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(backgroundColor: Colors.orange),
-                  onPressed: _saveList,
-                  child: const Text('Saqlash'),
-                )
-              ],
-            ),
-          )
-      ],
-    );
-  }
-
-  Widget _buildInputArea() {
-    return Padding(
-      padding: const EdgeInsets.all(20),
-      child: Row(
-        children: [
-          Expanded(
-            flex: 3,
-            child: TextField(
-              controller: _itemController,
-              decoration: InputDecoration(
-                hintText: 'Mahsulot nomi...',
-                filled: true,
-                fillColor: Colors.white.withValues(alpha: 0.1),
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
-              ),
-              style: TextStyle(color: GlassTokens.primaryText(context)),
-            ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text('Yo\'q', style: TextStyle(color: GlassTokens.secondaryText(ctx))),
           ),
-          const SizedBox(width: 8),
-          Expanded(
-            flex: 1,
-            child: TextField(
-              controller: _qtyController,
-              keyboardType: TextInputType.number,
-              decoration: InputDecoration(
-                hintText: 'Soni/Kg',
-                filled: true,
-                fillColor: Colors.white.withValues(alpha: 0.1),
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
-              ),
-              style: TextStyle(color: GlassTokens.primaryText(context)),
-            ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            onPressed: () {
+              Navigator.pop(ctx);
+              _deleteList(index);
+            },
+            child: const Text('Ha, o\'chirish'),
           ),
-          const SizedBox(width: 8),
-          Container(
-            decoration: BoxDecoration(color: Colors.orange, borderRadius: BorderRadius.circular(12)),
-            child: IconButton(
-              icon: _isCalculating 
-                ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                : const Icon(LucideIcons.plus, color: Colors.white),
-              onPressed: _isCalculating ? null : _calculateItemPrice,
-            ),
-          )
         ],
       ),
     );
   }
 
-  Widget _buildSavedListsTab() {
-    if (_isLoading) return const Center(child: CircularProgressIndicator());
-    if (_lists.isEmpty) return const Center(child: Text("Saqlangan ro'yxatlar yo'q"));
-    
-    return ListView.builder(
-      padding: const EdgeInsets.all(20),
-      itemCount: _lists.length,
-      itemBuilder: (context, index) {
-        final list = _lists[index];
-        return Card(
-          color: Colors.white.withValues(alpha: 0.05),
-          margin: const EdgeInsets.only(bottom: 12),
-          child: ExpansionTile(
-            title: Text(list.title, style: TextStyle(color: GlassTokens.primaryText(context))),
-            subtitle: Text('${list.totalEstimatedPrice} so\'m', style: const TextStyle(color: Colors.orange)),
-            children: list.items.map((i) => ListTile(
-              title: Text(i.name, style: TextStyle(color: GlassTokens.primaryText(context), fontSize: 14)),
-              trailing: Text('${i.quantity} | ${i.estimatedPrice} so\'m', style: TextStyle(color: GlassTokens.secondaryText(context), fontSize: 12)),
-            )).toList(),
-          ),
-        );
-      },
-    );
+  // ══════════════════════════════════════════════════════════
+  // Helpers
+  // ══════════════════════════════════════════════════════════
+
+  String _getItemEmoji(String name) {
+    final n = name.toLowerCase();
+    if (n.contains('olma')) return '🍎';
+    if (n.contains('banan')) return '🍌';
+    if (n.contains('anor')) return '🍎';
+    if (n.contains('uzum')) return '🍇';
+    if (n.contains('pomidor')) return '🍅';
+    if (n.contains('bodring')) return '🥒';
+    if (n.contains('kartoshka')) return '🥔';
+    if (n.contains('piyoz')) return '🧅';
+    if (n.contains('sarimsoq')) return '🧄';
+    if (n.contains('sabzi')) return '🥕';
+    if (n.contains('karam')) return '🥬';
+    if (n.contains('go\'sht') || n.contains('gosht')) return '🥩';
+    if (n.contains('tovuq')) return '🍗';
+    if (n.contains('baliq')) return '🐟';
+    if (n.contains('sut')) return '🥛';
+    if (n.contains('tuxum')) return '🥚';
+    if (n.contains('non')) return '🍞';
+    if (n.contains('guruch')) return '🍚';
+    if (n.contains('moy')) return '🫒';
+    if (n.contains('shakar')) return '🍬';
+    if (n.contains('choy')) return '🍵';
+    if (n.contains('kofe')) return '☕';
+    if (n.contains('suv')) return '💧';
+    if (n.contains('tarvuz')) return '🍉';
+    if (n.contains('qovun')) return '🍈';
+    if (n.contains('limon')) return '🍋';
+    if (n.contains('nok')) return '🍐';
+    if (n.contains('gilos')) return '🍒';
+    if (n.contains('makaron')) return '🍝';
+    if (n.contains('un')) return '🌾';
+    if (n.contains('pishloq')) return '🧀';
+    if (n.contains('kolbasa') || n.contains('sosiska')) return '🌭';
+    return '🛍️';
   }
 }

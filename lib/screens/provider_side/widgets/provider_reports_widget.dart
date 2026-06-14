@@ -67,29 +67,37 @@ class _ProviderReportsWidgetState extends State<ProviderReportsWidget>
       children: [
         Row(
           children: [
-            Text(
+            const Text(
               'Tushumlar hisoboti',
-              style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: Colors.black),
             ),
             const Spacer(),
-            IconButton(icon: const Icon(LucideIcons.refreshCw), onPressed: _loadAll),
+            Container(
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.black, width: 1.5),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: IconButton(icon: const Icon(LucideIcons.refreshCw, color: Colors.black), onPressed: _loadAll),
+            ),
           ],
         ),
         const SizedBox(height: 20),
         Container(
           height: 45,
           decoration: BoxDecoration(
-            color: Colors.grey.withValues(alpha: 0.1),
+            color: Colors.white,
+            border: Border.all(color: Colors.black, width: 2),
             borderRadius: BorderRadius.circular(12),
           ),
           child: TabBar(
             controller: _tabController,
             indicator: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
-              color: const Color(0xFF6366F1),
+              color: Colors.black,
             ),
             labelColor: Colors.white,
-            unselectedLabelColor: Colors.grey,
+            unselectedLabelColor: Colors.black87,
+            labelStyle: const TextStyle(fontWeight: FontWeight.bold),
             dividerColor: Colors.transparent,
             tabs: _periodLabels.map((l) => Tab(text: l)).toList(),
           ),
@@ -123,19 +131,20 @@ class _ProviderReportsWidgetState extends State<ProviderReportsWidget>
             width: double.infinity,
             padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
-              ),
+              color: Colors.black,
               borderRadius: BorderRadius.circular(24),
+              boxShadow: const [
+                BoxShadow(color: Colors.black26, offset: Offset(4, 4)),
+              ],
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('$label jami tushum', style: const TextStyle(color: Colors.white70)),
+                Text('$label jami tushum', style: const TextStyle(color: Colors.white70, fontWeight: FontWeight.bold)),
                 const SizedBox(height: 8),
                 Text(
                   '${NumberFormat('#,###').format(total)} so\'m',
-                  style: const TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.bold),
+                  style: const TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.w900),
                 ),
                 const SizedBox(height: 8),
                 Text('$orders ta buyurtma', style: const TextStyle(color: Colors.white70)),
@@ -163,8 +172,9 @@ class _ProviderReportsWidgetState extends State<ProviderReportsWidget>
                           Container(
                             height: h.clamp(4, 80),
                             decoration: BoxDecoration(
-                              color: const Color(0xFF6366F1),
+                              color: Colors.black,
                               borderRadius: BorderRadius.circular(4),
+                              border: Border.all(color: Colors.black, width: 1),
                             ),
                           ),
                         ],
@@ -176,21 +186,27 @@ class _ProviderReportsWidgetState extends State<ProviderReportsWidget>
             ),
             const SizedBox(height: 24),
           ],
-          Text('Xizmatlar bo\'yicha', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
+          const Text('Xizmatlar bo\'yicha', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: Colors.black)),
           const SizedBox(height: 12),
           if (breakdown.isEmpty)
-            const Text('Ma\'lumot yo\'q')
+            const Text('Ma\'lumot yo\'q', style: TextStyle(color: Colors.black87))
           else
             ...breakdown.map((b) {
               final amount = (b['amount'] as num?)?.toDouble() ?? 0;
               final count = b['count'] as int? ?? 0;
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 10),
+              return Container(
+                margin: const EdgeInsets.only(bottom: 10),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.black, width: 1.5),
+                ),
                 child: Row(
                   children: [
-                    Expanded(child: Text('${b['title']} ($count ta)')),
+                    Expanded(child: Text('${b['title']} ($count ta)', style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black))),
                     Text('${NumberFormat('#,###').format(amount)} so\'m',
-                        style: const TextStyle(fontWeight: FontWeight.bold)),
+                        style: const TextStyle(fontWeight: FontWeight.w900, color: Colors.black)),
                   ],
                 ),
               );

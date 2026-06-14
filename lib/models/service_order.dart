@@ -99,6 +99,7 @@ class ServiceOrder {
       price: (json['price'] as num?)?.toDouble() ?? 0.0,
       status: status,
       createdAt: json['created_at'] != null ? DateTime.parse(json['created_at']) : DateTime.now(),
+      providerId: json['provider_id'] as int?,
     );
   }
 

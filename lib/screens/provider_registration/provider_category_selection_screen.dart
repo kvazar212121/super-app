@@ -58,6 +58,19 @@ class _ProviderCategorySelectionScreenState
         });
       }
       _categories = items;
+
+      // Append any missing categories from ProviderCategoryConfig
+      final existingIds = _categories.map((c) => c['id']).toSet();
+      for (final c in ProviderCategoryConfig.all) {
+        if (!existingIds.contains(c.registrationId)) {
+          _categories.add({
+            'id': c.registrationId,
+            'dbId': null,
+            'name': c.title,
+            'icon': c.icon,
+          });
+        }
+      }
     } catch (_) {
       _error = 'Kategoriyalarni yuklab bo\'lmadi';
       _categories = _fallbackCategories();
@@ -145,13 +158,12 @@ class _ProviderCategorySelectionScreenState
                                   duration: const Duration(milliseconds: 200),
                                   decoration: BoxDecoration(
                                     color: isSelected
-                                        ? const Color(0xFF6366F1)
-                                            .withValues(alpha: 0.1)
+                                        ? Colors.black12
                                         : theme.colorScheme.surface,
                                     borderRadius: BorderRadius.circular(20),
                                     border: Border.all(
                                       color: isSelected
-                                          ? const Color(0xFF6366F1)
+                                          ? Colors.black
                                           : Colors.grey.withValues(alpha: 0.2),
                                       width: 2,
                                     ),
@@ -163,7 +175,7 @@ class _ProviderCategorySelectionScreenState
                                         cat['icon'] as IconData,
                                         size: 40,
                                         color: isSelected
-                                            ? const Color(0xFF6366F1)
+                                            ? Colors.black
                                             : Colors.grey,
                                       ),
                                       const SizedBox(height: 12),
@@ -180,7 +192,7 @@ class _ProviderCategorySelectionScreenState
                                                 ? FontWeight.bold
                                                 : FontWeight.normal,
                                             color: isSelected
-                                                ? const Color(0xFF6366F1)
+                                                ? Colors.black
                                                 : theme.colorScheme.onSurface,
                                           ),
                                         ),
