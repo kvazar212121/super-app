@@ -11,6 +11,9 @@ import '../screens/todo_screen.dart';
 import '../screens/shopping_list_screen.dart';
 import '../screens/finance_manager_screen.dart';
 import '../screens/all_categories_screen.dart';
+import '../screens/auth/auth_gate_screen.dart';
+import '../providers/auth_provider.dart';
+import 'package:provider/provider.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -51,7 +54,14 @@ class HomeScreen extends StatelessWidget {
                 icon: LucideIcons.calendarCheck,
                 label: 'Rejalarim',
                 color: Colors.blueAccent,
-                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const TodoScreen())),
+                onTap: () {
+                  final auth = Provider.of<AuthProvider>(context, listen: false);
+                  if (!auth.isAuthenticated) {
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => const AuthGateScreen()));
+                  } else {
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => const TodoScreen()));
+                  }
+                },
               ),
             ),
             const SizedBox(width: 12),
@@ -60,7 +70,14 @@ class HomeScreen extends StatelessWidget {
                 icon: LucideIcons.wallet,
                 label: 'Mening moliyam',
                 color: Colors.greenAccent,
-                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const FinanceManagerScreen())),
+                onTap: () {
+                  final auth = Provider.of<AuthProvider>(context, listen: false);
+                  if (!auth.isAuthenticated) {
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => const AuthGateScreen()));
+                  } else {
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => const FinanceManagerScreen()));
+                  }
+                },
               ),
             ),
           ],
@@ -73,7 +90,14 @@ class HomeScreen extends StatelessWidget {
                 icon: LucideIcons.shoppingBag,
                 label: 'Aqlli savdo',
                 color: Colors.orangeAccent,
-                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ShoppingListScreen())),
+                onTap: () {
+                  final auth = Provider.of<AuthProvider>(context, listen: false);
+                  if (!auth.isAuthenticated) {
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => const AuthGateScreen()));
+                  } else {
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => const ShoppingListScreen()));
+                  }
+                },
               ),
             ),
             const SizedBox(width: 12),

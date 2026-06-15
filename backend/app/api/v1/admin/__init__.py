@@ -10,7 +10,8 @@ from app.api.v1.admin import (
     settings,
     promos,
     notifications,
-    reports
+    reports,
+    user_data
 )
 
 router = APIRouter(prefix="/admin", tags=["admin"])
@@ -26,3 +27,4 @@ router.include_router(settings.router)
 router.include_router(promos.router)
 router.include_router(notifications.router)
 router.include_router(reports.router)
+router.include_router(user_data.router)

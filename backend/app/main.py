@@ -61,7 +61,7 @@ class RequestLoggingMiddleware(BaseHTTPMiddleware):
     """Har bir HTTP so'rovni log qiladi va request ID qo'shadi."""
 
     async def dispatch(
-        request: Request, call_next: RequestResponseEndpoint
+        self, request: Request, call_next: RequestResponseEndpoint
     ) -> Response:
         # Request ID yaratish yoki mavjudini olish
         request_id = request.headers.get("X-Request-ID", get_request_id())

@@ -6,19 +6,20 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <title>Super App &mdash; Boshqaruv Paneli</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         /* ===== CSS VARIABLES ===== */
         :root {
-            --primary: #6366F1;
-            --primary-dark: #4F46E5;
-            --primary-light: #A5B4FC;
-            --primary-bg: #EEF2FF;
-            --sidebar-bg: #1E1E2D;
-            --sidebar-hover: #2A2A3C;
-            --sidebar-active: #6366F1;
-            --sidebar-text: #9CA3AF;
+            --primary: #000000; /* Black */
+            --primary-dark: #111827;
+            --primary-light: #E5E7EB;
+            --primary-bg: #F9FAFB;
+            --sidebar-bg: #FFFFFF; /* White */
+            --sidebar-hover: #F3F4F6;
+            --sidebar-active: #000000;
+            --sidebar-text: #4B5563;
             --sidebar-text-active: #FFFFFF;
-            --bg: #F3F4F6;
+            --bg: #F9FAFB;
             --white: #FFFFFF;
             --gray-50: #F9FAFB;
             --gray-100: #F3F4F6;
@@ -54,7 +55,8 @@
         /* ===== RESET & BASE ===== */
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            font-size: 16px;
             background: var(--bg);
             color: var(--gray-800);
             line-height: 1.5;
@@ -227,16 +229,28 @@
             color: white;
             display: flex; align-items: center; justify-content: center;
             font-weight: 600; font-size: 14px;
+            font-weight: 600; font-size: 16px;
         }
         .topbar-avatar-info { line-height: 1.3; }
-        .topbar-avatar-name { font-size: 13px; font-weight: 600; color: var(--gray-800); }
-        .topbar-avatar-role { font-size: 11px; color: var(--gray-500); }
+        .topbar-avatar-name { font-size: 14px; font-weight: 600; color: var(--gray-800); }
+        .topbar-avatar-role { font-size: 12px; color: var(--gray-500); }
+
+        /* ===== UTILITIES ===== */
+        .widget-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; margin-bottom: 24px; }
+        .widget-card { background: var(--white); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow); display: flex; align-items: center; gap: 16px; }
+        .widget-icon { width: 48px; height: 48px; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; font-size: 24px; }
+        .widget-info { flex: 1; }
+        .widget-title { font-size: 14px; color: var(--gray-500); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+        .widget-value { font-size: 20px; font-weight: 700; color: var(--gray-900); }
+        .widget-desc { font-size: 13px; color: var(--gray-500); margin-top: 4px; }
+
+        .text-success { color: var(--success); }
 
         /* ===== CONTENT ===== */
         .content { flex: 1; padding: 24px; }
         .page-header { margin-bottom: 24px; }
-        .page-title { font-size: 24px; font-weight: 700; color: var(--gray-900); margin-bottom: 4px; }
-        .page-subtitle { font-size: 14px; color: var(--gray-500); }
+        .page-title { font-size: 28px; font-weight: 700; color: var(--gray-900); margin-bottom: 4px; }
+        .page-subtitle { font-size: 16px; color: var(--gray-500); }
 
         /* ===== STATS CARDS ===== */
         .stats-grid {
@@ -657,50 +671,67 @@
             <nav class="sidebar-nav">
                 <div class="nav-section-title">Asosiy</div>
                 <div class="nav-item active" data-page="dashboard">
-                    <span class="nav-icon">&#128202;</span>
+                    <span class="nav-icon"><i data-lucide="layout-dashboard"></i></span>
                     <span class="nav-label">Bosh sahifa</span>
                 </div>
                 <div class="nav-section-title">Boshqaruv</div>
                 <div class="nav-item" data-page="users">
-                    <span class="nav-icon">&#128101;</span>
+                    <span class="nav-icon"><i data-lucide="users"></i></span>
                     <span class="nav-label">Foydalanuvchilar</span>
                 </div>
                 <div class="nav-item" data-page="providers">
-                    <span class="nav-icon">&#127970;</span>
+                    <span class="nav-icon"><i data-lucide="briefcase"></i></span>
                     <span class="nav-label">Soha egalari</span>
                 </div>
                 <div class="nav-item" data-page="orders">
-                    <span class="nav-icon">&#128230;</span>
+                    <span class="nav-icon"><i data-lucide="shopping-bag"></i></span>
                     <span class="nav-label">Buyurtmalar</span>
                 </div>
                 <div class="nav-item" data-page="categories">
-                    <span class="nav-icon">&#128194;</span>
+                    <span class="nav-icon"><i data-lucide="folder"></i></span>
                     <span class="nav-label">Kategoriyalar</span>
                 </div>
                 <div class="nav-item" data-page="promos">
-                    <span class="nav-icon">&#127881;</span>
+                    <span class="nav-icon"><i data-lucide="tag"></i></span>
                     <span class="nav-label">Aksiyalar</span>
                 </div>
                 <div class="nav-item" data-page="reviews">
-                    <span class="nav-icon">&#11088;</span>
+                    <span class="nav-icon"><i data-lucide="star"></i></span>
                     <span class="nav-label">Sharhlar</span>
+                </div>
+                <div class="nav-section-title">Foydalanuvchi ma'lumotlari</div>
+                <div class="nav-item" data-page="user_data_todos">
+                    <span class="nav-icon"><i data-lucide="calendar-check"></i></span>
+                    <span class="nav-label">Kundalik rejalar</span>
+                </div>
+                <div class="nav-item" data-page="user_data_shopping">
+                    <span class="nav-icon"><i data-lucide="shopping-cart"></i></span>
+                    <span class="nav-label">Xaridlar (Bozorlik)</span>
+                </div>
+                <div class="nav-item" data-page="user_data_finance">
+                    <span class="nav-icon"><i data-lucide="wallet"></i></span>
+                    <span class="nav-label">Moliya daftari</span>
+                </div>
+                <div class="nav-item" data-page="user_data_plans">
+                    <span class="nav-icon"><i data-lucide="trending-up"></i></span>
+                    <span class="nav-label">Taqvim rejalari</span>
                 </div>
                 <div class="nav-section-title">Moliya va Tizim</div>
                 <div class="nav-item" data-page="finance">
-                    <span class="nav-icon">&#128176;</span>
+                    <span class="nav-icon"><i data-lucide="dollar-sign"></i></span>
                     <span class="nav-label">Moliya</span>
                 </div>
                 <div class="nav-item" data-page="settings">
-                    <span class="nav-icon">&#9881;</span>
+                    <span class="nav-icon"><i data-lucide="settings"></i></span>
                     <span class="nav-label">Sozlamalar</span>
                 </div>
                 <div class="nav-item" data-page="notifications">
-                    <span class="nav-icon">&#128276;</span>
+                    <span class="nav-icon"><i data-lucide="bell"></i></span>
                     <span class="nav-label">Bildirishnomalar</span>
                     <span class="nav-badge">3</span>
                 </div>
                 <div class="nav-item" data-page="reports">
-                    <span class="nav-icon">&#128200;</span>
+                    <span class="nav-icon"><i data-lucide="trending-up"></i></span>
                     <span class="nav-label">Hisobotlar</span>
                 </div>
             </nav>
@@ -918,6 +949,10 @@
                 settings: renderSettings,
                 notifications: renderNotifications,
                 reports: renderReports,
+                user_data_todos: renderUserDataTodos,
+                user_data_shopping: renderUserDataShopping,
+                user_data_finance: renderUserDataFinance,
+                user_data_plans: renderUserDataPlans,
             };
             if (renderers[page]) {
                 await renderers[page]();
@@ -951,10 +986,50 @@
                 }
             } catch(e) { console.warn('Dashboard lists fallback', e); }
 
+            var weatherHtml = '<div class="widget-desc">Yuklanmoqda...</div>';
+            try {
+                const wr = await api(API_BASE + '/utilities/weather?city=Tashkent');
+                if (wr && wr.ok) {
+                    var w = await wr.json();
+                    weatherHtml = '<div class="widget-value">' + w.temperature_celsius + '°C, ' + w.condition + '</div>' +
+                                  '<div class="widget-desc">' + w.city + ' (Namlik: ' + w.humidity + '%)</div>';
+                }
+            } catch(e) {}
+
+            var currencyHtml = '<div class="widget-desc">Yuklanmoqda...</div>';
+            try {
+                const cr = await api(API_BASE + '/utilities/currency');
+                if (cr && cr.ok) {
+                    var c = await cr.json();
+                    if (c.rates && c.rates.length > 0) {
+                        var usd = c.rates.find(r => r.Ccy === 'USD');
+                        var rub = c.rates.find(r => r.Ccy === 'RUB');
+                        currencyHtml = '<div class="widget-value">1 USD = ' + (usd ? usd.Rate : '--') + ' UZS</div>' +
+                                       '<div class="widget-desc">1 RUB = ' + (rub ? rub.Rate : '--') + ' UZS (' + (usd ? usd.Date : '') + ')</div>';
+                    }
+                }
+            } catch(e) {}
+
             mainContent.innerHTML =
                 '<div class="page-header">' +
                     '<h1 class="page-title">Bosh sahifa</h1>' +
                     '<p class="page-subtitle">Platforma statistikasi va tahlillar</p>' +
+                '</div>' +
+                '<div class="widget-grid">' +
+                    '<div class="widget-card">' +
+                        '<div class="widget-icon" style="background:var(--info-bg);color:var(--info);">&#9728;&#65039;</div>' +
+                        '<div class="widget-info">' +
+                            '<div class="widget-title">Ob-havo</div>' +
+                            weatherHtml +
+                        '</div>' +
+                    '</div>' +
+                    '<div class="widget-card">' +
+                        '<div class="widget-icon" style="background:var(--success-bg);color:var(--success);">&#128181;</div>' +
+                        '<div class="widget-info">' +
+                            '<div class="widget-title">Valyuta kurslari</div>' +
+                            currencyHtml +
+                        '</div>' +
+                    '</div>' +
                 '</div>' +
                 '<div class="stats-grid">' +
                     '<div class="stat-card">' +
@@ -2068,20 +2143,20 @@
                                 '<div class="form-group">' +
                                     '<label class="form-label">Sarlavha (Title)</label>' +
                                     '<input type="text" class="form-input" id="promoTitle" placeholder="Sartarosh — 25% chegirma" required>' +
-                                </div>' +
+                                '</div>' +
                                 '<div class="form-group">' +
                                     '<label class="form-label">Tavsif (Subtitle)</label>' +
                                     '<input type="text" class="form-input" id="promoSubtitle" placeholder="Dushanba–chorshanba, barcha xizmatlar" required>' +
-                                </div>' +
+                                '</div>' +
                                 '<div class="form-group">' +
                                     '<label class="form-label">Nishon matni (Badge)</label>' +
                                     '<input type="text" class="form-input" id="promoBadge" placeholder="-25%" required>' +
-                                </div>' +
+                                '</div>' +
                                 '<div class="form-group">' +
-                                    '<label class="form-label">Gradient Ranglari (Hex)</label>' +
-                                    '<input type="text" class="form-input" id="promoColors" value="#6366F1,#A855F7" required>' +
-                                    '<p style="font-size:11px;color:var(--gray-400);margin-top:4px;">Ikkita hex rang vergul bilan ajratilgan holda</p>' +
-                                </div>' +
+                                    '<label class="form-label">Ranglar gradiyenti (Colors)</label>' +
+                                    '<input type="text" class="form-input" id="promoColors" placeholder="#6366F1,#A855F7" required>' +
+                                    '<small class="text-muted" style="display:block;margin-top:4px;">Ikkita HEX rangni vergul bilan ajratib yozing.</small>' +
+                                '</div>' +
                                 '<button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;margin-top:8px;">Qo\'shish</button>' +
                             '</form>' +
                         '</div>' +
@@ -2513,8 +2588,119 @@
             }
         });
 
+        // ===== USER DATA =====
+        async function renderUserDataTodos() {
+            mainContent.innerHTML = '<div class="page-header"><h1 class="page-title">Kundalik rejalar</h1></div><div class="card"><div class="card-body">Yuklanmoqda...</div></div>';
+            var html = '<div class="page-header"><h1 class="page-title">Kundalik rejalar (Todos)</h1><p class="page-subtitle">Platformadagi barcha foydalanuvchi rejalari</p></div>';
+            html += '<div class="card"><div class="table-container"><table class="table"><thead><tr><th>ID</th><th>Foydalanuvchi</th><th>Sarlavha</th><th>Holati</th><th>Sana</th></tr></thead><tbody id="todosTableBody"></tbody></table></div></div>';
+            mainContent.innerHTML = html;
+            try {
+                const res = await api(API_BASE + '/admin/user-data/todos');
+                if (res.ok) {
+                    var data = await res.json();
+                    var tbody = document.getElementById('todosTableBody');
+                    if (data.length === 0) tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:20px;">Ma\'lumot yo\'q</td></tr>';
+                    else {
+                        tbody.innerHTML = data.map(function(t) {
+                            return '<tr>' +
+                                '<td>#' + t.id + '</td>' +
+                                '<td><div style="font-weight:600;">' + t.user_name + '</div></td>' +
+                                '<td>' + (t.title || '-') + '</td>' +
+                                '<td><span class="status-badge ' + (t.is_completed ? 'status-success' : 'status-warning') + '">' + (t.is_completed ? 'Bajarilgan' : 'Bajarilmagan') + '</span></td>' +
+                                '<td>' + (t.created_at ? t.created_at.substring(0,10) : '-') + '</td>' +
+                            '</tr>';
+                        }).join('');
+                    }
+                }
+            } catch(e) { console.error(e); }
+        }
+
+        async function renderUserDataShopping() {
+            mainContent.innerHTML = '<div class="page-header"><h1 class="page-title">Xaridlar (Bozorlik)</h1></div><div class="card"><div class="card-body">Yuklanmoqda...</div></div>';
+            var html = '<div class="page-header"><h1 class="page-title">Xaridlar ro\'yxati</h1><p class="page-subtitle">Foydalanuvchilar tuzgan bozorlik ro\'yxatlari</p></div>';
+            html += '<div class="card"><div class="table-container"><table class="table"><thead><tr><th>ID</th><th>Foydalanuvchi</th><th>Sarlavha</th><th>Mahsulotlar</th><th>Taxminiy narx</th><th>Asl narx</th><th>Holati</th></tr></thead><tbody id="shoppingTableBody"></tbody></table></div></div>';
+            mainContent.innerHTML = html;
+            try {
+                const res = await api(API_BASE + '/admin/user-data/shopping');
+                if (res.ok) {
+                    var data = await res.json();
+                    var tbody = document.getElementById('shoppingTableBody');
+                    if (data.length === 0) tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:20px;">Ma\'lumot yo\'q</td></tr>';
+                    else {
+                        tbody.innerHTML = data.map(function(s) {
+                            return '<tr>' +
+                                '<td>#' + s.id + '</td>' +
+                                '<td><div style="font-weight:600;">' + s.user_name + '</div></td>' +
+                                '<td>' + (s.name || '-') + '</td>' +
+                                '<td>' + s.item_count + ' ta</td>' +
+                                '<td>' + formatMoney(s.total_estimated_price) + '</td>' +
+                                '<td>' + formatMoney(s.total_actual_price) + '</td>' +
+                                '<td><span class="status-badge ' + (s.is_completed ? 'status-success' : 'status-warning') + '">' + (s.is_completed ? 'Tugallangan' : 'Jarayonda') + '</span></td>' +
+                            '</tr>';
+                        }).join('');
+                    }
+                }
+            } catch(e) { console.error(e); }
+        }
+
+        async function renderUserDataFinance() {
+            mainContent.innerHTML = '<div class="page-header"><h1 class="page-title">Moliya daftari</h1></div><div class="card"><div class="card-body">Yuklanmoqda...</div></div>';
+            var html = '<div class="page-header"><h1 class="page-title">Moliya yozuvlari</h1><p class="page-subtitle">Foydalanuvchilar kiritgan daromad va xarajatlar</p></div>';
+            html += '<div class="card"><div class="table-container"><table class="table"><thead><tr><th>ID</th><th>Foydalanuvchi</th><th>Turi</th><th>Kategoriya</th><th>Summa</th><th>Izoh</th><th>Sana</th></tr></thead><tbody id="financeTableBody"></tbody></table></div></div>';
+            mainContent.innerHTML = html;
+            try {
+                const res = await api(API_BASE + '/admin/user-data/finance');
+                if (res.ok) {
+                    var data = await res.json();
+                    var tbody = document.getElementById('financeTableBody');
+                    if (data.length === 0) tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:20px;">Ma\'lumot yo\'q</td></tr>';
+                    else {
+                        tbody.innerHTML = data.map(function(f) {
+                            return '<tr>' +
+                                '<td>#' + f.id + '</td>' +
+                                '<td><div style="font-weight:600;">' + f.user_name + '</div></td>' +
+                                '<td><span class="status-badge ' + (f.type === 'income' ? 'status-success' : 'status-danger') + '">' + (f.type === 'income' ? 'Daromad' : 'Xarajat') + '</span></td>' +
+                                '<td>' + (f.category || '-') + '</td>' +
+                                '<td style="font-weight:bold;color:' + (f.type === 'income' ? 'var(--success)' : 'var(--danger)') + ';">' + formatMoney(f.amount) + '</td>' +
+                                '<td>' + (f.note || '-') + '</td>' +
+                                '<td>' + (f.date ? f.date.substring(0,10) : '-') + '</td>' +
+                            '</tr>';
+                        }).join('');
+                    }
+                }
+            } catch(e) { console.error(e); }
+        }
+
+        async function renderUserDataPlans() {
+            mainContent.innerHTML = '<div class="page-header"><h1 class="page-title">Taqvim rejalari</h1></div><div class="card"><div class="card-body">Yuklanmoqda...</div></div>';
+            var html = '<div class="page-header"><h1 class="page-title">Taqvim rejalari</h1><p class="page-subtitle">Foydalanuvchilar kiritgan muddatli rejalar</p></div>';
+            html += '<div class="card"><div class="table-container"><table class="table"><thead><tr><th>ID</th><th>Foydalanuvchi</th><th>Sarlavha</th><th>Izoh</th><th>Sana/Vaqt</th><th>Holati</th></tr></thead><tbody id="plansTableBody"></tbody></table></div></div>';
+            mainContent.innerHTML = html;
+            try {
+                const res = await api(API_BASE + '/admin/user-data/plans');
+                if (res.ok) {
+                    var data = await res.json();
+                    var tbody = document.getElementById('plansTableBody');
+                    if (data.length === 0) tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:20px;">Ma\'lumot yo\'q</td></tr>';
+                    else {
+                        tbody.innerHTML = data.map(function(p) {
+                            return '<tr>' +
+                                '<td>#' + p.id + '</td>' +
+                                '<td><div style="font-weight:600;">' + p.user_name + '</div></td>' +
+                                '<td>' + (p.title || '-') + '</td>' +
+                                '<td>' + (p.description || '-') + '</td>' +
+                                '<td>' + (p.date ? p.date.substring(0,10) : '') + ' ' + (p.time ? p.time.substring(0,5) : '') + '</td>' +
+                                '<td><span class="status-badge ' + (p.is_completed ? 'status-success' : 'status-warning') + '">' + (p.is_completed ? 'Bajarilgan' : 'Bajarilmagan') + '</span></td>' +
+                            '</tr>';
+                        }).join('');
+                    }
+                }
+            } catch(e) { console.error(e); }
+        }
+
         // ===== INIT =====
         renderPage('dashboard');
+        lucide.createIcons();
     </script>
 </body>
 </html>
