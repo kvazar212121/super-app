@@ -121,20 +121,7 @@ class ServiceProfileHeader extends StatelessWidget {
             ),
           ],
         ),
-        const SizedBox(height: 6),
-        Row(
-          children: [
-            Icon(Icons.phone, size: 14, color: GlassTokens.secondaryText(context)),
-            const SizedBox(width: 4),
-            Flexible(
-              child: Text(
-                phone,
-                style: TextStyle(
-                    color: GlassTokens.secondaryText(context), fontSize: 14),
-              ),
-            ),
-          ],
-        ),
+
         if (extra != null) ...[const SizedBox(height: 8), extra!],
       ],
     );

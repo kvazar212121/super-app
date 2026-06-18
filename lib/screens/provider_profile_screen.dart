@@ -98,8 +98,7 @@ class ProviderProfileScreen extends StatelessWidget {
               master.locationLabel,
             ),
           ],
-          if (master.phoneNumber.isNotEmpty)
-            _infoTile(context, LucideIcons.phone, 'Telefon', master.phoneNumber),
+
           const SizedBox(height: 16),
           Text(
             'Xizmatlar va narxlar',

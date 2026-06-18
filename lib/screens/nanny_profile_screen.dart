@@ -3,6 +3,9 @@ import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
+import '../models/service_hub_kind.dart';
+import '../services/call_service.dart';
+import 'calls/call_screen.dart';
 import '../models/nanny_service.dart';
 import '../theme/glass_tokens.dart';
 import '../widgets/glass/glass_scaffold.dart';
@@ -35,14 +38,10 @@ class _NannyProfileScreenState extends State<NannyProfileScreen> {
   bool get _canBook => _reviewedProfile && _contactedNanny;
 
   void _callNanny() {
-    Clipboard.setData(ClipboardData(text: nanny.phoneNumber));
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Telefon nusxalandi: ${nanny.phoneNumber}'),
-        action: SnackBarAction(
-          label: 'Bog\'landim',
-          onPressed: () => setState(() => _contactedNanny = true),
-        ),
+    CallService().startCall(0, nanny.name);
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => const CallScreen(isIncoming: false),
       ),
     );
     setState(() => _contactedNanny = true);

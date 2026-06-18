@@ -550,20 +550,7 @@ class _FieldBottomSheet extends StatelessWidget {
               ),
               const SizedBox(height: 8),
 
-              // Telefon
-              if (field.phoneNumber.isNotEmpty)
-                Row(
-                  children: [
-                    Icon(Icons.phone_outlined,
-                        size: 18, color: Colors.grey[600]),
-                    const SizedBox(width: 6),
-                    Text(
-                      field.phoneNumber,
-                      style: TextStyle(fontSize: 14, color: Colors.grey[700]),
-                    ),
-                  ],
-                ),
-              const SizedBox(height: 16),
+
 
               // Qulayliklar
               const Text(
