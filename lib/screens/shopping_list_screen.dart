@@ -705,21 +705,17 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> with SingleTick
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 4),
-              Row(
-                children: [
-                  Text(
-                    'Taxminiy: ${_formatPrice(list.totalEstimatedPrice)}',
-                    style: TextStyle(color: GlassTokens.secondaryText(context), fontSize: 12),
-                  ),
-                  if (list.totalActualPrice > 0) ...[
-                    const SizedBox(width: 8),
-                    Text(
-                      'Haqiqiy: ${_formatPrice(list.totalActualPrice)}',
-                      style: const TextStyle(color: Colors.greenAccent, fontSize: 12, fontWeight: FontWeight.w600),
-                    ),
-                  ],
-                ],
+              Text(
+                'Taxminiy: ${_formatPrice(list.totalEstimatedPrice)}',
+                style: TextStyle(color: GlassTokens.secondaryText(context), fontSize: 12),
+                overflow: TextOverflow.ellipsis,
               ),
+              if (list.totalActualPrice > 0)
+                Text(
+                  'Haqiqiy: ${_formatPrice(list.totalActualPrice)}',
+                  style: const TextStyle(color: Colors.greenAccent, fontSize: 12, fontWeight: FontWeight.w600),
+                  overflow: TextOverflow.ellipsis,
+                ),
               const SizedBox(height: 6),
               Row(
                 children: [
