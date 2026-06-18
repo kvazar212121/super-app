@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../services/call_service.dart';
+import 'calls/call_screen.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -165,7 +167,7 @@ class _MassageBookingScreenState extends State<MassageBookingScreen> {
                       const SizedBox(height: 16),
                       BookingInputField(
                         controller: _addressCtrl,
-                        hint: 'Uy manzili (ko\'cha, uy, kvartira)',
+                        hint: 'Uy manzili (ko'cha, uy, kvartira)',
                         icon: LucideIcons.home,
                         accent: accentColor,
                       ),
@@ -238,11 +240,10 @@ class _MassageBookingScreenState extends State<MassageBookingScreen> {
                       secondaryLabel: "Mutaxassis bilan bog'lanish",
                       secondaryIcon: LucideIcons.phone,
                       onSecondary: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              "${widget.service.phoneNumber} raqamiga bog'lanilmoqda...",
-                            ),
+                        CallService().startCall(0, widget.service.name);
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => const CallScreen(isIncoming: false),
                           ),
                         );
                       },

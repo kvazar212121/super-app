@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../services/call_service.dart';
+import 'calls/call_screen.dart';
 import 'package:intl/intl.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:provider/provider.dart';
@@ -51,9 +53,9 @@ class _BarberBookingScreenState extends State<BarberBookingScreen> {
 
   String get _staffLabel {
     if (_selectedStaffId == null) return '';
-    if (_selectedStaffId == _anyStaffId) return 'Har qanday bo\'sh usta';
+    if (_selectedStaffId == _anyStaffId) return 'Har qanday bo'sh usta';
     final match = widget.shop.barbers.where((b) => b.id == _selectedStaffId);
-    return match.isEmpty ? 'Har qanday bo\'sh usta' : match.first.name;
+    return match.isEmpty ? 'Har qanday bo'sh usta' : match.first.name;
   }
 
   double get _selectedPrice => _selectedService == null
@@ -104,7 +106,7 @@ class _BarberBookingScreenState extends State<BarberBookingScreen> {
   @override
   Widget build(BuildContext context) {
     final currencyFormat =
-        NumberFormat.currency(locale: 'uz_UZ', symbol: 'so\'m', decimalDigits: 0);
+        NumberFormat.currency(locale: 'uz_UZ', symbol: 'so'm', decimalDigits: 0);
 
     return GlassBackdrop(
       child: Scaffold(
@@ -150,7 +152,7 @@ class _BarberBookingScreenState extends State<BarberBookingScreen> {
                       selectedId: _selectedStaffId,
                       onSelect: (id) => setState(() => _selectedStaffId = id),
                       accent: _accent,
-                      anyOptionLabel: 'Har qanday bo\'sh usta',
+                      anyOptionLabel: 'Har qanday bo'sh usta',
                     ),
                     const SizedBox(height: 24),
                     const SectionTitle('Sana'),
@@ -213,14 +215,13 @@ class _BarberBookingScreenState extends State<BarberBookingScreen> {
                           ? 'Bron qilish — ${currencyFormat.format(_selectedPrice)}'
                           : 'Bron qilish',
                       onPrimary: _canBook ? _confirmBooking : null,
-                      secondaryLabel: 'Qo\'ng\'iroq qilish',
+                      secondaryLabel: 'Qo'ng'iroq qilish',
                       secondaryIcon: LucideIcons.phone,
                       onSecondary: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              '${widget.shop.phoneNumber} raqamiga bog\'lanilmoqda...',
-                            ),
+                        CallService().startCall(0, widget.shop.name);
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => const CallScreen(isIncoming: false),
                           ),
                         );
                       },
@@ -248,7 +249,7 @@ class _BarberBookingScreenState extends State<BarberBookingScreen> {
         'key': 'flexible',
         'icon': LucideIcons.zap,
         'title': 'Tezkor navbat',
-        'desc': 'Usta bo\'shashiga qarab vaqtingiz oldinga surilishi mumkin',
+        'desc': 'Usta bo'shashiga qarab vaqtingiz oldinga surilishi mumkin',
       },
     ];
 
@@ -349,7 +350,7 @@ class _BarberBookingScreenState extends State<BarberBookingScreen> {
     if (!mounted || !_canBook) return;
 
     final currencyFormat =
-        NumberFormat.currency(locale: 'uz_UZ', symbol: 'so\'m', decimalDigits: 0);
+        NumberFormat.currency(locale: 'uz_UZ', symbol: 'so'm', decimalDigits: 0);
     final confirmed = await showBookingConfirmSheet(
       context,
       title: 'Bronni tasdiqlang',
@@ -413,7 +414,7 @@ class _BarberBookingScreenState extends State<BarberBookingScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Buyurtma yuborib bo\'lmadi. Qayta urinib ko\'ring.'),
+          content: Text('Buyurtma yuborib bo'lmadi. Qayta urinib ko'ring.'),
         ),
       );
     }

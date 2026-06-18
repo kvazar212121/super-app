@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../services/call_service.dart';
+import 'calls/call_screen.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -95,7 +97,7 @@ class _AutoHelpBookingScreenState extends State<AutoHelpBookingScreen> {
     if (!await ensureAuthenticated(context)) return;
     if (!_canSubmit || !mounted) return;
 
-    final currency = NumberFormat.currency(locale: 'uz_UZ', symbol: 'so\'m', decimalDigits: 0);
+    final currency = NumberFormat.currency(locale: 'uz_UZ', symbol: 'so'm', decimalDigits: 0);
     final location = _locationCtrl.text.trim();
     final car = _carCtrl.text.trim();
     final notes = _notesCtrl.text.trim();
@@ -149,14 +151,14 @@ class _AutoHelpBookingScreenState extends State<AutoHelpBookingScreen> {
       Navigator.pop(context);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Buyurtma qabul qilindi! ${widget.service.name} yo\'lda.'),
+          content: Text('Buyurtma qabul qilindi! ${widget.service.name} yo'lda.'),
           backgroundColor: Colors.green,
         ),
       );
     } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Buyurtma yuborib bo\'lmadi')),
+          const SnackBar(content: Text('Buyurtma yuborib bo'lmadi')),
         );
       }
     }
@@ -164,7 +166,7 @@ class _AutoHelpBookingScreenState extends State<AutoHelpBookingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final currency = NumberFormat.currency(locale: 'uz_UZ', symbol: 'so\'m', decimalDigits: 0);
+    final currency = NumberFormat.currency(locale: 'uz_UZ', symbol: 'so'm', decimalDigits: 0);
 
     return GlassBackdrop(
       child: Scaffold(
@@ -217,7 +219,7 @@ class _AutoHelpBookingScreenState extends State<AutoHelpBookingScreen> {
                     const SizedBox(height: 12),
                     BookingInputField(
                       controller: _locationCtrl,
-                      hint: 'Manzil yoki mo\'ljal...',
+                      hint: 'Manzil yoki mo'ljal...',
                       icon: LucideIcons.mapPin,
                       accent: _accent,
                     ),
@@ -237,7 +239,7 @@ class _AutoHelpBookingScreenState extends State<AutoHelpBookingScreen> {
                       controller: _notesCtrl,
                       maxLines: 2,
                       decoration: InputDecoration(
-                        hintText: 'Benzin tugadi, akkumulyator o\'chdi...',
+                        hintText: 'Benzin tugadi, akkumulyator o'chdi...',
                         filled: true,
                         fillColor: kBookingCard,
                         prefixIcon: Icon(LucideIcons.messageSquare, color: kBookingSub),
@@ -281,8 +283,11 @@ class _AutoHelpBookingScreenState extends State<AutoHelpBookingScreen> {
                       secondaryLabel: 'Telefon orqali',
                       secondaryIcon: LucideIcons.phone,
                       onSecondary: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('${widget.service.phoneNumber} raqamiga qo\'ng\'iroq...')),
+                        CallService().startCall(0, widget.service.name);
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => const CallScreen(isIncoming: false),
+                          ),
                         );
                       },
                     ),

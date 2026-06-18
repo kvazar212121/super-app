@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../services/call_service.dart';
+import 'calls/call_screen.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -169,10 +171,12 @@ class _DisinfectionBookingScreenState extends State<DisinfectionBookingScreen> {
                     secondaryLabel: "Xizmat bilan bog'lanish",
                     secondaryIcon: LucideIcons.phone,
                     onSecondary: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                            content: Text(
-                                "${widget.service.phoneNumber} raqamiga bog'lanilmoqda...")),
+                      final targetId = int.tryParse(widget.service.id) ?? 0;
+                      CallService().startCall(targetId, widget.service.name);
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => const CallScreen(isIncoming: false),
+                        ),
                       );
                     },
                   ),

@@ -100,7 +100,7 @@ class _EducationCenterBookingScreenState extends State<EducationCenterBookingScr
     if (!await ensureAuthenticated(context)) return;
     if (!_canSubmit || !mounted) return;
 
-    final currency = NumberFormat.currency(locale: 'uz_UZ', symbol: 'so\'m', decimalDigits: 0);
+    final currency = NumberFormat.currency(locale: 'uz_UZ', symbol: 'so'm', decimalDigits: 0);
     final student = _studentCtrl.text.trim();
     final notes = _notesCtrl.text.trim();
 
@@ -114,7 +114,7 @@ class _EducationCenterBookingScreenState extends State<EducationCenterBookingScr
       details: [
         MapEntry('Markaz', widget.center.name),
         MapEntry('Kurs', _selectedService!),
-        MapEntry('O\'quvchi', student),
+        MapEntry('O'quvchi', student),
         MapEntry('Manzil', widget.center.address),
         MapEntry('Sana', DateFormat('dd.MM.yyyy').format(_selectedDate)),
         MapEntry('Vaqt', _selectedTimeSlot!),
@@ -122,7 +122,7 @@ class _EducationCenterBookingScreenState extends State<EducationCenterBookingScr
       totalLabel: 'Narxi',
       totalValue: currency.format(_selectedPrice),
       accent: _accent,
-      confirmLabel: 'So\'rov yuborish',
+      confirmLabel: 'So'rov yuborish',
     );
     if (!confirmed || !mounted) return;
 
@@ -143,7 +143,7 @@ class _EducationCenterBookingScreenState extends State<EducationCenterBookingScr
       providerName: widget.center.name,
       variant: _selectedService!,
       address: widget.center.address,
-      notes: 'O\'quvchi: $student${notes.isNotEmpty ? '. $notes' : ''}',
+      notes: 'O'quvchi: $student${notes.isNotEmpty ? '. $notes' : ''}',
       date: dateTime,
       price: _selectedPrice,
       status: OrderStatus.pending,
@@ -156,14 +156,14 @@ class _EducationCenterBookingScreenState extends State<EducationCenterBookingScr
       Navigator.pop(context);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('So\'rov yuborildi! Markaz javob beradi.'),
+          content: Text('So'rov yuborildi! Markaz javob beradi.'),
           backgroundColor: Colors.green,
         ),
       );
     } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Buyurtma yuborib bo\'lmadi')),
+          const SnackBar(content: Text('Buyurtma yuborib bo'lmadi')),
         );
       }
     }
@@ -171,7 +171,7 @@ class _EducationCenterBookingScreenState extends State<EducationCenterBookingScr
 
   @override
   Widget build(BuildContext context) {
-    final currency = NumberFormat.currency(locale: 'uz_UZ', symbol: 'so\'m', decimalDigits: 0);
+    final currency = NumberFormat.currency(locale: 'uz_UZ', symbol: 'so'm', decimalDigits: 0);
     final prices = <String, double>{
       for (final s in _services) s: widget.center.prices[s] ?? 150000,
     };
@@ -218,7 +218,7 @@ class _EducationCenterBookingScreenState extends State<EducationCenterBookingScr
                       format: currency,
                     ),
                     const SizedBox(height: 24),
-                    const SectionTitle('O\'quvchi'),
+                    const SectionTitle('O'quvchi'),
                     const SizedBox(height: 12),
                     BookingInputField(
                       controller: _studentCtrl,
@@ -256,7 +256,7 @@ class _EducationCenterBookingScreenState extends State<EducationCenterBookingScr
                     const SizedBox(height: 16),
                     BookingTextArea(
                       controller: _notesCtrl,
-                      hint: 'Qo\'shimcha izoh...',
+                      hint: 'Qo'shimcha izoh...',
                       icon: LucideIcons.messageSquare,
                       accent: _accent,
                     ),

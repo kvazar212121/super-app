@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../services/call_service.dart';
+import 'calls/call_screen.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -11,6 +13,8 @@ import '../services/provider_availability_service.dart';
 import '../utils/auth_guard.dart';
 import '../widgets/booking_common_widgets.dart';
 import '../widgets/glass/mesh_background.dart';
+import '../services/call_service.dart';
+import 'calls/call_screen.dart';
 
 class DentalBookingScreen extends StatefulWidget {
   final DentalClinic clinic;
@@ -244,11 +248,14 @@ class _DentalBookingScreenState extends State<DentalBookingScreen> {
                           ? 'Band qilish — ${currency.format(_price)}'
                           : 'Band qilish',
                       onPrimary: _canBook ? _confirm : null,
-                      secondaryLabel: 'Klinika bilan bog\'lanish',
+                      secondaryLabel: 'Klinika bilan bog'lanish',
                       secondaryIcon: LucideIcons.phone,
                       onSecondary: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('${widget.clinic.phoneNumber}')),
+                        CallService().startCall(0, widget.clinic.name);
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => const CallScreen(isIncoming: false),
+                          ),
                         );
                       },
                     ),

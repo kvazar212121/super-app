@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../services/call_service.dart';
+import 'calls/call_screen.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -33,7 +35,7 @@ class _SalonBookingScreenState extends State<SalonBookingScreen> {
   @override
   Widget build(BuildContext context) {
     final accentColor = const Color(0xFFE91E63); // Pink for Salon
-    final currencyFormat = NumberFormat.currency(locale: 'uz_UZ', symbol: 'so\'m', decimalDigits: 0);
+    final currencyFormat = NumberFormat.currency(locale: 'uz_UZ', symbol: 'so'm', decimalDigits: 0);
 
     return GlassBackdrop(
       child: Scaffold(
@@ -94,12 +96,14 @@ class _SalonBookingScreenState extends State<SalonBookingScreen> {
                       secondaryLabel: "Salon bilan bog'lanish",
                       secondaryIcon: LucideIcons.phone,
                       onSecondary: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                              content: Text(
-                                  "${widget.salon.phoneNumber} raqamiga bog'lanilmoqda...")),
-                        );
-                      },
+                      final targetId = int.tryParse(widget.salon.id) ?? 0;
+                      CallService().startCall(targetId, widget.salon.name);
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => const CallScreen(isIncoming: false),
+                        ),
+                      );
+                    },
                     );
                   }),
                   const SizedBox(height: 40),

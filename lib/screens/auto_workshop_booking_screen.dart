@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../services/call_service.dart';
+import 'calls/call_screen.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -10,6 +12,8 @@ import '../services/provider_availability_service.dart';
 import '../utils/auth_guard.dart';
 import '../widgets/booking_common_widgets.dart';
 import '../widgets/glass/mesh_background.dart';
+import '../services/call_service.dart';
+import 'calls/call_screen.dart';
 
 class AutoWorkshopBookingScreen extends StatefulWidget {
   final AutoWorkshop workshop;
@@ -89,7 +93,7 @@ class _AutoWorkshopBookingScreenState extends State<AutoWorkshopBookingScreen> {
     if (!await ensureAuthenticated(context)) return;
     if (!_canSubmit || !mounted) return;
 
-    final currency = NumberFormat.currency(locale: 'uz_UZ', symbol: 'so\'m', decimalDigits: 0);
+    final currency = NumberFormat.currency(locale: 'uz_UZ', symbol: 'so'm', decimalDigits: 0);
     final car = _carCtrl.text.trim();
     final notes = _notesCtrl.text.trim();
 
@@ -149,7 +153,7 @@ class _AutoWorkshopBookingScreenState extends State<AutoWorkshopBookingScreen> {
     } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Buyurtma yuborib bo\'lmadi')),
+          const SnackBar(content: Text('Buyurtma yuborib bo'lmadi')),
         );
       }
     }
@@ -157,7 +161,7 @@ class _AutoWorkshopBookingScreenState extends State<AutoWorkshopBookingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final currency = NumberFormat.currency(locale: 'uz_UZ', symbol: 'so\'m', decimalDigits: 0);
+    final currency = NumberFormat.currency(locale: 'uz_UZ', symbol: 'so'm', decimalDigits: 0);
 
     return GlassBackdrop(
       child: Scaffold(
@@ -267,8 +271,11 @@ class _AutoWorkshopBookingScreenState extends State<AutoWorkshopBookingScreen> {
                       secondaryLabel: 'Telefon orqali',
                       secondaryIcon: LucideIcons.phone,
                       onSecondary: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('${widget.workshop.phoneNumber} raqamiga qo\'ng\'iroq...')),
+                        CallService().startCall(0, widget.workshop.name);
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => const CallScreen(isIncoming: false),
+                          ),
                         );
                       },
                     ),
