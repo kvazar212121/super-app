@@ -67,7 +67,7 @@ class Settings(BaseSettings):
 
     # Groq AI API (kalit faqat serverda saqlanadi)
     groq_api_key: str = ""
-    groq_model: str = "qwen/qwen3-32b"
+    groq_model: str = "llama3-70b-8192"
     groq_max_tokens: int = 1024
 
 

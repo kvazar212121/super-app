@@ -18,10 +18,16 @@ class _ChatScreenState extends State<ChatScreen> {
   
   final List<Map<String, dynamic>> _chatHistory = [];
   bool _isTyping = false;
+  bool _hasText = false;
 
   @override
   void initState() {
     super.initState();
+    _textController.addListener(() {
+      setState(() {
+        _hasText = _textController.text.trim().isNotEmpty;
+      });
+    });
     // Add initial greeting message
     _chatHistory.add({
       'role': 'assistant',
@@ -225,23 +231,37 @@ class _ChatScreenState extends State<ChatScreen> {
           ),
           const SizedBox(width: 12),
           GestureDetector(
-            onTap: _isTyping ? null : _sendMessage,
-            child: Container(
+            onTap: _hasText
+                ? (_isTyping ? null : _sendMessage)
+                : () {
+                    // STT (Speech-to-Text) logic will go here
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Ovozli xabar kiritish keyingi yangilanishda qo\\'shiladi')),
+                    );
+                  },
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [Color(0xFF8B5CF6), Color(0xFF3B82F6)],
+                gradient: LinearGradient(
+                  colors: _hasText
+                      ? [const Color(0xFF8B5CF6), const Color(0xFF3B82F6)]
+                      : [const Color(0xFF10B981), const Color(0xFF059669)], // Green for mic
                 ),
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
-                    color: const Color(0xFF3B82F6).withValues(alpha: 0.4),
+                    color: (_hasText ? const Color(0xFF3B82F6) : const Color(0xFF10B981)).withValues(alpha: 0.4),
                     blurRadius: 8,
                     offset: const Offset(0, 4),
                   ),
                 ],
               ),
-              child: const Icon(LucideIcons.send, color: Colors.white, size: 20),
+              child: Icon(
+                _hasText ? LucideIcons.send : LucideIcons.mic,
+                color: Colors.white,
+                size: 20,
+              ),
             ),
           ),
         ],
