@@ -110,3 +110,40 @@ class NotificationService:
             title="Yangi buyurtma",
             message=f"Sizga #{order_id} raqamli yangi buyurtma keldi.",
         )
+
+    @staticmethod
+    def notify_order_shifted(user_id: int, order_id: int, new_time_label: str) -> Notification:
+        """Mijozga navbati/vaqti oldinga surilganda xabar."""
+        return NotificationService.send_notification(
+            user_id=user_id,
+            ntype="order_time_shifted",
+            title="Navbatingiz surildi!",
+            message=(
+                f"Soha egasi vaqtidan oldin bo'shadi! Sizning #{order_id} raqamli "
+                f"buyurtmangiz vaqti oldinga surildi. Yangi vaqt: {new_time_label}. "
+                f"Iltimos, belgilangan vaqtda yetib keling."
+            ),
+        )
+
+    @staticmethod
+    def notify_booking_time_arrived(user_id: int, order_id: int, provider_name: str) -> Notification:
+        """Buyurtma vaqti kelganda (T+0) mijozga xabar."""
+        return NotificationService.send_notification(
+            user_id=user_id,
+            ntype="booking_time_arrived",
+            title="Navbatingiz keldi! 🕐",
+            message=(
+                f"#{order_id} — {provider_name} da vaqtingiz keldi. "
+                f"Joyga boring va ilovadan tasdiqlang."
+            ),
+        )
+
+    @staticmethod
+    def notify_provider_booking_time(provider_user_id: int, order_id: int, client_name: str) -> Notification:
+        """Buyurtma vaqti kelganda (T+0) soxa egasiga xabar."""
+        return NotificationService.send_notification(
+            user_id=provider_user_id,
+            ntype="booking_time_arrived",
+            title=f"Mijoz {client_name} ning vaqti keldi 📋",
+            message=f"#{order_id} buyurtma vaqti keldi. Mijoz kelganini tasdiqlang.",
+        )

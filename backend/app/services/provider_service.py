@@ -35,9 +35,9 @@ class ProviderService:
         base = (
             select(Provider)
             .options(selectinload(Provider.category))
-            .where(Provider.is_active == True)
+            .where(Provider.is_active == True, Provider.is_paused == False)
         )
-        count_base = select(func.count(Provider.id)).where(Provider.is_active == True)
+        count_base = select(func.count(Provider.id)).where(Provider.is_active == True, Provider.is_paused == False)
 
         if category_id:
             base = base.where(Provider.category_id == category_id)
@@ -63,6 +63,7 @@ class ProviderService:
         filtered = [
             p for p in providers
             if (p.metadata_json or {}).get("barber_role") != "shop_employee"
+            and not (p.metadata_json or {}).get("is_suspended")
         ]
         return filtered, total
 
@@ -158,6 +159,14 @@ class ProviderService:
         meta = provider.metadata_json or {}
         slots: list[str] = meta.get("time_slots") or DEFAULT_TIME_SLOTS
 
+        blocked_dates = meta.get("blocked_dates") or []
+        if meta.get("is_suspended") == True or day.isoformat() in blocked_dates or getattr(provider, "is_paused", False):
+            return {
+                "date": day.isoformat(),
+                "slots": slots,
+                "booked": list(slots),
+            }
+
         day_start = datetime.combine(day, time.min)
         day_end = datetime.combine(day, time.max)
 
@@ -171,11 +180,32 @@ class ProviderService:
         )
         orders = result.scalars().all()
 
+        from app.models.provider_blocked_time import ProviderBlockedTime
+        block_result = await db.execute(
+            select(ProviderBlockedTime).where(
+                ProviderBlockedTime.provider_id == provider_id,
+                ProviderBlockedTime.end_time > day_start,
+                ProviderBlockedTime.start_time < day_end
+            )
+        )
+        blocks = block_result.scalars().all()
+
         booked_times = {
             f"{o.date.hour:02d}:{o.date.minute:02d}"
             for o in orders
             if o.date is not None
         }
+
+        # Check slots against blocks
+        for slot in slots:
+            slot_h, slot_m = map(int, slot.split(':'))
+            slot_dt = datetime.combine(day, time(slot_h, slot_m))
+            for b in blocks:
+                # slot duration assumed 1 hr for simplicity, or just check point overlap
+                slot_end_dt = slot_dt + __import__('datetime').timedelta(minutes=59)
+                if b.start_time <= slot_end_dt and b.end_time > slot_dt:
+                    booked_times.add(slot)
+
         booked = [s for s in slots if s in booked_times]
 
         return {

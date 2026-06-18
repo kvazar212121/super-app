@@ -258,6 +258,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> with SingleTick
     return GlassScaffold(
       showBackButton: true,
       title: '🛒 Aqlli Savdo',
+      resizeToAvoidBottomInset: false, // Prevent keyboard from causing bottom overflow
       bottom: PreferredSize(
         preferredSize: const Size.fromHeight(48),
         child: TabBar(

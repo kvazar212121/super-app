@@ -129,31 +129,33 @@ async def plan_reminder_scheduler():
     while True:
         try:
             await asyncio.sleep(15)  # Check every 15 seconds
-            from datetime import datetime, timezone
+            from datetime import datetime, timezone, timedelta
             now = datetime.now(timezone.utc)
             
             async with async_session() as db:
                 from app.models.plan import Plan
+                from app.models.user import User
                 from app.services.notification_service import NotificationService
                 
-                stmt = select(Plan).where(
+                stmt = select(Plan, User).join(User, Plan.user_id == User.id).where(
                     Plan.is_completed == False,
-                    Plan.is_notified == False,
-                    Plan.due_date <= now
+                    Plan.is_notified == False
                 )
                 result = await db.execute(stmt)
-                plans = result.scalars().all()
+                rows = result.all()
                 
-                if plans:
-                    logger.info(f"Reminder scheduler found {len(plans)} plans to notify.")
-                    for plan in plans:
-                        NotificationService.send_notification(
-                            user_id=plan.user_id,
-                            ntype="plan_reminder",
-                            title="Reja eslatmasi ⏰",
-                            message=f"Siz shu soatda shuni qilishingiz kerak edi: {plan.title}",
-                        )
-                        plan.is_notified = True
+                if rows:
+                    for plan, user in rows:
+                        offset = getattr(user, "reminder_offset_minutes", 10)
+                        reminder_time = plan.due_date - timedelta(minutes=offset)
+                        if reminder_time <= now:
+                            NotificationService.send_notification(
+                                user_id=plan.user_id,
+                                ntype="plan_reminder",
+                                title="Reja eslatmasi ⏰",
+                                message=f"Siz shu soatda shuni qilishingiz kerak edi: {plan.title}",
+                            )
+                            plan.is_notified = True
                     await db.commit()
         except asyncio.CancelledError:
             logger.info("Plan reminder scheduler cancelled.")
@@ -274,6 +276,35 @@ async def finance_reminder_scheduler():
         except Exception as e:
             logger.error(f"Error in finance reminder scheduler: {e}")
 
+async def checkin_scheduler():
+    """Checkin eslatmalari va auto-noshow uchun cron scheduler."""
+    logger.info("Checkin scheduler starting...")
+    while True:
+        try:
+            await asyncio.sleep(15)  # Har 15 sekundda tekshirish
+
+            async with async_session() as db:
+                from app.services.checkin_service import CheckinService, CheckinScheduler
+
+                # 1. Checkin so'rovlari yuborish (vaqti yaqinlashganlarga)
+                prompt_count = await CheckinScheduler.send_checkin_prompts(db)
+
+                # 2. Auto no-show tekshiruvi (20 daqiqa o'tganlarga)
+                noshow_count = await CheckinService.auto_noshow_check(db)
+
+                await db.commit()
+
+                if prompt_count > 0 or noshow_count > 0:
+                    logger.info(
+                        "Checkin scheduler: %d prompts, %d auto-noshow",
+                        prompt_count, noshow_count,
+                    )
+        except asyncio.CancelledError:
+            logger.info("Checkin scheduler cancelled.")
+            break
+        except Exception as e:
+            logger.error(f"Error in checkin scheduler: {e}")
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -293,6 +324,12 @@ async def lifespan(app: FastAPI):
         ))
         await conn.execute(text(
             "ALTER TABLE plans ADD COLUMN IF NOT EXISTS is_notified BOOLEAN DEFAULT FALSE"
+        ))
+        await conn.execute(text(
+            "ALTER TABLE users ADD COLUMN IF NOT EXISTS reminder_offset_minutes INTEGER DEFAULT 10"
+        ))
+        await conn.execute(text(
+            "ALTER TABLE orders ADD COLUMN IF NOT EXISTS booking_mode VARCHAR(50) DEFAULT 'fixed'"
         ))
         # Shopping list new columns
         await conn.execute(text(
@@ -351,18 +388,24 @@ async def lifespan(app: FastAPI):
     # Start the background tasks
     reminder_task = asyncio.create_task(plan_reminder_scheduler())
     finance_task = asyncio.create_task(finance_reminder_scheduler())
+    checkin_task = asyncio.create_task(checkin_scheduler())
     
     yield
     
     # Cancel the background tasks
     reminder_task.cancel()
     finance_task.cancel()
+    checkin_task.cancel()
     try:
         await reminder_task
     except asyncio.CancelledError:
         pass
     try:
         await finance_task
+    except asyncio.CancelledError:
+        pass
+    try:
+        await checkin_task
     except asyncio.CancelledError:
         pass
         

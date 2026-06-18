@@ -2,6 +2,7 @@ from app.models.user import User
 from app.models.category import Category, CategoryVariant
 from app.models.provider import Provider
 from app.models.order import Order
+from app.models.order_checkin import OrderCheckin
 from app.models.payment import PaymentCard
 from app.models.review import Review
 from app.models.setting import PlatformSetting
@@ -14,6 +15,8 @@ from app.models.promo import Promo
 from app.models.plan import Plan
 from app.models.finance_record import FinanceRecord
 from app.models.planned_payment import PlannedPayment
+from app.models.provider_fraud_stats import ProviderFraudStats
+from app.models.provider_blocked_time import ProviderBlockedTime
 
 __all__ = [
     "User",
@@ -21,6 +24,7 @@ __all__ = [
     "CategoryVariant",
     "Provider",
     "Order",
+    "OrderCheckin",
     "PaymentCard",
     "Review",
     "PlatformSetting",
@@ -33,4 +37,6 @@ __all__ = [
     "Plan",
     "FinanceRecord",
     "PlannedPayment",
+    "ProviderFraudStats",
+    "ProviderBlockedTime",
 ]

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:dio/dio.dart';
 import '../models/nurse_service.dart';
 import '../models/service_hub_kind.dart';
 import '../models/service_order.dart';
@@ -34,6 +35,54 @@ class _NurseBookingScreenState extends State<NurseBookingScreen> {
   String? _selectedTimeSlot;
 
   late List<String> _timeSlots;
+
+  bool _isPriceRelevantForService(String priceKey, MedicalService? service) {
+    if (service == null) return true;
+    final keyLower = priceKey.toLowerCase();
+    final labelLower = service.label.toLowerCase();
+    
+    if (keyLower.contains(labelLower)) return true;
+
+    if (service == MedicalService.injection && keyLower.contains('in\'ektsiya')) return true;
+    if (service == MedicalService.bloodTest && keyLower.contains('qon')) return true;
+    if (service == MedicalService.drip && keyLower.contains('kapelnitsa')) return true;
+    if (service == MedicalService.drip && keyLower.contains('tomchil')) return true;
+
+    bool matchesAny = widget.service.medicalServices.any((s) {
+      final sLabel = s.label.toLowerCase();
+      if (keyLower.contains(sLabel)) return true;
+      if (s == MedicalService.injection && keyLower.contains('in\'ektsiya')) return true;
+      if (s == MedicalService.bloodTest && keyLower.contains('qon')) return true;
+      if (s == MedicalService.drip && keyLower.contains('kapelnitsa')) return true;
+      return false;
+    });
+
+    if (!matchesAny) return true;
+    return false;
+  }
+
+  Map<String, double> get _filteredPrices {
+    if (_selectedMedicalService == null) return widget.service.prices;
+    
+    final filtered = <String, double>{};
+    for (final entry in widget.service.prices.entries) {
+      if (_isPriceRelevantForService(entry.key, _selectedMedicalService)) {
+        filtered[entry.key] = entry.value;
+      }
+    }
+    return filtered;
+  }
+
+  void _onMedicalServiceSelected(MedicalService s) {
+    setState(() {
+      _selectedMedicalService = s;
+      if (_selectedPriceOption != null) {
+        if (!_isPriceRelevantForService(_selectedPriceOption!, s)) {
+          _selectedPriceOption = null;
+        }
+      }
+    });
+  }
 
   @override
   void initState() {
@@ -124,14 +173,14 @@ class _NurseBookingScreenState extends State<NurseBookingScreen> {
                     selected: _selectedMedicalService,
                     iconOf: (s) => s.icon,
                     labelOf: (s) => s.label,
-                    onSelect: (s) => setState(() => _selectedMedicalService = s),
+                    onSelect: _onMedicalServiceSelected,
                     accent: accentColor,
                   ),
                   const SizedBox(height: 24),
                   const SectionTitle("Narx variantlari"),
                   const SizedBox(height: 12),
                   PriceOptionList(
-                    prices: widget.service.prices,
+                    prices: _filteredPrices,
                     selected: _selectedPriceOption,
                     onSelect: (o) => setState(() => _selectedPriceOption = o),
                     accent: accentColor,
@@ -316,7 +365,7 @@ class _NurseBookingScreenState extends State<NurseBookingScreen> {
               width: double.infinity,
               height: 56,
               child: ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
                   final hour = int.tryParse(_selectedTimeSlot!.split(':')[0]) ?? 8;
                   final minute = int.tryParse(_selectedTimeSlot!.split(':')[1]) ?? 0;
                   final dateTime = DateTime(
@@ -343,15 +392,48 @@ class _NurseBookingScreenState extends State<NurseBookingScreen> {
                         : null,
                   );
 
-                  context.read<AppProvider>().addOrder(order);
-
-                  Navigator.pop(context);
-                  Navigator.pop(context);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                        content: Text("Muvaffaqiyatli band qilindi!"),
-                        backgroundColor: Colors.green),
+                  showDialog(
+                    context: context,
+                    barrierDismissible: false,
+                    builder: (context) => const Center(
+                      child: CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
+                      ),
+                    ),
                   );
+
+                  try {
+                    await context.read<AppProvider>().addOrder(order);
+
+                    if (context.mounted) {
+                      Navigator.pop(context); // pop loading dialog
+                      Navigator.pop(context); // pop bottom sheet
+                      Navigator.pop(context); // pop booking screen
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text("Muvaffaqiyatli band qilindi!"),
+                          backgroundColor: Colors.green,
+                        ),
+                      );
+                    }
+                  } catch (e) {
+                    if (context.mounted) {
+                      Navigator.pop(context); // pop loading dialog
+                      String errMsg = e.toString();
+                      if (e is DioException) {
+                        final data = e.response?.data;
+                        if (data is Map && data.containsKey('detail')) {
+                          errMsg = data['detail'].toString();
+                        }
+                      }
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text("Xatolik yuz berdi: $errMsg"),
+                          backgroundColor: Colors.red,
+                        ),
+                      );
+                    }
+                  }
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.green[700],

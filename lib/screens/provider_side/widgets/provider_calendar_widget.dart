@@ -26,6 +26,7 @@ class _ProviderCalendarWidgetState extends State<ProviderCalendarWidget> {
   List<String> _busySlots = [];
   List<Map<String, dynamic>> _orders = [];
   int? _actingId;
+  Map<String, dynamic>? _provider;
 
   @override
   void initState() {
@@ -40,7 +41,9 @@ class _ProviderCalendarWidgetState extends State<ProviderCalendarWidget> {
         _portal.getMe(widget.categoryKey),
         _portal.getCalendar(widget.categoryKey, _selectedDate),
       ]);
-      final meta = results[0]['metadata_json'] as Map<String, dynamic>? ?? {};
+      _provider = results[0] as Map<String, dynamic>;
+      final meta = _provider?['metadata_json'] as Map<String, dynamic>? ?? 
+                   _provider?['metadata'] as Map<String, dynamic>? ?? {};
       final slots = (meta['time_slots'] as List<dynamic>?)
           ?.map((e) => e.toString())
           .toList();
@@ -60,12 +63,84 @@ class _ProviderCalendarWidgetState extends State<ProviderCalendarWidget> {
     if (mounted) setState(() => _loading = false);
   }
 
+  bool get _isSuspended {
+    final meta = _provider?['metadata'] as Map<String, dynamic>? ??
+        _provider?['metadata_json'] as Map<String, dynamic>? ?? {};
+    return meta['is_suspended'] == true;
+  }
+
+  List<String> get _blockedDates {
+    final meta = _provider?['metadata'] as Map<String, dynamic>? ??
+        _provider?['metadata_json'] as Map<String, dynamic>? ?? {};
+    final list = meta['blocked_dates'] as List<dynamic>?;
+    return list?.map((e) => e.toString()).toList() ?? [];
+  }
+
+  bool get _isCurrentDateBlocked {
+    final dateStr = DateFormat('yyyy-MM-dd').format(_selectedDate);
+    return _blockedDates.contains(dateStr);
+  }
+
+  Future<void> _toggleSuspension(bool suspended) async {
+    if (_provider == null) return;
+    setState(() => _loading = true);
+    try {
+      final meta = Map<String, dynamic>.from(
+        _provider?['metadata'] as Map<String, dynamic>? ??
+            _provider?['metadata_json'] as Map<String, dynamic>? ?? {}
+      );
+      meta['is_suspended'] = suspended;
+      
+      await _portal.updateMetadata(widget.categoryKey, meta);
+      await _load();
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Faoliyat holatini yangilab bo\'lmadi')),
+        );
+      }
+      setState(() => _loading = false);
+    }
+  }
+
+  Future<void> _toggleBlockCurrentDate(bool block) async {
+    if (_provider == null) return;
+    setState(() => _loading = true);
+    try {
+      final meta = Map<String, dynamic>.from(
+        _provider?['metadata'] as Map<String, dynamic>? ??
+            _provider?['metadata_json'] as Map<String, dynamic>? ?? {}
+      );
+      final blocked = List<String>.from(_blockedDates);
+      final dateStr = DateFormat('yyyy-MM-dd').format(_selectedDate);
+      
+      if (block) {
+        if (!blocked.contains(dateStr)) {
+          blocked.add(dateStr);
+        }
+      } else {
+        blocked.remove(dateStr);
+      }
+      meta['blocked_dates'] = blocked;
+      
+      await _portal.updateMetadata(widget.categoryKey, meta);
+      await _load();
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Kun holatini yangilab bo\'lmadi')),
+        );
+      }
+      setState(() => _loading = false);
+    }
+  }
+
   String _normalizeSlot(String raw) {
     if (raw.length >= 5) return raw.substring(0, 5);
     return raw;
   }
 
-  bool _isBusy(String slot) => _busySlots.contains(_normalizeSlot(slot));
+  bool _isBusy(String slot) => _isCurrentDateBlocked || _isSuspended || _busySlots.contains(_normalizeSlot(slot));
 
   Future<void> _updateStatus(int orderId, String status) async {
     setState(() => _actingId = orderId);
@@ -90,9 +165,65 @@ class _ProviderCalendarWidgetState extends State<ProviderCalendarWidget> {
       return const Center(child: CircularProgressIndicator());
     }
 
+    final isSuspended = _isSuspended;
+    final isBlocked = _isCurrentDateBlocked;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        // Uzoq muddatli faoliyatni to'xtatish switch card
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          decoration: BoxDecoration(
+            color: isSuspended ? Colors.red.shade50 : Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: isSuspended ? Colors.red.shade700 : Colors.black,
+              width: 1.5,
+            ),
+          ),
+          child: Row(
+            children: [
+              Icon(
+                isSuspended ? Icons.pause_circle_filled : Icons.check_circle,
+                color: isSuspended ? Colors.red.shade700 : Colors.black,
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Uzoq muddatga to\'xtatish',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: isSuspended ? Colors.red.shade900 : Colors.black,
+                      ),
+                    ),
+                    Text(
+                      isSuspended
+                          ? 'Faoliyatingiz mijozlarga ko\'rinmaydi'
+                          : 'Faoliyatingiz mijozlarga ochiq',
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: isSuspended ? Colors.red.shade700 : Colors.grey.shade600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Switch(
+                value: isSuspended,
+                onChanged: _toggleSuspension,
+                activeColor: Colors.red.shade700,
+                activeTrackColor: Colors.red.shade200,
+                inactiveThumbColor: Colors.black,
+                inactiveTrackColor: Colors.black12,
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 20),
         Row(
           children: [
             Column(
@@ -182,6 +313,51 @@ class _ProviderCalendarWidgetState extends State<ProviderCalendarWidget> {
             },
           ),
         ),
+        const SizedBox(height: 20),
+        // Kunlik dam olish kuni toggle
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+          decoration: BoxDecoration(
+            color: isBlocked ? Colors.grey.shade100 : Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: Colors.black, width: 1.5),
+          ),
+          child: Row(
+            children: [
+              Icon(
+                isBlocked ? Icons.calendar_today : Icons.calendar_today_outlined,
+                color: isBlocked ? Colors.grey : Colors.black,
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Bugun dam olish kuni',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: isBlocked ? Colors.grey : Colors.black,
+                      ),
+                    ),
+                    Text(
+                      isBlocked
+                          ? 'Ushbu kunda mijozlar buyurtma bera olmaydi'
+                          : 'Mijozlar buyurtma berishi mumkin',
+                      style: const TextStyle(fontSize: 11, color: Colors.grey),
+                    ),
+                  ],
+                ),
+              ),
+              Switch(
+                value: isBlocked,
+                onChanged: _toggleBlockCurrentDate,
+                activeColor: Colors.black,
+                activeTrackColor: Colors.black12,
+              ),
+            ],
+          ),
+        ),
         const SizedBox(height: 24),
         const Text(
           'Ish vaqtlari',
@@ -201,21 +377,77 @@ class _ProviderCalendarWidgetState extends State<ProviderCalendarWidget> {
           itemBuilder: (context, index) {
             final slot = _timeSlots[index];
             final isBusy = _isBusy(slot);
-            return Container(
-              decoration: BoxDecoration(
-                color: isBusy ? Colors.black : Colors.white,
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(
-                  color: Colors.black,
-                  width: 1.5,
+            final hasOrder = _orders.any((o) {
+              if (o['date'] == null) return false;
+              final od = DateTime.parse(o['date']);
+              return '${od.hour.toString().padLeft(2, '0')}:${od.minute.toString().padLeft(2, '0')}' == slot;
+            });
+            
+            return GestureDetector(
+              onTap: () async {
+                if (_isCurrentDateBlocked || _isSuspended) return;
+                if (hasOrder) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Bu vaqtda buyurtma bor')),
+                  );
+                  return;
+                }
+                
+                setState(() => _loading = true);
+                try {
+                  if (isBusy) {
+                    // Try to unblock. We'll fetch blocked times, find the one that covers this slot, and remove it.
+                    final blocks = await _portal.getBlockedTimes(widget.categoryKey);
+                    final dateStr = DateFormat('yyyy-MM-dd').format(_selectedDate);
+                    for (final b in blocks) {
+                      final st = DateTime.parse(b['start_time']).toLocal();
+                      final slotTimeStr = '${st.hour.toString().padLeft(2, '0')}:${st.minute.toString().padLeft(2, '0')}';
+                      final blockDateStr = DateFormat('yyyy-MM-dd').format(st);
+                      if (blockDateStr == dateStr && slotTimeStr == slot) {
+                        await _portal.removeBlockedTime(widget.categoryKey, b['id']);
+                        break;
+                      }
+                    }
+                  } else {
+                    // Block the slot
+                    final parts = slot.split(':');
+                    final h = int.parse(parts[0]);
+                    final m = int.parse(parts[1]);
+                    final startDt = DateTime(_selectedDate.year, _selectedDate.month, _selectedDate.day, h, m);
+                    final endDt = startDt.add(const Duration(hours: 1)); // assuming 1 hr slots for UI
+                    await _portal.addBlockedTime(widget.categoryKey, {
+                      'start_time': startDt.toUtc().toIso8601String(),
+                      'end_time': endDt.toUtc().toIso8601String(),
+                      'reason': 'Manual block',
+                    });
+                  }
+                  await _load();
+                } catch (e) {
+                  if (mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Xatolik yuz berdi: $e')),
+                    );
+                  }
+                } finally {
+                  if (mounted) setState(() => _loading = false);
+                }
+              },
+              child: Container(
+                decoration: BoxDecoration(
+                  color: isBusy ? Colors.black : Colors.white,
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(
+                    color: Colors.black,
+                    width: 1.5,
+                  ),
                 ),
-              ),
-              child: Center(
-                child: Text(
-                  slot,
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: isBusy ? Colors.white : Colors.black,
+                child: Center(
+                  child: Text(
+                    slot,
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: isBusy ? Colors.white : Colors.black,
+                    ),
                   ),
                 ),
               ),

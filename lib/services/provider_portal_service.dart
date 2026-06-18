@@ -30,6 +30,18 @@ class ProviderPortalService {
   Future<void> setActive(String categoryKey, bool active) =>
       _api.setProviderActive(categoryKey, active);
 
+  Future<void> setPaused(String categoryKey, bool isPaused) =>
+      _api.setProviderPaused(categoryKey, isPaused);
+
+  Future<List<Map<String, dynamic>>> getBlockedTimes(String categoryKey) =>
+      _api.getProviderBlockedTimes(categoryKey);
+
+  Future<Map<String, dynamic>> addBlockedTime(String categoryKey, Map<String, dynamic> data) =>
+      _api.addProviderBlockedTime(categoryKey, data);
+
+  Future<void> removeBlockedTime(String categoryKey, int blockedTimeId) =>
+      _api.removeProviderBlockedTime(categoryKey, blockedTimeId);
+
   Future<void> updateOrderStatus(
     String categoryKey,
     int orderId,

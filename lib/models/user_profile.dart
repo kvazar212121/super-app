@@ -7,6 +7,8 @@ class UserProfile {
   final double balance;
   final double cashback;
   final bool isPremium;
+  final int reminderOffsetMinutes;
+  final bool isProvider;
 
   UserProfile({
     required this.name,
@@ -17,6 +19,8 @@ class UserProfile {
     this.balance = 0.0,
     this.cashback = 0.0,
     this.isPremium = false,
+    this.reminderOffsetMinutes = 10,
+    this.isProvider = false,
   });
 
   UserProfile copyWith({
@@ -28,6 +32,8 @@ class UserProfile {
     double? balance,
     double? cashback,
     bool? isPremium,
+    int? reminderOffsetMinutes,
+    bool? isProvider,
   }) {
     return UserProfile(
       name: name ?? this.name,
@@ -38,6 +44,8 @@ class UserProfile {
       balance: balance ?? this.balance,
       cashback: cashback ?? this.cashback,
       isPremium: isPremium ?? this.isPremium,
+      reminderOffsetMinutes: reminderOffsetMinutes ?? this.reminderOffsetMinutes,
+      isProvider: isProvider ?? this.isProvider,
     );
   }
   factory UserProfile.fromJson(Map<String, dynamic> json) {
@@ -50,6 +58,8 @@ class UserProfile {
       balance: (json['balance'] as num?)?.toDouble() ?? 0.0,
       cashback: (json['cashback'] as num?)?.toDouble() ?? 0.0,
       isPremium: json['is_premium'] ?? false,
+      reminderOffsetMinutes: json['reminder_offset_minutes'] ?? 10,
+      isProvider: json['is_provider'] ?? false,
     );
   }
 }

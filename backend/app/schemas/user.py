@@ -13,12 +13,19 @@ class UserOut(BaseModel):
     balance: float
     cashback: float
     is_premium: bool
+    reminder_offset_minutes: Optional[int] = 10
     created_at: Optional[datetime] = None
+    is_provider: bool = False
 
     model_config = {"from_attributes": False}
 
     @classmethod
     def from_user(cls, u) -> "UserOut":
+        is_provider = False
+        if hasattr(u, "providers") and u.providers:
+            is_provider = len(u.providers) > 0
+        elif hasattr(u, "is_provider"):
+            is_provider = u.is_provider
         return cls(
             id=u.id,
             name=u.name,
@@ -29,7 +36,9 @@ class UserOut(BaseModel):
             balance=u.balance,
             cashback=u.cashback,
             is_premium=u.is_premium,
+            reminder_offset_minutes=getattr(u, "reminder_offset_minutes", 10),
             created_at=u.created_at,
+            is_provider=is_provider,
         )
 
 
@@ -38,6 +47,7 @@ class UserUpdate(BaseModel):
     surname: Optional[str] = None
     avatar_url: Optional[str] = None
     telegram_username: Optional[str] = None
+    reminder_offset_minutes: Optional[int] = None
 
 
 class CardOut(BaseModel):

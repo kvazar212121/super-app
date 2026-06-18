@@ -31,6 +31,7 @@ class _BarberBookingScreenState extends State<BarberBookingScreen> {
   String? _selectedStaffId;
   DateTime _selectedDate = DateTime.now().add(const Duration(days: 1));
   String? _selectedTimeSlot;
+  String _selectedBookingMode = 'fixed';
 
   List<String> _timeSlots = ProviderAvailability.defaultSlots;
   List<String> _bookedSlots = [];
@@ -200,6 +201,11 @@ class _BarberBookingScreenState extends State<BarberBookingScreen> {
                         disabledTimeSlots: _bookedSlots,
                       ),
                     ],
+                    const SizedBox(height: 24),
+                    // ──── Navbat rejimi tanlash ────
+                    const SectionTitle('Navbat rejimi'),
+                    const SizedBox(height: 12),
+                    _buildQueueModeSelector(),
                     const SizedBox(height: 32),
                     BookingActionBar(
                       accent: _accent,
@@ -230,6 +236,114 @@ class _BarberBookingScreenState extends State<BarberBookingScreen> {
     );
   }
 
+  Widget _buildQueueModeSelector() {
+    const modes = [
+      {
+        'key': 'fixed',
+        'icon': LucideIcons.clock,
+        'title': 'Aniq vaqt',
+        'desc': 'Belgilangan vaqtda qabul qilinadi',
+      },
+      {
+        'key': 'flexible',
+        'icon': LucideIcons.zap,
+        'title': 'Tezkor navbat',
+        'desc': 'Usta bo\'shashiga qarab vaqtingiz oldinga surilishi mumkin',
+      },
+    ];
+
+    return Row(
+      children: modes.map((m) {
+        final key = m['key'] as String;
+        final isSelected = _selectedBookingMode == key;
+        return Expanded(
+          child: GestureDetector(
+            onTap: () => setState(() => _selectedBookingMode = key),
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 250),
+              curve: Curves.easeOutCubic,
+              margin: EdgeInsets.only(
+                right: key == 'fixed' ? 6 : 0,
+                left: key == 'flexible' ? 6 : 0,
+              ),
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                color: isSelected
+                    ? _accent.withValues(alpha: 0.12)
+                    : kBookingCard,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: isSelected ? _accent : kBookingBorder,
+                  width: isSelected ? 2 : 1,
+                ),
+                boxShadow: isSelected
+                    ? [
+                        BoxShadow(
+                          color: _accent.withValues(alpha: 0.15),
+                          blurRadius: 12,
+                          offset: const Offset(0, 4),
+                        ),
+                      ]
+                    : [],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      AnimatedContainer(
+                        duration: const Duration(milliseconds: 250),
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: isSelected
+                              ? _accent.withValues(alpha: 0.18)
+                              : GlassTokens.secondaryText(context)
+                                  .withValues(alpha: 0.08),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          m['icon'] as IconData,
+                          size: 18,
+                          color: isSelected
+                              ? _accent
+                              : GlassTokens.secondaryText(context),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          m['title'] as String,
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w700,
+                            color: isSelected
+                                ? _accent
+                                : GlassTokens.primaryText(context),
+                          ),
+                        ),
+                      ),
+                      if (isSelected)
+                        Icon(LucideIcons.circleCheck, size: 20, color: _accent),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    m['desc'] as String,
+                    style: TextStyle(
+                      fontSize: 11,
+                      height: 1.3,
+                      color: GlassTokens.secondaryText(context),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      }).toList(),
+    );
+  }
+
   Future<void> _confirmBooking() async {
     if (!await ensureAuthenticated(context)) return;
     if (!mounted || !_canBook) return;
@@ -246,6 +360,10 @@ class _BarberBookingScreenState extends State<BarberBookingScreen> {
         MapEntry(
           'Vaqt',
           '${DateFormat('dd.MM.yyyy').format(_selectedDate)} $_selectedTimeSlot',
+        ),
+        MapEntry(
+          'Navbat rejimi',
+          _selectedBookingMode == 'flexible' ? 'Tezkor navbat ⚡' : 'Aniq vaqt 🕐',
         ),
       ],
       totalLabel: 'Jami',
@@ -278,6 +396,7 @@ class _BarberBookingScreenState extends State<BarberBookingScreen> {
       price: _selectedPrice,
       status: OrderStatus.pending,
       providerId: widget.shop.providerId,
+      bookingMode: _selectedBookingMode,
     );
 
     try {

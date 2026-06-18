@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../services/api_service.dart';
 import '../theme/glass_tokens.dart';
-
+import 'weather_currency_modals.dart';
 class DailyUtilitiesWidget extends StatefulWidget {
   const DailyUtilitiesWidget({super.key});
 
@@ -73,18 +73,28 @@ class _DailyUtilitiesWidgetState extends State<DailyUtilitiesWidget> {
       final cond = weather!['condition'] ?? '';
       txt = '$temp°C • $cond';
     }
-    return _BaseCard(
-      icon: LucideIcons.cloudSun,
-      color: Colors.blueAccent,
-      title: 'Ob-havo',
-      customSubtitle: Text(
-        txt,
-        style: TextStyle(
-          color: GlassTokens.secondaryText(context),
-          fontSize: 10,
+    return GestureDetector(
+      onTap: () {
+        showModalBottomSheet(
+          context: context,
+          isScrollControlled: true,
+          backgroundColor: Colors.transparent,
+          builder: (context) => const WeatherModal(),
+        );
+      },
+      child: _BaseCard(
+        icon: LucideIcons.cloudSun,
+        color: Colors.blueAccent,
+        title: 'Ob-havo',
+        customSubtitle: Text(
+          txt,
+          style: TextStyle(
+            color: GlassTokens.secondaryText(context),
+            fontSize: 10,
+          ),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
         ),
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
       ),
     );
   }
@@ -98,35 +108,45 @@ class _DailyUtilitiesWidgetState extends State<DailyUtilitiesWidget> {
       txt = '1 $ccy = $rate UZS';
     }
     
-    return _BaseCard(
-      icon: LucideIcons.circleDollarSign,
-      color: Colors.greenAccent,
-      title: 'Valyuta kurslari',
-      customSubtitle: AnimatedSwitcher(
-        duration: const Duration(milliseconds: 500),
-        switchInCurve: Curves.easeOut,
-        switchOutCurve: Curves.easeIn,
-        transitionBuilder: (Widget child, Animation<double> animation) {
-          return FadeTransition(
-            opacity: animation,
-            child: SlideTransition(
-              position: Tween<Offset>(
-                begin: const Offset(0.0, 0.5),
-                end: Offset.zero,
-              ).animate(animation),
-              child: child,
+    return GestureDetector(
+      onTap: () {
+        showModalBottomSheet(
+          context: context,
+          isScrollControlled: true,
+          backgroundColor: Colors.transparent,
+          builder: (context) => const CurrencyModal(),
+        );
+      },
+      child: _BaseCard(
+        icon: LucideIcons.circleDollarSign,
+        color: Colors.greenAccent,
+        title: 'Valyuta kurslari',
+        customSubtitle: AnimatedSwitcher(
+          duration: const Duration(milliseconds: 500),
+          switchInCurve: Curves.easeOut,
+          switchOutCurve: Curves.easeIn,
+          transitionBuilder: (Widget child, Animation<double> animation) {
+            return FadeTransition(
+              opacity: animation,
+              child: SlideTransition(
+                position: Tween<Offset>(
+                  begin: const Offset(0.0, 0.5),
+                  end: Offset.zero,
+                ).animate(animation),
+                child: child,
+              ),
+            );
+          },
+          child: Text(
+            txt,
+            key: ValueKey<int>(_currentCurrencyIndex),
+            style: TextStyle(
+              color: GlassTokens.secondaryText(context),
+              fontSize: 10,
             ),
-          );
-        },
-        child: Text(
-          txt,
-          key: ValueKey<int>(_currentCurrencyIndex),
-          style: TextStyle(
-            color: GlassTokens.secondaryText(context),
-            fontSize: 10,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
         ),
       ),
     );

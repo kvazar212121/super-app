@@ -11,7 +11,8 @@ from app.api.v1.admin import (
     promos,
     notifications,
     reports,
-    user_data
+    user_data,
+    products
 )
 
 router = APIRouter(prefix="/admin", tags=["admin"])
@@ -28,3 +29,4 @@ router.include_router(promos.router)
 router.include_router(notifications.router)
 router.include_router(reports.router)
 router.include_router(user_data.router)
+router.include_router(products.router)

@@ -21,6 +21,7 @@ class Provider(Base):
     cover_image: Mapped[str | None] = mapped_column(String(500), nullable=True)
     metadata_json: Mapped[dict | None] = mapped_column(JSON, nullable=True)
     is_active: Mapped[bool] = mapped_column(default=True)
+    is_paused: Mapped[bool] = mapped_column(default=False)
     owner_user_id: Mapped[int | None] = mapped_column(
         Integer, ForeignKey("users.id"), nullable=True, index=True
     )
@@ -28,6 +29,7 @@ class Provider(Base):
     category = relationship("Category", back_populates="providers")
     orders = relationship("Order", back_populates="provider", lazy="selectin")
     reviews = relationship("Review", back_populates="provider", lazy="selectin")
+    owner = relationship("User", foreign_keys=[owner_user_id], lazy="selectin")
 
     def to_dict(self) -> dict:
         return {
@@ -44,4 +46,5 @@ class Provider(Base):
             "cover_image": self.cover_image,
             "metadata": self.metadata_json,
             "is_active": self.is_active,
+            "is_paused": self.is_paused,
         }

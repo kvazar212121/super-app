@@ -16,9 +16,15 @@ class OrdersListWidget extends StatelessWidget {
     switch (status) {
       case OrderStatus.pending: return Colors.orange;
       case OrderStatus.accepted: return Colors.blue;
+      case OrderStatus.onTheWay: return Colors.lightBlue;
+      case OrderStatus.arrived: return Colors.deepPurple;
+      case OrderStatus.preparing: return Colors.orangeAccent;
       case OrderStatus.inProgress: return Colors.purple;
+      case OrderStatus.delivered: return Colors.greenAccent;
       case OrderStatus.completed: return Colors.green;
       case OrderStatus.cancelled: return Colors.red;
+      case OrderStatus.noShow: return Colors.grey;
+      case OrderStatus.disputed: return Colors.redAccent;
     }
   }
 

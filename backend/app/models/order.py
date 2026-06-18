@@ -10,9 +10,15 @@ from app.db.base import Base
 class OrderStatus(str, Enum):
     pending = "pending"
     confirmed = "confirmed"
+    on_the_way = "on_the_way"
+    arrived = "arrived"
+    preparing = "preparing"
     in_progress = "in_progress"
+    delivered = "delivered"
     completed = "completed"
     cancelled = "cancelled"
+    no_show = "no_show"
+    disputed = "disputed"
 
 
 class Order(Base):
@@ -41,6 +47,7 @@ class Order(Base):
     status: Mapped[OrderStatus] = mapped_column(
         SAEnum(OrderStatus), default=OrderStatus.pending
     )
+    booking_mode: Mapped[str] = mapped_column(String(50), default="fixed")
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default="now()"
     )
@@ -73,5 +80,6 @@ class Order(Base):
             "price": self.price,
             "cashback_earned": self.cashback_earned,
             "status": self.status.value,
+            "booking_mode": self.booking_mode,
             "created_at": self.created_at.isoformat() if self.created_at else None,
         }

@@ -5,6 +5,8 @@ import '../services/api_service.dart';
 import '../widgets/glass/glass_scaffold.dart';
 import '../theme/glass_tokens.dart';
 
+import 'plan_history_screen.dart';
+
 class TodoScreen extends StatefulWidget {
   const TodoScreen({super.key});
 
@@ -25,11 +27,10 @@ class _TodoScreenState extends State<TodoScreen> {
   void initState() {
     super.initState();
     _calendarScrollController = ScrollController();
-    
-    // Generate 45 days: 7 days in the past, today, and 37 days in the future
+    // Generate 45 days: starting from today
     final today = DateTime.now();
     _calendarDays = List.generate(45, (index) {
-      return DateTime(today.year, today.month, today.day).subtract(const Duration(days: 7)).add(Duration(days: index));
+      return DateTime(today.year, today.month, today.day).add(Duration(days: index));
     });
 
     _loadPlans();
@@ -37,13 +38,8 @@ class _TodoScreenState extends State<TodoScreen> {
     // Scroll to today's date in calendar strip after frame layout
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_calendarScrollController.hasClients) {
-        // Spacing: card width is 64 + horizontal margins 12 (6 on each side) = 76.
-        // Today is at index 7. Let's center it.
-        const cardWidth = 76.0;
-        final screenWidth = MediaQuery.of(context).size.width;
-        final offset = (7 * cardWidth) - (screenWidth / 2) + (cardWidth / 2);
         _calendarScrollController.animateTo(
-          offset > 0 ? offset : 0,
+          0,
           duration: const Duration(milliseconds: 300),
           curve: Curves.easeInOut,
         );
@@ -205,10 +201,11 @@ class _TodoScreenState extends State<TodoScreen> {
                     // Date picker row
                     InkWell(
                       onTap: () async {
+                        final now = DateTime.now();
                         final picked = await showDatePicker(
                           context: context,
                           initialDate: chosenDate,
-                          firstDate: DateTime.now().subtract(const Duration(days: 365)),
+                          firstDate: DateTime(now.year, now.month, now.day),
                           lastDate: DateTime.now().add(const Duration(days: 365 * 2)),
                         );
                         if (picked != null) {
@@ -306,6 +303,16 @@ class _TodoScreenState extends State<TodoScreen> {
                       chosenTime.minute,
                     );
 
+                    if (due.isBefore(DateTime.now())) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text("O'tib ketgan vaqtga reja qo'shib bo'lmaydi!"),
+                          backgroundColor: Colors.redAccent,
+                        ),
+                      );
+                      return;
+                    }
+
                     Navigator.pop(context);
                     
                     try {
@@ -363,6 +370,18 @@ class _TodoScreenState extends State<TodoScreen> {
     return GlassScaffold(
       showBackButton: true,
       title: 'Rejalarim',
+      actions: [
+        IconButton(
+          icon: const Icon(LucideIcons.history),
+          tooltip: 'Tarix',
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const PlanHistoryScreen()),
+            );
+          },
+        ),
+      ],
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

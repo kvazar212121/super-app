@@ -362,6 +362,27 @@ class ApiService {
     return response.data;
   }
 
+  // ─────────────── CHECKIN (Ikki tomonlama tasdiqlash) ───────────────
+
+  /// Checkin javobini yuborish
+  Future<Map<String, dynamic>> submitCheckin(
+    int orderId, {
+    required String side,
+    required String response,
+  }) async {
+    final res = await _dio.post(
+      '/orders/$orderId/checkin',
+      data: {'side': side, 'response': response},
+    );
+    return res.data;
+  }
+
+  /// Checkin holatini olish
+  Future<Map<String, dynamic>> getCheckinStatus(int orderId) async {
+    final res = await _dio.get('/orders/$orderId/checkin-status');
+    return res.data;
+  }
+
   // ─────────────── UPLOAD ───────────────
 
   /// Avatar yuklash
@@ -442,6 +463,37 @@ class ApiService {
       queryParameters: {'category_key': categoryKey},
     );
     return response.data;
+  }
+
+  Future<void> setProviderPaused(String categoryKey, bool isPaused) async {
+    await _dio.put(
+      '/provider/pause',
+      queryParameters: {'category_key': categoryKey, 'is_paused': isPaused},
+    );
+  }
+
+  Future<List<Map<String, dynamic>>> getProviderBlockedTimes(String categoryKey) async {
+    final response = await _dio.get(
+      '/provider/blocked-times',
+      queryParameters: {'category_key': categoryKey},
+    );
+    return (response.data as List).cast<Map<String, dynamic>>();
+  }
+
+  Future<Map<String, dynamic>> addProviderBlockedTime(String categoryKey, Map<String, dynamic> data) async {
+    final response = await _dio.post(
+      '/provider/blocked-times',
+      queryParameters: {'category_key': categoryKey},
+      data: data,
+    );
+    return response.data as Map<String, dynamic>;
+  }
+
+  Future<void> removeProviderBlockedTime(String categoryKey, int blockedTimeId) async {
+    await _dio.delete(
+      '/provider/blocked-times/$blockedTimeId',
+      queryParameters: {'category_key': categoryKey},
+    );
   }
 
   Future<Map<String, dynamic>> getProviderStats(String categoryKey) async {
@@ -1040,8 +1092,11 @@ class ApiService {
 
   // ─────────────── DAILIES & UTILITIES ───────────────
 
-  Future<Map<String, dynamic>> getWeather(String city) async {
-    final response = await _dio.get('/utilities/weather', queryParameters: {'city': city});
+  Future<Map<String, dynamic>> getWeather(String city, {double? lat, double? lng}) async {
+    final Map<String, dynamic> params = {'city': city};
+    if (lat != null) params['lat'] = lat.toString();
+    if (lng != null) params['lng'] = lng.toString();
+    final response = await _dio.get('/utilities/weather', queryParameters: params);
     return response.data;
   }
 

@@ -47,6 +47,8 @@
 	<true/>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Ilova orqali qo'ng'iroq qilish uchun mikrofonga ruxsat bering.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Ob-havo ma'lumotlarini aniq ko'rsatish uchun joylashuvingiz kerak.</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>audio</string>

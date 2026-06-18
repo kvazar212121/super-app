@@ -48,6 +48,10 @@ class ProviderReportOut(BaseModel):
     period: str
     total_revenue: float
     total_orders: int
+    completed_orders: int
+    total_leads: int
+    lead_fee_charged: float
+    balance: float
     chart: list[dict]
     breakdown: list[dict]
 
@@ -322,6 +326,9 @@ async def update_order_status(
             order_id=order.id,
             status_label=label,
         )
+        if order.status == OS.completed:
+            from app.services.order_service import OrderService
+            await OrderService.shift_flexible_queue(db, order.provider_id)
 
     return {"message": "Status yangilandi", "status": data.status}
 
@@ -335,6 +342,10 @@ async def get_calendar(
 ):
     target_day = day or date.today()
     provider = await _get_user_provider(db, user, category_key)
+    
+    from app.services.provider_service import ProviderService
+    availability = await ProviderService.get_availability(db, provider.id, target_day)
+    
     result = await db.execute(
         select(Order)
         .options(selectinload(Order.user))
@@ -346,14 +357,10 @@ async def get_calendar(
         .order_by(Order.date)
     )
     orders = list(result.scalars().all())
-    busy = []
-    for o in orders:
-        if o.date:
-            busy.append(o.date.strftime("%H:%M"))
 
     return ProviderCalendarOut(
         date=target_day.isoformat(),
-        busy_slots=busy,
+        busy_slots=availability.get("booked", []),
         orders=[_order_to_out(o) for o in orders],
     )
 
@@ -401,10 +408,39 @@ async def get_reports(
         for k, v in sorted(breakdown_map.items(), key=lambda x: -x[1])
     ]
 
+    total_leads = await db.scalar(
+        select(func.count(Order.id)).where(
+            Order.provider_id == provider.id,
+            func.date(Order.date) >= start,
+            func.date(Order.date) <= today,
+        )
+    ) or 0
+
+    completed_orders = len(orders)
+
+    from app.models.transaction import Transaction
+    lead_fee_charged = float(
+        await db.scalar(
+            select(func.coalesce(func.sum(func.abs(Transaction.amount)), 0)).where(
+                Transaction.user_id == user.id,
+                Transaction.type == "lead_fee",
+                Transaction.status == "completed",
+                func.date(Transaction.created_at) >= start,
+                func.date(Transaction.created_at) <= today,
+            )
+        ) or 0
+    )
+
+    balance = float(user.balance)
+
     return ProviderReportOut(
         period=period,
         total_revenue=total_revenue,
         total_orders=len(orders),
+        completed_orders=completed_orders,
+        total_leads=total_leads,
+        lead_fee_charged=lead_fee_charged,
+        balance=balance,
         chart=chart,
         breakdown=breakdown,
     )
@@ -441,3 +477,86 @@ async def list_my_reviews(
         per_page=per_page,
         pages=pages,
     )
+
+
+@router.put("/pause", response_model=ProviderOut)
+async def toggle_provider_pause(
+    is_paused: bool = Query(...),
+    category_key: str | None = Query(None),
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    provider = await _get_user_provider(db, user, category_key)
+    provider.is_paused = is_paused
+    await db.commit()
+    await db.refresh(provider)
+    return ProviderOut.from_provider(provider)
+
+
+@router.get("/blocked-times")
+async def list_blocked_times(
+    category_key: str | None = Query(None),
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    from app.schemas.provider import ProviderBlockedTimeOut
+    from app.models.provider_blocked_time import ProviderBlockedTime
+    provider = await _get_user_provider(db, user, category_key)
+    result = await db.execute(
+        select(ProviderBlockedTime)
+        .where(ProviderBlockedTime.provider_id == provider.id)
+        .order_by(ProviderBlockedTime.start_time)
+    )
+    blocks = result.scalars().all()
+    return [ProviderBlockedTimeOut.model_validate(b) for b in blocks]
+
+
+@router.post("/blocked-times")
+async def add_blocked_time(
+    data: dict,  # Using dict directly to avoid circular imports or redefining schemas if import fails
+    category_key: str | None = Query(None),
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    from app.schemas.provider import ProviderBlockedTimeCreate, ProviderBlockedTimeOut
+    from app.models.provider_blocked_time import ProviderBlockedTime
+    parsed_data = ProviderBlockedTimeCreate(**data)
+    provider = await _get_user_provider(db, user, category_key)
+
+    if parsed_data.start_time >= parsed_data.end_time:
+        raise HTTPException(status_code=400, detail="Start time must be before end time")
+
+    new_block = ProviderBlockedTime(
+        provider_id=provider.id,
+        start_time=parsed_data.start_time.replace(tzinfo=None),
+        end_time=parsed_data.end_time.replace(tzinfo=None),
+        reason=parsed_data.reason,
+    )
+    db.add(new_block)
+    await db.commit()
+    await db.refresh(new_block)
+    return ProviderBlockedTimeOut.model_validate(new_block)
+
+
+@router.delete("/blocked-times/{blocked_time_id}")
+async def remove_blocked_time(
+    blocked_time_id: int,
+    category_key: str | None = Query(None),
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    from app.models.provider_blocked_time import ProviderBlockedTime
+    provider = await _get_user_provider(db, user, category_key)
+    result = await db.execute(
+        select(ProviderBlockedTime).where(
+            ProviderBlockedTime.id == blocked_time_id,
+            ProviderBlockedTime.provider_id == provider.id
+        )
+    )
+    block = result.scalar_one_or_none()
+    if not block:
+        raise HTTPException(status_code=404, detail="Blocked time not found")
+
+    await db.delete(block)
+    await db.commit()
+    return {"detail": "Muvaffaqiyatli o'chirildi"}

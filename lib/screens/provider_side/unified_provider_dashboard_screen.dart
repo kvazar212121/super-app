@@ -64,6 +64,7 @@ class _UnifiedProviderDashboardScreenState
   Map<String, dynamic>? _stats;
   List<Map<String, dynamic>> _todayOrders = [];
   bool _isActive = true;
+  bool _isPaused = false;
 
   bool get _hasVenueSettings {
     final k = widget.config.categoryKey;
@@ -148,6 +149,7 @@ class _UnifiedProviderDashboardScreenState
       _todayOrders = results[2] as List<Map<String, dynamic>>;
       _pendingCount = (results[3] as List).length;
       _isActive = _provider?['is_active'] == true;
+      _isPaused = _provider?['is_paused'] == true;
     } catch (e) {
       _error = 'Ma\'lumotlarni yuklab bo\'lmadi.\nRo\'yxatdan o\'tganingizni tekshiring.';
     }
@@ -187,6 +189,15 @@ class _UnifiedProviderDashboardScreenState
       await _portal.setActive(widget.config.categoryKey, v);
     } catch (_) {
       if (mounted) setState(() => _isActive = !v);
+    }
+  }
+
+  Future<void> _togglePaused(bool v) async {
+    setState(() => _isPaused = v);
+    try {
+      await _portal.setPaused(widget.config.categoryKey, v);
+    } catch (_) {
+      if (mounted) setState(() => _isPaused = !v);
     }
   }
 
@@ -498,7 +509,7 @@ class _UnifiedProviderDashboardScreenState
               ),
               const SizedBox(width: 12),
               Text(
-                _isActive ? 'Hozir ishlayapman' : 'Tanaffusda',
+                _isActive ? 'Hozir ishlayapman' : 'Faol emas',
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   color: Colors.black,
@@ -508,6 +519,38 @@ class _UnifiedProviderDashboardScreenState
               Switch(
                 value: _isActive,
                 onChanged: _toggleActive,
+                activeColor: Colors.black,
+                activeTrackColor: Colors.black12,
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 12),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: Colors.black, width: 1.5),
+          ),
+          child: Row(
+            children: [
+              Icon(
+                _isPaused ? LucideIcons.pauseCircle : LucideIcons.playCircle,
+                color: Colors.black,
+              ),
+              const SizedBox(width: 12),
+              const Text(
+                'Uzoq muddatli tanaffus',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+              ),
+              const Spacer(),
+              Switch(
+                value: _isPaused,
+                onChanged: _togglePaused,
                 activeColor: Colors.black,
                 activeTrackColor: Colors.black12,
               ),

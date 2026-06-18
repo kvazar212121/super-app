@@ -18,7 +18,14 @@ class OrderService:
         if not provider:
             raise HTTPException(status_code=404, detail="Provayder topilmadi")
 
-        cashback_earned = round(data.price * (settings.cashback_rate / 100), 2)
+        if data.date:
+            from app.services.provider_service import ProviderService
+            availability = await ProviderService.get_availability(db, provider.id, data.date.date())
+            slot_str = f"{data.date.hour:02d}:{data.date.minute:02d}"
+            if slot_str in availability.get("booked", []):
+                raise HTTPException(status_code=400, detail="Tanlangan vaqt band qilingan yoki ruxsat etilmagan")
+
+        cashback_earned = 0.0
 
         order = Order(
             user_id=user.id,
@@ -35,7 +42,40 @@ class OrderService:
             status=OrderStatus.pending,
         )
         db.add(order)
-        user.cashback += cashback_earned
+        await db.flush()
+
+        if provider.owner_user_id:
+            owner_user = await db.get(User, provider.owner_user_id)
+            if owner_user:
+                owner_user.balance -= 5000.0
+                from app.models.transaction import Transaction
+                tx = Transaction(
+                    user_id=owner_user.id,
+                    order_id=order.id,
+                    type="lead_fee",
+                    amount=-5000.0,
+                    description=f"Mijoz topilganligi uchun komissiya (Buyurtma #{order.id})",
+                    status="completed",
+                )
+                db.add(tx)
+        
+        # Create a plan for the user
+        from app.models.plan import Plan
+        plan_title = f"{order.service_name}"
+        plan_desc = f"Provayder: {provider.name}\nManzil: {order.address}\nNarxi: {int(order.price):,} so'm".replace(",", " ")
+        if order.notes:
+            plan_desc += f"\nIzoh: {order.notes}"
+        
+        plan = Plan(
+            user_id=user.id,
+            title=plan_title,
+            description=plan_desc,
+            due_date=order.date,
+            is_completed=False,
+            is_notified=False,
+        )
+        db.add(plan)
+        
         await db.flush()
         from sqlalchemy.orm import selectinload
         q = (
@@ -100,9 +140,15 @@ class OrderService:
             status_translations = {
                 OrderStatus.pending: "kutilmoqda",
                 OrderStatus.confirmed: "qabul qilindi",
+                OrderStatus.on_the_way: "yo'lda",
+                OrderStatus.arrived: "yetib keldi",
+                OrderStatus.preparing: "tayyorlanmoqda",
                 OrderStatus.in_progress: "jarayonda",
+                OrderStatus.delivered: "yetkazildi",
                 OrderStatus.completed: "yakunlandi",
                 OrderStatus.cancelled: "bekor qilindi",
+                OrderStatus.no_show: "mijoz kelmadi",
+                OrderStatus.disputed: "nizoli holat",
             }
             status_str = status_translations.get(new_status, new_status.value)
             NotificationService.notify_order_status(
@@ -110,6 +156,8 @@ class OrderService:
                 order_id=order.id,
                 status_label=status_str,
             )
+            if new_status == OrderStatus.completed:
+                await OrderService.shift_flexible_queue(db, order.provider_id)
         return order
 
     @staticmethod
@@ -136,3 +184,72 @@ class OrderService:
         ).limit(per_page)
         orders = (await db.execute(q)).scalars().all()
         return list(orders), total
+
+    @staticmethod
+    async def shift_flexible_queue(db: AsyncSession, provider_id: int) -> None:
+        """
+        Smart queue shifting algorithm.
+        When an order is completed, shifts subsequent flexible orders forward.
+        Stops shifting when a fixed order is encountered.
+        """
+        from datetime import datetime, time
+        from app.models.order import Order, OrderStatus
+        
+        now = datetime.utcnow()
+        today_end = datetime.combine(now.date(), time.max)
+        
+        # Get all future confirmed or pending/in-progress orders for this provider today
+        q = (
+            select(Order)
+            .where(
+                Order.provider_id == provider_id,
+                Order.status.in_([OrderStatus.pending, OrderStatus.confirmed, OrderStatus.in_progress]),
+                Order.date > now,
+                Order.date <= today_end,
+            )
+            .order_by(Order.date.asc())
+        )
+        future_orders = list((await db.execute(q)).scalars().all())
+        if not future_orders:
+            return
+            
+        # The shift threshold: we shift the first flexible order to 'now'
+        first_order = future_orders[0]
+        if getattr(first_order, "booking_mode", "fixed") != "flexible":
+            # If the first future order is fixed, we cannot shift it or skip past it
+            return
+            
+        delta = first_order.date - now
+        if delta.total_seconds() <= 0:
+            return
+            
+        # Shift the first flexible order to now
+        first_order.date = now
+        db.add(first_order)
+        
+        # Send notification to the user of the first order
+        from app.services.notification_service import NotificationService
+        time_str = now.strftime("%H:%M")
+        NotificationService.notify_order_shifted(
+            user_id=first_order.user_id,
+            order_id=first_order.id,
+            new_time_label=time_str,
+        )
+        
+        # Shift subsequent flexible orders by the same delta
+        for order in future_orders[1:]:
+            if getattr(order, "booking_mode", "fixed") == "flexible":
+                new_date = order.date - delta
+                order.date = new_date
+                db.add(order)
+                # Notify
+                time_str = new_date.strftime("%H:%M")
+                NotificationService.notify_order_shifted(
+                    user_id=order.user_id,
+                    order_id=order.id,
+                    new_time_label=time_str,
+                )
+            else:
+                # Stop shifting when we hit a fixed order
+                break
+        await db.flush()

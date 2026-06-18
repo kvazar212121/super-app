@@ -16,6 +16,8 @@ router = APIRouter()
 
 class ProviderListOut(ProviderOut):
     category_title: Optional[str] = None
+    owner_balance: Optional[float] = None
+    owner_phone: Optional[str] = None
 
 
 @router.get("/providers", response_model=PaginatedResponse)
@@ -29,7 +31,10 @@ async def list_providers(
     _admin: User = Depends(require_admin),
     db: AsyncSession = Depends(get_db),
 ):
-    query = select(Provider).options(selectinload(Provider.category))
+    query = select(Provider).options(
+        selectinload(Provider.category),
+        selectinload(Provider.owner)
+    )
 
     if search:
         query = query.where(
@@ -71,6 +76,8 @@ async def list_providers(
     for p in items:
         d = p.to_dict()
         d["category_title"] = p.category.title_uz if p.category else None
+        d["owner_balance"] = p.owner.balance if p.owner else None
+        d["owner_phone"] = p.owner.phone if p.owner else None
         out_items.append(d)
 
     pages = (total + per_page - 1) // per_page

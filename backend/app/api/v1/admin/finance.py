@@ -45,15 +45,18 @@ async def finance_stats(
         ) or 0
     )
 
-    commission_rate = 15.0
-    total_commission = total_revenue * (commission_rate / 100)
-    total_cashback_given = float(
+    from app.models.transaction import Transaction
+    total_commission = float(
         await db.scalar(
-            select(func.coalesce(func.sum(Order.cashback_earned), 0)).where(
-                Order.status == OrderStatus.completed
+            select(func.coalesce(func.sum(func.abs(Transaction.amount)), 0)).where(
+                Transaction.type == "lead_fee",
+                Transaction.status == "completed"
             )
         ) or 0
     )
+
+    total_cashback_given = 0.0
+    commission_rate = 0.0
 
     return FinanceStatsOut(
         total_revenue=total_revenue,

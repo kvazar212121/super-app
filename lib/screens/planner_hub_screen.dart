@@ -22,6 +22,7 @@ class PlannerHubScreen extends StatelessWidget {
               title: 'Mening rejalarim',
               subtitle: 'Kundalik vazifalar va eslatmalar',
               color: Colors.blueAccent,
+              bgImage: 'assets/images/my_plans.jpg',
               onTap: () {
                 Navigator.push(context, MaterialPageRoute(builder: (_) => const TodoScreen()));
               },
@@ -32,6 +33,7 @@ class PlannerHubScreen extends StatelessWidget {
               title: 'Aqlli savdo',
               subtitle: 'Bozorlik ro\'yxati va narxlar',
               color: Colors.orangeAccent,
+              bgImage: 'assets/images/smart_shopping.jpg',
               onTap: () {
                 Navigator.push(context, MaterialPageRoute(builder: (_) => const ShoppingListScreen()));
               },
@@ -51,6 +53,7 @@ class _HubActionCard extends StatelessWidget {
   final String subtitle;
   final Color color;
   final VoidCallback onTap;
+  final String? bgImage;
 
   const _HubActionCard({
     required this.icon,
@@ -58,12 +61,16 @@ class _HubActionCard extends StatelessWidget {
     required this.subtitle,
     required this.color,
     required this.onTap,
+    this.bgImage,
   });
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final textColor = isDark ? Colors.white : Colors.black87;
+    final textColor = bgImage != null ? Colors.white : (isDark ? Colors.white : Colors.black87);
+    final iconBgColor = bgImage != null ? Colors.white24 : color.withValues(alpha: 0.2);
+    final iconColor = bgImage != null ? Colors.white : color;
+    final chevronColor = bgImage != null ? Colors.white70 : color;
 
     return InkWell(
       onTap: onTap,
@@ -71,19 +78,29 @@ class _HubActionCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: isDark ? Color.lerp(const Color(0xFF1E293B), color, 0.15) : Color.lerp(Colors.white, color, 0.1),
+          color: bgImage != null 
+              ? Colors.black 
+              : (isDark ? Color.lerp(const Color(0xFF1E293B), color, 0.15) : Color.lerp(Colors.white, color, 0.1)),
           borderRadius: BorderRadius.circular(16),
           border: Border.all(color: isDark ? color.withValues(alpha: 0.4) : color.withValues(alpha: 0.3)),
+          image: bgImage != null ? DecorationImage(
+            image: AssetImage(bgImage!),
+            fit: BoxFit.cover,
+            colorFilter: ColorFilter.mode(
+              Colors.black.withValues(alpha: 0.55),
+              BlendMode.srcOver,
+            ),
+          ) : null,
         ),
         child: Row(
           children: [
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.2),
+                color: iconBgColor,
                 shape: BoxShape.circle,
               ),
-              child: Icon(icon, color: color, size: 28),
+              child: Icon(icon, color: iconColor, size: 28),
             ),
             const SizedBox(width: 16),
             Expanded(
@@ -92,17 +109,38 @@ class _HubActionCard extends StatelessWidget {
                 children: [
                   Text(
                     title,
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: textColor),
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold, 
+                      fontSize: 16, 
+                      color: textColor,
+                      shadows: bgImage != null ? [
+                        const Shadow(
+                          color: Colors.black87,
+                          offset: Offset(0, 1),
+                          blurRadius: 4,
+                        ),
+                      ] : null,
+                    ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     subtitle,
-                    style: TextStyle(color: textColor.withValues(alpha: 0.7), fontSize: 13),
+                    style: TextStyle(
+                      color: bgImage != null ? Colors.white70 : textColor.withValues(alpha: 0.7), 
+                      fontSize: 13,
+                      shadows: bgImage != null ? [
+                        const Shadow(
+                          color: Colors.black54,
+                          offset: Offset(0, 1),
+                          blurRadius: 2,
+                        ),
+                      ] : null,
+                    ),
                   ),
                 ],
               ),
             ),
-            Icon(LucideIcons.chevronRight, color: color, size: 20),
+            Icon(LucideIcons.chevronRight, color: chevronColor, size: 20),
           ],
         ),
       ),

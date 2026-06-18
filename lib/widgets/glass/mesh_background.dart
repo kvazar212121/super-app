@@ -9,27 +9,18 @@ class MeshBackground extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final mesh = GlassTokens.meshColorsLight(isDark);
-    final orbs = GlassTokens.orbColorsLight(isDark);
-
     return RepaintBoundary(
       child: DecoratedBox(
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: mesh,
+          image: DecorationImage(
+            image: const AssetImage('assets/images/background.jpg'),
+            fit: BoxFit.cover,
+            colorFilter: isDark 
+                ? ColorFilter.mode(Colors.black.withValues(alpha: 0.6), BlendMode.darken)
+                : null,
           ),
         ),
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            _Orb(top: -80, left: -60, size: 260, color: orbs[0]),
-            _Orb(top: 120, right: -90, size: 220, color: orbs[1]),
-            _Orb(bottom: 180, left: -40, size: 200, color: orbs[2]),
-            _Orb(bottom: -50, right: 20, size: 280, color: orbs[3]),
-          ],
-        ),
+        child: const SizedBox.expand(),
       ),
     );
   }

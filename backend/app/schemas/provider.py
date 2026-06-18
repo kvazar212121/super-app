@@ -17,6 +17,7 @@ class ProviderOut(BaseModel):
     cover_image: Optional[str] = None
     metadata: Optional[dict] = None
     is_active: bool
+    is_paused: bool
 
     model_config = {"from_attributes": False}
 
@@ -36,6 +37,7 @@ class ProviderOut(BaseModel):
             cover_image=p.cover_image,
             metadata=p.metadata_json,
             is_active=p.is_active,
+            is_paused=p.is_paused,
         )
 
 
@@ -59,6 +61,7 @@ class ProviderUpdate(BaseModel):
     cover_image: Optional[str] = None
     metadata_json: Optional[dict] = None
     is_active: Optional[bool] = None
+    is_paused: Optional[bool] = None
 
 
 class ReviewOut(BaseModel):
@@ -100,3 +103,17 @@ class ProviderAvailabilityOut(BaseModel):
     date: str
     slots: list[str]
     booked: list[str]
+
+class ProviderBlockedTimeCreate(BaseModel):
+    start_time: datetime
+    end_time: datetime
+    reason: Optional[str] = None
+
+class ProviderBlockedTimeOut(BaseModel):
+    id: int
+    provider_id: int
+    start_time: datetime
+    end_time: datetime
+    reason: Optional[str] = None
+
+    model_config = {"from_attributes": True}

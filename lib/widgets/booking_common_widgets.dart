@@ -316,9 +316,9 @@ class PriceOptionList extends StatelessWidget {
                     children: [
                       Text(
                         option,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          color: kBookingInk,
+                          color: isSelected ? GlassTokens.primaryText(context) : kBookingInk,
                         ),
                       ),
                       if (subtitleOf != null &&
@@ -326,8 +326,8 @@ class PriceOptionList extends StatelessWidget {
                         const SizedBox(height: 2),
                         Text(
                           subtitleOf!(option)!,
-                          style: const TextStyle(
-                            color: kBookingSub,
+                          style: TextStyle(
+                            color: isSelected ? GlassTokens.secondaryText(context) : kBookingSub,
                             fontSize: 12,
                           ),
                         ),
@@ -479,6 +479,7 @@ class BookingActionBar extends StatelessWidget {
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16)),
               disabledBackgroundColor: Colors.grey[300],
+              disabledForegroundColor: Colors.grey[600],
             ),
             child: FittedBox(
               fit: BoxFit.scaleDown,

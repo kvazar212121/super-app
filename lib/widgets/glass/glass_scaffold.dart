@@ -14,6 +14,7 @@ class GlassScaffold extends StatelessWidget {
   final bool showBackButton;
   final PreferredSizeWidget? bottom;
   final bool embeddedInShell;
+  final bool? resizeToAvoidBottomInset;
 
   const GlassScaffold({
     super.key,
@@ -24,12 +25,14 @@ class GlassScaffold extends StatelessWidget {
     this.showBackButton = false,
     this.bottom,
     this.embeddedInShell = false,
+    this.resizeToAvoidBottomInset,
   });
 
   @override
   Widget build(BuildContext context) {
     if (embeddedInShell) {
       return Scaffold(
+        resizeToAvoidBottomInset: resizeToAvoidBottomInset,
         backgroundColor: Colors.transparent,
         floatingActionButton: floatingActionButton,
         floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
@@ -58,6 +61,7 @@ class GlassScaffold extends StatelessWidget {
       children: [
         MeshBackground(isDark: isDark),
         Scaffold(
+          resizeToAvoidBottomInset: resizeToAvoidBottomInset,
           backgroundColor: Colors.transparent,
           extendBodyBehindAppBar: title != null,
           appBar: title == null

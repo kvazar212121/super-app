@@ -111,6 +111,20 @@ async def get_report(
         ) or 0
     )
 
+    from app.models.transaction import Transaction
+    total_commission = float(
+        await db.scalar(
+            select(func.coalesce(func.sum(func.abs(Transaction.amount)), 0)).where(
+                and_(
+                    Transaction.type == "lead_fee",
+                    Transaction.status == "completed",
+                    func.date(Transaction.created_at) >= d_from,
+                    func.date(Transaction.created_at) <= d_to,
+                )
+            )
+        ) or 0
+    )
+
     new_users = int(
         await db.scalar(
             select(func.count(User.id)).where(
@@ -147,7 +161,7 @@ async def get_report(
         completed_orders=completed_orders,
         cancelled_orders=cancelled_orders,
         total_revenue=total_revenue,
-        total_commission=round(total_revenue * 0.15, 2),
+        total_commission=round(total_commission, 2),
         total_cashback=0.0,
         new_users=new_users,
         new_providers=0,
@@ -176,7 +190,7 @@ async def export_report_csv(
         "",
         "Moliya",
         f"Jami tushum,{report.total_revenue}",
-        f"Komissiya (15%),{report.total_commission}",
+        f"Tizim komissiyasi,{report.total_commission}",
         f"Cashback,{report.total_cashback}",
         "",
         "Foydalanuvchilar",

@@ -23,6 +23,7 @@ class User(Base):
     is_premium: Mapped[bool] = mapped_column(Boolean, default=False)
     is_admin: Mapped[bool] = mapped_column(Boolean, default=False)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
+    reminder_offset_minutes: Mapped[int] = mapped_column(Integer, default=10)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
     )
@@ -37,6 +38,7 @@ class User(Base):
     finance_records = relationship("FinanceRecord", back_populates="user", lazy="selectin", cascade="all, delete-orphan")
     planned_payments = relationship("PlannedPayment", back_populates="user", lazy="selectin", cascade="all, delete-orphan")
     shopping_lists = relationship("ShoppingList", back_populates="user", lazy="selectin", cascade="all, delete-orphan")
+    providers = relationship("Provider", primaryjoin="User.id==Provider.owner_user_id", lazy="selectin")
 
     def to_dict(self) -> dict:
         return {
@@ -51,5 +53,7 @@ class User(Base):
             "is_premium": self.is_premium,
             "is_admin": self.is_admin,
             "is_active": self.is_active,
+            "reminder_offset_minutes": self.reminder_offset_minutes,
             "created_at": self.created_at,
+            "is_provider": len(self.providers) > 0 if hasattr(self, "providers") and self.providers else False,
         }

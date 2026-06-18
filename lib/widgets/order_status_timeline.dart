@@ -17,38 +17,56 @@ class OrderTimelineStep {
   });
 }
 
-/// Buyurtma holati ketma-ketligi.
 List<OrderTimelineStep> buildOrderTimeline(OrderStatus current) {
-  const steps = [
-    (OrderStatus.pending, 'Yuborildi'),
-    (OrderStatus.accepted, 'Qabul qilindi'),
-    (OrderStatus.inProgress, 'Jarayonda'),
-    (OrderStatus.completed, 'Yakunlandi'),
-  ];
-
-  if (current == OrderStatus.cancelled) {
+  if (current == OrderStatus.cancelled || current == OrderStatus.noShow || current == OrderStatus.disputed) {
+    final label = switch (current) {
+      OrderStatus.cancelled => 'Bekor qilindi',
+      OrderStatus.noShow => 'Kelmadi',
+      OrderStatus.disputed => 'Nizoli',
+      _ => 'Xatolik',
+    };
     return [
       const OrderTimelineStep(
         label: 'Yuborildi',
         status: OrderStatus.pending,
         isDone: true,
       ),
-      const OrderTimelineStep(
-        label: 'Bekor qilindi',
-        status: OrderStatus.cancelled,
+      OrderTimelineStep(
+        label: label,
+        status: current,
         isActive: true,
         isFailed: true,
       ),
     ];
   }
 
-  final currentIndex = switch (current) {
-    OrderStatus.pending => 0,
-    OrderStatus.accepted => 1,
-    OrderStatus.inProgress => 2,
-    OrderStatus.completed => 3,
-    OrderStatus.cancelled => -1,
-  };
+  final steps = <(OrderStatus, String)>[
+    (OrderStatus.pending, 'Yuborildi'),
+    (OrderStatus.accepted, 'Qabul qilindi'),
+  ];
+  
+  if (current == OrderStatus.onTheWay) {
+    steps.add((OrderStatus.onTheWay, 'Yo\'lda'));
+  } else if (current == OrderStatus.arrived) {
+    steps.add((OrderStatus.arrived, 'Yetib keldi'));
+  } else if (current == OrderStatus.preparing) {
+    steps.add((OrderStatus.preparing, 'Tayyorlanmoqda'));
+  }
+
+  steps.add((OrderStatus.inProgress, 'Jarayonda'));
+  
+  if (current == OrderStatus.delivered) {
+    steps.add((OrderStatus.delivered, 'Yetkazildi'));
+  } else {
+    steps.add((OrderStatus.completed, 'Yakunlandi'));
+  }
+
+  int currentIndex = 0;
+  if (current == OrderStatus.pending) currentIndex = 0;
+  else if (current == OrderStatus.accepted) currentIndex = 1;
+  else if (current == OrderStatus.onTheWay || current == OrderStatus.arrived || current == OrderStatus.preparing) currentIndex = 2;
+  else if (current == OrderStatus.inProgress) currentIndex = steps.length - 2;
+  else currentIndex = steps.length - 1; // delivered or completed
 
   return steps.asMap().entries.map((e) {
     final i = e.key;

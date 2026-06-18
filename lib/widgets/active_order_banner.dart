@@ -17,9 +17,15 @@ class ActiveOrderBanner extends StatelessWidget {
   Color _statusColor(OrderStatus s) => switch (s) {
         OrderStatus.pending => const Color(0xFFF59E0B),
         OrderStatus.accepted => const Color(0xFF3B82F6),
+        OrderStatus.onTheWay => const Color(0xFF0EA5E9),
+        OrderStatus.arrived => const Color(0xFF8B5CF6),
+        OrderStatus.preparing => const Color(0xFFF59E0B),
         OrderStatus.inProgress => const Color(0xFFA855F7),
+        OrderStatus.delivered => const Color(0xFF10B981),
         OrderStatus.completed => const Color(0xFF10B981),
         OrderStatus.cancelled => const Color(0xFFEF4444),
+        OrderStatus.noShow => const Color(0xFF6B7280),
+        OrderStatus.disputed => const Color(0xFFDC2626),
       };
 
   @override

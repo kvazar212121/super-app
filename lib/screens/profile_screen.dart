@@ -43,50 +43,89 @@ class ProfileScreen extends StatelessWidget {
             _buildProfileHeader(context, user, auth.isAuthenticated),
             const SizedBox(height: 20),
             if (auth.isAuthenticated) ...[
-              CashbackCardWidget(
-                balance: user.balance,
-                cashback: user.cashback,
-                isPremium: user.isPremium,
-              ),
-              const SizedBox(height: 12),
-              SizedBox(
-                width: double.infinity,
-                child: FilledButton.icon(
-                  onPressed: () => _showTopUpSheet(context, provider),
-                  icon: const Icon(Icons.account_balance_wallet_outlined),
-                  label: const Text('Hisobni to\'ldirish'),
+              if (user.isProvider) ...[
+                CashbackCardWidget(
+                  balance: user.balance,
+                  cashback: user.cashback,
+                  isPremium: user.isPremium,
                 ),
-              ),
-              const SizedBox(height: 20),
-              _sectionTitle(context, 'Soha egasi'),
-              const ProviderPortalEntry(compact: true),
-              const SizedBox(height: 16),
-              _sectionTitle(context, 'Mening kartalarim'),
-              ...provider.cards.map(
-                (card) => Padding(
-                  padding: const EdgeInsets.only(bottom: 12),
-                  child: CardItemWidget(card: card),
+                const SizedBox(height: 12),
+                SizedBox(
+                  width: double.infinity,
+                  child: FilledButton.icon(
+                    onPressed: () => _showTopUpSheet(context, provider),
+                    icon: const Icon(Icons.account_balance_wallet_outlined),
+                    label: const Text('Hisobni to\'ldirish'),
+                  ),
                 ),
-              ),
+                const SizedBox(height: 20),
+              ],
+              _sectionTitle(context, 'Sozlamalar'),
               GlassSurface(
-                onTap: () => _showAddCardDialog(context, provider),
+                onTap: () => _showReminderOffsetDialog(context, provider),
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                opacity: 0.5,
+                opacity: 0.55,
                 child: Row(
                   children: [
-                    Icon(Icons.add_circle_outline, color: GlassTokens.primaryText(context)),
+                    Icon(Icons.notifications_active_outlined, color: GlassTokens.primaryText(context)),
                     const SizedBox(width: 12),
-                    Text(
-                      'Karta qo\'shish',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        color: GlassTokens.primaryText(context),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Eslatmalar vaqti',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              color: GlassTokens.primaryText(context),
+                            ),
+                          ),
+                          Text(
+                            'Rejadan ${user.reminderOffsetMinutes} daqiqa oldin xabar berish',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: GlassTokens.secondaryText(context),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
+                    Icon(Icons.chevron_right_rounded, color: GlassTokens.secondaryText(context)),
                   ],
                 ),
               ),
               const SizedBox(height: 16),
+              _sectionTitle(context, 'Soha egasi'),
+              const ProviderPortalEntry(compact: true),
+              const SizedBox(height: 16),
+              if (user.isProvider) ...[
+                _sectionTitle(context, 'Mening kartalarim'),
+                ...provider.cards.map(
+                  (card) => Padding(
+                    padding: const EdgeInsets.only(bottom: 12),
+                    child: CardItemWidget(card: card),
+                  ),
+                ),
+                GlassSurface(
+                  onTap: () => _showAddCardDialog(context, provider),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                  opacity: 0.5,
+                  child: Row(
+                    children: [
+                      Icon(Icons.add_circle_outline, color: GlassTokens.primaryText(context)),
+                      const SizedBox(width: 12),
+                      Text(
+                        'Karta qo\'shish',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          color: GlassTokens.primaryText(context),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 16),
+              ],
               GlassSurface(
                 onTap: () => _showLogoutDialog(context),
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
@@ -358,6 +397,57 @@ class ProfileScreen extends StatelessWidget {
               await context.read<AuthProvider>().deleteAccount();
             },
             child: const Text('O\'chirish'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showReminderOffsetDialog(BuildContext context, AppProvider provider) {
+    final currentOffset = provider.user.reminderOffsetMinutes;
+    showDialog<void>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: Colors.grey[900]?.withValues(alpha: 0.95),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(GlassTokens.radiusMd),
+          side: BorderSide(color: Colors.white.withValues(alpha: 0.15)),
+        ),
+        title: const Text(
+          'Eslatma vaqtini tanlang',
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [5, 10, 15, 30, 60].map((mins) {
+            final isSelected = mins == currentOffset;
+            return ListTile(
+              title: Text('$mins daqiqa oldin', style: const TextStyle(color: Colors.white)),
+              trailing: isSelected ? const Icon(Icons.check_circle, color: Color(0xFF6366F1)) : null,
+              onTap: () async {
+                Navigator.pop(ctx);
+                try {
+                  await provider.updateReminderOffset(mins);
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Eslatma vaqti $mins daqiqaga o\'zgartirildi')),
+                    );
+                  }
+                } catch (e) {
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Sozlamani saqlab bo\'lmadi')),
+                    );
+                  }
+                }
+              },
+            );
+          }).toList(),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Bekor qilish', style: TextStyle(color: Colors.grey)),
           ),
         ],
       ),

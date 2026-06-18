@@ -13,6 +13,7 @@ class OrderCreate(BaseModel):
     notes: Optional[str] = None
     date: datetime
     price: float = Field(..., gt=0)
+    booking_mode: Optional[str] = "fixed"
 
 
 class OrderOut(BaseModel):
@@ -31,9 +32,13 @@ class OrderOut(BaseModel):
     status: str
     category_key: Optional[str] = None
     provider_name: Optional[str] = None
+    booking_mode: Optional[str] = "fixed"
     created_at: Optional[str] = None
     model_config = {"from_attributes": True}
 
 
 class OrderStatusUpdate(BaseModel):
-    status: str = Field(..., pattern=r"^(pending|confirmed|in_progress|completed|cancelled)$")
+    status: str = Field(
+        ...,
+        pattern=r"^(pending|confirmed|on_the_way|arrived|preparing|in_progress|delivered|completed|cancelled|no_show|disputed)$",
+    )

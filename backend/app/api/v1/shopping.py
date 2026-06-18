@@ -251,6 +251,24 @@ async def create_shopping_list(
             }
         else:
             est = _estimate_item_price(item.name, item.qty)
+            # Create a new product in the ProductCatalog catalog
+            new_p = ProductCatalog(
+                name=item.name,
+                unit=est["unit"],
+                average_price=est["unit_price"]
+            )
+            db.add(new_p)
+            await db.flush()
+            # Also record the initial price as AI estimated entry!
+            if est["unit_price"] > 0:
+                from app.models.product_catalog import ProductPriceEntry
+                pe = ProductPriceEntry(
+                    product_id=new_p.id,
+                    source_type="ai",
+                    price=est["unit_price"]
+                )
+                db.add(pe)
+                await db.flush()
         
         total_price += est["estimated_price"]
         items_with_price.append(est)
@@ -330,6 +348,53 @@ async def update_item_in_list(
         items[data.item_index]["actual_price"] = data.actual_price
     if data.is_bought is not None:
         items[data.item_index]["is_bought"] = data.is_bought
+        
+    item = items[data.item_index]
+    is_bought = item.get("is_bought", False)
+    
+    # Insert ProductPriceEntry and recalculate average price
+    if data.actual_price is not None and is_bought:
+        price_val = data.actual_price
+        qty = item.get("qty") or 1.0
+        unit_price = price_val / qty if qty > 0 else price_val
+        
+        # Find product in catalog
+        prod_name = item.get("name")
+        if prod_name:
+            result_pc = await db.execute(
+                select(ProductCatalog)
+                .where(ProductCatalog.name.ilike(f"%{prod_name}%"))
+                .limit(1)
+            )
+            product = result_pc.scalar_one_or_none()
+            if not product:
+                # Create catalog item if missing
+                product = ProductCatalog(
+                    name=prod_name,
+                    unit=item.get("unit") or "dona",
+                    average_price=unit_price
+                )
+                db.add(product)
+                await db.flush()
+            
+            # Add price entry
+            from app.models.product_catalog import ProductPriceEntry
+            pe = ProductPriceEntry(
+                product_id=product.id,
+                source_type="user",
+                price=unit_price
+            )
+            db.add(pe)
+            await db.flush()
+            
+            # Recalculate average price
+            result_prices = await db.execute(
+                select(ProductPriceEntry.price).where(ProductPriceEntry.product_id == product.id)
+            )
+            prices = result_prices.scalars().all()
+            if prices:
+                avg = sum(prices) / len(prices)
+                product.average_price = round(avg, 0)
     
     # Recalculate total actual price
     total_actual = sum(

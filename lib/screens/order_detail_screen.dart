@@ -23,6 +23,53 @@ class OrderDetailScreen extends StatefulWidget {
 
 class _OrderDetailScreenState extends State<OrderDetailScreen> {
   bool _cancelling = false;
+  Map<String, dynamic>? _checkinStatus;
+  bool _loadingCheckin = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchCheckinStatus();
+  }
+
+  Future<void> _fetchCheckinStatus() async {
+    try {
+      final app = context.read<AppProvider>();
+      final res = await app.api.getCheckinStatus(int.parse(widget.orderId));
+      if (mounted) {
+        setState(() {
+          _checkinStatus = res;
+          _loadingCheckin = false;
+        });
+      }
+    } catch (_) {
+      if (mounted) setState(() => _loadingCheckin = false);
+    }
+  }
+
+  Future<void> _submitCheckin(String response) async {
+    try {
+      final app = context.read<AppProvider>();
+      await app.api.submitCheckin(
+        int.parse(widget.orderId),
+        side: 'user',
+        response: response,
+      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Javobingiz qabul qilindi')),
+        );
+      }
+      await _fetchCheckinStatus();
+      await app.fetchOrders();
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(e.toString())),
+        );
+      }
+    }
+  }
 
   ServiceOrder? _findOrder(AppProvider p) {
     for (final o in p.orders) {
@@ -113,7 +160,10 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
       showBackButton: true,
       title: 'Buyurtma #${order.id}',
       body: RefreshIndicator(
-        onRefresh: () => app.fetchOrders(),
+        onRefresh: () async {
+          await app.fetchOrders();
+          await _fetchCheckinStatus();
+        },
         color: accent,
         child: ListView(
           padding: const EdgeInsets.all(16),
@@ -201,7 +251,80 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                   OrderStatusTimeline(status: order.status, accent: accent),
                 ],
               ),
+              ),
             ),
+            if (order.status == OrderStatus.accepted && !_loadingCheckin) ...[
+              if (_checkinStatus?['user'] == null) ...[
+                const SizedBox(height: 16),
+                GlassSurface(
+                  padding: const EdgeInsets.all(18),
+                  borderRadius: GlassTokens.radiusLg,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Tasdiqlash',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: GlassTokens.primaryText(context),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Buyurtma vaqti yaqin. Yetib keldingizmi?',
+                        style: TextStyle(color: GlassTokens.secondaryText(context)),
+                      ),
+                      const SizedBox(height: 16),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: FilledButton(
+                              style: FilledButton.styleFrom(backgroundColor: Colors.green),
+                              onPressed: () => _submitCheckin('arrived'),
+                              child: const Text('Keldim', style: TextStyle(fontSize: 13)),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: FilledButton.tonal(
+                              onPressed: () => _submitCheckin('delayed'),
+                              child: const Text('Kechikaman', style: TextStyle(fontSize: 13)),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      SizedBox(
+                        width: double.infinity,
+                        child: OutlinedButton(
+                          style: OutlinedButton.styleFrom(foregroundColor: Colors.red),
+                          onPressed: () => _submitCheckin('cant_come'),
+                          child: const Text('Bora olmayman', style: TextStyle(fontSize: 13)),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ] else ...[
+                const SizedBox(height: 16),
+                GlassSurface(
+                  padding: const EdgeInsets.all(18),
+                  borderRadius: GlassTokens.radiusLg,
+                  child: Row(
+                    children: [
+                      const Icon(Icons.check_circle, color: Colors.green),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          'Siz javob bergansiz. Usta tasdiqlashi kutilmoqda...',
+                          style: TextStyle(color: GlassTokens.primaryText(context)),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ],
             const SizedBox(height: 16),
             GlassSurface(
               padding: const EdgeInsets.all(18),

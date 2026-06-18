@@ -123,6 +123,11 @@ class _ProviderReportsWidgetState extends State<ProviderReportsWidget>
     final chart = (data['chart'] as List<dynamic>? ?? []);
     final breakdown = (data['breakdown'] as List<dynamic>? ?? []);
 
+    final totalLeads = data['total_leads'] as int? ?? 0;
+    final completedOrders = data['completed_orders'] as int? ?? 0;
+    final leadFeeCharged = (data['lead_fee_charged'] as num?)?.toDouble() ?? 0.0;
+    final balance = (data['balance'] as num?)?.toDouble() ?? 0.0;
+
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -150,6 +155,51 @@ class _ProviderReportsWidgetState extends State<ProviderReportsWidget>
                 Text('$orders ta buyurtma', style: const TextStyle(color: Colors.white70)),
               ],
             ),
+          ),
+          const SizedBox(height: 20),
+          Row(
+            children: [
+              Expanded(
+                child: _statCard(
+                  'Mijozlar (Leads)',
+                  '$totalLeads ta',
+                  LucideIcons.users,
+                  Colors.blue.shade900,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: _statCard(
+                  'Tugallangan',
+                  '$completedOrders ta',
+                  LucideIcons.checkCircle2,
+                  Colors.green.shade900,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Expanded(
+                child: _statCard(
+                  'Xizmat haqi',
+                  '${NumberFormat('#,###').format(leadFeeCharged)} so\'m',
+                  LucideIcons.banknote,
+                  Colors.amber.shade900,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: _statCard(
+                  'Hisob balansi',
+                  '${NumberFormat('#,###').format(balance)} so\'m',
+                  LucideIcons.wallet,
+                  balance < 0 ? Colors.red.shade900 : Colors.teal.shade900,
+                  subtitle: balance < 0 ? 'Balans manfiy!' : 'Balans yetarli',
+                ),
+              ),
+            ],
           ),
           const SizedBox(height: 24),
           if (chart.isNotEmpty) ...[
@@ -211,6 +261,51 @@ class _ProviderReportsWidgetState extends State<ProviderReportsWidget>
                 ),
               );
             }),
+        ],
+      ),
+    );
+  }
+
+  Widget _statCard(String title, String value, IconData icon, Color color, {String? subtitle}) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.black, width: 1.5),
+        boxShadow: const [
+          BoxShadow(color: Colors.black12, offset: Offset(2, 2), blurRadius: 4),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(icon, color: color, size: 20),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  title,
+                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.black87),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Text(
+            value,
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w900, color: Colors.black),
+          ),
+          if (subtitle != null) ...[
+            const SizedBox(height: 4),
+            Text(
+              subtitle,
+              style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: color),
+            ),
+          ],
         ],
       ),
     );

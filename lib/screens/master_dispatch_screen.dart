@@ -277,11 +277,20 @@ class _MasterDispatchScreenState extends State<MasterDispatchScreen> {
                           child: Row(
                             children: [
                               Expanded(
-                                child: Text(service, style: const TextStyle(fontWeight: FontWeight.w600)),
+                                child: Text(
+                                  service,
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w600,
+                                    color: selected ? _accent : Colors.black87,
+                                  ),
+                                ),
                               ),
                               Text(
                                 currency.format(widget.master.prices[service] ?? 0),
-                                style: TextStyle(fontWeight: FontWeight.bold, color: _accent),
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: selected ? _accent : Colors.black54,
+                                ),
                               ),
                             ],
                           ),

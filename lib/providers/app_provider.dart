@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../models/user_profile.dart';
 import '../models/payment_card.dart';
 import '../models/service_order.dart';
 import '../services/api_service.dart';
 import '../services/call_service.dart';
+import '../services/notification_helper.dart';
 
 class AppProvider extends ChangeNotifier {
   final ApiService _api = ApiService();
@@ -172,6 +174,7 @@ class AppProvider extends ChangeNotifier {
         'notes': order.notes,
         'date': order.date.toIso8601String(),
         'price': order.price,
+        'booking_mode': order.bookingMode,
       };
 
       final newOrderData = await _api.createOrder(payload);
@@ -204,6 +207,19 @@ class AppProvider extends ChangeNotifier {
       }
     } catch (e) {
       debugPrint('Error cancelling order: $e');
+      rethrow;
+    }
+  }
+
+  Future<void> updateReminderOffset(int offset) async {
+    try {
+      final updatedData = await _api.updateMe({
+        'reminder_offset_minutes': offset,
+      });
+      _user = UserProfile.fromJson(updatedData);
+      notifyListeners();
+    } catch (e) {
+      debugPrint('Error updating reminder offset: $e');
       rethrow;
     }
   }
@@ -253,6 +269,29 @@ class AppProvider extends ChangeNotifier {
 
       final prevUnreadCount = _unreadCount;
       _unreadCount = await _api.getUnreadCount();
+
+      // Show status bar notifications for new unread messages
+      final prefs = await SharedPreferences.getInstance();
+      final alertedIds = prefs.getStringList('alerted_notification_ids') ?? [];
+      final List<String> newAlertedIds = List.from(alertedIds);
+
+      for (var notif in _notifications) {
+        final notifId = notif['id'].toString();
+        final isRead = notif['is_read'] ?? false;
+        
+        if (!isRead && !alertedIds.contains(notifId)) {
+          final title = notif['title'] ?? 'Eslatma';
+          final message = notif['message'] ?? '';
+          final int notificationId = int.tryParse(notifId) ?? notifId.hashCode;
+          
+          await NotificationHelper().showNotification(notificationId, title, message);
+          newAlertedIds.add(notifId);
+        }
+      }
+      
+      if (newAlertedIds.length > alertedIds.length) {
+        await prefs.setStringList('alerted_notification_ids', newAlertedIds);
+      }
 
       if (_unreadCount > prevUnreadCount) {
         await fetchOrders();

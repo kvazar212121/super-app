@@ -54,6 +54,7 @@ class HomeScreen extends StatelessWidget {
                 icon: LucideIcons.calendarCheck,
                 label: 'Rejalarim',
                 color: Colors.blueAccent,
+                bgImage: 'assets/images/my_plans.jpg',
                 onTap: () {
                   final auth = Provider.of<AuthProvider>(context, listen: false);
                   if (!auth.isAuthenticated) {
@@ -70,6 +71,7 @@ class HomeScreen extends StatelessWidget {
                 icon: LucideIcons.wallet,
                 label: 'Mening moliyam',
                 color: Colors.greenAccent,
+                bgImage: 'assets/images/my_finance.png',
                 onTap: () {
                   final auth = Provider.of<AuthProvider>(context, listen: false);
                   if (!auth.isAuthenticated) {
@@ -90,6 +92,7 @@ class HomeScreen extends StatelessWidget {
                 icon: LucideIcons.shoppingBag,
                 label: 'Aqlli savdo',
                 color: Colors.orangeAccent,
+                bgImage: 'assets/images/smart_shopping.jpg',
                 onTap: () {
                   final auth = Provider.of<AuthProvider>(context, listen: false);
                   if (!auth.isAuthenticated) {
@@ -106,6 +109,7 @@ class HomeScreen extends StatelessWidget {
                 icon: LucideIcons.layoutGrid,
                 label: 'Barcha xizmatlar',
                 color: Colors.purpleAccent,
+                bgImage: 'assets/images/all_services.png',
                 onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AllCategoriesScreen())),
               ),
             ),
@@ -121,13 +125,21 @@ class _DailyBtn extends StatelessWidget {
   final String label;
   final Color color;
   final VoidCallback onTap;
+  final String? bgImage;
 
-  const _DailyBtn({required this.icon, required this.label, required this.color, required this.onTap});
+  const _DailyBtn({
+    required this.icon,
+    required this.label,
+    required this.color,
+    required this.onTap,
+    this.bgImage,
+  });
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final textColor = isDark ? Colors.white : Colors.black87;
+    final textColor = bgImage != null ? Colors.white : (isDark ? Colors.white : Colors.black87);
+    final iconColor = bgImage != null ? Colors.white : color;
     
     return InkWell(
       onTap: onTap,
@@ -135,16 +147,40 @@ class _DailyBtn extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 16),
         decoration: BoxDecoration(
-          color: isDark ? Color.lerp(const Color(0xFF1E293B), color, 0.15) : Color.lerp(Colors.white, color, 0.1),
+          color: bgImage != null 
+              ? Colors.black
+              : (isDark ? Color.lerp(const Color(0xFF1E293B), color, 0.15) : Color.lerp(Colors.white, color, 0.1)),
           borderRadius: BorderRadius.circular(16),
           border: Border.all(color: isDark ? color.withValues(alpha: 0.4) : color.withValues(alpha: 0.3)),
+          image: bgImage != null ? DecorationImage(
+            image: AssetImage(bgImage!),
+            fit: BoxFit.cover,
+            colorFilter: ColorFilter.mode(
+              Colors.black.withValues(alpha: 0.45),
+              BlendMode.srcOver,
+            ),
+          ) : null,
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, color: color, size: 28),
+            Icon(icon, color: iconColor, size: 28),
             const SizedBox(height: 8),
-            Text(label, style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13, color: textColor)),
+            Text(
+              label,
+              style: TextStyle(
+                fontWeight: FontWeight.w600, 
+                fontSize: 13, 
+                color: textColor,
+                shadows: bgImage != null ? [
+                  const Shadow(
+                    color: Colors.black87,
+                    offset: Offset(0, 1),
+                    blurRadius: 4,
+                  ),
+                ] : null,
+              ),
+            ),
           ],
         ),
       ),

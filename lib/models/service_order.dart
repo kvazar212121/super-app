@@ -1,6 +1,18 @@
 import 'service_hub_kind.dart';
 
-enum OrderStatus { pending, accepted, inProgress, completed, cancelled }
+enum OrderStatus {
+  pending,
+  accepted,
+  onTheWay,
+  arrived,
+  preparing,
+  inProgress,
+  delivered,
+  completed,
+  cancelled,
+  noShow,
+  disputed,
+}
 
 class ServiceOrder {
   final String id;
@@ -15,6 +27,8 @@ class ServiceOrder {
   final OrderStatus status;
   final DateTime createdAt;
   final int? providerId;
+  /// 'fixed' = aniq vaqt, 'flexible' = tezkor navbat (oldinga surilishi mumkin)
+  final String bookingMode;
 
   ServiceOrder({
     required this.id,
@@ -29,6 +43,7 @@ class ServiceOrder {
     required this.status,
     DateTime? createdAt,
     this.providerId,
+    this.bookingMode = 'fixed',
   }) : createdAt = createdAt ?? DateTime.now();
 
   /// Eski kod `serviceIcon` (string) ishlatardi — `category.icon` mos keladi.
@@ -40,7 +55,7 @@ class ServiceOrder {
         _ => category.name,
       };
 
-  ServiceOrder copyWith({OrderStatus? status}) => ServiceOrder(
+  ServiceOrder copyWith({OrderStatus? status, String? bookingMode}) => ServiceOrder(
         id: id,
         category: category,
         serviceName: serviceName,
@@ -53,6 +68,7 @@ class ServiceOrder {
         status: status ?? this.status,
         createdAt: createdAt,
         providerId: providerId,
+        bookingMode: bookingMode ?? this.bookingMode,
       );
 
   factory ServiceOrder.fromJson(Map<String, dynamic> json) {
@@ -64,14 +80,32 @@ class ServiceOrder {
       case 'confirmed':
         status = OrderStatus.accepted;
         break;
+      case 'on_the_way':
+        status = OrderStatus.onTheWay;
+        break;
+      case 'arrived':
+        status = OrderStatus.arrived;
+        break;
+      case 'preparing':
+        status = OrderStatus.preparing;
+        break;
       case 'in_progress':
         status = OrderStatus.inProgress;
+        break;
+      case 'delivered':
+        status = OrderStatus.delivered;
         break;
       case 'completed':
         status = OrderStatus.completed;
         break;
       case 'cancelled':
         status = OrderStatus.cancelled;
+        break;
+      case 'no_show':
+        status = OrderStatus.noShow;
+        break;
+      case 'disputed':
+        status = OrderStatus.disputed;
         break;
     }
 
@@ -100,6 +134,7 @@ class ServiceOrder {
       status: status,
       createdAt: json['created_at'] != null ? DateTime.parse(json['created_at']) : DateTime.now(),
       providerId: json['provider_id'] as int?,
+      bookingMode: json['booking_mode'] as String? ?? 'fixed',
     );
   }
 
@@ -133,6 +168,7 @@ class ServiceOrder {
       'price': price,
       'status': statusStr,
       'created_at': createdAt.toIso8601String(),
+      'booking_mode': bookingMode,
     };
   }
 
@@ -143,12 +179,24 @@ class ServiceOrder {
         return "Kutilmoqda";
       case OrderStatus.accepted:
         return "Qabul qilindi";
+      case OrderStatus.onTheWay:
+        return "Yo'lda";
+      case OrderStatus.arrived:
+        return "Yetib keldi";
+      case OrderStatus.preparing:
+        return "Tayyorlanmoqda";
       case OrderStatus.inProgress:
         return "Jarayonda";
+      case OrderStatus.delivered:
+        return "Yetkazildi";
       case OrderStatus.completed:
         return "Yakunlandi";
       case OrderStatus.cancelled:
         return "Bekor qilindi";
+      case OrderStatus.noShow:
+        return "Kelmadi";
+      case OrderStatus.disputed:
+        return "Nizoli";
     }
   }
 }
