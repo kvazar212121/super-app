@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'dart:math';
+import 'dart:async';
 import '../../services/call_service.dart';
 
 /// WhatsApp uslubidagi ovozli qo'ng'iroq ekrani.
@@ -21,12 +23,27 @@ class CallScreen extends StatefulWidget {
 class _CallScreenState extends State<CallScreen> with TickerProviderStateMixin {
   late CallService _callService;
   bool _isAccepted = false;
+  Timer? _vibrationTimer;
 
   // Jiringlash animatsiyasi
   late AnimationController _pulseController;
   late AnimationController _ringController;
   late Animation<double> _pulseAnimation;
   late Animation<double> _ringAnimation;
+
+  void _startRingingEffects() {
+    if (widget.isIncoming && !_isAccepted) {
+      _vibrationTimer = Timer.periodic(const Duration(milliseconds: 1500), (timer) {
+        HapticFeedback.vibrate();
+      });
+      HapticFeedback.vibrate();
+    }
+  }
+
+  void _stopRingingEffects() {
+    _vibrationTimer?.cancel();
+    _vibrationTimer = null;
+  }
 
   @override
   void initState() {
@@ -56,13 +73,16 @@ class _CallScreenState extends State<CallScreen> with TickerProviderStateMixin {
       // Kiruvchi qo'ng'iroqda animatsiyalarni boshlash
       _pulseController.repeat();
       _ringController.repeat(reverse: true);
+      _startRingingEffects();
     }
 
     _callService.onCallEnded = () {
+      _stopRingingEffects();
       if (mounted) Navigator.of(context).pop();
     };
 
     _callService.onCallAnswered = () {
+      _stopRingingEffects();
       if (mounted) {
         setState(() => _isAccepted = true);
         _pulseController.stop();
@@ -71,6 +91,7 @@ class _CallScreenState extends State<CallScreen> with TickerProviderStateMixin {
     };
 
     _callService.onError = (msg) {
+      _stopRingingEffects();
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(msg), backgroundColor: Colors.red.shade700),
@@ -83,6 +104,7 @@ class _CallScreenState extends State<CallScreen> with TickerProviderStateMixin {
   void dispose() {
     _pulseController.dispose();
     _ringController.dispose();
+    _stopRingingEffects();
     super.dispose();
   }
 
@@ -90,6 +112,7 @@ class _CallScreenState extends State<CallScreen> with TickerProviderStateMixin {
     setState(() => _isAccepted = true);
     _pulseController.stop();
     _ringController.stop();
+    _stopRingingEffects();
 
     final senderId = widget.incomingData?['sender_id'] as int? ?? 0;
     final senderName =
@@ -99,11 +122,13 @@ class _CallScreenState extends State<CallScreen> with TickerProviderStateMixin {
   }
 
   void _declineCall() {
+    _stopRingingEffects();
     _callService.rejectCall();
     Navigator.of(context).pop();
   }
 
   void _endCall() {
+    _stopRingingEffects();
     _callService.endCall();
     Navigator.of(context).pop();
   }

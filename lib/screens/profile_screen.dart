@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
 import '../models/user_profile.dart';
 import '../providers/app_provider.dart';
 import '../providers/auth_provider.dart';
@@ -10,6 +11,9 @@ import '../widgets/glass/glass_surface.dart';
 import '../widgets/provider_portal_entry.dart';
 import '../theme/glass_tokens.dart';
 import 'auth/auth_gate_screen.dart';
+import '../services/call_history_service.dart';
+import '../services/call_service.dart';
+import 'calls/call_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -97,6 +101,75 @@ class ProfileScreen extends StatelessWidget {
               const SizedBox(height: 16),
               _sectionTitle(context, 'Soha egasi'),
               const ProviderPortalEntry(compact: true),
+              const SizedBox(height: 16),
+              _sectionTitle(context, 'Qo\'ng\'iroqlar tarixi'),
+              ListenableBuilder(
+                listenable: CallHistoryService(),
+                builder: (context, _) {
+                  final logs = CallHistoryService().history;
+                  if (logs.isEmpty) {
+                    return GlassSurface(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+                      opacity: 0.5,
+                      child: const Center(
+                        child: Text(
+                          'Qo\'ng\'iroqlar tarixi bo\'sh',
+                          style: TextStyle(color: Colors.black54),
+                        ),
+                      ),
+                    );
+                  }
+                  return GlassSurface(
+                    padding: const EdgeInsets.all(8),
+                    opacity: 0.55,
+                    child: ListView.separated(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: logs.take(5).length,
+                      separatorBuilder: (_, __) => Divider(color: Colors.white.withValues(alpha: 0.1), height: 1),
+                      itemBuilder: (context, idx) {
+                        final log = logs[idx];
+                        final timeStr = DateFormat('dd.MM.yyyy HH:mm').format(log.timestamp);
+                        IconData iconData;
+                        Color iconColor;
+                        if (log.status == 'connected') {
+                          iconData = log.isIncoming ? Icons.call_received : Icons.call_made;
+                          iconColor = Colors.green;
+                        } else {
+                          iconData = log.isIncoming ? Icons.call_received_outlined : Icons.call_made_outlined;
+                          iconColor = Colors.red;
+                        }
+                        return ListTile(
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 8),
+                          leading: Icon(iconData, color: iconColor),
+                          title: Text(
+                            log.userName, 
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              color: GlassTokens.primaryText(context)
+                            )
+                          ),
+                          subtitle: Text(
+                            '${log.isIncoming ? "Kiruvchi" : "Chiquvchi"} • $timeStr\nDavomiyligi: ${log.duration}',
+                            style: TextStyle(color: GlassTokens.secondaryText(context))
+                          ),
+                          trailing: IconButton(
+                            icon: const Icon(Icons.phone, color: Colors.green),
+                            onPressed: () {
+                              CallService().startCall(log.userId, log.userName);
+                              Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (_) => const CallScreen(isIncoming: false),
+                                  ),
+                              );
+                            },
+                          ),
+                        );
+                      },
+                    ),
+                  );
+                },
+              ),
               const SizedBox(height: 16),
               if (user.isProvider) ...[
                 _sectionTitle(context, 'Mening kartalarim'),

@@ -236,7 +236,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 : () {
                     // STT (Speech-to-Text) logic will go here
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Ovozli xabar kiritish keyingi yangilanishda qo\\'shiladi')),
+                      const SnackBar(content: Text("Ovozli xabar kiritish keyingi yangilanishda qo'shiladi")),
                     );
                   },
             child: AnimatedContainer(

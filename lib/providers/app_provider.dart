@@ -10,6 +10,7 @@ import '../services/notification_helper.dart';
 
 class AppProvider extends ChangeNotifier {
   final ApiService _api = ApiService();
+  ApiService get api => _api;
   Timer? _notificationTimer;
   Timer? _orderPollTimer;
 

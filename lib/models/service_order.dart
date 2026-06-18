@@ -147,14 +147,32 @@ class ServiceOrder {
       case OrderStatus.accepted:
         statusStr = 'confirmed';
         break;
+      case OrderStatus.onTheWay:
+        statusStr = 'on_the_way';
+        break;
+      case OrderStatus.arrived:
+        statusStr = 'arrived';
+        break;
+      case OrderStatus.preparing:
+        statusStr = 'preparing';
+        break;
       case OrderStatus.inProgress:
         statusStr = 'in_progress';
+        break;
+      case OrderStatus.delivered:
+        statusStr = 'delivered';
         break;
       case OrderStatus.completed:
         statusStr = 'completed';
         break;
       case OrderStatus.cancelled:
         statusStr = 'cancelled';
+        break;
+      case OrderStatus.noShow:
+        statusStr = 'no_show';
+        break;
+      case OrderStatus.disputed:
+        statusStr = 'disputed';
         break;
     }
     return {

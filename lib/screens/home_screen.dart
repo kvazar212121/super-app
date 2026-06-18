@@ -143,51 +143,56 @@ class _DailyBtn extends StatelessWidget {
       onTap: onTap,
       borderRadius: BorderRadius.circular(16),
       child: Container(
-        height: 100,
+        height: 135, // Uzunasiga cho'zildi
         decoration: BoxDecoration(
-          color: bgImage != null 
-              ? Colors.black
-              : (isDark ? Color.lerp(const Color(0xFF1E293B), color, 0.15) : Color.lerp(Colors.white, color, 0.1)),
+          color: isDark ? const Color(0xFF1E293B) : Colors.white,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(color: isDark ? color.withValues(alpha: 0.4) : color.withValues(alpha: 0.3)),
-          image: bgImage != null ? DecorationImage(
-            image: AssetImage(bgImage!),
-            fit: BoxFit.cover,
-            // colorFilter ni olib tashladik, shunda rasm tiniq chiqadi
-          ) : null,
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(12.0),
-          child: Align(
-            alignment: Alignment.bottomCenter, // Yozuvlarni pastga surdik
-            child: Stack(
-              children: [
-                // Qora border (stroke)
-                Text(
-                  label,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontWeight: FontWeight.w800, 
-                    fontSize: 15, 
-                    foreground: Paint()
-                      ..style = PaintingStyle.stroke
-                      ..strokeWidth = 3.0
-                      ..color = Colors.black,
-                  ),
-                ),
-                // Oq matn (ichki qism)
-                Text(
-                  label,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w800, 
-                    fontSize: 15, 
-                    color: Colors.white,
-                  ),
-                ),
-              ],
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.06),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
             ),
-          ),
+          ],
+        ),
+        clipBehavior: Clip.antiAlias, // Rasmni burchaklardan chiqib ketmasligi uchun qirqamiz
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // Rasm joylashgan yuqori qism (Ramka)
+            Expanded(
+              child: bgImage != null
+                  ? Image.asset(
+                      bgImage!,
+                      fit: BoxFit.cover,
+                    )
+                  : Container(
+                      color: isDark ? Color.lerp(const Color(0xFF1E293B), color, 0.15) : Color.lerp(Colors.white, color, 0.1),
+                      child: Icon(icon, color: color, size: 30),
+                    ),
+            ),
+            // Ramkadan ajratib turuvchi chiziq
+            Container(
+              height: 1.5,
+              color: isDark ? color.withValues(alpha: 0.4) : color.withValues(alpha: 0.3),
+            ),
+            // Kichik yozuv maydoni (Oq fon va qora yozuv)
+            Container(
+              color: Colors.white, // Oq fon
+              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 6),
+              alignment: Alignment.center,
+              child: Text(
+                label,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontWeight: FontWeight.w800,
+                  fontSize: 13,
+                  color: Colors.black, // Qora yozuv
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

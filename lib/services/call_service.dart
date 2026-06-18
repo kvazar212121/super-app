@@ -6,6 +6,7 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:dio/dio.dart';
 import '../config/app_config.dart';
 import 'api_service.dart';
+import 'call_history_service.dart';
 
 /// WhatsApp uslubidagi ovozli qo'ng'iroq xizmati.
 /// WebSocket signaling + WebRTC peer connection bilan ishlaydi.
@@ -18,6 +19,8 @@ class CallService extends ChangeNotifier {
   RTCPeerConnection? _peerConnection;
   MediaStream? _localStream;
   MediaStream? _remoteStream;
+
+  String? _currentCallLogId;
 
   bool _inCall = false;
   bool _isMuted = false;
@@ -170,6 +173,29 @@ class CallService extends ChangeNotifier {
     debugPrint('WebSocket signal olindi: $type dan $senderId ($senderName)');
 
     if (type == 'call_init') {
+      if (CallHistoryService().isUserBlocked(senderId)) {
+        debugPrint('Bloklangan foydalanuvchidan qo\'ng\'iroq keldi. Rad etiladi.');
+        // Rad etish signalini yuboramiz
+        final msg = jsonEncode({
+          'type': 'reject_call',
+          'target_id': senderId,
+          'data': {},
+        });
+        _channel?.sink.add(msg);
+        return;
+      }
+
+      _currentCallLogId = DateTime.now().millisecondsSinceEpoch.toString();
+      CallHistoryService().addCallLog(CallLog(
+        id: _currentCallLogId!,
+        userId: senderId,
+        userName: senderName,
+        isIncoming: true,
+        timestamp: DateTime.now(),
+        duration: '00:00',
+        status: 'missed',
+      ));
+
       // Kiruvchi qo'ng'iroq
       _remoteUserId = senderId;
       _remoteUserName = senderName;
@@ -191,16 +217,29 @@ class CallService extends ChangeNotifier {
       await _handleAnswer(payload);
       _isConnecting = false;
       _startCallTimer();
+      if (_currentCallLogId != null) {
+        CallHistoryService().updateCallLog(_currentCallLogId!, status: 'connected');
+      }
       notifyListeners();
       if (onCallAnswered != null) onCallAnswered!();
     } else if (type == 'ice_candidate') {
       await _handleIceCandidate(payload);
     } else if (type == 'end_call' || type == 'reject_call') {
+      if (_currentCallLogId != null) {
+        CallHistoryService().updateCallLog(
+          _currentCallLogId!,
+          status: type == 'reject_call' ? 'declined' : (_callStartTime != null ? 'connected' : 'missed'),
+          duration: _callDuration,
+        );
+      }
       endCall(sendSignal: false);
     } else if (type == 'target_offline') {
       _isConnecting = false;
       _isRinging = false;
       notifyListeners();
+      if (_currentCallLogId != null) {
+        CallHistoryService().updateCallLog(_currentCallLogId!, status: 'cancelled');
+      }
       endCall(sendSignal: false);
       if (onError != null) {
         onError!('Foydalanuvchi hozir oflayn');
@@ -309,6 +348,18 @@ class CallService extends ChangeNotifier {
     _inCall = true;
     _isConnecting = true;
     _isRinging = true;
+
+    _currentCallLogId = DateTime.now().millisecondsSinceEpoch.toString();
+    CallHistoryService().addCallLog(CallLog(
+      id: _currentCallLogId!,
+      userId: targetId,
+      userName: targetName,
+      isIncoming: false,
+      timestamp: DateTime.now(),
+      duration: '00:00',
+      status: 'missed',
+    ));
+
     notifyListeners();
 
     // Notify target that a call is initiating
@@ -334,6 +385,11 @@ class CallService extends ChangeNotifier {
     _inCall = true;
     _isRinging = false;
     _isConnecting = true;
+
+    if (_currentCallLogId != null) {
+      CallHistoryService().updateCallLog(_currentCallLogId!, status: 'connected');
+    }
+
     notifyListeners();
 
     // Callerga "qabul qildim" deb signal yuborish
@@ -402,6 +458,15 @@ class CallService extends ChangeNotifier {
     if (sendSignal && _remoteUserId != null) {
       this.sendSignal('end_call', {});
     }
+
+    if (_currentCallLogId != null) {
+      CallHistoryService().updateCallLog(
+        _currentCallLogId!,
+        duration: _callDuration,
+        status: _callStartTime != null ? 'connected' : 'missed',
+      );
+    }
+
     _inCall = false;
     _isConnecting = false;
     _isRinging = false;
@@ -430,6 +495,11 @@ class CallService extends ChangeNotifier {
   /// Rad etish (kiruvchi qo'ng'iroq)
   void rejectCall() {
     sendSignal('reject_call', {});
+
+    if (_currentCallLogId != null) {
+      CallHistoryService().updateCallLog(_currentCallLogId!, status: 'declined');
+    }
+
     _isRinging = false;
     _remoteUserId = null;
     _remoteUserName = null;

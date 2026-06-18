@@ -121,6 +121,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
         OrderStatus.inProgress => const Color(0xFFA855F7),
         OrderStatus.completed => const Color(0xFF10B981),
         OrderStatus.cancelled => const Color(0xFFEF4444),
+        _ => const Color(0xFF6B7280),
       };
 
   @override
@@ -250,7 +251,6 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                   const SizedBox(height: 16),
                   OrderStatusTimeline(status: order.status, accent: accent),
                 ],
-              ),
               ),
             ),
             if (order.status == OrderStatus.accepted && !_loadingCheckin) ...[

@@ -119,12 +119,12 @@ class AllCategoriesScreen extends StatelessWidget {
                             builder: (_) => ServiceHubScreen(kind: k, accentColor: k.accent),
                           ),
                         ),
-                        borderRadius: GlassTokens.radiusMd,
+                        borderRadius: BorderRadius.circular(GlassTokens.radiusMd),
                         child: Container(
                           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                           decoration: BoxDecoration(
                             color: isDark ? const Color(0xFF1E293B) : Colors.white, // Shafoflik yo'q
-                            borderRadius: GlassTokens.radiusMd,
+                            borderRadius: BorderRadius.circular(GlassTokens.radiusMd),
                             border: Border.all(color: k.accent.withValues(alpha: 0.2)),
                           ),
                           child: Row(

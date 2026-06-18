@@ -34,6 +34,9 @@ import 'widgets/provider_dental_settings_widget.dart';
 import 'widgets/provider_event_settings_widget.dart';
 import 'widgets/provider_reports_widget.dart';
 import 'widgets/provider_venue_settings_widget.dart';
+import '../../services/call_history_service.dart';
+import '../../services/call_service.dart';
+import '../calls/call_screen.dart';
 
 /// Barcha soha egasi panellari — DB/API dan ma'lumot oladi.
 class UnifiedProviderDashboardScreen extends StatefulWidget {
@@ -115,8 +118,10 @@ class _UnifiedProviderDashboardScreenState
     return meta?['type'] == 'education_center' || meta?['tutor_role'] == 'center';
   }
 
-  int get _reportsIndex => _hasVenueSettings ? 3 : 2;
+  int get _calendarIndex => 1;
   int get _settingsIndex => 2;
+  int get _callsIndex => _hasVenueSettings ? 3 : 2;
+  int get _reportsIndex => _hasVenueSettings ? 4 : 3;
 
   @override
   void initState() {
@@ -305,10 +310,12 @@ class _UnifiedProviderDashboardScreenState
       child: Scaffold(
         backgroundColor: Colors.white,
         body: SafeArea(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(20),
-            child: _buildBody(theme, Colors.black),
-          ),
+          child: (_selectedIndex == _callsIndex)
+              ? _buildBody(theme, Colors.black)
+              : SingleChildScrollView(
+                  padding: const EdgeInsets.all(20),
+                  child: _buildBody(theme, Colors.black),
+                ),
         ),
         bottomNavigationBar: _buildBottomNav(Colors.black),
       ),
@@ -316,7 +323,7 @@ class _UnifiedProviderDashboardScreenState
   }
 
   Widget _buildBody(ThemeData theme, Color accent) {
-    if (_selectedIndex == 1) {
+    if (_selectedIndex == _calendarIndex) {
       return ProviderCalendarWidget(
         categoryKey: widget.config.categoryKey,
         accent: accent,
@@ -433,6 +440,9 @@ class _UnifiedProviderDashboardScreenState
         staffLabel: widget.config.categoryKey == 'salon' ? 'Mutaxassis' : 'Usta',
         staffMetadataKey: widget.config.categoryKey == 'salon' ? 'staff' : 'barbers',
       );
+    }
+    if (_selectedIndex == _callsIndex) {
+      return _buildCallsAndBlockTab(theme, accent);
     }
     if (_selectedIndex == _reportsIndex) {
       return ProviderReportsWidget(categoryKey: widget.config.categoryKey);
@@ -755,6 +765,10 @@ class _UnifiedProviderDashboardScreenState
           label: 'Sozlamalar',
         ),
       const NavigationDestination(
+        icon: Icon(LucideIcons.phone),
+        label: 'Muloqot',
+      ),
+      const NavigationDestination(
         icon: Icon(LucideIcons.chartBar),
         label: 'Hisobot',
       ),
@@ -766,6 +780,207 @@ class _UnifiedProviderDashboardScreenState
       destinations: destinations,
       backgroundColor: Colors.white,
       indicatorColor: Colors.black12,
+    );
+  }
+
+  Widget _buildCallsAndBlockTab(ThemeData theme, Color accent) {
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        appBar: PreferredSize(
+          preferredSize: const Size.fromHeight(48),
+          child: Container(
+            color: Colors.white,
+            child: const TabBar(
+              labelColor: Colors.black,
+              unselectedLabelColor: Colors.black54,
+              indicatorColor: Colors.black,
+              indicatorWeight: 3,
+              tabs: [
+                Tab(text: 'Qo\'ng\'iroqlar'),
+                Tab(text: 'Bloklanganlar'),
+              ],
+            ),
+          ),
+        ),
+        body: TabBarView(
+          children: [
+            _buildCallHistoryList(theme, accent),
+            _buildBlockedUsersList(theme, accent),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCallHistoryList(ThemeData theme, Color accent) {
+    return ListenableBuilder(
+      listenable: CallHistoryService(),
+      builder: (context, _) {
+        final logs = CallHistoryService().history;
+        if (logs.isEmpty) {
+          return const Center(
+            child: Text(
+              'Qo\'ng\'iroqlar tarixi bo\'sh',
+              style: TextStyle(color: Colors.black54),
+            ),
+          );
+        }
+        return ListView.separated(
+          padding: const EdgeInsets.all(20),
+          itemCount: logs.length,
+          separatorBuilder: (_, __) => const Divider(height: 1),
+          itemBuilder: (context, index) {
+            final log = logs[index];
+            final dateStr = DateFormat('dd.MM.yyyy HH:mm').format(log.timestamp);
+
+            IconData iconData;
+            Color iconColor;
+            String statusText = '';
+
+            if (log.status == 'connected') {
+              iconData = log.isIncoming ? LucideIcons.phoneIncoming : LucideIcons.phoneOutgoing;
+              iconColor = Colors.green;
+              statusText = log.isIncoming ? 'Kiruvchi' : 'Chiquvchi';
+            } else if (log.status == 'declined') {
+              iconData = LucideIcons.phoneOff;
+              iconColor = Colors.orange;
+              statusText = 'Rad etilgan';
+            } else if (log.status == 'cancelled') {
+              iconData = LucideIcons.phoneOff;
+              iconColor = Colors.grey;
+              statusText = 'Bekor qilingan';
+            } else {
+              iconData = log.isIncoming ? LucideIcons.phoneMissed : LucideIcons.phoneOff;
+              iconColor = Colors.red;
+              statusText = log.isIncoming ? 'Javobsiz' : 'Ulanmagan';
+            }
+
+            return ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: CircleAvatar(
+                backgroundColor: iconColor.withValues(alpha: 0.1),
+                child: Icon(iconData, color: iconColor, size: 20),
+              ),
+              title: Text(
+                log.userName,
+                style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
+              ),
+              subtitle: Text(
+                '$statusText • $dateStr\nDavomiyligi: ${log.duration}',
+                style: const TextStyle(color: Colors.black87),
+              ),
+              isThreeLine: true,
+              trailing: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  IconButton(
+                    icon: const Icon(LucideIcons.phone, color: Colors.green),
+                    onPressed: () {
+                      CallService().startCall(log.userId, log.userName);
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => const CallScreen(isIncoming: false),
+                        ),
+                      );
+                    },
+                  ),
+                  IconButton(
+                    icon: const Icon(LucideIcons.ban, color: Colors.red),
+                    onPressed: () {
+                      _showBlockDialog(log.userId, log.userName);
+                    },
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  void _showBlockDialog(int userId, String userName) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text('$userName bloklansinmi?'),
+        content: const Text('Ushbu foydalanuvchidan keladigan qo\'ng\'iroqlar avtomatik rad etiladi.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text('Bekor qilish', style: TextStyle(color: Colors.black)),
+          ),
+          TextButton(
+            onPressed: () {
+              CallHistoryService().blockUser(userId, userName);
+              Navigator.of(ctx).pop();
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('$userName bloklandi')),
+              );
+            },
+            child: const Text('Bloklash', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBlockedUsersList(ThemeData theme, Color accent) {
+    return ListenableBuilder(
+      listenable: CallHistoryService(),
+      builder: (context, _) {
+        final blocked = CallHistoryService().blocked;
+        if (blocked.isEmpty) {
+          return const Center(
+            child: Text(
+              'Bloklangan foydalanuvchilar yo\'q',
+              style: TextStyle(color: Colors.black54),
+            ),
+          );
+        }
+        return ListView.separated(
+          padding: const EdgeInsets.all(20),
+          itemCount: blocked.length,
+          separatorBuilder: (_, __) => const Divider(height: 1),
+          itemBuilder: (context, index) {
+            final user = blocked[index];
+            final dateStr = DateFormat('dd.MM.yyyy').format(user.blockedAt);
+
+            return ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: CircleAvatar(
+                backgroundColor: Colors.red.withValues(alpha: 0.1),
+                child: const Icon(LucideIcons.ban, color: Colors.red, size: 20),
+              ),
+              title: Text(
+                user.userName,
+                style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
+              ),
+              subtitle: Text(
+                'Bloklangan sana: $dateStr',
+                style: const TextStyle(color: Colors.black87),
+              ),
+              trailing: FilledButton(
+                onPressed: () {
+                  CallHistoryService().unblockUser(user.userId);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('${user.userName} blokdan chiqarildi')),
+                  );
+                },
+                style: FilledButton.styleFrom(
+                  backgroundColor: Colors.green,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
+                  textStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                ),
+                child: const Text('Ochish'),
+              ),
+            );
+          },
+        );
+      },
     );
   }
 }
