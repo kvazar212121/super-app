@@ -65,6 +65,11 @@ class Settings(BaseSettings):
     turn_server_password: str = ""
     stun_server_url: str = "stun:hubservis.uz:3478"
 
+    # Groq AI API (kalit faqat serverda saqlanadi)
+    groq_api_key: str = ""
+    groq_model: str = "qwen/qwen3-32b"
+    groq_max_tokens: int = 1024
+
 
 @lru_cache
 def get_settings() -> Settings:
