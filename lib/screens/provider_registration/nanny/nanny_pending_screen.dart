@@ -71,7 +71,7 @@ class _NannyPendingScreenState extends State<NannyPendingScreen> {
                 Container(
                   padding: const EdgeInsets.all(24),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFF472B6).withValues(alpha: 0.15),
+                    color: const Color(0xFFF472B6),
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(LucideIcons.baby, size: 48, color: Color(0xFFF472B6)),

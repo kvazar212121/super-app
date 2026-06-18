@@ -60,14 +60,14 @@ class ActiveOrderBanner extends StatelessWidget {
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: [
-                accent.withValues(alpha: 0.75),
-                accent.withValues(alpha: 0.45),
+                accent,
+                accent,
               ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
             borderRadius: BorderRadius.circular(24),
-            border: Border.all(color: Colors.white.withValues(alpha: 0.35)),
+            border: Border.all(color: Colors.white),
           ),
           child: Row(
             children: [
@@ -75,9 +75,9 @@ class ActiveOrderBanner extends StatelessWidget {
                 width: 50,
                 height: 50,
                 decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.2),
+                  color: Colors.white,
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: Colors.white.withValues(alpha: 0.3)),
+                  border: Border.all(color: Colors.white),
                 ),
                 child: Icon(order.category.icon, color: Colors.white, size: 26),
               ),
@@ -94,7 +94,7 @@ class ActiveOrderBanner extends StatelessWidget {
                             vertical: 3,
                           ),
                           decoration: BoxDecoration(
-                            color: statusColor.withValues(alpha: 0.95),
+                            color: statusColor,
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
@@ -112,7 +112,7 @@ class ActiveOrderBanner extends StatelessWidget {
                             children: [
                               Icon(
                                 LucideIcons.clock,
-                                color: Colors.white.withValues(alpha: 0.85),
+                                color: Colors.white,
                                 size: 12,
                               ),
                               const SizedBox(width: 4),
@@ -120,7 +120,7 @@ class ActiveOrderBanner extends StatelessWidget {
                                 dateStr,
                                 style: TextStyle(
                                   fontSize: 11,
-                                  color: Colors.white.withValues(alpha: 0.85),
+                                  color: Colors.white,
                                 ),
                               ),
                             ],
@@ -153,7 +153,7 @@ class ActiveOrderBanner extends StatelessWidget {
               ),
               Icon(
                 Icons.chevron_right_rounded,
-                color: Colors.white.withValues(alpha: 0.9),
+                color: Colors.white,
               ),
             ],
           ),

@@ -138,19 +138,19 @@ class _HomePromoSectionState extends State<HomePromoSection> {
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                           colors: [
-                            p.colors[0].withValues(alpha: 0.82),
-                            p.colors[1].withValues(alpha: 0.65),
+                            p.colors[0],
+                            p.colors[1],
                           ],
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
                         ),
                         borderRadius: BorderRadius.circular(22),
                         border: Border.all(
-                          color: Colors.white.withValues(alpha: 0.35),
+                          color: Colors.white,
                         ),
                         boxShadow: [
                           BoxShadow(
-                            color: p.colors[0].withValues(alpha: 0.3),
+                            color: p.colors[0],
                             blurRadius: 16,
                             offset: const Offset(0, 8),
                           ),
@@ -177,7 +177,7 @@ class _HomePromoSectionState extends State<HomePromoSection> {
                                 Text(
                                   p.subtitle,
                                   style: TextStyle(
-                                    color: Colors.white.withValues(alpha: 0.92),
+                                    color: Colors.white,
                                     fontSize: 12,
                                   ),
                                   maxLines: 2,
@@ -193,10 +193,10 @@ class _HomePromoSectionState extends State<HomePromoSection> {
                               vertical: 6,
                             ),
                             decoration: BoxDecoration(
-                              color: Colors.white.withValues(alpha: 0.22),
+                              color: Colors.white,
                               borderRadius: BorderRadius.circular(12),
                               border: Border.all(
-                                color: Colors.white.withValues(alpha: 0.3),
+                                color: Colors.white,
                               ),
                             ),
                             child: Text(

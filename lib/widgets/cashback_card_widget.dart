@@ -26,21 +26,21 @@ class CashbackCardWidget extends StatelessWidget {
             gradient: LinearGradient(
               colors: isPremium
                   ? [
-                      const Color(0xFF6366F1).withValues(alpha: 0.88),
-                      const Color(0xFF8B5CF6).withValues(alpha: 0.72),
+                      const Color(0xFF6366F1),
+                      const Color(0xFF8B5CF6),
                     ]
                   : [
-                      const Color(0xFF6366F1).withValues(alpha: 0.78),
-                      const Color(0xFF06B6D4).withValues(alpha: 0.62),
+                      const Color(0xFF6366F1),
+                      const Color(0xFF06B6D4),
                     ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
             borderRadius: BorderRadius.circular(GlassTokens.radiusLg),
-            border: Border.all(color: Colors.white.withValues(alpha: 0.35)),
+            border: Border.all(color: Colors.white),
             boxShadow: [
               BoxShadow(
-                color: const Color(0xFF6366F1).withValues(alpha: 0.28),
+                color: const Color(0xFF6366F1),
                 blurRadius: 20,
                 offset: const Offset(0, 10),
               ),
@@ -60,7 +60,7 @@ class CashbackCardWidget extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                       decoration: BoxDecoration(
-                        color: Colors.amber.withValues(alpha: 0.95),
+                        color: Colors.amber,
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: const Text(
@@ -84,7 +84,7 @@ class CashbackCardWidget extends StatelessWidget {
                   letterSpacing: -0.5,
                 ),
               ),
-              Divider(color: Colors.white.withValues(alpha: 0.25), height: 30),
+              Divider(color: Colors.white, height: 30),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -93,7 +93,7 @@ class CashbackCardWidget extends StatelessWidget {
                     children: [
                       Text(
                         'Keshbek',
-                        style: TextStyle(color: Colors.white.withValues(alpha: 0.8)),
+                        style: TextStyle(color: Colors.white),
                       ),
                       Text(
                         '+${cashback.toStringAsFixed(0)} so\'m',
@@ -107,7 +107,7 @@ class CashbackCardWidget extends StatelessWidget {
                   ),
                   Icon(
                     Icons.card_giftcard_rounded,
-                    color: Colors.white.withValues(alpha: 0.9),
+                    color: Colors.white,
                     size: 32,
                   ),
                 ],

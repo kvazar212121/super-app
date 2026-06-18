@@ -624,7 +624,7 @@ class _UnifiedProviderDashboardScreenState
             child: Center(
               child: Text(
                 'Bugun buyurtmalar yo\'q',
-                style: TextStyle(color: theme.colorScheme.onSurface.withValues(alpha: 0.5)),
+                style: TextStyle(color: theme.colorScheme.onSurface),
               ),
             ),
           )
@@ -866,7 +866,7 @@ class _UnifiedProviderDashboardScreenState
             return ListTile(
               contentPadding: EdgeInsets.zero,
               leading: CircleAvatar(
-                backgroundColor: iconColor.withValues(alpha: 0.1),
+                backgroundColor: iconColor,
                 child: Icon(iconData, color: iconColor, size: 20),
               ),
               title: Text(
@@ -957,7 +957,7 @@ class _UnifiedProviderDashboardScreenState
             return ListTile(
               contentPadding: EdgeInsets.zero,
               leading: CircleAvatar(
-                backgroundColor: Colors.red.withValues(alpha: 0.1),
+                backgroundColor: Colors.red,
                 child: const Icon(LucideIcons.ban, color: Colors.red, size: 20),
               ),
               title: Text(

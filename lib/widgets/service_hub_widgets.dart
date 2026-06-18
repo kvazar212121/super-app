@@ -64,7 +64,7 @@ class ShopSmallCard extends StatelessWidget {
               Container(
                 height: 80,
                 decoration: BoxDecoration(
-                  color: accentColor.withValues(alpha: 0.1),
+                  color: accentColor,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Center(child: Icon(LucideIcons.scissors, color: accentColor)),
@@ -115,7 +115,7 @@ class SalonSmallCard extends StatelessWidget {
               Container(
                 height: 80,
                 decoration: BoxDecoration(
-                  color: accentColor.withValues(alpha: 0.1),
+                  color: accentColor,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: const Center(child: Icon(LucideIcons.sparkles, color: accentColor)),
@@ -166,7 +166,7 @@ class FieldSmallCard extends StatelessWidget {
               Container(
                 height: 80,
                 decoration: BoxDecoration(
-                  color: accentColor.withValues(alpha: 0.1),
+                  color: accentColor,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: const Center(child: Icon(LucideIcons.trophy, color: accentColor)),
@@ -304,7 +304,7 @@ class HubActionCard extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: accentColor.withValues(alpha: 0.1),
+              color: accentColor,
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(icon, color: accentColor, size: 24),
@@ -371,7 +371,7 @@ class WorkshopSmallCard extends StatelessWidget {
               Container(
                 height: 80,
                 decoration: BoxDecoration(
-                  color: accentColor.withValues(alpha: 0.1),
+                  color: accentColor,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: const Center(child: Icon(LucideIcons.home, color: accentColor)),
@@ -426,7 +426,7 @@ class EducationCenterSmallCard extends StatelessWidget {
               Container(
                 height: 80,
                 decoration: BoxDecoration(
-                  color: accentColor.withValues(alpha: 0.1),
+                  color: accentColor,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: const Center(child: Icon(LucideIcons.bookOpen, color: accentColor)),
@@ -480,7 +480,7 @@ class DisinfectionSmallCard extends StatelessWidget {
               Container(
                 height: 80,
                 decoration: BoxDecoration(
-                  color: accentColor.withValues(alpha: 0.1),
+                  color: accentColor,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: const Center(child: Icon(LucideIcons.shieldCheck, color: accentColor)),
@@ -531,7 +531,7 @@ class ApplianceSmallCard extends StatelessWidget {
               Container(
                 height: 80,
                 decoration: BoxDecoration(
-                  color: accentColor.withValues(alpha: 0.1),
+                  color: accentColor,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: const Center(child: Icon(LucideIcons.monitor, color: accentColor)),
@@ -582,7 +582,7 @@ class CourierSmallCard extends StatelessWidget {
               Container(
                 height: 80,
                 decoration: BoxDecoration(
-                  color: accentColor.withValues(alpha: 0.1),
+                  color: accentColor,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: const Center(child: Icon(LucideIcons.bike, color: accentColor)),
@@ -633,7 +633,7 @@ class MassageSmallCard extends StatelessWidget {
               Container(
                 height: 80,
                 decoration: BoxDecoration(
-                  color: accentColor.withValues(alpha: 0.1),
+                  color: accentColor,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: const Center(child: Icon(LucideIcons.heartPulse, color: accentColor)),
@@ -690,7 +690,7 @@ class NurseSmallCard extends StatelessWidget {
               Container(
                 height: 80,
                 decoration: BoxDecoration(
-                  color: accentColor.withValues(alpha: 0.1),
+                  color: accentColor,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: const Center(child: Icon(LucideIcons.heartPulse, color: accentColor)),
@@ -747,7 +747,7 @@ class DentalSmallCard extends StatelessWidget {
               Container(
                 height: 80,
                 decoration: BoxDecoration(
-                  color: accentColor.withValues(alpha: 0.1),
+                  color: accentColor,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: const Center(child: Icon(LucideIcons.smile, color: accentColor)),
@@ -804,7 +804,7 @@ class EventSmallCard extends StatelessWidget {
               Container(
                 height: 80,
                 decoration: BoxDecoration(
-                  color: accentColor.withValues(alpha: 0.1),
+                  color: accentColor,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: const Center(child: Icon(LucideIcons.partyPopper, color: accentColor)),

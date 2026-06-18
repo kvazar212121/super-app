@@ -240,7 +240,7 @@ class _EventBookingScreenState extends State<EventBookingScreen> {
             margin: const EdgeInsets.only(bottom: 8),
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: isSelected ? color.withValues(alpha: 0.05) : Colors.white,
+              color: isSelected ? color : Colors.white,
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
                 color: isSelected ? color : Colors.grey[200]!,

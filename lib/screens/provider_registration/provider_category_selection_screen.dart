@@ -122,7 +122,7 @@ class _ProviderCategorySelectionScreenState
                   Text(
                     'Sizning sohangizga qarab mijozlar sizni topishadi.',
                     style: theme.textTheme.bodyMedium?.copyWith(
-                      color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                      color: theme.colorScheme.onSurface,
                     ),
                   ),
                   if (_error != null) ...[
@@ -164,7 +164,7 @@ class _ProviderCategorySelectionScreenState
                                     border: Border.all(
                                       color: isSelected
                                           ? Colors.black
-                                          : Colors.grey.withValues(alpha: 0.2),
+                                          : Colors.grey,
                                       width: 2,
                                     ),
                                   ),

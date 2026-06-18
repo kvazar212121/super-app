@@ -70,7 +70,7 @@ class SimpleCallBookingScreen extends StatelessWidget {
                     width: 80,
                     height: 80,
                     decoration: BoxDecoration(
-                      color: accentColor.withValues(alpha: 0.2),
+                      color: accentColor,
                       shape: BoxShape.circle,
                     ),
                     child: Icon(kind.icon, color: accentColor, size: 40),

@@ -9,19 +9,8 @@ class MeshBackground extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return RepaintBoundary(
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: const AssetImage('assets/images/background.jpg'),
-            fit: BoxFit.cover,
-            colorFilter: isDark 
-                ? ColorFilter.mode(Colors.black.withValues(alpha: 0.6), BlendMode.darken)
-                : null,
-          ),
-        ),
-        child: const SizedBox.expand(),
-      ),
+    return Container(
+      color: isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
     );
   }
 }

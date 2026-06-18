@@ -80,7 +80,7 @@ class _FootballFieldMapScreenState extends State<FootballFieldMapScreen> {
                   borderRadius: BorderRadius.circular(10),
                   boxShadow: [
                     BoxShadow(
-                      color: field.surface.color.withValues(alpha: 0.4),
+                      color: field.surface.color,
                       blurRadius: 8,
                       offset: const Offset(0, 2),
                     ),
@@ -119,7 +119,7 @@ class _FootballFieldMapScreenState extends State<FootballFieldMapScreen> {
                   borderRadius: BorderRadius.circular(6),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.1),
+                      color: Colors.black,
                       blurRadius: 4,
                     ),
                   ],
@@ -209,7 +209,7 @@ class _FootballFieldMapScreenState extends State<FootballFieldMapScreen> {
                 borderRadius: BorderRadius.circular(20),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.1),
+                    color: Colors.black,
                     blurRadius: 8,
                   ),
                 ],
@@ -294,7 +294,7 @@ class _FilterPanel extends StatelessWidget {
                       child: FilterChip(
                         label: Text(s.shortLabel),
                         selected: sizeFilter == s,
-                        selectedColor: const Color(0xFF4CAF50).withValues(alpha: 0.2),
+                        selectedColor: const Color(0xFF4CAF50),
                         onSelected: (_) => onSizeChanged(
                           sizeFilter == s ? null : s,
                         ),
@@ -317,7 +317,7 @@ class _FilterPanel extends StatelessWidget {
                         avatar: Icon(s.icon, size: 16),
                         label: Text(s.label),
                         selected: surfaceFilter == s,
-                        selectedColor: s.color.withValues(alpha: 0.2),
+                        selectedColor: s.color,
                         onSelected: (_) => onSurfaceChanged(
                           surfaceFilter == s ? null : s,
                         ),
@@ -368,7 +368,7 @@ class _FieldListView extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.1),
+            color: Colors.black,
             blurRadius: 12,
           ),
         ],
@@ -384,7 +384,7 @@ class _FieldListView extends StatelessWidget {
               width: 44,
               height: 44,
               decoration: BoxDecoration(
-                color: field.surface.color.withValues(alpha: 0.15),
+                color: field.surface.color,
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(field.surface.icon, color: field.surface.color),
@@ -475,7 +475,7 @@ class _FieldBottomSheet extends StatelessWidget {
                               padding: const EdgeInsets.symmetric(
                                   horizontal: 8, vertical: 4),
                               decoration: BoxDecoration(
-                                color: Colors.amber.withValues(alpha: 0.15),
+                                color: Colors.amber,
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: Row(
@@ -500,7 +500,7 @@ class _FieldBottomSheet extends StatelessWidget {
                                   horizontal: 8, vertical: 4),
                               decoration: BoxDecoration(
                                 color: field.surface.color
-                                    .withValues(alpha: 0.15),
+                                    ,
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: Text(
@@ -521,7 +521,7 @@ class _FieldBottomSheet extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: field.surface.color.withValues(alpha: 0.12),
+                      color: field.surface.color,
                       borderRadius: BorderRadius.circular(14),
                     ),
                     child: Icon(
@@ -652,7 +652,7 @@ class _AmenityChip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: const Color(0xFF4CAF50).withValues(alpha: 0.08),
+        color: const Color(0xFF4CAF50),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Row(

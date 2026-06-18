@@ -83,7 +83,7 @@ class HubServisBrand extends StatelessWidget {
         ShaderMask(
           shaderCallback: (bounds) => LinearGradient(
             colors: isDark
-                ? [Colors.white, _accent, _violet.withValues(alpha: 0.9)]
+                ? [Colors.white, _accent, _violet]
                 : [const Color(0xFF1E1B4B), _primary, _violet],
           ).createShader(bounds),
           child: Text(

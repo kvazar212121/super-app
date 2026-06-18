@@ -44,7 +44,7 @@ class BarberMapScreen extends StatelessWidget {
                           borderRadius: BorderRadius.circular(8),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.3),
+                              color: Colors.black,
                               blurRadius: 4,
                             ),
                           ],

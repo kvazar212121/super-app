@@ -39,7 +39,7 @@ class ProviderOnboardingScreen extends StatelessWidget {
               Text(
                 'Bizning platformada minglab mijozlar o\'ziga kerakli ustani qidirmoqda. Siz ham ular orasida bo\'ling!',
                 style: theme.textTheme.bodyLarge?.copyWith(
-                  color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
+                  color: theme.colorScheme.onSurface,
                 ),
               ),
               const SizedBox(height: 32),
@@ -119,7 +119,7 @@ class ProviderOnboardingScreen extends StatelessWidget {
               Text(
                 description,
                 style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                  color: theme.colorScheme.onSurface,
                 ),
               ),
             ],

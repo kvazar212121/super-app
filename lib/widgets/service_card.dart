@@ -22,16 +22,16 @@ class ServiceCard extends StatelessWidget {
       onTap: onTap,
       padding: const EdgeInsets.all(16),
       borderRadius: GlassTokens.radiusLg,
-      tint: color.withValues(alpha: 0.06),
+      tint: color,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.15),
+              color: color,
               shape: BoxShape.circle,
-              border: Border.all(color: color.withValues(alpha: 0.22)),
+              border: Border.all(color: color),
             ),
             child: Icon(icon, color: color, size: 28),
           ),

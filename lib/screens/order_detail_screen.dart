@@ -178,7 +178,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                     width: 52,
                     height: 52,
                     decoration: BoxDecoration(
-                      color: accent.withValues(alpha: 0.15),
+                      color: accent,
                       borderRadius: BorderRadius.circular(16),
                     ),
                     child: Icon(order.category.icon, color: accent, size: 26),
@@ -218,9 +218,9 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                     decoration: BoxDecoration(
-                      color: statusColor.withValues(alpha: 0.12),
+                      color: statusColor,
                       borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: statusColor.withValues(alpha: 0.3)),
+                      border: Border.all(color: statusColor),
                     ),
                     child: Text(
                       order.statusText,

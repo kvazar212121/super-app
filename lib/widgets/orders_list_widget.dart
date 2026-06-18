@@ -100,9 +100,9 @@ class _OrderCard extends StatelessWidget {
               width: 44,
               height: 44,
               decoration: BoxDecoration(
-                color: accent.withValues(alpha: 0.15),
+                color: accent,
                 borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: accent.withValues(alpha: 0.2)),
+                border: Border.all(color: accent),
               ),
               child: Icon(icon, color: accent),
             ),
@@ -129,9 +129,9 @@ class _OrderCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
-                color: statusColor.withValues(alpha: 0.12),
+                color: statusColor,
                 borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: statusColor.withValues(alpha: 0.25)),
+                border: Border.all(color: statusColor),
               ),
               child: Text(
                 order.statusText,
@@ -156,7 +156,7 @@ class _OrderCard extends StatelessWidget {
           ],
           Divider(
             height: 24,
-            color: GlassTokens.glassBorder(context).withValues(alpha: 0.5),
+            color: GlassTokens.glassBorder(context),
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,

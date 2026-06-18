@@ -184,7 +184,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> with SingleTick
                 suffixText: 'so\'m',
                 hintText: 'Narxni kiriting',
                 filled: true,
-                fillColor: Colors.white.withValues(alpha: 0.1),
+                fillColor: Colors.white,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                   borderSide: BorderSide.none,
@@ -312,7 +312,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> with SingleTick
           hintText: 'Ro\'yxat nomi (masalan: "Haftalik bozorlik")',
           hintStyle: TextStyle(color: GlassTokens.secondaryText(context), fontSize: 13),
           filled: true,
-          fillColor: Colors.white.withValues(alpha: 0.07),
+          fillColor: Colors.white,
           prefixIcon: Icon(LucideIcons.tag, color: Colors.orange.shade300, size: 18),
           contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           border: OutlineInputBorder(
@@ -330,9 +330,9 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> with SingleTick
       margin: const EdgeInsets.all(20),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.06),
+        color: Colors.white,
         borderRadius: BorderRadius.circular(GlassTokens.radiusMd),
-        border: Border.all(color: Colors.orange.withValues(alpha: 0.2)),
+        border: Border.all(color: Colors.orange),
       ),
       child: Column(
         children: [
@@ -347,7 +347,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> with SingleTick
                     hintText: 'Mahsulot nomi...',
                     hintStyle: TextStyle(color: GlassTokens.secondaryText(context)),
                     filled: true,
-                    fillColor: Colors.white.withValues(alpha: 0.08),
+                    fillColor: Colors.white,
                     prefixIcon: Icon(LucideIcons.search, color: GlassTokens.secondaryText(context), size: 18),
                     contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
                     border: OutlineInputBorder(
@@ -372,7 +372,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> with SingleTick
                     hintText: 'Soni',
                     hintStyle: TextStyle(color: GlassTokens.secondaryText(context), fontSize: 13),
                     filled: true,
-                    fillColor: Colors.white.withValues(alpha: 0.08),
+                    fillColor: Colors.white,
                     contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
@@ -386,7 +386,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> with SingleTick
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12),
                 decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.08),
+                  color: Colors.white,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: DropdownButtonHideUnderline(
@@ -410,7 +410,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> with SingleTick
                   borderRadius: BorderRadius.circular(12),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.orange.withValues(alpha: 0.3),
+                      color: Colors.orange,
                       blurRadius: 8,
                       offset: const Offset(0, 3),
                     ),
@@ -446,7 +446,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> with SingleTick
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(LucideIcons.shoppingBasket, size: 64, color: Colors.orange.withValues(alpha: 0.3)),
+          Icon(LucideIcons.shoppingBasket, size: 64, color: Colors.orange),
           const SizedBox(height: 16),
           Text(
             'Mahsulotlar qo\'shing',
@@ -455,7 +455,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> with SingleTick
           const SizedBox(height: 8),
           Text(
             'AI narxlarni taxmin qiladi 🤖',
-            style: TextStyle(color: GlassTokens.secondaryText(context).withValues(alpha: 0.6), fontSize: 13),
+            style: TextStyle(color: GlassTokens.secondaryText(context), fontSize: 13),
           ),
         ],
       ),
@@ -486,7 +486,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> with SingleTick
             margin: const EdgeInsets.only(bottom: 8),
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.06),
+              color: Colors.white,
               borderRadius: BorderRadius.circular(14),
               border: Border.all(color: GlassTokens.glassBorder(context)),
             ),
@@ -497,7 +497,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> with SingleTick
                   height: 40,
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
-                      colors: [Colors.orange.withValues(alpha: 0.3), Colors.deepOrange.withValues(alpha: 0.2)],
+                      colors: [Colors.orange, Colors.deepOrange],
                     ),
                     borderRadius: BorderRadius.circular(10),
                   ),
@@ -551,9 +551,9 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> with SingleTick
         gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          colors: [Colors.black.withValues(alpha: 0.0), Colors.black.withValues(alpha: 0.5)],
+          colors: [Colors.black, Colors.black],
         ),
-        border: Border(top: BorderSide(color: Colors.white.withValues(alpha: 0.08))),
+        border: Border(top: BorderSide(color: Colors.white)),
       ),
       child: Row(
         children: [
@@ -589,7 +589,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> with SingleTick
               borderRadius: BorderRadius.circular(14),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.orange.withValues(alpha: 0.4),
+                  color: Colors.orange,
                   blurRadius: 12,
                   offset: const Offset(0, 4),
                 ),
@@ -639,7 +639,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> with SingleTick
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(LucideIcons.clipboardList, size: 64, color: Colors.orange.withValues(alpha: 0.3)),
+            Icon(LucideIcons.clipboardList, size: 64, color: Colors.orange),
             const SizedBox(height: 16),
             Text(
               'Saqlangan ro\'yxatlar yo\'q',
@@ -665,10 +665,10 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> with SingleTick
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.06),
+        color: Colors.white,
         borderRadius: BorderRadius.circular(GlassTokens.radiusMd),
         border: Border.all(
-          color: isDone ? Colors.green.withValues(alpha: 0.4) : GlassTokens.glassBorder(context),
+          color: isDone ? Colors.green : GlassTokens.glassBorder(context),
         ),
         boxShadow: GlassTokens.glassShadow(context),
       ),
@@ -683,8 +683,8 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> with SingleTick
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: isDone
-                    ? [Colors.green.withValues(alpha: 0.3), Colors.teal.withValues(alpha: 0.2)]
-                    : [Colors.orange.withValues(alpha: 0.3), Colors.deepOrange.withValues(alpha: 0.2)],
+                    ? [Colors.green, Colors.teal]
+                    : [Colors.orange, Colors.deepOrange],
               ),
               borderRadius: BorderRadius.circular(12),
             ),
@@ -724,7 +724,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> with SingleTick
                       borderRadius: BorderRadius.circular(4),
                       child: LinearProgressIndicator(
                         value: progress,
-                        backgroundColor: Colors.white.withValues(alpha: 0.1),
+                        backgroundColor: Colors.white,
                         valueColor: AlwaysStoppedAnimation(isDone ? Colors.green : Colors.orange),
                         minHeight: 4,
                       ),
@@ -763,12 +763,12 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> with SingleTick
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
         decoration: BoxDecoration(
           color: item.isBought
-              ? Colors.green.withValues(alpha: 0.08)
-              : Colors.white.withValues(alpha: 0.04),
+              ? Colors.green
+              : Colors.white,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: item.isBought
-                ? Colors.green.withValues(alpha: 0.2)
+                ? Colors.green
                 : Colors.transparent,
           ),
         ),
@@ -785,7 +785,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> with SingleTick
                   color: item.isBought ? Colors.green : Colors.transparent,
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(
-                    color: item.isBought ? Colors.green : GlassTokens.secondaryText(context).withValues(alpha: 0.4),
+                    color: item.isBought ? Colors.green : GlassTokens.secondaryText(context),
                     width: 2,
                   ),
                 ),

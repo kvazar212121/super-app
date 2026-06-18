@@ -38,7 +38,7 @@ class ProviderProfileScreen extends StatelessWidget {
               children: [
                 CircleAvatar(
                   radius: 44,
-                  backgroundColor: accent.withValues(alpha: 0.15),
+                  backgroundColor: accent,
                   child: Icon(category.icon, color: accent, size: 40),
                 ),
                 const SizedBox(height: 16),

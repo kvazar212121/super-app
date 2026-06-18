@@ -311,7 +311,7 @@ class _NannyRegistrationScreenState extends State<NannyRegistrationScreen> {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: _accent.withValues(alpha: 0.1),
+              color: _accent,
               borderRadius: BorderRadius.circular(12),
             ),
             child: const Text(

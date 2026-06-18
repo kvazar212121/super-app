@@ -177,7 +177,7 @@ class _MassageRegistrationScreenState extends State<MassageRegistrationScreen> {
                         _visitModes.remove(m.key);
                       }
                     }),
-                    selectedColor: accent.withValues(alpha: 0.2),
+                    selectedColor: accent,
                     checkmarkColor: accent,
                   );
                 }).toList(),
@@ -206,7 +206,7 @@ class _MassageRegistrationScreenState extends State<MassageRegistrationScreen> {
                         _serviceTypes.remove(key);
                       }
                     }),
-                    selectedColor: accent.withValues(alpha: 0.2),
+                    selectedColor: accent,
                     checkmarkColor: accent,
                   );
                 }).toList(),

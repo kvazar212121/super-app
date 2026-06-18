@@ -38,7 +38,7 @@ class OrdersFilterWidget extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 10),
           decoration: BoxDecoration(
             color: selected
-                ? const Color(0xFF6366F1).withValues(alpha: 0.18)
+                ? const Color(0xFF6366F1)
                 : Colors.transparent,
             borderRadius: BorderRadius.circular(14),
           ),

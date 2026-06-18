@@ -53,11 +53,11 @@ class BookingSliverAppBar extends StatelessWidget {
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [color, color.withValues(alpha: 0.7)],
+              colors: [color, color],
             ),
           ),
           child: Center(
-            child: Icon(icon, size: 64, color: Colors.white.withValues(alpha: 0.2)),
+            child: Icon(icon, size: 64, color: Colors.white),
           ),
         ),
       ),
@@ -104,7 +104,7 @@ class ServiceProfileHeader extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
               decoration: BoxDecoration(
-                color: accent.withValues(alpha: 0.1),
+                color: accent,
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Row(
@@ -172,7 +172,7 @@ class SelectableIconGrid<T> extends StatelessWidget {
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 12),
             decoration: BoxDecoration(
-              color: isSelected ? accent.withValues(alpha: 0.1) : kBookingCard,
+              color: isSelected ? accent : kBookingCard,
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
                 color: isSelected ? accent : kBookingBorder,
@@ -235,7 +235,7 @@ class SelectableChips extends StatelessWidget {
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
             decoration: BoxDecoration(
-              color: isSelected ? accent.withValues(alpha: 0.1) : kBookingCard,
+              color: isSelected ? accent : kBookingCard,
               borderRadius: BorderRadius.circular(20),
               border: Border.all(
                 color: isSelected ? accent : kBookingBorder,
@@ -288,7 +288,7 @@ class PriceOptionList extends StatelessWidget {
             margin: const EdgeInsets.only(bottom: 8),
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
-              color: isSelected ? accent.withValues(alpha: 0.06) : kBookingCard,
+              color: isSelected ? accent : kBookingCard,
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
                 color: isSelected ? accent : kBookingBorder,
@@ -610,7 +610,7 @@ class SelectableStaffRow extends StatelessWidget {
                     child: CircleAvatar(
                       radius: 28,
                       backgroundColor:
-                          isSelected ? accent.withValues(alpha: 0.15) : kBookingCard,
+                          isSelected ? accent : kBookingCard,
                       child: Icon(
                         isAny ? Icons.groups_outlined : Icons.person_outline,
                         color: isSelected ? accent : kBookingSub,

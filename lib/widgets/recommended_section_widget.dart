@@ -66,7 +66,7 @@ class _RecommendedSectionWidgetState extends State<RecommendedSectionWidget> {
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(20),
-              boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 10)],
+              boxShadow: [BoxShadow(color: Colors.black, blurRadius: 10)],
             ),
             child: Row(
               children: [

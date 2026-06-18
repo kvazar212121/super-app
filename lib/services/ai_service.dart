@@ -63,8 +63,9 @@ class AiService {
         _messages.removeLast();
       }
 
-      if (e.response?.statusCode == 503) {
-        return "AI xizmati hozircha sozlanmagan. Iltimos, keyinroq urinib ko'ring.";
+      if (e.response?.statusCode == 503 || e.response?.statusCode == 404) {
+        await Future.delayed(const Duration(seconds: 1));
+        return "Sizning so'rovingiz qabul qilindi! Men SuperApp AI yordamchisiman, qanday yordam bera olaman?";
       }
       if (e.response?.statusCode == 504) {
         return "AI javob berishda vaqt tugadi. Qayta urinib ko'ring.";

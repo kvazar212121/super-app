@@ -127,7 +127,7 @@ class OrderStatusTimeline extends StatelessWidget {
                         color: dotColor,
                         shape: BoxShape.circle,
                         border: step.isActive
-                            ? Border.all(color: accent.withValues(alpha: 0.4), width: 3)
+                            ? Border.all(color: accent, width: 3)
                             : null,
                       ),
                       child: step.isDone
@@ -140,8 +140,8 @@ class OrderStatusTimeline extends StatelessWidget {
                           width: 2,
                           margin: const EdgeInsets.symmetric(vertical: 4),
                           color: step.isDone
-                              ? const Color(0xFF10B981).withValues(alpha: 0.5)
-                              : theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
+                              ? const Color(0xFF10B981)
+                              : theme.colorScheme.outlineVariant,
                         ),
                       ),
                   ],
@@ -156,7 +156,7 @@ class OrderStatusTimeline extends StatelessWidget {
                       fontWeight: step.isActive ? FontWeight.bold : FontWeight.w500,
                       color: step.isActive || step.isDone
                           ? theme.colorScheme.onSurface
-                          : theme.colorScheme.onSurface.withValues(alpha: 0.45),
+                          : theme.colorScheme.onSurface,
                       fontSize: step.isActive ? 15 : 14,
                     ),
                   ),

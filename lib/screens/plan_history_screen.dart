@@ -82,7 +82,7 @@ class _PlanHistoryScreenState extends State<PlanHistoryScreen> {
                       Icon(
                         LucideIcons.history, 
                         size: 48, 
-                        color: GlassTokens.secondaryText(context).withValues(alpha: 0.5)
+                        color: GlassTokens.secondaryText(context)
                       ),
                       const SizedBox(height: 12),
                       Text(
@@ -105,9 +105,9 @@ class _PlanHistoryScreenState extends State<PlanHistoryScreen> {
                     return Container(
                       margin: const EdgeInsets.only(bottom: 12),
                       decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.05),
+                        color: Colors.white,
                         borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+                        border: Border.all(color: Colors.white),
                       ),
                       child: ListTile(
                         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -115,8 +115,8 @@ class _PlanHistoryScreenState extends State<PlanHistoryScreen> {
                           padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
                             color: item.isCompleted 
-                                ? Colors.green.withValues(alpha: 0.2)
-                                : Colors.redAccent.withValues(alpha: 0.2),
+                                ? Colors.green
+                                : Colors.redAccent,
                             shape: BoxShape.circle,
                           ),
                           child: Icon(

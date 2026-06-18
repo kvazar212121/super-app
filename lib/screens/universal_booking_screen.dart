@@ -121,7 +121,7 @@ class _UniversalBookingScreenState extends State<UniversalBookingScreen> {
                 return ChoiceChip(
                   label: Text(v.label),
                   selected: selected,
-                  selectedColor: accent.withValues(alpha: 0.18),
+                  selectedColor: accent,
                   labelStyle: TextStyle(
                     color: selected ? accent : Colors.black87,
                     fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
@@ -266,9 +266,9 @@ class _PriceCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: accent.withValues(alpha: 0.08),
+        color: accent,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: accent.withValues(alpha: 0.25)),
+        border: Border.all(color: accent),
       ),
       child: Row(
         children: [

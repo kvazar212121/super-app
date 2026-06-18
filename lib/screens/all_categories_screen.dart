@@ -72,7 +72,7 @@ class AllCategoriesScreen extends StatelessWidget {
       title: 'Barcha xizmatlar',
       body: Container(
         decoration: BoxDecoration(
-          color: Colors.blue.withValues(alpha: 0.03), // Juda nozik ko'k rang
+          color: Colors.blue, // Juda nozik ko'k rang
         ),
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 3.0, sigmaY: 3.0), // Orqa fonga ozgina blur
@@ -81,7 +81,7 @@ class AllCategoriesScreen extends StatelessWidget {
             itemCount: _groups.length,
             separatorBuilder: (context, index) => Padding(
               padding: const EdgeInsets.symmetric(vertical: 24),
-              child: Divider(color: GlassTokens.primaryText(context).withValues(alpha: 0.1), thickness: 1),
+              child: Divider(color: GlassTokens.primaryText(context), thickness: 1),
             ),
             itemBuilder: (context, index) {
               final group = _groups[index];
@@ -125,7 +125,7 @@ class AllCategoriesScreen extends StatelessWidget {
                           decoration: BoxDecoration(
                             color: isDark ? const Color(0xFF1E293B) : Colors.white, // Shafoflik yo'q
                             borderRadius: BorderRadius.circular(GlassTokens.radiusMd),
-                            border: Border.all(color: k.accent.withValues(alpha: 0.2)),
+                            border: Border.all(color: k.accent),
                           ),
                           child: Row(
                             children: [
@@ -133,9 +133,9 @@ class AllCategoriesScreen extends StatelessWidget {
                                 width: 44,
                                 height: 44,
                                 decoration: BoxDecoration(
-                                  color: k.accent.withValues(alpha: 0.18),
+                                  color: k.accent,
                                   borderRadius: BorderRadius.circular(14),
-                                  border: Border.all(color: k.accent.withValues(alpha: 0.22)),
+                                  border: Border.all(color: k.accent),
                                 ),
                                 child: Icon(k.icon, color: k.accent, size: 22),
                               ),

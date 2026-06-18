@@ -22,18 +22,18 @@ class CardItemWidget extends StatelessWidget {
             gradient: LinearGradient(
               colors: isUzcard
                   ? [
-                      const Color(0xFF00A8E1).withValues(alpha: 0.85),
-                      const Color(0xFF0077B5).withValues(alpha: 0.75),
+                      const Color(0xFF00A8E1),
+                      const Color(0xFF0077B5),
                     ]
                   : [
-                      const Color(0xFF00C853).withValues(alpha: 0.85),
-                      const Color(0xFF069668).withValues(alpha: 0.75),
+                      const Color(0xFF00C853),
+                      const Color(0xFF069668),
                     ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
             borderRadius: BorderRadius.circular(GlassTokens.radiusLg),
-            border: Border.all(color: Colors.white.withValues(alpha: 0.3)),
+            border: Border.all(color: Colors.white),
           ),
           padding: const EdgeInsets.all(18),
           child: Column(
@@ -53,7 +53,7 @@ class CardItemWidget extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                       decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.25),
+                        color: Colors.white,
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: const Text(
@@ -82,7 +82,7 @@ class CardItemWidget extends StatelessWidget {
                     children: [
                       Text(
                         'Karta egasi',
-                        style: TextStyle(color: Colors.white.withValues(alpha: 0.75), fontSize: 12),
+                        style: TextStyle(color: Colors.white, fontSize: 12),
                       ),
                       Text(card.cardHolder, style: const TextStyle(color: Colors.white)),
                     ],
@@ -92,7 +92,7 @@ class CardItemWidget extends StatelessWidget {
                     children: [
                       Text(
                         'Muddati',
-                        style: TextStyle(color: Colors.white.withValues(alpha: 0.75), fontSize: 12),
+                        style: TextStyle(color: Colors.white, fontSize: 12),
                       ),
                       Text(card.expiryDate, style: const TextStyle(color: Colors.white)),
                     ],

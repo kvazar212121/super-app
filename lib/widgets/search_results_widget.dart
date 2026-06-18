@@ -171,9 +171,9 @@ class _CategoryTile extends StatelessWidget {
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.12),
+              color: color,
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: color.withValues(alpha: 0.2)),
+              border: Border.all(color: color),
             ),
             child: Icon(icon, color: color, size: 20),
           ),
@@ -213,9 +213,9 @@ class _ShopListItem extends StatelessWidget {
             width: 48,
             height: 48,
             decoration: BoxDecoration(
-              color: const Color(0xFF6366F1).withValues(alpha: 0.12),
+              color: const Color(0xFF6366F1),
               borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: const Color(0xFF6366F1).withValues(alpha: 0.2)),
+              border: Border.all(color: const Color(0xFF6366F1)),
             ),
             child: const Icon(LucideIcons.scissors, color: Color(0xFF6366F1)),
           ),

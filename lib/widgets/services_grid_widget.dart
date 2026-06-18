@@ -32,7 +32,7 @@ class ServicesGridWidget extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Colors.blueAccent.withValues(alpha: 0.1),
+                color: Colors.blueAccent,
                 shape: BoxShape.circle,
               ),
               child: const Icon(LucideIcons.layoutGrid, color: Colors.blueAccent, size: 28),
@@ -49,12 +49,12 @@ class ServicesGridWidget extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(
                     'Katalogdagi barcha xizmatlarni ko\'rish',
-                    style: TextStyle(color: textColor.withValues(alpha: 0.7), fontSize: 13),
+                    style: TextStyle(color: textColor, fontSize: 13),
                   ),
                 ],
               ),
             ),
-            Icon(LucideIcons.chevronRight, color: textColor.withValues(alpha: 0.5), size: 24),
+            Icon(LucideIcons.chevronRight, color: textColor, size: 24),
           ],
         ),
       ),

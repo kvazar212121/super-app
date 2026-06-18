@@ -68,7 +68,7 @@ class _HubActionCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final textColor = bgImage != null ? Colors.white : (isDark ? Colors.white : Colors.black87);
-    final iconBgColor = bgImage != null ? Colors.white24 : color.withValues(alpha: 0.2);
+    final iconBgColor = bgImage != null ? Colors.white24 : color;
     final iconColor = bgImage != null ? Colors.white : color;
     final chevronColor = bgImage != null ? Colors.white70 : color;
 
@@ -82,12 +82,12 @@ class _HubActionCard extends StatelessWidget {
               ? Colors.black 
               : (isDark ? Color.lerp(const Color(0xFF1E293B), color, 0.15) : Color.lerp(Colors.white, color, 0.1)),
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: isDark ? color.withValues(alpha: 0.4) : color.withValues(alpha: 0.3)),
+          border: Border.all(color: isDark ? color : color),
           image: bgImage != null ? DecorationImage(
             image: AssetImage(bgImage!),
             fit: BoxFit.cover,
             colorFilter: ColorFilter.mode(
-              Colors.black.withValues(alpha: 0.55),
+              Colors.black,
               BlendMode.srcOver,
             ),
           ) : null,
@@ -126,7 +126,7 @@ class _HubActionCard extends StatelessWidget {
                   Text(
                     subtitle,
                     style: TextStyle(
-                      color: bgImage != null ? Colors.white70 : textColor.withValues(alpha: 0.7), 
+                      color: bgImage != null ? Colors.white70 : textColor, 
                       fontSize: 13,
                       shadows: bgImage != null ? [
                         const Shadow(

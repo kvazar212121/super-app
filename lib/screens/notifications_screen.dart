@@ -75,7 +75,7 @@ class NotificationsScreen extends StatelessWidget {
                         ),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.02),
+                            color: Colors.black,
                             blurRadius: 8,
                             offset: const Offset(0, 4),
                           )
@@ -201,7 +201,7 @@ class NotificationsScreen extends StatelessWidget {
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.05),
+                    color: Colors.black,
                     blurRadius: 20,
                   )
                 ],

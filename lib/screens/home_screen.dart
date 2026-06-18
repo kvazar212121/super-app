@@ -147,10 +147,10 @@ class _DailyBtn extends StatelessWidget {
         decoration: BoxDecoration(
           color: isDark ? const Color(0xFF1E293B) : Colors.white,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: isDark ? color.withValues(alpha: 0.4) : color.withValues(alpha: 0.3)),
+          border: Border.all(color: isDark ? color : color),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.06),
+              color: Colors.black,
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),
@@ -175,7 +175,7 @@ class _DailyBtn extends StatelessWidget {
             // Ramkadan ajratib turuvchi chiziq
             Container(
               height: 1.5,
-              color: isDark ? color.withValues(alpha: 0.4) : color.withValues(alpha: 0.3),
+              color: isDark ? color : color,
             ),
             // Kichik yozuv maydoni (Oq fon va qora yozuv)
             Container(

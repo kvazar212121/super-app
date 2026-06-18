@@ -126,7 +126,7 @@ class ProfileScreen extends StatelessWidget {
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
                       itemCount: logs.take(5).length,
-                      separatorBuilder: (_, __) => Divider(color: Colors.white.withValues(alpha: 0.1), height: 1),
+                      separatorBuilder: (_, __) => Divider(color: Colors.white, height: 1),
                       itemBuilder: (context, idx) {
                         final log = logs[idx];
                         final timeStr = DateFormat('dd.MM.yyyy HH:mm').format(log.timestamp);
@@ -304,11 +304,11 @@ class ProfileScreen extends StatelessWidget {
               shape: BoxShape.circle,
               gradient: LinearGradient(
                 colors: [
-                  const Color(0xFF6366F1).withValues(alpha: 0.3),
-                  const Color(0xFFA855F7).withValues(alpha: 0.2),
+                  const Color(0xFF6366F1),
+                  const Color(0xFFA855F7),
                 ],
               ),
-              border: Border.all(color: Colors.white.withValues(alpha: 0.4), width: 2),
+              border: Border.all(color: Colors.white, width: 2),
             ),
             child: isLoggedIn && user.avatarUrl != null
                 ? ClipOval(child: Image.network(user.avatarUrl!, fit: BoxFit.cover))
@@ -481,10 +481,10 @@ class ProfileScreen extends StatelessWidget {
     showDialog<void>(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: Colors.grey[900]?.withValues(alpha: 0.95),
+        backgroundColor: Colors.grey[900]?,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(GlassTokens.radiusMd),
-          side: BorderSide(color: Colors.white.withValues(alpha: 0.15)),
+          side: BorderSide(color: Colors.white),
         ),
         title: const Text(
           'Eslatma vaqtini tanlang',

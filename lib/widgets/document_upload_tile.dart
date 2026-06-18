@@ -68,16 +68,16 @@ class _DocumentUploadTileState extends State<DocumentUploadTile> {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(14),
         border: Border.all(
-          color: hasUrl ? widget.accent : Colors.grey.withValues(alpha: 0.35),
+          color: hasUrl ? widget.accent : Colors.grey,
         ),
-        color: hasUrl ? widget.accent.withValues(alpha: 0.06) : null,
+        color: hasUrl ? widget.accent : null,
       ),
       child: Row(
         children: [
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: widget.accent.withValues(alpha: 0.12),
+              color: widget.accent,
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(

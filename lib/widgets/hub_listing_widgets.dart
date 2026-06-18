@@ -64,7 +64,7 @@ class HubFilterChips extends StatelessWidget {
             label: Text(_labels[f]!),
             selected: isSelected,
             onSelected: (_) => onChanged(f),
-            selectedColor: accent.withValues(alpha: 0.15),
+            selectedColor: accent,
             checkmarkColor: accent,
             labelStyle: TextStyle(
               fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
@@ -198,8 +198,8 @@ class VenueHubCard extends StatelessWidget {
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                         colors: [
-                          accent.withValues(alpha: 0.18),
-                          accent.withValues(alpha: 0.06),
+                          accent,
+                          accent,
                         ],
                       ),
                     ),
@@ -335,7 +335,7 @@ Future<void> showVenuePreviewSheet(
                 width: 56,
                 height: 56,
                 decoration: BoxDecoration(
-                  color: accent.withValues(alpha: 0.12),
+                  color: accent,
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Icon(LucideIcons.scissors, color: accent, size: 28),
@@ -445,7 +445,7 @@ class _PreviewChip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.1),
+        color: color,
         borderRadius: BorderRadius.circular(20),
       ),
       child: Row(
@@ -748,7 +748,7 @@ class MobileSalonHubSection extends StatelessWidget {
                       children: [
                         CircleAvatar(
                           radius: 22,
-                          backgroundColor: accentColor.withValues(alpha: 0.15),
+                          backgroundColor: accentColor,
                           child: Icon(LucideIcons.sparkles, color: accentColor, size: 20),
                         ),
                         const SizedBox(height: 10),
@@ -872,14 +872,14 @@ class _MobileBarberCard extends StatelessWidget {
               children: [
                 CircleAvatar(
                   radius: 22,
-                  backgroundColor: accent.withValues(alpha: 0.15),
+                  backgroundColor: accent,
                   child: Icon(LucideIcons.scissors, color: accent, size: 20),
                 ),
                 const Spacer(),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF10B981).withValues(alpha: 0.15),
+                    color: const Color(0xFF10B981),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: const Text(
@@ -1202,14 +1202,14 @@ class _CleaningCard extends StatelessWidget {
                 children: [
                   CircleAvatar(
                     radius: 22,
-                    backgroundColor: accent.withValues(alpha: 0.15),
+                    backgroundColor: accent,
                     child: Icon(LucideIcons.sprayCan, color: accent, size: 20),
                   ),
                   const Spacer(),
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                     decoration: BoxDecoration(
-                      color: accent.withValues(alpha: 0.12),
+                      color: accent,
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Icon(badgeIcon, size: 12, color: accent),
@@ -1375,14 +1375,14 @@ class _MasterDispatchCard extends StatelessWidget {
                 children: [
                   CircleAvatar(
                     radius: 22,
-                    backgroundColor: accent.withValues(alpha: 0.15),
+                    backgroundColor: accent,
                     child: Icon(LucideIcons.hammer, color: accent, size: 20),
                   ),
                   const Spacer(),
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                     decoration: BoxDecoration(
-                      color: accent.withValues(alpha: 0.12),
+                      color: accent,
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Icon(badgeIcon, size: 12, color: accent),
@@ -1501,7 +1501,7 @@ class ElectricianHubSection extends StatelessWidget {
                       children: [
                         CircleAvatar(
                           radius: 22,
-                          backgroundColor: accentColor.withValues(alpha: 0.15),
+                          backgroundColor: accentColor,
                           child: Icon(LucideIcons.zap, color: accentColor, size: 20),
                         ),
                         const SizedBox(height: 10),
@@ -1619,7 +1619,7 @@ class PlumberHubSection extends StatelessWidget {
                       children: [
                         CircleAvatar(
                           radius: 22,
-                          backgroundColor: accentColor.withValues(alpha: 0.15),
+                          backgroundColor: accentColor,
                           child: Icon(LucideIcons.droplet, color: accentColor, size: 20),
                         ),
                         const SizedBox(height: 10),
@@ -1734,7 +1734,7 @@ class CourierHubSection extends StatelessWidget {
                       children: [
                         CircleAvatar(
                           radius: 22,
-                          backgroundColor: accentColor.withValues(alpha: 0.15),
+                          backgroundColor: accentColor,
                           child: Icon(LucideIcons.bike, color: accentColor, size: 20),
                         ),
                         const SizedBox(height: 10),
@@ -1849,7 +1849,7 @@ class AutoHelpHubSection extends StatelessWidget {
                       children: [
                         CircleAvatar(
                           radius: 22,
-                          backgroundColor: accentColor.withValues(alpha: 0.15),
+                          backgroundColor: accentColor,
                           child: Icon(u.vehicleType.icon, color: accentColor, size: 20),
                         ),
                         const SizedBox(height: 10),
@@ -1964,7 +1964,7 @@ class AutoWorkshopHubSection extends StatelessWidget {
                       children: [
                         CircleAvatar(
                           radius: 22,
-                          backgroundColor: const Color(0xFF334155).withValues(alpha: 0.15),
+                          backgroundColor: const Color(0xFF334155),
                           child: Icon(LucideIcons.home, color: accentColor, size: 20),
                         ),
                         const SizedBox(height: 10),
@@ -2082,7 +2082,7 @@ class AcHubSection extends StatelessWidget {
                       children: [
                         CircleAvatar(
                           radius: 22,
-                          backgroundColor: accentColor.withValues(alpha: 0.15),
+                          backgroundColor: accentColor,
                           child: Icon(LucideIcons.wind, color: accentColor, size: 20),
                         ),
                         const SizedBox(height: 10),
@@ -2199,7 +2199,7 @@ class NannyHubSection extends StatelessWidget {
                           children: [
                             CircleAvatar(
                               radius: 22,
-                              backgroundColor: accentColor.withValues(alpha: 0.15),
+                              backgroundColor: accentColor,
                               child: Icon(LucideIcons.baby, color: accentColor, size: 20),
                             ),
                             if (n.isVerified) ...[
@@ -2311,7 +2311,7 @@ class TutorHubSection extends StatelessWidget {
                           children: [
                             CircleAvatar(
                               radius: 22,
-                              backgroundColor: accentColor.withValues(alpha: 0.15),
+                              backgroundColor: accentColor,
                               child: Icon(LucideIcons.bookOpen, color: accentColor, size: 20),
                             ),
                             const SizedBox(width: 10),

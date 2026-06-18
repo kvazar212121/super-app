@@ -70,7 +70,7 @@ class _IncomingOrderDialogState extends State<IncomingOrderDialog> {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: widget.accent.withOpacity(0.1),
+                color: widget.accent,
                 shape: BoxShape.circle,
               ),
               child: Icon(LucideIcons.bellRing, size: 48, color: widget.accent),

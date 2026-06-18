@@ -134,7 +134,7 @@ class _ProviderDataEntryScreenState extends State<ProviderDataEntryScreen> {
             Text(
               'Ma\'lumotlar serverga yuboriladi. Admin tasdiqlagach ko\'rinadi.',
               style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                color: theme.colorScheme.onSurface,
               ),
             ),
             const SizedBox(height: 24),

@@ -167,8 +167,8 @@ class _ChatScreenState extends State<ChatScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
           color: isUser
-              ? (isDark ? Colors.blue.withValues(alpha: 0.3) : Colors.blue.withValues(alpha: 0.2))
-              : (isDark ? Colors.white.withValues(alpha: 0.1) : Colors.white.withValues(alpha: 0.6)),
+              ? Colors.blue
+              : (isDark ? const Color(0xFF334155) : Colors.white),
           borderRadius: BorderRadius.only(
             topLeft: const Radius.circular(20),
             topRight: const Radius.circular(20),
@@ -177,14 +177,16 @@ class _ChatScreenState extends State<ChatScreen> {
           ),
           border: Border.all(
             color: isUser
-                ? Colors.blue.withValues(alpha: 0.3)
+                ? Colors.blue
                 : GlassTokens.glassBorder(context),
           ),
         ),
         child: Text(
           content,
           style: TextStyle(
-            color: GlassTokens.primaryText(context),
+            color: isUser 
+                 ? Colors.white 
+                 : (isDark ? Colors.white : Colors.black87),
             fontSize: 15,
             height: 1.4,
           ),
@@ -202,7 +204,7 @@ class _ChatScreenState extends State<ChatScreen> {
         margin: const EdgeInsets.only(bottom: 16),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         decoration: BoxDecoration(
-          color: isDark ? Colors.white.withValues(alpha: 0.1) : Colors.white.withValues(alpha: 0.6),
+          color: isDark ? Colors.white : Colors.white,
           borderRadius: const BorderRadius.only(
             topLeft: Radius.circular(20),
             topRight: Radius.circular(20),
@@ -232,7 +234,7 @@ class _ChatScreenState extends State<ChatScreen> {
     return Container(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF1E293B).withValues(alpha: 0.8) : Colors.white.withValues(alpha: 0.9),
+        color: isDark ? const Color(0xFF1E293B) : Colors.white,
         border: Border(
           top: BorderSide(color: GlassTokens.glassBorder(context)),
         ),
@@ -242,7 +244,7 @@ class _ChatScreenState extends State<ChatScreen> {
           Expanded(
             child: Container(
               decoration: BoxDecoration(
-                color: isDark ? Colors.black.withValues(alpha: 0.3) : Colors.grey.withValues(alpha: 0.1),
+                color: isDark ? Colors.black : Colors.grey,
                 borderRadius: BorderRadius.circular(24),
                 border: Border.all(color: GlassTokens.glassBorder(context)),
               ),
@@ -279,7 +281,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
-                    color: (_hasText ? const Color(0xFF3B82F6) : const Color(0xFF10B981)).withValues(alpha: 0.4),
+                    color: (_hasText ? const Color(0xFF3B82F6) : const Color(0xFF10B981)),
                     blurRadius: 8,
                     offset: const Offset(0, 4),
                   ),
@@ -424,15 +426,15 @@ class _VoiceMessageModalState extends State<_VoiceMessageModal>
         borderRadius: BorderRadius.circular(28),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.3),
+            color: Colors.black,
             blurRadius: 30,
             offset: const Offset(0, -5),
           ),
         ],
         border: Border.all(
           color: isDark
-              ? Colors.white.withValues(alpha: 0.1)
-              : Colors.grey.withValues(alpha: 0.2),
+              ? Colors.white
+              : Colors.grey,
         ),
       ),
       child: Column(
@@ -497,10 +499,10 @@ class _VoiceMessageModalState extends State<_VoiceMessageModal>
       children: [
         Container(
           decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.06),
+            color: Colors.white,
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: const Color(0xFF8B5CF6).withValues(alpha: 0.3),
+              color: const Color(0xFF8B5CF6),
             ),
           ),
           child: TextField(
@@ -520,7 +522,7 @@ class _VoiceMessageModalState extends State<_VoiceMessageModal>
                 padding: const EdgeInsets.only(left: 12, right: 4),
                 child: Icon(
                   LucideIcons.messageCircle,
-                  color: const Color(0xFF8B5CF6).withValues(alpha: 0.6),
+                  color: const Color(0xFF8B5CF6),
                   size: 20,
                 ),
               ),
@@ -541,7 +543,7 @@ class _VoiceMessageModalState extends State<_VoiceMessageModal>
               shape: BoxShape.circle,
               boxShadow: [
                 BoxShadow(
-                  color: const Color(0xFF10B981).withValues(alpha: 0.4),
+                  color: const Color(0xFF10B981),
                   blurRadius: 16,
                   offset: const Offset(0, 6),
                 ),
@@ -567,10 +569,10 @@ class _VoiceMessageModalState extends State<_VoiceMessageModal>
       children: [
         Container(
           decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.06),
+            color: Colors.white,
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: const Color(0xFFEF4444).withValues(alpha: 0.4),
+              color: const Color(0xFFEF4444),
             ),
           ),
           child: TextField(
@@ -619,9 +621,9 @@ class _VoiceMessageModalState extends State<_VoiceMessageModal>
                 width: 52,
                 height: 52,
                 decoration: BoxDecoration(
-                  color: Colors.red.withValues(alpha: 0.15),
+                  color: Colors.red,
                   shape: BoxShape.circle,
-                  border: Border.all(color: Colors.red.withValues(alpha: 0.3)),
+                  border: Border.all(color: Colors.red),
                 ),
                 child: Icon(LucideIcons.x, color: Colors.red.shade400, size: 22),
               ),
@@ -643,7 +645,7 @@ class _VoiceMessageModalState extends State<_VoiceMessageModal>
                       shape: BoxShape.circle,
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.red.withValues(alpha: 0.4),
+                          color: Colors.red,
                           blurRadius: 20,
                           offset: const Offset(0, 6),
                         ),
@@ -668,7 +670,7 @@ class _VoiceMessageModalState extends State<_VoiceMessageModal>
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
-                      color: const Color(0xFF3B82F6).withValues(alpha: 0.4),
+                      color: const Color(0xFF3B82F6),
                       blurRadius: 12,
                       offset: const Offset(0, 4),
                     ),
@@ -734,13 +736,13 @@ class _VoiceMessageModalState extends State<_VoiceMessageModal>
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: [
-                const Color(0xFF8B5CF6).withValues(alpha: 0.1),
-                const Color(0xFF3B82F6).withValues(alpha: 0.1),
+                const Color(0xFF8B5CF6),
+                const Color(0xFF3B82F6),
               ],
             ),
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: const Color(0xFF8B5CF6).withValues(alpha: 0.3),
+              color: const Color(0xFF8B5CF6),
             ),
           ),
           child: Column(

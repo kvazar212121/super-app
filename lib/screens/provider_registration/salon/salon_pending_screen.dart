@@ -21,7 +21,7 @@ class SalonPendingScreen extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(24),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFF59E0B).withValues(alpha: 0.15),
+                    color: const Color(0xFFF59E0B),
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(LucideIcons.clock, size: 48, color: Color(0xFFF59E0B)),

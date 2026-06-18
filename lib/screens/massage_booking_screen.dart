@@ -145,9 +145,9 @@ class _MassageBookingScreenState extends State<MassageBookingScreen> {
                         width: double.infinity,
                         padding: const EdgeInsets.all(14),
                         decoration: BoxDecoration(
-                          color: accentColor.withValues(alpha: 0.08),
+                          color: accentColor,
                           borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: accentColor.withValues(alpha: 0.3)),
+                          border: Border.all(color: accentColor),
                         ),
                         child: Row(
                           children: [
@@ -283,7 +283,7 @@ class _MassageBookingScreenState extends State<MassageBookingScreen> {
               ),
               padding: const EdgeInsets.symmetric(vertical: 14),
               decoration: BoxDecoration(
-                color: isSelected ? color.withValues(alpha: 0.1) : Colors.white,
+                color: isSelected ? color : Colors.white,
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
                   color: isSelected ? color : Colors.grey[200]!,

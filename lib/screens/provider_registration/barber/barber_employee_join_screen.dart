@@ -148,7 +148,7 @@ class _BarberEmployeeJoinScreenState extends State<BarberEmployeeJoinScreen>
                                 return Card(
                                   margin: const EdgeInsets.only(bottom: 10),
                                   color: selected
-                                      ? Colors.black.withValues(alpha: 0.08)
+                                      ? Colors.black
                                       : null,
                                   child: ListTile(
                                     leading: Icon(

@@ -234,7 +234,7 @@ class _TutorBookingScreenState extends State<TutorBookingScreen> {
                             ],
                           ),
                           selected: _lessonMode == m,
-                          selectedColor: _accent.withValues(alpha: 0.2),
+                          selectedColor: _accent,
                           onSelected: (_) => setState(() => _lessonMode = m),
                         ),
                       );

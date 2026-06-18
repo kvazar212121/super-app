@@ -136,7 +136,7 @@ class _SalonBookingScreenState extends State<SalonBookingScreen> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
               decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.1),
+                color: color,
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Row(

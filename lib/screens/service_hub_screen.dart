@@ -78,7 +78,7 @@ class _ServiceHubScreenState extends State<ServiceHubScreen> {
       title: widget.kind.title,
       body: Container(
         decoration: BoxDecoration(
-          color: Colors.blue.withValues(alpha: 0.03), // Juda nozik ko'k rang
+          color: Colors.blue, // Juda nozik ko'k rang
         ),
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 3.0, sigmaY: 3.0), // Orqa fonga ozgina blur
@@ -134,7 +134,7 @@ class _MapSection extends StatelessWidget {
         height: 40,
         child: Container(
           decoration: BoxDecoration(
-            color: Colors.blue.withValues(alpha: 0.2),
+            color: Colors.blue,
             shape: BoxShape.circle,
           ),
           child: Center(

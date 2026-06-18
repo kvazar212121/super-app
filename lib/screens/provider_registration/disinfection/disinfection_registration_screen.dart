@@ -142,7 +142,7 @@ class _DisinfectionRegistrationScreenState
                         _areaTypes.remove(t.key);
                       }
                     }),
-                    selectedColor: accent.withValues(alpha: 0.2),
+                    selectedColor: accent,
                     checkmarkColor: accent,
                   );
                 }).toList(),

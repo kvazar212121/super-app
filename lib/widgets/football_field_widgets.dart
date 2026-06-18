@@ -22,15 +22,15 @@ class FieldVisualWidget extends StatelessWidget {
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: [
-                field.surface.color.withValues(alpha: 0.2),
-                field.surface.color.withValues(alpha: 0.05),
+                field.surface.color,
+                field.surface.color,
               ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
             borderRadius: BorderRadius.circular(20),
             border: Border.all(
-              color: field.surface.color.withValues(alpha: 0.3),
+              color: field.surface.color,
               width: 1.5,
             ),
           ),
@@ -50,7 +50,7 @@ class FieldVisualWidget extends StatelessWidget {
                 width: double.infinity,
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                 decoration: BoxDecoration(
-                  color: field.surface.color.withValues(alpha: 0.15),
+                  color: field.surface.color,
                   borderRadius: const BorderRadius.vertical(
                     bottom: Radius.circular(18),
                   ),
@@ -112,15 +112,15 @@ class FootballFieldPainter extends CustomPainter {
             ? const Color(0xFF43A047)
             : const Color(0xFF8D6E63);
 
-    fillPaint.color = grassColor.withValues(alpha: 0.3);
+    fillPaint.color = grassColor;
     canvas.drawRRect(fieldRect, fillPaint);
 
-    paint.color = Colors.white.withValues(alpha: 0.9);
+    paint.color = Colors.white;
     paint.strokeWidth = 2.0;
     canvas.drawRRect(fieldRect, paint);
 
     final midX = w / 2;
-    paint.color = Colors.white.withValues(alpha: 0.7);
+    paint.color = Colors.white;
     paint.strokeWidth = 1.5;
     canvas.drawLine(
       Offset(midX, margin),
@@ -135,7 +135,7 @@ class FootballFieldPainter extends CustomPainter {
       28,
       paint,
     );
-    fillPaint.color = Colors.white.withValues(alpha: 0.8);
+    fillPaint.color = Colors.white;
     canvas.drawCircle(Offset(midX, centerY), 3, fillPaint);
 
     final penW = (w - 2 * margin) * 0.2;
@@ -143,7 +143,7 @@ class FootballFieldPainter extends CustomPainter {
     final penY = centerY - penH / 2;
 
     paint.strokeWidth = 1.5;
-    paint.color = Colors.white.withValues(alpha: 0.7);
+    paint.color = Colors.white;
 
     canvas.drawRect(
       Rect.fromLTRB(margin, penY, margin + penW, penY + penH),
@@ -171,7 +171,7 @@ class FootballFieldPainter extends CustomPainter {
     );
 
     paint.strokeWidth = 1.2;
-    paint.color = Colors.white.withValues(alpha: 0.8);
+    paint.color = Colors.white;
     final arcR = 16.0;
     canvas.drawArc(
       Rect.fromLTWH(margin - arcR / 2, margin - arcR / 2, arcR, arcR),
@@ -225,7 +225,7 @@ class FieldInfoCard extends StatelessWidget {
         border: Border.all(color: Colors.grey.shade200),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
+            color: Colors.black,
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -239,7 +239,7 @@ class FieldInfoCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                 decoration: BoxDecoration(
-                  color: Colors.amber.withValues(alpha: 0.15),
+                  color: Colors.amber,
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Row(
@@ -318,7 +318,7 @@ class InfoChip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
-        color: const Color(0xFF4CAF50).withValues(alpha: 0.08),
+        color: const Color(0xFF4CAF50),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Row(
@@ -449,14 +449,14 @@ class TimeSlotGrid extends StatelessWidget {
                   ? Colors.grey.shade100
                   : isSelected
                       ? accent
-                      : accent.withValues(alpha: 0.08),
+                      : accent,
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
                 color: !slot.isAvailable
                     ? Colors.grey.shade300
                     : isSelected
                         ? accent
-                        : accent.withValues(alpha: 0.3),
+                        : accent,
                 width: isSelected ? 2 : 1,
               ),
             ),
@@ -483,7 +483,7 @@ class TimeSlotGrid extends StatelessWidget {
                       fontSize: 11,
                       fontWeight: FontWeight.w600,
                       color: isSelected
-                          ? Colors.white.withValues(alpha: 0.9)
+                          ? Colors.white
                           : accent,
                     ),
                   )
@@ -556,9 +556,9 @@ class PriceSummaryCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: accent.withValues(alpha: 0.06),
+        color: accent,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: accent.withValues(alpha: 0.2)),
+        border: Border.all(color: accent),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

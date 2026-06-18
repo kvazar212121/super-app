@@ -192,7 +192,7 @@ class _CourierBookingScreenState extends State<CourierBookingScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: _isExpress ? color.withValues(alpha: 0.05) : Colors.white,
+        color: _isExpress ? color : Colors.white,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: _isExpress ? color : kBookingBorder,

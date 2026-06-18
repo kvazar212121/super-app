@@ -221,7 +221,7 @@ class _BaseCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: isDark ? Color.lerp(const Color(0xFF1E293B), color, 0.15) : Color.lerp(Colors.white, color, 0.1),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: isDark ? color.withValues(alpha: 0.4) : color.withValues(alpha: 0.3)),
+        border: Border.all(color: isDark ? color : color),
       ),
       child: Row(
         children: [
@@ -229,7 +229,7 @@ class _BaseCard extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.2),
+              color: color,
               shape: BoxShape.circle,
             ),
             child: Icon(icon, color: color, size: 18),

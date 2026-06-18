@@ -199,7 +199,7 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.grey[900]?.withValues(alpha: 0.95),
+      backgroundColor: Colors.grey[900]?,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(GlassTokens.radiusLg)),
       ),
@@ -249,8 +249,8 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
                               padding: const EdgeInsets.symmetric(vertical: 12),
                               decoration: BoxDecoration(
                                 color: selectedType == "expense" 
-                                    ? Colors.redAccent.withValues(alpha: 0.2)
-                                    : Colors.white.withValues(alpha: 0.05),
+                                    ? Colors.redAccent
+                                    : Colors.white,
                                 borderRadius: BorderRadius.circular(12),
                                 border: Border.all(
                                   color: selectedType == "expense" ? Colors.redAccent : Colors.white10,
@@ -280,8 +280,8 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
                               padding: const EdgeInsets.symmetric(vertical: 12),
                               decoration: BoxDecoration(
                                 color: selectedType == "income" 
-                                    ? Colors.greenAccent.withValues(alpha: 0.2)
-                                    : Colors.white.withValues(alpha: 0.05),
+                                    ? Colors.greenAccent
+                                    : Colors.white,
                                 borderRadius: BorderRadius.circular(12),
                                 border: Border.all(
                                   color: selectedType == "income" ? Colors.greenAccent : Colors.white10,
@@ -347,8 +347,8 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
                           child: Container(
                             decoration: BoxDecoration(
                               color: isSelected 
-                                  ? Colors.blueAccent.withValues(alpha: 0.25)
-                                  : Colors.white.withValues(alpha: 0.04),
+                                  ? Colors.blueAccent
+                                  : Colors.white,
                               borderRadius: BorderRadius.circular(12),
                               border: Border.all(
                                 color: isSelected ? Colors.blueAccent : Colors.white10,
@@ -495,7 +495,7 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.grey[900]?.withValues(alpha: 0.95),
+      backgroundColor: Colors.grey[900]?,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(GlassTokens.radiusLg)),
       ),
@@ -596,8 +596,8 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
                           child: Container(
                             decoration: BoxDecoration(
                               color: isSelected 
-                                  ? Colors.blueAccent.withValues(alpha: 0.25)
-                                  : Colors.white.withValues(alpha: 0.04),
+                                  ? Colors.blueAccent
+                                  : Colors.white,
                               borderRadius: BorderRadius.circular(12),
                               border: Border.all(
                                 color: isSelected ? Colors.blueAccent : Colors.white10,
@@ -804,9 +804,9 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
       child: Container(
         height: 46,
         decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.05),
+          color: Colors.white,
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+          border: Border.all(color: Colors.white),
         ),
         child: Row(
           children: [
@@ -816,7 +816,7 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
                 child: Container(
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
-                    color: _activeTab == 0 ? Colors.blueAccent.withValues(alpha: 0.2) : Colors.transparent,
+                    color: _activeTab == 0 ? Colors.blueAccent : Colors.transparent,
                     borderRadius: BorderRadius.circular(14),
                   ),
                   child: Text(
@@ -836,7 +836,7 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
                 child: Container(
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
-                    color: _activeTab == 1 ? Colors.blueAccent.withValues(alpha: 0.2) : Colors.transparent,
+                    color: _activeTab == 1 ? Colors.blueAccent : Colors.transparent,
                     borderRadius: BorderRadius.circular(14),
                   ),
                   child: Text(
@@ -901,7 +901,7 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
                   alignment: Alignment.center,
                   child: Column(
                     children: [
-                      Icon(LucideIcons.calendarCheck, size: 44, color: Colors.white.withValues(alpha: 0.3)),
+                      Icon(LucideIcons.calendarCheck, size: 44, color: Colors.white),
                       const SizedBox(height: 12),
                       const Text(
                         "Rejalashtirilgan to'lovlar yo'q",
@@ -933,12 +933,12 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
                       margin: const EdgeInsets.only(bottom: 12),
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.04),
+                        color: Colors.white,
                         borderRadius: BorderRadius.circular(18),
                         border: Border.all(
                           color: isOverdue 
-                              ? Colors.redAccent.withValues(alpha: 0.25)
-                              : Colors.white.withValues(alpha: 0.06),
+                              ? Colors.redAccent
+                              : Colors.white,
                         ),
                       ),
                       child: Column(
@@ -948,7 +948,7 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
                               Container(
                                 padding: const EdgeInsets.all(8),
                                 decoration: BoxDecoration(
-                                  color: Colors.blueAccent.withValues(alpha: 0.1),
+                                  color: Colors.blueAccent,
                                   shape: BoxShape.circle,
                                 ),
                                 child: Icon(
@@ -1011,7 +1011,7 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
                               Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                                 decoration: BoxDecoration(
-                                  color: statusColor.withValues(alpha: 0.15),
+                                  color: statusColor,
                                   borderRadius: BorderRadius.circular(10),
                                 ),
                                 child: Text(
@@ -1028,7 +1028,7 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
                                 Expanded(
                                   child: ElevatedButton.icon(
                                     style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.greenAccent.withValues(alpha: 0.15),
+                                      backgroundColor: Colors.greenAccent,
                                       foregroundColor: Colors.greenAccent,
                                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                                       padding: const EdgeInsets.symmetric(vertical: 10),
@@ -1042,7 +1042,7 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
                                 const SizedBox(width: 10),
                                 Container(
                                   decoration: BoxDecoration(
-                                    color: Colors.redAccent.withValues(alpha: 0.1),
+                                    color: Colors.redAccent,
                                     borderRadius: BorderRadius.circular(12),
                                   ),
                                   child: IconButton(
@@ -1073,9 +1073,9 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
       child: Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.05),
+          color: Colors.white,
           borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+          border: Border.all(color: Colors.white),
         ),
         child: Column(
           children: [
@@ -1104,7 +1104,7 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
                           Container(
                             padding: const EdgeInsets.all(4),
                             decoration: BoxDecoration(
-                              color: Colors.greenAccent.withValues(alpha: 0.15),
+                              color: Colors.greenAccent,
                               shape: BoxShape.circle,
                             ),
                             child: const Icon(LucideIcons.arrowDownLeft, color: Colors.greenAccent, size: 14),
@@ -1132,7 +1132,7 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
                           Container(
                             padding: const EdgeInsets.all(4),
                             decoration: BoxDecoration(
-                              color: Colors.redAccent.withValues(alpha: 0.15),
+                              color: Colors.redAccent,
                               shape: BoxShape.circle,
                             ),
                             child: const Icon(LucideIcons.arrowUpRight, color: Colors.redAccent, size: 14),
@@ -1164,9 +1164,9 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.amberAccent.withValues(alpha: 0.05),
+          color: Colors.amberAccent,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.amberAccent.withValues(alpha: 0.2)),
+          border: Border.all(color: Colors.amberAccent),
         ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -1313,9 +1313,9 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
                       margin: const EdgeInsets.only(bottom: 10),
                       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                       decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.03),
+                        color: Colors.white,
                         borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+                        border: Border.all(color: Colors.white),
                       ),
                       child: Row(
                         children: [
@@ -1323,8 +1323,8 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
                             padding: const EdgeInsets.all(8),
                             decoration: BoxDecoration(
                               color: isExpense 
-                                  ? Colors.redAccent.withValues(alpha: 0.1) 
-                                  : Colors.greenAccent.withValues(alpha: 0.1),
+                                  ? Colors.redAccent 
+                                  : Colors.greenAccent,
                               shape: BoxShape.circle,
                             ),
                             child: Icon(
@@ -1402,7 +1402,7 @@ class DonutChartPainter extends CustomPainter {
 
     if (stats.isEmpty) {
       final paint = Paint()
-        ..color = Colors.white.withValues(alpha: 0.1)
+        ..color = Colors.white
         ..style = PaintingStyle.stroke
         ..strokeWidth = 14
         ..strokeCap = StrokeCap.round;

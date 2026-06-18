@@ -230,7 +230,7 @@ class _MasterDispatchScreenState extends State<MasterDispatchScreen> {
                 background: Container(
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
-                      colors: [_accent, _accent.withValues(alpha: 0.7)],
+                      colors: [_accent, _accent],
                     ),
                   ),
                 ),
@@ -267,7 +267,7 @@ class _MasterDispatchScreenState extends State<MasterDispatchScreen> {
                           margin: const EdgeInsets.only(bottom: 8),
                           padding: const EdgeInsets.all(14),
                           decoration: BoxDecoration(
-                            color: selected ? _accent.withValues(alpha: 0.08) : Colors.white,
+                            color: selected ? _accent : Colors.white,
                             borderRadius: BorderRadius.circular(14),
                             border: Border.all(
                               color: selected ? _accent : Colors.grey.shade300,
@@ -357,7 +357,7 @@ class _MasterDispatchScreenState extends State<MasterDispatchScreen> {
       children: [
         CircleAvatar(
           radius: 32,
-          backgroundColor: _accent.withValues(alpha: 0.15),
+          backgroundColor: _accent,
           child: Icon(widget.category.icon, color: _accent, size: 28),
         ),
         const SizedBox(width: 14),

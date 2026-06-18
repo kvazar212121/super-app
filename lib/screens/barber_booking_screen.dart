@@ -270,7 +270,7 @@ class _BarberBookingScreenState extends State<BarberBookingScreen> {
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
                 color: isSelected
-                    ? _accent.withValues(alpha: 0.12)
+                    ? _accent
                     : kBookingCard,
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(
@@ -280,7 +280,7 @@ class _BarberBookingScreenState extends State<BarberBookingScreen> {
                 boxShadow: isSelected
                     ? [
                         BoxShadow(
-                          color: _accent.withValues(alpha: 0.15),
+                          color: _accent,
                           blurRadius: 12,
                           offset: const Offset(0, 4),
                         ),
@@ -297,9 +297,9 @@ class _BarberBookingScreenState extends State<BarberBookingScreen> {
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
                           color: isSelected
-                              ? _accent.withValues(alpha: 0.18)
+                              ? _accent
                               : GlassTokens.secondaryText(context)
-                                  .withValues(alpha: 0.08),
+                                  ,
                           shape: BoxShape.circle,
                         ),
                         child: Icon(

@@ -40,7 +40,7 @@ class BarberRoleSelectionScreen extends StatelessWidget {
                 Text(
                   'Sartaroshxonada bir nechta usta ishlashi mumkin. O\'zingizga mos turini tanlang.',
                   style: theme.textTheme.bodyMedium?.copyWith(
-                    color: theme.colorScheme.onSurface.withValues(alpha: 0.65),
+                    color: theme.colorScheme.onSurface,
                   ),
                 ),
                 const SizedBox(height: 28),
@@ -100,15 +100,15 @@ class _RoleCard extends StatelessWidget {
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: color.withValues(alpha: 0.35)),
-          color: color.withValues(alpha: 0.06),
+          border: Border.all(color: color),
+          color: color,
         ),
         child: Row(
           children: [
             Container(
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.15),
+                color: color,
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Icon(icon, color: color, size: 28),

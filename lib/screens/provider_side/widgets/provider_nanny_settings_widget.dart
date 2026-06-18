@@ -173,7 +173,7 @@ class _ProviderNannySettingsWidgetState extends State<ProviderNannySettingsWidge
             margin: const EdgeInsets.only(bottom: 16),
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
-              color: const Color(0xFFF59E0B).withValues(alpha: 0.12),
+              color: const Color(0xFFF59E0B),
               borderRadius: BorderRadius.circular(12),
             ),
             child: const Text(

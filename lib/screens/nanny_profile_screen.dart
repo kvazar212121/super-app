@@ -64,7 +64,7 @@ class _NannyProfileScreenState extends State<NannyProfileScreen> {
               children: [
                 CircleAvatar(
                   radius: 44,
-                  backgroundColor: _accent.withValues(alpha: 0.15),
+                  backgroundColor: _accent,
                   child: const Icon(LucideIcons.baby, color: _accent, size: 40),
                 ),
                 const SizedBox(height: 16),
@@ -234,10 +234,10 @@ class _NannyProfileScreenState extends State<NannyProfileScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: (ok ? const Color(0xFF10B981) : Colors.grey).withValues(alpha: 0.12),
+        color: (ok ? const Color(0xFF10B981) : Colors.grey),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: (ok ? const Color(0xFF10B981) : Colors.grey).withValues(alpha: 0.35),
+          color: (ok ? const Color(0xFF10B981) : Colors.grey),
         ),
       ),
       child: Row(

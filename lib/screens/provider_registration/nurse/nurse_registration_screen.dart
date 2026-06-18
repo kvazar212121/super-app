@@ -108,7 +108,7 @@ class _NurseRegistrationScreenState extends State<NurseRegistrationScreen> {
                         _medicalTypes.remove(m.key);
                       }
                     }),
-                    selectedColor: accent.withValues(alpha: 0.2),
+                    selectedColor: accent,
                   );
                 }).toList(),
               ),

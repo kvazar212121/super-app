@@ -11,7 +11,7 @@ abstract final class GlassTokens {
   static const blurHeavy = 28.0;
 
   /// Barcha shaffof panellar uchun bir xil qiymatlar (xiralashgan glass).
-  static const glassOpacity = 0.52;
+  static const glassOpacity = 1.0;
   static const glassBlur = blurLight;
 
   static List<Color> meshColorsLight(bool isDark) => isDark
@@ -30,27 +30,27 @@ abstract final class GlassTokens {
 
   static List<Color> orbColorsLight(bool isDark) => isDark
       ? [
-          const Color(0xFF6366F1).withValues(alpha: 0.45),
-          const Color(0xFFA855F7).withValues(alpha: 0.35),
-          const Color(0xFF06B6D4).withValues(alpha: 0.28),
-          const Color(0xFFEC4899).withValues(alpha: 0.22),
+          const Color(0xFF6366F1),
+          const Color(0xFFA855F7),
+          const Color(0xFF06B6D4),
+          const Color(0xFFEC4899),
         ]
       : [
-          const Color(0xFF6366F1).withValues(alpha: 0.28),
-          const Color(0xFFA855F7).withValues(alpha: 0.22),
-          const Color(0xFF06B6D4).withValues(alpha: 0.18),
-          const Color(0xFFEC4899).withValues(alpha: 0.14),
+          const Color(0xFF6366F1),
+          const Color(0xFFA855F7),
+          const Color(0xFF06B6D4),
+          const Color(0xFFEC4899),
         ];
 
   static Color glassFill(BuildContext context, {double opacity = glassOpacity}) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    // Opaque and clear solid fill
-    return isDark ? const Color(0xFF1E293B) : Colors.white;
+    // Solid fill for panels instead of glass
+    return isDark ? const Color(0xFF1E293B) : const Color(0xFFFFFFFF);
   }
 
   static Color glassBorder(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    return isDark ? Colors.white.withValues(alpha: 0.15) : Colors.black.withValues(alpha: 0.12);
+    return isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0);
   }
 
   static Color glassHighlight(BuildContext context) {

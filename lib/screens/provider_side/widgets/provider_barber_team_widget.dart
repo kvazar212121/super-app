@@ -119,8 +119,8 @@ class _ProviderBarberTeamWidgetState extends State<ProviderBarberTeamWidget> {
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: Colors.black.withValues(alpha: 0.35)),
-              color: Colors.black.withValues(alpha: 0.06),
+              border: Border.all(color: Colors.black),
+              color: Colors.black,
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,

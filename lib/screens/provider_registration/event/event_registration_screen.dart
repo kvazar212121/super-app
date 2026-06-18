@@ -145,7 +145,7 @@ class _EventRegistrationScreenState extends State<EventRegistrationScreen> {
                         _organizerTypes.remove(t.key);
                       }
                     }),
-                    selectedColor: accent.withValues(alpha: 0.2),
+                    selectedColor: accent,
                   );
                 }).toList(),
               ),
@@ -171,7 +171,7 @@ class _EventRegistrationScreenState extends State<EventRegistrationScreen> {
                         _eventTypes.remove(t.key);
                       }
                     }),
-                    selectedColor: accent.withValues(alpha: 0.2),
+                    selectedColor: accent,
                   );
                 }).toList(),
               ),
@@ -197,7 +197,7 @@ class _EventRegistrationScreenState extends State<EventRegistrationScreen> {
                         _venueTypes.remove(t.key);
                       }
                     }),
-                    selectedColor: accent.withValues(alpha: 0.2),
+                    selectedColor: accent,
                   );
                 }).toList(),
               ),

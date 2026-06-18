@@ -93,7 +93,7 @@ class _WeatherModalState extends State<WeatherModal> {
           Container(
             width: 40,
             height: 4,
-            decoration: BoxDecoration(color: Colors.grey.withOpacity(0.3), borderRadius: BorderRadius.circular(2)),
+            decoration: BoxDecoration(color: Colors.grey, borderRadius: BorderRadius.circular(2)),
           ),
           const SizedBox(height: 24),
           Row(
@@ -133,7 +133,7 @@ class _WeatherModalState extends State<WeatherModal> {
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(24),
-        boxShadow: [BoxShadow(color: Colors.blue.withOpacity(0.3), blurRadius: 10, offset: const Offset(0, 4))],
+        boxShadow: [BoxShadow(color: Colors.blue, blurRadius: 10, offset: const Offset(0, 4))],
       ),
       child: Column(
         children: [
@@ -221,7 +221,7 @@ class _CurrencyModalState extends State<CurrencyModal> {
           Container(
             width: 40,
             height: 4,
-            decoration: BoxDecoration(color: Colors.grey.withOpacity(0.3), borderRadius: BorderRadius.circular(2)),
+            decoration: BoxDecoration(color: Colors.grey, borderRadius: BorderRadius.circular(2)),
           ),
           const SizedBox(height: 24),
           Row(
@@ -271,7 +271,7 @@ class _CurrencyModalState extends State<CurrencyModal> {
                   Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: Colors.green.withOpacity(0.1),
+                      color: Colors.green,
                       shape: BoxShape.circle,
                     ),
                     child: const Icon(LucideIcons.banknote, color: Colors.green, size: 20),

@@ -151,10 +151,10 @@ class _TodoScreenState extends State<TodoScreen> {
         return StatefulBuilder(
           builder: (context, setDialogState) {
             return AlertDialog(
-              backgroundColor: Colors.grey[900]?.withValues(alpha: 0.95),
+              backgroundColor: Colors.grey[900]?,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(GlassTokens.radiusMd),
-                side: BorderSide(color: Colors.white.withValues(alpha: 0.15)),
+                side: BorderSide(color: Colors.white),
               ),
               title: const Text(
                 "Yangi reja yaratish",
@@ -173,9 +173,9 @@ class _TodoScreenState extends State<TodoScreen> {
                       style: const TextStyle(color: Colors.white),
                       decoration: InputDecoration(
                         labelText: "Reja nomi",
-                        labelStyle: TextStyle(color: Colors.white.withValues(alpha: 0.6)),
+                        labelStyle: TextStyle(color: Colors.white),
                         enabledBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.3)),
+                          borderSide: BorderSide(color: Colors.white),
                         ),
                         focusedBorder: const UnderlineInputBorder(
                           borderSide: BorderSide(color: Colors.blueAccent),
@@ -188,9 +188,9 @@ class _TodoScreenState extends State<TodoScreen> {
                       style: const TextStyle(color: Colors.white),
                       decoration: InputDecoration(
                         labelText: "Tavsif (ixtiyoriy)",
-                        labelStyle: TextStyle(color: Colors.white.withValues(alpha: 0.6)),
+                        labelStyle: TextStyle(color: Colors.white),
                         enabledBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.3)),
+                          borderSide: BorderSide(color: Colors.white),
                         ),
                         focusedBorder: const UnderlineInputBorder(
                           borderSide: BorderSide(color: Colors.blueAccent),
@@ -224,7 +224,7 @@ class _TodoScreenState extends State<TodoScreen> {
                                 children: [
                                   Text(
                                     "Sana",
-                                    style: TextStyle(color: Colors.white.withValues(alpha: 0.5), fontSize: 12),
+                                    style: TextStyle(color: Colors.white, fontSize: 12),
                                   ),
                                   Text(
                                     "${chosenDate.day}-${_getMonthName(chosenDate.month)} ${chosenDate.year}-yil",
@@ -262,7 +262,7 @@ class _TodoScreenState extends State<TodoScreen> {
                                 children: [
                                   Text(
                                     "Vaqt",
-                                    style: TextStyle(color: Colors.white.withValues(alpha: 0.5), fontSize: 12),
+                                    style: TextStyle(color: Colors.white, fontSize: 12),
                                   ),
                                   Text(
                                     "${chosenTime.hour.toString().padLeft(2, '0')}:${chosenTime.minute.toString().padLeft(2, '0')}",
@@ -420,7 +420,7 @@ class _TodoScreenState extends State<TodoScreen> {
                 // Reja qo'shish tugmasi
                 ElevatedButton.icon(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blueAccent.withValues(alpha: 0.8),
+                    backgroundColor: Colors.blueAccent,
                     foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
@@ -450,7 +450,7 @@ class _TodoScreenState extends State<TodoScreen> {
                             Icon(
                               LucideIcons.calendarX2, 
                               size: 48, 
-                              color: GlassTokens.secondaryText(context).withValues(alpha: 0.5)
+                              color: GlassTokens.secondaryText(context)
                             ),
                             const SizedBox(height: 12),
                             Text(
@@ -502,17 +502,17 @@ class _TodoScreenState extends State<TodoScreen> {
               margin: const EdgeInsets.symmetric(horizontal: 6),
               decoration: BoxDecoration(
                 color: isSelected 
-                    ? Colors.blueAccent.withValues(alpha: 0.25)
+                    ? Colors.blueAccent
                     : isToday 
-                        ? Colors.white.withValues(alpha: 0.12)
-                        : Colors.white.withValues(alpha: 0.04),
+                        ? Colors.white
+                        : Colors.white,
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(
                   color: isSelected 
-                      ? Colors.blueAccent.withValues(alpha: 0.6)
+                      ? Colors.blueAccent
                       : isToday 
-                          ? Colors.white.withValues(alpha: 0.3)
-                          : Colors.white.withValues(alpha: 0.08),
+                          ? Colors.white
+                          : Colors.white,
                   width: isSelected ? 1.5 : 1.0,
                 ),
               ),
@@ -545,7 +545,7 @@ class _TodoScreenState extends State<TodoScreen> {
                     _getMonthNameShort(date.month),
                     style: TextStyle(
                       color: isSelected 
-                          ? Colors.white.withValues(alpha: 0.8)
+                          ? Colors.white
                           : GlassTokens.secondaryText(context),
                       fontSize: 10,
                     ),
@@ -566,9 +566,9 @@ class _TodoScreenState extends State<TodoScreen> {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.05),
+        color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+        border: Border.all(color: Colors.white),
       ),
       child: hasDesc
           ? ClipRRect(
@@ -621,7 +621,7 @@ class _TodoScreenState extends State<TodoScreen> {
                       Icon(
                         LucideIcons.chevronDown, 
                         size: 18, 
-                        color: GlassTokens.secondaryText(context).withValues(alpha: 0.6)
+                        color: GlassTokens.secondaryText(context)
                       ),
                       IconButton(
                         icon: const Icon(LucideIcons.trash2, color: Colors.redAccent, size: 18),

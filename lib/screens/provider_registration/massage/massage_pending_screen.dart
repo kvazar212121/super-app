@@ -82,7 +82,7 @@ class _MassagePendingScreenState extends State<MassagePendingScreen> {
                 Container(
                   padding: const EdgeInsets.all(24),
                   decoration: BoxDecoration(
-                    color: accent.withValues(alpha: 0.15),
+                    color: accent,
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(LucideIcons.heartPulse, size: 48, color: accent),

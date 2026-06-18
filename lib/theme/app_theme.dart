@@ -24,8 +24,8 @@ class AppTheme {
         secondary: const Color(0xFF06B6D4),
         brightness: brightness,
         surface: isDark
-            ? const Color(0xFF1E1E2E).withValues(alpha: 0.5)
-            : Colors.white.withValues(alpha: 0.6),
+            ? const Color(0xFF1E1E2E)
+            : Colors.white,
       ),
       textTheme: textTheme.copyWith(
         titleLarge: textTheme.titleLarge?.copyWith(
@@ -73,8 +73,8 @@ class AppTheme {
           foregroundColor: isDark ? Colors.white : const Color(0xFF6366F1),
           side: BorderSide(
             color: isDark
-                ? Colors.white.withValues(alpha: 0.25)
-                : const Color(0xFF6366F1).withValues(alpha: 0.35),
+                ? Colors.white
+                : const Color(0xFF6366F1),
           ),
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
           shape: RoundedRectangleBorder(
@@ -85,8 +85,8 @@ class AppTheme {
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: isDark
-            ? Colors.white.withValues(alpha: 0.06)
-            : Colors.white.withValues(alpha: 0.5),
+            ? Colors.white
+            : Colors.white,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(GlassTokens.radiusMd),
           borderSide: BorderSide.none,
@@ -95,8 +95,8 @@ class AppTheme {
           borderRadius: BorderRadius.circular(GlassTokens.radiusMd),
           borderSide: BorderSide(
             color: isDark
-                ? Colors.white.withValues(alpha: 0.12)
-                : Colors.white.withValues(alpha: 0.8),
+                ? Colors.white
+                : Colors.white,
           ),
         ),
         focusedBorder: OutlineInputBorder(
@@ -105,14 +105,14 @@ class AppTheme {
         ),
         hintStyle: TextStyle(
           color: isDark
-              ? Colors.white.withValues(alpha: 0.45)
+              ? Colors.white
               : const Color(0xFF94A3B8),
         ),
       ),
       dividerTheme: DividerThemeData(
         color: isDark
-            ? Colors.white.withValues(alpha: 0.08)
-            : Colors.black.withValues(alpha: 0.06),
+            ? Colors.white
+            : Colors.black,
       ),
       floatingActionButtonTheme: FloatingActionButtonThemeData(
         backgroundColor: const Color(0xFF6366F1),

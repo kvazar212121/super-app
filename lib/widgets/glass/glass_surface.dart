@@ -73,12 +73,7 @@ class GlassSurface extends StatelessWidget {
 
     Widget content = ClipRRect(
       borderRadius: BorderRadius.circular(borderRadius),
-      child: enableBlur
-          ? BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: blur, sigmaY: blur),
-              child: panel,
-            )
-          : panel,
+      child: panel,
     );
 
     if (margin != null) {
@@ -91,8 +86,8 @@ class GlassSurface extends StatelessWidget {
         child: InkWell(
           onTap: onTap,
           borderRadius: BorderRadius.circular(borderRadius),
-          splashColor: Colors.white.withValues(alpha: 0.08),
-          highlightColor: Colors.white.withValues(alpha: 0.04),
+          splashColor: Colors.white,
+          highlightColor: Colors.white,
           child: content,
         ),
       );

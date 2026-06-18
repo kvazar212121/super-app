@@ -197,7 +197,7 @@ class _DentalBookingScreenState extends State<DentalBookingScreen> {
                             label: Text('${d.name} (${d.specialty})'),
                             selected: selected,
                             onSelected: (_) => setState(() => _selectedDentist = d),
-                            selectedColor: _accent.withValues(alpha: 0.2),
+                            selectedColor: _accent,
                             checkmarkColor: _accent,
                           );
                         }).toList(),

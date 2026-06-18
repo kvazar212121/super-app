@@ -37,7 +37,7 @@ class TutorProfileScreen extends StatelessWidget {
               children: [
                 CircleAvatar(
                   radius: 44,
-                  backgroundColor: _accent.withValues(alpha: 0.15),
+                  backgroundColor: _accent,
                   child: const Icon(LucideIcons.bookOpen, color: _accent, size: 40),
                 ),
                 const SizedBox(height: 16),
@@ -73,7 +73,7 @@ class TutorProfileScreen extends StatelessWidget {
               return Chip(
                 avatar: Icon(m.icon, size: 16, color: _accent),
                 label: Text(m.label, style: const TextStyle(fontSize: 12)),
-                backgroundColor: _accent.withValues(alpha: 0.1),
+                backgroundColor: _accent,
               );
             }).toList(),
           ),
