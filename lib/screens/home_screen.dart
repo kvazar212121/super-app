@@ -138,14 +138,12 @@ class _DailyBtn extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final textColor = bgImage != null ? Colors.white : (isDark ? Colors.white : Colors.black87);
-    final iconColor = bgImage != null ? Colors.white : color;
     
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(16),
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 16),
+        height: 100,
         decoration: BoxDecoration(
           color: bgImage != null 
               ? Colors.black
@@ -155,33 +153,41 @@ class _DailyBtn extends StatelessWidget {
           image: bgImage != null ? DecorationImage(
             image: AssetImage(bgImage!),
             fit: BoxFit.cover,
-            colorFilter: ColorFilter.mode(
-              Colors.black.withValues(alpha: 0.45),
-              BlendMode.srcOver,
-            ),
+            // colorFilter ni olib tashladik, shunda rasm tiniq chiqadi
           ) : null,
         ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, color: iconColor, size: 28),
-            const SizedBox(height: 8),
-            Text(
-              label,
-              style: TextStyle(
-                fontWeight: FontWeight.w600, 
-                fontSize: 13, 
-                color: textColor,
-                shadows: bgImage != null ? [
-                  const Shadow(
-                    color: Colors.black87,
-                    offset: Offset(0, 1),
-                    blurRadius: 4,
+        child: Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: Align(
+            alignment: Alignment.bottomCenter, // Yozuvlarni pastga surdik
+            child: Stack(
+              children: [
+                // Qora border (stroke)
+                Text(
+                  label,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w800, 
+                    fontSize: 15, 
+                    foreground: Paint()
+                      ..style = PaintingStyle.stroke
+                      ..strokeWidth = 3.0
+                      ..color = Colors.black,
                   ),
-                ] : null,
-              ),
+                ),
+                // Oq matn (ichki qism)
+                Text(
+                  label,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w800, 
+                    fontSize: 15, 
+                    color: Colors.white,
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );

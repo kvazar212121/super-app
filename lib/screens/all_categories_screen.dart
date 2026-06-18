@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import '../models/service_hub_kind.dart';
 import '../theme/glass_tokens.dart';
@@ -69,85 +70,99 @@ class AllCategoriesScreen extends StatelessWidget {
     return GlassScaffold(
       showBackButton: true,
       title: 'Barcha xizmatlar',
-      body: ListView.separated(
-        padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
-        itemCount: _groups.length,
-        separatorBuilder: (context, index) => Padding(
-          padding: const EdgeInsets.symmetric(vertical: 24),
-          child: Divider(color: GlassTokens.primaryText(context).withValues(alpha: 0.1), thickness: 1),
+      body: Container(
+        decoration: BoxDecoration(
+          color: Colors.blue.withValues(alpha: 0.03), // Juda nozik ko'k rang
         ),
-        itemBuilder: (context, index) {
-          final group = _groups[index];
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                group.title,
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w900,
-                  color: GlassTokens.primaryText(context),
-                  letterSpacing: -0.3,
-                ),
-              ),
-              const SizedBox(height: 16),
-              GridView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                padding: EdgeInsets.zero,
-                itemCount: group.items.length,
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 12,
-                  mainAxisSpacing: 10,
-                  mainAxisExtent: 68,
-                ),
-                itemBuilder: (ctx, i) {
-                  final k = group.items[i];
-                  return GlassSurface(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                    borderRadius: GlassTokens.radiusMd,
-                    tint: k.accent.withValues(alpha: 0.08),
-                    showShadow: false,
-                    onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute<void>(
-                        builder: (_) => ServiceHubScreen(kind: k, accentColor: k.accent),
-                      ),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 3.0, sigmaY: 3.0), // Orqa fonga ozgina blur
+          child: ListView.separated(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+            itemCount: _groups.length,
+            separatorBuilder: (context, index) => Padding(
+              padding: const EdgeInsets.symmetric(vertical: 24),
+              child: Divider(color: GlassTokens.primaryText(context).withValues(alpha: 0.1), thickness: 1),
+            ),
+            itemBuilder: (context, index) {
+              final group = _groups[index];
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    group.title,
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w900,
+                      color: GlassTokens.primaryText(context),
+                      letterSpacing: -0.3,
                     ),
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 44,
-                          height: 44,
+                  ),
+                  const SizedBox(height: 16),
+                  GridView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    padding: EdgeInsets.zero,
+                    itemCount: group.items.length,
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      crossAxisSpacing: 12,
+                      mainAxisSpacing: 10,
+                      mainAxisExtent: 68,
+                    ),
+                    itemBuilder: (ctx, i) {
+                      final k = group.items[i];
+                      final isDark = Theme.of(context).brightness == Brightness.dark;
+                      return InkWell(
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute<void>(
+                            builder: (_) => ServiceHubScreen(kind: k, accentColor: k.accent),
+                          ),
+                        ),
+                        borderRadius: GlassTokens.radiusMd,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                           decoration: BoxDecoration(
-                            color: k.accent.withValues(alpha: 0.18),
-                            borderRadius: BorderRadius.circular(14),
-                            border: Border.all(color: k.accent.withValues(alpha: 0.22)),
+                            color: isDark ? const Color(0xFF1E293B) : Colors.white, // Shafoflik yo'q
+                            borderRadius: GlassTokens.radiusMd,
+                            border: Border.all(color: k.accent.withValues(alpha: 0.2)),
                           ),
-                          child: Icon(k.icon, color: k.accent, size: 22),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Text(
-                            k.title,
-                            style: TextStyle(
-                              fontWeight: FontWeight.w700,
-                              fontSize: 14,
-                              color: GlassTokens.primaryText(context),
-                            ),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
+                          child: Row(
+                            children: [
+                              Container(
+                                width: 44,
+                                height: 44,
+                                decoration: BoxDecoration(
+                                  color: k.accent.withValues(alpha: 0.18),
+                                  borderRadius: BorderRadius.circular(14),
+                                  border: Border.all(color: k.accent.withValues(alpha: 0.22)),
+                                ),
+                                child: Icon(k.icon, color: k.accent, size: 22),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Text(
+                                  k.title,
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 14,
+                                    color: GlassTokens.primaryText(context),
+                                  ),
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                      ],
-                    ),
-                  );
-                },
-              ),
-            ],
-          );
-        },
+                      );
+                    },
+                  ),
+                ],
+              );
+            },
+          ),
+        ),
       ),
     );
   }

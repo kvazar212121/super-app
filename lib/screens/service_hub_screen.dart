@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -75,20 +76,28 @@ class _ServiceHubScreenState extends State<ServiceHubScreen> {
     return GlassScaffold(
       showBackButton: true,
       title: widget.kind.title,
-      body: FutureBuilder<HubScreenData>(
-        future: _dataFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          final data = snapshot.data ?? HubScreenData();
-          return Column(
-            children: [
-              _MapSection(kind: widget.kind, accentColor: widget.accentColor, data: data),
-              Expanded(child: _ActionList(kind: widget.kind, accentColor: widget.accentColor, data: data)),
-            ],
-          );
-        },
+      body: Container(
+        decoration: BoxDecoration(
+          color: Colors.blue.withValues(alpha: 0.03), // Juda nozik ko'k rang
+        ),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 3.0, sigmaY: 3.0), // Orqa fonga ozgina blur
+          child: FutureBuilder<HubScreenData>(
+            future: _dataFuture,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              final data = snapshot.data ?? HubScreenData();
+              return Column(
+                children: [
+                  _MapSection(kind: widget.kind, accentColor: widget.accentColor, data: data),
+                  Expanded(child: _ActionList(kind: widget.kind, accentColor: widget.accentColor, data: data)),
+                ],
+              );
+            },
+          ),
+        ),
       ),
     );
   }

@@ -8,25 +8,27 @@ class AIAssistantBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
-        gradient: LinearGradient(
+        // Moviy-ko'k gradient, shaffofliksiz (solid)
+        gradient: const LinearGradient(
           colors: [
-            const Color(0xFF8B5CF6).withValues(alpha: isDark ? 0.3 : 0.15),
-            const Color(0xFF3B82F6).withValues(alpha: isDark ? 0.3 : 0.15),
+            Color(0xFF0284C7), // To'qroq moviy
+            Color(0xFF06B6D4), // Ochiq moviy (cyan)
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        border: Border.all(
-          color: const Color(0xFF8B5CF6).withValues(alpha: 0.3),
-          width: 1.5,
-        ),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF0284C7).withValues(alpha: 0.3),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -36,17 +38,17 @@ class AIAssistantBanner extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF8B5CF6).withValues(alpha: 0.2),
+                  color: Colors.white.withValues(alpha: 0.25),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: const Icon(
                   LucideIcons.bot,
-                  color: Color(0xFF8B5CF6),
+                  color: Colors.white,
                   size: 24,
                 ),
               ),
               const SizedBox(width: 12),
-              Expanded(
+              const Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -55,15 +57,15 @@ class AIAssistantBanner extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
-                        color: GlassTokens.primaryText(context),
+                        color: Colors.white,
                       ),
                     ),
-                    const SizedBox(height: 2),
+                    SizedBox(height: 2),
                     Text(
                       'Ovoz yoki matn orqali buyruq bering',
                       style: TextStyle(
                         fontSize: 12,
-                        color: GlassTokens.secondaryText(context),
+                        color: Colors.white70,
                       ),
                     ),
                   ],
@@ -86,24 +88,21 @@ class AIAssistantBanner extends StatelessWidget {
                   child: Container(
                     padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
                     decoration: BoxDecoration(
-                      color: isDark ? Colors.black26 : Colors.white60,
+                      color: Colors.white, // Qattiq oq rang
                       borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                        color: GlassTokens.glassBorder(context),
-                      ),
                     ),
                     child: Row(
                       children: [
-                        Icon(
+                        const Icon(
                           LucideIcons.messageSquare,
                           size: 18,
-                          color: GlassTokens.secondaryText(context),
+                          color: Colors.black54,
                         ),
                         const SizedBox(width: 8),
-                        Text(
+                        const Text(
                           'Yozish...',
                           style: TextStyle(
-                            color: GlassTokens.secondaryText(context),
+                            color: Colors.black54,
                             fontSize: 14,
                           ),
                         ),
@@ -115,7 +114,6 @@ class AIAssistantBanner extends StatelessWidget {
               const SizedBox(width: 12),
               InkWell(
                 onTap: () {
-                  // TODO: Start voice recording
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('Ovoz yozish boshlandi...')),
                   );
@@ -124,23 +122,19 @@ class AIAssistantBanner extends StatelessWidget {
                 child: Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [Color(0xFF8B5CF6), Color(0xFF3B82F6)],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
+                    color: Colors.white, // Mikrofon tugmasi ham solid oq
                     borderRadius: BorderRadius.circular(12),
                     boxShadow: [
                       BoxShadow(
-                        color: const Color(0xFF8B5CF6).withValues(alpha: 0.3),
-                        blurRadius: 8,
-                        offset: const Offset(0, 4),
+                        color: Colors.black.withValues(alpha: 0.1),
+                        blurRadius: 4,
+                        offset: const Offset(0, 2),
                       ),
                     ],
                   ),
                   child: const Icon(
                     LucideIcons.mic,
-                    color: Colors.white,
+                    color: Color(0xFF0284C7), // Ikonka moviy
                     size: 20,
                   ),
                 ),
