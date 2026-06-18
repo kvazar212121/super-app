@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'dart:math';
 import 'dart:async';
 import '../../services/call_service.dart';
+import '../../services/ringtone_service.dart';
 
 /// WhatsApp uslubidagi ovozli qo'ng'iroq ekrani.
 /// Jiringlash animatsiyasi, vaqt ko'rsatkichi va boshqaruv tugmalari bilan.
@@ -74,6 +75,9 @@ class _CallScreenState extends State<CallScreen> with TickerProviderStateMixin {
       _pulseController.repeat();
       _ringController.repeat(reverse: true);
       _startRingingEffects();
+    } else if (!widget.isIncoming) {
+      // Chiquvchi qo'ng'iroqda pulse animatsiyasini boshlash
+      _pulseController.repeat();
     }
 
     _callService.onCallEnded = () {
@@ -113,6 +117,7 @@ class _CallScreenState extends State<CallScreen> with TickerProviderStateMixin {
     _pulseController.stop();
     _ringController.stop();
     _stopRingingEffects();
+    RingtoneService().stop();
 
     final senderId = widget.incomingData?['sender_id'] as int? ?? 0;
     final senderName =
@@ -123,12 +128,14 @@ class _CallScreenState extends State<CallScreen> with TickerProviderStateMixin {
 
   void _declineCall() {
     _stopRingingEffects();
+    RingtoneService().stop();
     _callService.rejectCall();
     Navigator.of(context).pop();
   }
 
   void _endCall() {
     _stopRingingEffects();
+    RingtoneService().stop();
     _callService.endCall();
     Navigator.of(context).pop();
   }

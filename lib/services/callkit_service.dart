@@ -1,0 +1,181 @@
+import 'dart:async';
+import 'package:flutter/foundation.dart';
+import 'package:flutter_callkit_incoming/entities/entities.dart';
+import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';
+import 'package:uuid/uuid.dart';
+
+/// Tizim darajasidagi qo'ng'iroq UI ni boshqaruvchi xizmat.
+/// Android va iOS da WhatsApp uslubidagi kiruvchi qo'ng'iroq ekranini ko'rsatadi.
+/// Ekran yopiq bo'lsa ham (fullscreen intent) ishlaydi.
+class CallKitService {
+  static final CallKitService _instance = CallKitService._internal();
+  factory CallKitService() => _instance;
+  CallKitService._internal();
+
+  String? _currentCallId;
+  final Uuid _uuid = const Uuid();
+
+  // UI eventlari uchun callbacklar
+  Function(String callerId)? onCallAccepted;
+  Function(String callerId)? onCallDeclined;
+  Function(String callerId)? onCallTimeout;
+
+  String? get currentCallId => _currentCallId;
+
+  /// CallKit eventlarini tinglashni boshlash
+  Future<void> init() async {
+    try {
+      FlutterCallkitIncoming.onEvent.listen((CallEvent? event) {
+        if (event == null) return;
+
+        final body = event.body as Map<dynamic, dynamic>? ?? {};
+        final extra = body['extra'] as Map<dynamic, dynamic>? ?? {};
+        final callerId = extra['callerId']?.toString() ?? '';
+
+        debugPrint('CallKit event: ${event.event}, callerId: $callerId');
+
+        switch (event.event) {
+          case Event.actionCallAccept:
+            debugPrint('CallKit: Qo\'ng\'iroq qabul qilindi');
+            onCallAccepted?.call(callerId);
+            break;
+          case Event.actionCallDecline:
+            debugPrint('CallKit: Qo\'ng\'iroq rad etildi');
+            onCallDeclined?.call(callerId);
+            break;
+          case Event.actionCallTimeout:
+            debugPrint('CallKit: Qo\'ng\'iroq vaqti tugadi');
+            onCallTimeout?.call(callerId);
+            break;
+          case Event.actionCallEnded:
+            debugPrint('CallKit: Qo\'ng\'iroq tugatildi');
+            _currentCallId = null;
+            break;
+          default:
+            debugPrint('CallKit: Boshqa event — ${event.event}');
+        }
+      });
+
+      debugPrint('CallKitService: Event listener o\'rnatildi');
+    } catch (e) {
+      debugPrint('CallKitService: Init xatolik — $e');
+    }
+  }
+
+  /// Tizim darajasidagi kiruvchi qo'ng'iroq ekranini ko'rsatish
+  Future<void> showIncomingCall({
+    required String callerName,
+    required int callerId,
+  }) async {
+    _currentCallId = _uuid.v4();
+
+    try {
+      final params = CallKitParams(
+        id: _currentCallId!,
+        nameCaller: callerName,
+        appName: 'HubServis',
+        // TODO(security): avatar URL faqat autentifikatsiyalangan endpointdan olinishi kerak
+        avatar: '',
+        handle: 'Internet qo\'ng\'iroq',
+        type: 0, // 0 = Audio call
+        duration: 30000, // 30 soniya kutish
+        textAccept: 'Qabul qilish',
+        textDecline: 'Rad etish',
+        missedCallNotification: const NotificationParams(
+          showNotification: true,
+          isShowCallback: false,
+          subtitle: 'O\'tkazib yuborilgan qo\'ng\'iroq',
+          callbackText: 'Qayta qo\'ng\'iroq',
+        ),
+        extra: <String, dynamic>{
+          'callerId': callerId.toString(),
+          'callerName': callerName,
+        },
+        headers: <String, dynamic>{},
+        android: const AndroidParams(
+          isCustomNotification: true,
+          isShowLogo: false,
+          ringtonePath: 'system_ringtone_default',
+          backgroundColor: '#1A1A2E',
+          actionColor: '#00D26A',
+          textColor: '#FFFFFF',
+          isShowFullLockedScreen: true,
+        ),
+        ios: const IOSParams(
+          iconName: 'AppIcon',
+          handleType: 'generic',
+          supportsVideo: false,
+          maximumCallGroups: 1,
+          maximumCallsPerCallGroup: 1,
+          audioSessionMode: 'voiceChat',
+          audioSessionActive: true,
+          audioSessionPreferredSampleRate: 44100.0,
+          audioSessionPreferredIOBufferDuration: 0.005,
+          ringtonePath: 'system_ringtone_default',
+        ),
+      );
+
+      await FlutterCallkitIncoming.showCallkitIncoming(params);
+      debugPrint('CallKit: Kiruvchi qo\'ng\'iroq ekrani ko\'rsatildi — $callerName');
+    } catch (e) {
+      debugPrint('CallKit: showIncomingCall xatolik — $e');
+    }
+  }
+
+  /// Chiquvchi qo'ng'iroq holatini ko'rsatish (tizim notification)
+  Future<void> showOutgoingCall({
+    required String callerName,
+    required int callerId,
+  }) async {
+    _currentCallId = _uuid.v4();
+
+    try {
+      final params = CallKitParams(
+        id: _currentCallId!,
+        nameCaller: callerName,
+        appName: 'HubServis',
+        handle: 'Internet qo\'ng\'iroq',
+        type: 0,
+        extra: <String, dynamic>{
+          'callerId': callerId.toString(),
+          'callerName': callerName,
+        },
+        android: const AndroidParams(
+          isCustomNotification: true,
+          isShowLogo: false,
+          backgroundColor: '#1A1A2E',
+          actionColor: '#00D26A',
+          textColor: '#FFFFFF',
+        ),
+      );
+
+      await FlutterCallkitIncoming.startCall(params);
+      debugPrint('CallKit: Chiquvchi qo\'ng\'iroq boshlandi — $callerName');
+    } catch (e) {
+      debugPrint('CallKit: showOutgoingCall xatolik — $e');
+    }
+  }
+
+  /// Barcha faol qo'ng'iroqlarni tugatish
+  Future<void> endAllCalls() async {
+    try {
+      await FlutterCallkitIncoming.endAllCalls();
+      _currentCallId = null;
+      debugPrint('CallKit: Barcha qo\'ng\'iroqlar tugatildi');
+    } catch (e) {
+      debugPrint('CallKit: endAllCalls xatolik — $e');
+    }
+  }
+
+  /// Aniq bir qo'ng'iroqni tugatish
+  Future<void> endCall() async {
+    if (_currentCallId == null) return;
+    try {
+      await FlutterCallkitIncoming.endCall(_currentCallId!);
+      _currentCallId = null;
+      debugPrint('CallKit: Qo\'ng\'iroq tugatildi');
+    } catch (e) {
+      debugPrint('CallKit: endCall xatolik — $e');
+    }
+  }
+}

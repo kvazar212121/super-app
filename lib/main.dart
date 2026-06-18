@@ -8,6 +8,7 @@ import 'screens/auth/splash_screen.dart';
 import 'screens/calls/call_screen.dart';
 import 'services/call_service.dart';
 import 'services/notification_helper.dart';
+import 'services/callkit_service.dart';
 
 import 'services/call_history_service.dart';
 
@@ -19,6 +20,40 @@ void main() async {
   await NotificationHelper().init();
   await CallHistoryService().init();
 
+  // CallKit tizim darajasidagi qo'ng'iroq UI ni ishga tushirish
+  await CallKitService().init();
+
+  // CallKit accept/decline eventlarini CallService ga ulash
+  CallKitService().onCallAccepted = (callerId) {
+    final id = int.tryParse(callerId) ?? 0;
+    final name = CallService().remoteUserName;
+    CallService().answerCall(id, name);
+
+    // CallScreen ni ochish
+    final ctx = navigatorKey.currentContext;
+    if (ctx != null) {
+      Navigator.of(ctx).push(
+        MaterialPageRoute(
+          builder: (_) => CallScreen(
+            isIncoming: true,
+            incomingData: {
+              'sender_id': id,
+              'sender_name': name,
+            },
+          ),
+        ),
+      );
+    }
+  };
+
+  CallKitService().onCallDeclined = (callerId) {
+    CallService().rejectCall();
+  };
+
+  CallKitService().onCallTimeout = (callerId) {
+    CallService().rejectCall();
+  };
+
   // Kiruvchi qo'ng'iroq callback — har qanday sahifada bo'lsa ham CallScreen ochadi
   CallService().onIncomingCall = (data) {
     final senderId = data['sender_id'] as int? ?? 0;
@@ -28,6 +63,9 @@ void main() async {
       return;
     }
 
+    // CallKit tizim ekranidan qabul qilinganda CallScreen ochiladi (yuqorida sozlangan).
+    // Bu yerda faqat ilovaning o'zi ochiq bo'lganda in-app CallScreen ochish uchun ishlatiladi.
+    // CallKit allaqachon CallService._handleSignalingMessage da chaqirilgan.
     final ctx = navigatorKey.currentContext;
     if (ctx != null) {
       Navigator.of(ctx).push(

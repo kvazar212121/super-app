@@ -4,9 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:dio/dio.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 import '../config/app_config.dart';
 import 'api_service.dart';
 import 'call_history_service.dart';
+import 'ringtone_service.dart';
+import 'callkit_service.dart';
 
 /// WhatsApp uslubidagi ovozli qo'ng'iroq xizmati.
 /// WebSocket signaling + WebRTC peer connection bilan ishlaydi.
@@ -202,6 +205,14 @@ class CallService extends ChangeNotifier {
       _isRinging = true;
       notifyListeners();
 
+      // Ringtone va CallKit ni boshlash
+      RingtoneService().playRingtone();
+      CallKitService().showIncomingCall(
+        callerName: senderName ?? 'Noma\'lum',
+        callerId: senderId ?? 0,
+      );
+      WakelockPlus.enable();
+
       if (onIncomingCall != null) {
         onIncomingCall!(data);
       }
@@ -209,6 +220,7 @@ class CallService extends ChangeNotifier {
       // Qo'ng'iroq qabul qilindi — offer yaratish
       _isRinging = false;
       _isConnecting = true;
+      RingtoneService().stop(); // Dial tone to'xtatish
       notifyListeners();
       await processOffer();
     } else if (type == 'offer') {
@@ -360,6 +372,10 @@ class CallService extends ChangeNotifier {
       status: 'missed',
     ));
 
+    // Chiquvchi qo'ng'iroq uchun dial tone va wakelock
+    RingtoneService().playDialTone();
+    WakelockPlus.enable();
+
     notifyListeners();
 
     // Notify target that a call is initiating
@@ -385,6 +401,10 @@ class CallService extends ChangeNotifier {
     _inCall = true;
     _isRinging = false;
     _isConnecting = true;
+
+    // Ringtone to'xtatish va CallKit yangilash
+    RingtoneService().stop();
+    CallKitService().endAllCalls();
 
     if (_currentCallLogId != null) {
       CallHistoryService().updateCallLog(_currentCallLogId!, status: 'connected');
@@ -467,6 +487,11 @@ class CallService extends ChangeNotifier {
       );
     }
 
+    // Ringtone, CallKit va WakeLock ni to'xtatish
+    RingtoneService().stop();
+    CallKitService().endAllCalls();
+    WakelockPlus.disable();
+
     _inCall = false;
     _isConnecting = false;
     _isRinging = false;
@@ -495,6 +520,11 @@ class CallService extends ChangeNotifier {
   /// Rad etish (kiruvchi qo'ng'iroq)
   void rejectCall() {
     sendSignal('reject_call', {});
+
+    // Ringtone va CallKit ni to'xtatish
+    RingtoneService().stop();
+    CallKitService().endAllCalls();
+    WakelockPlus.disable();
 
     if (_currentCallLogId != null) {
       CallHistoryService().updateCallLog(_currentCallLogId!, status: 'declined');
