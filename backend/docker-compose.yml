@@ -39,5 +39,12 @@ services:
       - backend
     restart: unless-stopped
 
+  coturn:
+    image: coturn/coturn:4.6
+    network_mode: host
+    volumes:
+      - ./turnserver.conf:/etc/turnserver.conf:ro
+    restart: unless-stopped
+
 volumes:
   superapp_pg:

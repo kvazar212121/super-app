@@ -341,6 +341,10 @@ async def lifespan(app: FastAPI):
         await conn.execute(text(
             "ALTER TABLE shopping_lists ADD COLUMN IF NOT EXISTS is_completed BOOLEAN DEFAULT FALSE"
         ))
+        # Provider yangi ustunlari
+        await conn.execute(text(
+            "ALTER TABLE providers ADD COLUMN IF NOT EXISTS is_paused BOOLEAN DEFAULT FALSE"
+        ))
 
     # Seed admin user & default promos
     async with async_session() as db:

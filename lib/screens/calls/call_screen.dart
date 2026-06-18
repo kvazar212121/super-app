@@ -1,26 +1,32 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'dart:ui';
+import 'dart:math';
 import '../../services/call_service.dart';
-import '../../theme/glass_tokens.dart';
 
+/// WhatsApp uslubidagi ovozli qo'ng'iroq ekrani.
+/// Jiringlash animatsiyasi, vaqt ko'rsatkichi va boshqaruv tugmalari bilan.
 class CallScreen extends StatefulWidget {
   final bool isIncoming;
   final Map<String, dynamic>? incomingData;
 
   const CallScreen({
-    Key? key,
+    super.key,
     this.isIncoming = false,
     this.incomingData,
-  }) : super(key: key);
+  });
 
   @override
   State<CallScreen> createState() => _CallScreenState();
 }
 
-class _CallScreenState extends State<CallScreen> {
+class _CallScreenState extends State<CallScreen> with TickerProviderStateMixin {
   late CallService _callService;
   bool _isAccepted = false;
+
+  // Jiringlash animatsiyasi
+  late AnimationController _pulseController;
+  late AnimationController _ringController;
+  late Animation<double> _pulseAnimation;
+  late Animation<double> _ringAnimation;
 
   @override
   void initState() {
@@ -28,36 +34,72 @@ class _CallScreenState extends State<CallScreen> {
     _callService = CallService();
     _isAccepted = !widget.isIncoming;
 
+    // Pulse animatsiya (avatar atrofida to'lqin)
+    _pulseController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1500),
+    );
+    _pulseAnimation = Tween<double>(begin: 1.0, end: 1.4).animate(
+      CurvedAnimation(parent: _pulseController, curve: Curves.easeOut),
+    );
+
+    // Ring animatsiya (telefon ikonka tebranishi)
+    _ringController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 300),
+    );
+    _ringAnimation = Tween<double>(begin: -0.1, end: 0.1).animate(
+      CurvedAnimation(parent: _ringController, curve: Curves.elasticIn),
+    );
+
+    if (!_isAccepted) {
+      // Kiruvchi qo'ng'iroqda animatsiyalarni boshlash
+      _pulseController.repeat();
+      _ringController.repeat(reverse: true);
+    }
+
     _callService.onCallEnded = () {
       if (mounted) Navigator.of(context).pop();
     };
 
-    if (!widget.isIncoming) {
-      // If we are making the call, we wait for answer, the service already sent call_init
-    }
+    _callService.onCallAnswered = () {
+      if (mounted) {
+        setState(() => _isAccepted = true);
+        _pulseController.stop();
+        _ringController.stop();
+      }
+    };
+
+    _callService.onError = (msg) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(msg), backgroundColor: Colors.red.shade700),
+        );
+      }
+    };
+  }
+
+  @override
+  void dispose() {
+    _pulseController.dispose();
+    _ringController.dispose();
+    super.dispose();
   }
 
   void _acceptCall() async {
     setState(() => _isAccepted = true);
-    final payload = widget.incomingData!['data'];
-    final senderId = widget.incomingData!['sender_id'];
-    final senderName = widget.incomingData!['sender_name'];
-    
+    _pulseController.stop();
+    _ringController.stop();
+
+    final senderId = widget.incomingData?['sender_id'] as int? ?? 0;
+    final senderName =
+        widget.incomingData?['sender_name'] as String? ?? 'Noma\'lum';
+
     await _callService.answerCall(senderId, senderName);
-    // Actually we don't have offer yet if they sent call_init. 
-    // Wait, the flow is: caller sends 'call_init'. Callee accepts, then callee tells caller 'im ready'?
-    // Let's adjust CallService: 
-    // If caller sends 'call_init', callee shows IncomingCallScreen.
-    // Callee accepts -> sends 'accept_init'. Caller receives 'accept_init' and generates offer -> sends 'offer'.
-    // Callee receives 'offer' -> generates answer.
-    // But since my CallService processes 'offer' when received, I can just let Caller send 'offer' immediately instead of 'call_init', 
-    // or Caller sends 'call_init', and Caller generates offer when Callee accepts.
-    // Let's keep it simple: Callee sends a special signal 'call_accepted' to Caller.
-    _callService.sendSignal('call_accepted', {});
   }
 
   void _declineCall() {
-    _callService.sendSignal('reject_call', {});
+    _callService.rejectCall();
     Navigator.of(context).pop();
   }
 
@@ -71,63 +113,160 @@ class _CallScreenState extends State<CallScreen> {
     return ListenableBuilder(
       listenable: _callService,
       builder: (context, _) {
+        final bool showConnecting = _callService.isConnecting && _isAccepted;
+        final bool showRinging =
+            !_isAccepted && widget.isIncoming; // Kiruvchi, hali qabul qilinmagan
+        final bool showCalling =
+            !_isAccepted && !widget.isIncoming; // Chiquvchi, kutilmoqda
+        final bool showInCall =
+            _isAccepted && !_callService.isConnecting; // Gaplashuvda
+
+        String statusText;
+        if (showRinging) {
+          statusText = 'Kiruvchi qo\'ng\'iroq...';
+        } else if (showCalling || showConnecting) {
+          statusText = 'Ulanmoqda...';
+        } else if (showInCall) {
+          statusText = _callService.callDuration;
+        } else {
+          statusText = '';
+        }
+
         return Scaffold(
-          backgroundColor: Colors.black87,
+          backgroundColor: Colors.black,
           body: Container(
             decoration: const BoxDecoration(
               gradient: LinearGradient(
-                colors: [Color(0xFF1E1E1E), Color(0xFF000000)],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
+                colors: [Color(0xFF1A1A2E), Color(0xFF16213E), Color(0xFF0F3460)],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
               ),
             ),
             child: SafeArea(
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const SizedBox(height: 60),
-                  Column(
-                    children: [
-                      Container(
-                        width: 120,
-                        height: 120,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.white.withOpacity(0.1),
-                          border: Border.all(color: Colors.white24),
-                        ),
-                        child: const Icon(Icons.person, size: 60, color: Colors.white),
-                      ),
-                      const SizedBox(height: 24),
-                      Text(
-                        _callService.remoteUserName,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 28,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        _isAccepted ? 'Qo\'ng\'iroq ulandi...' : 'Qo\'ng\'iroq kelmoqda...',
-                        style: const TextStyle(
-                          color: Colors.white70,
-                          fontSize: 16,
-                        ),
-                      ),
-                    ],
+                  const SizedBox(height: 40),
+
+                  // Status text
+                  Text(
+                    showInCall ? 'Ovozli qo\'ng\'iroq' : '',
+                    style: TextStyle(
+                      color: Colors.white.withValues(alpha: 0.6),
+                      fontSize: 14,
+                      letterSpacing: 1.2,
+                    ),
                   ),
-                  
+                  const SizedBox(height: 8),
+
+                  // Duration / Status
+                  AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 300),
+                    child: Text(
+                      statusText,
+                      key: ValueKey(statusText),
+                      style: TextStyle(
+                        color: showInCall
+                            ? const Color(0xFF00D26A)
+                            : Colors.white.withValues(alpha: 0.8),
+                        fontSize: showInCall ? 18 : 16,
+                        fontWeight:
+                            showInCall ? FontWeight.w600 : FontWeight.normal,
+                      ),
+                    ),
+                  ),
+
+                  const Spacer(flex: 1),
+
+                  // Avatar with pulse animation
+                  _buildAvatar(showRinging || showCalling),
+
+                  const SizedBox(height: 24),
+
+                  // Name
+                  Text(
+                    _callService.remoteUserName,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+
+                  const Spacer(flex: 2),
+
+                  // Controls
                   Padding(
-                    padding: const EdgeInsets.only(bottom: 60),
-                    child: _isAccepted ? _buildActiveControls() : _buildIncomingControls(),
+                    padding: const EdgeInsets.only(bottom: 50),
+                    child: _isAccepted || !widget.isIncoming
+                        ? _buildActiveControls()
+                        : _buildIncomingControls(),
                   ),
                 ],
               ),
             ),
           ),
         );
-      }
+      },
+    );
+  }
+
+  Widget _buildAvatar(bool animate) {
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        // Pulse rings
+        if (animate) ...[
+          AnimatedBuilder(
+            animation: _pulseAnimation,
+            builder: (context, child) {
+              return Container(
+                width: 140 * _pulseAnimation.value,
+                height: 140 * _pulseAnimation.value,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: const Color(0xFF00D26A)
+                        .withValues(alpha: 1.0 - (_pulseAnimation.value - 1.0) * 2.5),
+                    width: 2,
+                  ),
+                ),
+              );
+            },
+          ),
+        ],
+        // Main avatar
+        Container(
+          width: 120,
+          height: 120,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            gradient: const LinearGradient(
+              colors: [Color(0xFF00D26A), Color(0xFF0BA360)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: const Color(0xFF00D26A).withValues(alpha: 0.3),
+                blurRadius: 30,
+                spreadRadius: 5,
+              ),
+            ],
+          ),
+          child: animate
+              ? AnimatedBuilder(
+                  animation: _ringAnimation,
+                  builder: (context, child) {
+                    return Transform.rotate(
+                      angle: _ringAnimation.value,
+                      child: const Icon(Icons.person, size: 60, color: Colors.white),
+                    );
+                  },
+                )
+              : const Icon(Icons.person, size: 60, color: Colors.white),
+        ),
+      ],
     );
   }
 
@@ -135,14 +274,16 @@ class _CallScreenState extends State<CallScreen> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        _CallButton(
+        _buildCallButton(
           icon: Icons.call_end,
-          color: Colors.red,
+          label: 'Rad etish',
+          color: const Color(0xFFE53935),
           onTap: _declineCall,
         ),
-        _CallButton(
+        _buildCallButton(
           icon: Icons.call,
-          color: Colors.green,
+          label: 'Qabul qilish',
+          color: const Color(0xFF00D26A),
           onTap: _acceptCall,
         ),
       ],
@@ -150,48 +291,114 @@ class _CallScreenState extends State<CallScreen> {
   }
 
   Widget _buildActiveControls() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+    return Column(
       children: [
-        _CallButton(
-          icon: _callService.isMuted ? Icons.mic_off : Icons.mic,
-          color: _callService.isMuted ? Colors.white30 : Colors.white12,
-          onTap: _callService.toggleMute,
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            _buildSmallButton(
+              icon: _callService.isMuted ? Icons.mic_off : Icons.mic,
+              label: _callService.isMuted ? 'Ovoz yoq' : 'Mikrofon',
+              isActive: _callService.isMuted,
+              onTap: _callService.toggleMute,
+            ),
+            _buildSmallButton(
+              icon: _callService.isSpeaker ? Icons.volume_up : Icons.volume_down,
+              label: _callService.isSpeaker ? 'Karnay' : 'Quloq',
+              isActive: _callService.isSpeaker,
+              onTap: _callService.toggleSpeaker,
+            ),
+          ],
         ),
-        _CallButton(
+        const SizedBox(height: 30),
+        _buildCallButton(
           icon: Icons.call_end,
-          color: Colors.red,
+          label: 'Tugatish',
+          color: const Color(0xFFE53935),
           onTap: _endCall,
-        ),
-        _CallButton(
-          icon: _callService.isSpeaker ? Icons.volume_up : Icons.volume_down,
-          color: _callService.isSpeaker ? Colors.white30 : Colors.white12,
-          onTap: _callService.toggleSpeaker,
+          size: 70,
         ),
       ],
     );
   }
-}
 
-class _CallButton extends StatelessWidget {
-  final IconData icon;
-  final Color color;
-  final VoidCallback onTap;
-
-  const _CallButton({required this.icon, required this.color, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: color,
-          shape: BoxShape.circle,
+  Widget _buildCallButton({
+    required IconData icon,
+    required String label,
+    required Color color,
+    required VoidCallback onTap,
+    double size = 64,
+  }) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        GestureDetector(
+          onTap: onTap,
+          child: Container(
+            width: size,
+            height: size,
+            decoration: BoxDecoration(
+              color: color,
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: color.withValues(alpha: 0.4),
+                  blurRadius: 15,
+                  spreadRadius: 2,
+                ),
+              ],
+            ),
+            child: Icon(icon, color: Colors.white, size: size * 0.45),
+          ),
         ),
-        child: Icon(icon, color: Colors.white, size: 32),
-      ),
+        const SizedBox(height: 10),
+        Text(
+          label,
+          style: TextStyle(
+            color: Colors.white.withValues(alpha: 0.8),
+            fontSize: 13,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSmallButton({
+    required IconData icon,
+    required String label,
+    required bool isActive,
+    required VoidCallback onTap,
+  }) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        GestureDetector(
+          onTap: onTap,
+          child: Container(
+            width: 56,
+            height: 56,
+            decoration: BoxDecoration(
+              color: isActive
+                  ? Colors.white.withValues(alpha: 0.3)
+                  : Colors.white.withValues(alpha: 0.1),
+              shape: BoxShape.circle,
+              border: Border.all(
+                color: Colors.white.withValues(alpha: 0.2),
+                width: 1,
+              ),
+            ),
+            child: Icon(icon, color: Colors.white, size: 26),
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          label,
+          style: TextStyle(
+            color: Colors.white.withValues(alpha: 0.7),
+            fontSize: 12,
+          ),
+        ),
+      ],
     );
   }
 }

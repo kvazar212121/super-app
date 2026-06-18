@@ -59,6 +59,12 @@ class Settings(BaseSettings):
     eskiz_password: str = ""
     eskiz_sender: str = "4546"
 
+    # Coturn TURN/STUN Server
+    turn_server_url: str = "turn:hubservis.uz:3478"
+    turn_server_username: str = "superapp"
+    turn_server_password: str = ""
+    stun_server_url: str = "stun:hubservis.uz:3478"
+
 
 @lru_cache
 def get_settings() -> Settings:

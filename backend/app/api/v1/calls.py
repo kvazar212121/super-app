@@ -1,8 +1,11 @@
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect, Depends
+from fastapi.responses import JSONResponse
 import logging
 from app.core.call_manager import manager
+from app.core.config import settings
 from app.core.security import decode_token
 from app.db.session import async_session
+from app.api.dependencies import get_current_user
 from sqlalchemy import select
 from app.models.user import User
 
@@ -23,6 +26,32 @@ async def get_user_from_token(token: str):
         if not user:
             raise Exception("User not found")
         return user
+
+
+@router.get("/ice-servers")
+async def get_ice_servers(current_user: User = Depends(get_current_user)):
+    """
+    Autentifikatsiya qilingan foydalanuvchilar uchun ICE server
+    konfiguratsiyasini qaytaradi (STUN + TURN credentials).
+    """
+    ice_servers = [
+        {"urls": settings.stun_server_url},
+    ]
+    # TURN server faqat credentials mavjud bo'lganda qo'shiladi
+    if settings.turn_server_password:
+        ice_servers.append({
+            "urls": settings.turn_server_url,
+            "username": settings.turn_server_username,
+            "credential": settings.turn_server_password,
+        })
+        # UDP va TCP variantlari
+        ice_servers.append({
+            "urls": settings.turn_server_url.replace("turn:", "turn:") + "?transport=tcp",
+            "username": settings.turn_server_username,
+            "credential": settings.turn_server_password,
+        })
+    return {"iceServers": ice_servers}
+
 
 @router.websocket("/ws")
 async def websocket_call_endpoint(websocket: WebSocket, token: str):
@@ -72,3 +101,4 @@ async def websocket_call_endpoint(websocket: WebSocket, token: str):
     except Exception as e:
         logger.error(f"WebSocket error for user {user.id}: {e}")
         manager.disconnect(user.id)
+
