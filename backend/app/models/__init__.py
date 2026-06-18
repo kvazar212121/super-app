@@ -17,6 +17,8 @@ from app.models.finance_record import FinanceRecord
 from app.models.planned_payment import PlannedPayment
 from app.models.provider_fraud_stats import ProviderFraudStats
 from app.models.provider_blocked_time import ProviderBlockedTime
+from app.models.call_history import CallHistory
+from app.models.blocked_user import BlockedUser
 
 __all__ = [
     "User",
@@ -39,4 +41,6 @@ __all__ = [
     "PlannedPayment",
     "ProviderFraudStats",
     "ProviderBlockedTime",
+    "CallHistory",
+    "BlockedUser",
 ]

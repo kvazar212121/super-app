@@ -102,3 +102,65 @@ async def websocket_call_endpoint(websocket: WebSocket, token: str):
         logger.error(f"WebSocket error for user {user.id}: {e}")
         manager.disconnect(user.id)
 
+
+from pydantic import BaseModel
+from typing import Optional
+from sqlalchemy.ext.asyncio import AsyncSession
+from app.db.session import get_db
+
+class CallHistoryCreate(BaseModel):
+    target_id: int
+    duration: Optional[str] = "00:00"
+    status: str
+    is_incoming: bool
+    category_key: Optional[str] = None
+
+@router.post("/history")
+async def save_call_history(
+    data: CallHistoryCreate,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    from app.models.call_history import CallHistory
+    from app.api.v1.provider_portal import _get_user_provider
+    import traceback
+
+    # if is_incoming, it means the current user received the call from target_id
+    caller_id = data.target_id if data.is_incoming else current_user.id
+    receiver_id = current_user.id if data.is_incoming else data.target_id
+    
+    provider_id = None
+    if data.category_key:
+        try:
+            # We assume current user is provider, OR target user is provider.
+            # But the history is shared, so we just try to resolve provider_id
+            # Actually, _get_user_provider takes a user and category_key
+            # If current_user is the provider:
+            p = await _get_user_provider(db, current_user, data.category_key)
+            provider_id = p.id
+        except Exception as e:
+            logger.error(f"Could not resolve provider: {e}")
+
+    # If we couldn't resolve provider from current_user, try target_id? 
+    # Usually the call is initiated from User -> Provider or Provider -> User
+    # In either case, having `provider_id` makes it show up in provider's dashboard.
+    if not provider_id and data.category_key:
+        try:
+            target_user = await db.get(User, data.target_id)
+            if target_user:
+                p = await _get_user_provider(db, target_user, data.category_key)
+                provider_id = p.id
+        except Exception:
+            pass
+            
+    record = CallHistory(
+        caller_id=caller_id,
+        receiver_id=receiver_id,
+        provider_id=provider_id,
+        duration=data.duration,
+        status=data.status
+    )
+    db.add(record)
+    await db.commit()
+    return {"detail": "Saqlandi", "id": record.id}
+

@@ -560,3 +560,106 @@ async def remove_blocked_time(
     await db.delete(block)
     await db.commit()
     return {"detail": "Muvaffaqiyatli o'chirildi"}
+
+
+@router.get("/call-history")
+async def get_call_history(
+    category_key: str | None = Query(None),
+    page: int = Query(1, ge=1),
+    per_page: int = Query(20, ge=1, le=100),
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    from app.models.call_history import CallHistory
+    provider = await _get_user_provider(db, user, category_key)
+    
+    total = await db.scalar(
+        select(func.count(CallHistory.id)).where(CallHistory.provider_id == provider.id)
+    ) or 0
+    
+    result = await db.execute(
+        select(CallHistory)
+        .options(selectinload(CallHistory.caller), selectinload(CallHistory.receiver))
+        .where(CallHistory.provider_id == provider.id)
+        .order_by(CallHistory.created_at.desc())
+        .offset((page - 1) * per_page)
+        .limit(per_page)
+    )
+    calls = result.scalars().all()
+    pages = (total + per_page - 1) // per_page
+    
+    return PaginatedResponse(
+        items=[c.to_dict() for c in calls],
+        total=total,
+        page=page,
+        per_page=per_page,
+        pages=pages,
+    )
+
+
+@router.post("/block-user")
+async def block_user(
+    user_id: int = Query(...),
+    category_key: str | None = Query(None),
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    from app.models.blocked_user import BlockedUser
+    provider = await _get_user_provider(db, user, category_key)
+    
+    # Check if already blocked
+    existing = await db.scalar(
+        select(BlockedUser).where(BlockedUser.provider_id == provider.id, BlockedUser.user_id == user_id)
+    )
+    if existing:
+        return {"detail": "Foydalanuvchi allaqachon bloklangan"}
+        
+    blocked = BlockedUser(provider_id=provider.id, user_id=user_id)
+    db.add(blocked)
+    await db.commit()
+    return {"detail": "Foydalanuvchi bloklandi"}
+
+
+@router.get("/blocked-users")
+async def get_blocked_users(
+    category_key: str | None = Query(None),
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    from app.models.blocked_user import BlockedUser
+    provider = await _get_user_provider(db, user, category_key)
+    
+    result = await db.execute(
+        select(BlockedUser)
+        .options(selectinload(BlockedUser.user))
+        .where(BlockedUser.provider_id == provider.id)
+        .order_by(BlockedUser.created_at.desc())
+    )
+    blocked = result.scalars().all()
+    return [b.to_dict() for b in blocked]
+
+
+@router.delete("/block-user/{blocked_user_id}")
+async def unblock_user(
+    blocked_user_id: int,
+    category_key: str | None = Query(None),
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    from app.models.blocked_user import BlockedUser
+    provider = await _get_user_provider(db, user, category_key)
+    
+    result = await db.execute(
+        select(BlockedUser).where(
+            BlockedUser.user_id == blocked_user_id,
+            BlockedUser.provider_id == provider.id
+        )
+    )
+    block = result.scalar_one_or_none()
+    if not block:
+        raise HTTPException(status_code=404, detail="Bloklangan foydalanuvchi topilmadi")
+
+    await db.delete(block)
+    await db.commit()
+    return {"detail": "Muvaffaqiyatli o'chirildi (unblocked)"}
+
