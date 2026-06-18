@@ -37,6 +37,7 @@ import 'widgets/provider_venue_settings_widget.dart';
 import '../../services/call_history_service.dart';
 import '../../services/call_service.dart';
 import '../calls/call_screen.dart';
+import 'widgets/incoming_order_dialog.dart';
 
 /// Barcha soha egasi panellari — DB/API dan ma'lumot oladi.
 class UnifiedProviderDashboardScreen extends StatefulWidget {
@@ -168,15 +169,20 @@ class _UnifiedProviderDashboardScreenState
       final pending = await _portal.getPendingOrders(widget.config.categoryKey);
       if (!mounted) return;
       if (pending.length > prev && prev >= 0) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('${pending.length - prev} ta yangi buyurtma!'),
-            action: SnackBarAction(
-              label: 'Ko\'rish',
-              onPressed: () => setState(() => _selectedIndex = 0),
-            ),
+        final newOrder = pending.first;
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (context) => IncomingOrderDialog(
+            order: newOrder,
+            categoryKey: widget.config.categoryKey,
+            accent: widget.config.accentColor,
           ),
-        );
+        ).then((acted) {
+          if (acted == true) {
+            _refreshDashboard();
+          }
+        });
       }
       setState(() => _pendingCount = pending.length);
       _pendingKey.currentState?.load();
