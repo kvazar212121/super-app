@@ -278,16 +278,7 @@ class CallService extends ChangeNotifier {
       "sdpSemantics": "unified-plan",
     };
 
-    final Map<String, dynamic> offerSdpConstraints = {
-      "mandatory": {
-        "OfferToReceiveAudio": true,
-        "OfferToReceiveVideo": false,
-      },
-      "optional": [],
-    };
-
-    _peerConnection =
-        await createPeerConnection(configuration, offerSdpConstraints);
+    _peerConnection = await createPeerConnection(configuration);
 
     _peerConnection?.onIceCandidate = (RTCIceCandidate candidate) {
       sendSignal('ice_candidate', {
@@ -399,7 +390,14 @@ class CallService extends ChangeNotifier {
     if (_peerConnection != null) return;
     try {
       await _createPeerConnection();
-      RTCSessionDescription offer = await _peerConnection!.createOffer({});
+      final Map<String, dynamic> offerSdpConstraints = {
+        "mandatory": {
+          "OfferToReceiveAudio": true,
+          "OfferToReceiveVideo": false,
+        },
+        "optional": [],
+      };
+      RTCSessionDescription offer = await _peerConnection!.createOffer(offerSdpConstraints);
       await _peerConnection!.setLocalDescription(offer);
 
       sendSignal('offer', {
@@ -447,7 +445,14 @@ class CallService extends ChangeNotifier {
         RTCSessionDescription(offerData['sdp'], offerData['type']),
       );
 
-      RTCSessionDescription answer = await _peerConnection!.createAnswer({});
+      final Map<String, dynamic> answerSdpConstraints = {
+        "mandatory": {
+          "OfferToReceiveAudio": true,
+          "OfferToReceiveVideo": false,
+        },
+        "optional": [],
+      };
+      RTCSessionDescription answer = await _peerConnection!.createAnswer(answerSdpConstraints);
       await _peerConnection?.setLocalDescription(answer);
 
       sendSignal('answer', {
