@@ -58,18 +58,28 @@ class _SplashScreenState extends State<SplashScreen>
   }
 
   Future<void> _checkAuth() async {
+    // Start auth check and data fetching in parallel immediately
+    final authFuture = () async {
+      try {
+        final auth = context.read<AuthProvider>();
+        final loggedIn = await auth.tryAutoLogin();
+        if (!mounted) return;
+
+        if (loggedIn && auth.user != null) {
+          context.read<AppProvider>().applyAuthUser(auth.user!);
+        }
+        await context.read<AppProvider>().fetchInitialData();
+      } catch (e) {
+        debugPrint('Splash checkAuth error: $e');
+      }
+    }();
+
+    // Wait for the splash screen presentation delay
     await Future.delayed(const Duration(milliseconds: 2200));
-    if (!mounted) return;
-
-    final auth = context.read<AuthProvider>();
-    final loggedIn = await auth.tryAutoLogin();
-
-    if (!mounted) return;
-
-    if (loggedIn && auth.user != null) {
-      context.read<AppProvider>().applyAuthUser(auth.user!);
-    }
-    await context.read<AppProvider>().fetchInitialData();
+    
+    // Ensure auth check is completed before navigating
+    await authFuture;
+    
     if (!mounted) return;
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(builder: (_) => const MainScreen()),

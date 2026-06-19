@@ -35,28 +35,36 @@ void main() async {
   // CallKit tizim darajasidagi qo'ng'iroq UI ni ishga tushirish
   await CallKitService().init();
 
+  void safePushCallScreen({required int id, required String name, Map<String, dynamic>? data}) {
+    void doPush() {
+      final ctx = navigatorKey.currentContext;
+      if (ctx != null) {
+        Navigator.of(ctx).push(
+          MaterialPageRoute(
+            builder: (_) => CallScreen(
+              isIncoming: true,
+              incomingData: data ?? {
+                'sender_id': id,
+                'sender_name': name,
+              },
+            ),
+          ),
+        );
+      } else {
+        debugPrint('safePushCallScreen: context null, 100ms dan so\'ng qayta uriniladi...');
+        Future.delayed(const Duration(milliseconds: 100), doPush);
+      }
+    }
+    doPush();
+  }
+
   // CallKit accept/decline eventlarini CallService ga ulash
   CallKitService().onCallAccepted = (callerId, callerName) {
     final id = int.tryParse(callerId) ?? 0;
-    // remoteUserName ni avval CallKitdan olingan callerName bilan to'ldiramiz, bo'lmasa CallService dan.
     final name = (callerName != 'Noma\'lum') ? callerName : CallService().remoteUserName;
     CallService().answerCall(id, name);
 
-    // CallScreen ni ochish
-    final ctx = navigatorKey.currentContext;
-    if (ctx != null) {
-      Navigator.of(ctx).push(
-        MaterialPageRoute(
-          builder: (_) => CallScreen(
-            isIncoming: true,
-            incomingData: {
-              'sender_id': id,
-              'sender_name': name,
-            },
-          ),
-        ),
-      );
-    }
+    safePushCallScreen(id: id, name: name);
   };
 
   CallKitService().onCallDeclined = (callerId) {
@@ -67,25 +75,15 @@ void main() async {
     CallService().rejectCall();
   };
 
-  // Kiruvchi qo'ng'iroq callback — har qanday sahifada bo'lsa ham CallScreen ochadi
+  // Kiruvchi qo'ng'iroq callback — faqat bloklanganlarni tekshiradi.
+  // Avtomatik ravishda ilova ichida CallScreen ochilmaydi.
+  // Foydalanuvchi CallKit bildirishnomasidan qabul qilgandagina ochiladi.
   CallService().onIncomingCall = (data) {
     final senderId = data['sender_id'] as int? ?? 0;
     if (CallHistoryService().isUserBlocked(senderId)) {
       debugPrint('Bloklangan foydalanuvchi qo\'ng\'iroq qildi: $senderId. Avtomatik rad etiladi.');
       CallService().rejectCall();
       return;
-    }
-
-    // CallKit tizim ekranidan qabul qilinganda CallScreen ochiladi (yuqorida sozlangan).
-    // Bu yerda faqat ilovaning o'zi ochiq bo'lganda in-app CallScreen ochish uchun ishlatiladi.
-    // CallKit allaqachon CallService._handleSignalingMessage da chaqirilgan.
-    final ctx = navigatorKey.currentContext;
-    if (ctx != null) {
-      Navigator.of(ctx).push(
-        MaterialPageRoute(
-          builder: (_) => CallScreen(isIncoming: true, incomingData: data),
-        ),
-      );
     }
   };
 

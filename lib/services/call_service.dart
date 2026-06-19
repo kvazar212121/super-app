@@ -32,6 +32,9 @@ class CallService extends ChangeNotifier {
   // Signaling xabarlarini ketma-ket qayta ishlash uchun navbat.
   Future<void> _messageQueue = Future.value();
 
+  // WebSocket ulanmagan vaqtda chiquvchi signallarni saqlab turish uchun navbat
+  final List<String> _pendingOutgoingSignals = [];
+
   String? _currentCallLogId;
 
   bool _inCall = false;
@@ -159,6 +162,7 @@ class CallService extends ChangeNotifier {
         },
       );
 
+      _flushPendingOutgoingSignals();
       notifyListeners();
       debugPrint('WebSocket muvaffaqiyatli ulandi');
     } catch (e) {
@@ -278,8 +282,8 @@ class CallService extends ChangeNotifier {
   }
 
   void sendSignal(String type, Map<String, dynamic> data) {
-    if (_remoteUserId == null || _channel == null || !_wsConnected) {
-      debugPrint('Signal yuborib bo\'lmadi: ws=$_wsConnected, remote=$_remoteUserId');
+    if (_remoteUserId == null) {
+      debugPrint('Signal yuborib bo\'lmadi: remoteUserId null');
       return;
     }
     final msg = jsonEncode({
@@ -287,7 +291,38 @@ class CallService extends ChangeNotifier {
       'target_id': _remoteUserId,
       'data': data,
     });
-    _channel?.sink.add(msg);
+
+    if (_channel == null || !_wsConnected) {
+      debugPrint('WS bog\'lanmagan, signal navbatga qo\'shildi: $type');
+      _pendingOutgoingSignals.add(msg);
+      // Ulanishni tezlashtirish uchun connectWebSocket chaqiramiz
+      connectWebSocket();
+      return;
+    }
+
+    try {
+      _channel?.sink.add(msg);
+    } catch (e) {
+      debugPrint('Signal yuborishda xatolik: $e, navbatga qo\'shildi');
+      _pendingOutgoingSignals.add(msg);
+      _wsConnected = false;
+      connectWebSocket();
+    }
+  }
+
+  void _flushPendingOutgoingSignals() {
+    if (_pendingOutgoingSignals.isEmpty || _channel == null || !_wsConnected) return;
+    debugPrint('Navbatdagi ${_pendingOutgoingSignals.length} ta signal yuborilmoqda');
+    final signals = List<String>.from(_pendingOutgoingSignals);
+    _pendingOutgoingSignals.clear();
+    for (final msg in signals) {
+      try {
+        _channel?.sink.add(msg);
+      } catch (e) {
+        debugPrint('Navbatdagi signalni yuborishda xatolik: $e');
+        _pendingOutgoingSignals.add(msg); // Qayta qo'shamiz
+      }
+    }
   }
 
   Future<void> _createPeerConnection() async {
@@ -443,9 +478,8 @@ class CallService extends ChangeNotifier {
     _isRinging = false;
     _isConnecting = true;
 
-    // Ringtone to'xtatish va CallKit yangilash
+    // Ringtone to'xtatish (CallKit o'zi qo'ng'iroqni aktiv holatga o'tkazadi, endAllCalls QILINMAYDI!)
     RingtoneService().stop();
-    CallKitService().endAllCalls();
 
     if (_currentCallLogId != null) {
       CallHistoryService().updateCallLog(_currentCallLogId!, status: 'connected');
@@ -600,6 +634,7 @@ class CallService extends ChangeNotifier {
 
     _pendingCandidates.clear();
     _remoteDescriptionSet = false;
+    _pendingOutgoingSignals.clear();
 
     _isMuted = false;
     _isSpeaker = false;
