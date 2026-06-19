@@ -91,7 +91,8 @@ class CallService extends ChangeNotifier {
       ));
       final response = await dio.get('/calls/ice-servers');
       if (response.data != null && response.data['iceServers'] != null) {
-        _iceServers = List<Map<String, dynamic>>.from(response.data['iceServers']);
+        final List<dynamic> serversList = response.data['iceServers'];
+        _iceServers = serversList.map((e) => Map<String, dynamic>.from(e as Map)).toList();
         debugPrint('ICE servers yuklandi: ${_iceServers.length} ta server');
       }
     } catch (e) {
@@ -334,6 +335,7 @@ class CallService extends ChangeNotifier {
       "iceServers": _iceServers,
       "sdpSemantics": "unified-plan",
     };
+    debugPrint('WebRTC: createPeerConnection - ICE serverlar: $_iceServers');
 
     _peerConnection = await createPeerConnection(configuration);
 
@@ -542,9 +544,11 @@ class CallService extends ChangeNotifier {
     if (candidateData['candidate'] == null) return;
 
     final candidate = RTCIceCandidate(
-      candidateData['candidate'],
-      candidateData['sdpMid'],
-      candidateData['sdpMLineIndex'],
+      candidateData['candidate']?.toString(),
+      candidateData['sdpMid']?.toString(),
+      candidateData['sdpMLineIndex'] != null
+          ? int.tryParse(candidateData['sdpMLineIndex'].toString())
+          : null,
     );
 
     // Agar peer connection yoki remote description hali tayyor bo'lmasa,
@@ -557,6 +561,7 @@ class CallService extends ChangeNotifier {
 
     try {
       await _peerConnection?.addCandidate(candidate);
+      debugPrint('ICE candidate muvaffaqiyatli qo\'shildi: ${candidate.candidate}');
     } catch (e) {
       debugPrint('addCandidate xatolik: $e');
     }

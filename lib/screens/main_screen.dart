@@ -40,17 +40,6 @@ class _MainScreenState extends State<MainScreen> {
       _appProvider!.fetchInitialData();
       
       CallService().connectWebSocket();
-      CallService().onIncomingCall = (data) {
-        if (!mounted) return;
-        Navigator.of(context, rootNavigator: true).push(
-          MaterialPageRoute(
-            builder: (_) => CallScreen(
-              isIncoming: true,
-              incomingData: data,
-            ),
-          ),
-        );
-      };
     });
   }
 
