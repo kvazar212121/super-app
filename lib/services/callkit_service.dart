@@ -16,7 +16,7 @@ class CallKitService {
   final Uuid _uuid = const Uuid();
 
   // UI eventlari uchun callbacklar
-  Function(String callerId)? onCallAccepted;
+  Function(String callerId, String callerName)? onCallAccepted;
   Function(String callerId)? onCallDeclined;
   Function(String callerId)? onCallTimeout;
 
@@ -31,13 +31,14 @@ class CallKitService {
         final body = event.body as Map<dynamic, dynamic>? ?? {};
         final extra = body['extra'] as Map<dynamic, dynamic>? ?? {};
         final callerId = extra['callerId']?.toString() ?? '';
+        final callerName = extra['callerName']?.toString() ?? 'Noma\'lum';
 
         debugPrint('CallKit event: ${event.event}, callerId: $callerId');
 
         switch (event.event) {
           case Event.actionCallAccept:
             debugPrint('CallKit: Qo\'ng\'iroq qabul qilindi');
-            onCallAccepted?.call(callerId);
+            onCallAccepted?.call(callerId, callerName);
             break;
           case Event.actionCallDecline:
             debugPrint('CallKit: Qo\'ng\'iroq rad etildi');

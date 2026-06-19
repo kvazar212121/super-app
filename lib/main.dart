@@ -36,9 +36,10 @@ void main() async {
   await CallKitService().init();
 
   // CallKit accept/decline eventlarini CallService ga ulash
-  CallKitService().onCallAccepted = (callerId) {
+  CallKitService().onCallAccepted = (callerId, callerName) {
     final id = int.tryParse(callerId) ?? 0;
-    final name = CallService().remoteUserName;
+    // remoteUserName ni avval CallKitdan olingan callerName bilan to'ldiramiz, bo'lmasa CallService dan.
+    final name = (callerName != 'Noma\'lum') ? callerName : CallService().remoteUserName;
     CallService().answerCall(id, name);
 
     // CallScreen ni ochish

@@ -322,9 +322,11 @@ class CallService extends ChangeNotifier {
     };
 
     await _getUserMedia();
-    _localStream?.getTracks().forEach((track) {
-      _peerConnection?.addTrack(track, _localStream!);
-    });
+    if (_localStream != null) {
+      for (var track in _localStream!.getTracks()) {
+        await _peerConnection?.addTrack(track, _localStream!);
+      }
+    }
   }
 
   Future<void> _getUserMedia() async {
