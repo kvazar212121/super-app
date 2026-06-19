@@ -24,6 +24,14 @@ class CallService extends ChangeNotifier {
   MediaStream? _localStream;
   MediaStream? _remoteStream;
 
+  // Remote description o'rnatilgunga qadar kelgan ICE candidate'lar
+  // shu yerda buferlanadi (signaling race oldini olish uchun).
+  final List<RTCIceCandidate> _pendingCandidates = [];
+  bool _remoteDescriptionSet = false;
+
+  // Signaling xabarlarini ketma-ket qayta ishlash uchun navbat.
+  Future<void> _messageQueue = Future.value();
+
   String? _currentCallLogId;
 
   bool _inCall = false;
@@ -120,12 +128,22 @@ class CallService extends ChangeNotifier {
 
       _channel?.stream.listen(
         (message) {
+          Map<String, dynamic> data;
           try {
-            final data = jsonDecode(message);
-            _handleSignalingMessage(data);
+            data = jsonDecode(message);
           } catch (e) {
             debugPrint('WebSocket xabar parse xatolik: $e');
+            return;
           }
+          // Xabarlarni ketma-ket (serial) qayta ishlaymiz — offer/answer va
+          // ice_candidate xabarlari noto'g'ri tartibda parallel ishlamasligi uchun.
+          _messageQueue = _messageQueue.then((_) async {
+            try {
+              await _handleSignalingMessage(data);
+            } catch (e) {
+              debugPrint('Signaling xabarni qayta ishlashda xatolik: $e');
+            }
+          });
         },
         onDone: () {
           debugPrint('WebSocket uzildi');
@@ -168,7 +186,7 @@ class CallService extends ChangeNotifier {
   }
 
   /// Signaling xabarlarini qayta ishlash
-  void _handleSignalingMessage(Map<String, dynamic> data) async {
+  Future<void> _handleSignalingMessage(Map<String, dynamic> data) async {
     final type = data['type'];
     final senderId = data['sender_id'];
     final senderName = data['sender_name'];
@@ -273,6 +291,10 @@ class CallService extends ChangeNotifier {
   }
 
   Future<void> _createPeerConnection() async {
+    // Har bir yangi peer connection toza candidate buferi bilan boshlanadi.
+    _pendingCandidates.clear();
+    _remoteDescriptionSet = false;
+
     final Map<String, dynamic> configuration = {
       "iceServers": _iceServers,
       "sdpSemantics": "unified-plan",
@@ -446,6 +468,8 @@ class CallService extends ChangeNotifier {
       await _peerConnection?.setRemoteDescription(
         RTCSessionDescription(offerData['sdp'], offerData['type']),
       );
+      // Remote description tayyor — buferlangan candidate'larni qo'shamiz.
+      await _flushPendingCandidates();
 
       final Map<String, dynamic> answerSdpConstraints = {
         "mandatory": {
@@ -476,16 +500,49 @@ class CallService extends ChangeNotifier {
     await _peerConnection?.setRemoteDescription(
       RTCSessionDescription(answerData['sdp'], answerData['type']),
     );
+    // Remote description tayyor — buferlangan candidate'larni qo'shamiz.
+    await _flushPendingCandidates();
   }
 
   Future<void> _handleIceCandidate(Map<String, dynamic> candidateData) async {
-    if (candidateData['candidate'] != null) {
-      RTCIceCandidate candidate = RTCIceCandidate(
-        candidateData['candidate'],
-        candidateData['sdpMid'],
-        candidateData['sdpMLineIndex'],
-      );
+    if (candidateData['candidate'] == null) return;
+
+    final candidate = RTCIceCandidate(
+      candidateData['candidate'],
+      candidateData['sdpMid'],
+      candidateData['sdpMLineIndex'],
+    );
+
+    // Agar peer connection yoki remote description hali tayyor bo'lmasa,
+    // candidate'ni yo'qotmasdan buferlaymiz va keyinroq qo'shamiz.
+    if (_peerConnection == null || !_remoteDescriptionSet) {
+      _pendingCandidates.add(candidate);
+      debugPrint('ICE candidate buferlandi (jami: ${_pendingCandidates.length})');
+      return;
+    }
+
+    try {
       await _peerConnection?.addCandidate(candidate);
+    } catch (e) {
+      debugPrint('addCandidate xatolik: $e');
+    }
+  }
+
+  /// Remote description o'rnatilgandan keyin buferlangan candidate'larni qo'shish.
+  Future<void> _flushPendingCandidates() async {
+    if (_peerConnection == null) return;
+    _remoteDescriptionSet = true;
+    if (_pendingCandidates.isEmpty) return;
+
+    debugPrint('Buferlangan ${_pendingCandidates.length} ta ICE candidate qo\'shilmoqda');
+    final buffered = List<RTCIceCandidate>.from(_pendingCandidates);
+    _pendingCandidates.clear();
+    for (final candidate in buffered) {
+      try {
+        await _peerConnection?.addCandidate(candidate);
+      } catch (e) {
+        debugPrint('Buferlangan candidate qo\'shishda xatolik: $e');
+      }
     }
   }
 
@@ -540,6 +597,9 @@ class CallService extends ChangeNotifier {
 
     _peerConnection?.close();
     _peerConnection = null;
+
+    _pendingCandidates.clear();
+    _remoteDescriptionSet = false;
 
     _isMuted = false;
     _isSpeaker = false;
