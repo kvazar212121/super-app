@@ -613,29 +613,75 @@ class _UnifiedProviderDashboardScreenState
           ],
         ),
         const SizedBox(height: 32),
-        Text(
-          'Bugungi buyurtmalar',
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Colors.black),
+        Builder(
+          builder: (context) {
+            final activeOrders = _todayOrders.where((o) => o['status'] != 'completed' && o['status'] != 'cancelled').toList();
+            final completedOrders = _todayOrders.where((o) => o['status'] == 'completed').toList();
+            final cancelledOrders = _todayOrders.where((o) => o['status'] == 'cancelled').toList();
+
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Bugungi buyurtmalar',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Colors.black),
+                ),
+                const SizedBox(height: 16),
+                if (activeOrders.isEmpty && completedOrders.isEmpty && cancelledOrders.isEmpty)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 24),
+                    child: Center(
+                      child: Text(
+                        'Bugun buyurtmalar yo\'q',
+                        style: TextStyle(color: theme.colorScheme.onSurface),
+                      ),
+                    ),
+                  )
+                else ...[
+                  if (activeOrders.isNotEmpty) ...[
+                    ListView.separated(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: activeOrders.length,
+                      separatorBuilder: (_, __) => const SizedBox(height: 12),
+                      itemBuilder: (context, i) => _orderTile(activeOrders[i], theme, accent),
+                    ),
+                  ],
+                  if (completedOrders.isNotEmpty) ...[
+                    const SizedBox(height: 24),
+                    const Text(
+                      'Bajarilganlar',
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Colors.black),
+                    ),
+                    const SizedBox(height: 12),
+                    ListView.separated(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: completedOrders.length,
+                      separatorBuilder: (_, __) => const SizedBox(height: 12),
+                      itemBuilder: (context, i) => _orderTile(completedOrders[i], theme, accent),
+                    ),
+                  ],
+                  if (cancelledOrders.isNotEmpty) ...[
+                    const SizedBox(height: 24),
+                    const Text(
+                      'Bekor qilinganlar',
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Colors.black),
+                    ),
+                    const SizedBox(height: 12),
+                    ListView.separated(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: cancelledOrders.length,
+                      separatorBuilder: (_, __) => const SizedBox(height: 12),
+                      itemBuilder: (context, i) => _orderTile(cancelledOrders[i], theme, accent),
+                    ),
+                  ],
+                ],
+              ],
+            );
+          },
         ),
-        const SizedBox(height: 16),
-        if (_todayOrders.isEmpty)
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 24),
-            child: Center(
-              child: Text(
-                'Bugun buyurtmalar yo\'q',
-                style: TextStyle(color: theme.colorScheme.onSurface),
-              ),
-            ),
-          )
-        else
-          ListView.separated(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: _todayOrders.length,
-            separatorBuilder: (_, __) => const SizedBox(height: 12),
-            itemBuilder: (context, i) => _orderTile(_todayOrders[i], theme, accent),
-          ),
       ],
     );
   }

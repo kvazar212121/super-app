@@ -100,9 +100,9 @@ class _OrderCard extends StatelessWidget {
               width: 44,
               height: 44,
               decoration: BoxDecoration(
-                color: accent,
+                color: accent.withOpacity(0.15),
                 borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: accent),
+                border: Border.all(color: accent.withOpacity(0.3)),
               ),
               child: Icon(icon, color: accent),
             ),
@@ -129,9 +129,9 @@ class _OrderCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
-                color: statusColor,
+                color: statusColor.withOpacity(0.15),
                 borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: statusColor),
+                border: Border.all(color: statusColor.withOpacity(0.3)),
               ),
               child: Text(
                 order.statusText,

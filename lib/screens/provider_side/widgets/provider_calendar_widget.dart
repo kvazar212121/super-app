@@ -455,13 +455,46 @@ class _ProviderCalendarWidgetState extends State<ProviderCalendarWidget> {
           },
         ),
         if (_orders.isNotEmpty) ...[
-          const SizedBox(height: 28),
-          const Text(
-            'Kun buyurtmalari',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: Colors.black),
+          Builder(
+            builder: (context) {
+              final activeOrders = _orders.where((o) => o['status'] != 'completed' && o['status'] != 'cancelled').toList();
+              final completedOrders = _orders.where((o) => o['status'] == 'completed').toList();
+              final cancelledOrders = _orders.where((o) => o['status'] == 'cancelled').toList();
+
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (activeOrders.isNotEmpty) ...[
+                    const SizedBox(height: 28),
+                    const Text(
+                      'Kun buyurtmalari',
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: Colors.black),
+                    ),
+                    const SizedBox(height: 12),
+                    ...activeOrders.map((o) => _orderCard(o, theme)),
+                  ],
+                  if (completedOrders.isNotEmpty) ...[
+                    const SizedBox(height: 28),
+                    const Text(
+                      'Bajarilganlar',
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: Colors.black),
+                    ),
+                    const SizedBox(height: 12),
+                    ...completedOrders.map((o) => _orderCard(o, theme)),
+                  ],
+                  if (cancelledOrders.isNotEmpty) ...[
+                    const SizedBox(height: 28),
+                    const Text(
+                      'Bekor qilinganlar',
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: Colors.black),
+                    ),
+                    const SizedBox(height: 12),
+                    ...cancelledOrders.map((o) => _orderCard(o, theme)),
+                  ],
+                ],
+              );
+            },
           ),
-          const SizedBox(height: 12),
-          ..._orders.map((o) => _orderCard(o, theme)),
         ],
       ],
     );
