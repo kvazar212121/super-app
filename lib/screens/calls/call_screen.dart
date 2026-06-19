@@ -50,7 +50,7 @@ class _CallScreenState extends State<CallScreen> with TickerProviderStateMixin {
   void initState() {
     super.initState();
     _callService = CallService();
-    _isAccepted = !widget.isIncoming;
+    _isAccepted = !widget.isIncoming || _callService.inCall;
 
     // Pulse animatsiya (avatar atrofida to'lqin)
     _pulseController = AnimationController(

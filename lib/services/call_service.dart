@@ -205,8 +205,7 @@ class CallService extends ChangeNotifier {
       _isRinging = true;
       notifyListeners();
 
-      // Ringtone va CallKit ni boshlash
-      RingtoneService().playRingtone();
+      // CallKit ni boshlash (CallKit o'zi ringtone chaladi)
       CallKitService().showIncomingCall(
         callerName: senderName ?? 'Noma\'lum',
         callerId: senderId ?? 0,
@@ -345,7 +344,15 @@ class CallService extends ChangeNotifier {
       },
       'video': false,
     };
-    _localStream = await navigator.mediaDevices.getUserMedia(mediaConstraints);
+    try {
+      _localStream = await navigator.mediaDevices.getUserMedia(mediaConstraints);
+    } catch (e) {
+      debugPrint('Mikrofon ruxsati olinmadi yoki xatolik: $e');
+      if (onError != null) {
+        onError!('Mikrofon ruxsati olinmadi');
+      }
+      rethrow; // Rethrow so caller knows it failed
+    }
   }
 
   /// Chiquvchi qo'ng'iroq boshlash
@@ -384,18 +391,25 @@ class CallService extends ChangeNotifier {
 
   /// Offer yaratish va yuborish
   Future<void> processOffer() async {
-    await _createPeerConnection();
-    RTCSessionDescription offer = await _peerConnection!.createOffer({});
-    await _peerConnection!.setLocalDescription(offer);
+    if (_peerConnection != null) return;
+    try {
+      await _createPeerConnection();
+      RTCSessionDescription offer = await _peerConnection!.createOffer({});
+      await _peerConnection!.setLocalDescription(offer);
 
-    sendSignal('offer', {
-      'sdp': offer.sdp,
-      'type': offer.type,
-    });
+      sendSignal('offer', {
+        'sdp': offer.sdp,
+        'type': offer.type,
+      });
+    } catch (e) {
+      debugPrint('processOffer xatolik: $e');
+      endCall(sendSignal: true);
+    }
   }
 
   /// Kiruvchi qo'ng'iroqni qabul qilish
   Future<void> answerCall(int callerId, String callerName) async {
+    if (_inCall) return; // Agar allaqachon qabul qilingan bo'lsa
     _remoteUserId = callerId;
     _remoteUserName = callerName;
     _inCall = true;
@@ -422,23 +436,28 @@ class CallService extends ChangeNotifier {
     _remoteUserId = senderId;
     _remoteUserName = senderName;
 
-    await _createPeerConnection();
-    await _peerConnection?.setRemoteDescription(
-      RTCSessionDescription(offerData['sdp'], offerData['type']),
-    );
+    try {
+      await _createPeerConnection();
+      await _peerConnection?.setRemoteDescription(
+        RTCSessionDescription(offerData['sdp'], offerData['type']),
+      );
 
-    RTCSessionDescription answer = await _peerConnection!.createAnswer({});
-    await _peerConnection?.setLocalDescription(answer);
+      RTCSessionDescription answer = await _peerConnection!.createAnswer({});
+      await _peerConnection?.setLocalDescription(answer);
 
-    sendSignal('answer', {
-      'sdp': answer.sdp,
-      'type': answer.type,
-    });
+      sendSignal('answer', {
+        'sdp': answer.sdp,
+        'type': answer.type,
+      });
 
-    _inCall = true;
-    _isConnecting = false;
-    _startCallTimer();
-    notifyListeners();
+      _inCall = true;
+      _isConnecting = false;
+      _startCallTimer();
+      notifyListeners();
+    } catch (e) {
+      debugPrint('_handleOffer xatolik: $e');
+      endCall(sendSignal: true);
+    }
   }
 
   Future<void> _handleAnswer(Map<String, dynamic> answerData) async {
