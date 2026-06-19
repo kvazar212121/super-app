@@ -20,7 +20,7 @@ class AppTheme {
       scaffoldBackgroundColor:
           isDark ? const Color(0xFF0B0B1A) : const Color(0xFFEEF2FF),
       colorScheme: ColorScheme.fromSeed(
-        seedColor: const Color(0xFF6366F1),
+        seedColor: const Color(0xFF3B82F6),
         secondary: const Color(0xFF06B6D4),
         brightness: brightness,
         surface: isDark
@@ -58,7 +58,7 @@ class AppTheme {
       ),
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
-          backgroundColor: const Color(0xFF6366F1),
+          backgroundColor: const Color(0xFF3B82F6),
           foregroundColor: Colors.white,
           elevation: 0,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
@@ -74,7 +74,7 @@ class AppTheme {
           side: BorderSide(
             color: isDark
                 ? Colors.white
-                : const Color(0xFF6366F1),
+                : const Color(0xFF3B82F6),
           ),
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
           shape: RoundedRectangleBorder(
@@ -85,7 +85,7 @@ class AppTheme {
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: isDark
-            ? Colors.white
+            ? const Color(0xFF1E293B)
             : Colors.white,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(GlassTokens.radiusMd),
@@ -95,17 +95,17 @@ class AppTheme {
           borderRadius: BorderRadius.circular(GlassTokens.radiusMd),
           borderSide: BorderSide(
             color: isDark
-                ? Colors.white
+                ? Colors.transparent
                 : Colors.white,
           ),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(GlassTokens.radiusMd),
-          borderSide: const BorderSide(color: Color(0xFF6366F1), width: 1.5),
+          borderSide: const BorderSide(color: Color(0xFF3B82F6), width: 1.5),
         ),
         hintStyle: TextStyle(
           color: isDark
-              ? Colors.white
+              ? const Color(0xFF64748B)
               : const Color(0xFF94A3B8),
         ),
       ),
@@ -115,7 +115,7 @@ class AppTheme {
             : Colors.black,
       ),
       floatingActionButtonTheme: FloatingActionButtonThemeData(
-        backgroundColor: const Color(0xFF6366F1),
+        backgroundColor: const Color(0xFF3B82F6),
         foregroundColor: Colors.white,
         elevation: 0,
         shape: RoundedRectangleBorder(

@@ -28,7 +28,7 @@ class SimpleCallBookingScreen extends StatelessWidget {
 
     if (providerId <= 0) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Xatolik: Provayder ma'lumoti yo'q')),
+        const SnackBar(content: Text('Xatolik: Provayder ma\'lumoti yo\'q')),
       );
       return;
     }
@@ -50,14 +50,17 @@ class SimpleCallBookingScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final name = provider['name'] as String? ?? 'Soha egasi';
-    final address = provider['address'] as String? ?? 'Manzil ko'rsatilmagan';
+    final address = provider['address'] as String? ?? 'Manzil ko\'rsatilmagan';
     final rating = (provider['rating'] as num?)?.toDouble() ?? 0.0;
     final phone = provider['phone'] as String? ?? '';
 
     return GlassScaffold(
       showBackButton: true,
       title: kind.title,
-      body: Padding(
+      body: SafeArea(
+        top: false,
+        bottom: true,
+        child: Padding(
         padding: const EdgeInsets.all(24.0),
         child: Column(
           children: [
@@ -143,14 +146,14 @@ class SimpleCallBookingScreen extends StatelessWidget {
                 onPressed: () => _initiateCall(context),
                 icon: const Icon(LucideIcons.phoneCall, color: Colors.white),
                 label: const Text(
-                  'Dastur orqali qo'ng'iroq qilish',
+                  'Dastur orqali qo\'ng\'iroq qilish',
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
                 ),
               ),
             ),
             const SizedBox(height: 16),
             Text(
-              'Joyni band qilish uchun to'g'ridan-to'g'ri soha egasi bilan bog'laning.',
+              'Joyni band qilish uchun to\'g\'ridan-to\'g\'ri soha egasi bilan bog\'laning.',
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: GlassTokens.secondaryText(context),
@@ -159,6 +162,7 @@ class SimpleCallBookingScreen extends StatelessWidget {
             ),
             const SizedBox(height: 24),
           ],
+        ),
         ),
       ),
     );

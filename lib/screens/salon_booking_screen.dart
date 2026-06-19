@@ -28,6 +28,10 @@ class _SalonBookingScreenState extends State<SalonBookingScreen> {
   DateTime _selectedDate = DateTime.now().add(const Duration(days: 1));
   String? _selectedTimeSlot;
 
+  final _serviceKey = GlobalKey();
+  final _staffKey = GlobalKey();
+  final _timeKey = GlobalKey();
+
   final List<String> _timeSlots = [
     "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00"
   ];
@@ -35,7 +39,7 @@ class _SalonBookingScreenState extends State<SalonBookingScreen> {
   @override
   Widget build(BuildContext context) {
     final accentColor = const Color(0xFFE91E63); // Pink for Salon
-    final currencyFormat = NumberFormat.currency(locale: 'uz_UZ', symbol: 'so'm', decimalDigits: 0);
+    final currencyFormat = NumberFormat.currency(locale: 'uz_UZ', symbol: 'so\'m', decimalDigits: 0);
 
     return GlassBackdrop(
       child: Scaffold(
@@ -51,7 +55,7 @@ class _SalonBookingScreenState extends State<SalonBookingScreen> {
                 children: [
                   _buildSalonHeader(accentColor),
                   const SizedBox(height: 24),
-                  const SectionTitle("Xizmatni tanlang"),
+                  SectionTitle("Xizmatni tanlang", key: _serviceKey),
                   const SizedBox(height: 12),
                   PriceOptionList(
                     prices: widget.salon.prices,
@@ -61,7 +65,7 @@ class _SalonBookingScreenState extends State<SalonBookingScreen> {
                     format: currencyFormat,
                   ),
                   const SizedBox(height: 24),
-                  const SectionTitle("Mutaxassisni tanlang"),
+                  SectionTitle("Mutaxassisni tanlang", key: _staffKey),
                   const SizedBox(height: 12),
                   _buildStaffList(accentColor),
                   const SizedBox(height: 24),
@@ -75,7 +79,7 @@ class _SalonBookingScreenState extends State<SalonBookingScreen> {
                     startDaysOffset: 1,
                   ),
                   const SizedBox(height: 24),
-                  const SectionTitle("Vaqt"),
+                  SectionTitle("Vaqt", key: _timeKey),
                   const SizedBox(height: 12),
                   TimeSlotGrid(
                     timeSlots: _timeSlots,
@@ -93,17 +97,47 @@ class _SalonBookingScreenState extends State<SalonBookingScreen> {
                       accent: accentColor,
                       primaryLabel: "Band qilish",
                       onPrimary: canBook ? _confirmBooking : null,
+                      onPrimaryDisabled: () {
+                        String msg = 'Iltimos, kerakli ma\'lumotlarni kiriting';
+                        GlobalKey? targetKey;
+                        if (_selectedService == null) {
+                          msg = 'Iltimos, xizmat turini tanlang';
+                          targetKey = _serviceKey;
+                        } else if (_selectedStaff == null) {
+                          msg = 'Iltimos, mutaxassisni tanlang';
+                          targetKey = _staffKey;
+                        } else if (_selectedTimeSlot == null) {
+                          msg = 'Iltimos, bo\'sh vaqtni tanlang';
+                          targetKey = _timeKey;
+                        }
+
+                        if (targetKey != null && targetKey.currentContext != null) {
+                          Scrollable.ensureVisible(
+                            targetKey.currentContext!,
+                            alignment: 0.5,
+                            duration: const Duration(milliseconds: 300),
+                            curve: Curves.easeInOut,
+                          );
+                        }
+
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(msg),
+                            backgroundColor: Colors.redAccent,
+                          ),
+                        );
+                      },
                       secondaryLabel: "Salon bilan bog'lanish",
                       secondaryIcon: LucideIcons.phone,
                       onSecondary: () {
-                      final targetId = int.tryParse(widget.salon.id) ?? 0;
-                      CallService().startCall(targetId, widget.salon.name);
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) => const CallScreen(isIncoming: false),
-                        ),
-                      );
-                    },
+                        final targetId = int.tryParse(widget.salon.id) ?? 0;
+                        CallService().startCall(targetId, widget.salon.name);
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => const CallScreen(isIncoming: false),
+                          ),
+                        );
+                      },
                     );
                   }),
                   const SizedBox(height: 40),
@@ -141,11 +175,11 @@ class _SalonBookingScreenState extends State<SalonBookingScreen> {
               ),
               child: Row(
                 children: [
-                  Icon(LucideIcons.star, size: 16, color: color),
+                  const Icon(LucideIcons.star, size: 16, color: Colors.amber),
                   const SizedBox(width: 4),
                   Text(
                     widget.salon.rating.toString(),
-                    style: TextStyle(fontWeight: FontWeight.bold, color: color),
+                    style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
                   ),
                 ],
               ),

@@ -86,7 +86,7 @@ class _FootballFieldBookingScreenState extends State<FootballFieldBookingScreen>
   Future<void> _submitBooking() async {
     if (_selectedSlot == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Iltimos, vaqt oralig'ini tanlang')),
+        const SnackBar(content: Text('Iltimos, vaqt oralig\'ini tanlang')),
       );
       return;
     }
@@ -94,14 +94,14 @@ class _FootballFieldBookingScreenState extends State<FootballFieldBookingScreen>
     if (!await ensureAuthenticated(context)) return;
     if (!mounted) return;
 
-    final currency = NumberFormat.currency(locale: 'uz_UZ', symbol: 'so'm', decimalDigits: 0);
+    final currency = NumberFormat.currency(locale: 'uz_UZ', symbol: 'so\'m', decimalDigits: 0);
     final confirmed = await showBookingConfirmSheet(
       context,
       title: 'Bronni tasdiqlang',
       details: [
         MapEntry('Maydon', field.name),
         MapEntry('Vaqt', '${DateFormat('dd.MM.yyyy').format(_selectedDate)} ${_selectedSlot!.formatted}'),
-        MapEntry('O'yinchilar', _playersCtrl.text.trim()),
+        MapEntry('O\'yinchilar', _playersCtrl.text.trim()),
         MapEntry('Manzil', field.address),
       ],
       totalLabel: 'Jami',
@@ -121,9 +121,9 @@ class _FootballFieldBookingScreenState extends State<FootballFieldBookingScreen>
 
     final amenityNames = _selectedAmenities.map((i) => field.amenities[i].name).toList();
     final notes = [
-      if (_playersCtrl.text.trim().isNotEmpty) 'O'yinchilar: ${_playersCtrl.text.trim()}',
+      if (_playersCtrl.text.trim().isNotEmpty) 'O\'yinchilar: ${_playersCtrl.text.trim()}',
       if (_notesCtrl.text.trim().isNotEmpty) _notesCtrl.text.trim(),
-      if (amenityNames.isNotEmpty) 'Qo'shimcha: ${amenityNames.join(', ')}',
+      if (amenityNames.isNotEmpty) 'Qo\'shimcha: ${amenityNames.join(', ')}',
     ].join('\n');
 
     final order = ServiceOrder(
@@ -150,7 +150,7 @@ class _FootballFieldBookingScreenState extends State<FootballFieldBookingScreen>
     } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Bron qilib bo'lmadi')),
+          const SnackBar(content: Text('Bron qilib bo\'lmadi')),
         );
       }
     }
@@ -183,7 +183,7 @@ class _FootballFieldBookingScreenState extends State<FootballFieldBookingScreen>
               },
             ),
             const SizedBox(height: 20),
-            const SectionTitle('Vaqt oralig'i', Icons.schedule),
+            const SectionTitle('Vaqt oralig\'i', Icons.schedule),
             const SizedBox(height: 8),
             if (_loadingSlots)
               const Padding(
@@ -207,7 +207,7 @@ class _FootballFieldBookingScreenState extends State<FootballFieldBookingScreen>
               controller: _playersCtrl,
               keyboardType: TextInputType.number,
               decoration: InputDecoration(
-                hintText: 'Nechta o'yinchi?',
+                hintText: 'Nechta o\'yinchi?',
                 prefixIcon: const Icon(Icons.people),
                 border: const OutlineInputBorder(),
               ),

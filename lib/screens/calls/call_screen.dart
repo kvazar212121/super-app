@@ -412,20 +412,24 @@ class _CallScreenState extends State<CallScreen> with TickerProviderStateMixin {
             decoration: BoxDecoration(
               color: isActive
                   ? Colors.white
-                  : Colors.white,
+                  : Colors.white.withValues(alpha: 0.15),
               shape: BoxShape.circle,
               border: Border.all(
-                color: Colors.white,
+                color: Colors.white.withValues(alpha: 0.6),
                 width: 1,
               ),
             ),
-            child: Icon(icon, color: Colors.white, size: 26),
+            child: Icon(
+              icon,
+              color: isActive ? const Color(0xFF16213E) : Colors.white,
+              size: 26,
+            ),
           ),
         ),
         const SizedBox(height: 8),
         Text(
           label,
-          style: TextStyle(
+          style: const TextStyle(
             color: Colors.white,
             fontSize: 12,
           ),

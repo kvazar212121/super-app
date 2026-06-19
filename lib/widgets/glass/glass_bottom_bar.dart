@@ -21,18 +21,16 @@ class GlassBottomBar extends StatelessWidget {
     final border = GlassTokens.glassBorder(context);
     final highlight = GlassTokens.glassHighlight(context);
 
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(8, 0, 8, 20),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(GlassTokens.radiusXl),
-        child: BackdropFilter(
+    return ClipRRect(
+      borderRadius: const BorderRadius.vertical(top: Radius.circular(GlassTokens.radiusXl)),
+      child: BackdropFilter(
           filter: ImageFilter.blur(
             sigmaX: GlassTokens.glassBlur,
             sigmaY: GlassTokens.glassBlur,
           ),
           child: DecoratedBox(
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(GlassTokens.radiusXl),
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(GlassTokens.radiusXl)),
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
@@ -64,28 +62,30 @@ class GlassBottomBar extends StatelessWidget {
                     ),
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 10),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: List.generate(items.length, (i) {
-                      final item = items[i];
-                      final selected = i == currentIndex;
-                      return Expanded(
-                        child: _NavButton(
-                          item: item,
-                          selected: selected,
-                          onTap: () => onTap(i),
-                        ),
-                      );
-                    }),
+                SafeArea(
+                  top: false,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 10),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: List.generate(items.length, (i) {
+                        final item = items[i];
+                        final selected = i == currentIndex;
+                        return Expanded(
+                          child: _NavButton(
+                            item: item,
+                            selected: selected,
+                            onTap: () => onTap(i),
+                          ),
+                        );
+                      }),
+                    ),
                   ),
                 ),
               ],
             ),
           ),
         ),
-      ),
     );
   }
 }
@@ -110,7 +110,7 @@ class _NavButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const activeColor = Color(0xFF6366F1);
+    final activeColor = Colors.white.withOpacity(0.15);
     final inactive = GlassTokens.secondaryText(context);
 
     return Material(
@@ -134,7 +134,7 @@ class _NavButton extends StatelessWidget {
               Icon(
                 item.icon,
                 size: 22,
-                color: selected ? activeColor : inactive,
+                color: selected ? Colors.white : inactive,
               ),
               const SizedBox(height: 4),
               FittedBox(
@@ -144,7 +144,7 @@ class _NavButton extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 10.5,
                     fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
-                    color: selected ? activeColor : inactive,
+                    color: selected ? Colors.white : inactive,
                   ),
                 ),
               ),

@@ -220,7 +220,7 @@ class _ProviderPortalEntryState extends State<ProviderPortalEntry> {
                 ),
                 child: const Icon(
                   LucideIcons.briefcase,
-                  color: Color(0xFF6366F1),
+                  color: Colors.white,
                   size: 26,
                 ),
               ),

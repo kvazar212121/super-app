@@ -146,8 +146,11 @@ class _DentalBookingScreenState extends State<DentalBookingScreen> {
     return GlassBackdrop(
       child: Scaffold(
         backgroundColor: Colors.transparent,
-        body: CustomScrollView(
-          slivers: [
+        body: SafeArea(
+          top: false,
+          bottom: true,
+          child: CustomScrollView(
+            slivers: [
             BookingSliverAppBar(color: _accent, icon: LucideIcons.smile),
             SliverToBoxAdapter(
               child: Padding(
@@ -248,7 +251,7 @@ class _DentalBookingScreenState extends State<DentalBookingScreen> {
                           ? 'Band qilish — ${currency.format(_price)}'
                           : 'Band qilish',
                       onPrimary: _canBook ? _confirm : null,
-                      secondaryLabel: 'Klinika bilan bog'lanish',
+                      secondaryLabel: 'Klinika bilan bog\'lanish',
                       secondaryIcon: LucideIcons.phone,
                       onSecondary: () {
                         CallService().startCall(0, widget.clinic.name);
@@ -265,6 +268,7 @@ class _DentalBookingScreenState extends State<DentalBookingScreen> {
               ),
             ),
           ],
+        ),
         ),
       ),
     );

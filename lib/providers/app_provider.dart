@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:dio/dio.dart';
 import 'dart:async';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/user_profile.dart';
@@ -187,8 +188,12 @@ class AppProvider extends ChangeNotifier {
       _user = UserProfile.fromJson(profile);
       notifyListeners();
     } catch (e) {
-      debugPrint('Error adding order: $e');
-      rethrow;
+      String errMsg = e.toString();
+      if (e is DioException) {
+        errMsg = '${e.message}\n${e.response?.data}';
+      }
+      debugPrint('Error adding order: $errMsg');
+      throw Exception(errMsg);
     }
   }
 

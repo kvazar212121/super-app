@@ -59,24 +59,39 @@ class OrderService:
                 )
                 db.add(tx)
         
-        # Create a plan for the user
-        from app.models.plan import Plan
-        plan_title = f"{order.service_name}"
-        plan_desc = f"Provayder: {provider.name}\nManzil: {order.address}\nNarxi: {int(order.price):,} so'm".replace(",", " ")
-        if order.notes:
-            plan_desc += f"\nIzoh: {order.notes}"
+        import traceback
+        try:
+            from app.models.plan import Plan
+            from datetime import timezone
+            plan_title = f"{order.service_name}"
+            plan_desc = f"Provayder: {provider.name}\nManzil: {order.address}\nNarxi: {int(order.price):,} so'm".replace(",", " ")
+            if order.notes:
+                plan_desc += f"\nIzoh: {order.notes}"
+            
+            # Fix naive datetime for asyncpg
+            due_date_aware = order.date
+            if due_date_aware.tzinfo is None:
+                due_date_aware = due_date_aware.replace(tzinfo=timezone.utc)
+            
+            plan = Plan(
+                user_id=user.id,
+                title=plan_title,
+                description=plan_desc,
+                due_date=due_date_aware,
+                is_completed=False,
+                is_notified=False,
+            )
+            db.add(plan)
+            
+            await db.flush()
+        except Exception as e:
+            print(f"Error creating Plan or Transaction: {e}")
+            traceback.print_exc()
+            # If creating a plan fails, we don't want to crash the whole order creation
+            # Rollback to the savepoint if we were using one, but here we can just ignore or raise.
+            # Actually, if db.flush() fails, the session is in a bad state. We must raise.
+            raise HTTPException(status_code=500, detail=f"Ichki xatolik: {e}")
         
-        plan = Plan(
-            user_id=user.id,
-            title=plan_title,
-            description=plan_desc,
-            due_date=order.date,
-            is_completed=False,
-            is_notified=False,
-        )
-        db.add(plan)
-        
-        await db.flush()
         from sqlalchemy.orm import selectinload
         q = (
             select(Order)

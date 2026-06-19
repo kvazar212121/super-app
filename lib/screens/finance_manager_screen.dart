@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../models/finance_models.dart';
@@ -199,7 +200,7 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.grey[900]?,
+      backgroundColor: Colors.grey[900],
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(GlassTokens.radiusLg)),
       ),
@@ -495,7 +496,7 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.grey[900]?,
+      backgroundColor: Colors.grey[900],
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(GlassTokens.radiusLg)),
       ),
@@ -801,56 +802,62 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
   Widget _buildTabSelector() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
-      child: Container(
-        height: 46,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: Colors.white),
-        ),
-        child: Row(
-          children: [
-            Expanded(
-              child: GestureDetector(
-                onTap: () => setState(() => _activeTab = 0),
-                child: Container(
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    color: _activeTab == 0 ? Colors.blueAccent : Colors.transparent,
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                  child: Text(
-                    "Tahlil & Tarix",
-                    style: TextStyle(
-                      color: _activeTab == 0 ? Colors.white : Colors.white54,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 13,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(14),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+          child: Container(
+            height: 46,
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: Colors.white30),
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () => setState(() => _activeTab = 0),
+                    child: Container(
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        color: _activeTab == 0 ? Colors.blueAccent : Colors.transparent,
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      child: Text(
+                        "Tahlil & Tarix",
+                        style: TextStyle(
+                          color: _activeTab == 0 ? Colors.white : Colors.white70,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                        ),
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ),
-            Expanded(
-              child: GestureDetector(
-                onTap: () => setState(() => _activeTab = 1),
-                child: Container(
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    color: _activeTab == 1 ? Colors.blueAccent : Colors.transparent,
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                  child: Text(
-                    "Rejali to'lovlar",
-                    style: TextStyle(
-                      color: _activeTab == 1 ? Colors.white : Colors.white54,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 13,
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () => setState(() => _activeTab = 1),
+                    child: Container(
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        color: _activeTab == 1 ? Colors.blueAccent : Colors.transparent,
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      child: Text(
+                        "Rejali to'lovlar",
+                        style: TextStyle(
+                          color: _activeTab == 1 ? Colors.white : Colors.white70,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                        ),
+                      ),
                     ),
                   ),
                 ),
-              ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
@@ -929,19 +936,23 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
                       statusText = "Muddati o'tdi";
                     }
 
-                    return Container(
-                      margin: const EdgeInsets.only(bottom: 12),
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(18),
-                        border: Border.all(
-                          color: isOverdue 
-                              ? Colors.redAccent
-                              : Colors.white,
-                        ),
-                      ),
-                      child: Column(
+                    return ClipRRect(
+                      borderRadius: BorderRadius.circular(18),
+                      child: BackdropFilter(
+                        filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+                        child: Container(
+                          margin: const EdgeInsets.only(bottom: 12),
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.2),
+                            borderRadius: BorderRadius.circular(18),
+                            border: Border.all(
+                              color: isOverdue 
+                                  ? Colors.redAccent
+                                  : Colors.white30,
+                            ),
+                          ),
+                          child: Column(
                         children: [
                           Row(
                             children: [
@@ -1053,7 +1064,9 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
                               ],
                             ),
                           ]
-                        ],
+                            ],
+                          ),
+                        ),
                       ),
                     );
                   },
@@ -1070,18 +1083,25 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-      child: Container(
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: Colors.white),
-        ),
-        child: Column(
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(24),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+          child: Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(color: Colors.white30),
+            ),
+            child: Column(
           children: [
             const Text(
               "Jami Balans",
-              style: TextStyle(color: Colors.white60, fontSize: 14),
+              style: TextStyle(
+                color: Colors.white70,
+                fontSize: 16,
+              ),
             ),
             const SizedBox(height: 6),
             Text(
@@ -1104,19 +1124,19 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
                           Container(
                             padding: const EdgeInsets.all(4),
                             decoration: BoxDecoration(
-                              color: Colors.greenAccent,
+                              color: Colors.greenAccent.withOpacity(0.2),
                               shape: BoxShape.circle,
                             ),
                             child: const Icon(LucideIcons.arrowDownLeft, color: Colors.greenAccent, size: 14),
                           ),
                           const SizedBox(width: 6),
-                          const Text("Daromad", style: TextStyle(color: Colors.white60, fontSize: 12)),
+                          const Text("Daromad", style: TextStyle(color: Colors.white70, fontSize: 13)),
                         ],
                       ),
                       const SizedBox(height: 4),
                       Text(
                         _formatCurrency(income),
-                        style: const TextStyle(color: Colors.greenAccent, fontSize: 15, fontWeight: FontWeight.bold),
+                        style: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold),
                         textAlign: TextAlign.center,
                       ),
                     ],
@@ -1132,19 +1152,19 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
                           Container(
                             padding: const EdgeInsets.all(4),
                             decoration: BoxDecoration(
-                              color: Colors.redAccent,
+                              color: Colors.redAccent.withOpacity(0.2),
                               shape: BoxShape.circle,
                             ),
                             child: const Icon(LucideIcons.arrowUpRight, color: Colors.redAccent, size: 14),
                           ),
                           const SizedBox(width: 6),
-                          const Text("Xarajat", style: TextStyle(color: Colors.white60, fontSize: 12)),
+                          const Text("Xarajat", style: TextStyle(color: Colors.white70, fontSize: 13)),
                         ],
                       ),
                       const SizedBox(height: 4),
                       Text(
                         _formatCurrency(expense),
-                        style: const TextStyle(color: Colors.redAccent, fontSize: 15, fontWeight: FontWeight.bold),
+                        style: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold),
                         textAlign: TextAlign.center,
                       ),
                     ],
@@ -1155,20 +1175,26 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
           ],
         ),
       ),
+      ),
+      ),
     );
   }
 
   Widget _buildInsightCard() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Colors.amberAccent,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.amberAccent),
-        ),
-        child: Row(
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(16),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.amberAccent.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: Colors.amberAccent.withOpacity(0.3)),
+            ),
+            child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Icon(LucideIcons.lightbulb, color: Colors.amberAccent, size: 20),
@@ -1177,8 +1203,8 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
               child: Text(
                 _stats!.insight,
                 style: const TextStyle(
-                  color: Colors.amberAccent,
-                  fontSize: 13,
+                  color: Colors.white,
+                  fontSize: 14,
                   height: 1.4,
                   fontWeight: FontWeight.w500,
                 ),
@@ -1186,6 +1212,8 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
             ),
           ],
         ),
+      ),
+      ),
       ),
     );
   }
@@ -1313,9 +1341,9 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
                       margin: const EdgeInsets.only(bottom: 10),
                       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: Colors.white.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: Colors.white),
+                        border: Border.all(color: Colors.white.withOpacity(0.1)),
                       ),
                       child: Row(
                         children: [
@@ -1323,8 +1351,8 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
                             padding: const EdgeInsets.all(8),
                             decoration: BoxDecoration(
                               color: isExpense 
-                                  ? Colors.redAccent 
-                                  : Colors.greenAccent,
+                                  ? Colors.redAccent.withOpacity(0.2)
+                                  : Colors.greenAccent.withOpacity(0.2),
                               shape: BoxShape.circle,
                             ),
                             child: Icon(

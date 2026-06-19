@@ -10,6 +10,7 @@ import 'services/call_service.dart';
 import 'services/notification_helper.dart';
 import 'services/callkit_service.dart';
 
+import 'package:flutter/services.dart';
 import 'services/call_history_service.dart';
 
 /// Global navigator key — har qanday joydan CallScreen ochish uchun
@@ -17,6 +18,17 @@ final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  
+  // Enable edge-to-edge mode for transparent system navigation and status bars
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+    systemNavigationBarColor: Colors.transparent,
+    systemNavigationBarDividerColor: Colors.transparent,
+    statusBarColor: Colors.transparent,
+    statusBarIconBrightness: Brightness.light,
+    systemNavigationBarIconBrightness: Brightness.light,
+  ));
+
   await NotificationHelper().init();
   await CallHistoryService().init();
 
@@ -99,7 +111,7 @@ class MyApp extends StatelessWidget {
             debugShowCheckedModeBanner: false,
             theme: AppTheme.lightTheme,
             darkTheme: AppTheme.darkTheme,
-            themeMode: appProvider.isDarkMode ? ThemeMode.dark : ThemeMode.light,
+            themeMode: ThemeMode.dark,
             home: const SplashScreen(),
           );
         },

@@ -151,7 +151,7 @@ class _TodoScreenState extends State<TodoScreen> {
         return StatefulBuilder(
           builder: (context, setDialogState) {
             return AlertDialog(
-              backgroundColor: Colors.grey[900]?,
+              backgroundColor: Colors.grey[900],
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(GlassTokens.radiusMd),
                 side: BorderSide(color: Colors.white),

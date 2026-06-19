@@ -38,7 +38,7 @@ class OrdersFilterWidget extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 10),
           decoration: BoxDecoration(
             color: selected
-                ? const Color(0xFF6366F1)
+                ? Colors.white.withOpacity(0.15)
                 : Colors.transparent,
             borderRadius: BorderRadius.circular(14),
           ),
@@ -49,7 +49,7 @@ class OrdersFilterWidget extends StatelessWidget {
               fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
               fontSize: 13,
               color: selected
-                  ? const Color(0xFF6366F1)
+                  ? Colors.white
                   : GlassTokens.secondaryText(context),
             ),
           ),

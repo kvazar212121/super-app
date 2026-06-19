@@ -14,6 +14,7 @@ import 'auth/auth_gate_screen.dart';
 import '../services/call_history_service.dart';
 import '../services/call_service.dart';
 import 'calls/call_screen.dart';
+import 'calls/call_history_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -27,15 +28,7 @@ class ProfileScreen extends StatelessWidget {
     return GlassScaffold(
       embeddedInShell: true,
       title: 'Profil',
-      actions: [
-        IconButton(
-          icon: Icon(
-            provider.isDarkMode ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
-            color: GlassTokens.primaryText(context),
-          ),
-          onPressed: () => provider.toggleTheme(),
-        ),
-      ],
+      actions: const [],
       body: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 100),
         child: Column(
@@ -102,73 +95,26 @@ class ProfileScreen extends StatelessWidget {
               _sectionTitle(context, 'Soha egasi'),
               const ProviderPortalEntry(compact: true),
               const SizedBox(height: 16),
-              _sectionTitle(context, 'Qo\'ng\'iroqlar tarixi'),
-              ListenableBuilder(
-                listenable: CallHistoryService(),
-                builder: (context, _) {
-                  final logs = CallHistoryService().history;
-                  if (logs.isEmpty) {
-                    return GlassSurface(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-                      opacity: 0.5,
-                      child: const Center(
-                        child: Text(
-                          'Qo\'ng\'iroqlar tarixi bo\'sh',
-                          style: TextStyle(color: Colors.black54),
+              GlassSurface(
+                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const CallHistoryScreen())),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                opacity: 0.55,
+                child: Row(
+                  children: [
+                    Icon(Icons.history, color: GlassTokens.primaryText(context)),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        'Qo\'ng\'iroqlar tarixi',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          color: GlassTokens.primaryText(context),
                         ),
                       ),
-                    );
-                  }
-                  return GlassSurface(
-                    padding: const EdgeInsets.all(8),
-                    opacity: 0.55,
-                    child: ListView.separated(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: logs.take(5).length,
-                      separatorBuilder: (_, __) => Divider(color: Colors.white, height: 1),
-                      itemBuilder: (context, idx) {
-                        final log = logs[idx];
-                        final timeStr = DateFormat('dd.MM.yyyy HH:mm').format(log.timestamp);
-                        IconData iconData;
-                        Color iconColor;
-                        if (log.status == 'connected') {
-                          iconData = log.isIncoming ? Icons.call_received : Icons.call_made;
-                          iconColor = Colors.green;
-                        } else {
-                          iconData = log.isIncoming ? Icons.call_received_outlined : Icons.call_made_outlined;
-                          iconColor = Colors.red;
-                        }
-                        return ListTile(
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 8),
-                          leading: Icon(iconData, color: iconColor),
-                          title: Text(
-                            log.userName, 
-                            style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              color: GlassTokens.primaryText(context)
-                            )
-                          ),
-                          subtitle: Text(
-                            '${log.isIncoming ? "Kiruvchi" : "Chiquvchi"} • $timeStr\nDavomiyligi: ${log.duration}',
-                            style: TextStyle(color: GlassTokens.secondaryText(context))
-                          ),
-                          trailing: IconButton(
-                            icon: const Icon(Icons.phone, color: Colors.green),
-                            onPressed: () {
-                              CallService().startCall(log.userId, log.userName);
-                              Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (_) => const CallScreen(isIncoming: false),
-                                  ),
-                              );
-                            },
-                          ),
-                        );
-                      },
                     ),
-                  );
-                },
+                    Icon(Icons.chevron_right_rounded, color: GlassTokens.secondaryText(context)),
+                  ],
+                ),
               ),
               const SizedBox(height: 16),
               if (user.isProvider) ...[
@@ -303,9 +249,11 @@ class ProfileScreen extends StatelessWidget {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
                 colors: [
-                  const Color(0xFF6366F1),
-                  const Color(0xFFA855F7),
+                  Colors.white.withOpacity(0.25),
+                  Colors.white.withOpacity(0.05),
                 ],
               ),
               border: Border.all(color: Colors.white, width: 2),
@@ -481,7 +429,7 @@ class ProfileScreen extends StatelessWidget {
     showDialog<void>(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: Colors.grey[900]?,
+        backgroundColor: Colors.grey[900],
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(GlassTokens.radiusMd),
           side: BorderSide(color: Colors.white),

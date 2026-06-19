@@ -71,11 +71,11 @@ class AllCategoriesScreen extends StatelessWidget {
       showBackButton: true,
       title: 'Barcha xizmatlar',
       body: Container(
-        decoration: BoxDecoration(
-          color: Colors.blue, // Juda nozik ko'k rang
+        decoration: const BoxDecoration(
+          color: Colors.transparent,
         ),
         child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 3.0, sigmaY: 3.0), // Orqa fonga ozgina blur
+          filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
           child: ListView.separated(
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
             itemCount: _groups.length,
@@ -137,7 +137,7 @@ class AllCategoriesScreen extends StatelessWidget {
                                   borderRadius: BorderRadius.circular(14),
                                   border: Border.all(color: k.accent),
                                 ),
-                                child: Icon(k.icon, color: k.accent, size: 22),
+                                child: Icon(k.icon, color: Colors.white, size: 22),
                               ),
                               const SizedBox(width: 12),
                               Expanded(

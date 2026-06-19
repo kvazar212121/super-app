@@ -35,6 +35,10 @@ class _BarberBookingScreenState extends State<BarberBookingScreen> {
   String? _selectedTimeSlot;
   String _selectedBookingMode = 'fixed';
 
+  final _serviceKey = GlobalKey();
+  final _staffKey = GlobalKey();
+  final _timeKey = GlobalKey();
+
   List<String> _timeSlots = ProviderAvailability.defaultSlots;
   List<String> _bookedSlots = [];
   bool _loadingSlots = true;
@@ -53,9 +57,9 @@ class _BarberBookingScreenState extends State<BarberBookingScreen> {
 
   String get _staffLabel {
     if (_selectedStaffId == null) return '';
-    if (_selectedStaffId == _anyStaffId) return 'Har qanday bo'sh usta';
+    if (_selectedStaffId == _anyStaffId) return 'Har qanday bo\'sh usta';
     final match = widget.shop.barbers.where((b) => b.id == _selectedStaffId);
-    return match.isEmpty ? 'Har qanday bo'sh usta' : match.first.name;
+    return match.isEmpty ? 'Har qanday bo\'sh usta' : match.first.name;
   }
 
   double get _selectedPrice => _selectedService == null
@@ -106,13 +110,16 @@ class _BarberBookingScreenState extends State<BarberBookingScreen> {
   @override
   Widget build(BuildContext context) {
     final currencyFormat =
-        NumberFormat.currency(locale: 'uz_UZ', symbol: 'so'm', decimalDigits: 0);
+        NumberFormat.currency(locale: 'uz_UZ', symbol: 'so\'m', decimalDigits: 0);
 
     return GlassBackdrop(
       child: Scaffold(
         backgroundColor: Colors.transparent,
-        body: CustomScrollView(
-          slivers: [
+        body: SafeArea(
+          top: false,
+          bottom: true,
+          child: CustomScrollView(
+            slivers: [
             BookingSliverAppBar(color: _accent, icon: LucideIcons.scissors),
             SliverToBoxAdapter(
               child: Padding(
@@ -134,7 +141,7 @@ class _BarberBookingScreenState extends State<BarberBookingScreen> {
                       ),
                     ),
                     const SizedBox(height: 24),
-                    const SectionTitle('Xizmatni tanlang'),
+                    SectionTitle('Xizmatni tanlang', key: _serviceKey),
                     const SizedBox(height: 12),
                     PriceOptionList(
                       prices: widget.shop.prices,
@@ -145,14 +152,14 @@ class _BarberBookingScreenState extends State<BarberBookingScreen> {
                       subtitleOf: _serviceDuration,
                     ),
                     const SizedBox(height: 24),
-                    const SectionTitle('Mutaxassisni tanlang'),
+                    SectionTitle('Mutaxassisni tanlang', key: _staffKey),
                     const SizedBox(height: 12),
                     SelectableStaffRow(
                       staff: _staffOptions,
                       selectedId: _selectedStaffId,
                       onSelect: (id) => setState(() => _selectedStaffId = id),
                       accent: _accent,
-                      anyOptionLabel: 'Har qanday bo'sh usta',
+                      anyOptionLabel: 'Har qanday bo\'sh usta',
                     ),
                     const SizedBox(height: 24),
                     const SectionTitle('Sana'),
@@ -168,7 +175,7 @@ class _BarberBookingScreenState extends State<BarberBookingScreen> {
                       startDaysOffset: 1,
                     ),
                     const SizedBox(height: 24),
-                    const SectionTitle('Vaqt'),
+                    SectionTitle('Vaqt', key: _timeKey),
                     const SizedBox(height: 12),
                     if (_loadingSlots)
                       const Padding(
@@ -215,7 +222,37 @@ class _BarberBookingScreenState extends State<BarberBookingScreen> {
                           ? 'Bron qilish — ${currencyFormat.format(_selectedPrice)}'
                           : 'Bron qilish',
                       onPrimary: _canBook ? _confirmBooking : null,
-                      secondaryLabel: 'Qo'ng'iroq qilish',
+                      onPrimaryDisabled: () {
+                        String msg = 'Iltimos, kerakli ma\'lumotlarni kiriting';
+                        GlobalKey? targetKey;
+                        if (_selectedService == null) {
+                          msg = 'Iltimos, xizmat turini tanlang';
+                          targetKey = _serviceKey;
+                        } else if (_selectedStaffId == null) {
+                          msg = 'Iltimos, mutaxassisni tanlang';
+                          targetKey = _staffKey;
+                        } else if (_selectedTimeSlot == null) {
+                          msg = 'Iltimos, bo\'sh vaqtni tanlang';
+                          targetKey = _timeKey;
+                        }
+
+                        if (targetKey != null && targetKey.currentContext != null) {
+                          Scrollable.ensureVisible(
+                            targetKey.currentContext!,
+                            alignment: 0.5,
+                            duration: const Duration(milliseconds: 300),
+                            curve: Curves.easeInOut,
+                          );
+                        }
+
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(msg),
+                            backgroundColor: Colors.redAccent,
+                          ),
+                        );
+                      },
+                      secondaryLabel: 'Qo\'ng\'iroq qilish',
                       secondaryIcon: LucideIcons.phone,
                       onSecondary: () {
                         CallService().startCall(0, widget.shop.name);
@@ -233,6 +270,7 @@ class _BarberBookingScreenState extends State<BarberBookingScreen> {
             ),
           ],
         ),
+        ),
       ),
     );
   }
@@ -249,25 +287,22 @@ class _BarberBookingScreenState extends State<BarberBookingScreen> {
         'key': 'flexible',
         'icon': LucideIcons.zap,
         'title': 'Tezkor navbat',
-        'desc': 'Usta bo'shashiga qarab vaqtingiz oldinga surilishi mumkin',
+        'desc': 'Usta bo\'shashiga qarab vaqtingiz oldinga surilishi mumkin',
       },
     ];
 
-    return Row(
-      children: modes.map((m) {
-        final key = m['key'] as String;
-        final isSelected = _selectedBookingMode == key;
-        return Expanded(
-          child: GestureDetector(
-            onTap: () => setState(() => _selectedBookingMode = key),
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 250),
-              curve: Curves.easeOutCubic,
+    return IntrinsicHeight(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: modes.map((m) {
+          final key = m['key'] as String;
+          final isSelected = _selectedBookingMode == key;
+          return Expanded(
+            child: Container(
               margin: EdgeInsets.only(
                 right: key == 'fixed' ? 6 : 0,
                 left: key == 'flexible' ? 6 : 0,
               ),
-              padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
                 color: isSelected
                     ? _accent
@@ -287,61 +322,68 @@ class _BarberBookingScreenState extends State<BarberBookingScreen> {
                       ]
                     : [],
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
+              child: GestureDetector(
+                onTap: () => setState(() => _selectedBookingMode = key),
+                behavior: HitTestBehavior.opaque,
+                child: Padding(
+                  padding: const EdgeInsets.all(14),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      AnimatedContainer(
-                        duration: const Duration(milliseconds: 250),
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: isSelected
-                              ? _accent
-                              : GlassTokens.secondaryText(context)
-                                  ,
-                          shape: BoxShape.circle,
-                        ),
-                        child: Icon(
-                          m['icon'] as IconData,
-                          size: 18,
-                          color: isSelected
-                              ? _accent
-                              : GlassTokens.secondaryText(context),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          m['title'] as String,
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w700,
-                            color: isSelected
-                                ? _accent
-                                : GlassTokens.primaryText(context),
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: isSelected
+                                  ? Colors.white.withOpacity(0.2)
+                                  : const Color(0xFFF1F5F9),
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(
+                              m['icon'] as IconData,
+                              size: 18,
+                              color: isSelected
+                                  ? Colors.white
+                                  : const Color(0xFF64748B),
+                            ),
                           ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              m['title'] as String,
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w700,
+                                color: isSelected
+                                    ? Colors.white
+                                    : const Color(0xFF0F172A),
+                              ),
+                            ),
+                          ),
+                          if (isSelected)
+                            const Icon(LucideIcons.circleCheck, size: 20, color: Colors.white),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        m['desc'] as String,
+                        style: TextStyle(
+                          fontSize: 11,
+                          height: 1.3,
+                          color: isSelected
+                              ? Colors.white.withOpacity(0.8)
+                              : const Color(0xFF64748B),
                         ),
                       ),
-                      if (isSelected)
-                        Icon(LucideIcons.circleCheck, size: 20, color: _accent),
                     ],
                   ),
-                  const SizedBox(height: 8),
-                  Text(
-                    m['desc'] as String,
-                    style: TextStyle(
-                      fontSize: 11,
-                      height: 1.3,
-                      color: GlassTokens.secondaryText(context),
-                    ),
-                  ),
-                ],
+                ),
               ),
             ),
-          ),
-        );
-      }).toList(),
+          );
+        }).toList(),
+      ),
     );
   }
 
@@ -350,7 +392,7 @@ class _BarberBookingScreenState extends State<BarberBookingScreen> {
     if (!mounted || !_canBook) return;
 
     final currencyFormat =
-        NumberFormat.currency(locale: 'uz_UZ', symbol: 'so'm', decimalDigits: 0);
+        NumberFormat.currency(locale: 'uz_UZ', symbol: 'so\'m', decimalDigits: 0);
     final confirmed = await showBookingConfirmSheet(
       context,
       title: 'Bronni tasdiqlang',
@@ -410,11 +452,13 @@ class _BarberBookingScreenState extends State<BarberBookingScreen> {
           backgroundColor: Colors.green,
         ),
       );
-    } catch (_) {
+    } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Buyurtma yuborib bo'lmadi. Qayta urinib ko'ring.'),
+        SnackBar(
+          content: Text('Buyurtma yuborib bo\'lmadi. Xato: $e'),
+          duration: const Duration(seconds: 6),
+          backgroundColor: Colors.red,
         ),
       );
     }

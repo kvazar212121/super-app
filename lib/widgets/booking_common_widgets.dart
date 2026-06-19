@@ -110,11 +110,11 @@ class ServiceProfileHeader extends StatelessWidget {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.star, size: 16, color: accent),
+                  const Icon(Icons.star, size: 16, color: Colors.amber),
                   const SizedBox(width: 4),
                   Text(
                     rating.toString(),
-                    style: TextStyle(fontWeight: FontWeight.bold, color: accent),
+                    style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
                   ),
                 ],
               ),
@@ -183,7 +183,7 @@ class SelectableIconGrid<T> extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Icon(iconOf(item),
-                    color: isSelected ? accent : kBookingSub, size: 20),
+                    color: isSelected ? Colors.white : kBookingSub, size: 20),
                 const SizedBox(width: 8),
                 Flexible(
                   child: Text(
@@ -194,7 +194,7 @@ class SelectableIconGrid<T> extends StatelessWidget {
                     style: TextStyle(
                       fontWeight:
                           isSelected ? FontWeight.bold : FontWeight.normal,
-                      color: isSelected ? accent : kBookingInk,
+                      color: isSelected ? Colors.white : kBookingInk,
                       height: 1.1,
                     ),
                   ),
@@ -246,7 +246,7 @@ class SelectableChips extends StatelessWidget {
               item,
               style: TextStyle(
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                color: isSelected ? accent : kBookingInk,
+                color: isSelected ? Colors.white : kBookingInk,
               ),
             ),
           ),
@@ -305,7 +305,7 @@ class PriceOptionList extends StatelessWidget {
                         option,
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          color: isSelected ? GlassTokens.primaryText(context) : kBookingInk,
+                          color: isSelected ? Colors.white : kBookingInk,
                         ),
                       ),
                       if (subtitleOf != null &&
@@ -314,7 +314,7 @@ class PriceOptionList extends StatelessWidget {
                         Text(
                           subtitleOf!(option)!,
                           style: TextStyle(
-                            color: isSelected ? GlassTokens.secondaryText(context) : kBookingSub,
+                            color: isSelected ? Colors.white70 : kBookingSub,
                             fontSize: 12,
                           ),
                         ),
@@ -325,7 +325,7 @@ class PriceOptionList extends StatelessWidget {
                 const SizedBox(width: 8),
                 Text(
                   format.format(prices[option]),
-                  style: TextStyle(fontWeight: FontWeight.bold, color: accent),
+                  style: TextStyle(fontWeight: FontWeight.bold, color: isSelected ? Colors.white : accent),
                 ),
               ],
             ),
@@ -440,15 +440,17 @@ class BookingActionBar extends StatelessWidget {
   final String? secondaryLabel;
   final IconData? secondaryIcon;
   final VoidCallback? onSecondary;
+  final VoidCallback? onPrimaryDisabled;
 
   const BookingActionBar({
     super.key,
-    required this.primaryLabel,
-    required this.onPrimary,
     required this.accent,
+    required this.primaryLabel,
+    this.onPrimary,
     this.secondaryLabel,
     this.secondaryIcon,
     this.onSecondary,
+    this.onPrimaryDisabled,
   });
 
   @override
@@ -459,14 +461,20 @@ class BookingActionBar extends StatelessWidget {
           width: double.infinity,
           height: 56,
           child: ElevatedButton(
-            onPressed: onPrimary,
+            onPressed: onPrimary ?? (onPrimaryDisabled ?? () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text("Iltimos, barcha kerakli maydonlarni to'ldiring"),
+                  backgroundColor: Colors.redAccent,
+                ),
+              );
+            }),
             style: ElevatedButton.styleFrom(
-              backgroundColor: accent,
-              foregroundColor: Colors.white,
+              backgroundColor: onPrimary != null ? accent : Colors.grey[300]!.withOpacity(0.5),
+              foregroundColor: onPrimary != null ? Colors.white : Colors.grey[500],
+              elevation: onPrimary != null ? 2 : 0,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16)),
-              disabledBackgroundColor: Colors.grey[300],
-              disabledForegroundColor: Colors.grey[600],
             ),
             child: FittedBox(
               fit: BoxFit.scaleDown,
@@ -491,8 +499,8 @@ class BookingActionBar extends StatelessWidget {
                 child: Text(secondaryLabel!, maxLines: 1),
               ),
               style: OutlinedButton.styleFrom(
-                foregroundColor: accent,
-                side: BorderSide(color: accent),
+                foregroundColor: Colors.white,
+                side: const BorderSide(color: Colors.white),
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16)),
               ),
@@ -613,7 +621,7 @@ class SelectableStaffRow extends StatelessWidget {
                           isSelected ? accent : kBookingCard,
                       child: Icon(
                         isAny ? Icons.groups_outlined : Icons.person_outline,
-                        color: isSelected ? accent : kBookingSub,
+                        color: isSelected ? Colors.white : kBookingSub,
                         size: isAny ? 26 : 24,
                       ),
                     ),
@@ -627,7 +635,7 @@ class SelectableStaffRow extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 11,
                       fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                      color: isSelected ? accent : kBookingInk,
+                      color: isSelected ? accent : GlassTokens.primaryText(context),
                       height: 1.15,
                     ),
                   ),

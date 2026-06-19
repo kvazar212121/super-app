@@ -93,12 +93,22 @@ class _MainScreenState extends State<MainScreen> {
         MeshBackground(isDark: isDark),
         Scaffold(
           backgroundColor: Colors.transparent,
-          extendBody: true,
           body: _screens[_selectedIndex],
-          bottomNavigationBar: GlassBottomBar(
-            currentIndex: _selectedIndex,
-            onTap: (i) => setState(() => _selectedIndex = i),
-            items: _navItems,
+        ),
+        Positioned(
+          left: 0,
+          right: 0,
+          bottom: 0,
+          child: SafeArea(
+            bottom: true,
+            top: false,
+            left: false,
+            right: false,
+            child: GlassBottomBar(
+              currentIndex: _selectedIndex,
+              onTap: (i) => setState(() => _selectedIndex = i),
+              items: _navItems,
+            ),
           ),
         ),
       ],

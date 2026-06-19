@@ -43,7 +43,7 @@ class AIAssistantBanner extends StatelessWidget {
                 ),
                 child: const Icon(
                   LucideIcons.bot,
-                  color: Colors.white,
+                  color: Color(0xFF0284C7),
                   size: 24,
                 ),
               ),

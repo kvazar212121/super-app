@@ -232,69 +232,77 @@ class _ChatScreenState extends State<ChatScreen> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Container(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
       decoration: BoxDecoration(
         color: isDark ? const Color(0xFF1E293B) : Colors.white,
         border: Border(
           top: BorderSide(color: GlassTokens.glassBorder(context)),
         ),
       ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Container(
-              decoration: BoxDecoration(
-                color: isDark ? Colors.black : Colors.grey,
-                borderRadius: BorderRadius.circular(24),
-                border: Border.all(color: GlassTokens.glassBorder(context)),
-              ),
-              child: TextField(
-                controller: _textController,
-                style: TextStyle(color: GlassTokens.primaryText(context)),
-                maxLines: 3,
-                minLines: 1,
-                textInputAction: TextInputAction.send,
-                onSubmitted: (_) => _sendMessage(),
-                decoration: InputDecoration(
-                  hintText: 'Xabar yozish...',
-                  hintStyle: TextStyle(color: GlassTokens.secondaryText(context)),
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                  border: InputBorder.none,
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(width: 12),
-          GestureDetector(
-            onTap: _hasText
-                ? (_isTyping ? null : _sendMessage)
-                : _showVoiceModal,
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 200),
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: _hasText
-                      ? [const Color(0xFF8B5CF6), const Color(0xFF3B82F6)]
-                      : [const Color(0xFF10B981), const Color(0xFF059669)],
-                ),
-                shape: BoxShape.circle,
-                boxShadow: [
-                  BoxShadow(
-                    color: (_hasText ? const Color(0xFF3B82F6) : const Color(0xFF10B981)),
-                    blurRadius: 8,
-                    offset: const Offset(0, 4),
+      child: SafeArea(
+        top: false,
+        bottom: true,
+        left: false,
+        right: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
+          child: Row(
+            children: [
+              Expanded(
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: isDark ? Colors.black : Colors.grey,
+                    borderRadius: BorderRadius.circular(24),
+                    border: Border.all(color: GlassTokens.glassBorder(context)),
                   ),
-                ],
+                  child: TextField(
+                    controller: _textController,
+                    style: TextStyle(color: GlassTokens.primaryText(context)),
+                    maxLines: 3,
+                    minLines: 1,
+                    textInputAction: TextInputAction.send,
+                    onSubmitted: (_) => _sendMessage(),
+                    decoration: InputDecoration(
+                      hintText: 'Xabar yozish...',
+                      hintStyle: TextStyle(color: GlassTokens.secondaryText(context)),
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      border: InputBorder.none,
+                    ),
+                  ),
+                ),
               ),
-              child: Icon(
-                _hasText ? LucideIcons.send : LucideIcons.mic,
-                color: Colors.white,
-                size: 20,
+              const SizedBox(width: 12),
+              GestureDetector(
+                onTap: _hasText
+                    ? (_isTyping ? null : _sendMessage)
+                    : _showVoiceModal,
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: _hasText
+                          ? [const Color(0xFF8B5CF6), const Color(0xFF3B82F6)]
+                          : [const Color(0xFF10B981), const Color(0xFF059669)],
+                    ),
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: (_hasText ? const Color(0xFF3B82F6) : const Color(0xFF10B981)),
+                        blurRadius: 8,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: Icon(
+                    _hasText ? LucideIcons.send : LucideIcons.mic,
+                    color: Colors.white,
+                    size: 20,
+                  ),
+                ),
               ),
-            ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

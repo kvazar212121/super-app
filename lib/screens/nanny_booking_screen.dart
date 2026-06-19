@@ -128,7 +128,7 @@ class _NannyBookingScreenState extends State<NannyBookingScreen> {
     if (!await ensureAuthenticated(context)) return;
     if (!_canSubmit || !mounted) return;
 
-    final currency = NumberFormat.currency(locale: 'uz_UZ', symbol: 'so'm', decimalDigits: 0);
+    final currency = NumberFormat.currency(locale: 'uz_UZ', symbol: 'so\'m', decimalDigits: 0);
     final childName = _childNameCtrl.text.trim();
     final childAge = _childAgeCtrl.text.trim();
     final address = _addressCtrl.text.trim();
@@ -151,7 +151,7 @@ class _NannyBookingScreenState extends State<NannyBookingScreen> {
       totalLabel: 'Narxi',
       totalValue: currency.format(_selectedPrice),
       accent: _accent,
-      confirmLabel: 'So'rov yuborish',
+      confirmLabel: 'So\'rov yuborish',
     );
     if (!confirmed || !mounted) return;
 
@@ -167,7 +167,7 @@ class _NannyBookingScreenState extends State<NannyBookingScreen> {
 
     final childInfo = 'Bola: $childName, $childAge yosh'
         '${allergy.isNotEmpty ? '. Allergiya: $allergy' : ''}'
-        '${_trialDay ? '. Sinov kuni so'ralgan' : ''}'
+        '${_trialDay ? '. Sinov kuni so\'ralgan' : ''}'
         '${notes.isNotEmpty ? '. $notes' : ''}';
 
     final order = ServiceOrder(
@@ -191,7 +191,7 @@ class _NannyBookingScreenState extends State<NannyBookingScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text(
-            'So'rov yuborildi! Enaga ko'rib chiqadi va javob beradi.',
+            'So\'rov yuborildi! Enaga ko\'rib chiqadi va javob beradi.',
           ),
           backgroundColor: Colors.green,
         ),
@@ -199,7 +199,7 @@ class _NannyBookingScreenState extends State<NannyBookingScreen> {
     } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Buyurtma yuborib bo'lmadi')),
+          const SnackBar(content: Text('Buyurtma yuborib bo\'lmadi')),
         );
       }
     }
@@ -207,7 +207,7 @@ class _NannyBookingScreenState extends State<NannyBookingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final currency = NumberFormat.currency(locale: 'uz_UZ', symbol: 'so'm', decimalDigits: 0);
+    final currency = NumberFormat.currency(locale: 'uz_UZ', symbol: 'so\'m', decimalDigits: 0);
 
     return GlassBackdrop(
       child: Scaffold(
@@ -275,7 +275,7 @@ class _NannyBookingScreenState extends State<NannyBookingScreen> {
                     const SizedBox(height: 12),
                     BookingInputField(
                       controller: _addressCtrl,
-                      hint: 'To'liq manzil',
+                      hint: 'To\'liq manzil',
                       icon: LucideIcons.mapPin,
                       accent: _accent,
                     ),
@@ -311,7 +311,7 @@ class _NannyBookingScreenState extends State<NannyBookingScreen> {
                     const SizedBox(height: 16),
                     BookingTextArea(
                       controller: _notesCtrl,
-                      hint: 'Qo'shimcha izoh...',
+                      hint: 'Qo\'shimcha izoh...',
                       icon: LucideIcons.messageSquare,
                       accent: _accent,
                     ),
@@ -319,13 +319,13 @@ class _NannyBookingScreenState extends State<NannyBookingScreen> {
                     BookingActionBar(
                       accent: _accent,
                       primaryLabel: _canSubmit
-                          ? 'So'rov yuborish — ${currency.format(_selectedPrice)}'
-                          : 'So'rov yuborish',
+                          ? 'So\'rov yuborish — ${currency.format(_selectedPrice)}'
+                          : 'So\'rov yuborish',
                       onPrimary: _canSubmit ? _confirmBooking : null,
                     ),
                     const SizedBox(height: 12),
                     Text(
-                      'Buyurtma avtomatik tasdiqlanmaydi — enaga so'rovni ko'rib, qabul qiladi.',
+                      'Buyurtma avtomatik tasdiqlanmaydi — enaga so\'rovni ko\'rib, qabul qiladi.',
                       textAlign: TextAlign.center,
                       style: TextStyle(fontSize: 12, color: Colors.grey[600], height: 1.4),
                     ),

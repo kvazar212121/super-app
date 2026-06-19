@@ -105,8 +105,11 @@ class _MassageBookingScreenState extends State<MassageBookingScreen> {
     return GlassBackdrop(
       child: Scaffold(
         backgroundColor: Colors.transparent,
-        body: CustomScrollView(
-          slivers: [
+        body: SafeArea(
+          top: false,
+          bottom: true,
+          child: CustomScrollView(
+            slivers: [
             BookingSliverAppBar(color: accentColor, icon: LucideIcons.heartPulse),
             SliverToBoxAdapter(
               child: Padding(
@@ -167,7 +170,7 @@ class _MassageBookingScreenState extends State<MassageBookingScreen> {
                       const SizedBox(height: 16),
                       BookingInputField(
                         controller: _addressCtrl,
-                        hint: 'Uy manzili (ko'cha, uy, kvartira)',
+                        hint: 'Uy manzili (ko\'cha, uy, kvartira)',
                         icon: LucideIcons.home,
                         accent: accentColor,
                       ),
@@ -254,6 +257,7 @@ class _MassageBookingScreenState extends State<MassageBookingScreen> {
               ),
             ),
           ],
+        ),
         ),
       ),
     );

@@ -117,7 +117,7 @@ class _TutorBookingScreenState extends State<TutorBookingScreen> {
     if (!await ensureAuthenticated(context)) return;
     if (!_canSubmit || !mounted) return;
 
-    final currency = NumberFormat.currency(locale: 'uz_UZ', symbol: 'so'm', decimalDigits: 0);
+    final currency = NumberFormat.currency(locale: 'uz_UZ', symbol: 'so\'m', decimalDigits: 0);
     final student = _studentCtrl.text.trim();
     final goal = _goalCtrl.text.trim();
     final address = _addressCtrl.text.trim();
@@ -131,7 +131,7 @@ class _TutorBookingScreenState extends State<TutorBookingScreen> {
         MapEntry('Repetitor', widget.tutor.name),
         MapEntry('Fan / dars', _selectedService!),
         MapEntry('Format', _lessonMode!.label),
-        MapEntry('O'quvchi', student),
+        MapEntry('O\'quvchi', student),
         if (goal.isNotEmpty) MapEntry('Maqsad', goal),
         if (_lessonMode == LessonMode.homeVisit) MapEntry('Manzil', address),
         if (_lessonMode == LessonMode.online) MapEntry('Onlayn', online),
@@ -141,7 +141,7 @@ class _TutorBookingScreenState extends State<TutorBookingScreen> {
       totalLabel: 'Narxi',
       totalValue: currency.format(_selectedPrice),
       accent: _accent,
-      confirmLabel: 'So'rov yuborish',
+      confirmLabel: 'So\'rov yuborish',
     );
     if (!confirmed || !mounted) return;
 
@@ -156,7 +156,7 @@ class _TutorBookingScreenState extends State<TutorBookingScreen> {
     );
 
     final noteParts = <String>[
-      'O'quvchi: $student',
+      'O\'quvchi: $student',
       'Format: ${_lessonMode!.label}',
       if (goal.isNotEmpty) 'Maqsad: $goal',
       if (_lessonMode == LessonMode.online) 'Onlayn: $online',
@@ -183,14 +183,14 @@ class _TutorBookingScreenState extends State<TutorBookingScreen> {
       Navigator.pop(context);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('So'rov yuborildi! Repetitor javob beradi.'),
+          content: Text('So\'rov yuborildi! Repetitor javob beradi.'),
           backgroundColor: Colors.green,
         ),
       );
     } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Buyurtma yuborib bo'lmadi')),
+          const SnackBar(content: Text('Buyurtma yuborib bo\'lmadi')),
         );
       }
     }
@@ -198,7 +198,7 @@ class _TutorBookingScreenState extends State<TutorBookingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final currency = NumberFormat.currency(locale: 'uz_UZ', symbol: 'so'm', decimalDigits: 0);
+    final currency = NumberFormat.currency(locale: 'uz_UZ', symbol: 'so\'m', decimalDigits: 0);
 
     return GlassBackdrop(
       child: Scaffold(
@@ -256,7 +256,7 @@ class _TutorBookingScreenState extends State<TutorBookingScreen> {
                     const SizedBox(height: 12),
                     BookingInputField(
                       controller: _studentCtrl,
-                      hint: 'Ism (o'zingiz yoki farzandingiz)',
+                      hint: 'Ism (o\'zingiz yoki farzandingiz)',
                       icon: LucideIcons.user,
                       accent: _accent,
                     ),
@@ -315,7 +315,7 @@ class _TutorBookingScreenState extends State<TutorBookingScreen> {
                     const SizedBox(height: 16),
                     BookingTextArea(
                       controller: _notesCtrl,
-                      hint: 'Qo'shimcha izoh...',
+                      hint: 'Qo\'shimcha izoh...',
                       icon: LucideIcons.messageSquare,
                       accent: _accent,
                     ),
@@ -323,8 +323,8 @@ class _TutorBookingScreenState extends State<TutorBookingScreen> {
                     BookingActionBar(
                       accent: _accent,
                       primaryLabel: _canSubmit
-                          ? 'So'rov yuborish — ${currency.format(_selectedPrice)}'
-                          : 'So'rov yuborish',
+                          ? 'So\'rov yuborish — ${currency.format(_selectedPrice)}'
+                          : 'So\'rov yuborish',
                       onPrimary: _canSubmit ? _confirmBooking : null,
                     ),
                     const SizedBox(height: 40),

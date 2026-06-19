@@ -175,7 +175,7 @@ class _CategoryTile extends StatelessWidget {
               borderRadius: BorderRadius.circular(12),
               border: Border.all(color: color),
             ),
-            child: Icon(icon, color: color, size: 20),
+            child: Icon(icon, color: Colors.white, size: 20),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -217,7 +217,7 @@ class _ShopListItem extends StatelessWidget {
               borderRadius: BorderRadius.circular(14),
               border: Border.all(color: const Color(0xFF6366F1)),
             ),
-            child: const Icon(LucideIcons.scissors, color: Color(0xFF6366F1)),
+            child: const Icon(LucideIcons.scissors, color: Colors.white),
           ),
           const SizedBox(width: 12),
           Expanded(

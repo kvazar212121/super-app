@@ -93,7 +93,7 @@ class _AutoWorkshopBookingScreenState extends State<AutoWorkshopBookingScreen> {
     if (!await ensureAuthenticated(context)) return;
     if (!_canSubmit || !mounted) return;
 
-    final currency = NumberFormat.currency(locale: 'uz_UZ', symbol: 'so'm', decimalDigits: 0);
+    final currency = NumberFormat.currency(locale: 'uz_UZ', symbol: 'so\'m', decimalDigits: 0);
     final car = _carCtrl.text.trim();
     final notes = _notesCtrl.text.trim();
 
@@ -153,7 +153,7 @@ class _AutoWorkshopBookingScreenState extends State<AutoWorkshopBookingScreen> {
     } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Buyurtma yuborib bo'lmadi')),
+          const SnackBar(content: Text('Buyurtma yuborib bo\'lmadi')),
         );
       }
     }
@@ -161,7 +161,7 @@ class _AutoWorkshopBookingScreenState extends State<AutoWorkshopBookingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final currency = NumberFormat.currency(locale: 'uz_UZ', symbol: 'so'm', decimalDigits: 0);
+    final currency = NumberFormat.currency(locale: 'uz_UZ', symbol: 'so\'m', decimalDigits: 0);
 
     return GlassBackdrop(
       child: Scaffold(

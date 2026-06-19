@@ -157,16 +157,16 @@ class _EventBookingScreenState extends State<EventBookingScreen> {
                     const SizedBox(height: 12),
                     BookingTextArea(
                       controller: _addressController,
-                      hint: 'Viloyat, tuman, qishloq, ko'cha yoki maydon nomi...',
+                      hint: 'Viloyat, tuman, qishloq, ko\'cha yoki maydon nomi...',
                       icon: LucideIcons.mapPin,
                       accent: accentColor,
                     ),
                     const SizedBox(height: 24),
-                    const SectionTitle('Qo'shimcha ma'lumot'),
+                    const SectionTitle('Qo\'shimcha ma\'lumot'),
                     const SizedBox(height: 12),
                     BookingTextArea(
                       controller: _descriptionController,
-                      hint: 'Sahna o'lchami, dastur, maxsus talablar...',
+                      hint: 'Sahna o\'lchami, dastur, maxsus talablar...',
                       icon: LucideIcons.messageSquare,
                       accent: accentColor,
                     ),
@@ -207,7 +207,7 @@ class _EventBookingScreenState extends State<EventBookingScreen> {
                             ? "Buyurtma berish — ${currencyFormat.format(totalPrice)}"
                             : 'Buyurtma berish',
                         onPrimary: canBook ? () => _confirmBooking(currencyFormat) : null,
-                        secondaryLabel: 'Guruh bilan bog'lanish',
+                        secondaryLabel: 'Guruh bilan bog\'lanish',
                         secondaryIcon: LucideIcons.phone,
                         onSecondary: () {
                           CallService().startCall(0, widget.service.name);
