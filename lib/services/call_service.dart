@@ -5,6 +5,7 @@ import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:dio/dio.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
+import 'package:permission_handler/permission_handler.dart';
 import '../config/app_config.dart';
 import 'api_service.dart';
 import 'call_history_service.dart';
@@ -345,6 +346,10 @@ class CallService extends ChangeNotifier {
       'video': false,
     };
     try {
+      var status = await Permission.microphone.request();
+      if (status != PermissionStatus.granted) {
+        throw Exception('Mikrofon ruxsati berilmadi');
+      }
       _localStream = await navigator.mediaDevices.getUserMedia(mediaConstraints);
     } catch (e) {
       debugPrint('Mikrofon ruxsati olinmadi yoki xatolik: $e');
