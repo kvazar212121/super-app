@@ -31,6 +31,7 @@ class BarberShop {
   final List<String> services;
   final Map<String, double> prices;
   final List<Barber> barbers;
+  final int ownerUserId;
 
   BarberShop({
     required this.id,
@@ -45,6 +46,7 @@ class BarberShop {
     required this.services,
     required this.prices,
     required this.barbers,
+    this.ownerUserId = 0,
   });
 
   /// Backend provider ID (buyurtma yuborish uchun).
@@ -93,6 +95,7 @@ class BarberShop {
           specializations: defaultServices,
         );
       }).toList(),
+      ownerUserId: (json['owner_user_id'] as num?)?.toInt() ?? 0,
     );
   }
 

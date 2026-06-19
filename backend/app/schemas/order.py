@@ -26,14 +26,14 @@ class OrderOut(BaseModel):
     service_icon: Optional[str] = None
     address: str
     notes: Optional[str] = None
-    date: Optional[str] = None
+    date: Optional[datetime] = None
     price: float
     cashback_earned: float
     status: str
     category_key: Optional[str] = None
     provider_name: Optional[str] = None
     booking_mode: Optional[str] = "fixed"
-    created_at: Optional[str] = None
+    created_at: Optional[datetime] = None
     model_config = {"from_attributes": True}
 
 

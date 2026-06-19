@@ -18,6 +18,7 @@ class ProviderOut(BaseModel):
     metadata: Optional[dict] = None
     is_active: bool
     is_paused: bool
+    owner_user_id: Optional[int] = None
 
     model_config = {"from_attributes": False}
 
@@ -38,6 +39,7 @@ class ProviderOut(BaseModel):
             metadata=p.metadata_json,
             is_active=p.is_active,
             is_paused=p.is_paused,
+            owner_user_id=p.owner_user_id,
         )
 
 

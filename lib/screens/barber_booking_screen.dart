@@ -255,12 +255,18 @@ class _BarberBookingScreenState extends State<BarberBookingScreen> {
                       secondaryLabel: 'Qo\'ng\'iroq qilish',
                       secondaryIcon: LucideIcons.phone,
                       onSecondary: () {
-                        CallService().startCall(0, widget.shop.name);
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (_) => const CallScreen(isIncoming: false),
-                          ),
-                        );
+                        if (widget.shop.ownerUserId > 0) {
+                          CallService().startCall(widget.shop.ownerUserId, widget.shop.name);
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) => const CallScreen(isIncoming: false),
+                            ),
+                          );
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Ushbu joyga qo\\\'ng\\\'iroq qilib bo\\\'lmaydi')),
+                          );
+                        }
                       },
                     ),
                     const SizedBox(height: 40),
