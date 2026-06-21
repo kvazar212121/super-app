@@ -176,21 +176,37 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> with SingleTick
               style: TextStyle(color: GlassTokens.secondaryText(ctx)),
             ),
             const SizedBox(height: 12),
-            TextField(
-              controller: controller,
-              keyboardType: TextInputType.number,
-              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-              decoration: InputDecoration(
-                suffixText: 'so\'m',
-                hintText: 'Narxni kiriting',
-                filled: true,
-                fillColor: Colors.white,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide.none,
-                ),
-              ),
-              style: TextStyle(color: GlassTokens.primaryText(ctx), fontSize: 18),
+            Builder(
+              builder: (context) {
+                final isDark = Theme.of(context).brightness == Brightness.dark;
+                return TextField(
+                  controller: controller,
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  decoration: InputDecoration(
+                    suffixText: 'so\'m',
+                    suffixStyle: TextStyle(color: GlassTokens.secondaryText(ctx)),
+                    hintText: 'Narxni kiriting',
+                    hintStyle: TextStyle(color: GlassTokens.secondaryText(ctx)),
+                    filled: true,
+                    fillColor: isDark ? Colors.white.withOpacity(0.08) : Colors.black.withOpacity(0.05),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(
+                        color: isDark ? Colors.white.withOpacity(0.15) : Colors.black.withOpacity(0.1),
+                      ),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(
+                        color: isDark ? Colors.white.withOpacity(0.15) : Colors.black.withOpacity(0.1),
+                      ),
+                    ),
+                  ),
+                  style: TextStyle(color: GlassTokens.primaryText(ctx), fontSize: 18),
+                );
+              }
             ),
           ],
         ),
@@ -304,6 +320,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> with SingleTick
   }
 
   Widget _buildListNameInput() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
       child: TextField(
@@ -312,12 +329,20 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> with SingleTick
           hintText: 'Ro\'yxat nomi (masalan: "Haftalik bozorlik")',
           hintStyle: TextStyle(color: GlassTokens.secondaryText(context), fontSize: 13),
           filled: true,
-          fillColor: Colors.white,
+          fillColor: isDark ? Colors.white.withOpacity(0.08) : Colors.black.withOpacity(0.04),
           prefixIcon: Icon(LucideIcons.tag, color: Colors.orange.shade300, size: 18),
           contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(14),
-            borderSide: BorderSide.none,
+            borderSide: BorderSide(
+              color: isDark ? Colors.white.withOpacity(0.15) : Colors.black.withOpacity(0.1),
+            ),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(14),
+            borderSide: BorderSide(
+              color: isDark ? Colors.white.withOpacity(0.1) : Colors.black.withOpacity(0.05),
+            ),
           ),
         ),
         style: TextStyle(color: GlassTokens.primaryText(context), fontSize: 14),
@@ -326,13 +351,21 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> with SingleTick
   }
 
   Widget _buildInputArea() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       margin: const EdgeInsets.all(20),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? Colors.white.withOpacity(0.05) : Colors.white.withOpacity(0.85),
         borderRadius: BorderRadius.circular(GlassTokens.radiusMd),
-        border: Border.all(color: Colors.orange),
+        border: Border.all(color: Colors.orange.withOpacity(0.35)),
+        boxShadow: isDark ? [] : [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.03),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          )
+        ],
       ),
       child: Column(
         children: [
@@ -347,12 +380,20 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> with SingleTick
                     hintText: 'Mahsulot nomi...',
                     hintStyle: TextStyle(color: GlassTokens.secondaryText(context)),
                     filled: true,
-                    fillColor: Colors.white,
+                    fillColor: isDark ? Colors.white.withOpacity(0.08) : Colors.black.withOpacity(0.03),
                     prefixIcon: Icon(LucideIcons.search, color: GlassTokens.secondaryText(context), size: 18),
                     contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide.none,
+                      borderSide: BorderSide(
+                        color: isDark ? Colors.white.withOpacity(0.1) : Colors.black.withOpacity(0.05),
+                      ),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(
+                        color: isDark ? Colors.white.withOpacity(0.05) : Colors.black.withOpacity(0.05),
+                      ),
                     ),
                   ),
                   style: TextStyle(color: GlassTokens.primaryText(context)),
@@ -372,11 +413,19 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> with SingleTick
                     hintText: 'Soni',
                     hintStyle: TextStyle(color: GlassTokens.secondaryText(context), fontSize: 13),
                     filled: true,
-                    fillColor: Colors.white,
+                    fillColor: isDark ? Colors.white.withOpacity(0.08) : Colors.black.withOpacity(0.03),
                     contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide.none,
+                      borderSide: BorderSide(
+                        color: isDark ? Colors.white.withOpacity(0.1) : Colors.black.withOpacity(0.05),
+                      ),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(
+                        color: isDark ? Colors.white.withOpacity(0.05) : Colors.black.withOpacity(0.05),
+                      ),
                     ),
                   ),
                   style: TextStyle(color: GlassTokens.primaryText(context)),
@@ -386,16 +435,25 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> with SingleTick
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: isDark ? Colors.white.withOpacity(0.08) : Colors.black.withOpacity(0.03),
                   borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: isDark ? Colors.white.withOpacity(0.1) : Colors.black.withOpacity(0.05),
+                  ),
                 ),
                 child: DropdownButtonHideUnderline(
                   child: DropdownButton<String>(
                     value: _selectedUnit,
-                    dropdownColor: GlassTokens.glassFill(context),
+                    dropdownColor: isDark ? const Color(0xFF1E293B) : Colors.white,
                     style: TextStyle(color: GlassTokens.primaryText(context), fontSize: 14),
                     icon: Icon(LucideIcons.chevronDown, color: GlassTokens.secondaryText(context), size: 16),
-                    items: _units.map((u) => DropdownMenuItem(value: u, child: Text(u))).toList(),
+                    items: _units.map((u) => DropdownMenuItem(
+                      value: u,
+                      child: Text(
+                        u,
+                        style: TextStyle(color: isDark ? Colors.white : Colors.black87),
+                      ),
+                    )).toList(),
                     onChanged: (v) => setState(() => _selectedUnit = v ?? 'kg'),
                   ),
                 ),
@@ -454,7 +512,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> with SingleTick
           ),
           const SizedBox(height: 8),
           Text(
-            'AI narxlarni taxmin qiladi 🤖',
+            'AI narxlarni taxmin qiladi',
             style: TextStyle(color: GlassTokens.secondaryText(context), fontSize: 13),
           ),
         ],
@@ -463,6 +521,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> with SingleTick
   }
 
   Widget _buildCurrentItemsList() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return ListView.builder(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       itemCount: _currentItems.length,
@@ -486,7 +545,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> with SingleTick
             margin: const EdgeInsets.only(bottom: 8),
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: isDark ? Colors.white.withOpacity(0.05) : Colors.white.withOpacity(0.9),
               borderRadius: BorderRadius.circular(14),
               border: Border.all(color: GlassTokens.glassBorder(context)),
             ),
@@ -662,10 +721,11 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> with SingleTick
     final progress = list.items.isEmpty ? 0.0 : list.boughtCount / list.items.length;
     final isDone = list.isCompleted;
 
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? Colors.white.withOpacity(0.05) : Colors.white.withOpacity(0.9),
         borderRadius: BorderRadius.circular(GlassTokens.radiusMd),
         border: Border.all(
           color: isDone ? Colors.green : GlassTokens.glassBorder(context),
@@ -756,6 +816,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> with SingleTick
   }
 
   Widget _buildSavedItemRow(int listIndex, int itemIndex, ShoppingListItem item) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return GestureDetector(
       onLongPress: () => _setActualPrice(listIndex, itemIndex),
       child: Container(
@@ -763,13 +824,13 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> with SingleTick
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
         decoration: BoxDecoration(
           color: item.isBought
-              ? Colors.green
-              : Colors.white,
+              ? Colors.green.withOpacity(0.15)
+              : (isDark ? Colors.white.withOpacity(0.04) : Colors.white.withOpacity(0.8)),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: item.isBought
-                ? Colors.green
-                : Colors.transparent,
+                ? Colors.green.withOpacity(0.3)
+                : (isDark ? Colors.white.withOpacity(0.05) : Colors.black.withOpacity(0.05)),
           ),
         ),
         child: Row(

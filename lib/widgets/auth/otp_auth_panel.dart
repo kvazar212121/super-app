@@ -34,7 +34,21 @@ class OtpCodeFieldState extends State<OtpCodeField> {
   void initState() {
     super.initState();
     _controllers = List.generate(widget.length, (_) => TextEditingController());
-    _focusNodes = List.generate(widget.length, (_) => FocusNode());
+    _focusNodes = List.generate(widget.length, (index) {
+      final node = FocusNode();
+      node.onKeyEvent = (node, event) {
+        if (event is KeyDownEvent && event.logicalKey == LogicalKeyboardKey.backspace) {
+          if (_controllers[index].text.isEmpty && index > 0) {
+            _controllers[index - 1].clear();
+            _focusNodes[index - 1].requestFocus();
+            widget.onChanged?.call(code);
+            return KeyEventResult.handled;
+          }
+        }
+        return KeyEventResult.ignored;
+      };
+      return node;
+    });
   }
 
   @override
@@ -83,20 +97,25 @@ class OtpCodeFieldState extends State<OtpCodeField> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final theme = Theme.of(context);
+    final accent = theme.colorScheme.primary;
+
     return Row(
       children: List.generate(widget.length, (i) {
         return Expanded(
           child: Padding(
-            padding: EdgeInsets.only(left: i == 0 ? 0 : 5),
+            padding: EdgeInsets.only(left: i == 0 ? 0 : 6),
             child: TextField(
               controller: _controllers[i],
               focusNode: _focusNodes[i],
               enabled: widget.enabled,
               textAlign: TextAlign.center,
               keyboardType: TextInputType.number,
+              autofillHints: const [AutofillHints.oneTimeCode],
               maxLength: 1,
               style: TextStyle(
-                fontSize: 18,
+                fontSize: 20,
                 fontWeight: FontWeight.w800,
                 color: GlassTokens.primaryText(context),
               ),
@@ -104,9 +123,27 @@ class OtpCodeFieldState extends State<OtpCodeField> {
               decoration: InputDecoration(
                 counterText: '',
                 isDense: true,
-                contentPadding: const EdgeInsets.symmetric(vertical: 10),
+                filled: true,
+                fillColor: isDark ? Colors.white.withOpacity(0.08) : Colors.black.withOpacity(0.05),
+                contentPadding: const EdgeInsets.symmetric(vertical: 12),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide(
+                    color: isDark ? Colors.white.withOpacity(0.15) : Colors.black.withOpacity(0.1),
+                  ),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide(
+                    color: isDark ? Colors.white.withOpacity(0.15) : Colors.black.withOpacity(0.1),
+                  ),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide(
+                    color: accent,
+                    width: 2,
+                  ),
                 ),
               ),
               onChanged: (v) => _onDigit(i, v),

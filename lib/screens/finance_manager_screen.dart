@@ -251,7 +251,7 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
                               decoration: BoxDecoration(
                                 color: selectedType == "expense" 
                                     ? Colors.redAccent
-                                    : Colors.white,
+                                    : Colors.white.withOpacity(0.05),
                                 borderRadius: BorderRadius.circular(12),
                                 border: Border.all(
                                   color: selectedType == "expense" ? Colors.redAccent : Colors.white10,
@@ -260,7 +260,7 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
                               child: Text(
                                 "Xarajat",
                                 style: TextStyle(
-                                  color: selectedType == "expense" ? Colors.redAccent : Colors.white60,
+                                  color: selectedType == "expense" ? Colors.white : Colors.white60,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -281,17 +281,17 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
                               padding: const EdgeInsets.symmetric(vertical: 12),
                               decoration: BoxDecoration(
                                 color: selectedType == "income" 
-                                    ? Colors.greenAccent
-                                    : Colors.white,
+                                    ? Colors.green.shade700
+                                    : Colors.white.withOpacity(0.05),
                                 borderRadius: BorderRadius.circular(12),
                                 border: Border.all(
-                                  color: selectedType == "income" ? Colors.greenAccent : Colors.white10,
+                                  color: selectedType == "income" ? Colors.green.shade700 : Colors.white10,
                                 ),
                               ),
                               child: Text(
                                 "Daromad",
                                 style: TextStyle(
-                                  color: selectedType == "income" ? Colors.greenAccent : Colors.white60,
+                                  color: selectedType == "income" ? Colors.white : Colors.white60,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -349,7 +349,7 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
                             decoration: BoxDecoration(
                               color: isSelected 
                                   ? Colors.blueAccent
-                                  : Colors.white,
+                                  : Colors.white.withOpacity(0.05),
                               borderRadius: BorderRadius.circular(12),
                               border: Border.all(
                                 color: isSelected ? Colors.blueAccent : Colors.white10,
@@ -361,7 +361,7 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
                               children: [
                                 Icon(
                                   cat['icon'], 
-                                  color: isSelected ? Colors.blueAccent : Colors.white70,
+                                  color: isSelected ? Colors.white : Colors.white70,
                                   size: 20,
                                 ),
                                 const SizedBox(height: 6),
@@ -598,7 +598,7 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
                             decoration: BoxDecoration(
                               color: isSelected 
                                   ? Colors.blueAccent
-                                  : Colors.white,
+                                  : Colors.white.withOpacity(0.05),
                               borderRadius: BorderRadius.circular(12),
                               border: Border.all(
                                 color: isSelected ? Colors.blueAccent : Colors.white10,
@@ -610,7 +610,7 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
                               children: [
                                 Icon(
                                   cat['icon'], 
-                                  color: isSelected ? Colors.blueAccent : Colors.white70,
+                                  color: isSelected ? Colors.white : Colors.white70,
                                   size: 18,
                                 ),
                                 const SizedBox(height: 4),

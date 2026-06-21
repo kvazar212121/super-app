@@ -114,8 +114,9 @@ class AIAssistantBanner extends StatelessWidget {
               const SizedBox(width: 12),
               InkWell(
                 onTap: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Ovoz yozish boshlandi...')),
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const ChatScreen(startVoice: true)),
                   );
                 },
                 borderRadius: BorderRadius.circular(12),

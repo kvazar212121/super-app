@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'dart:async';
+import 'package:speech_to_text/speech_to_text.dart' as stt;
+import 'package:permission_handler/permission_handler.dart';
 import '../services/ai_service.dart';
 import '../widgets/glass/glass_scaffold.dart';
 import '../theme/glass_tokens.dart';
 
 class ChatScreen extends StatefulWidget {
-  const ChatScreen({super.key});
+  final bool startVoice;
+  const ChatScreen({super.key, this.startVoice = false});
 
   @override
   State<ChatScreen> createState() => _ChatScreenState();
@@ -34,6 +37,12 @@ class _ChatScreenState extends State<ChatScreen> {
       'role': 'assistant',
       'content': "Assalomu alaykum! Men HubServis SuperApp'ning sun'iy intellekt yordamchisiman. Ilova bo'yicha qanday savollaringiz bor? Sizga bajonidil yordam beraman. 🤖✨",
     });
+
+    if (widget.startVoice) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _showVoiceModal();
+      });
+    }
   }
 
   @override
@@ -336,6 +345,11 @@ class _VoiceMessageModalState extends State<_VoiceMessageModal>
   int _recordSeconds = 0;
   Timer? _recordTimer;
 
+  final stt.SpeechToText _speech = stt.SpeechToText();
+  bool _isSpeechInitialized = false;
+  String _speechLocale = 'uz_UZ';
+  final ValueNotifier<double> _soundLevel = ValueNotifier<double>(0.0);
+
   @override
   void initState() {
     super.initState();
@@ -346,6 +360,7 @@ class _VoiceMessageModalState extends State<_VoiceMessageModal>
     _pulseAnim = Tween<double>(begin: 1.0, end: 1.3).animate(
       CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
     );
+    _initSpeechEngine();
   }
 
   @override
@@ -353,14 +368,83 @@ class _VoiceMessageModalState extends State<_VoiceMessageModal>
     _pulseController.dispose();
     _voiceTextController.dispose();
     _recordTimer?.cancel();
+    _speech.cancel();
+    _soundLevel.dispose();
     super.dispose();
   }
 
-  void _startRecording() {
+  Future<void> _initSpeechEngine() async {
+    try {
+      bool available = await _speech.initialize(
+        onStatus: (status) {
+          debugPrint('Speech status: $status');
+          if (status == 'notListening' && _state == _VoiceState.recording && mounted) {
+            _stopRecording();
+          }
+        },
+        onError: (error) {
+          debugPrint('Speech error: $error');
+          if (mounted) {
+            setState(() {
+              _errorMessage = 'Ovoz yozishda xatolik: ${error.errorMsg}';
+            });
+          }
+        },
+      );
+      if (available && mounted) {
+        setState(() {
+          _isSpeechInitialized = true;
+        });
+        
+        try {
+          var locales = await _speech.locales();
+          for (var loc in locales) {
+            if (loc.localeId.startsWith('uz')) {
+              _speechLocale = loc.localeId;
+              break;
+            }
+          }
+        } catch (e) {
+          debugPrint('Locales fetching error: $e');
+        }
+      }
+    } catch (e) {
+      debugPrint('Speech init exception: $e');
+    }
+  }
+
+  Future<bool> _requestMicrophonePermission() async {
+    var status = await Permission.microphone.status;
+    if (!status.isGranted) {
+      status = await Permission.microphone.request();
+    }
+    return status.isGranted;
+  }
+
+  void _startRecording() async {
+    bool hasPermission = await _requestMicrophonePermission();
+    if (!hasPermission) {
+      setState(() {
+        _errorMessage = 'Mikrofon ruxsati berilmadi';
+      });
+      return;
+    }
+
+    if (!_isSpeechInitialized) {
+      await _initSpeechEngine();
+      if (!_isSpeechInitialized) {
+        setState(() {
+          _errorMessage = 'Ovozli dvigatel faollashmadi';
+        });
+        return;
+      }
+    }
+
     setState(() {
       _state = _VoiceState.recording;
       _recordSeconds = 0;
       _errorMessage = '';
+      _voiceTextController.clear();
     });
     _pulseController.repeat(reverse: true);
 
@@ -369,18 +453,51 @@ class _VoiceMessageModalState extends State<_VoiceMessageModal>
         setState(() => _recordSeconds++);
       }
     });
+
+    try {
+      await _speech.listen(
+        onResult: (result) {
+          if (mounted) {
+            setState(() {
+              _voiceTextController.text = result.recognizedWords;
+            });
+          }
+        },
+        onSoundLevelChange: (level) {
+          _soundLevel.value = level;
+        },
+        localeId: _speechLocale,
+        listenMode: stt.ListenMode.dictation,
+        cancelOnError: false,
+        partialResults: true,
+      );
+    } catch (e) {
+      debugPrint('Speech listen exception: $e');
+      setState(() {
+        _errorMessage = 'Mikrofondan ma\'lumot oqimi xatosi';
+      });
+    }
   }
 
-  void _stopRecording() {
+  void _stopRecording() async {
     _recordTimer?.cancel();
     _pulseController.stop();
     _pulseController.reset();
+    _soundLevel.value = 0.0;
+
+    try {
+      await _speech.stop();
+    } catch (e) {
+      debugPrint('Speech stop error: $e');
+    }
+
+    await Future.delayed(const Duration(milliseconds: 300));
 
     final text = _voiceTextController.text.trim();
     if (text.isEmpty) {
       setState(() {
         _state = _VoiceState.idle;
-        _errorMessage = 'Iltimos, xabar matnini kiriting';
+        _errorMessage = 'Hech narsa eshitilmadi. Iltimos qayta urining';
       });
       return;
     }
@@ -616,13 +733,20 @@ class _VoiceMessageModalState extends State<_VoiceMessageModal>
           children: [
             // Bekor qilish
             GestureDetector(
-              onTap: () {
+              onTap: () async {
                 _recordTimer?.cancel();
                 _pulseController.stop();
                 _pulseController.reset();
+                _soundLevel.value = 0.0;
+                try {
+                  await _speech.cancel();
+                } catch (e) {
+                  debugPrint('Speech cancel exception: $e');
+                }
                 setState(() {
                   _state = _VoiceState.idle;
                   _voiceTextController.clear();
+                  _errorMessage = '';
                 });
               },
               child: Container(
@@ -638,29 +762,37 @@ class _VoiceMessageModalState extends State<_VoiceMessageModal>
             ),
             const SizedBox(width: 24),
             // Pulsatsiya animatsiyasi
-            AnimatedBuilder(
-              animation: _pulseAnim,
-              builder: (context, child) {
-                return Transform.scale(
-                  scale: _pulseAnim.value,
-                  child: Container(
-                    width: 72,
-                    height: 72,
-                    decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [Color(0xFFEF4444), Color(0xFFDC2626)],
-                      ),
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.red,
-                          blurRadius: 20,
-                          offset: const Offset(0, 6),
+            ValueListenableBuilder<double>(
+              valueListenable: _soundLevel,
+              builder: (context, level, child) {
+                final soundScale = (level > 0.0 ? level : 0.0) * 0.035;
+                return AnimatedBuilder(
+                  animation: _pulseAnim,
+                  builder: (context, child) {
+                    final totalScale = (_pulseAnim.value + soundScale).clamp(1.0, 1.8);
+                    return Transform.scale(
+                      scale: totalScale,
+                      child: Container(
+                        width: 72,
+                        height: 72,
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            colors: [Color(0xFFEF4444), Color(0xFFDC2626)],
+                          ),
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.red.withOpacity(0.4),
+                              blurRadius: 20.0 + (level > 0.0 ? level * 2.5 : 0.0),
+                              spreadRadius: level > 0.0 ? level * 0.6 : 0.0,
+                              offset: const Offset(0, 6),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                    child: const Icon(LucideIcons.mic, color: Colors.white, size: 30),
-                  ),
+                        child: const Icon(LucideIcons.mic, color: Colors.white, size: 30),
+                      ),
+                    );
+                  },
                 );
               },
             ),

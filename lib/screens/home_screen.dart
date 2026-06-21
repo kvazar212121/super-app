@@ -71,7 +71,7 @@ class HomeScreen extends StatelessWidget {
                 icon: LucideIcons.wallet,
                 label: 'Mening moliyam',
                 color: Colors.greenAccent,
-                bgImage: 'assets/images/my_finance.png',
+                bgImage: 'assets/images/my_finance.jpg',
                 onTap: () {
                   final auth = Provider.of<AuthProvider>(context, listen: false);
                   if (!auth.isAuthenticated) {
@@ -109,7 +109,7 @@ class HomeScreen extends StatelessWidget {
                 icon: LucideIcons.layoutGrid,
                 label: 'Barcha xizmatlar',
                 color: Colors.purpleAccent,
-                bgImage: 'assets/images/all_services.png',
+                bgImage: 'assets/images/all_services.jpg',
                 onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AllCategoriesScreen())),
               ),
             ),

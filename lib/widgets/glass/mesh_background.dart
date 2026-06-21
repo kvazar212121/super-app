@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:ui';
 import '../../theme/glass_tokens.dart';
 
 /// Orqa fonda rangli "orb"lar — glass effekt uchun asos (yengil versiya).
@@ -9,13 +10,26 @@ class MeshBackground extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(
-        image: DecorationImage(
-          image: AssetImage('assets/images/main_bg.png'),
-          fit: BoxFit.cover,
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        Container(
+          decoration: const BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage('assets/images/main_bg.jpg'),
+              fit: BoxFit.cover,
+            ),
+          ),
         ),
-      ),
+        Positioned.fill(
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
+            child: Container(
+              color: isDark ? Colors.black.withOpacity(0.45) : Colors.white.withOpacity(0.25),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
