@@ -49,12 +49,11 @@ class _ProviderCategorySelectionScreenState
         final key = c['key']?.toString() ?? '';
         if (key == 'yana') continue;
         final config = ProviderCategoryConfig.byCategoryKey(key);
-        if (config == null) continue;
         items.add({
-          'id': config.registrationId,
+          'id': config?.registrationId ?? key,
           'dbId': c['id'],
-          'name': c['title']?.toString() ?? config.title,
-          'icon': config.icon,
+          'name': c['title']?.toString() ?? config?.title ?? 'Boshqa xizmat',
+          'icon': config?.icon ?? Icons.category,
         });
       }
       _categories = items;

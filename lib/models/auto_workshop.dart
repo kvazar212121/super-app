@@ -14,6 +14,8 @@ class AutoWorkshop {
   final String? autoRole;
   final int providerId;
 
+    final String? subCategory;
+
   AutoWorkshop({
     required this.id,
     required this.name,
@@ -30,6 +32,7 @@ class AutoWorkshop {
     this.autoRole,
     this.providerId = 0,
     this.rawJson,
+      this.subCategory,
   });
 
   bool get isWorkshop => autoRole == 'workshop';
@@ -76,6 +79,7 @@ class AutoWorkshop {
       autoRole: meta['auto_role']?.toString(),
       providerId: pid,
       rawJson: json,
+          subCategory: meta['sub_category']?.toString(),
     );
   }
 

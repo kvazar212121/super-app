@@ -142,6 +142,8 @@ class FootballField {
   final Map<int, List<TimeSlot>> weeklySlots;
   final Map<String, dynamic>? rawJson;
 
+    final String? subCategory;
+
   FootballField({
     required this.id,
     required this.name,
@@ -163,6 +165,7 @@ class FootballField {
     this.hasCafe = false,
     this.weeklySlots = const {},
     this.rawJson,
+      this.subCategory,
   });
 
   /// Backend provider ID.
@@ -207,6 +210,7 @@ class FootballField {
           ? {for (var d = 1; d <= 7; d++) d: _slotsFromHours(slotHours, basePrice, json['id']?.toString() ?? '')}
           : const {},
       rawJson: json,
+          subCategory: meta['sub_category']?.toString(),
     );
   }
 

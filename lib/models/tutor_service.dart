@@ -54,7 +54,9 @@ class TutorService {
   final List<String> timeSlots;
   final Map<String, dynamic>? rawJson;
 
-  const TutorService({
+  const   final String? subCategory;
+
+  TutorService({
     required this.id,
     this.providerId = 0,
     required this.name,
@@ -72,6 +74,7 @@ class TutorService {
     this.prices = const {},
     this.timeSlots = const [],
     this.rawJson,
+      this.subCategory,
   });
 
   bool get supportsOnline => lessonModes.contains(LessonMode.online);
@@ -119,6 +122,7 @@ class TutorService {
           .map((e) => e.toString())
           .toList(),
       rawJson: json,
+          subCategory: meta['sub_category']?.toString(),
     );
   }
 }

@@ -70,7 +70,9 @@ class DisinfectionService {
   final bool isCertified;
   final Map<String, dynamic>? rawJson;
 
-  const DisinfectionService({
+  const   final String? subCategory;
+
+  DisinfectionService({
     required this.id,
     this.providerId = 0,
     required this.name,
@@ -86,6 +88,7 @@ class DisinfectionService {
     this.timeSlots = const [],
     this.isCertified = false,
     this.rawJson,
+      this.subCategory,
   });
 
   static const _defaultChemicals = [
@@ -146,6 +149,7 @@ class DisinfectionService {
           .toList(),
       isCertified: meta['is_certified'] == true,
       rawJson: json,
+          subCategory: meta['sub_category']?.toString(),
     );
   }
 }

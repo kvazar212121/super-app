@@ -55,49 +55,56 @@ class ProviderCategoryConfig {
     categoryKey: 'salon',
     title: 'Salon',
     icon: LucideIcons.sparkles,
-    accentColor: Color(0xFFEC4899),
+    accentColor: Color(0xFFEC4899),,
+    subCategories: ['Soch turmagi', 'Makiyaj', 'Manikyur', 'Kosmetologiya']
   );
   static const plumber = ProviderCategoryConfig(
     registrationId: 'plumber',
     categoryKey: 'santexnik',
     title: 'Santexnik',
     icon: LucideIcons.droplet,
-    accentColor: Color(0xFF3B82F6),
+    accentColor: Color(0xFF3B82F6),,
+    subCategories: ['Quvurlar', 'Kran va vanna', 'Issiqlik tizimi', 'Shoshilinch']
   );
   static const electrician = ProviderCategoryConfig(
     registrationId: 'electrician',
     categoryKey: 'elektrik',
     title: 'Elektrik',
     icon: LucideIcons.zap,
-    accentColor: Color(0xFFF59E0B),
+    accentColor: Color(0xFFF59E0B),,
+    subCategories: ['Montaj', 'Rozetka va chiroq', 'Diagnostika', 'Shoshilinch']
   );
   static const cleaner = ProviderCategoryConfig(
     registrationId: 'cleaner',
     categoryKey: 'tozalash',
     title: 'Tozalash',
     icon: LucideIcons.sprayCan,
-    accentColor: Color(0xFF10B981),
+    accentColor: Color(0xFF10B981),,
+    subCategories: ['Uy tozalash', 'Ofis tozalash', 'Gilam yuvish', 'Deraza yuvish']
   );
   static const auto = ProviderCategoryConfig(
     registrationId: 'auto',
     categoryKey: 'avtoYordam',
     title: 'Avto-yordam',
     icon: LucideIcons.car,
-    accentColor: Color(0xFF8B5CF6),
+    accentColor: Color(0xFF8B5CF6),,
+    subCategories: ['Evakuator', 'Shina montaj', 'Diagnostika', 'Mator ustasi', 'Xodovoy']
   );
   static const futbol = ProviderCategoryConfig(
     registrationId: 'futbol',
     categoryKey: 'futbol',
     title: 'Futbol maydoni',
     icon: LucideIcons.trophy,
-    accentColor: Color(0xFF22C55E),
+    accentColor: Color(0xFF22C55E),,
+    subCategories: ['Yopiq maydon', 'Ochiq maydon', 'Mini futbol']
   );
   static const education = ProviderCategoryConfig(
     registrationId: 'education',
     categoryKey: 'repetitor',
     title: 'O\'quv markazi',
     icon: LucideIcons.graduationCap,
-    accentColor: Color(0xFF6366F1),
+    accentColor: Color(0xFF6366F1),,
+    subCategories: ['Maktab fanlari', 'Tillar', 'IT', 'Musiqa']
   );
   static const builder = ProviderCategoryConfig(
     registrationId: 'builder',
@@ -105,55 +112,63 @@ class ProviderCategoryConfig {
     title: 'Usta',
     icon: LucideIcons.hammer,
     accentColor: Color(0xFF78716C),
+    subCategories: ['Pardozlash', 'Qurilish', 'Santexnika', 'Elektrika', 'Boshqa'],
   );
   static const worker = ProviderCategoryConfig(
     registrationId: 'worker',
     categoryKey: 'ishchi',
     title: 'Ishchi',
     icon: LucideIcons.hardHat,
-    accentColor: Color(0xFFF97316),
+    accentColor: Color(0xFFF97316),,
+    subCategories: ['Yuk tashuvchi', 'Qurilish yordamchisi', 'Bog\'bon', 'Qorovul']
   );
   static const ac = ProviderCategoryConfig(
     registrationId: 'ac',
     categoryKey: 'konditsioner',
     title: 'Konditsioner',
     icon: LucideIcons.wind,
-    accentColor: Color(0xFF06B6D4),
+    accentColor: Color(0xFF06B6D4),,
+    subCategories: ['O\'rnatish', 'Ta\'mirlash', 'Tozalash', 'Freon quyish']
   );
   static const nanny = ProviderCategoryConfig(
     registrationId: 'nanny',
     categoryKey: 'enaga',
     title: 'Enaga',
     icon: LucideIcons.baby,
-    accentColor: Color(0xFFF472B6),
+    accentColor: Color(0xFFF472B6),,
+    subCategories: ['Kunduzgi', 'Tungi', 'Soatbay', 'Chaqaloqlar uchun']
   );
   static const tutor = ProviderCategoryConfig(
     registrationId: 'tutor',
     categoryKey: 'repetitor',
     title: 'Repetitor',
     icon: LucideIcons.bookOpen,
-    accentColor: Color(0xFF8B5CF6),
+    accentColor: Color(0xFF8B5CF6),,
+    subCategories: ['Maktab fanlari', 'Tillar', 'IT', 'Musiqa']
   );
   static const disinfection = ProviderCategoryConfig(
     registrationId: 'disinfection',
     categoryKey: 'dezinfeksiya',
     title: 'Dezinfeksiya',
     icon: LucideIcons.shieldCheck,
-    accentColor: Color(0xFF14B8A6),
+    accentColor: Color(0xFF14B8A6),,
+    subCategories: ['Hasharotlar', 'Kemeruvchilar', 'Viruslar']
   );
   static const appliance = ProviderCategoryConfig(
     registrationId: 'appliance',
     categoryKey: 'texnikaUstasi',
     title: 'Texnika ustasi',
     icon: LucideIcons.refrigerator,
-    accentColor: Color(0xFF64748B),
+    accentColor: Color(0xFF64748B),,
+    subCategories: ['Katta texnika', 'Mayda texnika', 'Oshxona texnikasi']
   );
   static const courier = ProviderCategoryConfig(
     registrationId: 'courier',
     categoryKey: 'kuryerlik',
     title: 'Kuryer',
     icon: LucideIcons.package,
-    accentColor: Color(0xFF0EA5E9),
+    accentColor: Color(0xFF0EA5E9),,
+    subCategories: ['Hujjatlar', 'Yuk', 'Piyoda kuryer', 'Avto kuryer']
   );
   static const massage = ProviderCategoryConfig(
     registrationId: 'massage',
@@ -168,21 +183,24 @@ class ProviderCategoryConfig {
     categoryKey: 'hamshira',
     title: 'Hamshira',
     icon: LucideIcons.stethoscope,
-    accentColor: Color(0xFFEF4444),
+    accentColor: Color(0xFFEF4444),,
+    subCategories: ['Ukol', 'Kapelnitsa', 'Qariyalar parvarishi']
   );
   static const dental = ProviderCategoryConfig(
     registrationId: 'dental',
     categoryKey: 'stomatologiya',
     title: 'Stomatologiya',
     icon: LucideIcons.smile,
-    accentColor: Color(0xFF0EA5E9),
+    accentColor: Color(0xFF0EA5E9),,
+    subCategories: ['Terapiya', 'Jarrohlik', 'Ortodontiya', 'Bolalar stomatologi']
   );
   static const events = ProviderCategoryConfig(
     registrationId: 'events',
     categoryKey: 'tadbirlar',
     title: 'Tadbirlar',
     icon: LucideIcons.partyPopper,
-    accentColor: Color(0xFFA855F7),
+    accentColor: Color(0xFFA855F7),,
+    subCategories: ['To\'y', 'Tug\'ilgan kun', 'Korporativ', 'Fotosessiya']
   );
   static const bozorchi = ProviderCategoryConfig(
     registrationId: 'bozorchi',
@@ -217,7 +235,8 @@ class ProviderCategoryConfig {
     categoryKey: 'kompyuter_usta',
     title: 'Kompyuter Ustasi',
     icon: LucideIcons.monitor,
-    accentColor: Color(0xFF607D8B),
+    accentColor: Color(0xFF607D8B),,
+    subCategories: ['Dasturiy ta\'minot', 'Qurilma ta\'miri', 'Tarmoq', 'Noutbuk ta\'miri']
   );
   static const boshqa = ProviderCategoryConfig(
     registrationId: 'boshqa_xizmatlar',

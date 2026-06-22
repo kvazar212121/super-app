@@ -56,7 +56,9 @@ class AutoMobileService {
   final int providerId;
   final Map<String, dynamic>? rawJson;
 
-  const AutoMobileService({
+  const   final String? subCategory;
+
+  AutoMobileService({
     required this.id,
     required this.name,
     required this.latitude,
@@ -71,6 +73,7 @@ class AutoMobileService {
     this.vehicleType = AutoVehicleType.combo,
     this.providerId = 0,
     this.rawJson,
+      this.subCategory,
   });
 
   bool get isAutoMobile => autoRole == 'mobile';
@@ -115,6 +118,7 @@ class AutoMobileService {
       vehicleType: autoVehicleTypeFromKey(meta['vehicle_type']?.toString()),
       providerId: pid,
       rawJson: json,
+          subCategory: meta['sub_category']?.toString(),
     );
   }
 

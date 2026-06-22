@@ -21,6 +21,7 @@ import '../models/dental_clinic.dart';
 import '../models/event_planning.dart';
 import '../models/service_hub_kind.dart';
 import '../services/hub_data_service.dart';
+import '../services/api_service.dart';
 import '../widgets/hub_map_preview.dart';
 import '../widgets/hub_listing_widgets.dart';
 import '../widgets/service_hub_widgets.dart';
@@ -70,13 +71,22 @@ class ServiceHubScreen extends StatefulWidget {
 }
 
 class _ServiceHubScreenState extends State<ServiceHubScreen> {
-  late Future<HubScreenData> _dataFuture;
+  late Future<Map<String, dynamic>> _initFuture;
   String? _selectedSubCategory;
 
   @override
   void initState() {
     super.initState();
-    _dataFuture = HubDataService().loadFor(widget.kind);
+    _initFuture = _loadData();
+  }
+
+  Future<Map<String, dynamic>> _loadData() async {
+    final d = await HubDataService().loadFor(widget.kind);
+    List<dynamic> cats = [];
+    try {
+      cats = await ApiService().getCategories();
+    } catch (_) {}
+    return {'data': d, 'cats': cats};
   }
 
   @override
@@ -90,21 +100,33 @@ class _ServiceHubScreenState extends State<ServiceHubScreen> {
         ),
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
-          child: FutureBuilder<HubScreenData>(
-            future: _dataFuture,
+          child: FutureBuilder<Map<String, dynamic>>(
+            future: _initFuture,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());
               }
-              final data = snapshot.data ?? HubScreenData();
+              final resultMap = snapshot.data as Map<String, dynamic>? ?? {};
+              final data = resultMap['data'] as HubScreenData? ?? HubScreenData();
+              final cats = resultMap['cats'] as List<dynamic>? ?? [];
+
               final config = ProviderCategoryConfig.byCategoryKey(widget.kind.name);
-              final subCategories = config?.subCategories ?? [];
+              List<String> subCategories = config?.subCategories ?? [];
+              
+              for (final c in cats) {
+                if (c['key'] == widget.kind.name) {
+                  final variants = c['variants'] as List<dynamic>? ?? [];
+                  if (variants.isNotEmpty) {
+                    subCategories = variants.map((v) => v['label_uz']?.toString() ?? '').where((s) => s.isNotEmpty).toList();
+                  }
+                  break;
+                }
+              }
               
               final filteredData = _filterData(data);
 
               return Column(
                 children: [
-                  _MapSection(kind: widget.kind, accentColor: widget.accentColor, data: filteredData),
                   if (subCategories.isNotEmpty) ...[
                     const SizedBox(height: 12),
                     HubCategoryChips(
@@ -117,7 +139,9 @@ class _ServiceHubScreenState extends State<ServiceHubScreen> {
                       },
                       accentColor: widget.accentColor,
                     ),
+                    const SizedBox(height: 12),
                   ],
+                  _MapSection(kind: widget.kind, accentColor: widget.accentColor, data: filteredData),
                   Expanded(child: _ActionList(kind: widget.kind, accentColor: widget.accentColor, data: filteredData)),
                 ],
               );
@@ -132,29 +156,32 @@ class _ServiceHubScreenState extends State<ServiceHubScreen> {
     if (_selectedSubCategory == null) return data;
 
     final filtered = HubScreenData();
-    // Copy and filter lists where applicable
+    // Apply filter to all lists
     filtered.barberShops = data.barberShops.where((e) => e.subCategory == _selectedSubCategory).toList();
     filtered.mobileBarbers = data.mobileBarbers.where((e) => e.subCategory == _selectedSubCategory).toList();
     filtered.massage = data.massage.where((e) => e.subCategory == _selectedSubCategory).toList();
+    filtered.masters = data.masters.where((e) => e.subCategory == _selectedSubCategory).toList();
+    filtered.salons = data.salons.where((e) => e.subCategory == _selectedSubCategory).toList();
+    filtered.footballFields = data.footballFields.where((e) => e.subCategory == _selectedSubCategory).toList();
+    filtered.workers = data.workers.where((e) => e.subCategory == _selectedSubCategory).toList();
+    filtered.workshops = data.workshops.where((e) => e.subCategory == _selectedSubCategory).toList();
+    filtered.autoMobile = data.autoMobile.where((e) => e.subCategory == _selectedSubCategory).toList();
+    filtered.educationCenters = data.educationCenters.where((e) => e.subCategory == _selectedSubCategory).toList();
+    filtered.disinfection = data.disinfection.where((e) => e.subCategory == _selectedSubCategory).toList();
+    filtered.appliance = data.appliance.where((e) => e.subCategory == _selectedSubCategory).toList();
+    filtered.couriers = data.couriers.where((e) => e.subCategory == _selectedSubCategory).toList();
+    filtered.nannies = data.nannies.where((e) => e.subCategory == _selectedSubCategory).toList();
+    filtered.tutors = data.tutors.where((e) => e.subCategory == _selectedSubCategory).toList();
+    filtered.nurses = data.nurses.where((e) => e.subCategory == _selectedSubCategory).toList();
+    filtered.dentalClinics = data.dentalClinics.where((e) => e.subCategory == _selectedSubCategory).toList();
+    filtered.events = data.events.where((e) => e.subCategory == _selectedSubCategory).toList();
+    filtered.mobileStylists = data.mobileStylists.where((e) => e.subCategory == _selectedSubCategory).toList();
     
-    // Pass other lists unchanged (we only filter those that support subCategory right now)
-    filtered.salons = data.salons;
-    filtered.footballFields = data.footballFields;
-    filtered.masters = data.masters;
-    filtered.workers = data.workers;
-    filtered.workshops = data.workshops;
-    filtered.autoMobile = data.autoMobile;
-    filtered.educationCenters = data.educationCenters;
-    filtered.disinfection = data.disinfection;
-    filtered.appliance = data.appliance;
-    filtered.couriers = data.couriers;
-    filtered.nannies = data.nannies;
-    filtered.tutors = data.tutors;
-    filtered.nurses = data.nurses;
-    filtered.dentalClinics = data.dentalClinics;
-    filtered.events = data.events;
-    filtered.mobileStylists = data.mobileStylists;
-    filtered.genericProviders = data.genericProviders;
+    filtered.genericProviders = data.genericProviders.where((e) {
+      final meta = e['metadata'] as Map<String, dynamic>?;
+      if (meta == null) return false;
+      return meta['sub_category'] == _selectedSubCategory;
+    }).toList();
 
     return filtered;
   }

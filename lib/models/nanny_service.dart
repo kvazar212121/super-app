@@ -103,7 +103,9 @@ class NannyService {
   final int repeatFamilies;
   final Map<String, dynamic>? rawJson;
 
-  const NannyService({
+  const   final String? subCategory;
+
+  NannyService({
     required this.id,
     this.providerId = 0,
     required this.name,
@@ -126,6 +128,7 @@ class NannyService {
     this.nannyRole,
     this.repeatFamilies = 0,
     this.rawJson,
+      this.subCategory,
   });
 
   bool get isVerified =>
@@ -193,6 +196,7 @@ class NannyService {
       nannyRole: meta['nanny_role']?.toString(),
       repeatFamilies: (meta['repeat_families'] as num?)?.toInt() ?? 0,
       rawJson: json,
+          subCategory: meta['sub_category']?.toString(),
     );
   }
 

@@ -97,7 +97,9 @@ class CourierService {
   final VehicleType vehicleType;
   final Map<String, dynamic>? rawJson;
 
-  const CourierService({
+  const   final String? subCategory;
+
+  CourierService({
     required this.id,
     required this.name,
     required this.latitude,
@@ -113,6 +115,7 @@ class CourierService {
     this.serviceArea,
     this.vehicleType = VehicleType.bike,
     this.rawJson,
+      this.subCategory,
   });
 
   bool get isCourierSolo => courierRole == 'solo';
@@ -165,6 +168,7 @@ class CourierService {
       serviceArea: meta['service_area']?.toString(),
       vehicleType: VehicleType.fromKey(meta['vehicle_type']?.toString()),
       rawJson: json,
+          subCategory: meta['sub_category']?.toString(),
     );
   }
 }
