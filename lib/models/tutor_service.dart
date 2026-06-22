@@ -52,6 +52,7 @@ class TutorService {
   final List<String> services;
   final Map<String, double> prices;
   final List<String> timeSlots;
+  final Map<String, dynamic>? rawJson;
 
   const TutorService({
     required this.id,
@@ -70,6 +71,7 @@ class TutorService {
     this.services = const [],
     this.prices = const {},
     this.timeSlots = const [],
+    this.rawJson,
   });
 
   bool get supportsOnline => lessonModes.contains(LessonMode.online);
@@ -116,6 +118,7 @@ class TutorService {
       timeSlots: (meta['time_slots'] as List<dynamic>? ?? [])
           .map((e) => e.toString())
           .toList(),
+      rawJson: json,
     );
   }
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../models/massage_hijoma.dart';
 import '../../../providers/auth_provider.dart';
+import '../../../config/provider_category_config.dart';
 import '../../../services/massage_portal_service.dart';
 import '../../../utils/phone_utils.dart';
 import '../../provider_side/provider_theme.dart';
@@ -24,6 +25,7 @@ class _MassageRegistrationScreenState extends State<MassageRegistrationScreen> {
   bool _submitting = false;
   String _role = 'solo';
   String _gender = 'both';
+  String? _selectedSubCategory;
 
   final Set<String> _visitModes = {'home_visit', 'at_center'};
   final Set<String> _serviceTypes = {'classic_massage', 'hijoma'};
@@ -77,6 +79,7 @@ class _MassageRegistrationScreenState extends State<MassageRegistrationScreen> {
         visitModes: _visitModes.toList(),
         serviceTypes: _serviceTypes.toList(),
         gender: _gender,
+        subCategory: _selectedSubCategory,
       );
       if (!mounted) return;
       Navigator.pushAndRemoveUntil(
@@ -140,6 +143,18 @@ class _MassageRegistrationScreenState extends State<MassageRegistrationScreen> {
                 keyboardType: TextInputType.phone,
               ),
               const SizedBox(height: 16),
+              if (ProviderCategoryConfig.massage.subCategories != null &&
+                  ProviderCategoryConfig.massage.subCategories!.isNotEmpty) ...[
+                DropdownButtonFormField<String>(
+                  decoration: const InputDecoration(labelText: 'Kategoriya tanlang'),
+                  value: _selectedSubCategory,
+                  items: ProviderCategoryConfig.massage.subCategories!
+                      .map((sc) => DropdownMenuItem(value: sc, child: Text(sc)))
+                      .toList(),
+                  onChanged: (val) => setState(() => _selectedSubCategory = val),
+                ),
+                const SizedBox(height: 16),
+              ],
               TextField(
                 controller: _areaCtrl,
                 decoration: const InputDecoration(

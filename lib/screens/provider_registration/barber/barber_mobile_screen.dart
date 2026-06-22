@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../providers/auth_provider.dart';
+import '../../../config/provider_category_config.dart';
 import '../../../services/barber_portal_service.dart';
 import '../../../utils/phone_utils.dart';
 import '../../provider_side/provider_theme.dart';
@@ -18,6 +19,7 @@ class _BarberMobileScreenState extends State<BarberMobileScreen> {
   final _phoneCtrl = TextEditingController();
   final _areaCtrl = TextEditingController();
   bool _submitting = false;
+  String? _selectedSubCategory;
 
   @override
   void dispose() {
@@ -50,6 +52,7 @@ class _BarberMobileScreenState extends State<BarberMobileScreen> {
         name: name,
         phone: phone,
         serviceArea: area,
+        subCategory: _selectedSubCategory,
       );
       if (!mounted) return;
       Navigator.pushAndRemoveUntil(
@@ -107,7 +110,20 @@ class _BarberMobileScreenState extends State<BarberMobileScreen> {
                   hintText: 'Masalan: Toshkent, Chilonzor, Yunusobod',
                 ),
               ),
-              const SizedBox(height: 32),
+              const SizedBox(height: 16),
+              if (ProviderCategoryConfig.barber.subCategories != null &&
+                  ProviderCategoryConfig.barber.subCategories!.isNotEmpty) ...[
+                DropdownButtonFormField<String>(
+                  decoration: const InputDecoration(labelText: 'Kategoriya tanlang'),
+                  value: _selectedSubCategory,
+                  items: ProviderCategoryConfig.barber.subCategories!
+                      .map((sc) => DropdownMenuItem(value: sc, child: Text(sc)))
+                      .toList(),
+                  onChanged: (val) => setState(() => _selectedSubCategory = val),
+                ),
+                const SizedBox(height: 16),
+              ],
+              const SizedBox(height: 16),
               SizedBox(
                 width: double.infinity,
                 child: FilledButton(

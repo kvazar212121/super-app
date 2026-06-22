@@ -503,16 +503,12 @@ class _TodoScreenState extends State<TodoScreen> {
               decoration: BoxDecoration(
                 color: isSelected 
                     ? Colors.blueAccent
-                    : isToday 
-                        ? Colors.white
-                        : Colors.white,
+                    : GlassTokens.glassFill(context),
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(
                   color: isSelected 
                       ? Colors.blueAccent
-                      : isToday 
-                          ? Colors.white
-                          : Colors.white,
+                      : GlassTokens.glassBorder(context),
                   width: isSelected ? 1.5 : 1.0,
                 ),
               ),
@@ -566,9 +562,9 @@ class _TodoScreenState extends State<TodoScreen> {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: GlassTokens.glassFill(context),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.white),
+        border: Border.all(color: GlassTokens.glassBorder(context)),
       ),
       child: hasDesc
           ? ClipRRect(

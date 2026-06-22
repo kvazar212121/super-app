@@ -43,6 +43,7 @@ class ApplianceRepair {
   final List<ApplianceType> applianceTypes;
   final Map<String, double> prices;
   final List<String> brands;
+  final Map<String, dynamic>? rawJson;
 
   const ApplianceRepair({
     required this.id,
@@ -55,6 +56,7 @@ class ApplianceRepair {
     required this.applianceTypes,
     required this.prices,
     required this.brands,
+    this.rawJson,
   });
 
   factory ApplianceRepair.fromProviderJson(Map<String, dynamic> json) {
@@ -73,6 +75,7 @@ class ApplianceRepair {
       ],
       prices: const {'Diagnostika': 50000, 'Ta\'mirlash': 150000},
       brands: const ['Samsung', 'LG', 'Artel'],
+      rawJson: json,
     );
   }
 

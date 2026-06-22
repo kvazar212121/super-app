@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:provider/provider.dart';
 
 import '../models/tutor_service.dart';
+import '../models/saved_place_model.dart';
+import '../providers/saved_places_provider.dart';
 import '../theme/glass_tokens.dart';
 import '../widgets/glass/glass_scaffold.dart';
 import '../widgets/glass/glass_surface.dart';
@@ -27,6 +30,57 @@ class TutorProfileScreen extends StatelessWidget {
     return GlassScaffold(
       showBackButton: true,
       title: 'Repetitor profili',
+      actions: [
+        Consumer<SavedPlacesProvider>(
+          builder: (context, savedPlaces, _) {
+            final isSaved = savedPlaces.isSaved(tutor.id);
+            return IconButton(
+              icon: Icon(
+                isSaved ? Icons.favorite : Icons.favorite_border,
+                color: isSaved ? Colors.red : GlassTokens.primaryText(context),
+              ),
+              onPressed: () {
+                final savedItem = SavedPlace(
+                  id: tutor.id,
+                  categoryKey: 'repetitor',
+                  name: tutor.name,
+                  address: tutor.serviceArea ?? tutor.address,
+                  rating: tutor.rating,
+                  type: 'tutor',
+                  rawJson: tutor.rawJson ?? {
+                    'id': tutor.id,
+                    'name': tutor.name,
+                    'phone': tutor.phoneNumber,
+                    'rating': tutor.rating,
+                    'review_count': tutor.reviewCount,
+                    'lat': tutor.latitude,
+                    'lng': tutor.longitude,
+                    'address': tutor.address,
+                    'metadata': {
+                      'type': 'tutor',
+                      'experience_years': tutor.experienceYears,
+                      'subjects': tutor.subjects,
+                      'lesson_modes': tutor.lessonModes.map((m) => m.key).toList(),
+                      'services': tutor.services,
+                      'prices': tutor.prices,
+                      'time_slots': tutor.timeSlots,
+                    }
+                  },
+                );
+                savedPlaces.toggleSave(savedItem);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      isSaved ? 'Sevimli ro\'yxatidan o\'chirildi' : 'Sevimli ro\'yxatiga qo\'shildi',
+                    ),
+                    duration: const Duration(seconds: 1),
+                  ),
+                );
+              },
+            );
+          },
+        ),
+      ],
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: [

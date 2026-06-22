@@ -29,9 +29,12 @@ class AutoWorkshop {
     this.isOpen = true,
     this.autoRole,
     this.providerId = 0,
+    this.rawJson,
   });
 
   bool get isWorkshop => autoRole == 'workshop';
+
+  final Map<String, dynamic>? rawJson;
 
   factory AutoWorkshop.fromProviderJson(Map<String, dynamic> json) {
     final meta = json['metadata'] as Map<String, dynamic>? ?? {};
@@ -72,6 +75,7 @@ class AutoWorkshop {
       prices: prices,
       autoRole: meta['auto_role']?.toString(),
       providerId: pid,
+      rawJson: json,
     );
   }
 

@@ -140,8 +140,9 @@ class FootballField {
   /// Har bir kun uchun vaqt slotlari (hafta kunlari bo'yicha)
   /// Kalit — DateTime.weekday (1=dushanba...7=yakshanba)
   final Map<int, List<TimeSlot>> weeklySlots;
+  final Map<String, dynamic>? rawJson;
 
-  const FootballField({
+  FootballField({
     required this.id,
     required this.name,
     required this.address,
@@ -161,6 +162,7 @@ class FootballField {
     this.hasShowers = false,
     this.hasCafe = false,
     this.weeklySlots = const {},
+    this.rawJson,
   });
 
   /// Backend provider ID.
@@ -204,6 +206,7 @@ class FootballField {
       weeklySlots: slotHours != null && slotHours.isNotEmpty
           ? {for (var d = 1; d <= 7; d++) d: _slotsFromHours(slotHours, basePrice, json['id']?.toString() ?? '')}
           : const {},
+      rawJson: json,
     );
   }
 

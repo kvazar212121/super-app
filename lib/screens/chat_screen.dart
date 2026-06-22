@@ -7,6 +7,8 @@ import '../services/ai_service.dart';
 import '../widgets/glass/glass_scaffold.dart';
 import '../theme/glass_tokens.dart';
 
+enum _VoiceState { idle, recording, processing }
+
 class ChatScreen extends StatefulWidget {
   final bool startVoice;
   const ChatScreen({super.key, this.startVoice = false});
@@ -15,7 +17,7 @@ class ChatScreen extends StatefulWidget {
   State<ChatScreen> createState() => _ChatScreenState();
 }
 
-class _ChatScreenState extends State<ChatScreen> {
+class _ChatScreenState extends State<ChatScreen> with SingleTickerProviderStateMixin {
   final AiService _aiService = AiService();
   final TextEditingController _textController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
@@ -23,6 +25,15 @@ class _ChatScreenState extends State<ChatScreen> {
   final List<Map<String, dynamic>> _chatHistory = [];
   bool _isTyping = false;
   bool _hasText = false;
+
+  // Speech to Text variables
+  _VoiceState _voiceState = _VoiceState.idle;
+  final stt.SpeechToText _speech = stt.SpeechToText();
+  bool _isSpeechInitialized = false;
+  String _speechLocale = 'uz_UZ';
+  
+  late AnimationController _pulseController;
+  late Animation<double> _pulseAnim;
 
   @override
   void initState() {
@@ -32,24 +43,167 @@ class _ChatScreenState extends State<ChatScreen> {
         _hasText = _textController.text.trim().isNotEmpty;
       });
     });
-    // Add initial greeting message
+
+    _pulseController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1000),
+    );
+    _pulseAnim = Tween<double>(begin: 1.0, end: 1.2).animate(
+      CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
+    );
+
     _chatHistory.add({
       'role': 'assistant',
       'content': "Assalomu alaykum! Men HubServis SuperApp'ning sun'iy intellekt yordamchisiman. Ilova bo'yicha qanday savollaringiz bor? Sizga bajonidil yordam beraman. 🤖✨",
     });
 
-    if (widget.startVoice) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        _showVoiceModal();
-      });
-    }
+    _initSpeechEngine().then((_) {
+      if (widget.startVoice) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          _startRecording();
+        });
+      }
+    });
   }
 
   @override
   void dispose() {
+    _pulseController.dispose();
     _textController.dispose();
     _scrollController.dispose();
+    _speech.cancel();
     super.dispose();
+  }
+
+  Future<void> _initSpeechEngine() async {
+    try {
+      bool available = await _speech.initialize(
+        onStatus: (status) {
+          if (status == 'notListening' && _voiceState == _VoiceState.recording && mounted) {
+            _stopRecordingAndSend();
+          }
+        },
+        onError: (error) {
+          debugPrint('Speech error: $error');
+          if (mounted) {
+            _resetVoiceState();
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Ovoz yozishda xatolik yuz berdi: ${error.errorMsg}')),
+            );
+          }
+        },
+      );
+      if (available && mounted) {
+        _isSpeechInitialized = true;
+        try {
+          var locales = await _speech.locales();
+          for (var loc in locales) {
+            if (loc.localeId.startsWith('uz')) {
+              _speechLocale = loc.localeId;
+              break;
+            }
+          }
+        } catch (e) {
+          debugPrint('Locales error: $e');
+        }
+      }
+    } catch (e) {
+      debugPrint('Speech init error: $e');
+    }
+  }
+
+  Future<bool> _requestMicrophonePermission() async {
+    var status = await Permission.microphone.status;
+    if (!status.isGranted) {
+      status = await Permission.microphone.request();
+    }
+    return status.isGranted;
+  }
+
+  void _startRecording() async {
+    if (_voiceState == _VoiceState.recording) return;
+
+    bool hasPermission = await _requestMicrophonePermission();
+    if (!hasPermission) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Mikrofonga ruxsat berilmadi')),
+      );
+      return;
+    }
+
+    if (!_isSpeechInitialized) {
+      await _initSpeechEngine();
+      if (!_isSpeechInitialized) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Ovozli tizim faollashmadi')),
+        );
+        return;
+      }
+    }
+
+    setState(() {
+      _voiceState = _VoiceState.recording;
+      _textController.clear();
+    });
+    _pulseController.repeat(reverse: true);
+
+    try {
+      await _speech.listen(
+        onResult: (result) {
+          if (mounted) {
+            setState(() {
+              _textController.text = result.recognizedWords;
+            });
+          }
+        },
+        localeId: _speechLocale,
+        listenMode: stt.ListenMode.dictation,
+        cancelOnError: false,
+        partialResults: true,
+      );
+    } catch (e) {
+      debugPrint('Speech listen exception: $e');
+      _resetVoiceState();
+    }
+  }
+
+  void _stopRecordingAndSend() async {
+    _pulseController.stop();
+    _pulseController.reset();
+
+    try {
+      await _speech.stop();
+    } catch (e) {
+      debugPrint('Speech stop error: $e');
+    }
+
+    if (!mounted) return;
+
+    final text = _textController.text.trim();
+    if (text.isEmpty) {
+      _resetVoiceState();
+      return;
+    }
+
+    setState(() {
+      _voiceState = _VoiceState.processing;
+    });
+
+    await _sendMessage(text: text, isVoice: true);
+    
+    if (mounted) {
+      _resetVoiceState();
+    }
+  }
+
+  void _resetVoiceState() {
+    if (mounted) {
+      setState(() {
+        _voiceState = _VoiceState.idle;
+      });
+      _pulseController.stop();
+      _pulseController.reset();
+    }
   }
 
   void _scrollToBottom() {
@@ -64,18 +218,18 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
-  Future<void> _sendMessage() async {
-    final text = _textController.text.trim();
-    if (text.isEmpty) return;
+  Future<void> _sendMessage({String? text, bool isVoice = false}) async {
+    final messageText = text ?? _textController.text.trim();
+    if (messageText.isEmpty) return;
 
     setState(() {
-      _chatHistory.add({'role': 'user', 'content': text});
+      _chatHistory.add({'role': 'user', 'content': isVoice ? '🎤 $messageText' : messageText});
       _isTyping = true;
     });
     _textController.clear();
     _scrollToBottom();
 
-    final response = await _aiService.sendMessage(text);
+    final response = await _aiService.sendMessage(messageText);
 
     if (mounted) {
       setState(() {
@@ -84,38 +238,6 @@ class _ChatScreenState extends State<ChatScreen> {
       });
       _scrollToBottom();
     }
-  }
-
-  /// AI ovozli xabar modali — mikrofon bosilganda ochiladi
-  void _showVoiceModal() {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (ctx) => _VoiceMessageModal(
-        onSend: (text) async {
-          // Chat tarixiga qo'shish
-          setState(() {
-            _chatHistory.add({'role': 'user', 'content': '🎤 $text'});
-            _isTyping = true;
-          });
-          _scrollToBottom();
-
-          // AI ga yuborish
-          final response = await _aiService.sendMessage(text);
-
-          if (mounted) {
-            setState(() {
-              _isTyping = false;
-              _chatHistory.add({'role': 'assistant', 'content': response});
-            });
-            _scrollToBottom();
-          }
-
-          return response;
-        },
-      ),
-    );
   }
 
   @override
@@ -213,7 +335,7 @@ class _ChatScreenState extends State<ChatScreen> {
         margin: const EdgeInsets.only(bottom: 16),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         decoration: BoxDecoration(
-          color: isDark ? Colors.white : Colors.white,
+          color: isDark ? const Color(0xFF334155) : Colors.white,
           borderRadius: const BorderRadius.only(
             topLeft: Radius.circular(20),
             topRight: Radius.circular(20),
@@ -239,6 +361,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
   Widget _buildInputArea() {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final isRecording = _voiceState == _VoiceState.recording;
 
     return Container(
       decoration: BoxDecoration(
@@ -259,20 +382,35 @@ class _ChatScreenState extends State<ChatScreen> {
               Expanded(
                 child: Container(
                   decoration: BoxDecoration(
-                    color: isDark ? Colors.black : Colors.grey,
+                    color: isRecording 
+                        ? (isDark ? Colors.red.withOpacity(0.1) : Colors.red.shade50)
+                        : (isDark ? Colors.black : Colors.grey.shade100),
                     borderRadius: BorderRadius.circular(24),
-                    border: Border.all(color: GlassTokens.glassBorder(context)),
+                    border: Border.all(
+                      color: isRecording 
+                          ? Colors.redAccent 
+                          : GlassTokens.glassBorder(context),
+                    ),
                   ),
                   child: TextField(
                     controller: _textController,
-                    style: TextStyle(color: GlassTokens.primaryText(context)),
+                    style: TextStyle(
+                      color: isRecording ? Colors.redAccent : GlassTokens.primaryText(context)
+                    ),
                     maxLines: 3,
                     minLines: 1,
                     textInputAction: TextInputAction.send,
-                    onSubmitted: (_) => _sendMessage(),
+                    onSubmitted: (_) {
+                      if (!isRecording) _sendMessage();
+                    },
+                    readOnly: isRecording,
                     decoration: InputDecoration(
-                      hintText: 'Xabar yozish...',
-                      hintStyle: TextStyle(color: GlassTokens.secondaryText(context)),
+                      hintText: isRecording ? 'Eshitilmoqda...' : 'Xabar yozish...',
+                      hintStyle: TextStyle(
+                        color: isRecording 
+                            ? Colors.redAccent.withOpacity(0.7) 
+                            : GlassTokens.secondaryText(context)
+                      ),
                       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                       border: InputBorder.none,
                     ),
@@ -281,678 +419,58 @@ class _ChatScreenState extends State<ChatScreen> {
               ),
               const SizedBox(width: 12),
               GestureDetector(
-                onTap: _hasText
-                    ? (_isTyping ? null : _sendMessage)
-                    : _showVoiceModal,
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: _hasText
-                          ? [const Color(0xFF8B5CF6), const Color(0xFF3B82F6)]
-                          : [const Color(0xFF10B981), const Color(0xFF059669)],
-                    ),
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: (_hasText ? const Color(0xFF3B82F6) : const Color(0xFF10B981)),
-                        blurRadius: 8,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
-                  ),
-                  child: Icon(
-                    _hasText ? LucideIcons.send : LucideIcons.mic,
-                    color: Colors.white,
-                    size: 20,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-// ══════════════════════════════════════════════════════════
-// Ovozli xabar modali
-// ══════════════════════════════════════════════════════════
-
-enum _VoiceState { idle, recording, sending, response }
-
-class _VoiceMessageModal extends StatefulWidget {
-  final Future<String> Function(String text) onSend;
-
-  const _VoiceMessageModal({required this.onSend});
-
-  @override
-  State<_VoiceMessageModal> createState() => _VoiceMessageModalState();
-}
-
-class _VoiceMessageModalState extends State<_VoiceMessageModal>
-    with SingleTickerProviderStateMixin {
-  _VoiceState _state = _VoiceState.idle;
-  final TextEditingController _voiceTextController = TextEditingController();
-  String _aiResponse = '';
-  String _errorMessage = '';
-
-  late AnimationController _pulseController;
-  late Animation<double> _pulseAnim;
-
-  int _recordSeconds = 0;
-  Timer? _recordTimer;
-
-  final stt.SpeechToText _speech = stt.SpeechToText();
-  bool _isSpeechInitialized = false;
-  String _speechLocale = 'uz_UZ';
-  final ValueNotifier<double> _soundLevel = ValueNotifier<double>(0.0);
-
-  @override
-  void initState() {
-    super.initState();
-    _pulseController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 1200),
-    );
-    _pulseAnim = Tween<double>(begin: 1.0, end: 1.3).animate(
-      CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
-    );
-    _initSpeechEngine();
-  }
-
-  @override
-  void dispose() {
-    _pulseController.dispose();
-    _voiceTextController.dispose();
-    _recordTimer?.cancel();
-    _speech.cancel();
-    _soundLevel.dispose();
-    super.dispose();
-  }
-
-  Future<void> _initSpeechEngine() async {
-    try {
-      bool available = await _speech.initialize(
-        onStatus: (status) {
-          debugPrint('Speech status: $status');
-          if (status == 'notListening' && _state == _VoiceState.recording && mounted) {
-            _stopRecording();
-          }
-        },
-        onError: (error) {
-          debugPrint('Speech error: $error');
-          if (mounted) {
-            setState(() {
-              _errorMessage = 'Ovoz yozishda xatolik: ${error.errorMsg}';
-            });
-          }
-        },
-      );
-      if (available && mounted) {
-        setState(() {
-          _isSpeechInitialized = true;
-        });
-        
-        try {
-          var locales = await _speech.locales();
-          for (var loc in locales) {
-            if (loc.localeId.startsWith('uz')) {
-              _speechLocale = loc.localeId;
-              break;
-            }
-          }
-        } catch (e) {
-          debugPrint('Locales fetching error: $e');
-        }
-      }
-    } catch (e) {
-      debugPrint('Speech init exception: $e');
-    }
-  }
-
-  Future<bool> _requestMicrophonePermission() async {
-    var status = await Permission.microphone.status;
-    if (!status.isGranted) {
-      status = await Permission.microphone.request();
-    }
-    return status.isGranted;
-  }
-
-  void _startRecording() async {
-    bool hasPermission = await _requestMicrophonePermission();
-    if (!hasPermission) {
-      setState(() {
-        _errorMessage = 'Mikrofon ruxsati berilmadi';
-      });
-      return;
-    }
-
-    if (!_isSpeechInitialized) {
-      await _initSpeechEngine();
-      if (!_isSpeechInitialized) {
-        setState(() {
-          _errorMessage = 'Ovozli dvigatel faollashmadi';
-        });
-        return;
-      }
-    }
-
-    setState(() {
-      _state = _VoiceState.recording;
-      _recordSeconds = 0;
-      _errorMessage = '';
-      _voiceTextController.clear();
-    });
-    _pulseController.repeat(reverse: true);
-
-    _recordTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (mounted) {
-        setState(() => _recordSeconds++);
-      }
-    });
-
-    try {
-      await _speech.listen(
-        onResult: (result) {
-          if (mounted) {
-            setState(() {
-              _voiceTextController.text = result.recognizedWords;
-            });
-          }
-        },
-        onSoundLevelChange: (level) {
-          _soundLevel.value = level;
-        },
-        localeId: _speechLocale,
-        listenMode: stt.ListenMode.dictation,
-        cancelOnError: false,
-        partialResults: true,
-      );
-    } catch (e) {
-      debugPrint('Speech listen exception: $e');
-      setState(() {
-        _errorMessage = 'Mikrofondan ma\'lumot oqimi xatosi';
-      });
-    }
-  }
-
-  void _stopRecording() async {
-    _recordTimer?.cancel();
-    _pulseController.stop();
-    _pulseController.reset();
-    _soundLevel.value = 0.0;
-
-    try {
-      await _speech.stop();
-    } catch (e) {
-      debugPrint('Speech stop error: $e');
-    }
-
-    await Future.delayed(const Duration(milliseconds: 300));
-
-    final text = _voiceTextController.text.trim();
-    if (text.isEmpty) {
-      setState(() {
-        _state = _VoiceState.idle;
-        _errorMessage = 'Hech narsa eshitilmadi. Iltimos qayta urining';
-      });
-      return;
-    }
-
-    _sendToAI(text);
-  }
-
-  Future<void> _sendToAI(String text) async {
-    setState(() => _state = _VoiceState.sending);
-
-    try {
-      final response = await widget.onSend(text);
-      if (mounted) {
-        setState(() {
-          _aiResponse = response;
-          _state = _VoiceState.response;
-        });
-
-        // 5 soniyadan keyin avtomatik yopish
-        Future.delayed(const Duration(seconds: 5), () {
-          if (mounted && _state == _VoiceState.response) {
-            Navigator.of(context).pop();
-          }
-        });
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          _state = _VoiceState.idle;
-          _errorMessage = 'Xatolik yuz berdi';
-        });
-      }
-    }
-  }
-
-  String get _formattedTime {
-    final m = (_recordSeconds ~/ 60).toString().padLeft(2, '0');
-    final s = (_recordSeconds % 60).toString().padLeft(2, '0');
-    return '$m:$s';
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
-    return Container(
-      margin: const EdgeInsets.all(16),
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF1E293B) : Colors.white,
-        borderRadius: BorderRadius.circular(28),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black,
-            blurRadius: 30,
-            offset: const Offset(0, -5),
-          ),
-        ],
-        border: Border.all(
-          color: isDark
-              ? Colors.white
-              : Colors.grey,
-        ),
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // Sarlavha
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFF8B5CF6), Color(0xFF3B82F6)],
-                  ),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: const Icon(LucideIcons.bot, color: Colors.white, size: 20),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Text(
-                  'AI Ovozli xabar',
-                  style: TextStyle(
-                    color: GlassTokens.primaryText(context),
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ),
-              IconButton(
-                onPressed: () => Navigator.pop(context),
-                icon: Icon(
-                  LucideIcons.x,
-                  color: GlassTokens.secondaryText(context),
-                  size: 20,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 20),
-
-          // Asosiy kontent — holatga qarab
-          if (_state == _VoiceState.idle) _buildIdleState(),
-          if (_state == _VoiceState.recording) _buildRecordingState(),
-          if (_state == _VoiceState.sending) _buildSendingState(),
-          if (_state == _VoiceState.response) _buildResponseState(),
-
-          if (_errorMessage.isNotEmpty) ...[
-            const SizedBox(height: 12),
-            Text(
-              _errorMessage,
-              style: TextStyle(color: Colors.red.shade400, fontSize: 13),
-            ),
-          ],
-        ],
-      ),
-    );
-  }
-
-  Widget _buildIdleState() {
-    return Column(
-      children: [
-        Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: const Color(0xFF8B5CF6),
-            ),
-          ),
-          child: TextField(
-            controller: _voiceTextController,
-            maxLines: 3,
-            minLines: 2,
-            style: TextStyle(
-              color: GlassTokens.primaryText(context),
-              fontSize: 15,
-            ),
-            decoration: InputDecoration(
-              hintText: 'AI ga savolingizni yozing...',
-              hintStyle: TextStyle(color: GlassTokens.secondaryText(context)),
-              contentPadding: const EdgeInsets.all(16),
-              border: InputBorder.none,
-              prefixIcon: Padding(
-                padding: const EdgeInsets.only(left: 12, right: 4),
-                child: Icon(
-                  LucideIcons.messageCircle,
-                  color: const Color(0xFF8B5CF6),
-                  size: 20,
-                ),
-              ),
-              prefixIconConstraints: const BoxConstraints(minWidth: 40),
-            ),
-          ),
-        ),
-        const SizedBox(height: 20),
-        GestureDetector(
-          onTap: _startRecording,
-          child: Container(
-            width: 72,
-            height: 72,
-            decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [Color(0xFF10B981), Color(0xFF059669)],
-              ),
-              shape: BoxShape.circle,
-              boxShadow: [
-                BoxShadow(
-                  color: const Color(0xFF10B981),
-                  blurRadius: 16,
-                  offset: const Offset(0, 6),
-                ),
-              ],
-            ),
-            child: const Icon(LucideIcons.mic, color: Colors.white, size: 30),
-          ),
-        ),
-        const SizedBox(height: 12),
-        Text(
-          'Bosing va xabaringizni yozing',
-          style: TextStyle(
-            color: GlassTokens.secondaryText(context),
-            fontSize: 13,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildRecordingState() {
-    return Column(
-      children: [
-        Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: const Color(0xFFEF4444),
-            ),
-          ),
-          child: TextField(
-            controller: _voiceTextController,
-            maxLines: 3,
-            minLines: 2,
-            autofocus: true,
-            style: TextStyle(
-              color: GlassTokens.primaryText(context),
-              fontSize: 15,
-            ),
-            decoration: InputDecoration(
-              hintText: 'Xabaringizni yozing...',
-              hintStyle: TextStyle(color: GlassTokens.secondaryText(context)),
-              contentPadding: const EdgeInsets.all(16),
-              border: InputBorder.none,
-            ),
-          ),
-        ),
-        const SizedBox(height: 20),
-        Text(
-          _formattedTime,
-          style: TextStyle(
-            color: Colors.red.shade400,
-            fontSize: 24,
-            fontWeight: FontWeight.w700,
-            fontFeatures: const [FontFeature.tabularFigures()],
-          ),
-        ),
-        const SizedBox(height: 16),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            // Bekor qilish
-            GestureDetector(
-              onTap: () async {
-                _recordTimer?.cancel();
-                _pulseController.stop();
-                _pulseController.reset();
-                _soundLevel.value = 0.0;
-                try {
-                  await _speech.cancel();
-                } catch (e) {
-                  debugPrint('Speech cancel exception: $e');
-                }
-                setState(() {
-                  _state = _VoiceState.idle;
-                  _voiceTextController.clear();
-                  _errorMessage = '';
-                });
-              },
-              child: Container(
-                width: 52,
-                height: 52,
-                decoration: BoxDecoration(
-                  color: Colors.red,
-                  shape: BoxShape.circle,
-                  border: Border.all(color: Colors.red),
-                ),
-                child: Icon(LucideIcons.x, color: Colors.red.shade400, size: 22),
-              ),
-            ),
-            const SizedBox(width: 24),
-            // Pulsatsiya animatsiyasi
-            ValueListenableBuilder<double>(
-              valueListenable: _soundLevel,
-              builder: (context, level, child) {
-                final soundScale = (level > 0.0 ? level : 0.0) * 0.035;
-                return AnimatedBuilder(
+                onTap: () {
+                  if (_hasText && !isRecording) {
+                    if (!_isTyping) _sendMessage();
+                  } else if (isRecording) {
+                    _stopRecordingAndSend();
+                  } else {
+                    _startRecording();
+                  }
+                },
+                child: AnimatedBuilder(
                   animation: _pulseAnim,
                   builder: (context, child) {
-                    final totalScale = (_pulseAnim.value + soundScale).clamp(1.0, 1.8);
                     return Transform.scale(
-                      scale: totalScale,
-                      child: Container(
-                        width: 72,
-                        height: 72,
+                      scale: isRecording ? _pulseAnim.value : 1.0,
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 200),
+                        padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          gradient: const LinearGradient(
-                            colors: [Color(0xFFEF4444), Color(0xFFDC2626)],
+                          gradient: LinearGradient(
+                            colors: isRecording
+                                ? [const Color(0xFFEF4444), const Color(0xFFDC2626)]
+                                : _hasText
+                                    ? [const Color(0xFF8B5CF6), const Color(0xFF3B82F6)]
+                                    : [const Color(0xFF10B981), const Color(0xFF059669)],
                           ),
                           shape: BoxShape.circle,
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.red.withOpacity(0.4),
-                              blurRadius: 20.0 + (level > 0.0 ? level * 2.5 : 0.0),
-                              spreadRadius: level > 0.0 ? level * 0.6 : 0.0,
-                              offset: const Offset(0, 6),
+                              color: isRecording
+                                  ? Colors.redAccent.withOpacity(0.5)
+                                  : (_hasText ? const Color(0xFF3B82F6) : const Color(0xFF10B981)).withOpacity(0.5),
+                              blurRadius: isRecording ? 12 : 8,
+                              offset: const Offset(0, 4),
                             ),
                           ],
                         ),
-                        child: const Icon(LucideIcons.mic, color: Colors.white, size: 30),
+                        child: Icon(
+                          isRecording 
+                              ? LucideIcons.square // Stop icon 
+                              : (_hasText ? LucideIcons.send : LucideIcons.mic),
+                          color: Colors.white,
+                          size: 20,
+                        ),
                       ),
                     );
-                  },
-                );
-              },
-            ),
-            const SizedBox(width: 24),
-            // Yuborish tugmasi
-            GestureDetector(
-              onTap: _stopRecording,
-              child: Container(
-                width: 52,
-                height: 52,
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFF8B5CF6), Color(0xFF3B82F6)],
-                  ),
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: const Color(0xFF3B82F6),
-                      blurRadius: 12,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
+                  }
                 ),
-                child: const Icon(LucideIcons.send, color: Colors.white, size: 20),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 12),
-        Text(
-          'Yozib bo\'lgach ➡️ yuborish tugmasini bosing',
-          style: TextStyle(
-            color: GlassTokens.secondaryText(context),
-            fontSize: 12,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildSendingState() {
-    return Column(
-      children: [
-        const SizedBox(height: 16),
-        const SizedBox(
-          width: 48,
-          height: 48,
-          child: CircularProgressIndicator(
-            strokeWidth: 3,
-            valueColor: AlwaysStoppedAnimation(Color(0xFF8B5CF6)),
-          ),
-        ),
-        const SizedBox(height: 20),
-        Text(
-          'AI javob yozmoqda...',
-          style: TextStyle(
-            color: GlassTokens.primaryText(context),
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          'Biroz kuting ⏳',
-          style: TextStyle(
-            color: GlassTokens.secondaryText(context),
-            fontSize: 13,
-          ),
-        ),
-        const SizedBox(height: 16),
-      ],
-    );
-  }
-
-  Widget _buildResponseState() {
-    return Column(
-      children: [
-        Container(
-          width: double.infinity,
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-                const Color(0xFF8B5CF6),
-                const Color(0xFF3B82F6),
-              ],
-            ),
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: const Color(0xFF8B5CF6),
-            ),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(6),
-                    decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [Color(0xFF8B5CF6), Color(0xFF3B82F6)],
-                      ),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: const Icon(LucideIcons.bot, color: Colors.white, size: 14),
-                  ),
-                  const SizedBox(width: 8),
-                  const Text(
-                    'AI javobi',
-                    style: TextStyle(
-                      color: Color(0xFF8B5CF6),
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  const Spacer(),
-                  Icon(LucideIcons.check, color: Colors.green.shade400, size: 18),
-                ],
-              ),
-              const SizedBox(height: 12),
-              Text(
-                _aiResponse,
-                style: TextStyle(
-                  color: GlassTokens.primaryText(context),
-                  fontSize: 14,
-                  height: 1.5,
-                ),
-                maxLines: 8,
-                overflow: TextOverflow.ellipsis,
               ),
             ],
           ),
         ),
-        const SizedBox(height: 16),
-        SizedBox(
-          width: double.infinity,
-          child: ElevatedButton.icon(
-            onPressed: () => Navigator.pop(context),
-            icon: const Icon(LucideIcons.check, size: 18),
-            label: const Text('Tayyor'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF10B981),
-              foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(vertical: 14),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(14),
-              ),
-            ),
-          ),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          '5 soniyadan keyin avtomatik yopiladi',
-          style: TextStyle(
-            color: GlassTokens.secondaryText(context),
-            fontSize: 11,
-          ),
-        ),
-      ],
+      ),
     );
   }
 }

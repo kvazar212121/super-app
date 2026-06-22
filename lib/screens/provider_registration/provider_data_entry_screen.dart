@@ -32,6 +32,7 @@ class _ProviderDataEntryScreenState extends State<ProviderDataEntryScreen> {
   final _priceCtrl = TextEditingController();
   final _extraCtrl = TextEditingController();
   bool _submitting = false;
+  String? _selectedSubCategory;
 
   @override
   void dispose() {
@@ -86,6 +87,7 @@ class _ProviderDataEntryScreenState extends State<ProviderDataEntryScreen> {
             if (_hoursCtrl.text.trim().isNotEmpty) 'hours': _hoursCtrl.text.trim(),
             if (_priceCtrl.text.trim().isNotEmpty) 'price_note': _priceCtrl.text.trim(),
             if (_extraCtrl.text.trim().isNotEmpty) 'extra': _extraCtrl.text.trim(),
+            if (_selectedSubCategory != null) 'sub_category': _selectedSubCategory,
           },
         );
       } catch (e) {
@@ -138,6 +140,19 @@ class _ProviderDataEntryScreenState extends State<ProviderDataEntryScreen> {
               ),
             ),
             const SizedBox(height: 24),
+            if (ProviderCategoryConfig.byRegistrationId(widget.categoryId)?.subCategories != null &&
+                ProviderCategoryConfig.byRegistrationId(widget.categoryId)!.subCategories!.isNotEmpty) ...[
+              DropdownButtonFormField<String>(
+                decoration: const InputDecoration(labelText: 'Kategoriya tanlang'),
+                value: _selectedSubCategory,
+                items: ProviderCategoryConfig.byRegistrationId(widget.categoryId)!
+                    .subCategories!
+                    .map((sc) => DropdownMenuItem(value: sc, child: Text(sc)))
+                    .toList(),
+                onChanged: (val) => setState(() => _selectedSubCategory = val),
+              ),
+              const SizedBox(height: 16),
+            ],
             TextField(controller: _nameCtrl, decoration: const InputDecoration(labelText: 'Nomi / Salon nomi')),
             const SizedBox(height: 16),
             TextField(controller: _addressCtrl, decoration: const InputDecoration(labelText: 'Manzil')),

@@ -88,6 +88,7 @@ class NurseService {
   final Map<String, double> prices;
   final String qualifications;
   final List<String> timeSlots;
+  final Map<String, dynamic>? rawJson;
 
   const NurseService({
     required this.id,
@@ -103,6 +104,7 @@ class NurseService {
     required this.prices,
     required this.qualifications,
     this.timeSlots = const [],
+    this.rawJson,
   });
 
   bool get homeVisitOnly => true;
@@ -146,6 +148,7 @@ class NurseService {
       timeSlots: (meta['time_slots'] as List<dynamic>? ?? [])
           .map((e) => e.toString())
           .toList(),
+      rawJson: json,
     );
   }
 }

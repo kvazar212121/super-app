@@ -129,8 +129,10 @@ class MassageHijoma {
   final List<MassageVisitMode> visitModes;
   final double homeVisitFee;
   final List<String> timeSlots;
+  final String? subCategory;
+  final Map<String, dynamic>? rawJson;
 
-  const MassageHijoma({
+  MassageHijoma({
     required this.id,
     this.providerId = 0,
     required this.name,
@@ -148,6 +150,8 @@ class MassageHijoma {
     this.visitModes = const [],
     this.homeVisitFee = 50000,
     this.timeSlots = const [],
+    this.subCategory,
+    this.rawJson,
   });
 
   bool get supportsHomeVisit =>
@@ -213,6 +217,8 @@ class MassageHijoma {
       timeSlots: (meta['time_slots'] as List<dynamic>? ?? [])
           .map((e) => e.toString())
           .toList(),
+      subCategory: meta['sub_category']?.toString(),
+      rawJson: json,
     );
   }
 }

@@ -171,6 +171,7 @@ class EventPlanning {
   final Map<String, double> prices;
   final int maxGuests;
   final List<String> timeSlots;
+  final Map<String, dynamic>? rawJson;
 
   const EventPlanning({
     required this.id,
@@ -189,6 +190,7 @@ class EventPlanning {
     required this.prices,
     this.maxGuests = 500,
     this.timeSlots = const [],
+    this.rawJson,
   });
 
   String get capabilitiesLabel {
@@ -258,6 +260,7 @@ class EventPlanning {
       timeSlots: (meta['time_slots'] as List<dynamic>? ?? [])
           .map((e) => e.toString())
           .toList(),
+      rawJson: json,
     );
   }
 }

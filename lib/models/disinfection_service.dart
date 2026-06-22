@@ -68,6 +68,7 @@ class DisinfectionService {
   final List<ChemicalProduct> chemicals;
   final List<String> timeSlots;
   final bool isCertified;
+  final Map<String, dynamic>? rawJson;
 
   const DisinfectionService({
     required this.id,
@@ -84,6 +85,7 @@ class DisinfectionService {
     required this.chemicals,
     this.timeSlots = const [],
     this.isCertified = false,
+    this.rawJson,
   });
 
   static const _defaultChemicals = [
@@ -143,6 +145,7 @@ class DisinfectionService {
           .map((e) => e.toString())
           .toList(),
       isCertified: meta['is_certified'] == true,
+      rawJson: json,
     );
   }
 }

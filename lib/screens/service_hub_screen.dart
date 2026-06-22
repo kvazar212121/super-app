@@ -26,6 +26,9 @@ import '../widgets/hub_listing_widgets.dart';
 import '../widgets/service_hub_widgets.dart';
 import '../widgets/glass/glass_scaffold.dart';
 import '../theme/glass_tokens.dart';
+import '../widgets/hub/massage_sections.dart';
+import '../config/provider_category_config.dart';
+import '../widgets/hub_category_chips.dart';
 import 'all_categories_screen.dart';
 import 'barber_booking_screen.dart';
 import 'barber_map_screen.dart';
@@ -47,6 +50,7 @@ import 'nanny_profile_screen.dart';
 import 'tutor_profile_screen.dart';
 import 'education_center_booking_screen.dart';
 import 'simple_call_booking_screen.dart';
+import 'service_hub/saved_places_screen.dart';
 
 part 'service_hub/service_hub_map_section.dart';
 part 'service_hub/service_hub_action_list.dart';
@@ -67,6 +71,7 @@ class ServiceHubScreen extends StatefulWidget {
 
 class _ServiceHubScreenState extends State<ServiceHubScreen> {
   late Future<HubScreenData> _dataFuture;
+  String? _selectedSubCategory;
 
   @override
   void initState() {
@@ -92,10 +97,28 @@ class _ServiceHubScreenState extends State<ServiceHubScreen> {
                 return const Center(child: CircularProgressIndicator());
               }
               final data = snapshot.data ?? HubScreenData();
+              final config = ProviderCategoryConfig.byCategoryKey(widget.kind.name);
+              final subCategories = config?.subCategories ?? [];
+              
+              final filteredData = _filterData(data);
+
               return Column(
                 children: [
-                  _MapSection(kind: widget.kind, accentColor: widget.accentColor, data: data),
-                  Expanded(child: _ActionList(kind: widget.kind, accentColor: widget.accentColor, data: data)),
+                  _MapSection(kind: widget.kind, accentColor: widget.accentColor, data: filteredData),
+                  if (subCategories.isNotEmpty) ...[
+                    const SizedBox(height: 12),
+                    HubCategoryChips(
+                      categories: subCategories,
+                      selectedCategory: _selectedSubCategory,
+                      onCategorySelected: (val) {
+                        setState(() {
+                          _selectedSubCategory = val;
+                        });
+                      },
+                      accentColor: widget.accentColor,
+                    ),
+                  ],
+                  Expanded(child: _ActionList(kind: widget.kind, accentColor: widget.accentColor, data: filteredData)),
                 ],
               );
             },
@@ -103,6 +126,37 @@ class _ServiceHubScreenState extends State<ServiceHubScreen> {
         ),
       ),
     );
+  }
+
+  HubScreenData _filterData(HubScreenData data) {
+    if (_selectedSubCategory == null) return data;
+
+    final filtered = HubScreenData();
+    // Copy and filter lists where applicable
+    filtered.barberShops = data.barberShops.where((e) => e.subCategory == _selectedSubCategory).toList();
+    filtered.mobileBarbers = data.mobileBarbers.where((e) => e.subCategory == _selectedSubCategory).toList();
+    filtered.massage = data.massage.where((e) => e.subCategory == _selectedSubCategory).toList();
+    
+    // Pass other lists unchanged (we only filter those that support subCategory right now)
+    filtered.salons = data.salons;
+    filtered.footballFields = data.footballFields;
+    filtered.masters = data.masters;
+    filtered.workers = data.workers;
+    filtered.workshops = data.workshops;
+    filtered.autoMobile = data.autoMobile;
+    filtered.educationCenters = data.educationCenters;
+    filtered.disinfection = data.disinfection;
+    filtered.appliance = data.appliance;
+    filtered.couriers = data.couriers;
+    filtered.nannies = data.nannies;
+    filtered.tutors = data.tutors;
+    filtered.nurses = data.nurses;
+    filtered.dentalClinics = data.dentalClinics;
+    filtered.events = data.events;
+    filtered.mobileStylists = data.mobileStylists;
+    filtered.genericProviders = data.genericProviders;
+
+    return filtered;
   }
 }
 

@@ -12,6 +12,7 @@ class EducationCenter {
   final List<String> services;
   final Map<String, double> prices;
   final List<String> timeSlots;
+  final Map<String, dynamic>? rawJson;
 
   EducationCenter({
     required this.id,
@@ -27,6 +28,7 @@ class EducationCenter {
     this.services = const [],
     this.prices = const {},
     this.timeSlots = const [],
+    this.rawJson,
   });
 
   factory EducationCenter.fromProviderJson(Map<String, dynamic> json) {
@@ -58,6 +60,7 @@ class EducationCenter {
       timeSlots: (meta['time_slots'] as List<dynamic>? ?? [])
           .map((e) => e.toString())
           .toList(),
+      rawJson: json,
     );
   }
 }

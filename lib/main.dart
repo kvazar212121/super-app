@@ -12,6 +12,9 @@ import 'services/callkit_service.dart';
 
 import 'package:flutter/services.dart';
 import 'services/call_history_service.dart';
+import 'services/weather_service.dart';
+
+import 'providers/saved_places_provider.dart';
 
 /// Global navigator key — har qanday joydan CallScreen ochish uchun
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -87,6 +90,9 @@ void main() async {
     }
   };
 
+  // Ob-havo ma'lumotlarini orqa fonda avtomatik yuklashni boshlash (App ochilishini kutib turmasligi uchun await qilinmaydi)
+  WeatherService().prefetchWeather();
+
   initializeDateFormatting('uz_UZ', null).then((_) {
     runApp(const MyApp());
   });
@@ -101,6 +107,7 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => AppProvider()),
+        ChangeNotifierProvider(create: (_) => SavedPlacesProvider()..loadSavedPlaces()),
       ],
       child: Consumer<AppProvider>(
         builder: (context, appProvider, _) {

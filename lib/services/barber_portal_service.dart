@@ -20,6 +20,7 @@ class BarberPortalService {
     required double lng,
     required bool alsoWorksAsBarber,
     String? hours,
+    String? subCategory,
   }) =>
       _api.registerBarberShopOwner(
         name: name,
@@ -29,6 +30,7 @@ class BarberPortalService {
         lng: lng,
         alsoWorksAsBarber: alsoWorksAsBarber,
         hours: hours,
+        subCategory: subCategory,
       );
 
   Future<Map<String, dynamic>> registerMobile({
@@ -36,12 +38,14 @@ class BarberPortalService {
     required String phone,
     required String serviceArea,
     String? address,
+    String? subCategory,
   }) =>
       _api.registerBarberMobile(
         name: name,
         phone: phone,
         serviceArea: serviceArea,
         address: address,
+        subCategory: subCategory,
       );
 
   Future<Map<String, dynamic>> requestJoin({

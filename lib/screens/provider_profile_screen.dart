@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:provider/provider.dart';
 
 import '../models/master_worker.dart';
 import '../models/service_hub_kind.dart';
+import '../models/saved_place_model.dart';
+import '../providers/saved_places_provider.dart';
 import '../screens/master_dispatch_screen.dart';
 import '../theme/glass_tokens.dart';
 import '../widgets/glass/glass_scaffold.dart';
@@ -28,6 +31,61 @@ class ProviderProfileScreen extends StatelessWidget {
     return GlassScaffold(
       showBackButton: true,
       title: 'Profil',
+      actions: [
+        Consumer<SavedPlacesProvider>(
+          builder: (context, savedPlaces, _) {
+            final isSaved = savedPlaces.isSaved(master.id);
+            return IconButton(
+              icon: Icon(
+                isSaved ? Icons.favorite : Icons.favorite_border,
+                color: isSaved ? Colors.red : GlassTokens.primaryText(context),
+              ),
+              onPressed: () {
+                final savedItem = SavedPlace(
+                  id: master.id,
+                  categoryKey: category.name,
+                  name: master.name,
+                  address: master.locationLabel,
+                  rating: master.rating,
+                  type: 'master',
+                  rawJson: master.rawJson ?? {
+                    'id': master.id,
+                    'name': master.name,
+                    'phone': master.phoneNumber,
+                    'rating': master.rating,
+                    'review_count': master.reviewCount,
+                    'lat': master.latitude,
+                    'lng': master.longitude,
+                    'address': master.address,
+                    'metadata': {
+                      'specialty': master.specialty,
+                      'services': master.services,
+                      'prices': master.prices,
+                      'service_area': master.serviceArea,
+                      'is_mobile': master.isHomeVisit,
+                      'cleaner_role': master.cleanerRole,
+                      'master_role': master.masterRole,
+                      'electrician_role': master.electricianRole,
+                      'plumber_role': master.plumberRole,
+                      'ac_role': master.acRole,
+                      'team_size': master.teamSize,
+                    }
+                  },
+                );
+                savedPlaces.toggleSave(savedItem);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      isSaved ? 'Sevimli ro\'yxatidan o\'chirildi' : 'Sevimli ro\'yxatiga qo\'shildi',
+                    ),
+                    duration: const Duration(seconds: 1),
+                  ),
+                );
+              },
+            );
+          },
+        ),
+      ],
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: [

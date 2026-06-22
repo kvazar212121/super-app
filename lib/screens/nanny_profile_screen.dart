@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:provider/provider.dart';
 
 import '../models/service_hub_kind.dart';
+import '../models/saved_place_model.dart';
+import '../providers/saved_places_provider.dart';
 import '../services/call_service.dart';
 import 'calls/call_screen.dart';
 import '../models/nanny_service.dart';
@@ -54,6 +57,61 @@ class _NannyProfileScreenState extends State<NannyProfileScreen> {
     return GlassScaffold(
       showBackButton: true,
       title: 'Enaga profili',
+      actions: [
+        Consumer<SavedPlacesProvider>(
+          builder: (context, savedPlaces, _) {
+            final isSaved = savedPlaces.isSaved(nanny.id);
+            return IconButton(
+              icon: Icon(
+                isSaved ? Icons.favorite : Icons.favorite_border,
+                color: isSaved ? Colors.red : GlassTokens.primaryText(context),
+              ),
+              onPressed: () {
+                final savedItem = SavedPlace(
+                  id: nanny.id,
+                  categoryKey: 'enaga',
+                  name: nanny.name,
+                  address: nanny.serviceArea ?? nanny.address,
+                  rating: nanny.rating,
+                  type: 'nanny',
+                  rawJson: nanny.rawJson ?? {
+                    'id': nanny.id,
+                    'name': nanny.name,
+                    'phone': nanny.phoneNumber,
+                    'rating': nanny.rating,
+                    'review_count': nanny.reviewCount,
+                    'lat': nanny.latitude,
+                    'lng': nanny.longitude,
+                    'address': nanny.address,
+                    'metadata': {
+                      'type': 'nanny',
+                      'experience_years': nanny.experienceYears,
+                      'age_groups': nanny.ageGroups,
+                      'languages': nanny.languages,
+                      'service_types': nanny.serviceTypes.map((t) => t.key).toList(),
+                      'services': nanny.services,
+                      'prices': nanny.prices,
+                      'time_slots': nanny.timeSlots,
+                      'verification_status': nanny.verificationStatus,
+                      'nanny_role': nanny.nannyRole,
+                      'repeat_families': nanny.repeatFamilies,
+                    }
+                  },
+                );
+                savedPlaces.toggleSave(savedItem);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      isSaved ? 'Sevimli ro\'yxatidan o\'chirildi' : 'Sevimli ro\'yxatiga qo\'shildi',
+                    ),
+                    duration: const Duration(seconds: 1),
+                  ),
+                );
+              },
+            );
+          },
+        ),
+      ],
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: [

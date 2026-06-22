@@ -30,6 +30,7 @@ class BeautySalon {
   final List<String> services;
   final Map<String, double> prices;
   final List<SalonStaff> staff;
+  final Map<String, dynamic>? rawJson;
 
   BeautySalon({
     required this.id,
@@ -43,6 +44,7 @@ class BeautySalon {
     required this.services,
     required this.prices,
     required this.staff,
+    this.rawJson,
   });
 
   int get providerId => int.tryParse(id) ?? 0;
@@ -91,6 +93,7 @@ class BeautySalon {
       services: defaultServices,
       prices: prices,
       staff: staff,
+      rawJson: json,
     );
   }
 

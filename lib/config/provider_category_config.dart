@@ -8,6 +8,7 @@ class ProviderCategoryConfig {
   final String title;
   final IconData icon;
   final Color accentColor;
+  final List<String>? subCategories;
 
   const ProviderCategoryConfig({
     required this.registrationId,
@@ -15,6 +16,7 @@ class ProviderCategoryConfig {
     required this.title,
     required this.icon,
     required this.accentColor,
+    this.subCategories,
   });
 
   static const all = [
@@ -46,6 +48,7 @@ class ProviderCategoryConfig {
     title: 'Sartarosh',
     icon: LucideIcons.scissors,
     accentColor: Color(0xFF6366F1),
+    subCategories: ['Oddiy', 'Biznes', 'Class (Premium)'],
   );
   static const salon = ProviderCategoryConfig(
     registrationId: 'salon',
@@ -158,6 +161,7 @@ class ProviderCategoryConfig {
     title: 'Massaj',
     icon: LucideIcons.heartPulse,
     accentColor: Color(0xFFE11D48),
+    subCategories: ['Hijoma', 'Massaj'],
   );
   static const nurse = ProviderCategoryConfig(
     registrationId: 'nurse',

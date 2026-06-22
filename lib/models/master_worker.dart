@@ -21,6 +21,8 @@ class Master {
   final String? plumberRole;
   final String? acRole;
   final int? teamSize;
+  final String? subCategory;
+  final Map<String, dynamic>? rawJson;
 
   Master({
     required this.id,
@@ -43,6 +45,8 @@ class Master {
     this.plumberRole,
     this.acRole,
     this.teamSize,
+    this.subCategory,
+    this.rawJson,
   });
 
   bool get isAcSolo => acRole == 'solo';
@@ -160,6 +164,8 @@ class Master {
       plumberRole: plumberRole,
       acRole: acRole,
       teamSize: teamSize,
+      subCategory: meta['sub_category']?.toString(),
+      rawJson: json,
     );
   }
 

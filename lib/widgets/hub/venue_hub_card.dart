@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:provider/provider.dart';
 
 import '../../models/barber_shop.dart';
 import '../../models/beauty_salon.dart';
 import '../../models/football_field.dart';
+import '../../models/massage_hijoma.dart';
+import '../../models/saved_place_model.dart';
+import '../../providers/saved_places_provider.dart';
 import '../../screens/barber_booking_screen.dart';
 import '../../screens/football_field_booking_screen.dart';
 import '../../theme/glass_tokens.dart';
@@ -101,6 +105,28 @@ class VenueHubCard extends StatelessWidget {
     );
   }
 
+  factory VenueHubCard.fromMassageCenter(
+    MassageHijoma center, {
+    required Color accent,
+    required VoidCallback onTap,
+    double userLat = kDefaultUserLat,
+    double userLng = kDefaultUserLng,
+  }) {
+    final minPrice = center.prices.values.isEmpty ? 50000 : center.prices.values.reduce((a, b) => a < b ? a : b);
+    return VenueHubCard(
+      name: center.name,
+      subtitle: center.address,
+      distanceLabel: formatDistanceKm(distanceKm(userLat, userLng, center.latitude, center.longitude)),
+      priceLabel: '${(minPrice / 1000).round()}k+',
+      rating: center.rating,
+      reviewCount: center.reviewCount,
+      isOpen: true, // Mocking as open for now
+      icon: LucideIcons.heartPulse,
+      accent: accent,
+      onTap: onTap,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -135,97 +161,57 @@ class VenueHubCard extends StatelessWidget {
                     top: 8,
                     right: 8,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 7,
-                        vertical: 3,
-                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                       decoration: BoxDecoration(
-                        color: isOpen
-                            ? const Color(0xFF10B981)
-                            : const Color(0xFF94A3B8),
-                        borderRadius: BorderRadius.circular(8),
+                        color: Colors.black45,
+                        borderRadius: BorderRadius.circular(10),
                       ),
                       child: Text(
-                        isOpen ? 'Ochiq' : 'Yopiq',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 10,
-                          fontWeight: FontWeight.w700,
-                        ),
+                        distanceLabel,
+                        style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
                       ),
                     ),
                   ),
                 ],
               ),
               Padding(
-                padding: const EdgeInsets.fromLTRB(10, 8, 10, 10),
+                padding: const EdgeInsets.all(8.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       name,
+                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontWeight: FontWeight.w800,
-                        fontSize: 13,
-                        color: const Color(0xFF0F172A),
-                      ),
                     ),
-                    const SizedBox(height: 3),
+                    const SizedBox(height: 2),
                     Text(
                       subtitle,
+                      style: const TextStyle(fontSize: 10, color: Colors.grey),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontSize: 11,
-                        color: const Color(0xFF64748B),
-                      ),
                     ),
                     const SizedBox(height: 6),
                     Row(
                       children: [
-                        const Icon(
-                          Icons.star_rounded,
-                          size: 14,
-                          color: Color(0xFFF59E0B),
-                        ),
-                        Text(
-                          rating.toStringAsFixed(1),
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w700,
-                            color: const Color(0xFF0F172A),
-                          ),
-                        ),
-                        Text(
-                          ' ($reviewCount)',
-                          style: const TextStyle(
-                            fontSize: 11,
-                            color: Color(0xFF94A3B8),
-                          ),
-                        ),
-                        const Spacer(),
-                        Icon(LucideIcons.mapPin, size: 11, color: accent),
+                        const Icon(Icons.star, size: 12, color: Colors.amber),
                         const SizedBox(width: 2),
-                        Text(
-                          distanceLabel,
-                          style: TextStyle(
-                            fontSize: 11,
-                            color: accent,
-                            fontWeight: FontWeight.w600,
+                        Text('$rating', style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
+                        Text(' ($reviewCount)', style: const TextStyle(fontSize: 9, color: Colors.grey)),
+                        const Spacer(),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: accent.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: Text(
+                            priceLabel,
+                            style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: accent),
                           ),
                         ),
                       ],
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      priceLabel,
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w700,
-                        color: accent,
-                      ),
                     ),
                   ],
                 ),
@@ -320,6 +306,53 @@ Future<void> showVenuePreviewSheet(
                     ),
                   ],
                 ),
+              ),
+              Consumer<SavedPlacesProvider>(
+                builder: (context, savedPlaces, _) {
+                  final isSaved = savedPlaces.isSaved(shop.id);
+                  return IconButton(
+                    icon: Icon(
+                      isSaved ? Icons.favorite : Icons.favorite_border,
+                      color: isSaved ? Colors.red : GlassTokens.primaryText(context),
+                    ),
+                    onPressed: () {
+                      final savedItem = SavedPlace(
+                        id: shop.id,
+                        categoryKey: 'sartarosh',
+                        name: shop.name,
+                        address: shop.address,
+                        rating: shop.rating,
+                        type: 'barber_shop',
+                        rawJson: shop.rawJson ?? {
+                          'id': shop.id,
+                          'name': shop.name,
+                          'phone': shop.phoneNumber,
+                          'rating': shop.rating,
+                          'review_count': shop.reviewCount,
+                          'lat': shop.latitude,
+                          'lng': shop.longitude,
+                          'address': shop.address,
+                          'metadata': {
+                            'barber_role': (shop.rawJson?['metadata']?['barber_role']) ?? 'shop',
+                            'services': shop.services,
+                            'prices': shop.prices,
+                            'barbers': shop.barbers.map((b) => {'name': b.name, 'rating': b.rating}).toList(),
+                            'owner_user_id': shop.ownerUserId,
+                          }
+                        },
+                      );
+                      savedPlaces.toggleSave(savedItem);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            isSaved ? 'Sevimli ro\'yxatidan o\'chirildi' : 'Sevimli ro\'yxatiga qo\'shildi',
+                          ),
+                          duration: const Duration(seconds: 1),
+                        ),
+                      );
+                    },
+                  );
+                },
               ),
             ],
           ),
@@ -441,18 +474,78 @@ Future<void> showFieldPreviewSheet(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            field.name,
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w800,
-              color: GlassTokens.primaryText(ctx),
-            ),
-          ),
-          const SizedBox(height: 6),
-          Text(
-            field.address,
-            style: TextStyle(color: GlassTokens.secondaryText(ctx)),
+          Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      field.name,
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w800,
+                        color: GlassTokens.primaryText(ctx),
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      field.address,
+                      style: TextStyle(color: GlassTokens.secondaryText(ctx)),
+                    ),
+                  ],
+                ),
+              ),
+              Consumer<SavedPlacesProvider>(
+                builder: (context, savedPlaces, _) {
+                  final isSaved = savedPlaces.isSaved(field.id);
+                  return IconButton(
+                    icon: Icon(
+                      isSaved ? Icons.favorite : Icons.favorite_border,
+                      color: isSaved ? Colors.red : GlassTokens.primaryText(context),
+                    ),
+                    onPressed: () {
+                      final savedItem = SavedPlace(
+                        id: field.id,
+                        categoryKey: 'futbol',
+                        name: field.name,
+                        address: field.address,
+                        rating: field.rating,
+                        type: 'football_field',
+                        rawJson: field.rawJson ?? {
+                          'id': field.id,
+                          'name': field.name,
+                          'phone': field.phoneNumber,
+                          'rating': field.rating,
+                          'review_count': field.reviewCount,
+                          'lat': field.latitude,
+                          'lng': field.longitude,
+                          'address': field.address,
+                          'metadata': {
+                            'size': field.size.name,
+                            'surface': field.surface.name,
+                            'base_price_per_hour': field.basePricePerHour,
+                            'has_lighting': field.hasLighting,
+                            'has_parking': field.hasParking,
+                            'has_showers': field.hasShowers,
+                            'has_cafe': field.hasCafe,
+                          }
+                        },
+                      );
+                      savedPlaces.toggleSave(savedItem);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            isSaved ? 'Sevimli ro\'yxatidan o\'chirildi' : 'Sevimli ro\'yxatiga qo\'shildi',
+                          ),
+                          duration: const Duration(seconds: 1),
+                        ),
+                      );
+                    },
+                  );
+                },
+              ),
+            ],
           ),
           const SizedBox(height: 12),
           Wrap(

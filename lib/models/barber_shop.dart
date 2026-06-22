@@ -32,6 +32,8 @@ class BarberShop {
   final Map<String, double> prices;
   final List<Barber> barbers;
   final int ownerUserId;
+  final String? subCategory;
+  final Map<String, dynamic>? rawJson;
 
   BarberShop({
     required this.id,
@@ -47,6 +49,8 @@ class BarberShop {
     required this.prices,
     required this.barbers,
     this.ownerUserId = 0,
+    this.subCategory,
+    this.rawJson,
   });
 
   /// Backend provider ID (buyurtma yuborish uchun).
@@ -96,6 +100,8 @@ class BarberShop {
         );
       }).toList(),
       ownerUserId: (json['owner_user_id'] as num?)?.toInt() ?? 0,
+      subCategory: meta['sub_category']?.toString(),
+      rawJson: json,
     );
   }
 

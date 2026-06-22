@@ -101,6 +101,7 @@ class NannyService {
   final String verificationStatus;
   final String? nannyRole;
   final int repeatFamilies;
+  final Map<String, dynamic>? rawJson;
 
   const NannyService({
     required this.id,
@@ -124,6 +125,7 @@ class NannyService {
     this.verificationStatus = 'pending',
     this.nannyRole,
     this.repeatFamilies = 0,
+    this.rawJson,
   });
 
   bool get isVerified =>
@@ -190,6 +192,7 @@ class NannyService {
       verificationStatus: meta['verification_status']?.toString() ?? 'pending',
       nannyRole: meta['nanny_role']?.toString(),
       repeatFamilies: (meta['repeat_families'] as num?)?.toInt() ?? 0,
+      rawJson: json,
     );
   }
 

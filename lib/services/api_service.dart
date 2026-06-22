@@ -597,6 +597,7 @@ class ApiService {
     required double lng,
     required bool alsoWorksAsBarber,
     String? hours,
+    String? subCategory,
   }) async {
     final response = await _dio.post('/provider/barber/register/shop-owner', data: {
       'name': name,
@@ -606,6 +607,7 @@ class ApiService {
       'lng': lng,
       'also_works_as_barber': alsoWorksAsBarber,
       if (hours != null) 'hours': hours,
+      if (subCategory != null) 'sub_category': subCategory,
     });
     return response.data as Map<String, dynamic>;
   }
@@ -615,12 +617,14 @@ class ApiService {
     required String phone,
     required String serviceArea,
     String? address,
+    String? subCategory,
   }) async {
     final response = await _dio.post('/provider/barber/register/mobile', data: {
       'name': name,
       'phone': phone,
       'service_area': serviceArea,
       if (address != null) 'address': address,
+      if (subCategory != null) 'sub_category': subCategory,
     });
     return response.data as Map<String, dynamic>;
   }
@@ -1013,6 +1017,7 @@ class ApiService {
     List<String> visitModes = const [],
     List<String> serviceTypes = const [],
     String gender = 'both',
+    String? subCategory,
   }) async {
     final response = await _dio.post('/provider/massage/register', data: {
       'name': name,
@@ -1023,6 +1028,7 @@ class ApiService {
       if (visitModes.isNotEmpty) 'visit_modes': visitModes,
       if (serviceTypes.isNotEmpty) 'service_types': serviceTypes,
       'gender': gender,
+      if (subCategory != null) 'sub_category': subCategory,
     });
     return response.data as Map<String, dynamic>;
   }

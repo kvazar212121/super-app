@@ -37,10 +37,18 @@ class AiService {
         return "Iltimos, avval tizimga kiring.";
       }
 
+      final payloadMessages = List<Map<String, String>>.from(_messages);
+      if (payloadMessages.isNotEmpty && payloadMessages.last['role'] == 'user') {
+        payloadMessages.last = {
+          'role': 'user',
+          'content': "${payloadMessages.last['content']}\n\n[TIZIM MA'LUMOTI: Foydalanuvchining joriy vaqti: ${DateTime.now().toString()} (Timezone: UTC+5). Har qanday reja yoki vazifa yaratishda ushbu vaqtni hisobga oling va vaqtni to'g'ri UTC+5 ga moslab belgilang.]"
+        };
+      }
+
       final response = await _dio.post(
         '/ai/chat',
         data: {
-          'messages': _messages,
+          'messages': payloadMessages,
         },
         options: Options(
           headers: {'Authorization': 'Bearer $token'},
@@ -76,13 +84,13 @@ class AiService {
       if (e.response?.statusCode == 401) {
         return "Iltimos, qayta tizimga kiring.";
       }
-      return "Internet bilan muammo yoki xizmat vaqtincha ishlamayapti.";
+      return "Internet muammosi: ${e.message} ${e.response?.statusCode ?? ''}";
     } catch (e) {
       debugPrint("AI Service Error: $e");
       if (_messages.isNotEmpty && _messages.last['role'] == 'user') {
         _messages.removeLast();
       }
-      return "Kutilmagan xatolik yuz berdi.";
+      return "Kutilmagan xatolik: $e";
     }
   }
 

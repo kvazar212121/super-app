@@ -5,6 +5,7 @@ import '../models/finance_models.dart';
 import '../services/api_service.dart';
 import '../widgets/glass/glass_scaffold.dart';
 import '../theme/glass_tokens.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 const double pi = 3.1415926535897932;
 
@@ -25,6 +26,9 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
   List<FinanceRecord> _records = [];
   List<PlannedPayment> _plannedPayments = [];
 
+  List<String> _customExpenseCategories = [];
+  List<String> _customIncomeCategories = [];
+
   final List<Color> _chartColors = [
     Colors.purpleAccent,
     Colors.cyanAccent,
@@ -39,7 +43,20 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
   @override
   void initState() {
     super.initState();
+    _loadCustomCategories();
     _loadData();
+  }
+
+  Future<void> _loadCustomCategories() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      setState(() {
+        _customExpenseCategories = prefs.getStringList('customExpenseCategories') ?? [];
+        _customIncomeCategories = prefs.getStringList('customIncomeCategories') ?? [];
+      });
+    } catch (e) {
+      debugPrint("SharedPreferences error: $e");
+    }
   }
 
   String _getMonthStr(DateTime dt) {
@@ -187,14 +204,12 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
       {'name': 'Xaridlar', 'icon': LucideIcons.creditCard},
       {'name': 'Kommunal', 'icon': LucideIcons.home},
       {'name': 'Ko\'ngilochar', 'icon': LucideIcons.gamepad2},
-      {'name': 'Boshqa', 'icon': LucideIcons.moreHorizontal},
     ];
 
     final List<Map<String, dynamic>> incomeCategories = [
       {'name': 'Maosh', 'icon': LucideIcons.banknote},
       {'name': 'Biznes', 'icon': LucideIcons.briefcase},
       {'name': 'Keshbek', 'icon': LucideIcons.coins},
-      {'name': 'Boshqa', 'icon': LucideIcons.moreHorizontal},
     ];
 
     showModalBottomSheet(
@@ -207,7 +222,16 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
       builder: (context) {
         return StatefulBuilder(
           builder: (context, setSheetState) {
-            final activeCategories = selectedType == "expense" ? expenseCategories : incomeCategories;
+            final activeCategories = List<Map<String, dynamic>>.from(
+                selectedType == "expense" ? expenseCategories : incomeCategories);
+            
+            final customCats = selectedType == "expense" ? _customExpenseCategories : _customIncomeCategories;
+            for (var c in customCats) {
+              activeCategories.add({'name': c, 'icon': LucideIcons.tag});
+            }
+            activeCategories.add({'name': 'Boshqa', 'icon': LucideIcons.moreHorizontal});
+            activeCategories.add({'name': 'Toifa qo\'shish', 'icon': LucideIcons.plus, 'isAdd': true});
+            
             
             return Padding(
               padding: EdgeInsets.only(
@@ -341,9 +365,13 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
                         
                         return GestureDetector(
                           onTap: () {
-                            setSheetState(() {
-                              selectedCategory = cat['name'];
-                            });
+                            if (cat['isAdd'] == true) {
+                              _showAddCategoryDialog(selectedType, setSheetState);
+                            } else {
+                              setSheetState(() {
+                                selectedCategory = cat['name'];
+                              });
+                            }
                           },
                           child: Container(
                             decoration: BoxDecoration(
@@ -478,6 +506,66 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
       },
     );
   }
+
+  void _showAddCategoryDialog(String type, StateSetter setSheetState) {
+    final catController = TextEditingController();
+    showDialog(
+      context: context,
+      builder: (ctx) {
+        return AlertDialog(
+          backgroundColor: Colors.grey[900],
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          title: const Text('Yangi toifa qo\'shish', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+          content: TextField(
+            controller: catController,
+            style: const TextStyle(color: Colors.white),
+            decoration: InputDecoration(
+              hintText: 'Toifa nomi',
+              hintStyle: const TextStyle(color: Colors.white54),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: const BorderSide(color: Colors.white24),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: const BorderSide(color: Colors.blueAccent),
+              ),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: const Text('Bekor qilish', style: TextStyle(color: Colors.white54)),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blueAccent,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              ),
+              onPressed: () async {
+                final name = catController.text.trim();
+                if (name.isNotEmpty) {
+                  final prefs = await SharedPreferences.getInstance();
+                  if (type == 'expense') {
+                    _customExpenseCategories.add(name);
+                    await prefs.setStringList('customExpenseCategories', _customExpenseCategories);
+                  } else {
+                    _customIncomeCategories.add(name);
+                    await prefs.setStringList('customIncomeCategories', _customIncomeCategories);
+                  }
+                  setSheetState(() {});
+                  setState(() {});
+                }
+                Navigator.pop(ctx);
+              },
+              child: const Text('Qo\'shish', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+            ),
+          ],
+        );
+      }
+    );
+  }
+
 
   void _showAddPlannedPaymentBottomSheet() {
     String? selectedCategory;

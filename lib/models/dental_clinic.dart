@@ -20,6 +20,7 @@ class DentalClinic {
   final Map<String, double> prices;
   final List<DentalDentist> dentists;
   final List<String> timeSlots;
+  final Map<String, dynamic>? rawJson;
 
   const DentalClinic({
     required this.id,
@@ -35,6 +36,7 @@ class DentalClinic {
     required this.prices,
     this.dentists = const [],
     this.timeSlots = const [],
+    this.rawJson,
   });
 
   factory DentalClinic.fromProviderJson(Map<String, dynamic> json) {
@@ -79,6 +81,7 @@ class DentalClinic {
       timeSlots: (meta['time_slots'] as List<dynamic>? ?? [])
           .map((e) => e.toString())
           .toList(),
+      rawJson: json,
     );
   }
 }

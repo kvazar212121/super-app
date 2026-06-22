@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../../../providers/auth_provider.dart';
+import '../../../config/provider_category_config.dart';
 import '../../../services/barber_portal_service.dart';
 import '../../../utils/phone_utils.dart';
 import '../../provider_side/provider_theme.dart';
@@ -25,6 +26,7 @@ class _BarberShopOwnerScreenState extends State<BarberShopOwnerScreen> {
   final _lngCtrl = TextEditingController(text: '69.2401');
   bool _alsoBarber = true;
   bool _submitting = false;
+  String? _selectedSubCategory;
 
   @override
   void dispose() {
@@ -64,6 +66,7 @@ class _BarberShopOwnerScreenState extends State<BarberShopOwnerScreen> {
         lng: double.tryParse(_lngCtrl.text.trim()) ?? 69.2401,
         alsoWorksAsBarber: _alsoBarber,
         hours: _hoursCtrl.text.trim().isEmpty ? null : _hoursCtrl.text.trim(),
+        subCategory: _selectedSubCategory,
       );
       if (!mounted) return;
       Navigator.pushAndRemoveUntil(
@@ -156,7 +159,20 @@ class _BarberShopOwnerScreenState extends State<BarberShopOwnerScreen> {
                 controller: _hoursCtrl,
                 decoration: const InputDecoration(labelText: 'Ish vaqti (ixtiyoriy)'),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 16),
+              if (ProviderCategoryConfig.barber.subCategories != null &&
+                  ProviderCategoryConfig.barber.subCategories!.isNotEmpty) ...[
+                DropdownButtonFormField<String>(
+                  decoration: const InputDecoration(labelText: 'Kategoriya tanlang'),
+                  value: _selectedSubCategory,
+                  items: ProviderCategoryConfig.barber.subCategories!
+                      .map((sc) => DropdownMenuItem(value: sc, child: Text(sc)))
+                      .toList(),
+                  onChanged: (val) => setState(() => _selectedSubCategory = val),
+                ),
+                const SizedBox(height: 16),
+              ],
+              const SizedBox(height: 4),
               SwitchListTile(
                 contentPadding: EdgeInsets.zero,
                 title: const Text('Men ham sartaroshman'),

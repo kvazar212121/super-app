@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../services/api_service.dart';
+import '../services/weather_service.dart';
 import '../theme/glass_tokens.dart';
 
 class WeatherModal extends StatefulWidget {
@@ -13,68 +15,23 @@ class WeatherModal extends StatefulWidget {
 }
 
 class _WeatherModalState extends State<WeatherModal> {
-  final ApiService _api = ApiService();
-  Map<String, dynamic>? weather;
-  bool _loading = true;
-  String _currentCity = 'Tashkent';
+  final WeatherService _weatherService = WeatherService();
+  bool _isRefreshing = false;
 
   @override
   void initState() {
     super.initState();
-    _fetchLocationAndWeather();
-  }
-
-  Future<void> _fetchLocationAndWeather() async {
-    setState(() => _loading = true);
-    try {
-      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-      if (!serviceEnabled) {
-        return _loadWeatherFallback();
-      }
-
-      LocationPermission permission = await Geolocator.checkPermission();
-      if (permission == LocationPermission.denied) {
-        permission = await Geolocator.requestPermission();
-        if (permission == LocationPermission.denied) {
-          return _loadWeatherFallback();
-        }
-      }
-      
-      if (permission == LocationPermission.deniedForever) {
-        return _loadWeatherFallback();
-      }
-
-      Position position = await Geolocator.getCurrentPosition();
-      List<Placemark> placemarks = await placemarkFromCoordinates(position.latitude, position.longitude);
-      
-      if (placemarks.isNotEmpty) {
-        _currentCity = placemarks.first.locality ?? placemarks.first.administrativeArea ?? 'Tashkent';
-      }
-
-      final w = await _api.getWeather(_currentCity, lat: position.latitude, lng: position.longitude);
-      if (mounted) {
-        setState(() {
-          weather = w;
-          _loading = false;
-        });
-      }
-    } catch (e) {
-      _loadWeatherFallback();
+    // Agar ma'lumot hali yo'q bo'lsa, yuklashni kutamiz. Agar bor bo'lsa, srazi ko'rsatamiz.
+    if (!_weatherService.hasData && !_weatherService.isLoading) {
+      _fetchData();
     }
   }
 
-  Future<void> _loadWeatherFallback() async {
-    try {
-      final w = await _api.getWeather('Tashkent');
-      if (mounted) {
-        setState(() {
-          weather = w;
-          _currentCity = 'Tashkent';
-          _loading = false;
-        });
-      }
-    } catch (_) {
-      if (mounted) setState(() => _loading = false);
+  Future<void> _fetchData() async {
+    setState(() => _isRefreshing = true);
+    await _weatherService.prefetchWeather();
+    if (mounted) {
+      setState(() => _isRefreshing = false);
     }
   }
 
@@ -100,18 +57,21 @@ class _WeatherModalState extends State<WeatherModal> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text('Ob-havo ma\'lumoti', style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
-              IconButton(icon: const Icon(LucideIcons.refreshCw), onPressed: _fetchLocationAndWeather),
+              IconButton(icon: const Icon(LucideIcons.refreshCw), onPressed: _fetchData),
             ],
           ),
           const SizedBox(height: 24),
-          if (_loading)
+          if (_weatherService.isLoading || _isRefreshing)
             const Padding(
               padding: EdgeInsets.all(32.0),
               child: Center(child: CircularProgressIndicator()),
             )
-          else if (weather != null)
-            _buildWeatherInfo(theme)
-          else
+          else if (_weatherService.hasData && _weatherService.weather != null) ...[
+            _buildWeatherInfo(theme),
+            const SizedBox(height: 24),
+            if (_weatherService.dailyForecast != null && _weatherService.dailyForecast!.isNotEmpty)
+              _buildDailyForecast(),
+          ] else
             const Center(child: Text("Ma'lumot topilmadi")),
           const SizedBox(height: 32),
         ],
@@ -120,9 +80,10 @@ class _WeatherModalState extends State<WeatherModal> {
   }
 
   Widget _buildWeatherInfo(ThemeData theme) {
-    final temp = weather!['temperature_celsius'] ?? weather!['temperature'] ?? '--';
-    final cond = weather!['condition'] ?? '--';
-    final wind = weather!['windspeed'] ?? '--';
+    final weather = _weatherService.weather!;
+    final temp = weather['temperature_celsius'] ?? weather['temperature'] ?? '--';
+    final cond = weather['condition'] ?? '--';
+    final wind = weather['windspeed'] ?? '--';
     
     return Container(
       padding: const EdgeInsets.all(24),
@@ -143,7 +104,7 @@ class _WeatherModalState extends State<WeatherModal> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(_currentCity, style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold)),
+                  Text(_weatherService.currentCity, style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold)),
                   const SizedBox(height: 4),
                   Text(cond, style: const TextStyle(color: Colors.white70, fontSize: 16)),
                 ],
@@ -172,6 +133,76 @@ class _WeatherModalState extends State<WeatherModal> {
         ],
       ),
     );
+  }
+
+  Widget _buildDailyForecast() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text("7 kunlik prognoz", style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+        const SizedBox(height: 16),
+        Container(
+          height: 150,
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: _weatherService.dailyForecast!.length,
+            itemBuilder: (context, index) {
+              final day = _weatherService.dailyForecast![index];
+              return Container(
+                width: 80,
+                margin: const EdgeInsets.only(right: 12),
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.05),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: Colors.white10),
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(_formatDate(day['date']), style: const TextStyle(color: Colors.white70, fontSize: 12)),
+                    Icon(_getWeatherIcon(day['code']), color: Colors.white, size: 28),
+                    Column(
+                      children: [
+                        Text('${day['max']}°', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                        Text('${day['min']}°', style: const TextStyle(color: Colors.white54, fontSize: 12)),
+                      ],
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  IconData _getWeatherIcon(int code) {
+    if (code == 0) return LucideIcons.sun;
+    if (code == 1 || code == 2) return LucideIcons.cloudSun;
+    if (code == 3) return LucideIcons.cloud;
+    if (code == 45 || code == 48) return LucideIcons.cloudFog;
+    if (code >= 51 && code <= 67) return LucideIcons.cloudRain;
+    if (code >= 71 && code <= 77) return LucideIcons.cloudSnow;
+    if (code >= 80 && code <= 82) return LucideIcons.cloudRain;
+    if (code >= 85 && code <= 86) return LucideIcons.cloudSnow;
+    if (code >= 95 && code <= 99) return LucideIcons.cloudLightning;
+    return LucideIcons.cloud;
+  }
+
+  String _formatDate(String isoDate) {
+    try {
+      final date = DateTime.parse(isoDate);
+      final now = DateTime.now();
+      if (date.year == now.year && date.month == now.month && date.day == now.day) return "Bugun";
+      if (date.year == now.year && date.month == now.month && date.day == now.day + 1) return "Ertaga";
+      
+      const months = ['Yan', 'Fev', 'Mar', 'Apr', 'May', 'Iyun', 'Iyul', 'Avg', 'Sen', 'Okt', 'Noy', 'Dek'];
+      return "${date.day} ${months[date.month - 1]}";
+    } catch (_) {
+      return isoDate;
+    }
   }
 }
 

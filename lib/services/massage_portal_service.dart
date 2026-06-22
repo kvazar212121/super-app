@@ -16,6 +16,7 @@ class MassagePortalService {
     List<String> visitModes = const [],
     List<String> serviceTypes = const [],
     String gender = 'both',
+    String? subCategory,
   }) =>
       _api.registerMassage(
         name: name,
@@ -26,5 +27,6 @@ class MassagePortalService {
         visitModes: visitModes,
         serviceTypes: serviceTypes,
         gender: gender,
+        subCategory: subCategory,
       );
 }
