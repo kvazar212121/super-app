@@ -241,7 +241,7 @@ class _BozorchiDispatchScreenState extends State<BozorchiDispatchScreen> {
             controller: _notesController,
             maxLines: 3,
             decoration: InputDecoration(
-              hintText: 'Sifatli go\\'sht tanlashni unutmang...',
+              hintText: "Sifatli go'sht tanlashni unutmang...",
               hintStyle: TextStyle(color: GlassTokens.secondaryText(context)),
               filled: true,
               fillColor: isDark ? Colors.white.withOpacity(0.05) : Colors.white.withOpacity(0.8),
@@ -265,7 +265,7 @@ class _BozorchiDispatchScreenState extends State<BozorchiDispatchScreen> {
               ),
               child: _isSending
                   ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                  : const Text('Jo\\'natish', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                  : const Text("Jo'natish", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             ),
           ),
           const SizedBox(height: 12),

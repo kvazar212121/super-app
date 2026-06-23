@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:math';
 import 'dart:async';
+import 'package:provider/provider.dart';
+import '../../providers/app_provider.dart';
 import '../../services/call_service.dart';
 import '../../services/ringtone_service.dart';
 import 'post_call_dialogs.dart';
@@ -86,14 +88,16 @@ class _CallScreenState extends State<CallScreen> with TickerProviderStateMixin {
     _callService.onCallEnded = () {
       _stopRingingEffects();
       if (mounted) {
-        PostCallDialogs.show(
+        final appProvider = context.read<AppProvider>();
+        final isProvider = appProvider.user.isProvider && widget.isIncoming;
+        PostCallDialogs.showPostCallDialog(
           context,
+          isProvider,
           _callService.remoteUserId,
           _callService.remoteUserName,
-          widget.isIncoming,
-          _callService.callDuration,
-          widget.isBookingCall,
-          _callService.callCategoryKey,
+          appProvider,
+          isBookingCall: widget.isBookingCall,
+          categoryKey: _callService.callCategoryKey ?? '',
         );
       }
     };

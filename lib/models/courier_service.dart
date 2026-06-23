@@ -97,7 +97,10 @@ class CourierService {
   final VehicleType vehicleType;
   final Map<String, dynamic>? rawJson;
 
-  const   final String? subCategory;
+  final String? subCategory;
+
+    final bool isTravelFeeIncluded;
+  final double travelFee;
 
   CourierService({
     required this.id,
@@ -116,6 +119,8 @@ class CourierService {
     this.vehicleType = VehicleType.bike,
     this.rawJson,
       this.subCategory,
+      this.isTravelFeeIncluded = true,
+    this.travelFee = 0.0,
   });
 
   bool get isCourierSolo => courierRole == 'solo';
@@ -169,6 +174,8 @@ class CourierService {
       vehicleType: VehicleType.fromKey(meta['vehicle_type']?.toString()),
       rawJson: json,
           subCategory: meta['sub_category']?.toString(),
+          isTravelFeeIncluded: meta['is_travel_fee_included'] as bool? ?? true,
+      travelFee: (meta['travel_fee'] as num?)?.toDouble() ?? 0.0,
     );
   }
 }

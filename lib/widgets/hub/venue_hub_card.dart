@@ -193,14 +193,14 @@ class VenueHubCard extends StatelessWidget {
                   children: [
                     Text(
                       name,
-                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Colors.black),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
                     const SizedBox(height: 2),
                     Text(
                       subtitle,
-                      style: const TextStyle(fontSize: 10, color: Colors.grey),
+                      style: const TextStyle(fontSize: 10, color: Colors.black54),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -209,30 +209,37 @@ class VenueHubCard extends StatelessWidget {
                       children: [
                         const Icon(Icons.star, size: 12, color: Colors.amber),
                         const SizedBox(width: 2),
-                        Text('$rating', style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
-                        Text(' ($reviewCount)', style: const TextStyle(fontSize: 9, color: Colors.grey)),
-                        const Spacer(),
+                        Text('$rating', style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.black)),
+                        Text(' ($reviewCount)', style: const TextStyle(fontSize: 9, color: Colors.black54)),
                         if (completedCount > 0) ...[
+                          const SizedBox(width: 4),
                           const Icon(Icons.check_circle, size: 10, color: Colors.green),
                           const SizedBox(width: 2),
                           Text('$completedCount', style: const TextStyle(fontSize: 9, color: Colors.green)),
-                          const SizedBox(width: 4),
                         ],
                         if (cancelledCount > 0) ...[
+                          const SizedBox(width: 4),
                           const Icon(Icons.cancel, size: 10, color: Colors.red),
                           const SizedBox(width: 2),
                           Text('$cancelledCount', style: const TextStyle(fontSize: 9, color: Colors.red)),
-                          const Spacer(),
                         ],
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                          decoration: BoxDecoration(
-                            color: accent.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(6),
-                          ),
-                          child: Text(
-                            priceLabel,
-                            style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: accent),
+                        const SizedBox(width: 4),
+                        Expanded(
+                          child: Align(
+                            alignment: Alignment.centerRight,
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                              decoration: BoxDecoration(
+                                color: accent.withValues(alpha: 0.1),
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              child: Text(
+                                priceLabel,
+                                style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: accent),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
                           ),
                         ),
                       ],

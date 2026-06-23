@@ -44,8 +44,12 @@ class _NannyBookingScreenState extends State<NannyBookingScreen> {
 
   static const _accent = Color(0xFFF472B6);
 
-  double get _selectedPrice =>
-      _selectedService == null ? 0 : (widget.nanny.prices[_selectedService] ?? 100000);
+  double get _selectedPrice {
+    if (_selectedService == null) return 0.0;
+    final base = (widget.nanny.prices[_selectedService] ?? 100000).toDouble();
+    final travel = widget.nanny.isTravelFeeIncluded ? 0.0 : widget.nanny.travelFee;
+    return base + travel;
+  }
 
   bool get _canSubmit =>
       _selectedService != null &&
@@ -142,6 +146,7 @@ class _NannyBookingScreenState extends State<NannyBookingScreen> {
         MapEntry('Enaga', widget.nanny.name),
         MapEntry('Xizmat', _selectedService!),
         MapEntry('Bola', '$childName ($childAge yosh)'),
+        MapEntry("Yo'l kira", widget.nanny.isTravelFeeIncluded ? "Bepul (narx ichida)" : currency.format(widget.nanny.travelFee)),
         MapEntry('Manzil', address),
         if (allergy.isNotEmpty) MapEntry('Allergiya', allergy),
         if (_trialDay) const MapEntry('Sinov kuni', 'Ha'),

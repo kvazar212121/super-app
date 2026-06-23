@@ -12,7 +12,7 @@ import '../providers/app_provider.dart';
 import '../utils/auth_guard.dart';
 import '../widgets/booking_common_widgets.dart';
 import '../widgets/glass/mesh_background.dart';
-import '../services/provider_availability.dart';
+import '../services/provider_availability_service.dart';
 
 class NurseBookingScreen extends StatefulWidget {
   final NurseService service;

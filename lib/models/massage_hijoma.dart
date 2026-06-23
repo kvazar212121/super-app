@@ -3,6 +3,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 /// Qabul usuli — uyga chiqish yoki salonda
 enum MassageVisitMode {
+  homeVisit,
   atCenter;
 
   static MassageVisitMode? fromKey(String key) {
@@ -15,18 +16,22 @@ enum MassageVisitMode {
 
 extension MassageVisitModeX on MassageVisitMode {
   String get key => switch (this) {
+        MassageVisitMode.homeVisit => 'home_visit',
         MassageVisitMode.atCenter => 'at_center',
       };
 
   String get label => switch (this) {
+        MassageVisitMode.homeVisit => 'Uyga chiqish',
         MassageVisitMode.atCenter => 'Salonga borish',
       };
 
   String get shortLabel => switch (this) {
+        MassageVisitMode.homeVisit => 'Chaqirish',
         MassageVisitMode.atCenter => 'Borish',
       };
 
   IconData get icon => switch (this) {
+        MassageVisitMode.homeVisit => LucideIcons.home,
         MassageVisitMode.atCenter => LucideIcons.building2,
       };
 }
@@ -127,6 +132,9 @@ class MassageHijoma {
   final String? subCategory;
   final Map<String, dynamic>? rawJson;
 
+    final bool isTravelFeeIncluded;
+  final double travelFee;
+
   MassageHijoma({
     required this.id,
     this.providerId = 0,
@@ -147,16 +155,18 @@ class MassageHijoma {
     this.timeSlots = const [],
     this.subCategory,
     this.rawJson,
+      this.isTravelFeeIncluded = true,
+    this.travelFee = 0.0,
   });
 
-  bool get supportsHomeVisit => false;
+  bool get supportsHomeVisit => visitModes.contains(MassageVisitMode.homeVisit);
 
   bool get supportsAtCenter => visitModes.contains(MassageVisitMode.atCenter);
 
   bool get isSalon => massageRole == 'salon';
 
   String get visitModesLabel => visitModes.isEmpty
-      ? 'Salonda'
+      ? 'Uyga chiqish, salonda'
       : visitModes.map((m) => m.shortLabel).join(' • ');
 
   @Deprecated('Use visitModes')
@@ -169,7 +179,7 @@ class MassageHijoma {
         .toList();
     var modes = modeKeys.map(MassageVisitMode.fromKey).whereType<MassageVisitMode>().toList();
     if (modes.isEmpty) {
-      modes = [MassageVisitMode.atCenter];
+      modes = [MassageVisitMode.homeVisit, MassageVisitMode.atCenter];
     }
 
     final typeKeys = (meta['service_types'] as List<dynamic>? ?? [])
@@ -213,6 +223,8 @@ class MassageHijoma {
           .toList(),
       subCategory: meta['sub_category']?.toString(),
       rawJson: json,
+          isTravelFeeIncluded: meta['is_travel_fee_included'] as bool? ?? true,
+      travelFee: (meta['travel_fee'] as num?)?.toDouble() ?? 0.0,
     );
   }
 }

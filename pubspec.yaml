@@ -58,7 +58,7 @@ dependencies:
   permission_handler: ^11.3.1
   speech_to_text: ^7.4.0
   firebase_core: ^2.24.2
-  firebase_messaging: ^14.7.19
+  firebase_messaging: ^14.7.10
 
 dev_dependencies:
   flutter_test:

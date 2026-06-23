@@ -56,9 +56,6 @@ class _MassageBookingScreenState extends State<MassageBookingScreen> {
   @override
   void initState() {
     super.initState();
-  @override
-  void initState() {
-    super.initState();
     _visitMode = MassageVisitMode.atCenter;
     _addressCtrl.addListener(() => setState(() {}));
   }
@@ -71,9 +68,10 @@ class _MassageBookingScreenState extends State<MassageBookingScreen> {
 
   double? get _totalPrice {
     if (_selectedPriceOption == null) return null;
-    var total = widget.service.prices[_selectedPriceOption] ?? 0;
+    var total = (widget.service.prices[_selectedPriceOption] ?? 0).toDouble();
     if (_visitMode == MassageVisitMode.homeVisit) {
-      total += widget.service.homeVisitFee;
+      final travel = widget.service.isTravelFeeIncluded ? 0.0 : widget.service.travelFee;
+      total += travel;
     }
     return total;
   }
@@ -139,7 +137,7 @@ class _MassageBookingScreenState extends State<MassageBookingScreen> {
                           border: Border.all(color: accentColor),
                         ),
                         child: Row(
-                          children: [
+                           children: [
                             Icon(LucideIcons.mapPin, color: accentColor, size: 20),
                             const SizedBox(width: 10),
                             Expanded(
@@ -149,6 +147,26 @@ class _MassageBookingScreenState extends State<MassageBookingScreen> {
                               ),
                             ),
                           ],
+                        ),
+                      ),
+                    ],
+                    if (_visitMode == MassageVisitMode.homeVisit) ...[
+                      const SizedBox(height: 16),
+                      BookingInputField(
+                        controller: _addressCtrl,
+                        hint: 'Uy manzili (ko\'cha, uy, kvartira)',
+                        icon: LucideIcons.home,
+                        accent: accentColor,
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        widget.service.isTravelFeeIncluded
+                            ? 'Yo\'l kira: Bepul (narx ichida)'
+                            : 'Yo\'l kira: +${currencyFormat.format(widget.service.travelFee)}',
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          color: widget.service.isTravelFeeIncluded ? Colors.green[800] : Colors.amber[900],
                         ),
                       ),
                     ],
@@ -310,8 +328,16 @@ class _MassageBookingScreenState extends State<MassageBookingScreen> {
             DetailRow(label: 'Turi', value: _selectedServiceType!.label),
             DetailRow(label: 'Paket', value: _selectedPriceOption!),
             DetailRow(label: 'Jinsiyat', value: _selectedGender!.label),
-            if (widget.service.address.isNotEmpty)
-              DetailRow(label: 'Manzil', value: widget.service.address),
+            DetailRow(label: 'Qabul', value: _visitMode!.label),
+            if (_visitMode == MassageVisitMode.homeVisit) ...[
+              DetailRow(
+                label: "Yo'l kira",
+                value: widget.service.isTravelFeeIncluded ? "Bepul (narx ichida)" : currencyFormat.format(widget.service.travelFee),
+              ),
+              DetailRow(label: 'Manzil', value: _addressCtrl.text.trim()),
+            ]
+            else if (widget.service.address.isNotEmpty)
+              DetailRow(label: 'Salon', value: widget.service.address),
             DetailRow(
               label: 'Vaqt',
               value:

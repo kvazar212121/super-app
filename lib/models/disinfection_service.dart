@@ -70,7 +70,10 @@ class DisinfectionService {
   final bool isCertified;
   final Map<String, dynamic>? rawJson;
 
-  const   final String? subCategory;
+  final String? subCategory;
+
+    final bool isTravelFeeIncluded;
+  final double travelFee;
 
   DisinfectionService({
     required this.id,
@@ -89,6 +92,8 @@ class DisinfectionService {
     this.isCertified = false,
     this.rawJson,
       this.subCategory,
+      this.isTravelFeeIncluded = true,
+    this.travelFee = 0.0,
   });
 
   static const _defaultChemicals = [
@@ -150,6 +155,8 @@ class DisinfectionService {
       isCertified: meta['is_certified'] == true,
       rawJson: json,
           subCategory: meta['sub_category']?.toString(),
+          isTravelFeeIncluded: meta['is_travel_fee_included'] as bool? ?? true,
+      travelFee: (meta['travel_fee'] as num?)?.toDouble() ?? 0.0,
     );
   }
 }

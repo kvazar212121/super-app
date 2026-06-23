@@ -44,8 +44,14 @@ class _TutorBookingScreenState extends State<TutorBookingScreen> {
 
   static const _accent = Color(0xFF7C3AED);
 
-  double get _selectedPrice =>
-      _selectedService == null ? 0 : (widget.tutor.prices[_selectedService] ?? 100000);
+  double get _selectedPrice {
+    if (_selectedService == null) return 0.0;
+    final base = (widget.tutor.prices[_selectedService] ?? 100000).toDouble();
+    final travel = (_lessonMode == LessonMode.homeVisit && !widget.tutor.isTravelFeeIncluded)
+        ? widget.tutor.travelFee
+        : 0.0;
+    return base + travel;
+  }
 
   bool get _canSubmit {
     if (_selectedService == null || _selectedTimeSlot == null || _loadingSlots) return false;
@@ -133,7 +139,10 @@ class _TutorBookingScreenState extends State<TutorBookingScreen> {
         MapEntry('Format', _lessonMode!.label),
         MapEntry('O\'quvchi', student),
         if (goal.isNotEmpty) MapEntry('Maqsad', goal),
-        if (_lessonMode == LessonMode.homeVisit) MapEntry('Manzil', address),
+        if (_lessonMode == LessonMode.homeVisit) ...[
+          MapEntry("Yo'l kira", widget.tutor.isTravelFeeIncluded ? "Bepul (narx ichida)" : currency.format(widget.tutor.travelFee)),
+          MapEntry('Manzil', address),
+        ],
         if (_lessonMode == LessonMode.online) MapEntry('Onlayn', online),
         MapEntry('Sana', DateFormat('dd.MM.yyyy').format(_selectedDate)),
         MapEntry('Vaqt', _selectedTimeSlot!),
@@ -274,6 +283,17 @@ class _TutorBookingScreenState extends State<TutorBookingScreen> {
                         hint: 'Uy manzili',
                         icon: LucideIcons.mapPin,
                         accent: _accent,
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        widget.tutor.isTravelFeeIncluded
+                            ? "Yo'l kira: Bepul (narx ichida)"
+                            : "Yo'l kira: +${currency.format(widget.tutor.travelFee)}",
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          color: widget.tutor.isTravelFeeIncluded ? Colors.green[800] : Colors.amber[900],
+                        ),
                       ),
                     ],
                     if (_lessonMode == LessonMode.online) ...[

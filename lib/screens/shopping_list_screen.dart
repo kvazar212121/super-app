@@ -7,6 +7,7 @@ import '../models/service_hub_kind.dart';
 import '../services/hub_data_service.dart';
 import '../widgets/glass/glass_scaffold.dart';
 import '../theme/glass_tokens.dart';
+import '../services/api_service.dart';
 import 'bozorchi_profile_screen.dart';
 
 class ShoppingListScreen extends StatefulWidget {
@@ -805,6 +806,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> with SingleTick
             icon: Icon(LucideIcons.trash2, color: Colors.red.shade400, size: 18),
             onPressed: () => _confirmDelete(listIndex),
           ),
+          children: [
             ...list.items.asMap().entries.map((entry) {
               final itemIndex = entry.key;
               final item = entry.value;
@@ -1139,7 +1141,7 @@ class _BozorchiSelectionSheetState extends State<_BozorchiSelectionSheet> {
                                 children: [
                                   const Icon(Icons.star, color: Colors.amber, size: 14),
                                   const SizedBox(width: 4),
-                                  Text('${b.rating} • Shahar bo\\'ylab'),
+                                  Text('${b.rating} • Shahar bo\'ylab'),
                                 ],
                               ),
                               trailing: FilledButton(

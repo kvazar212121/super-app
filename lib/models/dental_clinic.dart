@@ -27,7 +27,7 @@ class DentalClinic {
   final List<String> timeSlots;
   final Map<String, dynamic>? rawJson;
 
-  const   final String? subCategory;
+  final String? subCategory;
 
   DentalClinic({
     required this.id,

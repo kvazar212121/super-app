@@ -256,7 +256,7 @@ class _MapSection extends StatelessWidget {
             icon: LucideIcons.monitor,
             color: accentColor,
             label: s.name,
-            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => ApplianceBookingScreen(service: s))),
+            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => ApplianceDispatchScreen(service: s))),
           ),
         )));
         break;
@@ -269,7 +269,7 @@ class _MapSection extends StatelessWidget {
             icon: LucideIcons.bike,
             color: accentColor,
             label: s.name,
-            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => CourierBookingScreen(service: s))),
+            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => CourierDispatchScreen(service: s))),
           ),
         )));
         break;

@@ -35,6 +35,8 @@ class _ProviderElectricianSettingsWidgetState extends State<ProviderElectricianS
   bool _loading = true;
   bool _saving = false;
   Map<String, dynamic> _baseMeta = {};
+  bool _isTravelFeeIncluded = true;
+  final _travelFeeCtrl = TextEditingController();
   final List<_ServiceRow> _services = [];
   List<String> _timeSlots = List.of(ProviderAvailability.defaultSlots);
 
@@ -49,6 +51,7 @@ class _ProviderElectricianSettingsWidgetState extends State<ProviderElectricianS
       s.dispose();
     }
     _serviceAreaCtrl.dispose();
+    _travelFeeCtrl.dispose();
     super.dispose();
   }
 
@@ -81,6 +84,9 @@ class _ProviderElectricianSettingsWidgetState extends State<ProviderElectricianS
       s.dispose();
     }
     _services.clear();
+
+    _isTravelFeeIncluded = meta['is_travel_fee_included'] as bool? ?? true;
+    _travelFeeCtrl.text = '${meta['travel_fee'] ?? 0}';
 
     final names = (meta['services'] as List<dynamic>? ?? []).map((e) => e.toString()).toList();
     final prices = Map<String, dynamic>.from(meta['prices'] as Map<String, dynamic>? ?? {});
@@ -126,6 +132,8 @@ class _ProviderElectricianSettingsWidgetState extends State<ProviderElectricianS
         ..['time_slots'] = _timeSlots
         ..['service_area'] = _serviceAreaCtrl.text.trim();
 
+      meta['is_travel_fee_included'] = _isTravelFeeIncluded;
+      meta['travel_fee'] = double.tryParse(_travelFeeCtrl.text.replaceAll(RegExp(r'\D'), '')) ?? 0.0;
       await _portal.updateMetadata(widget.categoryKey, meta);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -227,6 +235,25 @@ class _ProviderElectricianSettingsWidgetState extends State<ProviderElectricianS
           }).toList(),
         ),
         const SizedBox(height: 32),
+        const SizedBox(height: 16),
+        SwitchListTile(
+          contentPadding: EdgeInsets.zero,
+          title: const Text('Yo\'l kira xizmat narxi ichida (bepul)'),
+          value: _isTravelFeeIncluded,
+          onChanged: (val) => setState(() => _isTravelFeeIncluded = val),
+        ),
+        if (!_isTravelFeeIncluded) ...[
+          const SizedBox(height: 12),
+          TextField(
+            controller: _travelFeeCtrl,
+            decoration: const InputDecoration(
+              labelText: 'Yo\'l kira narxi (so\'m)',
+              border: OutlineInputBorder(),
+            ),
+            keyboardType: TextInputType.number,
+          ),
+        ],
+        const SizedBox(height: 16),
         SizedBox(
           width: double.infinity,
           child: FilledButton(

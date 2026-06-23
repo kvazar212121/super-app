@@ -41,6 +41,8 @@ import 'universal_booking_screen.dart';
 import 'disinfection_profile_screen.dart';
 import 'appliance_profile_screen.dart';
 import 'courier_profile_screen.dart';
+import 'appliance_dispatch_screen.dart';
+import 'courier_dispatch_screen.dart';
 import 'auto_mobile_profile_screen.dart';
 import 'auto_workshop_profile_screen.dart';
 import 'massage_booking_screen.dart';
@@ -178,9 +180,12 @@ class _ServiceHubScreenState extends State<ServiceHubScreen> {
     filtered.mobileStylists = data.mobileStylists.where((e) => e.subCategory == _selectedSubCategory).toList();
     
     filtered.genericProviders = data.genericProviders.where((e) {
-      final meta = e['metadata'] as Map<String, dynamic>?;
-      if (meta == null) return false;
-      return meta['sub_category'] == _selectedSubCategory;
+      if (e is Map<String, dynamic>) {
+        final meta = e['metadata'] as Map<String, dynamic>?;
+        if (meta == null) return false;
+        return meta['sub_category'] == _selectedSubCategory;
+      }
+      return true; // Keep objects since they don't have sub_category filtering yet
     }).toList();
 
     return filtered;

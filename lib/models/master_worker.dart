@@ -22,7 +22,11 @@ class Master {
   final String? acRole;
   final int? teamSize;
   final String? subCategory;
+  final String? about;
   final Map<String, dynamic>? rawJson;
+
+    final bool isTravelFeeIncluded;
+  final double travelFee;
 
   Master({
     required this.id,
@@ -46,7 +50,10 @@ class Master {
     this.acRole,
     this.teamSize,
     this.subCategory,
+    this.about,
     this.rawJson,
+      this.isTravelFeeIncluded = true,
+    this.travelFee = 0.0,
   });
 
   bool get isAcSolo => acRole == 'solo';
@@ -165,7 +172,10 @@ class Master {
       acRole: acRole,
       teamSize: teamSize,
       subCategory: meta['sub_category']?.toString(),
+      about: meta['about']?.toString() ?? meta['bio']?.toString() ?? meta['description']?.toString(),
       rawJson: json,
+          isTravelFeeIncluded: meta['is_travel_fee_included'] as bool? ?? true,
+      travelFee: (meta['travel_fee'] as num?)?.toDouble() ?? 0.0,
     );
   }
 
@@ -223,6 +233,7 @@ class Worker {
   final int? experienceYears;
   final List<String> skills;
   final double? price;
+  final String? subCategory;
 
   Worker({
     required this.id,
@@ -237,6 +248,7 @@ class Worker {
     this.experienceYears,
     this.skills = const [],
     this.price,
+    this.subCategory,
   });
 
   factory Worker.fromProviderJson(Map<String, dynamic> json) {
@@ -260,6 +272,7 @@ class Worker {
       experienceYears: int.tryParse(meta['experience_years']?.toString() ?? ''),
       skills: skillsList,
       price: (meta['price'] as num?)?.toDouble(),
+      subCategory: meta['sub_category']?.toString(),
     );
   }
 }

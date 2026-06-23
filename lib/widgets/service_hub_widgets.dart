@@ -419,40 +419,6 @@ class MasterSmallCard extends StatelessWidget {
               context,
               MaterialPageRoute(builder: (_) => BozorchiProfileScreen(bozorchi: master)),
             );
-          } else if (kind == ServiceHubKind.gameZona) {
-            if (d.genericProviders.isNotEmpty) {
-              return _buildHorizontalList(
-                d.genericProviders,
-                (f) => GameZoneSmallCard(zone: f),
-              );
-            }
-            return const SizedBox.shrink();
-          } else if (kind == ServiceHubKind.tadbirlar) {
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (d.genericProviders.isNotEmpty) ...[
-                  const Padding(
-                    padding: EdgeInsets.fromLTRB(16, 8, 16, 8),
-                    child: Text('Tadbir o\'tkazish joylari', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                  ),
-                  _buildHorizontalList(
-                    d.genericProviders,
-                    (f) => EventVenueSmallCard(venue: f),
-                  ),
-                ],
-                if (d.events.isNotEmpty) ...[
-                  const Padding(
-                    padding: EdgeInsets.fromLTRB(16, 16, 16, 8),
-                    child: Text('Tashkilotchi va Brigadalar', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                  ),
-                  _buildHorizontalList(
-                    d.events,
-                    (f) => EventTeamSmallCard(team: f),
-                  ),
-                ],
-              ],
-            );
           } else {
             Navigator.push(
               context,

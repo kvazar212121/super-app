@@ -24,7 +24,6 @@ class _EventTeamProfileScreenState extends State<EventTeamProfileScreen> {
       team.providerId > 0 ? team.providerId : 1, // Fallback for demo
       team.name,
       categoryKey: ServiceHubKind.tadbirlar.name,
-      isBookingCall: false, // Standard hire call, not date/time slot booking
     );
   }
 

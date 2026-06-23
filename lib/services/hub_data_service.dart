@@ -219,7 +219,7 @@ class HubScreenData {
   List<EventPlanning> events = [];
   List<Master> mobileBarbers = [];
   List<Master> mobileStylists = [];
-  List<Map<String, dynamic>> genericProviders = [];
+  List<dynamic> genericProviders = [];
 }
 
 extension HubDataLoader on HubDataService {
