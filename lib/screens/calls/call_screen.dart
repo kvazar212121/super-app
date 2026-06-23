@@ -4,17 +4,20 @@ import 'dart:math';
 import 'dart:async';
 import '../../services/call_service.dart';
 import '../../services/ringtone_service.dart';
+import 'post_call_dialogs.dart';
 
 /// WhatsApp uslubidagi ovozli qo'ng'iroq ekrani.
 /// Jiringlash animatsiyasi, vaqt ko'rsatkichi va boshqaruv tugmalari bilan.
 class CallScreen extends StatefulWidget {
   final bool isIncoming;
   final Map<String, dynamic>? incomingData;
+  final bool isBookingCall;
 
   const CallScreen({
     super.key,
     this.isIncoming = false,
     this.incomingData,
+    this.isBookingCall = true,
   });
 
   @override
@@ -82,7 +85,17 @@ class _CallScreenState extends State<CallScreen> with TickerProviderStateMixin {
 
     _callService.onCallEnded = () {
       _stopRingingEffects();
-      if (mounted) Navigator.of(context).pop();
+      if (mounted) {
+        PostCallDialogs.show(
+          context,
+          _callService.remoteUserId,
+          _callService.remoteUserName,
+          widget.isIncoming,
+          _callService.callDuration,
+          widget.isBookingCall,
+          _callService.callCategoryKey,
+        );
+      }
     };
 
     _callService.onCallAnswered = () {
@@ -137,7 +150,7 @@ class _CallScreenState extends State<CallScreen> with TickerProviderStateMixin {
     _stopRingingEffects();
     RingtoneService().stop();
     _callService.endCall();
-    Navigator.of(context).pop();
+    // Navigator.pop is handled by onCallEnded / PostCallDialogs.show
   }
 
   @override

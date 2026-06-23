@@ -3,9 +3,11 @@ import 'package:flutter/services.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'dart:async';
 import '../models/daily_models.dart';
-import '../services/api_service.dart';
+import '../models/service_hub_kind.dart';
+import '../services/hub_data_service.dart';
 import '../widgets/glass/glass_scaffold.dart';
 import '../theme/glass_tokens.dart';
+import 'bozorchi_profile_screen.dart';
 
 class ShoppingListScreen extends StatefulWidget {
   const ShoppingListScreen({super.key});
@@ -803,12 +805,27 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> with SingleTick
             icon: Icon(LucideIcons.trash2, color: Colors.red.shade400, size: 18),
             onPressed: () => _confirmDelete(listIndex),
           ),
-          children: [
             ...list.items.asMap().entries.map((entry) {
               final itemIndex = entry.key;
               final item = entry.value;
               return _buildSavedItemRow(listIndex, itemIndex, item);
             }),
+            if (!isDone)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: FilledButton.icon(
+                    onPressed: () => _hireBozorchi(list),
+                    icon: const Icon(LucideIcons.shoppingBag),
+                    label: const Text('Bozorchi yollash'),
+                    style: FilledButton.styleFrom(
+                      backgroundColor: Colors.orange.shade700,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    ),
+                  ),
+                ),
+              ),
           ],
         ),
       ),
@@ -987,4 +1004,171 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> with SingleTick
     if (n.contains('kolbasa') || n.contains('sosiska')) return '🌭';
     return '🛍️';
   }
+
+  void _hireBozorchi(ShoppingListModel list) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) => _BozorchiSelectionSheet(list: list),
+    );
+  }
 }
+
+class _BozorchiSelectionSheet extends StatefulWidget {
+  final ShoppingListModel list;
+  const _BozorchiSelectionSheet({required this.list});
+
+  @override
+  State<_BozorchiSelectionSheet> createState() => _BozorchiSelectionSheetState();
+}
+
+class _BozorchiSelectionSheetState extends State<_BozorchiSelectionSheet> {
+  final HubDataService _hubDataService = HubDataService();
+  bool _isLoading = true;
+  List<dynamic> _bozorchilar = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadBozorchilar();
+  }
+
+  Future<void> _loadBozorchilar() async {
+    try {
+      final providers = await _hubDataService.fetchProviders(ServiceHubKind.bozorchi);
+      if (mounted) {
+        setState(() {
+          _bozorchilar = providers;
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      debugPrint('Error fetching bozorchilar: $e');
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    
+    return Container(
+      height: MediaQuery.of(context).size.height * 0.7,
+      decoration: BoxDecoration(
+        color: isDark ? const Color(0xFF1E293B) : Colors.white,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      child: Column(
+        children: [
+          const SizedBox(height: 12),
+          Container(
+            width: 40,
+            height: 4,
+            decoration: BoxDecoration(
+              color: Colors.grey.withOpacity(0.3),
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+          const SizedBox(height: 16),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.orange.withOpacity(0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(LucideIcons.shoppingBag, color: Colors.orange),
+                ),
+                const SizedBox(width: 12),
+                const Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Bo\'sh bozorchilar',
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      ),
+                      Text(
+                        'Ro\'yxatni topshirish uchun tanlang',
+                        style: TextStyle(fontSize: 13, color: Colors.grey),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const Divider(height: 32),
+          Expanded(
+            child: _isLoading
+                ? const Center(child: CircularProgressIndicator(color: Colors.orange))
+                : _bozorchilar.isEmpty
+                    ? const Center(child: Text('Hozircha bo\'sh bozorchilar yo\'q'))
+                    : ListView.builder(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        itemCount: _bozorchilar.length,
+                        itemBuilder: (context, index) {
+                          final b = _bozorchilar[index];
+                          return Card(
+                            elevation: 0,
+                            color: isDark ? Colors.white.withOpacity(0.05) : Colors.grey.shade50,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                              side: BorderSide(color: Colors.grey.withOpacity(0.2)),
+                            ),
+                            margin: const EdgeInsets.only(bottom: 12),
+                            child: ListTile(
+                              contentPadding: const EdgeInsets.all(12),
+                              leading: Stack(
+                                alignment: Alignment.bottomRight,
+                                children: [
+                                  CircleAvatar(
+                                    radius: 24,
+                                    backgroundColor: Colors.orange.withOpacity(0.1),
+                                    child: const Icon(LucideIcons.user, color: Colors.orange),
+                                  ),
+                                  const Icon(Icons.verified, color: Colors.blue, size: 16),
+                                ],
+                              ),
+                              title: Text(b.name, style: const TextStyle(fontWeight: FontWeight.bold)),
+                              subtitle: Row(
+                                children: [
+                                  const Icon(Icons.star, color: Colors.amber, size: 14),
+                                  const SizedBox(width: 4),
+                                  Text('${b.rating} • Shahar bo\\'ylab'),
+                                ],
+                              ),
+                              trailing: FilledButton(
+                                onPressed: () {
+                                  Navigator.pop(context); // Close sheet
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => BozorchiProfileScreen(
+                                        bozorchi: b,
+                                        initialList: widget.list,
+                                      ),
+                                    ),
+                                  );
+                                },
+                                style: FilledButton.styleFrom(
+                                  backgroundColor: Colors.orange,
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                ),
+                                child: const Text('Tanlash'),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+

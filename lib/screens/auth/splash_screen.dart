@@ -5,6 +5,7 @@ import '../../providers/auth_provider.dart';
 import '../../widgets/glass/mesh_background.dart';
 import '../../widgets/hub_servis_brand.dart';
 import '../main_screen.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -58,6 +59,13 @@ class _SplashScreenState extends State<SplashScreen>
   }
 
   Future<void> _checkAuth() async {
+    // Ilova ishga tushishi bilan Joylashuv ruxsatini so'rash
+    try {
+      await Permission.locationWhenInUse.request();
+    } catch (e) {
+      debugPrint('Location permission request error: $e');
+    }
+
     // Start auth check and data fetching in parallel immediately
     final authFuture = () async {
       try {

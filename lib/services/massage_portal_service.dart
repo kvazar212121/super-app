@@ -17,6 +17,7 @@ class MassagePortalService {
     List<String> serviceTypes = const [],
     String gender = 'both',
     String? subCategory,
+    int concurrentCapacity = 1,
   }) =>
       _api.registerMassage(
         name: name,
@@ -28,5 +29,6 @@ class MassagePortalService {
         serviceTypes: serviceTypes,
         gender: gender,
         subCategory: subCategory,
+        concurrentCapacity: concurrentCapacity,
       );
 }

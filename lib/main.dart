@@ -13,6 +13,7 @@ import 'services/callkit_service.dart';
 import 'package:flutter/services.dart';
 import 'services/call_history_service.dart';
 import 'services/weather_service.dart';
+import 'services/firebase_service.dart';
 
 import 'providers/saved_places_provider.dart';
 
@@ -37,6 +38,13 @@ void main() async {
 
   // CallKit tizim darajasidagi qo'ng'iroq UI ni ishga tushirish
   await CallKitService().init();
+
+  // Firebase Orqa fon qo'ng'iroqlarini boshqarishni ishga tushirish
+  try {
+    await FirebaseService().init();
+  } catch (e) {
+    debugPrint("Firebase init failed: $e");
+  }
 
   void safePushCallScreen({required int id, required String name, Map<String, dynamic>? data}) {
     void doPush() {

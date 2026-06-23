@@ -3,6 +3,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 import '../theme/glass_tokens.dart';
+import '../screens/promotion_map_screen.dart';
 
 class HomePromoSection extends StatefulWidget {
   const HomePromoSection({super.key});
@@ -118,10 +119,15 @@ class _HomePromoSectionState extends State<HomePromoSection> {
               padding: const EdgeInsets.only(right: 6),
               child: GestureDetector(
                 onTap: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('${p.title} — tez orada batafsil'),
-                      behavior: SnackBarBehavior.floating,
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => PromotionMapScreen(
+                        title: p.title,
+                        subtitle: p.subtitle,
+                        badge: p.badge,
+                        colors: p.colors,
+                      ),
                     ),
                   );
                 },

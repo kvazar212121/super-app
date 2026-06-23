@@ -8,6 +8,7 @@ class Barber {
   final String imageUrl;
   final double rating;
   final List<String> specializations;
+  final int providerId;
 
   Barber({
     required this.id,
@@ -15,6 +16,7 @@ class Barber {
     required this.imageUrl,
     required this.rating,
     required this.specializations,
+    this.providerId = 0,
   });
 }
 
@@ -97,6 +99,7 @@ class BarberShop {
           imageUrl: '',
           rating: (m['rating'] as num?)?.toDouble() ?? 4.5,
           specializations: defaultServices,
+          providerId: (m['provider_id'] as num?)?.toInt() ?? 0,
         );
       }).toList(),
       ownerUserId: (json['owner_user_id'] as num?)?.toInt() ?? 0,

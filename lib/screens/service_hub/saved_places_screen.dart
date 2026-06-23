@@ -37,11 +37,13 @@ import '../tutor_profile_screen.dart';
 import '../nurse_booking_screen.dart';
 import '../dental_booking_screen.dart';
 import '../event_booking_screen.dart';
-import '../disinfection_booking_screen.dart';
-import '../appliance_booking_screen.dart';
-import '../courier_booking_screen.dart';
-import '../auto_help_booking_screen.dart';
-import '../auto_workshop_booking_screen.dart';
+import '../disinfection_profile_screen.dart';
+import '../appliance_profile_screen.dart';
+import '../courier_profile_screen.dart';
+import '../oshxona_profile_screen.dart';
+import '../bozorchi_profile_screen.dart';
+import '../auto_mobile_profile_screen.dart';
+import '../auto_workshop_profile_screen.dart';
 import '../education_center_booking_screen.dart';
 
 class SavedPlacesScreen extends StatelessWidget {
@@ -248,7 +250,7 @@ class SavedPlacesScreen extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (_) => DisinfectionBookingScreen(service: disinfection),
+            builder: (_) => DisinfectionProfileScreen(service: disinfection),
           ),
         );
         break;
@@ -257,7 +259,7 @@ class SavedPlacesScreen extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (_) => ApplianceBookingScreen(service: appliance),
+            builder: (_) => ApplianceProfileScreen(service: appliance),
           ),
         );
         break;
@@ -266,7 +268,7 @@ class SavedPlacesScreen extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (_) => CourierBookingScreen(service: courier),
+            builder: (_) => CourierProfileScreen(service: courier),
           ),
         );
         break;
@@ -275,7 +277,7 @@ class SavedPlacesScreen extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (_) => AutoHelpBookingScreen(service: autoMobile),
+            builder: (_) => AutoMobileProfileScreen(service: autoMobile),
           ),
         );
         break;
@@ -284,7 +286,7 @@ class SavedPlacesScreen extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (_) => AutoWorkshopBookingScreen(workshop: workshop),
+            builder: (_) => AutoWorkshopProfileScreen(workshop: workshop),
           ),
         );
         break;
@@ -294,6 +296,24 @@ class SavedPlacesScreen extends StatelessWidget {
           context,
           MaterialPageRoute(
             builder: (_) => EducationCenterBookingScreen(center: center),
+          ),
+        );
+        break;
+      case 'oshxona':
+        final oshxona = Master.fromProviderJson(item.rawJson);
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => OshxonaProfileScreen(oshxona: oshxona),
+          ),
+        );
+        break;
+      case 'bozorchi':
+        final bozorchi = Master.fromProviderJson(item.rawJson);
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => BozorchiProfileScreen(bozorchi: bozorchi),
           ),
         );
         break;

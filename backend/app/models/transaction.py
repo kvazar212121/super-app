@@ -12,6 +12,7 @@ class Transaction(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"), nullable=True, index=True)
+    provider_id = Column(Integer, ForeignKey("providers.id", ondelete="SET NULL"), nullable=True, index=True)
     order_id = Column(Integer, ForeignKey("orders.id", ondelete="SET NULL"), nullable=True, index=True)
     
     # income (tushum), expense (xarajat), cashback, commission, payout (provayderga)
@@ -25,4 +26,5 @@ class Transaction(Base):
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), index=True)
 
     user = relationship("User", back_populates="transactions")
+    provider = relationship("Provider", backref="transactions")
     order = relationship("Order", back_populates="transactions")

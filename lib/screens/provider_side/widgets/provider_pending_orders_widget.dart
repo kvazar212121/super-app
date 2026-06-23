@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../services/provider_portal_service.dart';
+import '../../../services/call_service.dart';
+import '../../calls/call_screen.dart';
 
 /// Yangi (pending) buyurtmalar — qabul / rad etish.
 class ProviderPendingOrdersWidget extends StatefulWidget {
@@ -44,10 +46,10 @@ class ProviderPendingOrdersWidgetState
     if (mounted) setState(() => _loading = false);
   }
 
-  Future<void> _respond(int orderId, String status) async {
+  Future<void> _respond(int orderId, String status, {bool? notifiedClient}) async {
     setState(() => _actingId = orderId);
     try {
-      await _portal.updateOrderStatus(widget.categoryKey, orderId, status);
+      await _portal.updateOrderStatus(widget.categoryKey, orderId, status, notifiedClient: notifiedClient);
       await load();
       widget.onChanged?.call();
       if (mounted) {
@@ -69,6 +71,67 @@ class ProviderPendingOrdersWidgetState
       }
     } finally {
       if (mounted) setState(() => _actingId = null);
+    }
+  }
+
+  Future<void> _confirmCancelOrder(int orderId) async {
+    final int? doCancel = await showDialog<int>(
+      context: context,
+      builder: (ctx) {
+        return AlertDialog(
+          title: const Text('Buyurtmani rad etish'),
+          content: const Text('Ushbu buyurtmani qanday rad etmoqchisiz?\n\nMijozga vaziyatni tushuntirsangiz reytingingiz tushmaydi.'),
+          actionsAlignment: MainAxisAlignment.center,
+          actions: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                OutlinedButton.icon(
+                  onPressed: () => Navigator.of(ctx).pop(1),
+                  icon: const Icon(LucideIcons.phone, color: Colors.green),
+                  label: const Text('Tel qilib tushuntirish va rad etish'),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: Colors.green,
+                    side: const BorderSide(color: Colors.green),
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                FilledButton(
+                  onPressed: () => Navigator.of(ctx).pop(2),
+                  style: FilledButton.styleFrom(
+                    backgroundColor: Colors.red,
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                  ),
+                  child: const Text('Shunchaki rad etish'),
+                ),
+                const SizedBox(height: 8),
+                TextButton(
+                  onPressed: () => Navigator.of(ctx).pop(0),
+                  child: const Text('Orqaga qaytish', style: TextStyle(color: Colors.black)),
+                ),
+              ],
+            ),
+          ],
+        );
+      },
+    );
+
+    if (doCancel == 1) {
+      final order = _orders.firstWhere((o) => o['id'] == orderId, orElse: () => {});
+      final userId = order['user_id'] as int?;
+      final userName = order['user_name'] as String? ?? 'Mijoz';
+      if (userId != null) {
+        CallService().startCall(userId, userName);
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => const CallScreen(isIncoming: false),
+          ),
+        );
+      }
+      await _respond(orderId, 'cancelled', notifiedClient: true);
+    } else if (doCancel == 2) {
+      await _respond(orderId, 'cancelled', notifiedClient: false);
     }
   }
 
@@ -175,7 +238,7 @@ class ProviderPendingOrdersWidgetState
             children: [
               Expanded(
                 child: OutlinedButton(
-                  onPressed: acting ? null : () => _respond(id, 'cancelled'),
+                  onPressed: acting ? null : () => _confirmCancelOrder(id),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: Colors.black,
                     side: const BorderSide(color: Colors.black, width: 2),

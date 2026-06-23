@@ -21,6 +21,7 @@ class MassageRegisterIn(BaseModel):
     visit_modes: list[str] = Field(default_factory=list)
     service_types: list[str] = Field(default_factory=list)
     gender: str = "both"
+    concurrent_capacity: int = 1
 
 
 @router.post("/register", response_model=ProviderOut, status_code=201)
@@ -40,5 +41,6 @@ async def register_massage(
         visit_modes=data.visit_modes or None,
         service_types=data.service_types or None,
         gender=data.gender,
+        concurrent_capacity=data.concurrent_capacity,
     )
     return ProviderOut.from_provider(provider)

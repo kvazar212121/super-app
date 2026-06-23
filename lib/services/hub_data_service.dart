@@ -16,7 +16,10 @@ import '../models/massage_hijoma.dart';
 import '../models/nurse_service.dart';
 import '../models/dental_clinic.dart';
 import '../models/event_planning.dart';
+import '../models/event_venue.dart';
 import '../models/service_hub_kind.dart';
+import '../models/sport_facility.dart';
+import '../models/game_zone.dart';
 import 'api_service.dart';
 
 /// API dan hub ma'lumotlarini yuklash.
@@ -247,7 +250,12 @@ extension HubDataLoader on HubDataService {
         d.nurses = await getNurseServices();
       case ServiceHubKind.stomatologiya:
         d.dentalClinics = await getDentalClinics();
+      case ServiceHubKind.sportMaydon:
+        d.genericProviders = mockSportFacilities;
+      case ServiceHubKind.gameZona:
+        d.genericProviders = mockGameZones;
       case ServiceHubKind.tadbirlar:
+        d.genericProviders = mockEventVenues;
         d.events = await getEventPlanners();
       case ServiceHubKind.avtoYordam:
         d.autoMobile = await getAutoMobileUnits();
@@ -262,8 +270,6 @@ extension HubDataLoader on HubDataService {
       case ServiceHubKind.sportMaydon:
       case ServiceHubKind.bozorchi:
       case ServiceHubKind.oshxona:
-      case ServiceHubKind.kompUsta:
-      case ServiceHubKind.boshqa:
         d.genericProviders = await fetchProviders(kind);
       default:
         d.masters = await getMasters(kind);

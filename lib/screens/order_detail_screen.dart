@@ -6,6 +6,7 @@ import '../models/service_hub_kind.dart';
 import '../models/service_order.dart';
 import '../providers/app_provider.dart';
 import '../services/call_service.dart';
+import '../utils/call_helper.dart';
 import '../theme/glass_tokens.dart';
 import 'calls/call_screen.dart';
 import '../widgets/glass/glass_scaffold.dart';
@@ -115,6 +116,105 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
     }
   }
 
+  Future<void> _confirmCompletion(AppProvider p, ServiceOrder order, bool confirm) async {
+    setState(() => _cancelling = true);
+    try {
+      await p.api.confirmCompletion(int.parse(order.id), confirm: confirm);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(confirm ? 'Tasdiqlandi!' : 'Shikoyat yuborildi')),
+        );
+      }
+      await p.fetchOrders();
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Xatolik: $e')),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _cancelling = false);
+    }
+  }
+
+  Future<void> _rateProvider(AppProvider p, ServiceOrder order) async {
+    int rating = 5;
+    String comment = '';
+    bool submitting = false;
+
+    await showDialog(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (context, setState) => AlertDialog(
+          title: const Text('Ustani baholang'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text('Xizmat sifati qanday bo\'ldi?'),
+              const SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: List.generate(5, (index) {
+                  return IconButton(
+                    icon: Icon(
+                      index < rating ? Icons.star : Icons.star_border,
+                      color: Colors.amber,
+                      size: 32,
+                    ),
+                    onPressed: () => setState(() => rating = index + 1),
+                  );
+                }),
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                decoration: const InputDecoration(
+                  labelText: 'Izoh (ixtiyoriy)',
+                  border: OutlineInputBorder(),
+                ),
+                maxLines: 3,
+                onChanged: (v) => comment = v,
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: const Text('Yopish', style: TextStyle(color: Colors.black)),
+            ),
+            FilledButton(
+              onPressed: submitting
+                  ? null
+                  : () async {
+                      setState(() => submitting = true);
+                      try {
+                        await p.api.submitReview(order.providerId!, rating, comment);
+                        if (mounted) {
+                          Navigator.pop(ctx);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Baho yuborildi! Rahmat!')),
+                          );
+                        }
+                      } catch (_) {
+                        if (mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Xatolik yuz berdi')),
+                          );
+                        }
+                      } finally {
+                        if (mounted) setState(() => submitting = false);
+                      }
+                    },
+              style: FilledButton.styleFrom(backgroundColor: Colors.amber, foregroundColor: Colors.black),
+              child: submitting
+                  ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(color: Colors.black, strokeWidth: 2))
+                  : const Text('Yuborish'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Color _statusColor(OrderStatus s) => switch (s) {
         OrderStatus.pending => const Color(0xFFF59E0B),
         OrderStatus.accepted => const Color(0xFF3B82F6),
@@ -208,12 +308,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                     IconButton(
                       icon: const Icon(LucideIcons.phone, color: Colors.green),
                       onPressed: () {
-                        CallService().startCall(order.providerId!, order.providerName);
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (_) => const CallScreen(isIncoming: false),
-                          ),
-                        );
+                        CallHelper.startCallWithPurposeCheck(context, order.providerId!, order.providerName);
                       },
                     ),
                   Container(
@@ -326,6 +421,53 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                 ),
               ],
             ],
+            if (order.status == OrderStatus.awaitingConfirmation) ...[
+              const SizedBox(height: 16),
+              GlassSurface(
+                padding: const EdgeInsets.all(18),
+                borderRadius: GlassTokens.radiusLg,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Ishni yakunlash tasdig\'i',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: GlassTokens.primaryText(context),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Usta o\'z ishini yakunlaganini xabar qildi. Buni tasdiqlaysizmi?',
+                      style: TextStyle(color: GlassTokens.secondaryText(context)),
+                    ),
+                    const SizedBox(height: 16),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: FilledButton.icon(
+                            style: FilledButton.styleFrom(backgroundColor: Colors.green),
+                            onPressed: _cancelling ? null : () => _confirmCompletion(app, order, true),
+                            icon: const Icon(Icons.check, size: 18),
+                            label: const Text('Ha, bajardi', style: TextStyle(fontSize: 13)),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    SizedBox(
+                      width: double.infinity,
+                      child: OutlinedButton.icon(
+                        style: OutlinedButton.styleFrom(foregroundColor: Colors.red),
+                        onPressed: _cancelling ? null : () => _confirmCompletion(app, order, false),
+                        icon: const Icon(Icons.close, size: 18),
+                        label: const Text('Yo\'q, usta kelmadi', style: TextStyle(fontSize: 13)),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
             const SizedBox(height: 16),
             GlassSurface(
               padding: const EdgeInsets.all(18),
@@ -382,6 +524,22 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                   style: OutlinedButton.styleFrom(
                     foregroundColor: Colors.red,
                     side: const BorderSide(color: Colors.red),
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                  ),
+                ),
+              ),
+            ],
+            if (order.status == OrderStatus.completed && order.providerId != null) ...[
+              const SizedBox(height: 24),
+              SizedBox(
+                width: double.infinity,
+                child: FilledButton.icon(
+                  onPressed: () => _rateProvider(app, order),
+                  icon: const Icon(Icons.star, color: Colors.amber),
+                  label: const Text('Ustani baholash'),
+                  style: FilledButton.styleFrom(
+                    backgroundColor: Colors.black,
+                    foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 14),
                   ),
                 ),

@@ -19,6 +19,8 @@ class ProviderOut(BaseModel):
     is_active: bool
     is_paused: bool
     owner_user_id: Optional[int] = None
+    completed_orders_count: int = 0
+    cancelled_orders_count: int = 0
 
     model_config = {"from_attributes": False}
 
@@ -40,6 +42,8 @@ class ProviderOut(BaseModel):
             is_active=p.is_active,
             is_paused=p.is_paused,
             owner_user_id=p.owner_user_id,
+            completed_orders_count=getattr(p, "completed_orders_count", 0),
+            cancelled_orders_count=getattr(p, "cancelled_orders_count", 0),
         )
 
 

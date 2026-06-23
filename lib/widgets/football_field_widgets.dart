@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../models/football_field.dart';
+import '../theme/glass_tokens.dart';
 
 // ===================================================================
 //              VIZUAL MAYDON SXEMASI (CustomPaint)
@@ -217,19 +218,14 @@ class FieldInfoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? Colors.white.withOpacity(0.05) : Colors.white.withOpacity(0.9),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey.shade200),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black,
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
+        border: Border.all(color: GlassTokens.glassBorder(context)),
+        boxShadow: GlassTokens.glassShadow(context),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -265,7 +261,7 @@ class FieldInfoCard extends StatelessWidget {
               Expanded(
                 child: Text(
                   field.address,
-                  style: TextStyle(color: Colors.grey[700], fontSize: 13),
+                  style: TextStyle(color: GlassTokens.secondaryText(context), fontSize: 13),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -290,13 +286,14 @@ class FieldInfoCard extends StatelessWidget {
           const SizedBox(height: 12),
           Row(
             children: [
-              Icon(Icons.payments_outlined, size: 20, color: Colors.grey[700]),
+              Icon(Icons.payments_outlined, size: 20, color: GlassTokens.secondaryText(context)),
               const SizedBox(width: 6),
               Text(
                 '${NumberFormat('#,###').format(field.basePricePerHour)} soʻm / soat',
-                style: const TextStyle(
+                style: TextStyle(
                   fontWeight: FontWeight.w700,
                   fontSize: 15,
+                  color: GlassTokens.primaryText(context),
                 ),
               ),
             ],
@@ -318,7 +315,7 @@ class InfoChip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
-        color: const Color(0xFF4CAF50),
+        color: const Color(0xFF4CAF50).withOpacity(0.15),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Row(
@@ -418,15 +415,16 @@ class TimeSlotGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     if (slots.isEmpty) {
       return Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: Colors.grey.shade50,
+          color: isDark ? Colors.white.withOpacity(0.05) : Colors.grey.shade50,
           borderRadius: BorderRadius.circular(12),
         ),
-        child: const Center(
-          child: Text('Bu kun uchun boʻsh vaqt yoʻq'),
+        child: Center(
+          child: Text('Bu kun uchun boʻsh vaqt yoʻq', style: TextStyle(color: GlassTokens.primaryText(context))),
         ),
       );
     }
@@ -446,17 +444,17 @@ class TimeSlotGrid extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 8),
             decoration: BoxDecoration(
               color: !slot.isAvailable
-                  ? Colors.grey.shade100
+                  ? (isDark ? Colors.white.withOpacity(0.05) : Colors.grey.shade100)
                   : isSelected
                       ? accent
-                      : accent,
+                      : accent.withOpacity(0.15),
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
                 color: !slot.isAvailable
-                    ? Colors.grey.shade300
+                    ? (isDark ? Colors.white.withOpacity(0.1) : Colors.grey.shade300)
                     : isSelected
                         ? accent
-                        : accent,
+                        : accent.withOpacity(0.3),
                 width: isSelected ? 2 : 1,
               ),
             ),
@@ -469,10 +467,10 @@ class TimeSlotGrid extends StatelessWidget {
                     fontWeight: FontWeight.w700,
                     fontSize: 12,
                     color: !slot.isAvailable
-                        ? Colors.grey
+                        ? GlassTokens.secondaryText(context)
                         : isSelected
                             ? Colors.white
-                            : Colors.black87,
+                            : GlassTokens.primaryText(context),
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -517,13 +515,14 @@ class SectionTitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Row(
         children: [
-          Icon(icon, size: 18, color: Colors.grey[700]),
+          Icon(icon, size: 18, color: GlassTokens.secondaryText(context)),
           const SizedBox(width: 6),
           Text(
             text,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.w700,
+              color: GlassTokens.primaryText(context),
             ),
           ),
         ],
@@ -565,11 +564,11 @@ class PriceSummaryCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              Icon(Icons.receipt_long_outlined, color: accent),
+              const Icon(Icons.receipt_long_outlined, color: Colors.white),
               const SizedBox(width: 8),
               const Text(
                 'Buyurtma xulosasi',
-                style: TextStyle(fontWeight: FontWeight.w700, fontSize: 15),
+                style: TextStyle(fontWeight: FontWeight.w700, fontSize: 15, color: Colors.white),
               ),
             ],
           ),
@@ -588,7 +587,7 @@ class PriceSummaryCard extends StatelessWidget {
           ),
           if (selectedAmenities.isNotEmpty) ...[
             const SizedBox(height: 6),
-            const Divider(height: 1),
+            const Divider(height: 1, color: Colors.white30),
             const SizedBox(height: 6),
             ...selectedAmenities.map((i) {
               final a = amenities[i];
@@ -602,23 +601,23 @@ class PriceSummaryCard extends StatelessWidget {
             }),
           ],
           const SizedBox(height: 10),
-          const Divider(height: 1),
+          const Divider(height: 1, color: Colors.white30),
           const SizedBox(height: 10),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const Text(
                 'Jami:',
-                style: TextStyle(fontWeight: FontWeight.w800, fontSize: 16),
+                style: TextStyle(fontWeight: FontWeight.w800, fontSize: 16, color: Colors.white),
               ),
               Text(
                 selectedSlot != null
                     ? '${NumberFormat('#,###').format(totalPrice)} soʻm'
                     : '—',
-                style: TextStyle(
+                style: const TextStyle(
                   fontWeight: FontWeight.w800,
                   fontSize: 18,
-                  color: accent,
+                  color: Colors.white,
                 ),
               ),
             ],
@@ -652,7 +651,7 @@ class PriceLine extends StatelessWidget {
             flex: 2,
             child: Text(
               label,
-              style: TextStyle(fontSize: 13, color: Colors.grey[700]),
+              style: const TextStyle(fontSize: 13, color: Colors.white70),
             ),
           ),
           Text(
@@ -660,7 +659,7 @@ class PriceLine extends StatelessWidget {
             style: TextStyle(
               fontSize: 13,
               fontWeight: FontWeight.w600,
-              color: isGreen ? Colors.green : Colors.black87,
+              color: isGreen ? Colors.white : Colors.white,
             ),
           ),
         ],

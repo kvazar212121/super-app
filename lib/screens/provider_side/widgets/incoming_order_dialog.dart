@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../services/provider_portal_service.dart';
+import '../../../services/call_service.dart';
+import '../../calls/call_screen.dart';
 
 class IncomingOrderDialog extends StatefulWidget {
   final Map<String, dynamic> order;
@@ -23,11 +25,11 @@ class _IncomingOrderDialogState extends State<IncomingOrderDialog> {
   final _portal = ProviderPortalService();
   bool _acting = false;
 
-  Future<void> _respond(String status) async {
+  Future<void> _respond(String status, {bool? notifiedClient}) async {
     setState(() => _acting = true);
     try {
       final id = widget.order['id'] as int;
-      await _portal.updateOrderStatus(widget.categoryKey, id, status);
+      await _portal.updateOrderStatus(widget.categoryKey, id, status, notifiedClient: notifiedClient);
       if (mounted) {
         Navigator.pop(context, true);
         ScaffoldMessenger.of(context).showSnackBar(
@@ -49,6 +51,68 @@ class _IncomingOrderDialogState extends State<IncomingOrderDialog> {
       }
     } finally {
       if (mounted) setState(() => _acting = false);
+    }
+  }
+
+  Future<void> _confirmCancelOrder() async {
+    final int? doCancel = await showDialog<int>(
+      context: context,
+      builder: (ctx) {
+        return AlertDialog(
+          title: const Text('Buyurtmani rad etish'),
+          content: const Text('Ushbu buyurtmani qanday rad etmoqchisiz?\n\nMijozga vaziyatni tushuntirsangiz reytingingiz tushmaydi.'),
+          actionsAlignment: MainAxisAlignment.center,
+          actions: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                OutlinedButton.icon(
+                  onPressed: () => Navigator.of(ctx).pop(1),
+                  icon: const Icon(LucideIcons.phone, color: Colors.green),
+                  label: const Text('Tel qilib tushuntirish va rad etish'),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: Colors.green,
+                    side: const BorderSide(color: Colors.green),
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                FilledButton(
+                  onPressed: () => Navigator.of(ctx).pop(2),
+                  style: FilledButton.styleFrom(
+                    backgroundColor: Colors.red,
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                  ),
+                  child: const Text('Shunchaki rad etish'),
+                ),
+                const SizedBox(height: 8),
+                TextButton(
+                  onPressed: () => Navigator.of(ctx).pop(0),
+                  child: const Text('Orqaga qaytish', style: TextStyle(color: Colors.black)),
+                ),
+              ],
+            ),
+          ],
+        );
+      },
+    );
+
+    if (doCancel == 1) {
+      // Call client
+      final userId = widget.order['user_id'] as int?;
+      final userName = widget.order['user_name'] as String? ?? 'Mijoz';
+      if (userId != null) {
+        CallService().startCall(userId, userName);
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => const CallScreen(isIncoming: false),
+          ),
+        );
+      }
+      await _respond('cancelled', notifiedClient: true);
+    } else if (doCancel == 2) {
+      // Just reject
+      await _respond('cancelled', notifiedClient: false);
     }
   }
 
@@ -110,7 +174,7 @@ class _IncomingOrderDialogState extends State<IncomingOrderDialog> {
               children: [
                 Expanded(
                   child: OutlinedButton(
-                    onPressed: _acting ? null : () => _respond('cancelled'),
+                    onPressed: _acting ? null : _confirmCancelOrder,
                     style: OutlinedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       foregroundColor: Colors.red,

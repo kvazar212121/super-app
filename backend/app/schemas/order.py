@@ -42,3 +42,4 @@ class OrderStatusUpdate(BaseModel):
         ...,
         pattern=r"^(pending|confirmed|on_the_way|arrived|preparing|in_progress|delivered|completed|cancelled|no_show|disputed)$",
     )
+    notified_client: Optional[bool] = False

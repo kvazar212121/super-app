@@ -45,8 +45,9 @@ class ProviderPortalService {
   Future<void> updateOrderStatus(
     String categoryKey,
     int orderId,
-    String status,
-  ) => _api.updateProviderOrderStatus(categoryKey, orderId, status);
+    String status, {
+    bool? notifiedClient,
+  }) => _api.updateProviderOrderStatus(categoryKey, orderId, status, notifiedClient: notifiedClient);
 
   Future<List<Map<String, dynamic>>> getPendingOrders(String categoryKey) =>
       _api.getProviderOrders(categoryKey, status: 'pending');

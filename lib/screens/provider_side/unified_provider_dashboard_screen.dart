@@ -489,9 +489,19 @@ class _UnifiedProviderDashboardScreenState
                   ),
                   Row(
                     children: [
-                      const Icon(Icons.star, color: Colors.black, size: 16),
-                      const SizedBox(width: 4),
                       Text('$rating ($reviews sharh)', style: const TextStyle(color: Colors.black87, fontWeight: FontWeight.w500)),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  Row(
+                    children: [
+                      const Icon(LucideIcons.checkCircle2, color: Colors.green, size: 14),
+                      const SizedBox(width: 4),
+                      Text('${_provider?['completed_orders_count'] ?? 0} yakunlagan', style: const TextStyle(fontSize: 12, color: Colors.black54)),
+                      const SizedBox(width: 12),
+                      const Icon(LucideIcons.xCircle, color: Colors.red, size: 14),
+                      const SizedBox(width: 4),
+                      Text('${_provider?['cancelled_orders_count'] ?? 0} bekor qilgan', style: const TextStyle(fontSize: 12, color: Colors.black54)),
                     ],
                   ),
                 ],
@@ -589,28 +599,12 @@ class _UnifiedProviderDashboardScreenState
           ProviderSalonTeamWidget(accent: accent, inviteCode: _salonInviteCode),
           const SizedBox(height: 24),
         ],
-        Row(
-          children: [
-            Expanded(
-              child: _summaryCard(
-                'Bugungi buyurtmalar',
-                '$ordersToday',
-                LucideIcons.shoppingBag,
-                accent,
-                theme,
-              ),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: _summaryCard(
-                'Oylik daromad',
-                _formatMoney(revenueMonth),
-                LucideIcons.banknote,
-                accent,
-                theme,
-              ),
-            ),
-          ],
+        _summaryCard(
+          'Bugungi buyurtmalar',
+          '$ordersToday',
+          LucideIcons.shoppingBag,
+          accent,
+          theme,
         ),
         const SizedBox(height: 32),
         Builder(

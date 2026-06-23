@@ -31,6 +31,7 @@ class ProviderPlumberSettingsWidget extends StatefulWidget {
 
 class _ProviderPlumberSettingsWidgetState extends State<ProviderPlumberSettingsWidget> {
   final _portal = ProviderPortalService();
+  final _serviceAreaCtrl = TextEditingController();
   bool _loading = true;
   bool _saving = false;
   Map<String, dynamic> _baseMeta = {};
@@ -47,6 +48,7 @@ class _ProviderPlumberSettingsWidgetState extends State<ProviderPlumberSettingsW
     for (final s in _services) {
       s.dispose();
     }
+    _serviceAreaCtrl.dispose();
     super.dispose();
   }
 
@@ -73,6 +75,7 @@ class _ProviderPlumberSettingsWidgetState extends State<ProviderPlumberSettingsW
   }
 
   void _applyMeta(Map<String, dynamic> meta) {
+    _serviceAreaCtrl.text = meta['service_area']?.toString() ?? '';
     _baseMeta = Map<String, dynamic>.from(meta);
     for (final s in _services) {
       s.dispose();
@@ -120,7 +123,8 @@ class _ProviderPlumberSettingsWidgetState extends State<ProviderPlumberSettingsW
         ..['specialty'] = 'Santexnik'
         ..['services'] = services
         ..['prices'] = prices
-        ..['time_slots'] = _timeSlots;
+        ..['time_slots'] = _timeSlots
+        ..['service_area'] = _serviceAreaCtrl.text.trim();
 
       await _portal.updateMetadata(widget.categoryKey, meta);
       if (mounted) {

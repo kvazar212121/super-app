@@ -12,6 +12,7 @@ import '../utils/auth_guard.dart';
 import '../widgets/booking_common_widgets.dart';
 import '../widgets/glass/mesh_background.dart';
 import '../theme/glass_tokens.dart';
+import '../services/provider_availability.dart';
 
 class SalonBookingScreen extends StatefulWidget {
   final BeautySalon salon;
@@ -32,9 +33,42 @@ class _SalonBookingScreenState extends State<SalonBookingScreen> {
   final _staffKey = GlobalKey();
   final _timeKey = GlobalKey();
 
-  final List<String> _timeSlots = [
-    "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00"
-  ];
+  bool _loadingSlots = true;
+  List<String> _timeSlots = ProviderAvailability.defaultSlots;
+  List<String> _bookedSlots = [];
+  final _availabilityService = ProviderAvailabilityService();
+
+  @override
+  void initState() {
+    super.initState();
+    _loadAvailability();
+  }
+
+  Future<void> _loadAvailability() async {
+    setState(() {
+      _loadingSlots = true;
+      _selectedTimeSlot = null;
+    });
+
+    int fetchProviderId = widget.salon.providerId;
+    if (_selectedStaff != null && _selectedStaff!.providerId > 0) {
+      fetchProviderId = _selectedStaff!.providerId;
+    }
+
+    final availability = await _availabilityService.fetch(
+      providerId: fetchProviderId,
+      date: _selectedDate,
+    );
+
+    if (!mounted) return;
+    setState(() {
+      _timeSlots = availability.slots.isNotEmpty
+          ? availability.slots
+          : ProviderAvailability.defaultSlots;
+      _bookedSlots = availability.booked;
+      _loadingSlots = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -74,20 +108,27 @@ class _SalonBookingScreenState extends State<SalonBookingScreen> {
                   HorizontalDatePicker(
                     selectedDate: _selectedDate,
                     accentColor: accentColor,
-                    onDateSelected: (date) => setState(() => _selectedDate = date),
+                    onDateSelected: (date) {
+                      setState(() => _selectedDate = date);
+                      _loadAvailability();
+                    },
                     daysCount: 14,
                     startDaysOffset: 1,
                   ),
                   const SizedBox(height: 24),
                   SectionTitle("Vaqt", key: _timeKey),
                   const SizedBox(height: 12),
-                  TimeSlotGrid(
-                    timeSlots: _timeSlots,
-                    selectedTimeSlot: _selectedTimeSlot,
-                    accentColor: accentColor,
-                    onTimeSelected: (slot) => setState(() => _selectedTimeSlot = slot),
-                    crossAxisCount: 5,
-                  ),
+                  _loadingSlots
+                      ? const Center(child: CircularProgressIndicator())
+                      : TimeSlotGrid(
+                          timeSlots: _timeSlots,
+                          selectedTimeSlot: _selectedTimeSlot,
+                          accentColor: accentColor,
+                          disabledTimeSlots: _bookedSlots,
+                          onTimeSelected: (slot) =>
+                              setState(() => _selectedTimeSlot = slot),
+                          crossAxisCount: 5,
+                        ),
                   const SizedBox(height: 32),
                   Builder(builder: (context) {
                     final canBook = _selectedService != null &&
@@ -207,7 +248,10 @@ class _SalonBookingScreenState extends State<SalonBookingScreen> {
           final st = widget.salon.staff[index];
           final isSelected = _selectedStaff?.id == st.id;
           return GestureDetector(
-            onTap: () => setState(() => _selectedStaff = st),
+            onTap: () {
+              setState(() => _selectedStaff = st);
+              _loadAvailability();
+            },
             child: Column(
               children: [
                 CircleAvatar(
@@ -267,6 +311,11 @@ class _SalonBookingScreenState extends State<SalonBookingScreen> {
                     minute,
                   );
 
+                  int orderProviderId = widget.salon.providerId;
+                  if (_selectedStaff != null && _selectedStaff!.providerId > 0) {
+                    orderProviderId = _selectedStaff!.providerId;
+                  }
+
                   final order = ServiceOrder(
                     id: DateTime.now().microsecondsSinceEpoch.toString(),
                     category: ServiceHubKind.salon,
@@ -276,8 +325,9 @@ class _SalonBookingScreenState extends State<SalonBookingScreen> {
                     address: widget.salon.address,
                     notes: 'Mutaxassis: ${_selectedStaff!.name}',
                     date: dateTime,
-                    price: 80000.0,
+                    price: widget.salon.prices[_selectedService] ?? 80000.0,
                     status: OrderStatus.pending,
+                    providerId: orderProviderId,
                   );
 
                   context.read<AppProvider>().addOrder(order);

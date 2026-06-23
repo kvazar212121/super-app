@@ -6,6 +6,7 @@ from app.api.dependencies import get_current_user
 from app.models.user import User
 from app.services.order_service import OrderService
 from app.schemas.order import OrderCreate, OrderOut, OrderStatusUpdate
+from app.models.order import OrderStatus
 from app.schemas.common import PaginatedResponse
 
 router = APIRouter(prefix="/orders", tags=["orders"])
@@ -56,3 +57,41 @@ async def update_order_status(
     db: AsyncSession = Depends(get_db),
 ):
     return await OrderService.update_status(db, current_user.id, order_id, data)
+
+@router.post("/my/{order_id}/confirm_completion", response_model=OrderOut)
+async def confirm_completion(
+    order_id: int,
+    confirm: bool = Query(...),
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    order = await OrderService.get_by_id(db, current_user.id, order_id)
+    if order.status != OrderStatus.awaiting_confirmation:
+        from fastapi import HTTPException
+        raise HTTPException(status_code=400, detail="Faqat tasdiqlanishi kutilayotgan buyurtmani tasdiqlash mumkin")
+        
+    old_status = order.status
+    if confirm:
+        order.status = OrderStatus.completed
+    else:
+        order.status = OrderStatus.disputed
+    await db.flush()
+    await db.refresh(order)
+    
+    if confirm:
+        from app.models.provider import Provider
+        provider = await db.get(Provider, order.provider_id)
+        if provider:
+            provider.completed_orders_count += 1
+        await OrderService.shift_flexible_queue(db, order.provider_id)
+        await OrderService.process_commission(db, order)
+        
+    from app.services.notification_service import NotificationService
+    if confirm:
+        # Ustaga bildirishnoma jo'natish
+        NotificationService.notify_order_status(
+            user_id=provider.owner_user_id if provider and provider.owner_user_id else 0,
+            order_id=order.id,
+            status_label="Mijoz ishni tasdiqladi!",
+        )
+    return order

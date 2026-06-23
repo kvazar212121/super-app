@@ -46,6 +46,7 @@ class CallService extends ChangeNotifier {
 
   int? _remoteUserId;
   String? _remoteUserName;
+  String? _callCategoryKey;
 
   // Qo'ng'iroq vaqti
   DateTime? _callStartTime;
@@ -72,6 +73,7 @@ class CallService extends ChangeNotifier {
   String get remoteUserName => _remoteUserName ?? 'Noma\'lum';
   String get callDuration => _callDuration;
   int? get remoteUserId => _remoteUserId;
+  String? get callCategoryKey => _callCategoryKey;
 
   // Callbacks for UI
   Function(Map<String, dynamic>)? onIncomingCall;
@@ -226,6 +228,7 @@ class CallService extends ChangeNotifier {
       // Kiruvchi qo'ng'iroq
       _remoteUserId = senderId;
       _remoteUserName = senderName;
+      _callCategoryKey = payload['category']?.toString();
       _isRinging = true;
       notifyListeners();
 
@@ -271,6 +274,8 @@ class CallService extends ChangeNotifier {
     } else if (type == 'target_offline') {
       _isConnecting = false;
       _isRinging = false;
+      _callCategoryKey = null;
+
       notifyListeners();
       if (_currentCallLogId != null) {
         CallHistoryService().updateCallLog(_currentCallLogId!, status: 'cancelled');
@@ -413,7 +418,7 @@ class CallService extends ChangeNotifier {
   }
 
   /// Chiquvchi qo'ng'iroq boshlash
-  Future<void> startCall(int targetId, String targetName) async {
+  Future<void> startCall(int targetId, String targetName, {String? categoryKey}) async {
     if (_inCall) {
       debugPrint('Allaqachon qo\'ng\'iroqda');
       return;
@@ -421,6 +426,7 @@ class CallService extends ChangeNotifier {
 
     _remoteUserId = targetId;
     _remoteUserName = targetName;
+    _callCategoryKey = categoryKey;
     _inCall = true;
     _isConnecting = true;
     _isRinging = true;
@@ -443,7 +449,7 @@ class CallService extends ChangeNotifier {
     notifyListeners();
 
     // Notify target that a call is initiating
-    sendSignal('call_init', {});
+    sendSignal('call_init', {'category': categoryKey});
   }
 
   /// Offer yaratish va yuborish

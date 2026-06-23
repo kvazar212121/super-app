@@ -307,17 +307,30 @@ async def update_order_status(
     if not order:
         raise HTTPException(status_code=404, detail="Buyurtma topilmadi")
     old_status = order.status
-    order.status = OrderStatus(data.status)
+    
+    # Ikki tomonlama tasdiqlash mantig'i: 
+    # Usta "completed" deb belgilasa, avval mijoz tasdig'i kutiladi
+    from app.models.order import OrderStatus as OS
+    if data.status == "completed" and old_status not in (OS.completed, OS.awaiting_confirmation):
+        # 30 minut qoidasi: buyurtma vaqtidan 30 daqiqa oldin yakunlab bo'lmaydi
+        if order.date:
+            from datetime import datetime, timezone
+            now = datetime.now(timezone.utc).replace(tzinfo=None)
+            if (order.date - now).total_seconds() > 1800:
+                raise HTTPException(status_code=400, detail="Buyurtmani belgilangan vaqtdan 30 daqiqadan erta yakunlash mumkin emas")
+        data.status = "awaiting_confirmation"
+
+    order.status = OS(data.status)
     await db.flush()
 
     if old_status != order.status:
-        from app.models.order import OrderStatus as OS
         from app.services.notification_service import NotificationService
         labels = {
             OS.pending: "kutilmoqda",
             OS.confirmed: "qabul qilindi",
             OS.in_progress: "jarayonda",
             OS.completed: "yakunlandi",
+            OS.awaiting_confirmation: "mijoz tasdig'ini kutmoqda",
             OS.cancelled: "bekor qilindi",
         }
         label = labels.get(order.status, order.status.value)
@@ -327,8 +340,13 @@ async def update_order_status(
             status_label=label,
         )
         if order.status == OS.completed:
+            provider.completed_orders_count += 1
             from app.services.order_service import OrderService
             await OrderService.shift_flexible_queue(db, order.provider_id)
+            await OrderService.process_commission(db, order)
+        elif order.status == OS.cancelled:
+            if not data.notified_client:
+                provider.cancelled_orders_count += 1
 
     return {"message": "Status yangilandi", "status": data.status}
 
@@ -663,3 +681,80 @@ async def unblock_user(
     await db.commit()
     return {"detail": "Muvaffaqiyatli o'chirildi (unblocked)"}
 
+
+
+class ManualCallOrderIn(BaseModel):
+    user_id: int
+    service_name: str
+    date: datetime
+    price: float
+    address: str | None = None
+    notes: str | None = "Telefon orqali kelishildi"
+    staff_provider_id: int | None = None
+
+@router.post("/orders/manual_after_call")
+async def create_manual_order(
+    parsed_data: ManualCallOrderIn,
+    category_key: str | None = Query(None),
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    from app.models.order import Order, OrderStatus
+    provider = await _get_user_provider(db, user, category_key)
+    
+    # Verify the user exists
+    user_query = await db.execute(select(User).where(User.id == parsed_data.user_id))
+    target_user = user_query.scalar_one_or_none()
+    if not target_user:
+        raise HTTPException(status_code=404, detail="Foydalanuvchi topilmadi")
+        
+    actual_provider_id = parsed_data.staff_provider_id if parsed_data.staff_provider_id else provider.id
+    new_order = Order(
+        user_id=target_user.id,
+        category_id=provider.category_id,
+        provider_id=actual_provider_id,
+        service_name=parsed_data.service_name,
+        date=parsed_data.date.replace(tzinfo=None),
+        price=parsed_data.price,
+        address=parsed_data.address or provider.address or "",
+        notes=parsed_data.notes,
+        status=OrderStatus.confirmed,
+        booking_mode="manual_call"
+    )
+    db.add(new_order)
+    await db.commit()
+    await db.refresh(new_order)
+    
+    return {"detail": "Buyurtma muvaffaqiyatli qo'shildi", "order_id": new_order.id}
+
+@router.get("/my-staff")
+async def get_my_staff(
+    category_key: str | None = Query(None),
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    provider = await _get_user_provider(db, user, category_key)
+    
+    # Staff are providers with salon_role='salon_employee' and salon_provider_id=provider.id
+    from app.models.provider import Provider
+    result = await db.execute(
+        select(Provider).where(
+            Provider.is_active == True,
+            Provider.category_id == provider.category_id
+        )
+    )
+    staff_list = []
+    for p in result.scalars().all():
+        meta = p.metadata_json or {}
+        is_salon_staff = meta.get("salon_role") == "salon_employee" and meta.get("salon_provider_id") == provider.id
+        is_massage_staff = meta.get("massage_role") == "center_employee" and meta.get("center_provider_id") == provider.id
+        is_dental_staff = meta.get("clinic_role") == "clinic_employee" and meta.get("clinic_provider_id") == provider.id
+        
+        if is_salon_staff or is_massage_staff or is_dental_staff:
+            staff_list.append({
+                "id": p.id,
+                "name": meta.get("display_name") or p.name,
+                "user_id": p.owner_user_id
+            })
+            
+    return {"staff": staff_list}

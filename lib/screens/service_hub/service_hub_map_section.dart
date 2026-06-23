@@ -96,7 +96,7 @@ class _MapSection extends StatelessWidget {
             label: unit.name,
             onTap: () => Navigator.push(
               context,
-              MaterialPageRoute(builder: (_) => AutoHelpBookingScreen(service: unit)),
+              MaterialPageRoute(builder: (_) => AutoMobileProfileScreen(service: unit)),
             ),
           ),
         )));
@@ -111,7 +111,7 @@ class _MapSection extends StatelessWidget {
             onTap: () => Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (_) => AutoWorkshopBookingScreen(workshop: ws),
+                builder: (_) => AutoWorkshopProfileScreen(workshop: ws),
               ),
             ),
           ),
@@ -243,7 +243,7 @@ class _MapSection extends StatelessWidget {
             icon: LucideIcons.shieldCheck,
             color: accentColor,
             label: s.name,
-            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => DisinfectionBookingScreen(service: s))),
+            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => DisinfectionProfileScreen(service: s))),
           ),
         )));
         break;

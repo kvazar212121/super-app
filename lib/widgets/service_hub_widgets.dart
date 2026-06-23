@@ -22,14 +22,22 @@ import '../screens/salon_booking_screen.dart';
 import '../screens/football_field_booking_screen.dart';
 import '../screens/provider_profile_screen.dart';
 import '../screens/master_dispatch_screen.dart';
-import '../screens/disinfection_booking_screen.dart';
-import '../screens/appliance_booking_screen.dart';
-import '../screens/courier_booking_screen.dart';
-import '../screens/auto_workshop_booking_screen.dart';
+import '../screens/disinfection_profile_screen.dart';
+import '../screens/appliance_profile_screen.dart';
+import '../screens/courier_profile_screen.dart';
+import '../screens/sport_facility_booking_screen.dart';
+import '../screens/game_zone_booking_screen.dart';
+import '../screens/event_venue_booking_screen.dart';
+import '../screens/event_team_profile_screen.dart';
+import '../screens/oshxona_profile_screen.dart';
+import '../screens/bozorchi_profile_screen.dart';
+import '../screens/auto_mobile_profile_screen.dart';
+import '../screens/auto_workshop_profile_screen.dart';
 import '../screens/massage_booking_screen.dart';
 import '../screens/nurse_booking_screen.dart';
 import '../screens/dental_booking_screen.dart';
 import '../screens/event_booking_screen.dart';
+import '../screens/worker_profile_screen.dart';
 
 /// Oq kartalardagi matnlar (har doim oq fonda, shuning uchun qat'iy qora).
 const _cardTitleColor = Colors.black;
@@ -188,6 +196,198 @@ class FieldSmallCard extends StatelessWidget {
   }
 }
 
+class SportFacilitySmallCard extends StatelessWidget {
+  final dynamic facility;
+
+  const SportFacilitySmallCard({super.key, required this.facility});
+
+  @override
+  Widget build(BuildContext context) {
+    final accentColor = ServiceHubKind.sportMaydon.accent;
+    return Container(
+      width: 150,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.black26),
+      ),
+      child: InkWell(
+        onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => SportFacilityBookingScreen(facility: facility)),
+        ),
+        borderRadius: BorderRadius.circular(16),
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                height: 80,
+                decoration: BoxDecoration(
+                  color: accentColor,
+                  borderRadius: BorderRadius.circular(12),
+                  image: facility.gallery.isNotEmpty ? DecorationImage(
+                    image: NetworkImage(facility.gallery.first),
+                    fit: BoxFit.cover,
+                  ) : null,
+                ),
+                child: facility.gallery.isEmpty ? const Center(child: Icon(Icons.sports_tennis, color: Colors.white)) : null,
+              ),
+              const SizedBox(height: 8),
+              Text(facility.name, style: const TextStyle(fontWeight: FontWeight.bold, color: _cardTitleColor), maxLines: 1),
+              Text(facility.sportType, style: TextStyle(fontSize: 11, color: accentColor), maxLines: 1),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class GameZoneSmallCard extends StatelessWidget {
+  final dynamic zone;
+
+  const GameZoneSmallCard({super.key, required this.zone});
+
+  @override
+  Widget build(BuildContext context) {
+    final accentColor = ServiceHubKind.gameZona.accent;
+    return Container(
+      width: 150,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.black26),
+      ),
+      child: InkWell(
+        onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => GameZoneBookingScreen(zone: zone)),
+        ),
+        borderRadius: BorderRadius.circular(16),
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                height: 80,
+                decoration: BoxDecoration(
+                  color: accentColor,
+                  borderRadius: BorderRadius.circular(12),
+                  image: zone.gallery.isNotEmpty ? DecorationImage(
+                    image: NetworkImage(zone.gallery.first),
+                    fit: BoxFit.cover,
+                  ) : null,
+                ),
+                child: zone.gallery.isEmpty ? const Center(child: Icon(Icons.gamepad, color: Colors.white)) : null,
+              ),
+              const SizedBox(height: 8),
+              Text(zone.name, style: const TextStyle(fontWeight: FontWeight.bold, color: _cardTitleColor), maxLines: 1),
+              Text(zone.zoneType, style: TextStyle(fontSize: 11, color: accentColor), maxLines: 1),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class EventVenueSmallCard extends StatelessWidget {
+  final dynamic venue;
+
+  const EventVenueSmallCard({super.key, required this.venue});
+
+  @override
+  Widget build(BuildContext context) {
+    final accentColor = ServiceHubKind.tadbirlar.accent;
+    return Container(
+      width: 150,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.black26),
+      ),
+      child: InkWell(
+        onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => EventVenueBookingScreen(venue: venue)),
+        ),
+        borderRadius: BorderRadius.circular(16),
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                height: 80,
+                decoration: BoxDecoration(
+                  color: accentColor,
+                  borderRadius: BorderRadius.circular(12),
+                  image: venue.gallery.isNotEmpty ? DecorationImage(
+                    image: NetworkImage(venue.gallery.first),
+                    fit: BoxFit.cover,
+                  ) : null,
+                ),
+                child: venue.gallery.isEmpty ? const Center(child: Icon(Icons.location_city, color: Colors.white)) : null,
+              ),
+              const SizedBox(height: 8),
+              Text(venue.name, style: const TextStyle(fontWeight: FontWeight.bold, color: _cardTitleColor), maxLines: 1),
+              Text(venue.venueType, style: TextStyle(fontSize: 11, color: accentColor), maxLines: 1),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class EventTeamSmallCard extends StatelessWidget {
+  final dynamic team;
+
+  const EventTeamSmallCard({super.key, required this.team});
+
+  @override
+  Widget build(BuildContext context) {
+    final accentColor = ServiceHubKind.tadbirlar.accent;
+    return Container(
+      width: 150,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.black26),
+      ),
+      child: InkWell(
+        onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => EventTeamProfileScreen(team: team)),
+        ),
+        borderRadius: BorderRadius.circular(16),
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                height: 80,
+                decoration: BoxDecoration(
+                  color: accentColor.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Center(child: Icon(Icons.celebration, color: accentColor, size: 36)),
+              ),
+              const SizedBox(height: 8),
+              Text(team.name, style: const TextStyle(fontWeight: FontWeight.bold, color: _cardTitleColor), maxLines: 1),
+              Text(team.capabilitiesLabel, style: TextStyle(fontSize: 11, color: accentColor), maxLines: 1),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class MasterSmallCard extends StatelessWidget {
   final Master master;
   final ServiceHubKind category;
@@ -208,15 +408,63 @@ class MasterSmallCard extends StatelessWidget {
         border: Border.all(color: Colors.black26),
       ),
       child: InkWell(
-        onTap: () => Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => ProviderProfileScreen(
-              master: master,
-              category: category,
-            ),
-          ),
-        ),
+        onTap: () {
+          if (category == ServiceHubKind.oshxona) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => OshxonaProfileScreen(oshxona: master)),
+            );
+          } else if (category == ServiceHubKind.bozorchi) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => BozorchiProfileScreen(bozorchi: master)),
+            );
+          } else if (kind == ServiceHubKind.gameZona) {
+            if (d.genericProviders.isNotEmpty) {
+              return _buildHorizontalList(
+                d.genericProviders,
+                (f) => GameZoneSmallCard(zone: f),
+              );
+            }
+            return const SizedBox.shrink();
+          } else if (kind == ServiceHubKind.tadbirlar) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (d.genericProviders.isNotEmpty) ...[
+                  const Padding(
+                    padding: EdgeInsets.fromLTRB(16, 8, 16, 8),
+                    child: Text('Tadbir o\'tkazish joylari', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                  ),
+                  _buildHorizontalList(
+                    d.genericProviders,
+                    (f) => EventVenueSmallCard(venue: f),
+                  ),
+                ],
+                if (d.events.isNotEmpty) ...[
+                  const Padding(
+                    padding: EdgeInsets.fromLTRB(16, 16, 16, 8),
+                    child: Text('Tashkilotchi va Brigadalar', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                  ),
+                  _buildHorizontalList(
+                    d.events,
+                    (f) => EventTeamSmallCard(team: f),
+                  ),
+                ],
+              ],
+            );
+          } else {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => ProviderProfileScreen(
+                  master: master,
+                  category: category,
+                ),
+              ),
+            );
+          }
+        },
         borderRadius: BorderRadius.circular(16),
         child: Padding(
           padding: const EdgeInsets.all(12),
@@ -253,8 +501,9 @@ class WorkerSmallCard extends StatelessWidget {
         border: Border.all(color: Colors.black26),
       ),
       child: InkWell(
-        onTap: () => ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("${worker.name} bilan bog'lanilmoqda...")),
+        onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => WorkerProfileScreen(worker: worker)),
         ),
         borderRadius: BorderRadius.circular(16),
         child: Padding(
@@ -359,7 +608,7 @@ class WorkshopSmallCard extends StatelessWidget {
         onTap: () => Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (_) => AutoWorkshopBookingScreen(workshop: workshop),
+            builder: (_) => AutoWorkshopProfileScreen(workshop: workshop),
           ),
         ),
         borderRadius: BorderRadius.circular(16),
@@ -469,7 +718,7 @@ class DisinfectionSmallCard extends StatelessWidget {
       child: InkWell(
         onTap: () => Navigator.push(
           context,
-          MaterialPageRoute(builder: (_) => DisinfectionBookingScreen(service: service)),
+          MaterialPageRoute(builder: (_) => DisinfectionProfileScreen(service: service)),
         ),
         borderRadius: BorderRadius.circular(16),
         child: Padding(
@@ -520,7 +769,7 @@ class ApplianceSmallCard extends StatelessWidget {
       child: InkWell(
         onTap: () => Navigator.push(
           context,
-          MaterialPageRoute(builder: (_) => ApplianceBookingScreen(service: service)),
+          MaterialPageRoute(builder: (_) => ApplianceProfileScreen(service: service)),
         ),
         borderRadius: BorderRadius.circular(16),
         child: Padding(
@@ -571,7 +820,7 @@ class CourierSmallCard extends StatelessWidget {
       child: InkWell(
         onTap: () => Navigator.push(
           context,
-          MaterialPageRoute(builder: (_) => CourierBookingScreen(service: service)),
+          MaterialPageRoute(builder: (_) => CourierProfileScreen(service: service)),
         ),
         borderRadius: BorderRadius.circular(16),
         child: Padding(

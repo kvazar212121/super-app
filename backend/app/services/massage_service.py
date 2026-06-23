@@ -7,18 +7,16 @@ from app.models.provider import Provider
 from app.models.category import Category
 from app.models.user import User
 
-DEFAULT_VISIT_MODES = ["home_visit", "at_center"]
+DEFAULT_VISIT_MODES = ["at_center"]
 DEFAULT_SERVICE_TYPES = ["classic_massage", "hijoma", "sport_massage"]
 DEFAULT_SERVICES = [
     "Klassik massaj (60 min)",
     "Hijoma",
     "Sport massaj (60 min)",
 ]
-DEFAULT_PRICES = {
     "Klassik massaj (60 min)": 150000,
     "Hijoma": 120000,
     "Sport massaj (60 min)": 180000,
-    "Uyga chiqish qo'shimcha": 50000,
 }
 DEFAULT_TIME_SLOTS = [
     "09:00", "10:00", "11:00", "12:00",
@@ -49,6 +47,7 @@ class MassageService:
         visit_modes: list[str] | None = None,
         service_types: list[str] | None = None,
         gender: str = "both",
+        concurrent_capacity: int = 1,
     ) -> Provider:
         cat_id = await MassageService._category_id(db)
         existing = await db.execute(
@@ -82,9 +81,9 @@ class MassageService:
             "service_types": stypes,
             "services": services,
             "prices": prices,
-            "home_visit_fee": DEFAULT_PRICES["Uyga chiqish qo'shimcha"],
             "gender": gender if gender in ("male", "female", "both") else "both",
             "service_area": service_area,
+            "concurrent_capacity": concurrent_capacity,
             "time_slots": list(DEFAULT_TIME_SLOTS),
         }
 

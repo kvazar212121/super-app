@@ -8,6 +8,7 @@ class SalonStaff {
   final String specialty;
   final double rating;
   final String imageUrl;
+  final int providerId;
 
   SalonStaff({
     required this.id,
@@ -15,6 +16,7 @@ class SalonStaff {
     this.specialty = 'Mutaxassis',
     required this.rating,
     this.imageUrl = '',
+    this.providerId = 0,
   });
 }
 
@@ -81,6 +83,7 @@ class BeautySalon {
         id: m['name']?.toString() ?? '',
         name: m['name'] ?? '',
         rating: (m['rating'] as num?)?.toDouble() ?? 4.5,
+        providerId: (m['provider_id'] as num?)?.toInt() ?? 0,
       );
     }).toList();
 

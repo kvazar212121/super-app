@@ -173,6 +173,7 @@ class OrderService:
             )
             if new_status == OrderStatus.completed:
                 await OrderService.shift_flexible_queue(db, order.provider_id)
+                await OrderService.process_commission(db, order)
         return order
 
     @staticmethod
@@ -248,6 +249,58 @@ class OrderService:
         NotificationService.notify_order_shifted(
             user_id=first_order.user_id,
             order_id=first_order.id,
+            new_time=time_str,
+        )
+
+    @staticmethod
+    async def run_completion_checks(db: AsyncSession) -> None:
+        from datetime import datetime, timezone, timedelta
+        from app.models.order import Order, OrderStatus
+        from app.services.notification_service import NotificationService
+
+        now = datetime.now(timezone.utc).replace(tzinfo=None)
+
+        # 1. 2 soat o'tgan bo'lsa eslatish (faqat in_progress yoki confirmed)
+        q_remind = select(Order).where(
+            Order.status.in_([OrderStatus.confirmed, OrderStatus.in_progress]),
+            Order.date <= now - timedelta(hours=2)
+        )
+        orders_to_remind = (await db.execute(q_remind)).scalars().all()
+        for order in orders_to_remind:
+            # Ustaga eslatish
+            if order.provider and order.provider.owner_user_id:
+                NotificationService.notify_order_status(
+                    user_id=order.provider.owner_user_id,
+                    order_id=order.id,
+                    status_label="Vaqti o'tdi! Ishni yakunladingizmi?"
+                )
+            # Mijozga eslatish
+            NotificationService.notify_order_status(
+                user_id=order.user_id,
+                order_id=order.id,
+                status_label="Xizmatdan qoniqdingizmi?"
+            )
+
+        # 2. 24 soat o'tgan bo'lsa (awaiting_confirmation -> completed avtomatik)
+        q_auto_complete = select(Order).where(
+            Order.status == OrderStatus.awaiting_confirmation,
+            Order.date <= now - timedelta(hours=24)
+        )
+        orders_to_complete = (await db.execute(q_auto_complete)).scalars().all()
+        for order in orders_to_complete:
+            order.status = OrderStatus.completed
+            
+            # Count increment & commission
+            from app.models.provider import Provider
+            provider = await db.get(Provider, order.provider_id)
+            if provider:
+                provider.completed_orders_count += 1
+            await OrderService.shift_flexible_queue(db, order.provider_id)
+            await OrderService.process_commission(db, order)
+
+        if orders_to_complete:
+            await db.flush()
+            await db.commit()            order_id=first_order.id,
             new_time_label=time_str,
         )
         
@@ -268,3 +321,45 @@ class OrderService:
                 # Stop shifting when we hit a fixed order
                 break
         await db.flush()
+
+    @staticmethod
+    async def process_commission(db: AsyncSession, order) -> None:
+        """
+        Process commission deduction from provider's balance when an order is completed.
+        """
+        from app.models.provider import Provider
+        from app.models.setting import PlatformSetting
+        from app.models.transaction import Transaction
+
+        # Check if already processed
+        result = await db.execute(
+            select(Transaction).where(
+                Transaction.order_id == order.id,
+                Transaction.type == "commission_fee"
+            )
+        )
+        if result.scalar_one_or_none():
+            return  # Already processed
+
+        setting = await db.scalar(select(PlatformSetting).where(PlatformSetting.key == "commission_rate"))
+        rate = float(setting.value) if setting else 15.0
+
+        if order.price and order.price > 0:
+            commission_amount = (order.price * rate) / 100.0
+
+            provider_result = await db.execute(select(Provider).where(Provider.id == order.provider_id))
+            provider = provider_result.scalar_one()
+
+            provider.balance -= commission_amount
+
+            transaction = Transaction(
+                user_id=provider.owner_user_id,
+                provider_id=provider.id,
+                order_id=order.id,
+                type="commission_fee",
+                amount=-commission_amount,
+                description=f"#{order.id} buyurtma uchun {rate}% komissiya ushlab qolindi",
+                status="completed"
+            )
+            db.add(transaction)
+            await db.flush()

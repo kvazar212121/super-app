@@ -8,9 +8,11 @@ import '../models/service_hub_kind.dart';
 import '../models/saved_place_model.dart';
 import '../providers/saved_places_provider.dart';
 import '../screens/master_dispatch_screen.dart';
+import '../screens/cleaning_dispatch_screen.dart';
 import '../theme/glass_tokens.dart';
 import '../widgets/glass/glass_scaffold.dart';
 import '../widgets/glass/glass_surface.dart';
+import '../utils/call_helper.dart';
 
 /// Usta / mobil mutaxassis profili.
 class ProviderProfileScreen extends StatelessWidget {
@@ -182,31 +184,57 @@ class ProviderProfileScreen extends StatelessWidget {
             );
           }),
           const SizedBox(height: 28),
-          SizedBox(
-            width: double.infinity,
-            child: FilledButton.icon(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => MasterDispatchScreen(
-                      master: master,
-                      category: category,
-                    ),
+          Row(
+            children: [
+              Expanded(
+                child: OutlinedButton.icon(
+                  onPressed: () {
+                    CallHelper.startCallWithPurposeCheck(context, master.providerId, master.name);
+                  },
+                  icon: const Icon(LucideIcons.phoneCall),
+                  label: const Text('Qo\'ng\'iroq'),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: accent,
+                    side: BorderSide(color: accent, width: 2),
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                   ),
-                );
-              },
-              icon: Icon(master.isHomeVisit ? LucideIcons.calendarCheck : LucideIcons.phoneCall),
-              label: Text(
-                master.isCleaner || master.isDispatchMaster || master.isElectrician || master.isPlumber || master.isAcTechnician
-                    ? 'Buyurtma berish'
-                    : (master.isHomeVisit ? 'Vaqt bron qilish' : 'Ustani chaqirish'),
+                ),
               ),
-              style: FilledButton.styleFrom(
-                backgroundColor: accent,
-                padding: const EdgeInsets.symmetric(vertical: 16),
+              const SizedBox(width: 12),
+              Expanded(
+                flex: 2,
+                child: FilledButton.icon(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => master.isCleaner
+                            ? CleaningDispatchScreen(
+                                master: master,
+                                category: category,
+                              )
+                            : MasterDispatchScreen(
+                                master: master,
+                                category: category,
+                              ),
+                      ),
+                    );
+                  },
+                  icon: Icon(master.isHomeVisit ? LucideIcons.calendarCheck : LucideIcons.wrench),
+                  label: Text(
+                    master.isCleaner || master.isDispatchMaster || master.isElectrician || master.isPlumber || master.isAcTechnician
+                        ? 'Chaqirish'
+                        : (master.isHomeVisit ? 'Bron qilish' : 'Ustani chaqirish'),
+                  ),
+                  style: FilledButton.styleFrom(
+                    backgroundColor: accent,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  ),
+                ),
               ),
-            ),
+            ],
           ),
         ],
       ),

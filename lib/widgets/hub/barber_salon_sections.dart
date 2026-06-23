@@ -350,13 +350,29 @@ class MobileSalonHubSection extends StatelessWidget {
                           ),
                         ),
                         const Spacer(),
-                        Text(
-                          '${(minPrice / 1000).round()}k+',
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                            color: accentColor,
-                          ),
+                        Row(
+                          children: [
+                            Text(
+                              '${(minPrice / 1000).round()}k+',
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                                color: accentColor,
+                              ),
+                            ),
+                            const Spacer(),
+                            if ((s.rawJson?['completed_orders_count'] ?? 0) > 0) ...[
+                              const Icon(Icons.check_circle, size: 10, color: Colors.green),
+                              const SizedBox(width: 2),
+                              Text('${s.rawJson?['completed_orders_count']}', style: const TextStyle(fontSize: 10, color: Colors.green)),
+                              const SizedBox(width: 4),
+                            ],
+                            if ((s.rawJson?['cancelled_orders_count'] ?? 0) > 0) ...[
+                              const Icon(Icons.cancel, size: 10, color: Colors.red),
+                              const SizedBox(width: 2),
+                              Text('${s.rawJson?['cancelled_orders_count']}', style: const TextStyle(fontSize: 10, color: Colors.red)),
+                            ],
+                          ],
                         ),
                       ],
                     ),
@@ -534,13 +550,29 @@ class _MobileBarberCard extends StatelessWidget {
                 ],
               ),
               const Spacer(),
-              Text(
-                'dan ${NumberFormat('#,###').format(minPrice)} so\'m',
-                style: TextStyle(
-                  fontSize: 11,
-                  fontWeight: FontWeight.w600,
-                  color: accent,
-                ),
+              Row(
+                children: [
+                  Text(
+                    'dan ${NumberFormat('#,###').format(minPrice)} so\'m',
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                      color: accent,
+                    ),
+                  ),
+                  const Spacer(),
+                  if ((master.rawJson?['completed_orders_count'] ?? 0) > 0) ...[
+                    const Icon(Icons.check_circle, size: 10, color: Colors.green),
+                    const SizedBox(width: 2),
+                    Text('${master.rawJson?['completed_orders_count']}', style: const TextStyle(fontSize: 10, color: Colors.green)),
+                    const SizedBox(width: 4),
+                  ],
+                  if ((master.rawJson?['cancelled_orders_count'] ?? 0) > 0) ...[
+                    const Icon(Icons.cancel, size: 10, color: Colors.red),
+                    const SizedBox(width: 2),
+                    Text('${master.rawJson?['cancelled_orders_count']}', style: const TextStyle(fontSize: 10, color: Colors.red)),
+                  ],
+                ],
               ),
             ],
           ),

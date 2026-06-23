@@ -25,6 +25,9 @@ class Provider(Base):
     owner_user_id: Mapped[int | None] = mapped_column(
         Integer, ForeignKey("users.id"), nullable=True, index=True
     )
+    balance: Mapped[float] = mapped_column(Float, default=0.0)
+    completed_orders_count: Mapped[int] = mapped_column(Integer, default=0)
+    cancelled_orders_count: Mapped[int] = mapped_column(Integer, default=0)
 
     category = relationship("Category", back_populates="providers")
     orders = relationship("Order", back_populates="provider", lazy="selectin")
@@ -47,4 +50,7 @@ class Provider(Base):
             "metadata": self.metadata_json,
             "is_active": self.is_active,
             "is_paused": self.is_paused,
+            "balance": self.balance,
+            "completed_orders_count": self.completed_orders_count,
+            "cancelled_orders_count": self.cancelled_orders_count,
         }

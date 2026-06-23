@@ -22,12 +22,13 @@ class _MassageRegistrationScreenState extends State<MassageRegistrationScreen> {
   final _phoneCtrl = TextEditingController();
   final _areaCtrl = TextEditingController();
   final _addressCtrl = TextEditingController();
+  final _capacityCtrl = TextEditingController(text: '1');
   bool _submitting = false;
   String _role = 'solo';
   String _gender = 'both';
   String? _selectedSubCategory;
 
-  final Set<String> _visitModes = {'home_visit', 'at_center'};
+  final Set<String> _visitModes = {'at_center'};
   final Set<String> _serviceTypes = {'classic_massage', 'hijoma'};
 
   @override
@@ -36,6 +37,7 @@ class _MassageRegistrationScreenState extends State<MassageRegistrationScreen> {
     _phoneCtrl.dispose();
     _areaCtrl.dispose();
     _addressCtrl.dispose();
+    _capacityCtrl.dispose();
     super.dispose();
   }
 
@@ -61,6 +63,12 @@ class _MassageRegistrationScreenState extends State<MassageRegistrationScreen> {
       );
       return;
     }
+    
+    int capacity = 1;
+    if (_role == 'salon') {
+      capacity = int.tryParse(_capacityCtrl.text.trim()) ?? 1;
+      if (capacity < 1) capacity = 1;
+    }
 
     setState(() => _submitting = true);
     final auth = context.read<AuthProvider>();
@@ -80,6 +88,7 @@ class _MassageRegistrationScreenState extends State<MassageRegistrationScreen> {
         serviceTypes: _serviceTypes.toList(),
         gender: _gender,
         subCategory: _selectedSubCategory,
+        concurrentCapacity: capacity,
       );
       if (!mounted) return;
       Navigator.pushAndRemoveUntil(
@@ -112,7 +121,7 @@ class _MassageRegistrationScreenState extends State<MassageRegistrationScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Mijozlarni uyga chaqirasiz yoki salonga qabul qilasiz — ikkalasini ham belgilashingiz mumkin.',
+                'Mijozlarni o\'z markazingizda yoki salonda qabul qilasiz.',
                 style: TextStyle(color: Colors.grey[700], height: 1.4),
               ),
               const SizedBox(height: 20),
@@ -172,32 +181,18 @@ class _MassageRegistrationScreenState extends State<MassageRegistrationScreen> {
                   ),
                   maxLines: 2,
                 ),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: _capacityCtrl,
+                  decoration: const InputDecoration(
+                    labelText: 'Bir vaqtda nechta mijoz qabul qila olasiz?',
+                    hintText: 'Masalan: 3',
+                  ),
+                  keyboardType: TextInputType.number,
+                ),
               ],
               const SizedBox(height: 20),
-              const Text('Qabul usuli', style: TextStyle(fontWeight: FontWeight.w600)),
-              const SizedBox(height: 8),
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: MassageVisitMode.values.map((m) {
-                  final selected = _visitModes.contains(m.key);
-                  return FilterChip(
-                    label: Text(m.label),
-                    avatar: Icon(m.icon, size: 18),
-                    selected: selected,
-                    onSelected: (v) => setState(() {
-                      if (v) {
-                        _visitModes.add(m.key);
-                      } else if (_visitModes.length > 1) {
-                        _visitModes.remove(m.key);
-                      }
-                    }),
-                    selectedColor: accent,
-                    checkmarkColor: accent,
-                  );
-                }).toList(),
-              ),
-              const SizedBox(height: 20),
+
               const Text('Xizmatlar', style: TextStyle(fontWeight: FontWeight.w600)),
               const SizedBox(height: 8),
               Wrap(

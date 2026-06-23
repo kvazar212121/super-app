@@ -11,6 +11,7 @@ import '../utils/auth_guard.dart';
 import '../widgets/booking_common_widgets.dart' hide SectionTitle, TimeSlotGrid;
 import '../widgets/football_field_widgets.dart';
 import '../widgets/glass/mesh_background.dart';
+import '../utils/call_helper.dart';
 
 /// Futbol maydoni bron qilish — API slotlari bilan.
 class FootballFieldBookingScreen extends StatefulWidget {
@@ -83,77 +84,13 @@ class _FootballFieldBookingScreenState extends State<FootballFieldBookingScreen>
     return price;
   }
 
-  Future<void> _submitBooking() async {
-    if (_selectedSlot == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Iltimos, vaqt oralig\'ini tanlang')),
-      );
-      return;
-    }
-
-    if (!await ensureAuthenticated(context)) return;
-    if (!mounted) return;
-
-    final currency = NumberFormat.currency(locale: 'uz_UZ', symbol: 'so\'m', decimalDigits: 0);
-    final confirmed = await showBookingConfirmSheet(
+  void _startCall() {
+    CallHelper.startCallWithPurposeCheck(
       context,
-      title: 'Bronni tasdiqlang',
-      details: [
-        MapEntry('Maydon', field.name),
-        MapEntry('Vaqt', '${DateFormat('dd.MM.yyyy').format(_selectedDate)} ${_selectedSlot!.formatted}'),
-        MapEntry('O\'yinchilar', _playersCtrl.text.trim()),
-        MapEntry('Manzil', field.address),
-      ],
-      totalLabel: 'Jami',
-      totalValue: currency.format(_totalPrice),
-      accent: _accent,
-      confirmLabel: 'Bron qilish',
+      field.providerId > 0 ? field.providerId : 1, // Fallback to 1 for demo
+      field.name,
+      categoryKey: ServiceHubKind.futbol.name,
     );
-    if (!confirmed || !mounted) return;
-
-    final dateTime = DateTime(
-      _selectedDate.year,
-      _selectedDate.month,
-      _selectedDate.day,
-      _selectedSlot!.start.hour,
-      _selectedSlot!.start.minute,
-    );
-
-    final amenityNames = _selectedAmenities.map((i) => field.amenities[i].name).toList();
-    final notes = [
-      if (_playersCtrl.text.trim().isNotEmpty) 'O\'yinchilar: ${_playersCtrl.text.trim()}',
-      if (_notesCtrl.text.trim().isNotEmpty) _notesCtrl.text.trim(),
-      if (amenityNames.isNotEmpty) 'Qo\'shimcha: ${amenityNames.join(', ')}',
-    ].join('\n');
-
-    final order = ServiceOrder(
-      id: DateTime.now().microsecondsSinceEpoch.toString(),
-      category: ServiceHubKind.futbol,
-      serviceName: '${field.name} — ${field.size.shortLabel}',
-      providerName: field.name,
-      variant: '${field.size.shortLabel} — ${_selectedSlot!.formatted}',
-      address: field.address,
-      notes: notes,
-      date: dateTime,
-      price: _totalPrice,
-      status: OrderStatus.pending,
-      providerId: field.providerId > 0 ? field.providerId : null,
-    );
-
-    try {
-      await context.read<AppProvider>().addOrder(order);
-      if (!mounted) return;
-      Navigator.pop(context, true);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('${field.name} band qilindi')),
-      );
-    } catch (_) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Bron qilib bo\'lmadi')),
-        );
-      }
-    }
   }
 
   @override
@@ -240,11 +177,11 @@ class _FootballFieldBookingScreenState extends State<FootballFieldBookingScreen>
                   backgroundColor: _accent,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                 ),
-                onPressed: _loadingSlots ? null : _submitBooking,
-                icon: const Icon(Icons.check_circle_outline, size: 22),
+                onPressed: _startCall,
+                icon: const Icon(Icons.phone_in_talk, size: 22),
                 label: const Text(
-                  'Maydonni bron qilish',
-                  style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700),
+                  'Ma\'muriyatga qo\'ng\'iroq qilish',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
                 ),
               ),
             ),

@@ -12,6 +12,7 @@ import '../providers/app_provider.dart';
 import '../utils/auth_guard.dart';
 import '../widgets/booking_common_widgets.dart';
 import '../widgets/glass/mesh_background.dart';
+import '../services/provider_availability.dart';
 
 class NurseBookingScreen extends StatefulWidget {
   final NurseService service;
@@ -36,7 +37,10 @@ class _NurseBookingScreenState extends State<NurseBookingScreen> {
   DateTime _selectedDate = DateTime.now().add(const Duration(days: 1));
   String? _selectedTimeSlot;
 
-  late List<String> _timeSlots;
+  bool _loadingSlots = true;
+  List<String> _timeSlots = ProviderAvailability.defaultSlots;
+  List<String> _bookedSlots = [];
+  final _availabilityService = ProviderAvailabilityService();
 
   bool _isPriceRelevantForService(String priceKey, MedicalService? service) {
     if (service == null) return true;
@@ -90,12 +94,30 @@ class _NurseBookingScreenState extends State<NurseBookingScreen> {
   void initState() {
     super.initState();
     _selectedMedicalService = widget.initialMedicalService;
-    _timeSlots = widget.service.timeSlots.isNotEmpty
-        ? widget.service.timeSlots
-        : const [
-            '08:00', '09:00', '10:00', '11:00', '12:00',
-            '14:00', '15:00', '16:00', '17:00', '18:00',
-          ];
+    _loadAvailability();
+  }
+
+  Future<void> _loadAvailability() async {
+    setState(() {
+      _loadingSlots = true;
+      _selectedTimeSlot = null;
+    });
+
+    final availability = await _availabilityService.fetch(
+      providerId: widget.service.providerId,
+      date: _selectedDate,
+    );
+
+    if (!mounted) return;
+    setState(() {
+      _timeSlots = availability.slots.isNotEmpty
+          ? availability.slots
+          : (widget.service.timeSlots.isNotEmpty
+              ? widget.service.timeSlots
+              : ProviderAvailability.defaultSlots);
+      _bookedSlots = availability.booked;
+      _loadingSlots = false;
+    });
   }
 
   @override
@@ -217,20 +239,27 @@ class _NurseBookingScreenState extends State<NurseBookingScreen> {
                   HorizontalDatePicker(
                     selectedDate: _selectedDate,
                     accentColor: accentColor,
-                    onDateSelected: (date) => setState(() => _selectedDate = date),
+                    onDateSelected: (date) {
+                      setState(() => _selectedDate = date);
+                      _loadAvailability();
+                    },
                     daysCount: 14,
                     startDaysOffset: 1,
                   ),
                   const SizedBox(height: 24),
                   const SectionTitle("Vaqt"),
                   const SizedBox(height: 12),
-                  TimeSlotGrid(
-                    timeSlots: _timeSlots,
-                    selectedTimeSlot: _selectedTimeSlot,
-                    accentColor: accentColor,
-                    onTimeSelected: (slot) => setState(() => _selectedTimeSlot = slot),
-                    crossAxisCount: 5,
-                  ),
+                  _loadingSlots
+                      ? const Center(child: CircularProgressIndicator())
+                      : TimeSlotGrid(
+                          timeSlots: _timeSlots,
+                          selectedTimeSlot: _selectedTimeSlot,
+                          accentColor: accentColor,
+                          disabledTimeSlots: _bookedSlots,
+                          onTimeSelected: (slot) =>
+                              setState(() => _selectedTimeSlot = slot),
+                          crossAxisCount: 5,
+                        ),
                   const SizedBox(height: 32),
                   BookingActionBar(
                     accent: accentColor,

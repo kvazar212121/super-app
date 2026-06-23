@@ -3,7 +3,6 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 /// Qabul usuli — uyga chiqish yoki salonda
 enum MassageVisitMode {
-  homeVisit,
   atCenter;
 
   static MassageVisitMode? fromKey(String key) {
@@ -16,22 +15,18 @@ enum MassageVisitMode {
 
 extension MassageVisitModeX on MassageVisitMode {
   String get key => switch (this) {
-        MassageVisitMode.homeVisit => 'home_visit',
         MassageVisitMode.atCenter => 'at_center',
       };
 
   String get label => switch (this) {
-        MassageVisitMode.homeVisit => 'Uyga chiqish',
         MassageVisitMode.atCenter => 'Salonga borish',
       };
 
   String get shortLabel => switch (this) {
-        MassageVisitMode.homeVisit => 'Chaqirish',
         MassageVisitMode.atCenter => 'Borish',
       };
 
   IconData get icon => switch (this) {
-        MassageVisitMode.homeVisit => LucideIcons.home,
         MassageVisitMode.atCenter => LucideIcons.building2,
       };
 }
@@ -154,15 +149,14 @@ class MassageHijoma {
     this.rawJson,
   });
 
-  bool get supportsHomeVisit =>
-      visitModes.contains(MassageVisitMode.homeVisit);
+  bool get supportsHomeVisit => false;
 
   bool get supportsAtCenter => visitModes.contains(MassageVisitMode.atCenter);
 
   bool get isSalon => massageRole == 'salon';
 
   String get visitModesLabel => visitModes.isEmpty
-      ? 'Uyga chiqish, salonda'
+      ? 'Salonda'
       : visitModes.map((m) => m.shortLabel).join(' • ');
 
   @Deprecated('Use visitModes')
@@ -175,7 +169,7 @@ class MassageHijoma {
         .toList();
     var modes = modeKeys.map(MassageVisitMode.fromKey).whereType<MassageVisitMode>().toList();
     if (modes.isEmpty) {
-      modes = [MassageVisitMode.homeVisit, MassageVisitMode.atCenter];
+      modes = [MassageVisitMode.atCenter];
     }
 
     final typeKeys = (meta['service_types'] as List<dynamic>? ?? [])

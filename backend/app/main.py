@@ -305,6 +305,22 @@ async def checkin_scheduler():
         except Exception as e:
             logger.error(f"Error in checkin scheduler: {e}")
 
+async def order_completion_scheduler():
+    """Ikki tomonlama tasdiqlash uchun eslatmalar va avto-yakunlash"""
+    logger.info("Order completion scheduler starting...")
+    while True:
+        try:
+            await asyncio.sleep(60 * 5)  # Har 5 daqiqada tekshiradi
+
+            async with async_session() as db:
+                from app.services.order_service import OrderService
+                await OrderService.run_completion_checks(db)
+        except asyncio.CancelledError:
+            logger.info("Order completion scheduler cancelled.")
+            break
+        except Exception as e:
+            logger.error(f"Error in order completion scheduler: {e}")
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -393,6 +409,7 @@ async def lifespan(app: FastAPI):
     reminder_task = asyncio.create_task(plan_reminder_scheduler())
     finance_task = asyncio.create_task(finance_reminder_scheduler())
     checkin_task = asyncio.create_task(checkin_scheduler())
+    completion_task = asyncio.create_task(order_completion_scheduler())
     
     yield
     

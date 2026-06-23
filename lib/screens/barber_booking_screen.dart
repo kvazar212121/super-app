@@ -51,6 +51,7 @@ class _BarberBookingScreenState extends State<BarberBookingScreen> {
           id: b.id,
           name: b.name,
           subtitle: b.rating.toStringAsFixed(1),
+          providerId: b.providerId,
         ),
       )
       .toList();
@@ -92,8 +93,16 @@ class _BarberBookingScreenState extends State<BarberBookingScreen> {
       _selectedTimeSlot = null;
     });
 
+    int fetchProviderId = widget.shop.providerId;
+    if (_selectedStaffId != null && _selectedStaffId != _anyStaffId) {
+      final match = widget.shop.barbers.where((b) => b.id == _selectedStaffId);
+      if (match.isNotEmpty && match.first.providerId > 0) {
+        fetchProviderId = match.first.providerId;
+      }
+    }
+
     final availability = await _availabilityService.fetch(
-      providerId: widget.shop.providerId,
+      providerId: fetchProviderId,
       date: _selectedDate,
     );
 
@@ -157,7 +166,10 @@ class _BarberBookingScreenState extends State<BarberBookingScreen> {
                     SelectableStaffRow(
                       staff: _staffOptions,
                       selectedId: _selectedStaffId,
-                      onSelect: (id) => setState(() => _selectedStaffId = id),
+                      onSelect: (id) {
+                        setState(() => _selectedStaffId = id);
+                        _loadAvailability();
+                      },
                       accent: _accent,
                       anyOptionLabel: 'Har qanday bo\'sh usta',
                     ),
@@ -433,6 +445,14 @@ class _BarberBookingScreenState extends State<BarberBookingScreen> {
       minute,
     );
 
+    int orderProviderId = widget.shop.providerId;
+    if (_selectedStaffId != null && _selectedStaffId != _anyStaffId) {
+      final match = widget.shop.barbers.where((b) => b.id == _selectedStaffId);
+      if (match.isNotEmpty && match.first.providerId > 0) {
+        orderProviderId = match.first.providerId;
+      }
+    }
+
     final order = ServiceOrder(
       id: DateTime.now().microsecondsSinceEpoch.toString(),
       category: ServiceHubKind.sartarosh,
@@ -444,7 +464,7 @@ class _BarberBookingScreenState extends State<BarberBookingScreen> {
       date: dateTime,
       price: _selectedPrice,
       status: OrderStatus.pending,
-      providerId: widget.shop.providerId,
+      providerId: orderProviderId,
       bookingMode: _selectedBookingMode,
     );
 

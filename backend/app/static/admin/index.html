@@ -547,11 +547,17 @@
         .stars .empty { color: var(--gray-300); }
 
         /* ===== CATEGORY CARD ===== */
+        #categoriesList {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 16px;
+        }
         .category-item {
             border: 1px solid var(--gray-200);
             border-radius: var(--radius-sm);
-            margin-bottom: 12px; overflow: hidden;
+            overflow: hidden;
             transition: var(--transition);
+            align-self: start;
         }
         .category-item:hover { border-color: var(--primary-light); }
         .category-header {
@@ -703,22 +709,13 @@
                     <span class="nav-icon"><i data-lucide="star"></i></span>
                     <span class="nav-label">Sharhlar</span>
                 </div>
-                <div class="nav-section-title">Foydalanuvchi ma'lumotlari</div>
-                <div class="nav-item" data-page="user_data_todos">
-                    <span class="nav-icon"><i data-lucide="calendar-check"></i></span>
-                    <span class="nav-label">Kundalik rejalar</span>
+                <div class="nav-item" data-page="reports">
+                    <span class="nav-icon"><i data-lucide="bar-chart-2"></i></span>
+                    <span class="nav-label">Hisobotlar</span>
                 </div>
-                <div class="nav-item" data-page="user_data_shopping">
-                    <span class="nav-icon"><i data-lucide="shopping-cart"></i></span>
-                    <span class="nav-label">Xaridlar (Bozorlik)</span>
-                </div>
-                <div class="nav-item" data-page="user_data_finance">
-                    <span class="nav-icon"><i data-lucide="wallet"></i></span>
-                    <span class="nav-label">Moliya daftari</span>
-                </div>
-                <div class="nav-item" data-page="user_data_plans">
-                    <span class="nav-icon"><i data-lucide="trending-up"></i></span>
-                    <span class="nav-label">Taqvim rejalari</span>
+                <div class="nav-item" data-page="user_analytics">
+                    <span class="nav-icon"><i data-lucide="pie-chart"></i></span>
+                    <span class="nav-label">Foydalanuvchi odatlari</span>
                 </div>
                 <div class="nav-section-title">Moliya va Tizim</div>
                 <div class="nav-item" data-page="finance">
@@ -733,10 +730,6 @@
                     <span class="nav-icon"><i data-lucide="bell"></i></span>
                     <span class="nav-label">Bildirishnomalar</span>
                     <span class="nav-badge">3</span>
-                </div>
-                <div class="nav-item" data-page="reports">
-                    <span class="nav-icon"><i data-lucide="trending-up"></i></span>
-                    <span class="nav-label">Hisobotlar</span>
                 </div>
             </nav>
             <div class="sidebar-footer">
@@ -758,18 +751,11 @@
                     <input type="text" placeholder="Qidirish..." id="globalSearch">
                 </div>
                 <div class="topbar-actions">
-                    <button class="topbar-btn" title="Bildirishnomalar">
-                        &#128276;<span class="badge"></span>
-                    </button>
-                    <button class="topbar-btn" title="Sozlamalar">&#9881;</button>
                     <div class="topbar-avatar">
-                        <div class="topbar-avatar-img">AA</div>
                         <div class="topbar-avatar-info">
-                            <div class="topbar-avatar-name">Admin Adminov</div>
-                            <div class="topbar-avatar-role">Super Admin</div>
+                            <div class="topbar-avatar-role" style="font-size: 16px; font-weight: 700; color: var(--primary);">Super Admin</div>
                         </div>
                     </div>
-                    <button class="topbar-btn" title="Chiqish" onclick="logout()" style="color:var(--danger);">&#128682;</button>
                 </div>
             </header>
 
@@ -954,10 +940,7 @@
                 settings: renderSettings,
                 notifications: renderNotifications,
                 reports: renderReports,
-                user_data_todos: renderUserDataTodos,
-                user_data_shopping: renderUserDataShopping,
-                user_data_finance: renderUserDataFinance,
-                user_data_plans: renderUserDataPlans,
+                user_analytics: renderUserAnalytics,
             };
             if (renderers[page]) {
                 await renderers[page]();
@@ -969,10 +952,15 @@
         async function renderDashboard() {
             // Fetch real stats from API
             let s = { orders_total: 0, users: 0, providers: 0, categories: 0, revenue_today: 0, revenue_month: 0, avg_rating: 0, orders_by_status: {} };
+            let providers = [];
             try {
                 const r = await api(API_BASE + '/stats');
                 if (r && r.ok) s = await r.json();
+                const providersRes = await api(API_BASE + '/finance/providers');
+                if (providersRes && providersRes.ok) providers = await providersRes.json();
             } catch(e) { console.warn('Stats load error', e); apiError('Statistikani yuklab bo\'lmadi'); }
+
+            var providerOptions = providers.map(p => '<option value="' + p.id + '">' + p.name + ' (Balans: ' + formatMoney(p.balance) + ')</option>').join('');
 
             var recentOrders = [];
             var topProviders = [];
@@ -1020,22 +1008,7 @@
                     '<h1 class="page-title">Bosh sahifa</h1>' +
                     '<p class="page-subtitle">Platforma statistikasi va tahlillar</p>' +
                 '</div>' +
-                '<div class="widget-grid">' +
-                    '<div class="widget-card">' +
-                        '<div class="widget-icon" style="background:var(--info-bg);color:var(--info);">&#9728;&#65039;</div>' +
-                        '<div class="widget-info">' +
-                            '<div class="widget-title">Ob-havo</div>' +
-                            weatherHtml +
-                        '</div>' +
-                    '</div>' +
-                    '<div class="widget-card">' +
-                        '<div class="widget-icon" style="background:var(--success-bg);color:var(--success);">&#128181;</div>' +
-                        '<div class="widget-info">' +
-                            '<div class="widget-title">Valyuta kurslari</div>' +
-                            currencyHtml +
-                        '</div>' +
-                    '</div>' +
-                '</div>' +
+
                 '<div class="stats-grid">' +
                     '<div class="stat-card">' +
                         '<div class="stat-card-header">' +
@@ -1263,7 +1236,7 @@
                     '<div class="card-body no-padding">' +
                         '<div class="table-container">' +
                             '<table class="data-table" id="usersTable">' +
-                                '<thead><tr><th>ID</th><th>Foydalanuvchi</th><th>Telefon</th><th>Balans</th><th>Cashback</th><th>Premium</th><th>Sana</th><th>Amallar</th></tr></thead>' +
+                                '<thead><tr><th>ID</th><th>Foydalanuvchi</th><th>Telefon</th><th>Premium</th><th>Sana</th><th>Amallar</th></tr></thead>' +
                                 '<tbody id="usersTableBody">' + renderUserRowsApi(usersData.items) + '</tbody>' +
                             '</table>' +
                         '</div>' +
@@ -1291,8 +1264,6 @@
                     '<td>' + u.id + '</td>' +
                     '<td><div class="table-user"><div class="table-avatar">' + getInitials(name) + '</div><span>' + name.trim() + '</span></div></td>' +
                     '<td>' + (u.phone || '') + '</td>' +
-                    '<td>' + formatMoney(u.balance || 0) + '</td>' +
-                    '<td>' + formatMoney(u.cashback || 0) + '</td>' +
                     '<td>' + (u.is_premium ? '<span class="badge-status confirmed">Premium</span>' : '<span class="badge-status pending">Oddiy</span>') + '</td>' +
                     '<td>' + created + '</td>' +
                     '<td><div class="action-group">' +
@@ -1419,7 +1390,7 @@
                     '<div class="card-body no-padding">' +
                         '<div class="table-container">' +
                             '<table class="data-table" id="providersTable">' +
-                                '<thead><tr><th>ID</th><th>Nomi</th><th>Kategoriya</th><th>Telefon</th><th>Balans</th><th>Reyting</th><th>Holat</th><th>Amallar</th></tr></thead>' +
+                                '<thead><tr><th>ID</th><th>Nomi</th><th>Kategoriya</th><th>Telefon</th><th>Reyting</th><th>Holat</th><th>Amallar</th></tr></thead>' +
                                 '<tbody id="providersTableBody">' + renderProviderRowsApi(providersData.items) + '</tbody>' +
                             '</table>' +
                         '</div>' +
@@ -1480,15 +1451,11 @@
                     actions += '<button class="btn-icon danger" title="Rad etish" onclick="rejectProvider(' + p.id + ')">&#10007;</button>';
                 }
                 actions += '<button class="btn-icon danger" title="O\'chirish" onclick="deleteProvider(' + p.id + ')">&#128465;</button>';
-                var balVal = p.owner_balance !== undefined && p.owner_balance !== null ? p.owner_balance : 0;
-                var balText = formatMoney(balVal) + ' so\'m';
-                var balStyle = balVal < 0 ? 'color: var(--danger); font-weight: bold;' : 'font-weight: bold;';
                 return '<tr>' +
                     '<td>' + p.id + '</td>' +
                     '<td><div class="table-user"><div class="table-avatar">' + getInitials(p.name) + '</div><span>' + p.name + (typeLabel ? '<br><small style="color:#64748b">' + typeLabel + '</small>' : '') + '</span></div></td>' +
                     '<td>' + (p.category_title || p.category_key || '-') + '</td>' +
                     '<td>' + p.phone + '</td>' +
-                    '<td style="' + balStyle + '">' + balText + '</td>' +
                     '<td>' + renderStars(Math.round(p.rating || 0)) + ' ' + (p.rating || 0) + '</td>' +
                     '<td>' + statusBadge(status) + '</td>' +
                     '<td><div class="action-group">' + actions + '</div></td>' +
@@ -1689,6 +1656,20 @@
         }
 
         // ===== PAGE: CATEGORIES =====
+        function getCategoryEmoji(icon) {
+            if (!icon) return '&#128194;';
+            var map = {
+                'scissors': '✂️', 'sparkles': '✨', 'droplet': '💦', 'droplets': '💦', 'zap': '⚡',
+                'sprayCan': '🧴', 'car': '🚗', 'trophy': '🏆', 'graduationCap': '🎓',
+                'hammer': '🔨', 'hardHat': '👷', 'wind': '💨', 'baby': '👶',
+                'bookOpen': '📖', 'shieldCheck': '🛡️', 'refrigerator': '🗄️', 'package': '📦',
+                'heartPulse': '❤️', 'stethoscope': '🩺', 'smile': '😊', 'partyPopper': '🎉',
+                'shoppingCart': '🛒', 'utensils': '🍴', 'gamepad2': '🎮', 'sports_soccer': '⚽',
+                'monitor': '🖥️', 'layoutGrid': '🔲', 'users': '👥', 'wrench': '🔧'
+            };
+            return map[icon] || icon;
+        }
+
         async function renderCategories() {
             await loadCategoriesCache();
             var cats = categoriesCache;
@@ -1707,7 +1688,7 @@
                 var variants = c.variants || [];
                 html += '<div class="category-item" id="category-' + ci + '">' +
                     '<div class="category-header" onclick="toggleCategory(' + ci + ')">' +
-                        '<div class="category-icon" style="background:' + (c.accent_color || '#6366F1') + '20; color:' + (c.accent_color || '#6366F1') + ';">' + (c.icon || '&#128194;') + '</div>' +
+                        '<div class="category-icon" style="background:' + (c.accent_color || '#6366F1') + '20; color:' + (c.accent_color || '#6366F1') + ';">' + getCategoryEmoji(c.icon) + '</div>' +
                         '<div class="category-info">' +
                             '<div class="category-name">' + c.title_uz + '</div>' +
                             '<div class="category-key">' + c.key + '</div>' +
@@ -2021,21 +2002,21 @@
                             '<span class="stat-card-label">Cashback berilgan</span>' +
                             '<div class="stat-card-icon orange">&#127873;</div>' +
                         '</div>' +
-                        '<div class="stat-card-value">' + formatMoney(f.total_cashback_given) + '</div>' +
-                        '<span class="stat-card-change down">Foydalanuvchilarga</span>' +
+                        '<div class="stat-card-value">' + formatMoney(f.total_topups) + '</div>' +
+                        '<span class="stat-card-change up">Jami kiritilgan</span>' +
                     '</div>' +
                     '<div class="stat-card">' +
                         '<div class="stat-card-header">' +
-                            '<span class="stat-card-label">Platforma balansi</span>' +
+                            '<span class="stat-card-label">Qaytarilgan summalar (Refund)</span>' +
                             '<div class="stat-card-icon blue">&#128178;</div>' +
                         '</div>' +
-                        '<div class="stat-card-value">' + formatMoney(f.platform_balance) + '</div>' +
-                        '<span class="stat-card-change up">Joriy balans</span>' +
+                        '<div class="stat-card-value">' + formatMoney(f.total_refunds) + '</div>' +
+                        '<span class="stat-card-change down">Foydalanuvchilarga</span>' +
                     '</div>' +
                 '</div>' +
                 '<div style="display:grid; grid-template-columns: 1fr 1fr; gap:24px;">' +
                     '<div class="card">' +
-                        '<div class="card-header"><h3 class="card-title">Providerga to\'lov</h3></div>' +
+                        '<div class="card-header"><h3 class="card-title">Provider hisobini boshqarish</h3></div>' +
                         '<div class="card-body">' +
                             '<div class="form-group">' +
                                 '<label class="form-label">Provider</label>' +
@@ -2045,14 +2026,21 @@
                                 '</select>' +
                             '</div>' +
                             '<div class="form-group">' +
+                                '<label class="form-label">Amaliyot turi</label>' +
+                                '<select class="form-input" id="transactionType">' +
+                                    '<option value="topup">Pul qo\'shish (Top-up)</option>' +
+                                    '<option value="refund">Pul qaytarish / Yechish (Refund)</option>' +
+                                '</select>' +
+                            '</div>' +
+                            '<div class="form-group">' +
                                 '<label class="form-label">Summa (so\'m)</label>' +
                                 '<input type="number" class="form-input" id="payoutAmount" placeholder="500000">' +
                             '</div>' +
                             '<div class="form-group">' +
                                 '<label class="form-label">Izoh</label>' +
-                                '<textarea class="form-input" id="payoutNote" placeholder="To\'lov haqida qisqacha..." rows="3"></textarea>' +
+                                '<textarea class="form-input" id="payoutNote" placeholder="O\'tkazma haqida qisqacha..." rows="3"></textarea>' +
                             '</div>' +
-                            '<button class="btn btn-primary" onclick="processPayout()" style="width:100%;">To\'lovni amalga oshirish</button>' +
+                            '<button class="btn btn-primary" onclick="processProviderTransaction()" style="width:100%;">Tranzaksiyani amalga oshirish</button>' +
                         '</div>' +
                     '</div>' +
                     '<div class="card">' +
@@ -2072,21 +2060,23 @@
                 '</div>';
         }
 
-        function processPayout() {
+        function processProviderTransaction() {
             var provider = document.getElementById('payoutProvider').value;
             var amount = document.getElementById('payoutAmount').value;
             var note = document.getElementById('payoutNote').value;
+            var type = document.getElementById('transactionType').value;
             if (!provider || !amount) { showToast('Provider va summa majburiy', 'error'); return; }
-            api(API_BASE + '/finance/payout', {
+            api(API_BASE + '/finance/provider-transaction', {
                 method: 'POST',
-                body: JSON.stringify({ provider_id: parseInt(provider), amount: parseFloat(amount), note: note || null })
+                body: JSON.stringify({ provider_id: parseInt(provider), amount: parseFloat(amount), type: type, note: note || null })
             }).then(function(r) {
                 if (r && r.ok) {
-                    showToast(formatMoney(parseInt(amount)) + ' to\'lov amalga oshirildi');
+                    showToast('Tranzaksiya amalga oshirildi');
                     document.getElementById('payoutAmount').value = '';
                     document.getElementById('payoutNote').value = '';
+                    renderFinance(); // Refresh balances
                 } else {
-                    showToast('To\'lov amalga oshmadi', 'error');
+                    showToast('Tranzaksiya amalga oshmadi', 'error');
                 }
             });
         }
@@ -2124,7 +2114,7 @@
                         '<div class="card-body no-padding">' +
                             '<div class="table-container">' +
                                 '<table class="data-table">' +
-                                    '<thead><tr><th>ID</th><th>Sarlavha</th><th>Kichik matn</th><th>Badge</th><th>Ranglar</th><th>Amallar</th></tr></thead>' +
+                                    '<thead><tr><th>ID</th><th>Sarlavha</th><th>Kichik matn</th><th>Badge</th><th>Ranglar</th><th>Rasm</th><th>Amallar</th></tr></thead>' +
                                     '<tbody>' +
                                         (promos.length === 0 ? '<tr><td colspan="6" style="text-align:center;padding:24px;color:var(--gray-400);">Bannerlar topilmadi</td></tr>' : 
                                         promos.map(function(p) {
@@ -2137,6 +2127,7 @@
                                                 '<td>' + (p.subtitle || '—') + '</td>' +
                                                 '<td><span class="badge-status active">' + (p.badge || 'AKSIYA') + '</span></td>' +
                                                 '<td>' + colorBadges + ' ' + (p.colors || '') + '</td>' +
+                                                '<td>' + (p.image_url ? '<img src="'+p.image_url+'" style="width:40px;height:40px;object-fit:cover;border-radius:4px;border:1px solid var(--gray-200);">' : '—') + '</td>' +
                                                 '<td><button class="btn btn-sm btn-danger" onclick="deletePromo(' + p.id + ')">O\'chirish</button></td>' +
                                             '</tr>';
                                         }).join('')) +
@@ -2166,6 +2157,11 @@
                                     '<input type="text" class="form-input" id="promoColors" placeholder="#6366F1,#A855F7" required>' +
                                     '<small class="text-muted" style="display:block;margin-top:4px;">Ikkita HEX rangni vergul bilan ajratib yozing.</small>' +
                                 '</div>' +
+                                '<div class="form-group">' +
+                                    '<label class="form-label">Rasm (URL)</label>' +
+                                    '<input type="url" class="form-input" id="promoImageUrl" placeholder="https://example.com/banner.png">' +
+                                    '<small class="text-muted" style="display:block;margin-top:4px;">Ixtiyoriy. Banner rasmi havolasini kiriting.</small>' +
+                                '</div>' +
                                 '<button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;margin-top:8px;">Qo\'shish</button>' +
                             '</form>' +
                         '</div>' +
@@ -2178,12 +2174,13 @@
             const subtitle = document.getElementById('promoSubtitle').value.trim();
             const badge = document.getElementById('promoBadge').value.trim();
             const colors = document.getElementById('promoColors').value.trim();
+            const image_url = document.getElementById('promoImageUrl').value.trim();
             if (!title || !subtitle || !badge || !colors) return;
 
             try {
                 const r = await api(API_BASE + '/promos', {
                     method: 'POST',
-                    body: JSON.stringify({ title, subtitle, badge, colors })
+                    body: JSON.stringify({ title, subtitle, badge, colors, image_url: image_url || null })
                 });
                 if (r && r.ok) {
                     showToast('Yangi aksiya banneri qo\'shildi');
@@ -2597,6 +2594,76 @@
             }
         });
 
+        // ===== USER ANALYTICS =====
+        async function renderUserAnalytics() {
+            mainContent.innerHTML = '<div class="page-header"><h1 class="page-title">Foydalanuvchi odatlari</h1></div><div class="card"><div class="card-body">Yuklanmoqda...</div></div>';
+            
+            try {
+                const r = await api(API_BASE + '/analytics/user-insights');
+                if (!r || !r.ok) throw new Error();
+                const data = await r.json();
+
+                let html = '<div class="page-header">' +
+                    '<h1 class="page-title">Foydalanuvchi odatlari va statistikasi</h1>' +
+                    '<p class="page-subtitle">Umumiy anonimlashtirilgan xatti-harakatlar tahlili</p>' +
+                    '</div>';
+                
+                // Top cards
+                html += '<div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap:24px; margin-bottom:24px;">' +
+                    '<div class="stat-card"><div class="stat-title">O\'rtacha bozorlik xarajati</div><div class="stat-value text-success">' + formatMoney(data.shopping.avg_price) + '</div><div class="stat-desc">' + data.shopping.total_lists + ' ta ro\'yxat asosida</div></div>' +
+                    '<div class="stat-card"><div class="stat-title">Jami rejalar (Plans & Todos)</div><div class="stat-value">' + (data.planning.total_plans + data.planning.total_todos) + '</div><div class="stat-desc">Bajarilganlar: ' + (data.planning.completed_plans + data.planning.completed_todos) + '</div></div>' +
+                    '</div>';
+
+                html += '<div style="display:grid; grid-template-columns: 1fr 1fr; gap:24px;">';
+
+                // Popular Shopping Items
+                html += '<div class="card">' +
+                    '<div class="card-header"><h3 class="card-title">Top-10 eng ommabop mahsulotlar</h3></div>' +
+                    '<div class="card-body no-padding"><div class="table-container"><table class="data-table">' +
+                    '<thead><tr><th>#</th><th>Mahsulot nomi</th><th>Qo\'shilgan soni</th></tr></thead><tbody>';
+                if(data.shopping.top_items.length === 0) {
+                    html += '<tr><td colspan="3" style="text-align:center;padding:24px;color:var(--gray-400);">Ma\'lumot yo\'q</td></tr>';
+                } else {
+                    data.shopping.top_items.forEach((item, index) => {
+                        html += '<tr><td>' + (index + 1) + '</td><td><b>' + item.name + '</b></td><td>' + item.count + ' marta</td></tr>';
+                    });
+                }
+                html += '</tbody></table></div></div></div>';
+
+                // Popular Hours
+                let maxHourCount = 0;
+                data.planning.popular_hours.forEach(h => { if(h.count > maxHourCount) maxHourCount = h.count; });
+                
+                html += '<div class="card">' +
+                    '<div class="card-header"><h3 class="card-title">Reja tuzish uchun eng faol soatlar</h3></div>' +
+                    '<div class="card-body" style="padding: 24px;">';
+                
+                if (maxHourCount === 0) {
+                    html += '<div style="text-align:center;color:var(--gray-400);">Ma\'lumot yo\'q</div>';
+                } else {
+                    data.planning.popular_hours.forEach(h => {
+                        if(h.count > 0) {
+                            let w = Math.max(5, (h.count / maxHourCount) * 100);
+                            html += '<div style="margin-bottom:12px; display:flex; align-items:center;">' +
+                                '<div style="width:50px; font-size:12px; color:var(--gray-500);">' + h.hour + '</div>' +
+                                '<div style="flex:1; background:var(--gray-100); border-radius:4px; height:24px; overflow:hidden;">' +
+                                    '<div style="width:' + w + '%; background:var(--primary); height:100%; display:flex; align-items:center; padding-left:8px; color:white; font-size:11px; font-weight:bold;">' + h.count + ' ta</div>' +
+                                '</div>' +
+                                '</div>';
+                        }
+                    });
+                }
+                html += '</div></div>';
+
+                html += '</div>'; // End grid
+
+                mainContent.innerHTML = html;
+            } catch(e) { 
+                apiError('Statistikani yuklashda xatolik yuz berdi');
+                mainContent.innerHTML = '<div class="page-header"><h1 class="page-title">Foydalanuvchi odatlari</h1></div><div class="card"><div class="card-body" style="color:var(--danger)">Yuklab bo\'lmadi</div></div>';
+            }
+        }
+        
         // ===== USER DATA =====
         async function renderUserDataTodos() {
             mainContent.innerHTML = '<div class="page-header"><h1 class="page-title">Kundalik rejalar</h1></div><div class="card"><div class="card-body">Yuklanmoqda...</div></div>';
@@ -2604,7 +2671,7 @@
             html += '<div class="card"><div class="table-container"><table class="table"><thead><tr><th>ID</th><th>Foydalanuvchi</th><th>Sarlavha</th><th>Holati</th><th>Sana</th></tr></thead><tbody id="todosTableBody"></tbody></table></div></div>';
             mainContent.innerHTML = html;
             try {
-                const res = await api(API_BASE + '/admin/user-data/todos');
+                const res = await api(API_BASE + '/user-data/todos');
                 if (res.ok) {
                     var data = await res.json();
                     var tbody = document.getElementById('todosTableBody');
@@ -2630,7 +2697,7 @@
             html += '<div class="card"><div class="table-container"><table class="table"><thead><tr><th>ID</th><th>Foydalanuvchi</th><th>Sarlavha</th><th>Mahsulotlar</th><th>Taxminiy narx</th><th>Asl narx</th><th>Holati</th></tr></thead><tbody id="shoppingTableBody"></tbody></table></div></div>';
             mainContent.innerHTML = html;
             try {
-                const res = await api(API_BASE + '/admin/user-data/shopping');
+                const res = await api(API_BASE + '/user-data/shopping');
                 if (res.ok) {
                     var data = await res.json();
                     var tbody = document.getElementById('shoppingTableBody');
@@ -2658,7 +2725,7 @@
             html += '<div class="card"><div class="table-container"><table class="table"><thead><tr><th>ID</th><th>Foydalanuvchi</th><th>Turi</th><th>Kategoriya</th><th>Summa</th><th>Izoh</th><th>Sana</th></tr></thead><tbody id="financeTableBody"></tbody></table></div></div>';
             mainContent.innerHTML = html;
             try {
-                const res = await api(API_BASE + '/admin/user-data/finance');
+                const res = await api(API_BASE + '/user-data/finance');
                 if (res.ok) {
                     var data = await res.json();
                     var tbody = document.getElementById('financeTableBody');
@@ -2686,7 +2753,7 @@
             html += '<div class="card"><div class="table-container"><table class="table"><thead><tr><th>ID</th><th>Foydalanuvchi</th><th>Sarlavha</th><th>Izoh</th><th>Sana/Vaqt</th><th>Holati</th></tr></thead><tbody id="plansTableBody"></tbody></table></div></div>';
             mainContent.innerHTML = html;
             try {
-                const res = await api(API_BASE + '/admin/user-data/plans');
+                const res = await api(API_BASE + '/user-data/plans');
                 if (res.ok) {
                     var data = await res.json();
                     var tbody = document.getElementById('plansTableBody');

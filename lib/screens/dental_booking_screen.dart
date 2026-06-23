@@ -254,7 +254,9 @@ class _DentalBookingScreenState extends State<DentalBookingScreen> {
                       secondaryLabel: 'Klinika bilan bog\'lanish',
                       secondaryIcon: LucideIcons.phone,
                       onSecondary: () {
-                        CallService().startCall(0, widget.clinic.name);
+                        int targetId = _selectedDentist?.providerId ?? widget.clinic.providerId;
+                      if (targetId == 0) targetId = widget.clinic.providerId;
+                      CallService().startCall(targetId, _selectedDentist?.name ?? widget.clinic.name);
                         Navigator.of(context).push(
                           MaterialPageRoute(
                             builder: (_) => const CallScreen(isIncoming: false),

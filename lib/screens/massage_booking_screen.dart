@@ -56,13 +56,10 @@ class _MassageBookingScreenState extends State<MassageBookingScreen> {
   @override
   void initState() {
     super.initState();
-    _visitMode = widget.initialVisitMode;
-    if (_visitMode != null && !_availableVisitModes.contains(_visitMode)) {
-      _visitMode = _availableVisitModes.isNotEmpty ? _availableVisitModes.first : null;
-    }
-    if (_visitMode == null && _availableVisitModes.length == 1) {
-      _visitMode = _availableVisitModes.first;
-    }
+  @override
+  void initState() {
+    super.initState();
+    _visitMode = MassageVisitMode.atCenter;
     _addressCtrl.addListener(() => setState(() {}));
   }
 
@@ -131,18 +128,7 @@ class _MassageBookingScreenState extends State<MassageBookingScreen> {
                       ),
                     ],
                     const SizedBox(height: 24),
-                    const SectionTitle('Qabul usuli'),
-                    const SizedBox(height: 12),
-                    SelectableIconGrid<MassageVisitMode>(
-                      items: _availableVisitModes,
-                      selected: _visitMode,
-                      iconOf: (m) => m.icon,
-                      labelOf: (m) => m.label,
-                      onSelect: (m) => setState(() => _visitMode = m),
-                      accent: accentColor,
-                    ),
-                    if (_visitMode == MassageVisitMode.atCenter &&
-                        widget.service.address.isNotEmpty) ...[
+                    if (widget.service.address.isNotEmpty) ...[
                       const SizedBox(height: 12),
                       Container(
                         width: double.infinity,
@@ -165,22 +151,6 @@ class _MassageBookingScreenState extends State<MassageBookingScreen> {
                           ],
                         ),
                       ),
-                    ],
-                    if (_visitMode == MassageVisitMode.homeVisit) ...[
-                      const SizedBox(height: 16),
-                      BookingInputField(
-                        controller: _addressCtrl,
-                        hint: 'Uy manzili (ko\'cha, uy, kvartira)',
-                        icon: LucideIcons.home,
-                        accent: accentColor,
-                      ),
-                      if (widget.service.homeVisitFee > 0) ...[
-                        const SizedBox(height: 8),
-                        Text(
-                          'Uyga chiqish: +${currencyFormat.format(widget.service.homeVisitFee)}',
-                          style: TextStyle(color: accentColor, fontSize: 13),
-                        ),
-                      ],
                     ],
                     const SizedBox(height: 24),
                     const SectionTitle('Xizmat turi'),
@@ -243,7 +213,7 @@ class _MassageBookingScreenState extends State<MassageBookingScreen> {
                       secondaryLabel: "Mutaxassis bilan bog'lanish",
                       secondaryIcon: LucideIcons.phone,
                       onSecondary: () {
-                        CallService().startCall(0, widget.service.name);
+                        CallService().startCall(widget.service.providerId, widget.service.name);
                         Navigator.of(context).push(
                           MaterialPageRoute(
                             builder: (_) => const CallScreen(isIncoming: false),
@@ -340,11 +310,8 @@ class _MassageBookingScreenState extends State<MassageBookingScreen> {
             DetailRow(label: 'Turi', value: _selectedServiceType!.label),
             DetailRow(label: 'Paket', value: _selectedPriceOption!),
             DetailRow(label: 'Jinsiyat', value: _selectedGender!.label),
-            DetailRow(label: 'Qabul', value: _visitMode!.label),
-            if (_visitMode == MassageVisitMode.homeVisit)
-              DetailRow(label: 'Manzil', value: _addressCtrl.text.trim())
-            else if (widget.service.address.isNotEmpty)
-              DetailRow(label: 'Salon', value: widget.service.address),
+            if (widget.service.address.isNotEmpty)
+              DetailRow(label: 'Manzil', value: widget.service.address),
             DetailRow(
               label: 'Vaqt',
               value:
@@ -393,11 +360,9 @@ class _MassageBookingScreenState extends State<MassageBookingScreen> {
                         '${widget.service.name} — ${_selectedServiceType!.label}',
                     providerName: widget.service.name,
                     variant: _selectedPriceOption!,
-                    address: _visitMode == MassageVisitMode.homeVisit
-                        ? _addressCtrl.text.trim()
-                        : widget.service.address,
+                    address: widget.service.address,
                     notes:
-                        '${_visitMode!.label} • Mutaxassis jinsi: ${_selectedGender!.label}',
+                        'Mutaxassis jinsi: ${_selectedGender!.label}',
                     date: dateTime,
                     price: totalPrice ?? 150000.0,
                     status: OrderStatus.pending,

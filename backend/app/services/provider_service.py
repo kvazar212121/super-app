@@ -190,11 +190,20 @@ class ProviderService:
         )
         blocks = block_result.scalars().all()
 
-        booked_times = {
+        capacity = int(meta.get("concurrent_capacity", 1))
+
+        # Count orders per time slot
+        from collections import Counter
+        order_counts = Counter(
             f"{o.date.hour:02d}:{o.date.minute:02d}"
             for o in orders
             if o.date is not None
-        }
+        )
+
+        booked_times = set()
+        for t_str, count in order_counts.items():
+            if count >= capacity:
+                booked_times.add(t_str)
 
         # Check slots against blocks
         for slot in slots:

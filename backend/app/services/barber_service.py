@@ -215,6 +215,17 @@ class BarberService:
         )
         db.add(provider)
         await db.flush()
+
+        if also_works_as_barber:
+            meta = dict(provider.metadata_json)
+            barbers = list(meta.get("barbers", []))
+            for b in barbers:
+                if b.get("is_owner"):
+                    b["provider_id"] = provider.id
+            meta["barbers"] = barbers
+            provider.metadata_json = meta
+            await db.flush()
+
         await db.refresh(provider, attribute_names=["category"])
         return provider
 
@@ -261,6 +272,15 @@ class BarberService:
         )
         db.add(provider)
         await db.flush()
+
+        meta = dict(provider.metadata_json)
+        barbers = list(meta.get("barbers", []))
+        for b in barbers:
+            b["provider_id"] = provider.id
+        meta["barbers"] = barbers
+        provider.metadata_json = meta
+        await db.flush()
+
         await db.refresh(provider, attribute_names=["category"])
         return provider
 
@@ -352,11 +372,6 @@ class BarberService:
         pending = [m for m in pending if m.get("user_id") != member_user_id]
         meta["pending_members"] = pending
 
-        display_name = member_req.get("name", "Usta")
-        barbers = list(meta.get("barbers", []))
-        barbers.append({"name": display_name, "rating": 5.0, "user_id": member_user_id})
-        meta["barbers"] = barbers
-
         approved = list(meta.get("approved_members", []))
         approved.append({
             "user_id": member_user_id,
@@ -364,7 +379,7 @@ class BarberService:
             "approved_at": _now_iso(),
         })
         meta["approved_members"] = approved
-        shop.metadata_json = meta
+        # shop.metadata_json is updated later
 
         member_user = await db.get(User, member_user_id)
         if not member_user:
@@ -387,6 +402,18 @@ class BarberService:
             owner_user_id=member_user_id,
         )
         db.add(employee)
+        await db.flush()
+
+        # Update barbers list with new provider ID
+        barbers = list(meta.get("barbers", []))
+        barbers.append({
+            "name": display_name, 
+            "rating": 5.0, 
+            "user_id": member_user_id,
+            "provider_id": employee.id
+        })
+        meta["barbers"] = barbers
+        shop.metadata_json = meta
         await db.flush()
 
         from app.services.notification_service import NotificationService

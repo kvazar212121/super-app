@@ -23,6 +23,8 @@ class VenueHubCard extends StatelessWidget {
   final String priceLabel;
   final double rating;
   final int reviewCount;
+  final int completedCount;
+  final int cancelledCount;
   final bool isOpen;
   final IconData icon;
   final Color accent;
@@ -36,6 +38,8 @@ class VenueHubCard extends StatelessWidget {
     required this.priceLabel,
     required this.rating,
     required this.reviewCount,
+    this.completedCount = 0,
+    this.cancelledCount = 0,
     required this.isOpen,
     required this.icon,
     required this.accent,
@@ -56,6 +60,8 @@ class VenueHubCard extends StatelessWidget {
       priceLabel: shop.priceRangeLabel(),
       rating: shop.rating,
       reviewCount: shop.reviewCount,
+      completedCount: shop.rawJson?['completed_orders_count'] ?? 0,
+      cancelledCount: shop.rawJson?['cancelled_orders_count'] ?? 0,
       isOpen: shop.isOpenNow(),
       icon: LucideIcons.scissors,
       accent: accent,
@@ -77,6 +83,8 @@ class VenueHubCard extends StatelessWidget {
       priceLabel: salon.priceRangeLabel(),
       rating: salon.rating,
       reviewCount: salon.reviewCount,
+      completedCount: salon.rawJson?['completed_orders_count'] ?? 0,
+      cancelledCount: salon.rawJson?['cancelled_orders_count'] ?? 0,
       isOpen: salon.isOpenNow(),
       icon: LucideIcons.sparkles,
       accent: accent,
@@ -98,6 +106,8 @@ class VenueHubCard extends StatelessWidget {
       priceLabel: field.priceLabel,
       rating: field.rating,
       reviewCount: field.reviewCount,
+      completedCount: field.rawJson?['completed_orders_count'] ?? 0,
+      cancelledCount: field.rawJson?['cancelled_orders_count'] ?? 0,
       isOpen: field.isOpenNow(),
       icon: LucideIcons.trophy,
       accent: accent,
@@ -120,6 +130,8 @@ class VenueHubCard extends StatelessWidget {
       priceLabel: '${(minPrice / 1000).round()}k+',
       rating: center.rating,
       reviewCount: center.reviewCount,
+      completedCount: center.rawJson?['completed_orders_count'] ?? 0,
+      cancelledCount: center.rawJson?['cancelled_orders_count'] ?? 0,
       isOpen: true, // Mocking as open for now
       icon: LucideIcons.heartPulse,
       accent: accent,
@@ -200,6 +212,18 @@ class VenueHubCard extends StatelessWidget {
                         Text('$rating', style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
                         Text(' ($reviewCount)', style: const TextStyle(fontSize: 9, color: Colors.grey)),
                         const Spacer(),
+                        if (completedCount > 0) ...[
+                          const Icon(Icons.check_circle, size: 10, color: Colors.green),
+                          const SizedBox(width: 2),
+                          Text('$completedCount', style: const TextStyle(fontSize: 9, color: Colors.green)),
+                          const SizedBox(width: 4),
+                        ],
+                        if (cancelledCount > 0) ...[
+                          const Icon(Icons.cancel, size: 10, color: Colors.red),
+                          const SizedBox(width: 2),
+                          Text('$cancelledCount', style: const TextStyle(fontSize: 9, color: Colors.red)),
+                          const Spacer(),
+                        ],
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                           decoration: BoxDecoration(

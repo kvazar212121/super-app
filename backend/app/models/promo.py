@@ -12,5 +12,6 @@ class Promo(Base):
     subtitle: Mapped[str] = mapped_column(String(500), nullable=False)
     badge: Mapped[str] = mapped_column(String(50), nullable=False)
     colors: Mapped[str] = mapped_column(String(255), nullable=False, default="#6366F1,#A855F7")
+    image_url: Mapped[str | None] = mapped_column(String(500), nullable=True)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())

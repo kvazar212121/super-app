@@ -362,19 +362,38 @@ class ApiService {
     return response.data;
   }
 
+  /// Mijoz tomonidan ishni tasdiqlash
+  Future<Map<String, dynamic>> confirmCompletion(
+    int orderId, {
+    required bool confirm,
+  }) async {
+    final response = await _dio.post(
+      '/orders/my/$orderId/confirm_completion',
+      queryParameters: {'confirm': confirm},
+    );
+    return response.data;
+  }
+
   // ─────────────── CHECKIN (Ikki tomonlama tasdiqlash) ───────────────
 
   /// Checkin javobini yuborish
-  Future<Map<String, dynamic>> submitCheckin(
+  Future<void> submitCheckin(
     int orderId, {
     required String side,
     required String response,
   }) async {
-    final res = await _dio.post(
-      '/orders/$orderId/checkin',
-      data: {'side': side, 'response': response},
-    );
-    return res.data;
+    await _dio.post('/orders/$orderId/checkin', data: {
+      'side': side,
+      'response': response,
+    });
+  }
+
+  Future<void> submitReview(int providerId, int rating, String comment) async {
+    await _dio.post('/providers/reviews', data: {
+      'provider_id': providerId,
+      'rating': rating,
+      'comment': comment,
+    });
   }
 
   /// Checkin holatini olish
@@ -539,12 +558,16 @@ class ApiService {
   Future<void> updateProviderOrderStatus(
     String categoryKey,
     int orderId,
-    String status,
-  ) async {
+    String status, {
+    bool? notifiedClient,
+  }) async {
     await _dio.patch(
       '/provider/orders/$orderId/status',
       queryParameters: {'category_key': categoryKey},
-      data: {'status': status},
+      data: {
+        'status': status,
+        if (notifiedClient != null) 'notified_client': notifiedClient,
+      },
     );
   }
 
@@ -1018,6 +1041,7 @@ class ApiService {
     List<String> serviceTypes = const [],
     String gender = 'both',
     String? subCategory,
+    int concurrentCapacity = 1,
   }) async {
     final response = await _dio.post('/provider/massage/register', data: {
       'name': name,
@@ -1029,6 +1053,7 @@ class ApiService {
       if (serviceTypes.isNotEmpty) 'service_types': serviceTypes,
       'gender': gender,
       if (subCategory != null) 'sub_category': subCategory,
+      'concurrent_capacity': concurrentCapacity,
     });
     return response.data as Map<String, dynamic>;
   }
@@ -1317,5 +1342,37 @@ class ApiService {
 
   Future<void> deletePlannedPayment(int id) async {
     await _dio.delete('/finance/planned/$id');
+  }
+
+  Future<void> createManualOrderAfterCall({
+    required int userId,
+    required String serviceName,
+    required String date,
+    required double price,
+    int? staffProviderId,
+    String? address,
+  }) async {
+    final response = await _dio.post('/provider/orders/manual_after_call', data: {
+      'user_id': userId,
+      'service_name': serviceName,
+      'date': date,
+      'price': price,
+      'notes': 'Telefon orqali kelishildi',
+      if (staffProviderId != null) 'staff_provider_id': staffProviderId,
+    });
+    if (response.statusCode != 200) {
+      throw Exception('Failed to create manual order');
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> getMyStaff() async {
+    final response = await _dio.get('/provider/my-staff');
+    if (response.statusCode == 200) {
+      final data = response.data;
+      if (data != null && data['staff'] != null) {
+        return List<Map<String, dynamic>>.from(data['staff']);
+      }
+    }
+    return [];
   }
 }

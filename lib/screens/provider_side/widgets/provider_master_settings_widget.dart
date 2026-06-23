@@ -32,6 +32,7 @@ class ProviderMasterSettingsWidget extends StatefulWidget {
 class _ProviderMasterSettingsWidgetState extends State<ProviderMasterSettingsWidget> {
   final _portal = ProviderPortalService();
   final _teamSizeCtrl = TextEditingController();
+  final _serviceAreaCtrl = TextEditingController();
   bool _loading = true;
   bool _saving = false;
   Map<String, dynamic> _baseMeta = {};
@@ -50,6 +51,7 @@ class _ProviderMasterSettingsWidgetState extends State<ProviderMasterSettingsWid
     for (final s in _services) {
       s.dispose();
     }
+    _serviceAreaCtrl.dispose();
     super.dispose();
   }
 
@@ -76,6 +78,7 @@ class _ProviderMasterSettingsWidgetState extends State<ProviderMasterSettingsWid
   }
 
   void _applyMeta(Map<String, dynamic> meta) {
+    _serviceAreaCtrl.text = meta['service_area']?.toString() ?? '';
     _baseMeta = Map<String, dynamic>.from(meta);
     _isBrigade = meta['master_role'] == 'brigade';
     _teamSizeCtrl.text = '${meta['team_size'] ?? ''}';
@@ -126,7 +129,8 @@ class _ProviderMasterSettingsWidgetState extends State<ProviderMasterSettingsWid
         ..['specialty'] = 'Usta'
         ..['services'] = services
         ..['prices'] = prices
-        ..['time_slots'] = _timeSlots;
+        ..['time_slots'] = _timeSlots
+        ..['service_area'] = _serviceAreaCtrl.text.trim();
 
       if (_isBrigade) {
         meta['team_size'] = int.tryParse(_teamSizeCtrl.text.trim()) ?? 2;
@@ -229,6 +233,17 @@ class _ProviderMasterSettingsWidgetState extends State<ProviderMasterSettingsWid
           onPressed: () => setState(() => _addService('', '')),
           icon: const Icon(Icons.add),
           label: const Text('Xizmat qo\'shish'),
+        ),
+        const SizedBox(height: 24),
+        const Text('Xizmat ko\'rsatish hududi', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+        const SizedBox(height: 8),
+        TextField(
+          controller: _serviceAreaCtrl,
+          decoration: const InputDecoration(
+            hintText: 'Masalan: Toshkent shahri, Chilonzor tumani',
+            border: OutlineInputBorder(),
+            prefixIcon: Icon(Icons.map_outlined),
+          ),
         ),
         const SizedBox(height: 24),
         Text(

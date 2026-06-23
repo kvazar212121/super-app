@@ -15,6 +15,7 @@ class OrderStatus(str, Enum):
     preparing = "preparing"
     in_progress = "in_progress"
     delivered = "delivered"
+    awaiting_confirmation = "awaiting_confirmation"
     completed = "completed"
     cancelled = "cancelled"
     no_show = "no_show"

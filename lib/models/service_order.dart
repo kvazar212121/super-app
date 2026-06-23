@@ -9,6 +9,7 @@ enum OrderStatus {
   inProgress,
   delivered,
   completed,
+  awaitingConfirmation,
   cancelled,
   noShow,
   disputed,
@@ -98,6 +99,9 @@ class ServiceOrder {
       case 'completed':
         status = OrderStatus.completed;
         break;
+      case 'awaiting_confirmation':
+        status = OrderStatus.awaitingConfirmation;
+        break;
       case 'cancelled':
         status = OrderStatus.cancelled;
         break;
@@ -165,6 +169,9 @@ class ServiceOrder {
       case OrderStatus.completed:
         statusStr = 'completed';
         break;
+      case OrderStatus.awaitingConfirmation:
+        statusStr = 'awaiting_confirmation';
+        break;
       case OrderStatus.cancelled:
         statusStr = 'cancelled';
         break;
@@ -209,6 +216,8 @@ class ServiceOrder {
         return "Yetkazildi";
       case OrderStatus.completed:
         return "Yakunlandi";
+      case OrderStatus.awaitingConfirmation:
+        return "Tasdiq kutilmoqda";
       case OrderStatus.cancelled:
         return "Bekor qilindi";
       case OrderStatus.noShow:

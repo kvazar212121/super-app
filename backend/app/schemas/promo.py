@@ -7,6 +7,7 @@ class PromoBase(BaseModel):
     subtitle: str = Field(..., max_length=500)
     badge: str = Field(..., max_length=50)
     colors: str = Field("#6366F1,#A855F7", max_length=255)
+    image_url: Optional[str] = Field(None, max_length=500)
     is_active: Optional[bool] = True
 
 class PromoCreate(PromoBase):

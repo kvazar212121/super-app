@@ -45,9 +45,9 @@ class ProviderOnboardingScreen extends StatelessWidget {
               const SizedBox(height: 32),
               _buildFeatureItem(
                 context,
-                LucideIcons.trendingUp,
-                'Daromadni oshiring',
-                'Yangi mijozlar va ko\'proq buyurtmalar oling.',
+                LucideIcons.users,
+                'Mijozlar oqimini ko\'paytiring',
+                'Doimiy mijozlar va ko\'proq buyurtmalar oling.',
               ),
               const SizedBox(height: 20),
               _buildFeatureItem(

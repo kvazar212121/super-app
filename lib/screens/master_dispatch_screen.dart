@@ -120,7 +120,9 @@ class _MasterDispatchScreenState extends State<MasterDispatchScreen> {
       totalLabel: 'Jami',
       totalValue: currency.format(_selectedPrice),
       accent: _accent,
-      confirmLabel: widget.master.isHomeVisit ? 'Bron qilish' : 'Chaqirish',
+      confirmLabel: widget.master.isCleaner || widget.master.isElectrician || widget.master.isPlumber || widget.master.isAcTechnician || widget.master.isDispatchMaster
+          ? 'Chaqirish'
+          : (widget.master.isHomeVisit ? 'Bron qilish' : 'Chaqirish'),
     );
     if (!confirmed || !mounted) return;
 
@@ -246,15 +248,38 @@ class _MasterDispatchScreenState extends State<MasterDispatchScreen> {
                     const SizedBox(height: 24),
                     const SectionTitle('Qayerga keladi?'),
                     const SizedBox(height: 8),
-                    TextField(
-                      controller: _addressCtrl,
-                      maxLines: 2,
-                      onChanged: (_) => setState(() {}),
-                      decoration: InputDecoration(
-                        hintText: 'Ko\'cha, uy, orientir...',
-                        prefixIcon: const Icon(LucideIcons.mapPin),
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
-                      ),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TextField(
+                            controller: _addressCtrl,
+                            maxLines: 2,
+                            onChanged: (_) => setState(() {}),
+                            decoration: InputDecoration(
+                              hintText: 'Ko\'cha, uy, orientir...',
+                              prefixIcon: const Icon(LucideIcons.mapPin),
+                              border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Container(
+                          height: 56,
+                          decoration: BoxDecoration(
+                            color: _accent.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(14),
+                            border: Border.all(color: _accent, width: 1.5),
+                          ),
+                          child: IconButton(
+                            icon: Icon(LucideIcons.map, color: _accent),
+                            onPressed: () {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text('Xaritadan tanlash tez orada qo\'shiladi')),
+                              );
+                            },
+                          ),
+                        ),
+                      ],
                     ),
                     const SizedBox(height: 24),
                     const SectionTitle('Xizmat turi'),
@@ -336,7 +361,9 @@ class _MasterDispatchScreenState extends State<MasterDispatchScreen> {
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                         ),
                         child: Text(
-                          widget.master.isHomeVisit ? 'Bron qilish' : 'Ustani chaqirish',
+                          widget.master.isCleaner || widget.master.isElectrician || widget.master.isPlumber || widget.master.isAcTechnician || widget.master.isDispatchMaster
+                              ? 'Chaqirish'
+                              : (widget.master.isHomeVisit ? 'Bron qilish' : 'Ustani chaqirish'),
                           style: const TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
                         ),
                       ),

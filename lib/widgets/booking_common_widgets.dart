@@ -547,11 +547,13 @@ class BookingStaffOption {
   final String id;
   final String name;
   final String? subtitle;
+  final int providerId;
 
   const BookingStaffOption({
     required this.id,
     required this.name,
     this.subtitle,
+    this.providerId = 0,
   });
 }
 

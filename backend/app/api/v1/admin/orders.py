@@ -141,6 +141,10 @@ async def admin_update_order_status(
             title="Buyurtma holati o'zgardi",
             message=f"Sizning #{order.id} raqamli buyurtmangiz holati '{status_str}' ga o'zgardi."
         )
+        if new_status == OrderStatus.completed:
+            from app.services.order_service import OrderService
+            await OrderService.process_commission(db, order)
+
     return order
 
 

@@ -1,8 +1,13 @@
 class DentalDentist {
   final String name;
   final String specialty;
+  final int providerId;
 
-  const DentalDentist({required this.name, this.specialty = 'Stomatolog'});
+  const DentalDentist({
+    required this.name,
+    this.specialty = 'Stomatolog',
+    this.providerId = 0,
+  });
 }
 
 /// Stomatologiya klinikasi
@@ -58,6 +63,7 @@ class DentalClinic {
       return DentalDentist(
         name: m['name']?.toString() ?? 'Shifokor',
         specialty: m['specialty']?.toString() ?? 'Stomatolog',
+        providerId: (m['provider_id'] as num?)?.toInt() ?? 0,
       );
     }).toList();
 

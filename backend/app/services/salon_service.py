@@ -210,6 +210,17 @@ class SalonService:
         )
         db.add(provider)
         await db.flush()
+
+        if also_works_as_stylist:
+            meta = dict(provider.metadata_json)
+            staff_list = list(meta.get("staff", []))
+            for s in staff_list:
+                if s.get("is_owner"):
+                    s["provider_id"] = provider.id
+            meta["staff"] = staff_list
+            provider.metadata_json = meta
+            await db.flush()
+
         await db.refresh(provider, attribute_names=["category"])
         return provider
 
@@ -256,6 +267,15 @@ class SalonService:
         )
         db.add(provider)
         await db.flush()
+
+        meta = dict(provider.metadata_json)
+        staff_list = list(meta.get("staff", []))
+        for s in staff_list:
+            s["provider_id"] = provider.id
+        meta["staff"] = staff_list
+        provider.metadata_json = meta
+        await db.flush()
+
         await db.refresh(provider, attribute_names=["category"])
         return provider
 
@@ -347,11 +367,6 @@ class SalonService:
         pending = [m for m in pending if m.get("user_id") != member_user_id]
         meta["pending_members"] = pending
 
-        display_name = member_req.get("name", "Mutaxassis")
-        staff = list(meta.get("staff", []))
-        staff.append({"name": display_name, "rating": 5.0, "user_id": member_user_id})
-        meta["staff"] = staff
-
         approved = list(meta.get("approved_members", []))
         approved.append({
             "user_id": member_user_id,
@@ -359,7 +374,7 @@ class SalonService:
             "approved_at": _now_iso(),
         })
         meta["approved_members"] = approved
-        salon.metadata_json = meta
+        # shop.metadata_json is updated later
 
         member_user = await db.get(User, member_user_id)
         if not member_user:
@@ -382,6 +397,18 @@ class SalonService:
             owner_user_id=member_user_id,
         )
         db.add(employee)
+        await db.flush()
+
+        # Update staff list with new provider ID
+        staff = list(meta.get("staff", []))
+        staff.append({
+            "name": display_name, 
+            "rating": 5.0, 
+            "user_id": member_user_id,
+            "provider_id": employee.id
+        })
+        meta["staff"] = staff
+        salon.metadata_json = meta
         await db.flush()
 
         from app.services.notification_service import NotificationService
