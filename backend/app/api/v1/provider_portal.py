@@ -362,7 +362,7 @@ async def get_calendar(
     provider = await _get_user_provider(db, user, category_key)
     
     from app.services.provider_service import ProviderService
-    availability = await ProviderService.get_availability(db, provider.id, target_day)
+    availability = await ProviderService.get_availability(db, provider.id, target_day, allow_inactive=True)
     
     result = await db.execute(
         select(Order)

@@ -152,10 +152,18 @@ class ProviderService:
 
     @staticmethod
     async def get_availability(
-        db: AsyncSession, provider_id: int, day: date
+        db: AsyncSession, provider_id: int, day: date, allow_inactive: bool = False
     ) -> dict:
         """Kunlik band/bo'sh vaqt slotlari (buyurtmalar va metadata asosida)."""
-        provider = await ProviderService.get_by_id(db, provider_id)
+        if allow_inactive:
+            result = await db.execute(
+                select(Provider).where(Provider.id == provider_id)
+            )
+            provider = result.scalar_one_or_none()
+            if not provider:
+                raise HTTPException(status_code=404, detail="Provayder topilmadi")
+        else:
+            provider = await ProviderService.get_by_id(db, provider_id)
         meta = provider.metadata_json or {}
         slots: list[str] = meta.get("time_slots") or DEFAULT_TIME_SLOTS
 
