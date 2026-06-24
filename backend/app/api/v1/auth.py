@@ -18,6 +18,7 @@ from app.schemas.auth import (
 from app.models.user import User
 from app.core.config import settings
 from app.core.limiter import limiter
+from app.services.otp_whitelist import WHITELIST_NUMBERS
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -26,6 +27,16 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 @limiter.limit("5/minute")
 async def send_otp(request: Request, data: SendOtpRequest):
     """Telefon raqamiga SMS tasdiqlash kodi yuborish."""
+    from app.utils.phone import normalize_phone
+    phone = normalize_phone(data.phone)
+    if phone in WHITELIST_NUMBERS:
+        # Test raqamlariga SMS ketmaydi, ular to'g'ridan-to'g'ri '111111' bilan kiradi
+        return SendOtpResponse(
+            message="Test raqam. Tasdiqlash kodi: 111111",
+            phone=phone,
+            expires_in=300,
+            purpose=data.purpose
+        )
     return await OtpService.send_code(data.phone, data.purpose)
 
 
@@ -37,6 +48,38 @@ async def verify_otp(
     db: AsyncSession = Depends(get_db),
 ):
     """SMS kodni tasdiqlash. Mavjud user bo'lsa — login, yo'q bo'lsa — verification_token."""
+    from app.utils.phone import normalize_phone
+    phone = normalize_phone(data.phone)
+    
+    if phone in WHITELIST_NUMBERS:
+        if data.code != "111111":
+            from fastapi import HTTPException, status
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Maxsus raqamlar uchun kod: 111111",
+            )
+        
+        # O'tkazib yuborish mexanizmi (database dan userni qidiramiz)
+        result = await db.execute(select(User).where(User.phone == phone))
+        user = result.scalar_one_or_none()
+
+        if user:
+            tokens = AuthService._build_token_response(user)
+            return VerifyOtpResponse(
+                phone=phone,
+                user_exists=True,
+                access_token=tokens.access_token,
+                refresh_token=tokens.refresh_token,
+                user=tokens.user,
+            )
+
+        verification_token = OtpService.create_verification_token(phone)
+        return VerifyOtpResponse(
+            phone=phone,
+            user_exists=False,
+            verification_token=verification_token,
+        )
+
     return await AuthService.verify_otp_and_login(db, data.phone, data.code)
 
 
