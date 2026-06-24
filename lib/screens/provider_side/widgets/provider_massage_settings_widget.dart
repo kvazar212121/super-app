@@ -5,6 +5,8 @@ import '../../../models/massage_hijoma.dart';
 import '../../../services/provider_availability_service.dart';
 import '../../../services/provider_portal_service.dart';
 
+import '../../../services/settings_save_controller.dart';
+
 class _ServiceRow {
   final nameCtrl = TextEditingController();
   final priceCtrl = TextEditingController();
@@ -18,11 +20,15 @@ class _ServiceRow {
 class ProviderMassageSettingsWidget extends StatefulWidget {
   final String categoryKey;
   final Color accent;
+  final bool showSaveButton;
+  final SettingsSaveController? saveController;
 
   const ProviderMassageSettingsWidget({
     super.key,
     required this.categoryKey,
     required this.accent,
+    this.showSaveButton = true,
+    this.saveController,
   });
 
   @override
@@ -52,6 +58,7 @@ class _ProviderMassageSettingsWidgetState
 
   @override
   void dispose() {
+    widget.saveController?.deregister(_saveExternal);
     for (final s in _services) {
       s.dispose();
     }
@@ -65,6 +72,16 @@ class _ProviderMassageSettingsWidgetState
   void initState() {
     super.initState();
     _load();
+    widget.saveController?.register(_saveExternal);
+  }
+
+  Future<bool> _saveExternal() async {
+    try {
+      await _save();
+      return true;
+    } catch (_) {
+      return false;
+    }
   }
 
   Future<void> _load() async {
@@ -328,24 +345,26 @@ class _ProviderMassageSettingsWidgetState
             keyboardType: TextInputType.number,
           ),
         ],
-        const SizedBox(height: 16),
-        SizedBox(
-          width: double.infinity,
-          child: FilledButton(
-            onPressed: _saving ? null : _save,
-            style: FilledButton.styleFrom(
-              backgroundColor: Colors.black, foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(vertical: 16),
+        if (widget.showSaveButton) ...[
+          const SizedBox(height: 16),
+          SizedBox(
+            width: double.infinity,
+            child: FilledButton(
+              onPressed: _saving ? null : _save,
+              style: FilledButton.styleFrom(
+                backgroundColor: Colors.black, foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 16),
+              ),
+              child: _saving
+                  ? const SizedBox(
+                      width: 22,
+                      height: 22,
+                      child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                    )
+                  : const Text('Saqlash'),
             ),
-            child: _saving
-                ? const SizedBox(
-                    width: 22,
-                    height: 22,
-                    child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-                  )
-                : const Text('Saqlash'),
           ),
-        ),
+        ],
       ],
     );
   }

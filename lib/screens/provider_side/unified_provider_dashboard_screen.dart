@@ -460,6 +460,8 @@ class _UnifiedProviderDashboardScreenState
         specificSettingsWidget = ProviderMassageSettingsWidget(
           categoryKey: widget.config.categoryKey,
           accent: accent,
+          showSaveButton: false,
+          saveController: _saveController,
         );
       } else if (widget.config.categoryKey == 'hamshira') {
         specificSettingsWidget = ProviderNurseSettingsWidget(
@@ -489,6 +491,7 @@ class _UnifiedProviderDashboardScreenState
 
       final isVenue = widget.config.categoryKey == 'salon' ||
           widget.config.categoryKey == 'sartarosh' ||
+          widget.config.categoryKey == 'massajHijoma' ||
           (widget.config.categoryKey == 'repetitor' && _isEducationCenter);
 
       return Column(
