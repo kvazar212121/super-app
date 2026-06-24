@@ -77,16 +77,16 @@ class _RoleCard extends StatelessWidget {
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: color),
-          color: color,
+          border: Border.all(color: color.withValues(alpha: 0.3)),
+          color: color.withValues(alpha: 0.05),
         ),
         child: Row(
           children: [
             Container(
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
-                color: color,
-                borderRadius: BorderRadius.circular(14),
+                color: color.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(16),
               ),
               child: Icon(icon, color: color, size: 28),
             ),
@@ -97,7 +97,7 @@ class _RoleCard extends StatelessWidget {
                 children: [
                   Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                   const SizedBox(height: 4),
-                  Text(subtitle, style: TextStyle(color: Colors.grey[600], fontSize: 13, height: 1.35)),
+                  Text(subtitle, style: TextStyle(color: Colors.grey, height: 1.35, fontSize: 13)),
                 ],
               ),
             ),

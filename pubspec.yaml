@@ -54,13 +54,13 @@ dependencies:
   flutter_ringtone_player: ^4.0.0+3
   wakelock_plus: ^1.2.8
   flutter_callkit_incoming: ^2.0.4+1
-  uuid: ^4.5.1
+  uuid: ^4.5.3
   permission_handler: ^11.3.1
   speech_to_text: ^7.4.0
   firebase_core: ^2.24.2
   firebase_messaging: ^14.7.10
-  flutter_image_compress: ^8.0.0
-  path_provider: ^2.1.2
+  flutter_image_compress: ^2.4.0
+  path_provider: ^2.1.6
   cached_network_image: ^3.3.1
 
 dev_dependencies:

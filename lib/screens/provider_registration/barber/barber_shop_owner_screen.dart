@@ -7,6 +7,8 @@ import '../../../services/barber_portal_service.dart';
 import '../../../utils/phone_utils.dart';
 import '../../provider_side/provider_theme.dart';
 import '../provider_success_screen.dart';
+import '../../location_picker_screen.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 class BarberShopOwnerScreen extends StatefulWidget {
   final int? categoryDbId;
@@ -114,13 +116,47 @@ class _BarberShopOwnerScreenState extends State<BarberShopOwnerScreen> {
                 ),
               ),
               const SizedBox(height: 16),
-              TextField(
-                controller: _addressCtrl,
-                maxLines: 2,
-                decoration: const InputDecoration(
-                  labelText: 'Manzil (to\'liq)',
-                  hintText: 'Tuman, ko\'cha, uy raqami',
-                ),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: _addressCtrl,
+                      maxLines: 2,
+                      decoration: const InputDecoration(
+                        labelText: 'Manzil (to\'liq)',
+                        hintText: 'Tuman, ko\'cha, uy raqami',
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 6.0),
+                    child: IconButton.filledTonal(
+                      icon: const Icon(LucideIcons.map),
+                      onPressed: () async {
+                        final result = await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => LocationPickerScreen(
+                              initialLat: double.tryParse(_latCtrl.text) ?? 41.2995,
+                              initialLng: double.tryParse(_lngCtrl.text) ?? 69.2401,
+                            ),
+                          ),
+                        );
+                        if (result != null && result is Map<String, dynamic>) {
+                          setState(() {
+                            _latCtrl.text = result['lat'].toString();
+                            _lngCtrl.text = result['lng'].toString();
+                            if (result['address'] != 'Noma\'lum manzil' && result['address'] != 'Manzilni aniqlab bo\'lmadi') {
+                              _addressCtrl.text = result['address'];
+                            }
+                          });
+                        }
+                      },
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(height: 16),
               Row(
