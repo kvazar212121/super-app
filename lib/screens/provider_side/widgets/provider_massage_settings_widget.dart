@@ -42,6 +42,8 @@ class _ProviderMassageSettingsWidgetState
   bool _loading = true;
   bool _saving = false;
   Map<String, dynamic> _baseMeta = {};
+  final List<_ServiceRow> _services = [];
+  List<String> _timeSlots = List.of(ProviderAvailability.defaultSlots);
   final _areaCtrl = TextEditingController();
   String _gender = 'both';
 
