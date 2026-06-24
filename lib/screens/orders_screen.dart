@@ -4,6 +4,8 @@ import '../providers/app_provider.dart';
 import '../widgets/orders_filter_widget.dart';
 import '../widgets/orders_list_widget.dart';
 import '../widgets/glass/glass_scaffold.dart';
+import '../providers/auth_provider.dart';
+import '../widgets/guest_blocker_widget.dart';
 
 class OrdersScreen extends StatefulWidget {
   const OrdersScreen({super.key});
@@ -18,11 +20,12 @@ class _OrdersScreenState extends State<OrdersScreen> {
   @override
   Widget build(BuildContext context) {
     final provider = context.read<AppProvider>();
+    final auth = context.watch<AuthProvider>();
 
     return GlassScaffold(
       embeddedInShell: true,
       title: 'Buyurtmalarim',
-      body: Column(
+      body: auth.isAuthenticated ? Column(
         children: [
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
@@ -40,6 +43,10 @@ class _OrdersScreenState extends State<OrdersScreen> {
             ),
           ),
         ],
+      ) : const GuestBlockerWidget(
+        title: 'Buyurtmalarni ko\'rish uchun',
+        subtitle: 'Ro\'yxatdan o\'ting yoki tizimga kiring',
+        icon: Icons.list_alt,
       ),
     );
   }

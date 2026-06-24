@@ -1,3 +1,4 @@
+import '../../utils/call_helper.dart';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -38,6 +39,7 @@ import '../../services/call_history_service.dart';
 import '../../services/call_service.dart';
 import '../calls/call_screen.dart';
 import 'widgets/incoming_order_dialog.dart';
+import 'widgets/provider_profile_editor_widget.dart';
 
 /// Barcha soha egasi panellari — DB/API dan ma'lumot oladi.
 class UnifiedProviderDashboardScreen extends StatefulWidget {
@@ -336,115 +338,119 @@ class _UnifiedProviderDashboardScreenState
       );
     }
     if (_hasVenueSettings && _selectedIndex == _settingsIndex) {
+      Widget specificSettingsWidget;
       if (widget.config.categoryKey == 'futbol') {
-        return ProviderFootballSettingsWidget(
+        specificSettingsWidget = ProviderFootballSettingsWidget(
           categoryKey: widget.config.categoryKey,
           accent: accent,
         );
-      }
-      if (widget.config.categoryKey == 'tozalash') {
-        return ProviderCleaningSettingsWidget(
+      } else if (widget.config.categoryKey == 'tozalash') {
+        specificSettingsWidget = ProviderCleaningSettingsWidget(
           categoryKey: widget.config.categoryKey,
           accent: accent,
         );
-      }
-      if (widget.config.categoryKey == 'usta') {
-        return ProviderMasterSettingsWidget(
+      } else if (widget.config.categoryKey == 'usta') {
+        specificSettingsWidget = ProviderMasterSettingsWidget(
           categoryKey: widget.config.categoryKey,
           accent: accent,
         );
-      }
-      if (widget.config.categoryKey == 'elektrik') {
-        return ProviderElectricianSettingsWidget(
+      } else if (widget.config.categoryKey == 'elektrik') {
+        specificSettingsWidget = ProviderElectricianSettingsWidget(
           categoryKey: widget.config.categoryKey,
           accent: accent,
         );
-      }
-      if (widget.config.categoryKey == 'santexnik') {
-        return ProviderPlumberSettingsWidget(
+      } else if (widget.config.categoryKey == 'santexnik') {
+        specificSettingsWidget = ProviderPlumberSettingsWidget(
           categoryKey: widget.config.categoryKey,
           accent: accent,
         );
-      }
-      if (widget.config.categoryKey == 'kuryerlik') {
-        return ProviderCourierSettingsWidget(
+      } else if (widget.config.categoryKey == 'kuryerlik') {
+        specificSettingsWidget = ProviderCourierSettingsWidget(
           categoryKey: widget.config.categoryKey,
           accent: accent,
         );
-      }
-      if (widget.config.categoryKey == 'avtoYordam') {
+      } else if (widget.config.categoryKey == 'avtoYordam') {
         if (_isAutoWorkshop) {
-          return ProviderAutoWorkshopSettingsWidget(
+          specificSettingsWidget = ProviderAutoWorkshopSettingsWidget(
+            categoryKey: widget.config.categoryKey,
+            accent: accent,
+          );
+        } else {
+          specificSettingsWidget = ProviderAutoSettingsWidget(
             categoryKey: widget.config.categoryKey,
             accent: accent,
           );
         }
-        return ProviderAutoSettingsWidget(
+      } else if (widget.config.categoryKey == 'konditsioner') {
+        specificSettingsWidget = ProviderAcSettingsWidget(
           categoryKey: widget.config.categoryKey,
           accent: accent,
         );
-      }
-      if (widget.config.categoryKey == 'konditsioner') {
-        return ProviderAcSettingsWidget(
+      } else if (widget.config.categoryKey == 'enaga') {
+        specificSettingsWidget = ProviderNannySettingsWidget(
           categoryKey: widget.config.categoryKey,
           accent: accent,
         );
-      }
-      if (widget.config.categoryKey == 'enaga') {
-        return ProviderNannySettingsWidget(
-          categoryKey: widget.config.categoryKey,
-          accent: accent,
-        );
-      }
-      if (widget.config.categoryKey == 'repetitor') {
+      } else if (widget.config.categoryKey == 'repetitor') {
         if (_isEducationCenter) {
-          return ProviderVenueSettingsWidget(
+          specificSettingsWidget = ProviderVenueSettingsWidget(
             categoryKey: widget.config.categoryKey,
             accent: accent,
-            staffLabel: 'O\'qituvchi',
+            staffLabel: "O'qituvchi",
             staffMetadataKey: 'teachers',
           );
+        } else {
+          specificSettingsWidget = ProviderTutorSettingsWidget(
+            categoryKey: widget.config.categoryKey,
+            accent: accent,
+          );
         }
-        return ProviderTutorSettingsWidget(
+      } else if (widget.config.categoryKey == 'dezinfeksiya') {
+        specificSettingsWidget = ProviderDisinfectionSettingsWidget(
           categoryKey: widget.config.categoryKey,
           accent: accent,
         );
-      }
-      if (widget.config.categoryKey == 'dezinfeksiya') {
-        return ProviderDisinfectionSettingsWidget(
+      } else if (widget.config.categoryKey == 'massajHijoma') {
+        specificSettingsWidget = ProviderMassageSettingsWidget(
           categoryKey: widget.config.categoryKey,
           accent: accent,
         );
-      }
-      if (widget.config.categoryKey == 'massajHijoma') {
-        return ProviderMassageSettingsWidget(
+      } else if (widget.config.categoryKey == 'hamshira') {
+        specificSettingsWidget = ProviderNurseSettingsWidget(
           categoryKey: widget.config.categoryKey,
           accent: accent,
         );
-      }
-      if (widget.config.categoryKey == 'hamshira') {
-        return ProviderNurseSettingsWidget(
+      } else if (widget.config.categoryKey == 'stomatologiya') {
+        specificSettingsWidget = ProviderDentalSettingsWidget(
           categoryKey: widget.config.categoryKey,
           accent: accent,
         );
-      }
-      if (widget.config.categoryKey == 'stomatologiya') {
-        return ProviderDentalSettingsWidget(
+      } else if (widget.config.categoryKey == 'tadbirlar') {
+        specificSettingsWidget = ProviderEventSettingsWidget(
           categoryKey: widget.config.categoryKey,
           accent: accent,
         );
-      }
-      if (widget.config.categoryKey == 'tadbirlar') {
-        return ProviderEventSettingsWidget(
+      } else {
+        specificSettingsWidget = ProviderVenueSettingsWidget(
           categoryKey: widget.config.categoryKey,
           accent: accent,
+          staffLabel: widget.config.categoryKey == 'salon' ? 'Mutaxassis' : 'Usta',
+          staffMetadataKey: widget.config.categoryKey == 'salon' ? 'staff' : 'barbers',
         );
       }
-      return ProviderVenueSettingsWidget(
-        categoryKey: widget.config.categoryKey,
-        accent: accent,
-        staffLabel: widget.config.categoryKey == 'salon' ? 'Mutaxassis' : 'Usta',
-        staffMetadataKey: widget.config.categoryKey == 'salon' ? 'staff' : 'barbers',
+
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ProviderProfileEditorWidget(
+            categoryKey: widget.config.categoryKey,
+            accent: accent,
+          ),
+          const SizedBox(height: 32),
+          const Divider(thickness: 2, color: Colors.black12),
+          const SizedBox(height: 24),
+          specificSettingsWidget,
+        ],
       );
     }
     if (_selectedIndex == _callsIndex) {
@@ -457,7 +463,9 @@ class _UnifiedProviderDashboardScreenState
   }
 
   Widget _buildDashboard(ThemeData theme, Color accent) {
-    final name = _provider?['name'] as String? ?? widget.config.title;
+    final meta = _provider?['metadata_json'] as Map<String, dynamic>? ?? {};
+    final name = meta['display_name'] as String? ?? _provider?['name'] as String? ?? widget.config.title;
+    final coverUrl = meta['cover_url'] as String?;
     final rating = (_provider?['rating'] as num?)?.toDouble() ?? 0;
     final reviews = _provider?['review_count'] as int? ?? 0;
     final ordersToday = _stats?['orders_today'] as int? ?? 0;
@@ -475,8 +483,13 @@ class _UnifiedProviderDashboardScreenState
                 color: Colors.white,
                 shape: BoxShape.circle,
                 border: Border.all(color: Colors.black, width: 2),
+                image: coverUrl != null && coverUrl.isNotEmpty
+                    ? DecorationImage(image: NetworkImage(coverUrl), fit: BoxFit.cover)
+                    : null,
               ),
-              child: Icon(widget.config.icon, color: Colors.black, size: 28),
+              child: coverUrl != null && coverUrl.isNotEmpty
+                  ? null
+                  : Icon(widget.config.icon, color: Colors.black, size: 28),
             ),
             const SizedBox(width: 16),
             Expanded(
@@ -924,12 +937,7 @@ class _UnifiedProviderDashboardScreenState
                   IconButton(
                     icon: const Icon(LucideIcons.phone, color: Colors.green),
                     onPressed: () {
-                      CallService().startCall(log.userId, log.userName);
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) => const CallScreen(isIncoming: false),
-                        ),
-                      );
+                      CallHelper.makeDirectCall(context, log.userId, log.userName);
                     },
                   ),
                   IconButton(

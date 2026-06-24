@@ -95,28 +95,6 @@ class ProfileScreen extends StatelessWidget {
               _sectionTitle(context, 'Soha egasi'),
               const ProviderPortalEntry(compact: true),
               const SizedBox(height: 16),
-              GlassSurface(
-                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const CallHistoryScreen())),
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                opacity: 0.55,
-                child: Row(
-                  children: [
-                    Icon(Icons.history, color: GlassTokens.primaryText(context)),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Text(
-                        'Qo\'ng\'iroqlar tarixi',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          color: GlassTokens.primaryText(context),
-                        ),
-                      ),
-                    ),
-                    Icon(Icons.chevron_right_rounded, color: GlassTokens.secondaryText(context)),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 16),
               if (user.isProvider) ...[
                 _sectionTitle(context, 'Mening kartalarim'),
                 ...provider.cards.map(

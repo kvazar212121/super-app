@@ -6,6 +6,9 @@ import '../../utils/call_helper.dart';
 import '../../theme/glass_tokens.dart';
 import '../../widgets/glass/glass_scaffold.dart';
 import '../../widgets/glass/glass_surface.dart';
+import '../../providers/auth_provider.dart';
+import 'package:provider/provider.dart';
+import '../../widgets/guest_blocker_widget.dart';
 import 'call_screen.dart';
 
 class CallHistoryScreen extends StatelessWidget {
@@ -13,10 +16,12 @@ class CallHistoryScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final auth = context.watch<AuthProvider>();
+
     return GlassScaffold(
       showBackButton: true,
       title: "Qo'ng'iroqlar tarixi",
-      body: ListenableBuilder(
+      body: auth.isAuthenticated ? ListenableBuilder(
         listenable: CallHistoryService(),
         builder: (context, _) {
           final logs = CallHistoryService().history;
@@ -68,12 +73,7 @@ class CallHistoryScreen extends StatelessWidget {
                   trailing: IconButton(
                     icon: const Icon(Icons.phone, color: Colors.green),
                     onPressed: () {
-                      CallService().startCall(log.userId, log.userName);
-                      Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (_) => const CallScreen(isIncoming: false),
-                          ),
-                      );
+                      CallHelper.makeDirectCall(context, log.userId, log.userName);
                     },
                   ),
                 ),
@@ -81,6 +81,10 @@ class CallHistoryScreen extends StatelessWidget {
             },
           );
         },
+      ) : const GuestBlockerWidget(
+        title: 'Qo\'ng\'iroqlar tarixini ko\'rish uchun',
+        subtitle: 'Ro\'yxatdan o\'ting yoki tizimga kiring',
+        icon: Icons.history,
       ),
     );
   }

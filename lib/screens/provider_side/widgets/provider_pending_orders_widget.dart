@@ -1,3 +1,4 @@
+import '../../../utils/call_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
@@ -122,12 +123,7 @@ class ProviderPendingOrdersWidgetState
       final userId = order['user_id'] as int?;
       final userName = order['user_name'] as String? ?? 'Mijoz';
       if (userId != null) {
-        CallService().startCall(userId, userName);
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (_) => const CallScreen(isIncoming: false),
-          ),
-        );
+        CallHelper.makeDirectCall(context, userId, userName);
       }
       await _respond(orderId, 'cancelled', notifiedClient: true);
     } else if (doCancel == 2) {

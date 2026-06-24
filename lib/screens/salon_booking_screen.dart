@@ -1,3 +1,4 @@
+import '../utils/call_helper.dart';
 import 'package:flutter/material.dart';
 import '../services/call_service.dart';
 import 'calls/call_screen.dart';
@@ -172,12 +173,7 @@ class _SalonBookingScreenState extends State<SalonBookingScreen> {
                       secondaryIcon: LucideIcons.phone,
                       onSecondary: () {
                         final targetId = int.tryParse(widget.salon.id) ?? 0;
-                        CallService().startCall(targetId, widget.salon.name);
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (_) => const CallScreen(isIncoming: false),
-                          ),
-                        );
+                        CallHelper.makeDirectCall(context, targetId, widget.salon.name);
                       },
                     );
                   }),

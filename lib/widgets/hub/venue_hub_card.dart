@@ -28,6 +28,7 @@ class VenueHubCard extends StatelessWidget {
   final bool isOpen;
   final IconData icon;
   final Color accent;
+  final String? coverUrl;
   final VoidCallback onTap;
 
   const VenueHubCard({
@@ -43,6 +44,7 @@ class VenueHubCard extends StatelessWidget {
     required this.isOpen,
     required this.icon,
     required this.accent,
+    this.coverUrl,
     required this.onTap,
   });
 
@@ -65,6 +67,7 @@ class VenueHubCard extends StatelessWidget {
       isOpen: shop.isOpenNow(),
       icon: LucideIcons.scissors,
       accent: accent,
+      coverUrl: shop.rawJson?['metadata']?['cover_url'],
       onTap: onTap,
     );
   }
@@ -88,6 +91,7 @@ class VenueHubCard extends StatelessWidget {
       isOpen: salon.isOpenNow(),
       icon: LucideIcons.sparkles,
       accent: accent,
+      coverUrl: salon.rawJson?['metadata']?['cover_url'],
       onTap: onTap,
     );
   }
@@ -111,6 +115,7 @@ class VenueHubCard extends StatelessWidget {
       isOpen: field.isOpenNow(),
       icon: LucideIcons.trophy,
       accent: accent,
+      coverUrl: field.rawJson?['metadata']?['cover_url'],
       onTap: onTap,
     );
   }
@@ -135,6 +140,7 @@ class VenueHubCard extends StatelessWidget {
       isOpen: true, // Mocking as open for now
       icon: LucideIcons.heartPulse,
       accent: accent,
+      coverUrl: center.rawJson?['metadata']?['cover_url'],
       onTap: onTap,
     );
   }
@@ -161,13 +167,21 @@ class VenueHubCard extends StatelessWidget {
                     height: 88,
                     width: double.infinity,
                     decoration: BoxDecoration(
-                      gradient: LinearGradient(
+                      gradient: (coverUrl != null && coverUrl!.isNotEmpty) ? null : LinearGradient(
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                         colors: [accent, accent],
                       ),
+                      image: (coverUrl != null && coverUrl!.isNotEmpty)
+                          ? DecorationImage(
+                              image: NetworkImage(coverUrl!),
+                              fit: BoxFit.cover,
+                            )
+                          : null,
                     ),
-                    child: Icon(icon, color: Colors.white, size: 32),
+                    child: (coverUrl != null && coverUrl!.isNotEmpty)
+                        ? null
+                        : Icon(icon, color: Colors.white, size: 32),
                   ),
                   Positioned(
                     top: 8,
@@ -205,41 +219,49 @@ class VenueHubCard extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                     ),
                     const SizedBox(height: 6),
-                    Row(
+                    Wrap(
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      spacing: 4,
+                      runSpacing: 4,
                       children: [
-                        const Icon(Icons.star, size: 12, color: Colors.amber),
-                        const SizedBox(width: 2),
-                        Text('$rating', style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.black)),
-                        Text(' ($reviewCount)', style: const TextStyle(fontSize: 9, color: Colors.black54)),
-                        if (completedCount > 0) ...[
-                          const SizedBox(width: 4),
-                          const Icon(Icons.check_circle, size: 10, color: Colors.green),
-                          const SizedBox(width: 2),
-                          Text('$completedCount', style: const TextStyle(fontSize: 9, color: Colors.green)),
-                        ],
-                        if (cancelledCount > 0) ...[
-                          const SizedBox(width: 4),
-                          const Icon(Icons.cancel, size: 10, color: Colors.red),
-                          const SizedBox(width: 2),
-                          Text('$cancelledCount', style: const TextStyle(fontSize: 9, color: Colors.red)),
-                        ],
-                        const SizedBox(width: 4),
-                        Expanded(
-                          child: Align(
-                            alignment: Alignment.centerRight,
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                              decoration: BoxDecoration(
-                                color: accent.withValues(alpha: 0.1),
-                                borderRadius: BorderRadius.circular(6),
-                              ),
-                              child: Text(
-                                priceLabel,
-                                style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: accent),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(Icons.star, size: 12, color: Colors.amber),
+                            const SizedBox(width: 2),
+                            Text('$rating', style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.black)),
+                            Text(' ($reviewCount)', style: const TextStyle(fontSize: 9, color: Colors.black)),
+                          ],
+                        ),
+                        if (completedCount > 0)
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(Icons.check_circle, size: 10, color: Colors.black),
+                              const SizedBox(width: 2),
+                              Text('$completedCount', style: const TextStyle(fontSize: 9, color: Colors.black)),
+                            ],
+                          ),
+                        if (cancelledCount > 0)
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(Icons.cancel, size: 10, color: Colors.black),
+                              const SizedBox(width: 2),
+                              Text('$cancelledCount', style: const TextStyle(fontSize: 9, color: Colors.black)),
+                            ],
+                          ),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: Colors.black.withValues(alpha: 0.05),
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: Text(
+                            priceLabel,
+                            style: const TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: Colors.black),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ),
                       ],
@@ -269,6 +291,8 @@ Future<void> showVenuePreviewSheet(
   final dist = formatDistanceKm(
     shop.distanceKmFrom(kDefaultUserLat, kDefaultUserLng),
   );
+
+  final coverUrl = shop.rawJson?['metadata']?['cover_url'];
 
   return showModalBottomSheet<void>(
     context: context,
@@ -305,10 +329,11 @@ Future<void> showVenuePreviewSheet(
                 width: 56,
                 height: 56,
                 decoration: BoxDecoration(
-                  color: accent,
+                  color: coverUrl != null ? null : accent,
+                  image: coverUrl != null ? DecorationImage(image: NetworkImage(coverUrl), fit: BoxFit.cover) : null,
                   borderRadius: BorderRadius.circular(16),
                 ),
-                child: Icon(
+                child: coverUrl != null ? null : Icon(
                   LucideIcons.scissors,
                   color: Colors.white,
                   size: 28,
@@ -492,6 +517,8 @@ Future<void> showFieldPreviewSheet(
   required FootballField field,
   required Color accent,
 }) {
+  final coverUrl = field.rawJson?['metadata']?['cover_url'];
+
   return showModalBottomSheet<void>(
     context: context,
     isScrollControlled: true,
@@ -507,6 +534,17 @@ Future<void> showFieldPreviewSheet(
         children: [
           Row(
             children: [
+              if (coverUrl != null) ...[
+                Container(
+                  width: 50,
+                  height: 50,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    image: DecorationImage(image: NetworkImage(coverUrl), fit: BoxFit.cover),
+                  ),
+                ),
+                const SizedBox(width: 12),
+              ],
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,

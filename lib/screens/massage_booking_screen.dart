@@ -1,3 +1,4 @@
+import '../utils/call_helper.dart';
 import 'package:flutter/material.dart';
 import '../services/call_service.dart';
 import 'calls/call_screen.dart';
@@ -231,12 +232,7 @@ class _MassageBookingScreenState extends State<MassageBookingScreen> {
                       secondaryLabel: "Mutaxassis bilan bog'lanish",
                       secondaryIcon: LucideIcons.phone,
                       onSecondary: () {
-                        CallService().startCall(widget.service.providerId, widget.service.name);
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (_) => const CallScreen(isIncoming: false),
-                          ),
-                        );
+                        CallHelper.makeDirectCall(context, widget.service.providerId, widget.service.name);
                       },
                     ),
                     const SizedBox(height: 40),

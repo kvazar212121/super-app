@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 
 import '../models/master_worker.dart';
 import '../services/call_service.dart';
+import '../utils/call_helper.dart';
 import '../theme/glass_tokens.dart';
 import '../widgets/glass/glass_scaffold.dart';
 import '../widgets/glass/glass_surface.dart';
@@ -114,7 +115,7 @@ class WorkerProfileScreen extends StatelessWidget {
             height: 56,
             child: FilledButton.icon(
               onPressed: () {
-                CallService().startCall(worker.providerId, worker.name);
+                CallHelper.makeDirectCall(context, worker.providerId, worker.name);
               },
               icon: const Icon(LucideIcons.phoneCall),
               label: const Text(

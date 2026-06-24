@@ -62,6 +62,8 @@ class ProviderPortalService {
     Map<String, dynamic> metadata,
   ) => _api.updateProviderMetadata(categoryKey, metadata);
 
+  Future<String> uploadCover(String filePath) => _api.uploadCover(filePath);
+
   Future<Map<String, dynamic>> register({
     required int categoryId,
     required String name,
