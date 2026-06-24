@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../services/provider_availability_service.dart';
 import '../../../services/provider_portal_service.dart';
+import '../../../services/hub_data_service.dart';
+import '../../../services/settings_save_controller.dart';
 
 /// Sartarosh / salon — xizmatlar, narxlar, ustalar.
 class ProviderVenueSettingsWidget extends StatefulWidget {
@@ -10,6 +12,8 @@ class ProviderVenueSettingsWidget extends StatefulWidget {
   final Color accent;
   final String staffLabel;
   final String staffMetadataKey;
+  final bool showSaveButton;
+  final SettingsSaveController? saveController;
 
   const ProviderVenueSettingsWidget({
     super.key,
@@ -17,6 +21,8 @@ class ProviderVenueSettingsWidget extends StatefulWidget {
     required this.accent,
     this.staffLabel = 'Usta',
     this.staffMetadataKey = 'barbers',
+    this.showSaveButton = true,
+    this.saveController,
   });
 
   @override
@@ -45,14 +51,19 @@ class _ProviderVenueSettingsWidgetState
   final List<TextEditingController> _staff = [];
   List<String> _timeSlots = List.of(ProviderAvailability.defaultSlots);
 
+  String _startHour = '09:00';
+  String _endHour = '18:00';
+
   @override
   void initState() {
     super.initState();
     _load();
+    widget.saveController?.register(_saveExternal);
   }
 
   @override
   void dispose() {
+    widget.saveController?.deregister(_saveExternal);
     for (final s in _services) {
       s.dispose();
     }
@@ -60,6 +71,27 @@ class _ProviderVenueSettingsWidgetState
       c.dispose();
     }
     super.dispose();
+  }
+
+  Future<bool> _saveExternal() async {
+    try {
+      await _save();
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  void _updateTimeSlots() {
+    final start = int.tryParse(_startHour.split(':')[0]) ?? 9;
+    final end = int.tryParse(_endHour.split(':')[0]) ?? 18;
+    final slots = <String>[];
+    for (int h = start; h <= end; h++) {
+      slots.add('${h.toString().padLeft(2, '0')}:00');
+    }
+    setState(() {
+      _timeSlots = slots;
+    });
   }
 
   Future<void> _load() async {
@@ -116,6 +148,14 @@ class _ProviderVenueSettingsWidgetState
             ?.map((e) => e.toString())
             .toList() ??
         List.of(ProviderAvailability.defaultSlots);
+
+    if (_timeSlots.isNotEmpty) {
+      _startHour = _timeSlots.first;
+      _endHour = _timeSlots.last;
+    } else {
+      _startHour = '09:00';
+      _endHour = '18:00';
+    }
   }
 
   void _addService(String name, String price) {
@@ -143,13 +183,20 @@ class _ProviderVenueSettingsWidgetState
           .map((name) => {'name': name, 'rating': 5.0})
           .toList();
 
-      final meta = Map<String, dynamic>.from(_baseMeta)
+      final latestData = await _portal.getMe(widget.categoryKey);
+      final latestMeta = Map<String, dynamic>.from(
+        latestData['metadata'] as Map<String, dynamic>? ??
+        latestData['metadata_json'] as Map<String, dynamic>? ??
+        {},
+      );
+      final meta = Map<String, dynamic>.from(latestMeta)
         ..['services'] = services
         ..['prices'] = prices
         ..[widget.staffMetadataKey] = staff
         ..['time_slots'] = _timeSlots;
 
       await _portal.updateMetadata(widget.categoryKey, meta);
+      HubDataService().clearCache();
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Sozlamalar saqlandi')),
@@ -208,56 +255,89 @@ class _ProviderVenueSettingsWidgetState
           label: Text('${widget.staffLabel} qo\'shish'),
         ),
         const SizedBox(height: 24),
+        const SizedBox(height: 24),
         Text(
           'Ish vaqtlari',
           style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 8),
         Text(
-          'Mijozlar faqat shu vaqtlarga yoziladi',
+          'Mijozlar faqat shu vaqt oralig\'ida yoziladi',
           style: theme.textTheme.bodySmall,
         ),
         const SizedBox(height: 12),
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: ProviderAvailability.defaultSlots.map((slot) {
-            final selected = _timeSlots.contains(slot);
-            return FilterChip(
-              label: Text(slot),
-              selected: selected,
-              onSelected: (v) {
-                setState(() {
-                  if (v) {
-                    _timeSlots = [..._timeSlots, slot]..sort();
-                  } else {
-                    _timeSlots.remove(slot);
+        Row(
+          children: [
+            Expanded(
+              child: DropdownButtonFormField<String>(
+                value: _startHour,
+                decoration: const InputDecoration(
+                  labelText: 'Ish boshlanishi',
+                  border: OutlineInputBorder(),
+                  isDense: true,
+                ),
+                items: List.generate(17, (index) {
+                  final h = index + 6; // 06:00 to 22:00
+                  final val = '${h.toString().padLeft(2, '0')}:00';
+                  return DropdownMenuItem(value: val, child: Text(val));
+                }),
+                onChanged: (val) {
+                  if (val != null) {
+                    setState(() {
+                      _startHour = val;
+                      _updateTimeSlots();
+                    });
                   }
-                });
-              },
-              selectedColor: Colors.black12,
-              checkmarkColor: Colors.black,
-            );
-          }).toList(),
-        ),
-        const SizedBox(height: 32),
-        SizedBox(
-          width: double.infinity,
-          child: FilledButton(
-            onPressed: _saving ? null : _save,
-            style: FilledButton.styleFrom(
-              backgroundColor: Colors.black, foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(vertical: 16),
+                },
+              ),
             ),
-            child: _saving
-                ? const SizedBox(
-                    width: 22,
-                    height: 22,
-                    child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-                  )
-                : const Text('Saqlash'),
-          ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: DropdownButtonFormField<String>(
+                value: _endHour,
+                decoration: const InputDecoration(
+                  labelText: 'Ish tugashi',
+                  border: OutlineInputBorder(),
+                  isDense: true,
+                ),
+                items: List.generate(17, (index) {
+                  final h = index + 7; // 07:00 to 23:00
+                  final val = '${h.toString().padLeft(2, '0')}:00';
+                  return DropdownMenuItem(value: val, child: Text(val));
+                }),
+                onChanged: (val) {
+                  if (val != null) {
+                    setState(() {
+                      _endHour = val;
+                      _updateTimeSlots();
+                    });
+                  }
+                },
+              ),
+            ),
+          ],
         ),
+        if (widget.showSaveButton) ...[
+          const SizedBox(height: 32),
+          SizedBox(
+            width: double.infinity,
+            child: FilledButton(
+              onPressed: _saving ? null : _save,
+              style: FilledButton.styleFrom(
+                backgroundColor: Colors.black,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 16),
+              ),
+              child: _saving
+                  ? const SizedBox(
+                      width: 22,
+                      height: 22,
+                      child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                    )
+                  : const Text('Saqlash'),
+            ),
+          ),
+        ],
       ],
     );
   }

@@ -106,7 +106,11 @@ class _MassageBookingScreenState extends State<MassageBookingScreen> {
           bottom: true,
           child: CustomScrollView(
             slivers: [
-            BookingSliverAppBar(color: accentColor, icon: LucideIcons.heartPulse),
+            BookingSliverAppBar(
+              color: accentColor,
+              icon: LucideIcons.heartPulse,
+              rawJson: widget.service.rawJson,
+            ),
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.all(20.0),
@@ -118,6 +122,10 @@ class _MassageBookingScreenState extends State<MassageBookingScreen> {
                       rating: widget.service.rating,
                       phone: widget.service.phoneNumber,
                       accent: accentColor,
+                      onCallPressed: () {
+                        CallHelper.makeDirectCall(context, widget.service.ownerUserId, widget.service.name);
+                      },
+                      contactLabel: "Mutaxassis bilan bog'lanish",
                     ),
                     if (widget.service.visitModesLabel.isNotEmpty) ...[
                       const SizedBox(height: 8),
@@ -229,11 +237,6 @@ class _MassageBookingScreenState extends State<MassageBookingScreen> {
                       onPrimary: _canBook
                           ? () => _confirmBooking(currencyFormat, _totalPrice)
                           : null,
-                      secondaryLabel: "Mutaxassis bilan bog'lanish",
-                      secondaryIcon: LucideIcons.phone,
-                      onSecondary: () {
-                        CallHelper.makeDirectCall(context, widget.service.providerId, widget.service.name);
-                      },
                     ),
                     const SizedBox(height: 40),
                   ],

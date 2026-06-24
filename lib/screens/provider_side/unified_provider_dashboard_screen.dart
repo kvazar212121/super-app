@@ -2,6 +2,7 @@ import '../../utils/call_helper.dart';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import '../../services/settings_save_controller.dart';
 import 'package:intl/intl.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../config/provider_category_config.dart';
@@ -40,6 +41,7 @@ import '../../services/call_service.dart';
 import '../calls/call_screen.dart';
 import 'widgets/incoming_order_dialog.dart';
 import 'widgets/provider_profile_editor_widget.dart';
+import '../../services/hub_data_service.dart';
 
 /// Barcha soha egasi panellari — DB/API dan ma'lumot oladi.
 class UnifiedProviderDashboardScreen extends StatefulWidget {
@@ -59,9 +61,49 @@ class _UnifiedProviderDashboardScreenState
     extends State<UnifiedProviderDashboardScreen> {
   final _portal = ProviderPortalService();
   final _pendingKey = GlobalKey<ProviderPendingOrdersWidgetState>();
+  final _saveController = SettingsSaveController();
+  bool _savingSettings = false;
 
   int _selectedIndex = 0;
   bool _loading = true;
+
+  Future<void> _saveAllSettings() async {
+    setState(() => _savingSettings = true);
+    try {
+      final success = await _saveController.saveAll();
+      if (mounted) {
+        if (success) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text("Sozlamalar saqlandi"),
+              backgroundColor: Colors.green,
+            ),
+          );
+          _load();
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text("Xatolik yuz berdi"),
+              backgroundColor: Colors.redAccent,
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Xatolik: $e"),
+            backgroundColor: Colors.redAccent,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _savingSettings = false);
+      }
+    }
+  }
   String? _error;
   int _pendingCount = 0;
   Timer? _pollTimer;
@@ -200,6 +242,7 @@ class _UnifiedProviderDashboardScreenState
     setState(() => _isActive = v);
     try {
       await _portal.setActive(widget.config.categoryKey, v);
+      HubDataService().clearCache();
     } catch (_) {
       if (mounted) setState(() => _isActive = !v);
     }
@@ -209,6 +252,7 @@ class _UnifiedProviderDashboardScreenState
     setState(() => _isPaused = v);
     try {
       await _portal.setPaused(widget.config.categoryKey, v);
+      HubDataService().clearCache();
     } catch (_) {
       if (mounted) setState(() => _isPaused = !v);
     }
@@ -398,6 +442,8 @@ class _UnifiedProviderDashboardScreenState
             accent: accent,
             staffLabel: "O'qituvchi",
             staffMetadataKey: 'teachers',
+            showSaveButton: false,
+            saveController: _saveController,
           );
         } else {
           specificSettingsWidget = ProviderTutorSettingsWidget(
@@ -436,8 +482,14 @@ class _UnifiedProviderDashboardScreenState
           accent: accent,
           staffLabel: widget.config.categoryKey == 'salon' ? 'Mutaxassis' : 'Usta',
           staffMetadataKey: widget.config.categoryKey == 'salon' ? 'staff' : 'barbers',
+          showSaveButton: false,
+          saveController: _saveController,
         );
       }
+
+      final isVenue = widget.config.categoryKey == 'salon' ||
+          widget.config.categoryKey == 'sartarosh' ||
+          (widget.config.categoryKey == 'repetitor' && _isEducationCenter);
 
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -445,11 +497,38 @@ class _UnifiedProviderDashboardScreenState
           ProviderProfileEditorWidget(
             categoryKey: widget.config.categoryKey,
             accent: accent,
+            showSaveButton: !isVenue,
+            saveController: isVenue ? _saveController : null,
           ),
           const SizedBox(height: 32),
           const Divider(thickness: 2, color: Colors.black12),
           const SizedBox(height: 24),
           specificSettingsWidget,
+          if (isVenue) ...[
+            const SizedBox(height: 32),
+            SizedBox(
+              width: double.infinity,
+              child: FilledButton(
+                onPressed: _savingSettings ? null : _saveAllSettings,
+                style: FilledButton.styleFrom(
+                  backgroundColor: Colors.black,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                ),
+                child: _savingSettings
+                    ? const SizedBox(
+                        width: 22,
+                        height: 22,
+                        child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                      )
+                    : const Text(
+                        'Saqlash',
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                      ),
+              ),
+            ),
+          ],
         ],
       );
     }

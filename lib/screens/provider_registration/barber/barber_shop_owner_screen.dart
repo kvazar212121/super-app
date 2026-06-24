@@ -9,6 +9,7 @@ import '../../provider_side/provider_theme.dart';
 import '../provider_success_screen.dart';
 import '../../location_picker_screen.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import '../../../services/hub_data_service.dart';
 
 class BarberShopOwnerScreen extends StatefulWidget {
   final int? categoryDbId;
@@ -70,6 +71,7 @@ class _BarberShopOwnerScreenState extends State<BarberShopOwnerScreen> {
         hours: _hoursCtrl.text.trim().isEmpty ? null : _hoursCtrl.text.trim(),
         subCategory: _selectedSubCategory,
       );
+      HubDataService().clearCache();
       if (!mounted) return;
       Navigator.pushAndRemoveUntil(
         context,
@@ -158,33 +160,7 @@ class _BarberShopOwnerScreenState extends State<BarberShopOwnerScreen> {
                   ),
                 ],
               ),
-              const SizedBox(height: 16),
-              Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: _latCtrl,
-                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                      inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[\d.]'))],
-                      decoration: const InputDecoration(labelText: 'Kenglik (lat)'),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: TextField(
-                      controller: _lngCtrl,
-                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                      inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[\d.]'))],
-                      decoration: const InputDecoration(labelText: 'Uzunlik (lng)'),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Xaritada aniq joylashuv uchun koordinatalar. Keyinroq xaritadan tanlash qo\'shiladi.',
-                style: TextStyle(fontSize: 12, color: Colors.grey[600]),
-              ),
+
               const SizedBox(height: 16),
               TextField(
                 controller: _phoneCtrl,

@@ -201,6 +201,15 @@ class CallService extends ChangeNotifier {
 
     debugPrint('WebSocket signal olindi: $type dan $senderId ($senderName)');
 
+    final token = await ApiService().getToken();
+    if (token != null) {
+      final currentUserId = _parseUserIdFromToken(token);
+      if (currentUserId != null && senderId == currentUserId) {
+        debugPrint('O\'z-o\'zidan kelgan (loopback) signaling xabar e\'tiborga olinmaydi');
+        return;
+      }
+    }
+
     if (type == 'call_init') {
       if (CallHistoryService().isUserBlocked(senderId)) {
         debugPrint('Bloklangan foydalanuvchidan qo\'ng\'iroq keldi. Rad etiladi.');
@@ -285,6 +294,24 @@ class CallService extends ChangeNotifier {
         onError!('Foydalanuvchi hozir oflayn');
       }
     }
+  }
+
+  int? _parseUserIdFromToken(String token) {
+    try {
+      final parts = token.split('.');
+      if (parts.length != 3) return null;
+      final payload = parts[1];
+      final normalized = base64Url.normalize(payload);
+      final decoded = utf8.decode(base64Url.decode(normalized));
+      final Map<String, dynamic> json = jsonDecode(decoded);
+      final sub = json['sub'];
+      if (sub != null) {
+        return int.tryParse(sub.toString());
+      }
+    } catch (e) {
+      debugPrint('JWT token decode xatoligi: $e');
+    }
+    return null;
   }
 
   void sendSignal(String type, Map<String, dynamic> data) {
@@ -418,10 +445,10 @@ class CallService extends ChangeNotifier {
   }
 
   /// Chiquvchi qo'ng'iroq boshlash
-  Future<void> startCall(int targetId, String targetName, {String? categoryKey}) async {
+  Future<bool> startCall(int targetId, String targetName, {String? categoryKey}) async {
     if (_inCall) {
       debugPrint('Allaqachon qo\'ng\'iroqda');
-      return;
+      return false;
     }
 
     _remoteUserId = targetId;
@@ -450,6 +477,7 @@ class CallService extends ChangeNotifier {
 
     // Notify target that a call is initiating
     sendSignal('call_init', {'category': categoryKey});
+    return true;
   }
 
   /// Offer yaratish va yuborish

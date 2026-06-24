@@ -131,9 +131,9 @@ class MassageHijoma {
   final List<String> timeSlots;
   final String? subCategory;
   final Map<String, dynamic>? rawJson;
-
-    final bool isTravelFeeIncluded;
+  final bool isTravelFeeIncluded;
   final double travelFee;
+  final int ownerUserId;
 
   MassageHijoma({
     required this.id,
@@ -155,8 +155,9 @@ class MassageHijoma {
     this.timeSlots = const [],
     this.subCategory,
     this.rawJson,
-      this.isTravelFeeIncluded = true,
+    this.isTravelFeeIncluded = true,
     this.travelFee = 0.0,
+    this.ownerUserId = 0,
   });
 
   bool get supportsHomeVisit => visitModes.contains(MassageVisitMode.homeVisit);
@@ -223,8 +224,9 @@ class MassageHijoma {
           .toList(),
       subCategory: meta['sub_category']?.toString(),
       rawJson: json,
-          isTravelFeeIncluded: meta['is_travel_fee_included'] as bool? ?? true,
+      isTravelFeeIncluded: meta['is_travel_fee_included'] as bool? ?? true,
       travelFee: (meta['travel_fee'] as num?)?.toDouble() ?? 0.0,
+      ownerUserId: (json['owner_user_id'] as num?)?.toInt() ?? 0,
     );
   }
 }

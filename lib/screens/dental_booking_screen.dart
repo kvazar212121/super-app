@@ -152,7 +152,11 @@ class _DentalBookingScreenState extends State<DentalBookingScreen> {
           bottom: true,
           child: CustomScrollView(
             slivers: [
-            BookingSliverAppBar(color: _accent, icon: LucideIcons.smile),
+            BookingSliverAppBar(
+              color: _accent,
+              icon: LucideIcons.smile,
+              rawJson: widget.clinic.rawJson,
+            ),
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.all(20),
@@ -164,6 +168,10 @@ class _DentalBookingScreenState extends State<DentalBookingScreen> {
                       rating: widget.clinic.rating,
                       phone: widget.clinic.phoneNumber,
                       accent: _accent,
+                      onCallPressed: () {
+                        CallHelper.makeDirectCall(context, widget.clinic.ownerUserId, widget.clinic.name);
+                      },
+                      contactLabel: "Klinika bilan bog'lanish",
                     ),
                     const SizedBox(height: 8),
                     Row(
@@ -252,13 +260,6 @@ class _DentalBookingScreenState extends State<DentalBookingScreen> {
                           ? 'Band qilish — ${currency.format(_price)}'
                           : 'Band qilish',
                       onPrimary: _canBook ? _confirm : null,
-                      secondaryLabel: 'Klinika bilan bog\'lanish',
-                      secondaryIcon: LucideIcons.phone,
-                      onSecondary: () {
-                        int targetId = _selectedDentist?.providerId ?? widget.clinic.providerId;
-                      if (targetId == 0) targetId = widget.clinic.providerId;
-                      CallHelper.makeDirectCall(context, targetId, _selectedDentist?.name ?? widget.clinic.name);
-                      },
                     ),
                     const SizedBox(height: 40),
                   ],

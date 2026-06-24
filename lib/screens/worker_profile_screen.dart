@@ -115,7 +115,7 @@ class WorkerProfileScreen extends StatelessWidget {
             height: 56,
             child: FilledButton.icon(
               onPressed: () {
-                CallHelper.makeDirectCall(context, worker.providerId, worker.name);
+                CallHelper.makeDirectCall(context, worker.ownerUserId, worker.name);
               },
               icon: const Icon(LucideIcons.phoneCall),
               label: const Text(

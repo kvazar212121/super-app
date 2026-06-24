@@ -53,11 +53,10 @@ class TutorService {
   final Map<String, double> prices;
   final List<String> timeSlots;
   final Map<String, dynamic>? rawJson;
-
   final String? subCategory;
-
-    final bool isTravelFeeIncluded;
+  final bool isTravelFeeIncluded;
   final double travelFee;
+  final int ownerUserId;
 
   TutorService({
     required this.id,
@@ -77,9 +76,10 @@ class TutorService {
     this.prices = const {},
     this.timeSlots = const [],
     this.rawJson,
-      this.subCategory,
-      this.isTravelFeeIncluded = true,
+    this.subCategory,
+    this.isTravelFeeIncluded = true,
     this.travelFee = 0.0,
+    this.ownerUserId = 0,
   });
 
   bool get supportsOnline => lessonModes.contains(LessonMode.online);
@@ -127,9 +127,10 @@ class TutorService {
           .map((e) => e.toString())
           .toList(),
       rawJson: json,
-          subCategory: meta['sub_category']?.toString(),
-          isTravelFeeIncluded: meta['is_travel_fee_included'] as bool? ?? true,
+      subCategory: meta['sub_category']?.toString(),
+      isTravelFeeIncluded: meta['is_travel_fee_included'] as bool? ?? true,
       travelFee: (meta['travel_fee'] as num?)?.toDouble() ?? 0.0,
+      ownerUserId: (json['owner_user_id'] as num?)?.toInt() ?? 0,
     );
   }
 }

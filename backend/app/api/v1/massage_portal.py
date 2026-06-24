@@ -17,6 +17,8 @@ class MassageRegisterIn(BaseModel):
     phone: str = Field(..., min_length=9, max_length=20)
     service_area: str = Field(..., min_length=3, max_length=500)
     address: str | None = None
+    lat: float | None = None
+    lng: float | None = None
     massage_role: str = "solo"
     visit_modes: list[str] = Field(default_factory=list)
     service_types: list[str] = Field(default_factory=list)
@@ -37,6 +39,8 @@ async def register_massage(
         phone=data.phone,
         service_area=data.service_area,
         address=data.address,
+        lat=data.lat,
+        lng=data.lng,
         massage_role=data.massage_role,
         visit_modes=data.visit_modes or None,
         service_types=data.service_types or None,

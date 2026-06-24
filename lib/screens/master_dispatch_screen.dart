@@ -200,10 +200,19 @@ class _MasterDispatchScreenState extends State<MasterDispatchScreen> {
         backgroundColor: Colors.transparent,
         body: CustomScrollView(
           slivers: [
-            SliverAppBar(
+            BookingSliverAppBar(
+              color: _accent,
+              icon: widget.master.isCleaner
+                  ? LucideIcons.brush
+                  : widget.master.isElectrician
+                      ? LucideIcons.zap
+                      : widget.master.isPlumber
+                          ? LucideIcons.droplets
+                          : widget.master.isAcTechnician
+                              ? LucideIcons.wind
+                              : LucideIcons.wrench,
               expandedHeight: 160,
-              pinned: true,
-              backgroundColor: _accent,
+              rawJson: widget.master.rawJson,
               actions: [
                 IconButton(
                   icon: const Icon(LucideIcons.user),
@@ -218,28 +227,19 @@ class _MasterDispatchScreenState extends State<MasterDispatchScreen> {
                   ),
                 ),
               ],
-              flexibleSpace: FlexibleSpaceBar(
-                title: Text(
-                  widget.master.isCleaner
-                      ? 'Tozalash buyurtmasi'
-                : widget.master.isDispatchMaster
-                    ? 'Ustani chaqirish'
-                    : widget.master.isElectrician
-                        ? 'Elektrikni chaqirish'
-                        : widget.master.isPlumber
-                            ? 'Santexnikni chaqirish'
-                            : widget.master.isAcTechnician
-                                ? 'Konditsionerni chaqirish'
-                                : (widget.master.isHomeVisit ? 'Uyga chaqirish' : 'Ustani chaqirish'),
-                  style: const TextStyle(fontSize: 16),
-                ),
-                background: Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [_accent, _accent],
-                    ),
-                  ),
-                ),
+              title: Text(
+                widget.master.isCleaner
+                    ? 'Tozalash buyurtmasi'
+                    : widget.master.isDispatchMaster
+                        ? 'Ustani chaqirish'
+                        : widget.master.isElectrician
+                            ? 'Elektrikni chaqirish'
+                            : widget.master.isPlumber
+                                ? 'Santexnikni chaqirish'
+                                : widget.master.isAcTechnician
+                                    ? 'Konditsionerni chaqirish'
+                                    : (widget.master.isHomeVisit ? 'Uyga chaqirish' : 'Ustani chaqirish'),
+                style: const TextStyle(fontSize: 16),
               ),
             ),
             SliverToBoxAdapter(

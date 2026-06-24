@@ -159,12 +159,22 @@ class _ServiceHubScreenState extends State<ServiceHubScreen> {
     if (_selectedSubCategory == null) return data;
 
     final filtered = HubScreenData();
-    // Apply filter to all lists
-    filtered.barberShops = data.barberShops.where((e) => e.subCategory == _selectedSubCategory).toList();
+    final query = _selectedSubCategory!.toLowerCase();
+
+    // Match if any of the salon/barber services contain the selected category, or if the subCategory matches
+    filtered.barberShops = data.barberShops.where((e) {
+      final hasService = e.services.any((s) => s.toLowerCase().contains(query));
+      return hasService || e.subCategory == _selectedSubCategory;
+    }).toList();
+    
+    filtered.salons = data.salons.where((e) {
+      final hasService = e.services.any((s) => s.toLowerCase().contains(query));
+      return hasService || e.subCategory == _selectedSubCategory;
+    }).toList();
+
     filtered.mobileBarbers = data.mobileBarbers.where((e) => e.subCategory == _selectedSubCategory).toList();
     filtered.massage = data.massage.where((e) => e.subCategory == _selectedSubCategory).toList();
     filtered.masters = data.masters.where((e) => e.subCategory == _selectedSubCategory).toList();
-    filtered.salons = data.salons.where((e) => e.subCategory == _selectedSubCategory).toList();
     filtered.footballFields = data.footballFields.where((e) => e.subCategory == _selectedSubCategory).toList();
     filtered.workers = data.workers.where((e) => e.subCategory == _selectedSubCategory).toList();
     filtered.workshops = data.workshops.where((e) => e.subCategory == _selectedSubCategory).toList();
@@ -186,7 +196,7 @@ class _ServiceHubScreenState extends State<ServiceHubScreen> {
         if (meta == null) return false;
         return meta['sub_category'] == _selectedSubCategory;
       }
-      return true; // Keep objects since they don't have sub_category filtering yet
+      return true;
     }).toList();
 
     return filtered;

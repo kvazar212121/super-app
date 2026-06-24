@@ -139,7 +139,11 @@ class _NurseBookingScreenState extends State<NurseBookingScreen> {
       backgroundColor: Colors.transparent,
       body: CustomScrollView(
         slivers: [
-          BookingSliverAppBar(color: accentColor, icon: LucideIcons.heartPulse),
+          BookingSliverAppBar(
+            color: accentColor,
+            icon: LucideIcons.heartPulse,
+            rawJson: widget.service.rawJson,
+          ),
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.all(20.0),
@@ -151,6 +155,10 @@ class _NurseBookingScreenState extends State<NurseBookingScreen> {
                     rating: widget.service.rating,
                     phone: widget.service.phoneNumber,
                     accent: accentColor,
+                    onCallPressed: () {
+                      CallHelper.makeDirectCall(context, widget.service.ownerUserId, widget.service.name);
+                    },
+                    contactLabel: "Hamshira bilan bog'lanish",
                   ),
                   if (widget.service.serviceArea != null) ...[
                     const SizedBox(height: 8),
@@ -280,12 +288,6 @@ class _NurseBookingScreenState extends State<NurseBookingScreen> {
                             _addressController.text.trim().length >= 5)
                         ? () => _confirmBooking(currencyFormat)
                         : null,
-                    secondaryLabel: "Hamshira bilan bog'lanish",
-                    secondaryIcon: LucideIcons.phone,
-                    onSecondary: () {
-                      final targetId = int.tryParse(widget.service.id) ?? 0;
-                      CallHelper.makeDirectCall(context, targetId, widget.service.name);
-                    },
                   ),
                   const SizedBox(height: 40),
                 ],

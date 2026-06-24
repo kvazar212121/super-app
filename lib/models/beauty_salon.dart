@@ -33,8 +33,8 @@ class BeautySalon {
   final Map<String, double> prices;
   final List<SalonStaff> staff;
   final Map<String, dynamic>? rawJson;
-
-    final String? subCategory;
+  final String? subCategory;
+  final int ownerUserId;
 
   BeautySalon({
     required this.id,
@@ -49,7 +49,8 @@ class BeautySalon {
     required this.prices,
     required this.staff,
     this.rawJson,
-      this.subCategory,
+    this.subCategory,
+    this.ownerUserId = 0,
   });
 
   int get providerId => int.tryParse(id) ?? 0;
@@ -100,7 +101,8 @@ class BeautySalon {
       prices: prices,
       staff: staff,
       rawJson: json,
-          subCategory: meta['sub_category']?.toString(),
+      subCategory: meta['sub_category']?.toString(),
+      ownerUserId: (json['owner_user_id'] as num?)?.toInt() ?? 0,
     );
   }
 

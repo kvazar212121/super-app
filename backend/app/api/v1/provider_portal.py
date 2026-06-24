@@ -385,7 +385,7 @@ async def get_calendar(
 
 @router.get("/reports", response_model=ProviderReportOut)
 async def get_reports(
-    period: str = Query("monthly", pattern="^(daily|monthly|yearly)$"),
+    period: str = Query("monthly", pattern="^(daily|monthly|yearly|all_time)$"),
     category_key: str | None = Query(None),
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
@@ -397,6 +397,8 @@ async def get_reports(
         start = today
     elif period == "yearly":
         start = today.replace(month=1, day=1)
+    elif period == "all_time":
+        start = today.replace(year=2000, month=1, day=1)
     else:
         start = today.replace(day=1)
 

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../theme/glass_tokens.dart';
+import '../config/app_config.dart';
 
 /// Booking ekranlari uchun umumiy ranglar.
 /// Kartalar har doim OQ fonda, shuning uchun ulardagi matn qat'iy qora.
@@ -34,6 +35,9 @@ class BookingSliverAppBar extends StatelessWidget {
   final IconData icon;
   final double expandedHeight;
   final String? coverUrl;
+  final Map<String, dynamic>? rawJson;
+  final List<Widget>? actions;
+  final Widget? title;
 
   const BookingSliverAppBar({
     super.key,
@@ -41,26 +45,37 @@ class BookingSliverAppBar extends StatelessWidget {
     required this.icon,
     this.expandedHeight = 180,
     this.coverUrl,
+    this.rawJson,
+    this.actions,
+    this.title,
   });
 
   @override
   Widget build(BuildContext context) {
+    final String? resolvedCoverUrl = coverUrl ??
+        rawJson?['metadata']?['cover_url'] ??
+        rawJson?['cover_image'];
+
+    final bool hasImage = resolvedCoverUrl != null && resolvedCoverUrl.trim().isNotEmpty;
+
     return SliverAppBar(
       expandedHeight: expandedHeight,
       pinned: true,
       backgroundColor: color,
       foregroundColor: Colors.white,
+      actions: actions,
       flexibleSpace: FlexibleSpaceBar(
+        title: title,
         background: Container(
           decoration: BoxDecoration(
-            gradient: coverUrl != null ? null : LinearGradient(
+            gradient: hasImage ? null : LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [color, color],
             ),
-            image: coverUrl != null
+            image: hasImage
                 ? DecorationImage(
-                    image: CachedNetworkImageProvider(coverUrl!),
+                    image: CachedNetworkImageProvider(AppConfig.formatImageUrl(resolvedCoverUrl)),
                     fit: BoxFit.cover,
                     colorFilter: ColorFilter.mode(
                       Colors.black.withOpacity(0.3),
@@ -69,7 +84,7 @@ class BookingSliverAppBar extends StatelessWidget {
                   )
                 : null,
           ),
-          child: coverUrl != null
+          child: hasImage
               ? const SizedBox.shrink()
               : Center(
                   child: Icon(icon, size: 64, color: Colors.white),
@@ -87,6 +102,8 @@ class ServiceProfileHeader extends StatelessWidget {
   final String phone;
   final Color accent;
   final Widget? extra;
+  final VoidCallback? onCallPressed;
+  final String? contactLabel;
 
   const ServiceProfileHeader({
     super.key,
@@ -95,6 +112,8 @@ class ServiceProfileHeader extends StatelessWidget {
     required this.phone,
     required this.accent,
     this.extra,
+    this.onCallPressed,
+    this.contactLabel,
   });
 
   @override
@@ -103,7 +122,7 @@ class ServiceProfileHeader extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Expanded(
               child: Text(
@@ -111,16 +130,39 @@ class ServiceProfileHeader extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
+                  height: 1.2,
                   color: GlassTokens.primaryText(context),
                 ),
               ),
             ),
             const SizedBox(width: 8),
+            if (onCallPressed != null) ...[
+              FilledButton.icon(
+                onPressed: onCallPressed,
+                style: FilledButton.styleFrom(
+                  backgroundColor: accent.withOpacity(0.15),
+                  foregroundColor: accent,
+                  elevation: 0,
+                  minimumSize: const Size(0, 36),
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    side: BorderSide(color: accent.withOpacity(0.4)),
+                  ),
+                ),
+                icon: const Icon(Icons.phone, size: 16),
+                label: const Text(
+                  "Qo'ng'iroq qilish",
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                ),
+              ),
+              const SizedBox(width: 8),
+            ],
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
               decoration: BoxDecoration(
                 color: accent,
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(10),
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
@@ -129,7 +171,7 @@ class ServiceProfileHeader extends StatelessWidget {
                   const SizedBox(width: 4),
                   Text(
                     rating.toString(),
-                    style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+                    style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white, fontSize: 13),
                   ),
                 ],
               ),

@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import '../../config/app_config.dart';
 
 import '../../models/barber_shop.dart';
 import '../../models/beauty_salon.dart';
@@ -175,7 +176,7 @@ class VenueHubCard extends StatelessWidget {
                       ),
                       image: (coverUrl != null && coverUrl!.isNotEmpty)
                           ? DecorationImage(
-                              image: CachedNetworkImageProvider(coverUrl!),
+                              image: CachedNetworkImageProvider(AppConfig.formatImageUrl(coverUrl)),
                               fit: BoxFit.cover,
                             )
                           : null,
@@ -331,7 +332,7 @@ Future<void> showVenuePreviewSheet(
                 height: 56,
                 decoration: BoxDecoration(
                   color: coverUrl != null ? null : accent,
-                  image: coverUrl != null ? DecorationImage(image: CachedNetworkImageProvider(coverUrl), fit: BoxFit.cover) : null,
+                  image: coverUrl != null ? DecorationImage(image: CachedNetworkImageProvider(AppConfig.formatImageUrl(coverUrl)), fit: BoxFit.cover) : null,
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: coverUrl != null ? null : Icon(

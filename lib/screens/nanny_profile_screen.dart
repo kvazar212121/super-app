@@ -42,7 +42,7 @@ class _NannyProfileScreenState extends State<NannyProfileScreen> {
   bool get _canBook => _reviewedProfile && _contactedNanny;
 
   void _callNanny() {
-    CallHelper.makeDirectCall(context, 0, nanny.name);
+    CallHelper.makeDirectCall(context, nanny.ownerUserId, nanny.name);
     setState(() => _contactedNanny = true);
   }
 

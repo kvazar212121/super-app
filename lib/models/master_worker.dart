@@ -24,9 +24,9 @@ class Master {
   final String? subCategory;
   final String? about;
   final Map<String, dynamic>? rawJson;
-
-    final bool isTravelFeeIncluded;
+  final bool isTravelFeeIncluded;
   final double travelFee;
+  final int ownerUserId;
 
   Master({
     required this.id,
@@ -52,8 +52,9 @@ class Master {
     this.subCategory,
     this.about,
     this.rawJson,
-      this.isTravelFeeIncluded = true,
+    this.isTravelFeeIncluded = true,
     this.travelFee = 0.0,
+    this.ownerUserId = 0,
   });
 
   bool get isAcSolo => acRole == 'solo';
@@ -174,8 +175,9 @@ class Master {
       subCategory: meta['sub_category']?.toString(),
       about: meta['about']?.toString() ?? meta['bio']?.toString() ?? meta['description']?.toString(),
       rawJson: json,
-          isTravelFeeIncluded: meta['is_travel_fee_included'] as bool? ?? true,
+      isTravelFeeIncluded: meta['is_travel_fee_included'] as bool? ?? true,
       travelFee: (meta['travel_fee'] as num?)?.toDouble() ?? 0.0,
+      ownerUserId: (json['owner_user_id'] as num?)?.toInt() ?? 0,
     );
   }
 
@@ -234,6 +236,7 @@ class Worker {
   final List<String> skills;
   final double? price;
   final String? subCategory;
+  final int ownerUserId;
 
   Worker({
     required this.id,
@@ -249,6 +252,7 @@ class Worker {
     this.skills = const [],
     this.price,
     this.subCategory,
+    this.ownerUserId = 0,
   });
 
   factory Worker.fromProviderJson(Map<String, dynamic> json) {
@@ -273,6 +277,7 @@ class Worker {
       skills: skillsList,
       price: (meta['price'] as num?)?.toDouble(),
       subCategory: meta['sub_category']?.toString(),
+      ownerUserId: (json['owner_user_id'] as num?)?.toInt() ?? 0,
     );
   }
 }

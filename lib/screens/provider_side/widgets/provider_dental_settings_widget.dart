@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../services/hub_data_service.dart';
 import 'package:flutter/services.dart';
 import '../../../services/provider_availability_service.dart';
 import '../../../services/provider_portal_service.dart';
@@ -157,7 +158,13 @@ class _ProviderDentalSettingsWidgetState extends State<ProviderDentalSettingsWid
         dentists.add({'id': 'd$i', 'name': name});
       }
 
-      final meta = Map<String, dynamic>.from(_baseMeta)
+      final latestData = await _portal.getMe(widget.categoryKey);
+      final latestMeta = Map<String, dynamic>.from(
+        latestData['metadata'] as Map<String, dynamic>? ??
+        latestData['metadata_json'] as Map<String, dynamic>? ??
+        {},
+      );
+      final meta = Map<String, dynamic>.from(latestMeta)
         ..['type'] = 'dental_clinic'
         ..['visit_modes'] = ['at_center']
         ..['address'] = _addressCtrl.text.trim()
@@ -167,6 +174,7 @@ class _ProviderDentalSettingsWidgetState extends State<ProviderDentalSettingsWid
         ..['time_slots'] = _timeSlots;
 
       await _portal.updateMetadata(widget.categoryKey, meta);
+      HubDataService().clearCache();
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Sozlamalar saqlandi')),

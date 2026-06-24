@@ -181,7 +181,11 @@ class _EducationCenterBookingScreenState extends State<EducationCenterBookingScr
         backgroundColor: Colors.transparent,
         body: CustomScrollView(
           slivers: [
-            BookingSliverAppBar(color: _accent, icon: LucideIcons.school),
+            BookingSliverAppBar(
+              color: _accent,
+              icon: LucideIcons.school,
+              rawJson: widget.center.rawJson,
+            ),
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.all(20),

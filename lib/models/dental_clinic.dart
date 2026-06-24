@@ -26,8 +26,8 @@ class DentalClinic {
   final List<DentalDentist> dentists;
   final List<String> timeSlots;
   final Map<String, dynamic>? rawJson;
-
   final String? subCategory;
+  final int ownerUserId;
 
   DentalClinic({
     required this.id,
@@ -44,7 +44,8 @@ class DentalClinic {
     this.dentists = const [],
     this.timeSlots = const [],
     this.rawJson,
-      this.subCategory,
+    this.subCategory,
+    this.ownerUserId = 0,
   });
 
   factory DentalClinic.fromProviderJson(Map<String, dynamic> json) {
@@ -91,7 +92,8 @@ class DentalClinic {
           .map((e) => e.toString())
           .toList(),
       rawJson: json,
-          subCategory: meta['sub_category']?.toString(),
+      subCategory: meta['sub_category']?.toString(),
+      ownerUserId: (json['owner_user_id'] as num?)?.toInt() ?? 0,
     );
   }
 }

@@ -214,7 +214,11 @@ class _TutorBookingScreenState extends State<TutorBookingScreen> {
         backgroundColor: Colors.transparent,
         body: CustomScrollView(
           slivers: [
-            BookingSliverAppBar(color: _accent, icon: LucideIcons.bookOpen),
+            BookingSliverAppBar(
+              color: _accent,
+              icon: LucideIcons.bookOpen,
+              rawJson: widget.tutor.rawJson,
+            ),
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.all(20),

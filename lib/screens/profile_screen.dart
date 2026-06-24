@@ -15,6 +15,7 @@ import '../services/call_history_service.dart';
 import '../services/call_service.dart';
 import 'calls/call_screen.dart';
 import 'calls/call_history_screen.dart';
+import '../config/app_config.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -237,7 +238,7 @@ class ProfileScreen extends StatelessWidget {
               border: Border.all(color: Colors.white, width: 2),
             ),
             child: isLoggedIn && user.avatarUrl != null
-                ? ClipOval(child: Image.network(user.avatarUrl!, fit: BoxFit.cover))
+                ? ClipOval(child: Image.network(AppConfig.formatImageUrl(user.avatarUrl), fit: BoxFit.cover))
                 : Center(
                     child: Text(
                       isLoggedIn

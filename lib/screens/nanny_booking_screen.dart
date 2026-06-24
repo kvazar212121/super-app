@@ -219,7 +219,11 @@ class _NannyBookingScreenState extends State<NannyBookingScreen> {
         backgroundColor: Colors.transparent,
         body: CustomScrollView(
           slivers: [
-            BookingSliverAppBar(color: _accent, icon: LucideIcons.baby),
+            BookingSliverAppBar(
+              color: _accent,
+              icon: LucideIcons.baby,
+              rawJson: widget.nanny.rawJson,
+            ),
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.all(20),

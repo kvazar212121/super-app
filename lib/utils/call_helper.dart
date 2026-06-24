@@ -29,7 +29,28 @@ class CallHelper {
         }
       }
       
-      if (!context.mounted || !context.read<AuthProvider>().isAuthenticated) return;
+    if (!context.mounted || !context.read<AuthProvider>().isAuthenticated) return;
+    }
+
+    final currentUserId = int.tryParse(auth.user?['id']?.toString() ?? '');
+    if (currentUserId != null && currentUserId == targetId) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("O'zingizga qo'ng'iroq qila olmaysiz"),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    if (targetId == 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Kechirasiz, ushbu foydalanuvchining hisobi hali to'liq faollashtirilmagan."),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      return;
     }
 
     // Show a bottom sheet or dialog to ask purpose
@@ -70,7 +91,14 @@ class CallHelper {
 
     if (!context.mounted) return;
 
-    CallService().startCall(targetId, targetName, categoryKey: categoryKey);
+    bool started = await CallService().startCall(targetId, targetName, categoryKey: categoryKey);
+    if (!started) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Allaqachon qo'ng'iroqdamiz")),
+      );
+      return;
+    }
+    
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) => CallScreen(isIncoming: false, isBookingCall: isBooking),
@@ -102,7 +130,35 @@ class CallHelper {
       if (!context.mounted || !context.read<AuthProvider>().isAuthenticated) return;
     }
 
-    CallService().startCall(targetId, targetName);
+    final currentUserId = int.tryParse(auth.user?['id']?.toString() ?? '');
+    if (currentUserId != null && currentUserId == targetId) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("O'zingizga qo'ng'iroq qila olmaysiz"),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    if (targetId == 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Kechirasiz, ushbu foydalanuvchining hisobi hali to'liq faollashtirilmagan."),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      return;
+    }
+
+    bool started = await CallService().startCall(targetId, targetName);
+    if (!started) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Allaqachon qo'ng'iroqdamiz")),
+      );
+      return;
+    }
+    
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) => const CallScreen(isIncoming: false),

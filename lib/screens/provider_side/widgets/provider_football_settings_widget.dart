@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../services/hub_data_service.dart';
 import 'package:flutter/services.dart';
 import '../../../services/provider_availability_service.dart';
 import '../../../services/provider_portal_service.dart';
@@ -66,12 +67,19 @@ class _ProviderFootballSettingsWidgetState extends State<ProviderFootballSetting
   Future<void> _save() async {
     setState(() => _saving = true);
     try {
-      final meta = Map<String, dynamic>.from(_baseMeta)
+      final latestData = await _portal.getMe(widget.categoryKey);
+      final latestMeta = Map<String, dynamic>.from(
+        latestData['metadata'] as Map<String, dynamic>? ??
+        latestData['metadata_json'] as Map<String, dynamic>? ??
+        {},
+      );
+      final meta = Map<String, dynamic>.from(latestMeta)
         ..['type'] = 'football_field'
         ..['base_price_per_hour'] =
             int.tryParse(_priceCtrl.text.replaceAll(' ', '')) ?? 200000
         ..['time_slots'] = _timeSlots;
       await _portal.updateMetadata(widget.categoryKey, meta);
+      HubDataService().clearCache();
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Sozlamalar saqlandi')),

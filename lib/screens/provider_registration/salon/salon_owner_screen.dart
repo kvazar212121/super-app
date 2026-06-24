@@ -8,6 +8,7 @@ import '../../provider_side/provider_theme.dart';
 import '../provider_success_screen.dart';
 import '../../location_picker_screen.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import '../../../services/hub_data_service.dart';
 
 class SalonOwnerScreen extends StatefulWidget {
   const SalonOwnerScreen({super.key});
@@ -65,6 +66,7 @@ class _SalonOwnerScreenState extends State<SalonOwnerScreen> {
         alsoWorksAsStylist: _alsoStylist,
         hours: _hoursCtrl.text.trim().isEmpty ? null : _hoursCtrl.text.trim(),
       );
+      HubDataService().clearCache();
       if (!mounted) return;
       Navigator.pushAndRemoveUntil(
         context,
@@ -140,28 +142,7 @@ class _SalonOwnerScreenState extends State<SalonOwnerScreen> {
                   ),
                 ],
               ),
-              const SizedBox(height: 16),
-              Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: _latCtrl,
-                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                      inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[\d.]'))],
-                      decoration: const InputDecoration(labelText: 'Kenglik (lat)'),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: TextField(
-                      controller: _lngCtrl,
-                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                      inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[\d.]'))],
-                      decoration: const InputDecoration(labelText: 'Uzunlik (lng)'),
-                    ),
-                  ),
-                ],
-              ),
+
               const SizedBox(height: 16),
               TextField(controller: _phoneCtrl, decoration: const InputDecoration(labelText: 'Telefon')),
               const SizedBox(height: 16),

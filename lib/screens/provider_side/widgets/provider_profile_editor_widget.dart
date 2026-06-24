@@ -7,15 +7,22 @@ import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../services/provider_portal_service.dart';
+import '../../../services/hub_data_service.dart';
+import '../../../services/settings_save_controller.dart';
+import '../../../config/app_config.dart';
 
 class ProviderProfileEditorWidget extends StatefulWidget {
   final String categoryKey;
   final Color accent;
+  final bool showSaveButton;
+  final SettingsSaveController? saveController;
 
   const ProviderProfileEditorWidget({
     super.key,
     required this.categoryKey,
     required this.accent,
+    this.showSaveButton = true,
+    this.saveController,
   });
 
   @override
@@ -36,12 +43,23 @@ class _ProviderProfileEditorWidgetState extends State<ProviderProfileEditorWidge
   void initState() {
     super.initState();
     _load();
+    widget.saveController?.register(_saveExternal);
   }
 
   @override
   void dispose() {
+    widget.saveController?.deregister(_saveExternal);
     _nameCtrl.dispose();
     super.dispose();
+  }
+
+  Future<bool> _saveExternal() async {
+    try {
+      await _save();
+      return true;
+    } catch (_) {
+      return false;
+    }
   }
 
   Future<void> _load() async {
@@ -95,7 +113,13 @@ class _ProviderProfileEditorWidgetState extends State<ProviderProfileEditorWidge
         finalCoverUrl = await _portal.uploadCover(_selectedImage!.path);
       }
 
-      final meta = Map<String, dynamic>.from(_baseMeta);
+      final latestData = await _portal.getMe(widget.categoryKey);
+      final latestMeta = Map<String, dynamic>.from(
+        latestData['metadata'] as Map<String, dynamic>? ??
+        latestData['metadata_json'] as Map<String, dynamic>? ??
+        {},
+      );
+      final meta = Map<String, dynamic>.from(latestMeta);
       meta['display_name'] = _nameCtrl.text.trim();
       if (finalCoverUrl != null) {
         meta['cover_url'] = finalCoverUrl;
@@ -105,6 +129,9 @@ class _ProviderProfileEditorWidgetState extends State<ProviderProfileEditorWidge
       if (finalCoverUrl != null) {
         await _portal.updateCover(widget.categoryKey, finalCoverUrl);
       }
+      
+      // Clear cache so that the client immediately reflects the updated name/banner
+      HubDataService().clearCache();
       
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -166,7 +193,7 @@ class _ProviderProfileEditorWidgetState extends State<ProviderProfileEditorWidge
                 ? Image.file(_selectedImage!, fit: BoxFit.cover)
                 : (_coverUrl != null && _coverUrl!.isNotEmpty)
                     ? Image.network(
-                        _coverUrl!,
+                        AppConfig.formatImageUrl(_coverUrl),
                         fit: BoxFit.cover,
                         errorBuilder: (_, __, ___) => const Center(child: Icon(LucideIcons.image, size: 40, color: Colors.black26)),
                       )
@@ -196,24 +223,27 @@ class _ProviderProfileEditorWidgetState extends State<ProviderProfileEditorWidge
         const SizedBox(height: 16),
 
         // Save Button
-        SizedBox(
-          width: double.infinity,
-          child: FilledButton(
-            onPressed: _saving ? null : _save,
-            style: FilledButton.styleFrom(
-              backgroundColor: Colors.black,
-              foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(vertical: 16),
+        if (widget.showSaveButton) ...[
+          const SizedBox(height: 16),
+          SizedBox(
+            width: double.infinity,
+            child: FilledButton(
+              onPressed: _saving ? null : _save,
+              style: FilledButton.styleFrom(
+                backgroundColor: Colors.black,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 16),
+              ),
+              child: _saving
+                  ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                    )
+                  : const Text("Asosiy ma'lumotlarni saqlash", style: TextStyle(fontWeight: FontWeight.bold)),
             ),
-            child: _saving
-                ? const SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-                  )
-                : const Text("Asosiy ma'lumotlarni saqlash", style: TextStyle(fontWeight: FontWeight.bold)),
           ),
-        ),
+        ],
       ],
     );
   }

@@ -51,14 +51,14 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
             .toList();
         if (mounted) {
           setState(() {
-            _currentAddress = parts.isNotEmpty ? parts.join(', ') : 'Noma\\'lum manzil';
+            _currentAddress = parts.isNotEmpty ? parts.join(', ') : "Noma'lum manzil";
           });
         }
       }
     } catch (e) {
       if (mounted) {
         setState(() {
-          _currentAddress = 'Manzilni aniqlab bo\\'lmadi';
+          _currentAddress = "Manzilni aniqlab bo'lmadi";
         });
       }
     } finally {
@@ -76,7 +76,7 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
     if (!serviceEnabled) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('GPS xizmati o\\'chirilgan')),
+        const SnackBar(content: Text("GPS xizmati o'chirilgan")),
       );
       return;
     }

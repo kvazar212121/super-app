@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../services/hub_data_service.dart';
 import 'package:flutter/services.dart';
 import '../../../services/provider_availability_service.dart';
 import '../../../services/provider_portal_service.dart';
@@ -126,7 +127,13 @@ class _ProviderCleaningSettingsWidgetState extends State<ProviderCleaningSetting
         prices[name] = int.tryParse(row.priceCtrl.text.replaceAll(' ', '')) ?? 0;
       }
 
-      final meta = Map<String, dynamic>.from(_baseMeta)
+      final latestData = await _portal.getMe(widget.categoryKey);
+      final latestMeta = Map<String, dynamic>.from(
+        latestData['metadata'] as Map<String, dynamic>? ??
+        latestData['metadata_json'] as Map<String, dynamic>? ??
+        {},
+      );
+      final meta = Map<String, dynamic>.from(latestMeta)
         ..['type'] = 'master'
         ..['specialty'] = 'Tozalash'
         ..['services'] = services
@@ -140,6 +147,7 @@ class _ProviderCleaningSettingsWidgetState extends State<ProviderCleaningSetting
       meta['is_travel_fee_included'] = _isTravelFeeIncluded;
       meta['travel_fee'] = double.tryParse(_travelFeeCtrl.text.replaceAll(RegExp(r'\D'), '')) ?? 0.0;
       await _portal.updateMetadata(widget.categoryKey, meta);
+      HubDataService().clearCache();
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Sozlamalar saqlandi')),

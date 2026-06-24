@@ -172,8 +172,8 @@ class EventPlanning {
   final int maxGuests;
   final List<String> timeSlots;
   final Map<String, dynamic>? rawJson;
-
   final String? subCategory;
+  final int ownerUserId;
 
   EventPlanning({
     required this.id,
@@ -193,7 +193,8 @@ class EventPlanning {
     this.maxGuests = 500,
     this.timeSlots = const [],
     this.rawJson,
-      this.subCategory,
+    this.subCategory,
+    this.ownerUserId = 0,
   });
 
   String get capabilitiesLabel {
@@ -264,7 +265,8 @@ class EventPlanning {
           .map((e) => e.toString())
           .toList(),
       rawJson: json,
-          subCategory: meta['sub_category']?.toString(),
+      subCategory: meta['sub_category']?.toString(),
+      ownerUserId: (json['owner_user_id'] as num?)?.toInt() ?? 0,
     );
   }
 }

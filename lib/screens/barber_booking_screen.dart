@@ -133,7 +133,7 @@ class _BarberBookingScreenState extends State<BarberBookingScreen> {
             BookingSliverAppBar(
               color: _accent, 
               icon: LucideIcons.scissors,
-              coverUrl: widget.shop.rawJson?['metadata']?['cover_url'],
+              rawJson: widget.shop.rawJson,
             ),
             SliverToBoxAdapter(
               child: Padding(
@@ -153,6 +153,10 @@ class _BarberBookingScreenState extends State<BarberBookingScreen> {
                           fontSize: 14,
                         ),
                       ),
+                      onCallPressed: () {
+                        CallHelper.makeDirectCall(context, widget.shop.ownerUserId, widget.shop.name);
+                      },
+                      contactLabel: "Sartaroshxona bilan bog'lanish",
                     ),
                     const SizedBox(height: 24),
                     SectionTitle('Xizmatni tanlang', key: _serviceKey),
@@ -269,11 +273,7 @@ class _BarberBookingScreenState extends State<BarberBookingScreen> {
                           ),
                         );
                       },
-                      secondaryLabel: 'Qo\'ng\'iroq qilish',
-                      secondaryIcon: LucideIcons.phone,
-                      onSecondary: () {
-                        CallHelper.makeDirectCall(context, widget.shop.ownerUserId, widget.shop.name);
-                      },
+
                     ),
                     const SizedBox(height: 40),
                   ],

@@ -82,7 +82,11 @@ class _EventBookingScreenState extends State<EventBookingScreen> {
         backgroundColor: Colors.transparent,
         body: CustomScrollView(
           slivers: [
-            BookingSliverAppBar(color: accentColor, icon: LucideIcons.partyPopper),
+            BookingSliverAppBar(
+              color: accentColor,
+              icon: LucideIcons.partyPopper,
+              rawJson: widget.service.rawJson,
+            ),
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.all(20.0),
@@ -94,6 +98,10 @@ class _EventBookingScreenState extends State<EventBookingScreen> {
                       rating: widget.service.rating,
                       phone: widget.service.phoneNumber,
                       accent: accentColor,
+                      onCallPressed: () {
+                        CallHelper.makeDirectCall(context, widget.service.ownerUserId, widget.service.name);
+                      },
+                      contactLabel: "Guruh bilan bog'lanish",
                     ),
                     if (widget.service.serviceArea != null) ...[
                       const SizedBox(height: 8),
@@ -208,11 +216,6 @@ class _EventBookingScreenState extends State<EventBookingScreen> {
                             ? "Buyurtma berish — ${currencyFormat.format(totalPrice)}"
                             : 'Buyurtma berish',
                         onPrimary: canBook ? () => _confirmBooking(currencyFormat) : null,
-                        secondaryLabel: 'Guruh bilan bog\'lanish',
-                        secondaryIcon: LucideIcons.phone,
-                        onSecondary: () {
-                          CallHelper.makeDirectCall(context, 0, widget.service.name);
-                        },
                       );
                     }),
                     const SizedBox(height: 40),

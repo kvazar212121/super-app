@@ -81,14 +81,34 @@ class _SalonBookingScreenState extends State<SalonBookingScreen> {
       backgroundColor: Colors.transparent,
       body: CustomScrollView(
         slivers: [
-          BookingSliverAppBar(color: accentColor, icon: LucideIcons.sparkles),
+          BookingSliverAppBar(
+            color: accentColor,
+            icon: LucideIcons.sparkles,
+            rawJson: widget.salon.rawJson,
+          ),
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.all(20.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildSalonHeader(accentColor),
+                  ServiceProfileHeader(
+                    name: widget.salon.name,
+                    rating: widget.salon.rating,
+                    phone: widget.salon.phoneNumber,
+                    accent: accentColor,
+                    extra: Text(
+                      widget.salon.address,
+                      style: TextStyle(
+                        color: GlassTokens.secondaryText(context),
+                        fontSize: 14,
+                      ),
+                    ),
+                    onCallPressed: () {
+                      CallHelper.makeDirectCall(context, widget.salon.ownerUserId, widget.salon.name);
+                    },
+                    contactLabel: "Salon bilan bog'lanish",
+                  ),
                   const SizedBox(height: 24),
                   SectionTitle("Xizmatni tanlang", key: _serviceKey),
                   const SizedBox(height: 12),
@@ -169,12 +189,6 @@ class _SalonBookingScreenState extends State<SalonBookingScreen> {
                           ),
                         );
                       },
-                      secondaryLabel: "Salon bilan bog'lanish",
-                      secondaryIcon: LucideIcons.phone,
-                      onSecondary: () {
-                        final targetId = int.tryParse(widget.salon.id) ?? 0;
-                        CallHelper.makeDirectCall(context, targetId, widget.salon.name);
-                      },
                     );
                   }),
                   const SizedBox(height: 40),
@@ -188,50 +202,7 @@ class _SalonBookingScreenState extends State<SalonBookingScreen> {
     );
   }
 
-  Widget _buildSalonHeader(Color color) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Expanded(
-              child: Text(
-                widget.salon.name,
-                style: TextStyle(
-                    fontSize: 26,
-                    fontWeight: FontWeight.bold,
-                    color: GlassTokens.primaryText(context)),
-              ),
-            ),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-              decoration: BoxDecoration(
-                color: color,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Row(
-                children: [
-                  const Icon(LucideIcons.star, size: 16, color: Colors.amber),
-                  const SizedBox(width: 4),
-                  Text(
-                    widget.salon.rating.toString(),
-                    style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 4),
-        Text(
-          widget.salon.address,
-          style: TextStyle(
-              color: GlassTokens.secondaryText(context), fontSize: 14),
-        ),
-      ],
-    );
-  }
+
 
   Widget _buildStaffList(Color color) {
     return SizedBox(

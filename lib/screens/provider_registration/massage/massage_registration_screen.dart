@@ -7,6 +7,8 @@ import '../../../services/massage_portal_service.dart';
 import '../../../utils/phone_utils.dart';
 import '../../provider_side/provider_theme.dart';
 import 'massage_pending_screen.dart';
+import '../../location_picker_screen.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 /// Massaj va hijoma — uyga chiqish va/yoki salonda.
 class MassageRegistrationScreen extends StatefulWidget {
@@ -22,6 +24,8 @@ class _MassageRegistrationScreenState extends State<MassageRegistrationScreen> {
   final _phoneCtrl = TextEditingController();
   final _areaCtrl = TextEditingController();
   final _addressCtrl = TextEditingController();
+  final _latCtrl = TextEditingController(text: '41.2995');
+  final _lngCtrl = TextEditingController(text: '69.2401');
   final _capacityCtrl = TextEditingController(text: '1');
   bool _submitting = false;
   String _role = 'solo';
@@ -37,6 +41,8 @@ class _MassageRegistrationScreenState extends State<MassageRegistrationScreen> {
     _phoneCtrl.dispose();
     _areaCtrl.dispose();
     _addressCtrl.dispose();
+    _latCtrl.dispose();
+    _lngCtrl.dispose();
     _capacityCtrl.dispose();
     super.dispose();
   }
@@ -83,6 +89,8 @@ class _MassageRegistrationScreenState extends State<MassageRegistrationScreen> {
         phone: phone,
         serviceArea: area,
         address: _addressCtrl.text.trim().isNotEmpty ? _addressCtrl.text.trim() : null,
+        lat: double.tryParse(_latCtrl.text.trim()) ?? 41.2995,
+        lng: double.tryParse(_lngCtrl.text.trim()) ?? 69.2401,
         massageRole: _role,
         visitModes: _visitModes.toList(),
         serviceTypes: _serviceTypes.toList(),
@@ -173,13 +181,47 @@ class _MassageRegistrationScreenState extends State<MassageRegistrationScreen> {
               ),
               if (_role == 'salon') ...[
                 const SizedBox(height: 16),
-                TextField(
-                  controller: _addressCtrl,
-                  decoration: const InputDecoration(
-                    labelText: 'Salon manzili',
-                    hintText: 'Ko\'cha, uy raqami',
-                  ),
-                  maxLines: 2,
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: _addressCtrl,
+                        decoration: const InputDecoration(
+                          labelText: 'Salon manzili',
+                          hintText: 'Ko\'cha, uy raqami',
+                        ),
+                        maxLines: 2,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 6.0),
+                      child: IconButton.filledTonal(
+                        icon: const Icon(LucideIcons.map),
+                        onPressed: () async {
+                          final result = await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => LocationPickerScreen(
+                                initialLat: double.tryParse(_latCtrl.text) ?? 41.2995,
+                                initialLng: double.tryParse(_lngCtrl.text) ?? 69.2401,
+                              ),
+                            ),
+                          );
+                          if (result != null && result is Map<String, dynamic>) {
+                            setState(() {
+                              _latCtrl.text = result['lat'].toString();
+                              _lngCtrl.text = result['lng'].toString();
+                              if (result['address'] != 'Noma\'lum manzil' && result['address'] != 'Manzilni aniqlab bo\'lmadi') {
+                                _addressCtrl.text = result['address'];
+                              }
+                            });
+                          }
+                        },
+                      ),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 16),
                 TextField(
