@@ -29,5 +29,5 @@ class NursePortalService {
       );
 
   Future<Map<String, dynamic>> getMe(String categoryKey) =>
-      _api.getMyProvider(categoryKey);
+      _api.getProviderMe(categoryKey);
 }
