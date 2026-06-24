@@ -12,6 +12,7 @@ import '../utils/auth_guard.dart';
 import '../widgets/booking_common_widgets.dart';
 import '../widgets/glass/mesh_background.dart';
 import 'provider_profile_screen.dart';
+import 'map_address_picker_screen.dart';
 
 /// Usta / mobil mutaxassisni vaqtga chaqirish — mijoz manzili bilan.
 class MasterDispatchScreen extends StatefulWidget {
@@ -289,10 +290,17 @@ class _MasterDispatchScreenState extends State<MasterDispatchScreen> {
                           ),
                           child: IconButton(
                             icon: Icon(LucideIcons.map, color: _accent),
-                            onPressed: () {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('Xaritadan tanlash tez orada qo\'shiladi')),
+                            onPressed: () async {
+                              final picked = await Navigator.push<String>(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => const MapAddressPickerScreen(),
+                                ),
                               );
+                              if (picked != null && picked.isNotEmpty) {
+                                _addressCtrl.text = picked;
+                                setState(() {});
+                              }
                             },
                           ),
                         ),
