@@ -19,6 +19,8 @@ class NurseRegisterIn(BaseModel):
     address: str | None = None
     medical_types: list[str] = Field(default_factory=list)
     qualifications: str | None = None
+    document_url: str | None = None   # diploma yoki sertifikat
+    passport_url: str | None = None   # pasport
 
 
 @router.post("/register", response_model=ProviderOut, status_code=201)
@@ -36,5 +38,7 @@ async def register_nurse(
         address=data.address,
         medical_types=data.medical_types or None,
         qualifications=data.qualifications,
+        document_url=data.document_url,
+        passport_url=data.passport_url,
     )
     return ProviderOut.from_provider(provider)

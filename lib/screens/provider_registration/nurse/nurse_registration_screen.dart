@@ -1,8 +1,11 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import '../../../models/nurse_service.dart';
 import '../../../providers/auth_provider.dart';
 import '../../../services/nurse_portal_service.dart';
+import '../../../services/api_service.dart';
 import '../../../utils/phone_utils.dart';
 import '../../provider_side/provider_theme.dart';
 import 'nurse_pending_screen.dart';
@@ -22,6 +25,18 @@ class _NurseRegistrationScreenState extends State<NurseRegistrationScreen> {
   bool _submitting = false;
   final Set<String> _medicalTypes = {'injection', 'blood_test', 'drip'};
 
+  // Hujjat fayllari
+  File? _documentFile;   // diplom yoki sertifikat
+  File? _passportFile;   // pasport
+  String? _documentUrl;
+  String? _passportUrl;
+  bool _uploadingDoc = false;
+  bool _uploadingPassport = false;
+
+  final _picker = ImagePicker();
+
+  static const accent = Color(0xFFEF4444);
+
   @override
   void dispose() {
     _nameCtrl.dispose();
@@ -29,6 +44,98 @@ class _NurseRegistrationScreenState extends State<NurseRegistrationScreen> {
     _areaCtrl.dispose();
     _qualCtrl.dispose();
     super.dispose();
+  }
+
+  Future<void> _pickAndUpload({required bool isPassport}) async {
+    final source = await showModalBottomSheet<ImageSource>(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const SizedBox(height: 8),
+            Container(
+              width: 36,
+              height: 4,
+              decoration: BoxDecoration(
+                color: Colors.grey.shade300,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const SizedBox(height: 16),
+            ListTile(
+              leading: const Icon(Icons.camera_alt),
+              title: const Text('Kamera'),
+              onTap: () => Navigator.pop(ctx, ImageSource.camera),
+            ),
+            ListTile(
+              leading: const Icon(Icons.photo_library),
+              title: const Text('Galereya'),
+              onTap: () => Navigator.pop(ctx, ImageSource.gallery),
+            ),
+            const SizedBox(height: 8),
+          ],
+        ),
+      ),
+    );
+    if (source == null) return;
+
+    final picked = await _picker.pickImage(
+      source: source,
+      imageQuality: 85,
+      maxWidth: 1800,
+    );
+    if (picked == null) return;
+
+    final file = File(picked.path);
+    if (isPassport) {
+      setState(() {
+        _passportFile = file;
+        _uploadingPassport = true;
+      });
+    } else {
+      setState(() {
+        _documentFile = file;
+        _uploadingDoc = true;
+      });
+    }
+
+    try {
+      final url = await ApiService().uploadFile(file.path);
+      if (mounted) {
+        setState(() {
+          if (isPassport) {
+            _passportUrl = url;
+          } else {
+            _documentUrl = url;
+          }
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Yuklashda xatolik: $e'), backgroundColor: Colors.red),
+        );
+        if (isPassport) {
+          setState(() => _passportFile = null);
+        } else {
+          setState(() => _documentFile = null);
+        }
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          if (isPassport) {
+            _uploadingPassport = false;
+          } else {
+            _uploadingDoc = false;
+          }
+        });
+      }
+    }
   }
 
   Future<void> _submit() async {
@@ -41,6 +148,25 @@ class _NurseRegistrationScreenState extends State<NurseRegistrationScreen> {
       );
       return;
     }
+    if (_documentUrl == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Iltimos, diplom yoki sertifikatingizni yuklang'),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      return;
+    }
+    if (_passportUrl == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Iltimos, pasportingizni yuklang'),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      return;
+    }
+
     setState(() => _submitting = true);
     final auth = context.read<AuthProvider>();
     final phone = _phoneCtrl.text.trim().isNotEmpty
@@ -53,6 +179,8 @@ class _NurseRegistrationScreenState extends State<NurseRegistrationScreen> {
         serviceArea: area,
         medicalTypes: _medicalTypes.toList(),
         qualifications: _qualCtrl.text.trim(),
+        documentUrl: _documentUrl,
+        passportUrl: _passportUrl,
       );
       if (!mounted) return;
       Navigator.pushAndRemoveUntil(
@@ -71,7 +199,6 @@ class _NurseRegistrationScreenState extends State<NurseRegistrationScreen> {
 
   @override
   Widget build(BuildContext context) {
-    const accent = Color(0xFFEF4444);
     return ProviderTheme(
       child: Scaffold(
         appBar: AppBar(title: const Text('Hamshira xizmati')),
@@ -80,22 +207,104 @@ class _NurseRegistrationScreenState extends State<NurseRegistrationScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'Faqat uyga chiqish — mijoz manziliga borasiz. Administrator tasdiqlagach ishlay boshlaysiz.',
-                style: TextStyle(height: 1.4),
+              // Eslatma
+              Container(
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: accent.withOpacity(0.08),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: accent.withOpacity(0.3)),
+                ),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Icon(Icons.info_outline, color: accent, size: 20),
+                    const SizedBox(width: 10),
+                    const Expanded(
+                      child: Text(
+                        'Faqat uyga chiqish — mijoz manziliga borasiz.\nAdministrator hujjatlaringizni tekshirib, tasdiqlagach ishlay boshlaysiz.',
+                        style: TextStyle(height: 1.4, fontSize: 13),
+                      ),
+                    ),
+                  ],
+                ),
               ),
               const SizedBox(height: 20),
-              TextField(controller: _nameCtrl, decoration: const InputDecoration(labelText: 'Ism yoki xizmat nomi')),
+
+              // Ism
+              TextField(
+                controller: _nameCtrl,
+                decoration: const InputDecoration(labelText: 'Ism yoki xizmat nomi'),
+              ),
               const SizedBox(height: 12),
-              TextField(controller: _phoneCtrl, decoration: const InputDecoration(labelText: 'Telefon'), keyboardType: TextInputType.phone),
+
+              // Telefon
+              TextField(
+                controller: _phoneCtrl,
+                decoration: const InputDecoration(labelText: 'Telefon'),
+                keyboardType: TextInputType.phone,
+              ),
               const SizedBox(height: 12),
-              TextField(controller: _areaCtrl, decoration: const InputDecoration(labelText: 'Xizmat hududi')),
+
+              // Hudud
+              TextField(
+                controller: _areaCtrl,
+                decoration: const InputDecoration(labelText: 'Xizmat hududi'),
+              ),
               const SizedBox(height: 12),
-              TextField(controller: _qualCtrl, decoration: const InputDecoration(labelText: 'Malaka / litsenziya')),
-              const SizedBox(height: 16),
-              const Text('Tibbiy xizmatlar', style: TextStyle(fontWeight: FontWeight.w600)),
+
+              // Malaka
+              TextField(
+                controller: _qualCtrl,
+                decoration: const InputDecoration(labelText: 'Malaka / litsenziya'),
+              ),
+              const SizedBox(height: 20),
+
+              // ── HUJJATLAR ─────────────────────────────────
+              const Text(
+                'Tasdiqlovchi hujjatlar',
+                style: TextStyle(fontWeight: FontWeight.w700, fontSize: 15),
+              ),
+              const SizedBox(height: 4),
+              const Text(
+                'Admin ko\'rib chiqishi uchun hujjatlaringizni yuklang',
+                style: TextStyle(color: Colors.grey, fontSize: 12),
+              ),
+              const SizedBox(height: 12),
+
+              // Diplom / Sertifikat
+              _DocumentUploadTile(
+                label: 'Diplom yoki Sertifikat',
+                subtitle: 'Hamshiralik malakasini tasdiqlovchi hujjat',
+                icon: Icons.school_outlined,
+                file: _documentFile,
+                isUploading: _uploadingDoc,
+                isUploaded: _documentUrl != null,
+                onTap: () => _pickAndUpload(isPassport: false),
+              ),
+              const SizedBox(height: 10),
+
+              // Pasport
+              _DocumentUploadTile(
+                label: 'Pasport',
+                subtitle: 'Shaxsni tasdiqlovchi hujjat (1-2 bet)',
+                icon: Icons.badge_outlined,
+                file: _passportFile,
+                isUploading: _uploadingPassport,
+                isUploaded: _passportUrl != null,
+                onTap: () => _pickAndUpload(isPassport: true),
+              ),
+              const SizedBox(height: 20),
+
+              // Tibbiy xizmatlar
+              const Text(
+                'Tibbiy xizmatlar',
+                style: TextStyle(fontWeight: FontWeight.w600),
+              ),
+              const SizedBox(height: 8),
               Wrap(
                 spacing: 8,
+                runSpacing: 4,
                 children: MedicalService.values.take(6).map((m) {
                   final selected = _medicalTypes.contains(m.key);
                   return FilterChip(
@@ -109,20 +318,157 @@ class _NurseRegistrationScreenState extends State<NurseRegistrationScreen> {
                       }
                     }),
                     selectedColor: accent,
+                    labelStyle: TextStyle(
+                      color: selected ? Colors.white : Colors.black87,
+                      fontWeight: selected ? FontWeight.bold : FontWeight.normal,
+                    ),
+                    checkmarkColor: Colors.white,
                   );
                 }).toList(),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 28),
+
+              // Yuborish tugmasi
               SizedBox(
                 width: double.infinity,
                 child: FilledButton(
-                  onPressed: _submitting ? null : _submit,
-                  style: FilledButton.styleFrom(backgroundColor: accent, padding: const EdgeInsets.symmetric(vertical: 16)),
-                  child: _submitting ? const CircularProgressIndicator(color: Colors.white) : const Text('Yuborish'),
+                  onPressed: (_submitting || _uploadingDoc || _uploadingPassport)
+                      ? null
+                      : _submit,
+                  style: FilledButton.styleFrom(
+                    backgroundColor: accent,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                  ),
+                  child: _submitting
+                      ? const SizedBox(
+                          width: 22,
+                          height: 22,
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2.5,
+                          ),
+                        )
+                      : const Text(
+                          'Ariza yuborish',
+                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                        ),
                 ),
               ),
+              const SizedBox(height: 16),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Hujjat yuklash kartochkasi
+class _DocumentUploadTile extends StatelessWidget {
+  final String label;
+  final String subtitle;
+  final IconData icon;
+  final File? file;
+  final bool isUploading;
+  final bool isUploaded;
+  final VoidCallback onTap;
+
+  const _DocumentUploadTile({
+    required this.label,
+    required this.subtitle,
+    required this.icon,
+    required this.file,
+    required this.isUploading,
+    required this.isUploaded,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    const accent = Color(0xFFEF4444);
+    final Color borderColor = isUploaded
+        ? Colors.green
+        : isUploading
+            ? accent.withOpacity(0.5)
+            : Colors.grey.shade300;
+    final Color bgColor = isUploaded
+        ? Colors.green.withOpacity(0.06)
+        : Colors.grey.shade50;
+
+    return GestureDetector(
+      onTap: isUploading ? null : onTap,
+      child: Container(
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: bgColor,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: borderColor, width: isUploaded ? 1.5 : 1),
+        ),
+        child: Row(
+          children: [
+            // Preview yoki icon
+            ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: file != null
+                  ? Image.file(file!, width: 52, height: 52, fit: BoxFit.cover)
+                  : Container(
+                      width: 52,
+                      height: 52,
+                      decoration: BoxDecoration(
+                        color: isUploaded
+                            ? Colors.green.withOpacity(0.1)
+                            : Colors.grey.shade200,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Icon(
+                        isUploaded ? Icons.check_circle : icon,
+                        color: isUploaded ? Colors.green : Colors.grey,
+                        size: 28,
+                      ),
+                    ),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    label,
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      color: isUploaded ? Colors.green.shade700 : Colors.black87,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    isUploaded
+                        ? '✓ Muvaffaqiyatli yuklandi'
+                        : subtitle,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: isUploaded ? Colors.green : Colors.grey,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 8),
+            if (isUploading)
+              const SizedBox(
+                width: 22,
+                height: 22,
+                child: CircularProgressIndicator(strokeWidth: 2, color: accent),
+              )
+            else
+              Icon(
+                isUploaded ? Icons.edit_outlined : Icons.upload_outlined,
+                color: isUploaded ? Colors.green : accent,
+                size: 22,
+              ),
+          ],
         ),
       ),
     );

@@ -57,6 +57,8 @@ class NurseService:
         address: str | None = None,
         medical_types: list[str] | None = None,
         qualifications: str | None = None,
+        document_url: str | None = None,
+        passport_url: str | None = None,
     ) -> Provider:
         cat_id = await NurseService._category_id(db)
         existing = await db.execute(
@@ -74,7 +76,7 @@ class NurseService:
         med_types = medical_types or list(DEFAULT_MEDICAL_TYPES)
         meta = {
             "type": "nurse",
-            "verification_status": "approved",
+            "verification_status": "pending",
             "visit_modes": ["home_visit"],
             "medical_types": med_types,
             "services": list(DEFAULT_SERVICES),
@@ -82,6 +84,8 @@ class NurseService:
             "service_area": service_area,
             "qualifications": qualifications or "Litsenziyalangan hamshira",
             "time_slots": list(DEFAULT_TIME_SLOTS),
+            "document_url": document_url,
+            "passport_url": passport_url,
         }
 
         provider = Provider(
@@ -92,7 +96,7 @@ class NurseService:
             lat=41.2995,
             lng=69.2401,
             metadata_json=meta,
-            is_active=True,
+            is_active=False,
             owner_user_id=user.id,
         )
         db.add(provider)

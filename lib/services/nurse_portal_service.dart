@@ -14,6 +14,8 @@ class NursePortalService {
     String? address,
     List<String> medicalTypes = const [],
     String? qualifications,
+    String? documentUrl,
+    String? passportUrl,
   }) =>
       _api.registerNurse(
         name: name,
@@ -22,5 +24,10 @@ class NursePortalService {
         address: address,
         medicalTypes: medicalTypes,
         qualifications: qualifications,
+        documentUrl: documentUrl,
+        passportUrl: passportUrl,
       );
+
+  Future<Map<String, dynamic>> getMe(String categoryKey) =>
+      _api.getMyProvider(categoryKey);
 }

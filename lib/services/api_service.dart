@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -1074,7 +1075,26 @@ class ApiService {
     return response.data as Map<String, dynamic>;
   }
 
+  // ─────────────── FILE UPLOAD ───────────────
+
+  /// Faylni serverga yuklaydi va URL qaytaradi (/upload/cover endpoint).
+  Future<String> uploadFile(String filePath) async {
+    final file = File(filePath);
+    final fileName = file.path.split('/').last;
+    final formData = FormData.fromMap({
+      'file': await MultipartFile.fromFile(file.path, filename: fileName),
+    });
+    final response = await _dio.post(
+      '/upload/cover',
+      data: formData,
+      options: Options(contentType: 'multipart/form-data'),
+    );
+    final data = response.data as Map<String, dynamic>;
+    return data['url'] as String;
+  }
+
   // ─────────────── NURSE PORTAL ───────────────
+
 
   Future<Map<String, dynamic>> registerNurse({
     required String name,
@@ -1083,6 +1103,8 @@ class ApiService {
     String? address,
     List<String> medicalTypes = const [],
     String? qualifications,
+    String? documentUrl,
+    String? passportUrl,
   }) async {
     final response = await _dio.post('/provider/nurse/register', data: {
       'name': name,
@@ -1091,6 +1113,8 @@ class ApiService {
       if (address != null) 'address': address,
       if (medicalTypes.isNotEmpty) 'medical_types': medicalTypes,
       if (qualifications != null) 'qualifications': qualifications,
+      if (documentUrl != null) 'document_url': documentUrl,
+      if (passportUrl != null) 'passport_url': passportUrl,
     });
     return response.data as Map<String, dynamic>;
   }
