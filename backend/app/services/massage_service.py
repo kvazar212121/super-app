@@ -79,7 +79,7 @@ class MassageService:
         meta = {
             "type": "massage",
             "massage_role": role,
-            "verification_status": "pending",
+            "verification_status": "approved",
             "visit_modes": modes,
             "service_types": stypes,
             "services": services,
@@ -98,7 +98,7 @@ class MassageService:
             lat=lat if lat is not None else 41.2995,
             lng=lng if lng is not None else 69.2401,
             metadata_json=meta,
-            is_active=False,
+            is_active=True,
             owner_user_id=user.id,
         )
         db.add(provider)
