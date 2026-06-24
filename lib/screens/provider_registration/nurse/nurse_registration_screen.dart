@@ -21,7 +21,7 @@ class _NurseRegistrationScreenState extends State<NurseRegistrationScreen> {
   final _nameCtrl = TextEditingController();
   final _phoneCtrl = TextEditingController();
   final _areaCtrl = TextEditingController();
-  final _qualCtrl = TextEditingController(text: 'Litsenziyalangan hamshira');
+  final _qualCtrl = TextEditingController(text: 'Malakali hamshira');
   bool _submitting = false;
   final Set<String> _medicalTypes = {'injection', 'blood_test', 'drip'};
 
@@ -256,7 +256,7 @@ class _NurseRegistrationScreenState extends State<NurseRegistrationScreen> {
               // Malaka
               TextField(
                 controller: _qualCtrl,
-                decoration: const InputDecoration(labelText: 'Malaka / litsenziya'),
+                decoration: const InputDecoration(labelText: 'Malaka darajasi (qisqacha)'),
               ),
               const SizedBox(height: 20),
 

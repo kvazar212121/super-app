@@ -82,7 +82,7 @@ class NurseService:
             "services": list(DEFAULT_SERVICES),
             "prices": dict(DEFAULT_PRICES),
             "service_area": service_area,
-            "qualifications": qualifications or "Litsenziyalangan hamshira",
+            "qualifications": qualifications or "Malakali hamshira",
             "time_slots": list(DEFAULT_TIME_SLOTS),
             "document_url": document_url,
             "passport_url": passport_url,
