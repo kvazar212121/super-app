@@ -42,13 +42,7 @@ class _ProviderMassageSettingsWidgetState
   bool _loading = true;
   bool _saving = false;
   Map<String, dynamic> _baseMeta = {};
-  bool _isTravelFeeIncluded = true;
-  final _travelFeeCtrl = TextEditingController();
-  final List<_ServiceRow> _services = [];
-  List<String> _timeSlots = List.of(ProviderAvailability.defaultSlots);
-  final Set<String> _visitModes = {};
   final _areaCtrl = TextEditingController();
-  final _homeFeeCtrl = TextEditingController();
   String _gender = 'both';
 
   static const _slots = [
@@ -63,8 +57,6 @@ class _ProviderMassageSettingsWidgetState
       s.dispose();
     }
     _areaCtrl.dispose();
-    _homeFeeCtrl.dispose();
-    _travelFeeCtrl.dispose();
     super.dispose();
   }
 
@@ -107,9 +99,6 @@ class _ProviderMassageSettingsWidgetState
     }
     _services.clear();
 
-    _isTravelFeeIncluded = meta['is_travel_fee_included'] as bool? ?? true;
-    _travelFeeCtrl.text = '${meta['travel_fee'] ?? 0}';
-
     final names = (meta['services'] as List<dynamic>? ?? [])
         .map((e) => e.toString())
         .toList();
@@ -128,14 +117,8 @@ class _ProviderMassageSettingsWidgetState
             ?.map((e) => e.toString())
             .toList() ??
         List.of(_slots);
-    _visitModes
-      ..clear()
-      ..addAll(
-        (meta['visit_modes'] as List<dynamic>? ?? []).map((e) => e.toString()),
-      );
     _gender = meta['gender']?.toString() ?? 'both';
     _areaCtrl.text = meta['service_area']?.toString() ?? '';
-    _homeFeeCtrl.text = '${meta['home_visit_fee'] ?? prices["Uyga chiqish qo'shimcha"] ?? 50000}';
   }
 
   void _addService(String name, String price) {
@@ -155,11 +138,6 @@ class _ProviderMassageSettingsWidgetState
         services.add(name);
         prices[name] = int.tryParse(row.priceCtrl.text.replaceAll(' ', '')) ?? 0;
       }
-      final homeFee = int.tryParse(_homeFeeCtrl.text.replaceAll(' ', '')) ?? 50000;
-      prices["Uyga chiqish qo'shimcha"] = homeFee;
-      if (!services.contains("Uyga chiqish qo'shimcha")) {
-        services.add("Uyga chiqish qo'shimcha");
-      }
 
       final latestData = await _portal.getMe(widget.categoryKey);
       final latestMeta = Map<String, dynamic>.from(
@@ -170,15 +148,12 @@ class _ProviderMassageSettingsWidgetState
       final meta = Map<String, dynamic>.from(latestMeta)
         ..['type'] = 'massage'
         ..['service_area'] = _areaCtrl.text.trim()
-        ..['visit_modes'] = _visitModes.toList()
+        ..['visit_modes'] = ['at_center']
         ..['gender'] = _gender
         ..['services'] = services
         ..['prices'] = prices
-        ..['home_visit_fee'] = homeFee
         ..['time_slots'] = _timeSlots;
 
-      meta['is_travel_fee_included'] = _isTravelFeeIncluded;
-      meta['travel_fee'] = double.tryParse(_travelFeeCtrl.text.replaceAll(RegExp(r'\D'), '')) ?? 0.0;
       await _portal.updateMetadata(widget.categoryKey, meta);
       HubDataService().clearCache();
       if (mounted) {
@@ -216,39 +191,6 @@ class _ProviderMassageSettingsWidgetState
             labelText: 'Xizmat hududi',
             border: OutlineInputBorder(),
           ),
-        ),
-        const SizedBox(height: 16),
-        TextField(
-          controller: _homeFeeCtrl,
-          keyboardType: TextInputType.number,
-          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-          decoration: const InputDecoration(
-            labelText: 'Uyga chiqish qo\'shimcha to\'lovi (so\'m)',
-            border: OutlineInputBorder(),
-          ),
-        ),
-        const SizedBox(height: 20),
-        Text('Qabul usuli', style: Theme.of(context).textTheme.titleMedium),
-        const SizedBox(height: 8),
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: MassageVisitMode.values.map((m) {
-            final selected = _visitModes.contains(m.key);
-            return FilterChip(
-              label: Text(m.label),
-              selected: selected,
-              onSelected: (v) => setState(() {
-                if (v) {
-                  _visitModes.add(m.key);
-                } else if (_visitModes.length > 1) {
-                  _visitModes.remove(m.key);
-                }
-              }),
-              selectedColor: Colors.black12,
-              checkmarkColor: Colors.black,
-            );
-          }).toList(),
         ),
         const SizedBox(height: 24),
         Text('Xizmatlar va narxlar', style: Theme.of(context).textTheme.titleMedium),
@@ -326,25 +268,7 @@ class _ProviderMassageSettingsWidgetState
             );
           }).toList(),
         ),
-        const SizedBox(height: 32),
         const SizedBox(height: 16),
-        SwitchListTile(
-          contentPadding: EdgeInsets.zero,
-          title: const Text('Yo\'l kira xizmat narxi ichida (bepul)'),
-          value: _isTravelFeeIncluded,
-          onChanged: (val) => setState(() => _isTravelFeeIncluded = val),
-        ),
-        if (!_isTravelFeeIncluded) ...[
-          const SizedBox(height: 12),
-          TextField(
-            controller: _travelFeeCtrl,
-            decoration: const InputDecoration(
-              labelText: 'Yo\'l kira narxi (so\'m)',
-              border: OutlineInputBorder(),
-            ),
-            keyboardType: TextInputType.number,
-          ),
-        ],
         if (widget.showSaveButton) ...[
           const SizedBox(height: 16),
           SizedBox(
