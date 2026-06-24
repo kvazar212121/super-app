@@ -130,7 +130,11 @@ class _BarberBookingScreenState extends State<BarberBookingScreen> {
           bottom: true,
           child: CustomScrollView(
             slivers: [
-            BookingSliverAppBar(color: _accent, icon: LucideIcons.scissors),
+            BookingSliverAppBar(
+              color: _accent, 
+              icon: LucideIcons.scissors,
+              coverUrl: widget.shop.rawJson?['metadata']?['cover_url'],
+            ),
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.all(20),

@@ -2,6 +2,9 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:uuid/uuid.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../services/provider_portal_service.dart';
 
@@ -59,9 +62,26 @@ class _ProviderProfileEditorWidgetState extends State<ProviderProfileEditorWidge
     final picker = ImagePicker();
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
-      setState(() {
-        _selectedImage = File(pickedFile.path);
-      });
+      try {
+        final tempDir = await getTemporaryDirectory();
+        final targetPath = '${tempDir.path}/${const Uuid().v4()}.jpg';
+        final compressedFile = await FlutterImageCompress.compressAndGetFile(
+          pickedFile.path,
+          targetPath,
+          quality: 70,
+          format: CompressFormat.jpeg,
+        );
+        if (compressedFile != null) {
+          setState(() {
+            _selectedImage = File(compressedFile.path);
+          });
+        }
+      } catch (e) {
+        // Fallback if compression fails
+        setState(() {
+          _selectedImage = File(pickedFile.path);
+        });
+      }
     }
   }
 
@@ -82,6 +102,9 @@ class _ProviderProfileEditorWidgetState extends State<ProviderProfileEditorWidge
       }
 
       await _portal.updateMetadata(widget.categoryKey, meta);
+      if (finalCoverUrl != null) {
+        await _portal.updateCover(widget.categoryKey, finalCoverUrl);
+      }
       
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

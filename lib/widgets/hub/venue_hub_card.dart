@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:provider/provider.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 import '../../models/barber_shop.dart';
 import '../../models/beauty_salon.dart';
@@ -174,7 +175,7 @@ class VenueHubCard extends StatelessWidget {
                       ),
                       image: (coverUrl != null && coverUrl!.isNotEmpty)
                           ? DecorationImage(
-                              image: NetworkImage(coverUrl!),
+                              image: CachedNetworkImageProvider(coverUrl!),
                               fit: BoxFit.cover,
                             )
                           : null,
@@ -330,7 +331,7 @@ Future<void> showVenuePreviewSheet(
                 height: 56,
                 decoration: BoxDecoration(
                   color: coverUrl != null ? null : accent,
-                  image: coverUrl != null ? DecorationImage(image: NetworkImage(coverUrl), fit: BoxFit.cover) : null,
+                  image: coverUrl != null ? DecorationImage(image: CachedNetworkImageProvider(coverUrl), fit: BoxFit.cover) : null,
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: coverUrl != null ? null : Icon(
@@ -540,7 +541,7 @@ Future<void> showFieldPreviewSheet(
                   height: 50,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(12),
-                    image: DecorationImage(image: NetworkImage(coverUrl), fit: BoxFit.cover),
+                    image: DecorationImage(image: CachedNetworkImageProvider(coverUrl), fit: BoxFit.cover),
                   ),
                 ),
                 const SizedBox(width: 12),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import '../theme/glass_tokens.dart';
 
 /// Booking ekranlari uchun umumiy ranglar.
@@ -32,12 +33,14 @@ class BookingSliverAppBar extends StatelessWidget {
   final Color color;
   final IconData icon;
   final double expandedHeight;
+  final String? coverUrl;
 
   const BookingSliverAppBar({
     super.key,
     required this.color,
     required this.icon,
     this.expandedHeight = 180,
+    this.coverUrl,
   });
 
   @override
@@ -50,15 +53,27 @@ class BookingSliverAppBar extends StatelessWidget {
       flexibleSpace: FlexibleSpaceBar(
         background: Container(
           decoration: BoxDecoration(
-            gradient: LinearGradient(
+            gradient: coverUrl != null ? null : LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [color, color],
             ),
+            image: coverUrl != null
+                ? DecorationImage(
+                    image: CachedNetworkImageProvider(coverUrl!),
+                    fit: BoxFit.cover,
+                    colorFilter: ColorFilter.mode(
+                      Colors.black.withOpacity(0.3),
+                      BlendMode.darken,
+                    ),
+                  )
+                : null,
           ),
-          child: Center(
-            child: Icon(icon, size: 64, color: Colors.white),
-          ),
+          child: coverUrl != null
+              ? const SizedBox.shrink()
+              : Center(
+                  child: Icon(icon, size: 64, color: Colors.white),
+                ),
         ),
       ),
     );

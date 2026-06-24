@@ -600,6 +600,18 @@ class ApiService {
     return response.data as Map<String, dynamic>;
   }
 
+  Future<Map<String, dynamic>> updateProviderCover(
+    String categoryKey,
+    String coverUrl,
+  ) async {
+    final response = await _dio.patch(
+      '/provider/me',
+      queryParameters: {'category_key': categoryKey},
+      data: {'cover_image': coverUrl},
+    );
+    return response.data as Map<String, dynamic>;
+  }
+
   // ─────────────── BARBER PORTAL ───────────────
 
   Future<List<Map<String, dynamic>>> getBarberShops() async {
@@ -1374,5 +1386,20 @@ class ApiService {
       }
     }
     return [];
+  }
+
+  Future<String?> uploadProviderCover(String filePath) async {
+    try {
+      final formData = FormData.fromMap({
+        'file': await MultipartFile.fromFile(filePath),
+      });
+      final response = await _dio.post('/upload/cover', data: formData);
+      if (response.statusCode == 200 && response.data != null) {
+        return response.data['url'] as String?;
+      }
+    } catch (e) {
+      // Ignored
+    }
+    return null;
   }
 }
