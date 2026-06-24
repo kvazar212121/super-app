@@ -42,6 +42,11 @@ class _MasterDispatchScreenState extends State<MasterDispatchScreen> {
 
   Color get _accent => widget.category.accent;
 
+  bool get _isAppointment {
+    final cat = _resolveCategory().name;
+    return cat == 'massajHijoma' || cat == 'salon' || cat == 'sartarosh';
+  }
+
   double get _selectedPrice {
     if (_selectedService == null) return 0.0;
     final base = (widget.master.prices[_selectedService] ?? 100000).toDouble();
@@ -124,9 +129,11 @@ class _MasterDispatchScreenState extends State<MasterDispatchScreen> {
       totalLabel: 'Jami',
       totalValue: currency.format(_selectedPrice),
       accent: _accent,
-      confirmLabel: widget.master.isCleaner || widget.master.isElectrician || widget.master.isPlumber || widget.master.isAcTechnician || widget.master.isDispatchMaster
-          ? 'Chaqirish'
-          : (widget.master.isHomeVisit ? 'Bron qilish' : 'Chaqirish'),
+      confirmLabel: _isAppointment
+          ? 'Yozilish'
+          : widget.master.isCleaner || widget.master.isElectrician || widget.master.isPlumber || widget.master.isAcTechnician || widget.master.isDispatchMaster
+              ? 'Chaqirish'
+              : (widget.master.isHomeVisit ? 'Bron qilish' : 'Chaqirish'),
     );
     if (!confirmed || !mounted) return;
 
@@ -165,19 +172,21 @@ class _MasterDispatchScreenState extends State<MasterDispatchScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            widget.master.isCleaner
-                ? 'Buyurtma qabul qilindi! ${widget.master.name} belgilangan vaqtda keladi.'
-                : widget.master.isDispatchMaster
-                    ? 'Ustani chaqirildi! ${widget.master.name} belgilangan vaqtda keladi.'
-                    : widget.master.isElectrician
-                        ? 'Elektrik chaqirildi! ${widget.master.name} belgilangan vaqtda keladi.'
-                        : widget.master.isPlumber
-                            ? 'Santexnik chaqirildi! ${widget.master.name} belgilangan vaqtda keladi.'
-                            : widget.master.isAcTechnician
-                                ? 'Konditsioner chaqirildi! ${widget.master.name} belgilangan vaqtda keladi.'
-                                : widget.master.isHomeVisit
-                        ? 'Bron qilindi! ${widget.master.name} belgilangan vaqtda keladi.'
-                        : 'Usta chaqirildi! Tez orada bog\'lanadi.',
+            _isAppointment
+                ? 'Qabulga yozildingiz! ${widget.master.name} sizni kutadi.'
+                : widget.master.isCleaner
+                    ? 'Buyurtma qabul qilindi! ${widget.master.name} belgilangan vaqtda keladi.'
+                    : widget.master.isDispatchMaster
+                        ? 'Usta chaqirildi! ${widget.master.name} belgilangan vaqtda keladi.'
+                        : widget.master.isElectrician
+                            ? 'Elektrik chaqirildi! ${widget.master.name} belgilangan vaqtda keladi.'
+                            : widget.master.isPlumber
+                                ? 'Santexnik chaqirildi! ${widget.master.name} belgilangan vaqtda keladi.'
+                                : widget.master.isAcTechnician
+                                    ? 'Konditsioner chaqirildi! ${widget.master.name} belgilangan vaqtda keladi.'
+                                    : widget.master.isHomeVisit
+                            ? 'Bron qilindi! ${widget.master.name} belgilangan vaqtda keladi.'
+                            : 'Usta chaqirildi! Tez orada bog\'lanadi.',
           ),
           backgroundColor: Colors.green,
         ),
@@ -228,17 +237,19 @@ class _MasterDispatchScreenState extends State<MasterDispatchScreen> {
                 ),
               ],
               title: Text(
-                widget.master.isCleaner
-                    ? 'Tozalash buyurtmasi'
-                    : widget.master.isDispatchMaster
-                        ? 'Ustani chaqirish'
-                        : widget.master.isElectrician
-                            ? 'Elektrikni chaqirish'
-                            : widget.master.isPlumber
-                                ? 'Santexnikni chaqirish'
-                                : widget.master.isAcTechnician
-                                    ? 'Konditsionerni chaqirish'
-                                    : (widget.master.isHomeVisit ? 'Uyga chaqirish' : 'Ustani chaqirish'),
+                _isAppointment
+                    ? 'Qabulga yozilish'
+                    : widget.master.isCleaner
+                        ? 'Tozalash buyurtmasi'
+                        : widget.master.isDispatchMaster
+                            ? 'Ustani chaqirish'
+                            : widget.master.isElectrician
+                                ? 'Elektrikni chaqirish'
+                                : widget.master.isPlumber
+                                    ? 'Santexnikni chaqirish'
+                                    : widget.master.isAcTechnician
+                                        ? 'Konditsionerni chaqirish'
+                                        : (widget.master.isHomeVisit ? 'Uyga chaqirish' : 'Ustani chaqirish'),
                 style: const TextStyle(fontSize: 16),
               ),
             ),
@@ -365,9 +376,11 @@ class _MasterDispatchScreenState extends State<MasterDispatchScreen> {
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                         ),
                         child: Text(
-                          widget.master.isCleaner || widget.master.isElectrician || widget.master.isPlumber || widget.master.isAcTechnician || widget.master.isDispatchMaster
-                              ? 'Chaqirish'
-                              : (widget.master.isHomeVisit ? 'Bron qilish' : 'Ustani chaqirish'),
+                          _isAppointment
+                              ? 'Qabulga yozilish'
+                              : widget.master.isCleaner || widget.master.isElectrician || widget.master.isPlumber || widget.master.isAcTechnician || widget.master.isDispatchMaster
+                                  ? 'Chaqirish'
+                                  : (widget.master.isHomeVisit ? 'Bron qilish' : 'Ustani chaqirish'),
                           style: const TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
                         ),
                       ),

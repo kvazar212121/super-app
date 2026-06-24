@@ -221,11 +221,17 @@ class ProviderProfileScreen extends StatelessWidget {
                       ),
                     );
                   },
-                  icon: Icon(master.isHomeVisit ? LucideIcons.calendarCheck : LucideIcons.wrench),
+                  icon: Icon(
+                    category.name == 'massajHijoma' || category.name == 'salon' || category.name == 'sartarosh' 
+                        ? LucideIcons.calendarCheck 
+                        : (master.isHomeVisit ? LucideIcons.calendarCheck : LucideIcons.wrench)
+                  ),
                   label: Text(
-                    master.isCleaner || master.isDispatchMaster || master.isElectrician || master.isPlumber || master.isAcTechnician
-                        ? 'Chaqirish'
-                        : (master.isHomeVisit ? 'Bron qilish' : 'Ustani chaqirish'),
+                    category.name == 'massajHijoma' || category.name == 'salon' || category.name == 'sartarosh' 
+                        ? 'Qabulga yozilish'
+                        : master.isCleaner || master.isDispatchMaster || master.isElectrician || master.isPlumber || master.isAcTechnician
+                            ? 'Chaqirish'
+                            : (master.isHomeVisit ? 'Bron qilish' : 'Ustani chaqirish'),
                   ),
                   style: FilledButton.styleFrom(
                     backgroundColor: accent,
