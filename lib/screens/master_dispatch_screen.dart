@@ -219,7 +219,9 @@ class _MasterDispatchScreenState extends State<MasterDispatchScreen> {
                           ? LucideIcons.droplets
                           : widget.master.isAcTechnician
                               ? LucideIcons.wind
-                              : LucideIcons.wrench,
+                              : _isAppointment
+                                  ? LucideIcons.heartPulse
+                                  : LucideIcons.wrench,
               expandedHeight: 160,
               rawJson: widget.master.rawJson,
               actions: [

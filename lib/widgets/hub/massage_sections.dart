@@ -272,5 +272,6 @@ Master _convertToMaster(MassageHijoma mh) {
     longitude: mh.longitude,
     serviceArea: mh.serviceArea,
     teamSize: mh.massageRole == 'salon' ? 3 : null,
+    rawJson: mh.rawJson,
   );
 }
