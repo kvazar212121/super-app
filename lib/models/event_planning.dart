@@ -173,7 +173,7 @@ class EventPlanning {
   final List<String> timeSlots;
   final Map<String, dynamic>? rawJson;
 
-  const   final String? subCategory;
+  final String? subCategory;
 
   EventPlanning({
     required this.id,

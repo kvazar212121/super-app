@@ -1,3 +1,4 @@
+import '../utils/call_helper.dart';
 import 'package:flutter/material.dart';
 import '../services/call_service.dart';
 import 'calls/call_screen.dart';
@@ -12,7 +13,7 @@ import '../providers/app_provider.dart';
 import '../utils/auth_guard.dart';
 import '../widgets/booking_common_widgets.dart';
 import '../widgets/glass/mesh_background.dart';
-import '../services/provider_availability.dart';
+import '../services/provider_availability_service.dart';
 
 class NurseBookingScreen extends StatefulWidget {
   final NurseService service;
@@ -283,12 +284,7 @@ class _NurseBookingScreenState extends State<NurseBookingScreen> {
                     secondaryIcon: LucideIcons.phone,
                     onSecondary: () {
                       final targetId = int.tryParse(widget.service.id) ?? 0;
-                      CallService().startCall(targetId, widget.service.name);
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) => const CallScreen(isIncoming: false),
-                        ),
-                      );
+                      CallHelper.makeDirectCall(context, targetId, widget.service.name);
                     },
                   ),
                   const SizedBox(height: 40),

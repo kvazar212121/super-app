@@ -1,3 +1,4 @@
+import '../utils/call_helper.dart';
 import 'package:flutter/material.dart';
 import '../services/call_service.dart';
 import 'calls/call_screen.dart';
@@ -256,12 +257,7 @@ class _DentalBookingScreenState extends State<DentalBookingScreen> {
                       onSecondary: () {
                         int targetId = _selectedDentist?.providerId ?? widget.clinic.providerId;
                       if (targetId == 0) targetId = widget.clinic.providerId;
-                      CallService().startCall(targetId, _selectedDentist?.name ?? widget.clinic.name);
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (_) => const CallScreen(isIncoming: false),
-                          ),
-                        );
+                      CallHelper.makeDirectCall(context, targetId, _selectedDentist?.name ?? widget.clinic.name);
                       },
                     ),
                     const SizedBox(height: 40),

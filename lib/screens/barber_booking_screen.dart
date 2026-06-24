@@ -1,3 +1,4 @@
+import '../utils/call_helper.dart';
 import 'package:flutter/material.dart';
 import '../services/call_service.dart';
 import 'calls/call_screen.dart';
@@ -267,18 +268,7 @@ class _BarberBookingScreenState extends State<BarberBookingScreen> {
                       secondaryLabel: 'Qo\'ng\'iroq qilish',
                       secondaryIcon: LucideIcons.phone,
                       onSecondary: () {
-                        if (widget.shop.ownerUserId > 0) {
-                          CallService().startCall(widget.shop.ownerUserId, widget.shop.name);
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (_) => const CallScreen(isIncoming: false),
-                            ),
-                          );
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Ushbu joyga qo\\\'ng\\\'iroq qilib bo\\\'lmaydi')),
-                          );
-                        }
+                        CallHelper.makeDirectCall(context, widget.shop.ownerUserId, widget.shop.name);
                       },
                     ),
                     const SizedBox(height: 40),

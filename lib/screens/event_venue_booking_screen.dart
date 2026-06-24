@@ -42,7 +42,6 @@ class _EventVenueBookingScreenState extends State<EventVenueBookingScreen> {
       venue.providerId > 0 ? venue.providerId : 1, // Fallback for demo
       venue.name,
       categoryKey: ServiceHubKind.tadbirlar.name,
-      isBookingCall: true, // Specifically for venue booking (date/time)
     );
   }
 

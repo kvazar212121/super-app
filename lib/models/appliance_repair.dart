@@ -45,7 +45,10 @@ class ApplianceRepair {
   final List<String> brands;
   final Map<String, dynamic>? rawJson;
 
-  const   final String? subCategory;
+  final String? subCategory;
+
+    final bool isTravelFeeIncluded;
+  final double travelFee;
 
   ApplianceRepair({
     required this.id,
@@ -60,6 +63,8 @@ class ApplianceRepair {
     required this.brands,
     this.rawJson,
       this.subCategory,
+      this.isTravelFeeIncluded = true,
+    this.travelFee = 0.0,
   });
 
   factory ApplianceRepair.fromProviderJson(Map<String, dynamic> json) {
@@ -82,6 +87,8 @@ class ApplianceRepair {
       brands: const ['Samsung', 'LG', 'Artel'],
       rawJson: json,
           subCategory: meta['sub_category']?.toString(),
+          isTravelFeeIncluded: meta['is_travel_fee_included'] as bool? ?? true,
+      travelFee: (meta['travel_fee'] as num?)?.toDouble() ?? 0.0,
     );
   }
 

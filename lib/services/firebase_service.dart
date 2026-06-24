@@ -13,7 +13,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   // Agar xabar qo'ng'iroq (call) turida bo'lsa, CallKit'ni chaqiramiz
   if (message.data['type'] == 'incoming_call') {
     final callerId = message.data['caller_id']?.toString() ?? '0';
-    final callerName = message.data['caller_name']?.toString() ?? 'Noma\\'lum';
+    final callerName = message.data['caller_name']?.toString() ?? "Noma'lum";
     
     // CallKitService orqali qora ekranda qo'ng'iroqni ko'rsatish
     await CallKitService().showIncomingCall(
@@ -56,7 +56,7 @@ class FirebaseService {
 
         if (message.data['type'] == 'incoming_call') {
           final callerId = message.data['caller_id']?.toString() ?? '0';
-          final callerName = message.data['caller_name']?.toString() ?? 'Noma\\'lum';
+          final callerName = message.data['caller_name']?.toString() ?? "Noma'lum";
           
           CallKitService().showIncomingCall(
             callerId: int.tryParse(callerId) ?? 0,

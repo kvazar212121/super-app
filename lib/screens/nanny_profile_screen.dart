@@ -1,3 +1,4 @@
+import '../utils/call_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
@@ -41,12 +42,7 @@ class _NannyProfileScreenState extends State<NannyProfileScreen> {
   bool get _canBook => _reviewedProfile && _contactedNanny;
 
   void _callNanny() {
-    CallService().startCall(0, nanny.name);
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => const CallScreen(isIncoming: false),
-      ),
-    );
+    CallHelper.makeDirectCall(context, 0, nanny.name);
     setState(() => _contactedNanny = true);
   }
 

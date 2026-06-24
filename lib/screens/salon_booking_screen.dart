@@ -1,3 +1,4 @@
+import '../utils/call_helper.dart';
 import 'package:flutter/material.dart';
 import '../services/call_service.dart';
 import 'calls/call_screen.dart';
@@ -12,7 +13,7 @@ import '../utils/auth_guard.dart';
 import '../widgets/booking_common_widgets.dart';
 import '../widgets/glass/mesh_background.dart';
 import '../theme/glass_tokens.dart';
-import '../services/provider_availability.dart';
+import '../services/provider_availability_service.dart';
 
 class SalonBookingScreen extends StatefulWidget {
   final BeautySalon salon;
@@ -172,12 +173,7 @@ class _SalonBookingScreenState extends State<SalonBookingScreen> {
                       secondaryIcon: LucideIcons.phone,
                       onSecondary: () {
                         final targetId = int.tryParse(widget.salon.id) ?? 0;
-                        CallService().startCall(targetId, widget.salon.name);
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (_) => const CallScreen(isIncoming: false),
-                          ),
-                        );
+                        CallHelper.makeDirectCall(context, targetId, widget.salon.name);
                       },
                     );
                   }),

@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../services/call_service.dart';
 import '../screens/calls/call_screen.dart';
+import '../providers/auth_provider.dart';
+import '../providers/app_provider.dart';
+import '../screens/auth/auth_gate_screen.dart';
 
 class CallHelper {
   static Future<void> startCallWithPurposeCheck(
@@ -9,6 +13,25 @@ class CallHelper {
     String targetName, {
     String? categoryKey,
   }) async {
+    final auth = context.read<AuthProvider>();
+    if (!auth.isAuthenticated) {
+      final ok = await Navigator.of(context).push<bool>(
+        MaterialPageRoute(
+          fullscreenDialog: true,
+          builder: (_) => const AuthGateScreen(),
+        ),
+      );
+      if (ok == true && context.mounted) {
+        final auth = context.read<AuthProvider>();
+        if (auth.user != null) {
+          context.read<AppProvider>().applyAuthUser(auth.user!);
+          await context.read<AppProvider>().fetchInitialData();
+        }
+      }
+      
+      if (!context.mounted || !context.read<AuthProvider>().isAuthenticated) return;
+    }
+
     // Show a bottom sheet or dialog to ask purpose
     bool? isBooking = await showModalBottomSheet<bool>(
       context: context,
@@ -51,6 +74,38 @@ class CallHelper {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) => CallScreen(isIncoming: false, isBookingCall: isBooking),
+      ),
+    );
+  }
+
+  static Future<void> makeDirectCall(
+    BuildContext context,
+    int targetId,
+    String targetName,
+  ) async {
+    final auth = context.read<AuthProvider>();
+    if (!auth.isAuthenticated) {
+      final ok = await Navigator.of(context).push<bool>(
+        MaterialPageRoute(
+          fullscreenDialog: true,
+          builder: (_) => const AuthGateScreen(),
+        ),
+      );
+      if (ok == true && context.mounted) {
+        final auth = context.read<AuthProvider>();
+        if (auth.user != null) {
+          context.read<AppProvider>().applyAuthUser(auth.user!);
+          await context.read<AppProvider>().fetchInitialData();
+        }
+      }
+      
+      if (!context.mounted || !context.read<AuthProvider>().isAuthenticated) return;
+    }
+
+    CallService().startCall(targetId, targetName);
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => const CallScreen(isIncoming: false),
       ),
     );
   }

@@ -5,9 +5,9 @@ import '../../models/courier_service.dart';
 import '../../models/auto_mobile_service.dart';
 import '../../models/auto_workshop.dart';
 import '../../models/tutor_service.dart';
-import '../../screens/courier_booking_screen.dart';
-import '../../screens/auto_help_booking_screen.dart';
-import '../../screens/auto_workshop_booking_screen.dart';
+import '../../screens/courier_dispatch_screen.dart';
+import '../../screens/auto_mobile_dispatch_screen.dart';
+import '../../screens/auto_workshop_dispatch_screen.dart';
 import '../../screens/tutor_profile_screen.dart';
 import '../../theme/glass_tokens.dart';
 import '../glass/glass_surface.dart';
@@ -71,7 +71,7 @@ class CourierHubSection extends StatelessWidget {
                   onTap: () => Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (_) => CourierBookingScreen(service: c),
+                      builder: (_) => CourierDispatchScreen(service: c),
                     ),
                   ),
                   borderRadius: BorderRadius.circular(18),
@@ -215,7 +215,7 @@ class AutoHelpHubSection extends StatelessWidget {
                   onTap: () => Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (_) => AutoHelpBookingScreen(service: u),
+                      builder: (_) => AutoMobileDispatchScreen(service: u),
                     ),
                   ),
                   borderRadius: BorderRadius.circular(18),
@@ -359,7 +359,7 @@ class AutoWorkshopHubSection extends StatelessWidget {
                   onTap: () => Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (_) => AutoWorkshopBookingScreen(workshop: w),
+                      builder: (_) => AutoWorkshopDispatchScreen(workshop: w),
                     ),
                   ),
                   borderRadius: BorderRadius.circular(18),

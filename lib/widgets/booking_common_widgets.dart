@@ -343,6 +343,7 @@ class BookingTextArea extends StatelessWidget {
   final IconData icon;
   final Color accent;
   final int maxLines;
+  final ValueChanged<String>? onChanged;
 
   const BookingTextArea({
     super.key,
@@ -351,6 +352,7 @@ class BookingTextArea extends StatelessWidget {
     required this.icon,
     required this.accent,
     this.maxLines = 3,
+    this.onChanged,
   });
 
   @override
@@ -358,6 +360,7 @@ class BookingTextArea extends StatelessWidget {
     return TextField(
       controller: controller,
       maxLines: maxLines,
+      onChanged: onChanged,
       style: const TextStyle(color: kBookingInk),
       decoration: InputDecoration(
         hintText: hint,
@@ -390,6 +393,7 @@ class BookingInputField extends StatelessWidget {
   final Color accent;
   final TextInputType keyboardType;
   final String? suffixText;
+  final ValueChanged<String>? onChanged;
 
   const BookingInputField({
     super.key,
@@ -399,6 +403,7 @@ class BookingInputField extends StatelessWidget {
     required this.accent,
     this.keyboardType = TextInputType.text,
     this.suffixText,
+    this.onChanged,
   });
 
   @override
@@ -406,6 +411,7 @@ class BookingInputField extends StatelessWidget {
     return TextField(
       controller: controller,
       keyboardType: keyboardType,
+      onChanged: onChanged,
       style: const TextStyle(color: kBookingInk),
       decoration: InputDecoration(
         hintText: hint,

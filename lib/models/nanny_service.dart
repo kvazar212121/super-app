@@ -103,7 +103,10 @@ class NannyService {
   final int repeatFamilies;
   final Map<String, dynamic>? rawJson;
 
-  const   final String? subCategory;
+  final String? subCategory;
+
+    final bool isTravelFeeIncluded;
+  final double travelFee;
 
   NannyService({
     required this.id,
@@ -129,6 +132,8 @@ class NannyService {
     this.repeatFamilies = 0,
     this.rawJson,
       this.subCategory,
+      this.isTravelFeeIncluded = true,
+    this.travelFee = 0.0,
   });
 
   bool get isVerified =>
@@ -197,6 +202,8 @@ class NannyService {
       repeatFamilies: (meta['repeat_families'] as num?)?.toInt() ?? 0,
       rawJson: json,
           subCategory: meta['sub_category']?.toString(),
+          isTravelFeeIncluded: meta['is_travel_fee_included'] as bool? ?? true,
+      travelFee: (meta['travel_fee'] as num?)?.toDouble() ?? 0.0,
     );
   }
 

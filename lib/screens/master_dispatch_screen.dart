@@ -42,9 +42,12 @@ class _MasterDispatchScreenState extends State<MasterDispatchScreen> {
 
   Color get _accent => widget.category.accent;
 
-  double get _selectedPrice => _selectedService == null
-      ? 0
-      : (widget.master.prices[_selectedService] ?? 100000);
+  double get _selectedPrice {
+    if (_selectedService == null) return 0.0;
+    final base = (widget.master.prices[_selectedService] ?? 100000).toDouble();
+    final travel = widget.master.isTravelFeeIncluded ? 0.0 : widget.master.travelFee;
+    return base + travel;
+  }
 
   bool get _canSubmit =>
       _selectedService != null &&
@@ -114,6 +117,7 @@ class _MasterDispatchScreenState extends State<MasterDispatchScreen> {
         MapEntry('Mutaxassis', widget.master.name),
         MapEntry('Xizmat', _selectedService!),
         MapEntry('Sana', DateFormat('dd.MM.yyyy').format(_selectedDate)),
+        MapEntry("Yo'l kira", widget.master.isTravelFeeIncluded ? "Bepul (narx ichida)" : currency.format(widget.master.travelFee)),
         MapEntry('Vaqt', _selectedTimeSlot!),
         MapEntry('Manzil', address),
       ],

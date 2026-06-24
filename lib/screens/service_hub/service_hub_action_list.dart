@@ -107,7 +107,36 @@ class _ActionList extends StatelessWidget {
         ],
         if (kind == ServiceHubKind.hamshira) _buildSection(context, "Hamshira xizmatlari", data.nurses.map((s) => NurseSmallCard(service: s)).toList()),
         if (kind == ServiceHubKind.stomatologiya) _buildSection(context, "Stomatologiya klinikalari", data.dentalClinics.map((c) => DentalSmallCard(clinic: c)).toList()),
-        if (kind == ServiceHubKind.tadbirlar) _buildSection(context, "Tadbir tashkilotchilar", data.events.map((s) => EventSmallCard(service: s)).toList()),
+        if (kind == ServiceHubKind.tadbirlar) ...[
+          if (data.genericProviders.isNotEmpty)
+            _buildSection(
+              context,
+              "Tadbir o'tkazish joylari",
+              data.genericProviders.map((f) => EventVenueSmallCard(venue: f)).toList(),
+            ),
+          if (data.events.isNotEmpty)
+            _buildSection(
+              context,
+              "Tashkilotchi va Brigadalar",
+              data.events.map((s) => EventTeamSmallCard(team: s)).toList(),
+            ),
+        ],
+        if (kind == ServiceHubKind.gameZona) ...[
+          if (data.genericProviders.isNotEmpty)
+            _buildSection(
+              context,
+              "PS5 va Kompyuter klublari",
+              data.genericProviders.map((f) => GameZoneSmallCard(zone: f)).toList(),
+            ),
+        ],
+        if (kind == ServiceHubKind.sportMaydon) ...[
+          if (data.genericProviders.isNotEmpty)
+            _buildSection(
+              context,
+              "Sport maydonchalari",
+              data.genericProviders.map((f) => SportFacilitySmallCard(facility: f)).toList(),
+            ),
+        ],
         if (kind == ServiceHubKind.bozorchi) _buildSection(context, "Bozorchi va kuryerlar", data.masters.map((m) => MasterSmallCard(master: m)).toList()),
         if (kind == ServiceHubKind.oshxona) _buildSection(context, "Oshxona va Restoranlar", data.masters.map((m) => MasterSmallCard(master: m)).toList()),
         

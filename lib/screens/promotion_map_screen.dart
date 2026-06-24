@@ -194,7 +194,7 @@ class _PromotionMapScreenState extends State<PromotionMapScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Aksiyadagi ob\\'yekt',
+              "Aksiyadagi ob'yekt",
               style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
@@ -204,7 +204,7 @@ class _PromotionMapScreenState extends State<PromotionMapScreen> {
             ),
             const SizedBox(height: 16),
             const Text(
-              'Aksiya bo\\'yicha chegirma ushbu filialda amal qiladi. Joyni band qilish uchun hoziroq qo\\'ng\\'iroq qiling.',
+              "Aksiya bo'yicha chegirma ushbu filialda amal qiladi. Joyni band qilish uchun hoziroq qo'ng'iroq qiling.",
               style: TextStyle(height: 1.5),
             ),
             const SizedBox(height: 24),
@@ -214,11 +214,11 @@ class _PromotionMapScreenState extends State<PromotionMapScreen> {
                 onPressed: () {
                   Navigator.pop(context);
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Ma\\'muriyatga qo\\'ng\\'iroq qilinmoqda...')),
+                    const SnackBar(content: Text("Ma'muriyatga qo'ng'iroq qilinmoqda...")),
                   );
                 },
                 icon: const Icon(LucideIcons.phone),
-                label: const Text('Qo\\'ng\\'iroq qilish'),
+                label: const Text("Qo'ng'iroq qilish"),
                 style: FilledButton.styleFrom(
                   backgroundColor: widget.colors[0],
                   padding: const EdgeInsets.symmetric(vertical: 16),

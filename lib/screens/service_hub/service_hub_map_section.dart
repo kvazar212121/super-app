@@ -1,6 +1,6 @@
 part of '../service_hub_screen.dart';
 
-class _MapSection extends StatelessWidget {
+class _MapSection extends StatefulWidget {
   final ServiceHubKind kind;
   final Color accentColor;
   final HubScreenData data;
@@ -8,44 +8,104 @@ class _MapSection extends StatelessWidget {
   const _MapSection({required this.kind, required this.accentColor, required this.data});
 
   @override
+  State<_MapSection> createState() => _MapSectionState();
+}
+
+class _MapSectionState extends State<_MapSection> {
+  LatLng _userLocation = const LatLng(41.311081, 69.240562);
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchUserLocation();
+  }
+
+  Future<void> _fetchUserLocation() async {
+    try {
+      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) return;
+
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) return;
+      }
+      
+      if (permission == LocationPermission.deniedForever) return;
+
+      final pos = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+      if (mounted) {
+        setState(() {
+          _userLocation = LatLng(pos.latitude, pos.longitude);
+        });
+      }
+    } catch (e) {
+      debugPrint("Location error: $e");
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return SizedBox(
       height: 250,
       child: HubMapPreview(
-        center: const LatLng(41.311081, 69.240562),
+        key: ValueKey(_userLocation),
+        center: _userLocation,
         zoom: 13,
         markers: _buildMarkers(context),
         onExpand: () => Navigator.push(
           context,
-          MaterialPageRoute(builder: (_) => BarberMapScreen(shops: data.barberShops)),
+          MaterialPageRoute(builder: (context) => Scaffold(
+            appBar: AppBar(
+              title: const Text("Xarita"),
+              backgroundColor: widget.accentColor,
+            ),
+            body: HubMapPreview(
+              center: _userLocation,
+              zoom: 13,
+              markers: _buildMarkers(context),
+            ),
+          )),
         ),
       ),
     );
   }
 
   List<Marker> _buildMarkers(BuildContext context) {
+    final data = widget.data;
+    final kind = widget.kind;
+    final accentColor = widget.accentColor;
     final markers = <Marker>[
       Marker(
-        point: const LatLng(41.311081, 69.240562),
-        width: 40,
-        height: 40,
+        point: _userLocation,
+        width: 48,
+        height: 48,
         child: Container(
           decoration: BoxDecoration(
             color: Colors.blue,
             shape: BoxShape.circle,
+            border: Border.all(color: Colors.white, width: 3),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.blue.withOpacity(0.5),
+                blurRadius: 10,
+                spreadRadius: 2,
+                offset: const Offset(0, 3),
+              ),
+            ],
           ),
-          child: Center(
-            child: Container(
-              width: 12,
-              height: 12,
-              decoration: const BoxDecoration(color: Colors.blue, shape: BoxShape.circle),
+          child: const Center(
+            child: Icon(
+              Icons.person,
+              color: Colors.white,
+              size: 26,
             ),
           ),
         ),
       ),
     ];
 
-    switch (kind) {
+    switch (widget.kind) {
       case ServiceHubKind.sartarosh:
         markers.addAll(data.barberShops.map((shop) => Marker(
           point: LatLng(shop.latitude, shop.longitude),
@@ -256,7 +316,7 @@ class _MapSection extends StatelessWidget {
             icon: LucideIcons.monitor,
             color: accentColor,
             label: s.name,
-            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => ApplianceBookingScreen(service: s))),
+            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => ApplianceDispatchScreen(service: s))),
           ),
         )));
         break;
@@ -269,7 +329,7 @@ class _MapSection extends StatelessWidget {
             icon: LucideIcons.bike,
             color: accentColor,
             label: s.name,
-            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => CourierBookingScreen(service: s))),
+            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => CourierDispatchScreen(service: s))),
           ),
         )));
         break;
@@ -357,17 +417,31 @@ class _MapSection extends StatelessWidget {
       case ServiceHubKind.oshxona:
       case ServiceHubKind.kompUsta:
       case ServiceHubKind.boshqa:
-        markers.addAll(data.genericProviders.map((p) => Marker(
-          point: LatLng(p['lat'] as double? ?? 41.31, p['lng'] as double? ?? 69.24),
-          width: 120,
-          height: 55,
-          child: _MapPin(
-            icon: kind.icon,
-            color: accentColor,
-            label: p['name'] as String? ?? 'Xizmat',
-            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => SimpleCallBookingScreen(kind: kind, provider: p, accentColor: accentColor))),
-          ),
-        )));
+        markers.addAll(data.genericProviders.map((p) {
+          double lat = 41.31;
+          double lng = 69.24;
+          String name = 'Xizmat';
+          if (p is Map) {
+            lat = p['lat'] as double? ?? 41.31;
+            lng = p['lng'] as double? ?? 69.24;
+            name = p['name'] as String? ?? 'Xizmat';
+          } else {
+            try { lat = p.latitude as double; } catch (_) {}
+            try { lng = p.longitude as double; } catch (_) {}
+            try { name = p.name as String; } catch (_) {}
+          }
+          return Marker(
+            point: LatLng(lat, lng),
+            width: 120,
+            height: 55,
+            child: _MapPin(
+              icon: kind.icon,
+              color: accentColor,
+              label: name,
+              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => SimpleCallBookingScreen(kind: kind, provider: p, accentColor: accentColor))),
+            ),
+          );
+        }));
         break;
       default: break;
     }

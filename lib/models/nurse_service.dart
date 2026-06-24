@@ -90,7 +90,7 @@ class NurseService {
   final List<String> timeSlots;
   final Map<String, dynamic>? rawJson;
 
-  const   final String? subCategory;
+  final String? subCategory;
 
   NurseService({
     required this.id,
