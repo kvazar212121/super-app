@@ -331,7 +331,7 @@ class _MasterDispatchScreenState extends State<MasterDispatchScreen> {
                                   service,
                                   style: TextStyle(
                                     fontWeight: FontWeight.w600,
-                                    color: selected ? _accent : Colors.black87,
+                                    color: selected ? Colors.white : Colors.black87,
                                   ),
                                 ),
                               ),
@@ -339,7 +339,7 @@ class _MasterDispatchScreenState extends State<MasterDispatchScreen> {
                                 currency.format(widget.master.prices[service] ?? 0),
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
-                                  color: selected ? _accent : Colors.black54,
+                                  color: selected ? Colors.white : Colors.black54,
                                 ),
                               ),
                             ],
