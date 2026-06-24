@@ -197,8 +197,8 @@ class MassageHijoma {
             'Klassik massaj (60 min)': 150000.0,
             'Hijoma': 120000.0,
           }
-        : pricesRaw.map(
-            (k, v) => MapEntry(k, (v as num?)?.toDouble() ?? 0),
+        : pricesRaw.map<String, double>(
+            (k, v) => MapEntry(k, (v as num?)?.toDouble() ?? 0.0),
           );
 
     return MassageHijoma(
@@ -208,7 +208,7 @@ class MassageHijoma {
       address: json['address']?.toString() ?? '',
       latitude: (json['lat'] as num?)?.toDouble() ?? 41.31,
       longitude: (json['lng'] as num?)?.toDouble() ?? 69.25,
-      rating: (json['rating'] as num?)?.toDouble() ?? 0,
+      rating: (json['rating'] as num?)?.toDouble() ?? 0.0,
       reviewCount: (json['review_count'] as num?)?.toInt() ?? 0,
       phoneNumber: json['phone']?.toString() ?? '',
       serviceArea: meta['service_area']?.toString(),
@@ -218,7 +218,7 @@ class MassageHijoma {
       gender: GenderType.fromKey(meta['gender']?.toString()),
       visitModes: modes,
       homeVisitFee: (meta['home_visit_fee'] as num?)?.toDouble() ??
-          (prices["Uyga chiqish qo'shimcha"] ?? 50000),
+          (prices["Uyga chiqish qo'shimcha"] ?? 50000.0),
       timeSlots: (meta['time_slots'] as List<dynamic>? ?? [])
           .map((e) => e.toString())
           .toList(),
