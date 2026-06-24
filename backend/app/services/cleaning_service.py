@@ -88,7 +88,7 @@ class CleaningService:
             lat=41.2995,
             lng=69.2401,
             metadata_json=meta,
-            is_active=False,
+            is_active=True,
             owner_user_id=user.id,
         )
         db.add(provider)
@@ -129,7 +129,7 @@ class CleaningService:
             lat=lat,
             lng=lng,
             metadata_json=meta,
-            is_active=False,
+            is_active=True,
             owner_user_id=user.id,
         )
         db.add(provider)

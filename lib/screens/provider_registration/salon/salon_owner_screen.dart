@@ -52,9 +52,18 @@ class _SalonOwnerScreenState extends State<SalonOwnerScreen> {
     setState(() => _submitting = true);
     final auth = context.read<AuthProvider>();
     final user = auth.user;
-    final phone = _phoneCtrl.text.trim().isNotEmpty
-        ? normalizeUzPhone(_phoneCtrl.text.replaceAll(RegExp(r'\D'), ''))
-        : (user?['phone'] as String? ?? '');
+    final phoneInput = _phoneCtrl.text.trim();
+    final userPhone = user?['phone'] as String? ?? '';
+    final phone = phoneInput.isNotEmpty
+        ? normalizeUzPhone(phoneInput.replaceAll(RegExp(r'\D'), ''))
+        : userPhone;
+
+    if (phone.isEmpty || phone.replaceAll(RegExp(r'\D'), '').length < 9) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Yaroqli telefon raqamini kiriting (kamida 9 ta raqam)')),
+      );
+      return;
+    }
 
     try {
       await SalonPortalService().registerOwner(

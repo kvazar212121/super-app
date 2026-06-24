@@ -87,7 +87,7 @@ class MasterDispatchService:
             lat=41.2995,
             lng=69.2401,
             metadata_json=meta,
-            is_active=False,
+            is_active=True,
             owner_user_id=user.id,
         )
         db.add(provider)
@@ -128,7 +128,7 @@ class MasterDispatchService:
             lat=lat,
             lng=lng,
             metadata_json=meta,
-            is_active=False,
+            is_active=True,
             owner_user_id=user.id,
         )
         db.add(provider)

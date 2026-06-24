@@ -96,7 +96,7 @@ class EventOrganizerService:
 
         meta = {
             "type": "event_organizer",
-            "verification_status": "pending",
+            "verification_status": "approved",
             "organizer_types": otypes,
             "event_types": etypes,
             "venue_types": vtypes,
@@ -115,7 +115,7 @@ class EventOrganizerService:
             lat=41.2995,
             lng=69.2401,
             metadata_json=meta,
-            is_active=False,
+            is_active=True,
             owner_user_id=user.id,
         )
         db.add(provider)

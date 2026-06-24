@@ -86,7 +86,7 @@ class TutorService:
         meta = {
             "type": "tutor",
             "tutor_role": "solo",
-            "verification_status": "pending",
+            "verification_status": "approved",
             "specialty": "Repetitor",
             "service_area": service_area,
             "subjects": subs,
@@ -105,7 +105,7 @@ class TutorService:
             lat=41.2995,
             lng=69.2401,
             metadata_json=meta,
-            is_active=False,
+            is_active=True,
             owner_user_id=user.id,
         )
         db.add(provider)
@@ -141,7 +141,7 @@ class TutorService:
         meta = {
             "type": "education_center",
             "tutor_role": "center",
-            "verification_status": "pending",
+            "verification_status": "approved",
             "courses": course_list,
             "lesson_modes": ["at_center"],
             "services": services,
@@ -157,7 +157,7 @@ class TutorService:
             lat=41.2995,
             lng=69.2401,
             metadata_json=meta,
-            is_active=False,
+            is_active=True,
             owner_user_id=user.id,
         )
         db.add(provider)

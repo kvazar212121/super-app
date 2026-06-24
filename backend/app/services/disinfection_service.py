@@ -72,7 +72,7 @@ class DisinfectionService:
 
         meta = {
             "type": "disinfection",
-            "verification_status": "pending",
+            "verification_status": "approved",
             "service_area": service_area,
             "area_types": areas,
             "services": services,
@@ -90,7 +90,7 @@ class DisinfectionService:
             lat=41.2995,
             lng=69.2401,
             metadata_json=meta,
-            is_active=False,
+            is_active=True,
             owner_user_id=user.id,
         )
         db.add(provider)

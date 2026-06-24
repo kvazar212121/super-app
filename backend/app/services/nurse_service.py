@@ -74,7 +74,7 @@ class NurseService:
         med_types = medical_types or list(DEFAULT_MEDICAL_TYPES)
         meta = {
             "type": "nurse",
-            "verification_status": "pending",
+            "verification_status": "approved",
             "visit_modes": ["home_visit"],
             "medical_types": med_types,
             "services": list(DEFAULT_SERVICES),
@@ -92,7 +92,7 @@ class NurseService:
             lat=41.2995,
             lng=69.2401,
             metadata_json=meta,
-            is_active=False,
+            is_active=True,
             owner_user_id=user.id,
         )
         db.add(provider)
