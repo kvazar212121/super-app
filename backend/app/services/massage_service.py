@@ -14,6 +14,7 @@ DEFAULT_SERVICES = [
     "Hijoma",
     "Sport massaj (60 min)",
 ]
+DEFAULT_PRICES = {
     "Klassik massaj (60 min)": 150000,
     "Hijoma": 120000,
     "Sport massaj (60 min)": 180000,

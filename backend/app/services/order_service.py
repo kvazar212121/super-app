@@ -249,8 +249,26 @@ class OrderService:
         NotificationService.notify_order_shifted(
             user_id=first_order.user_id,
             order_id=first_order.id,
-            new_time=time_str,
+            new_time_label=time_str,
         )
+        
+        # Shift subsequent flexible orders by the same delta
+        for order in future_orders[1:]:
+            if getattr(order, "booking_mode", "fixed") == "flexible":
+                new_date = order.date - delta
+                order.date = new_date
+                db.add(order)
+                # Notify
+                time_str = new_date.strftime("%H:%M")
+                NotificationService.notify_order_shifted(
+                    user_id=order.user_id,
+                    order_id=order.id,
+                    new_time_label=time_str,
+                )
+            else:
+                # Stop shifting when we hit a fixed order
+                break
+        await db.flush()
 
     @staticmethod
     async def run_completion_checks(db: AsyncSession) -> None:
@@ -300,27 +318,7 @@ class OrderService:
 
         if orders_to_complete:
             await db.flush()
-            await db.commit()            order_id=first_order.id,
-            new_time_label=time_str,
-        )
-        
-        # Shift subsequent flexible orders by the same delta
-        for order in future_orders[1:]:
-            if getattr(order, "booking_mode", "fixed") == "flexible":
-                new_date = order.date - delta
-                order.date = new_date
-                db.add(order)
-                # Notify
-                time_str = new_date.strftime("%H:%M")
-                NotificationService.notify_order_shifted(
-                    user_id=order.user_id,
-                    order_id=order.id,
-                    new_time_label=time_str,
-                )
-            else:
-                # Stop shifting when we hit a fixed order
-                break
-        await db.flush()
+            await db.commit()
 
     @staticmethod
     async def process_commission(db: AsyncSession, order) -> None:
