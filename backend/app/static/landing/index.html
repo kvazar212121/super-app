@@ -4,281 +4,468 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="HubServis — barcha xizmatlar bir joyda. Sartarosh, usta, tozalash, avto-yordam va yana 19+ xizmat.">
-  <title>HubServis — Barcha xizmatlar bir joyda</title>
+  <title>HubServis — Premium Xizmatlar</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --primary: #6366F1;
-      --primary-dark: #4F46E5;
-      --accent: #06B6D4;
-      --text: #0F172A;
-      --muted: #64748B;
-      --glass: rgba(255,255,255,0.72);
-      --glass-border: rgba(255,255,255,0.85);
-      --radius: 20px;
+      --bg: #050505;
+      --bg-surface: #111111;
+      --bg-surface-hover: #1A1A1A;
+      --text: #F3F4F6;
+      --text-muted: #9CA3AF;
+      --border: rgba(255, 255, 255, 0.1);
+      --border-hover: rgba(255, 255, 255, 0.25);
+      --metallic: linear-gradient(180deg, #FFFFFF 0%, #D4D4D8 40%, #71717A 100%);
+      --accent-glow: 0 0 20px rgba(255, 255, 255, 0.15);
     }
     html { scroll-behavior: smooth; }
     body {
       font-family: 'Inter', system-ui, sans-serif;
+      background-color: var(--bg);
       color: var(--text);
-      background: linear-gradient(135deg, #EEF2FF 0%, #F5F3FF 35%, #ECFEFF 70%, #FDF4FF 100%);
       min-height: 100vh;
       overflow-x: hidden;
+      line-height: 1.5;
     }
-    .orb {
+    
+    /* Background grid effect */
+    body::before {
+      content: '';
       position: fixed;
-      border-radius: 50%;
-      filter: blur(80px);
+      top: 0; left: 0; width: 100%; height: 100%;
+      background-image: 
+        linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
       pointer-events: none;
       z-index: 0;
+      mask-image: radial-gradient(ellipse at center, black 40%, transparent 80%);
+      -webkit-mask-image: radial-gradient(ellipse at center, black 40%, transparent 80%);
     }
-    .orb-1 { width: 420px; height: 420px; background: rgba(99,102,241,0.28); top: -120px; left: -100px; }
-    .orb-2 { width: 360px; height: 360px; background: rgba(168,85,247,0.22); top: 20%; right: -120px; }
-    .orb-3 { width: 300px; height: 300px; background: rgba(6,182,212,0.18); bottom: 10%; left: -80px; }
 
-    .wrap { position: relative; z-index: 1; max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+    .wrap { position: relative; z-index: 1; max-width: 1200px; margin: 0 auto; padding: 0 24px; }
 
     /* Nav */
     nav {
       position: sticky; top: 0; z-index: 100;
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      background: rgba(255,255,255,0.65);
-      border-bottom: 1px solid rgba(255,255,255,0.8);
+      background: rgba(5, 5, 5, 0.8);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border-bottom: 1px solid var(--border);
     }
     .nav-inner {
       display: flex; align-items: center; justify-content: space-between;
-      height: 68px; max-width: 1120px; margin: 0 auto; padding: 0 24px;
+      height: 80px; max-width: 1200px; margin: 0 auto; padding: 0 24px;
     }
-    .logo {
-      display: flex; align-items: center; gap: 10px;
-      font-weight: 800; font-size: 1.25rem; color: var(--text); text-decoration: none;
+    
+    /* Custom Logo matching screenshot */
+    .logo-container {
+      position: relative;
+      display: inline-block;
+      text-decoration: none;
+      user-select: none;
     }
-    .logo-icon {
-      width: 38px; height: 38px; border-radius: 12px;
-      background: linear-gradient(135deg, var(--primary), #A855F7);
-      display: flex; align-items: center; justify-content: center;
-      color: #fff; font-size: 18px;
+    .logo-text {
+      font-size: 2.2rem;
+      font-weight: 900;
+      letter-spacing: -1px;
+      text-transform: uppercase;
+      background: var(--metallic);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin: 0;
+      line-height: 1;
+      position: relative;
+      z-index: 2;
+      /* Adding a slight drop shadow to make metal pop */
+      filter: drop-shadow(0 4px 6px rgba(0,0,0,0.5));
     }
-    .nav-links { display: flex; align-items: center; gap: 12px; }
+    .logo-arc {
+      position: absolute;
+      top: 50%;
+      left: -5%;
+      width: 110%;
+      height: 150%;
+      transform: translateY(-50%);
+      pointer-events: none;
+      z-index: 3;
+    }
+    .logo-arc path {
+      fill: none;
+      stroke: url(#arcGradient);
+      stroke-width: 3.5;
+      stroke-linecap: round;
+    }
+
+    .nav-links { display: flex; align-items: center; gap: 16px; }
     .nav-links a {
-      text-decoration: none; color: var(--muted); font-weight: 500; font-size: 0.9rem;
-      padding: 8px 14px; border-radius: 10px; transition: color .2s;
+      text-decoration: none; color: var(--text-muted); font-weight: 500; font-size: 0.95rem;
+      transition: color 0.3s;
     }
-    .nav-links a:hover { color: var(--primary); }
+    .nav-links a:hover { color: #FFF; }
+    
     .btn {
-      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-      padding: 12px 22px; border-radius: 14px; font-weight: 600; font-size: 0.95rem;
-      text-decoration: none; border: none; cursor: pointer; transition: transform .15s, box-shadow .15s;
+      display: inline-flex; align-items: center; justify-content: center;
+      padding: 12px 24px; border-radius: 8px; font-weight: 600; font-size: 0.95rem;
+      text-decoration: none; cursor: pointer; transition: all 0.3s ease;
     }
-    .btn:active { transform: scale(0.98); }
     .btn-primary {
-      background: linear-gradient(135deg, var(--primary), #7C3AED);
-      color: #fff; box-shadow: 0 8px 24px rgba(99,102,241,0.35);
+      background: #FFFFFF; color: #000000;
+      box-shadow: var(--accent-glow);
     }
-    .btn-primary:hover { box-shadow: 0 12px 32px rgba(99,102,241,0.45); }
+    .btn-primary:hover {
+      background: #E5E7EB;
+      box-shadow: 0 0 30px rgba(255,255,255,0.3);
+      transform: translateY(-2px);
+    }
     .btn-ghost {
-      background: var(--glass); color: var(--primary);
-      border: 1px solid rgba(99,102,241,0.25);
-      backdrop-filter: blur(12px);
+      background: transparent; color: #FFFFFF;
+      border: 1px solid var(--border);
+    }
+    .btn-ghost:hover {
+      background: var(--bg-surface);
+      border-color: var(--border-hover);
     }
 
     /* Hero */
-    .hero { padding: 72px 0 56px; text-align: center; }
+    .hero { padding: 120px 0 80px; text-align: center; position: relative; }
+    
+    .hero::after {
+      content: '';
+      position: absolute;
+      top: 50%; left: 50%;
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 70%);
+      transform: translate(-50%, -50%);
+      z-index: -1;
+      pointer-events: none;
+    }
+
     .badge {
-      display: inline-flex; align-items: center; gap: 6px;
-      padding: 6px 14px; border-radius: 999px; font-size: 0.8rem; font-weight: 600;
-      background: rgba(99,102,241,0.12); color: var(--primary);
-      border: 1px solid rgba(99,102,241,0.2); margin-bottom: 24px;
+      display: inline-block; padding: 6px 16px; border-radius: 100px;
+      font-size: 0.85rem; font-weight: 600; letter-spacing: 1px;
+      text-transform: uppercase; margin-bottom: 32px;
+      background: var(--bg-surface); border: 1px solid var(--border);
+      color: var(--text-muted);
     }
     .hero h1 {
-      font-size: clamp(2.2rem, 5vw, 3.5rem); font-weight: 800;
-      line-height: 1.1; letter-spacing: -0.03em; margin-bottom: 20px;
-    }
-    .hero h1 span {
-      background: linear-gradient(135deg, var(--primary), #A855F7, var(--accent));
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      font-size: clamp(3rem, 7vw, 5rem); font-weight: 900;
+      line-height: 1.05; letter-spacing: -0.04em; margin-bottom: 24px;
+      background: var(--metallic);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      text-shadow: 0 10px 30px rgba(0,0,0,0.5);
     }
     .hero p {
-      font-size: 1.125rem; color: var(--muted); max-width: 560px;
-      margin: 0 auto 36px; line-height: 1.6;
+      font-size: 1.25rem; color: var(--text-muted); max-width: 600px;
+      margin: 0 auto 48px; line-height: 1.6;
     }
-    .hero-cta { display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; }
+    .hero-cta { display: flex; flex-wrap: wrap; gap: 16px; justify-content: center; }
 
-    /* Stats */
+    /* Stats Box */
     .stats {
-      display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-      gap: 16px; margin: 48px 0 72px;
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1px; background: var(--border); border: 1px solid var(--border);
+      border-radius: 16px; overflow: hidden; margin: 0 auto 100px;
+      max-width: 1000px; box-shadow: 0 20px 40px rgba(0,0,0,0.5);
     }
     .stat-card {
-      backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
-      background: var(--glass); border: 1px solid var(--glass-border);
-      border-radius: var(--radius); padding: 24px 20px; text-align: center;
-      box-shadow: 0 8px 32px rgba(15,23,42,0.06);
+      background: var(--bg-surface); padding: 40px 24px; text-align: center;
+      transition: background 0.3s;
     }
-    .stat-card strong { display: block; font-size: 1.75rem; font-weight: 800; color: var(--primary); }
-    .stat-card span { font-size: 0.85rem; color: var(--muted); margin-top: 4px; display: block; }
+    .stat-card:hover { background: var(--bg-surface-hover); }
+    .stat-card strong { 
+      display: block; font-size: 2.5rem; font-weight: 900; 
+      background: var(--metallic); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      margin-bottom: 8px;
+    }
+    .stat-card span { font-size: 0.9rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
 
-    /* Services */
-    section { padding: 56px 0; }
+    /* Services Section */
+    section { padding: 80px 0; }
+    .section-header { text-align: center; margin-bottom: 64px; }
     .section-title {
-      text-align: center; font-size: 1.75rem; font-weight: 800;
-      letter-spacing: -0.02em; margin-bottom: 12px;
+      font-size: 2.5rem; font-weight: 800; letter-spacing: -0.03em;
+      margin-bottom: 16px; color: #FFF;
     }
-    .section-sub { text-align: center; color: var(--muted); margin-bottom: 40px; }
+    .section-sub { color: var(--text-muted); font-size: 1.1rem; }
+    
     .services-grid {
-      display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 14px;
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 24px;
     }
     .service-card {
-      backdrop-filter: blur(16px); background: var(--glass);
-      border: 1px solid var(--glass-border); border-radius: 16px;
-      padding: 20px 16px; text-align: center; transition: transform .2s, box-shadow .2s;
+      background: var(--bg-surface);
+      border: 1px solid var(--border); border-radius: 16px;
+      padding: 32px 24px; transition: all 0.4s ease;
+      position: relative; overflow: hidden;
+      display: flex; flex-direction: column; align-items: flex-start;
+      cursor: pointer;
     }
-    .service-card:hover { transform: translateY(-3px); box-shadow: 0 12px 28px rgba(99,102,241,0.12); }
+    .service-card::before {
+      content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      background: radial-gradient(800px circle at var(--mouse-x, 0) var(--mouse-y, 0), rgba(255,255,255,0.06), transparent 40%);
+      opacity: 0; transition: opacity 0.3s; pointer-events: none;
+    }
+    .service-card:hover { 
+      transform: translateY(-4px); 
+      border-color: var(--border-hover);
+      box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+    }
+    .service-card:hover::before { opacity: 1; }
     .service-icon {
-      width: 48px; height: 48px; border-radius: 14px; margin: 0 auto 12px;
-      display: flex; align-items: center; justify-content: center; font-size: 22px;
+      font-size: 32px; margin-bottom: 24px;
+      filter: grayscale(100%) brightness(200%);
     }
-    .service-card h3 { font-size: 0.9rem; font-weight: 700; }
+    .service-card h3 { font-size: 1.25rem; font-weight: 700; margin-bottom: 8px; color: #FFF; }
+    .service-card p { font-size: 0.9rem; color: var(--text-muted); line-height: 1.5; }
 
     /* Steps */
-    .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; }
+    .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; }
     .step {
-      backdrop-filter: blur(16px); background: var(--glass);
-      border: 1px solid var(--glass-border); border-radius: var(--radius);
-      padding: 28px 24px;
+      background: transparent; border-left: 2px solid var(--border);
+      padding: 24px 32px; position: relative; transition: border-color 0.3s;
     }
+    .step:hover { border-color: #FFF; }
     .step-num {
-      width: 36px; height: 36px; border-radius: 10px;
-      background: linear-gradient(135deg, var(--primary), #7C3AED);
-      color: #fff; font-weight: 800; display: flex; align-items: center; justify-content: center;
-      margin-bottom: 16px; font-size: 0.9rem;
+      font-size: 4rem; font-weight: 900; line-height: 1;
+      color: transparent; -webkit-text-stroke: 1px var(--border-hover);
+      position: absolute; top: -10px; right: 20px; opacity: 0.3; transition: all 0.3s;
     }
-    .step h3 { font-size: 1.05rem; margin-bottom: 8px; }
-    .step p { color: var(--muted); font-size: 0.9rem; line-height: 1.5; }
+    .step:hover .step-num { color: rgba(255,255,255,0.05); -webkit-text-stroke: 1px #FFF; opacity: 1; }
+    .step h3 { font-size: 1.5rem; margin-bottom: 12px; color: #FFF; }
+    .step p { color: var(--text-muted); font-size: 1rem; line-height: 1.6; }
 
-    /* CTA */
-    .cta-box {
-      margin: 56px 0 72px; padding: 48px 32px; text-align: center; border-radius: 28px;
-      background: linear-gradient(135deg, rgba(99,102,241,0.9), rgba(124,58,237,0.85));
-      border: 1px solid rgba(255,255,255,0.3);
-      box-shadow: 0 20px 60px rgba(99,102,241,0.35);
-      color: #fff;
+    /* CTA Section */
+    .cta-container {
+      margin: 100px 0;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 80px 40px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
     }
-    .cta-box h2 { font-size: 1.75rem; font-weight: 800; margin-bottom: 12px; }
-    .cta-box p { opacity: 0.9; margin-bottom: 28px; max-width: 480px; margin-left: auto; margin-right: auto; }
-    .cta-box .btn-primary { background: #fff; color: var(--primary); box-shadow: none; }
-    .cta-box .btn-ghost { color: #fff; border-color: rgba(255,255,255,0.4); background: rgba(255,255,255,0.15); }
+    .cta-container::after {
+      content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+      background: conic-gradient(from 0deg at 50% 50%, transparent 0%, rgba(255,255,255,0.05) 50%, transparent 100%);
+      animation: rotate 20s linear infinite; pointer-events: none; z-index: 0;
+    }
+    @keyframes rotate { 100% { transform: rotate(360deg); } }
+    .cta-content { position: relative; z-index: 1; }
+    .cta-content h2 { font-size: 2.5rem; font-weight: 900; margin-bottom: 16px; color: #FFF; }
+    .cta-content p { font-size: 1.1rem; color: var(--text-muted); margin-bottom: 40px; max-width: 500px; margin-left: auto; margin-right: auto; }
 
     footer {
-      border-top: 1px solid rgba(15,23,42,0.06); padding: 32px 0 48px;
-      text-align: center; color: var(--muted); font-size: 0.85rem;
+      border-top: 1px solid var(--border); padding: 48px 0;
+      display: flex; flex-direction: column; align-items: center; gap: 24px;
+      background: #000;
     }
-    footer a { color: var(--primary); text-decoration: none; }
+    .footer-logo {
+      font-size: 1.5rem; font-weight: 900; letter-spacing: -1px;
+      color: #FFF; text-decoration: none;
+    }
+    .footer-links { display: flex; gap: 24px; }
+    .footer-links a { color: var(--text-muted); text-decoration: none; font-size: 0.9rem; transition: color 0.3s; }
+    .footer-links a:hover { color: #FFF; }
+    .copyright { color: #52525B; font-size: 0.85rem; }
 
-    @media (max-width: 640px) {
+    /* Animations */
+    .reveal { opacity: 0; transform: translateY(30px); transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
+    .reveal.active { opacity: 1; transform: translateY(0); }
+
+    @media (max-width: 768px) {
       .nav-links .hide-mobile { display: none; }
-      .hero { padding-top: 48px; }
+      .hero h1 { font-size: 2.5rem; }
+      .hero { padding: 80px 0 60px; }
+      .stat-card strong { font-size: 2rem; }
+      .cta-container { padding: 40px 20px; }
+      .cta-content h2 { font-size: 2rem; }
     }
   </style>
 </head>
 <body>
-  <div class="orb orb-1"></div>
-  <div class="orb orb-2"></div>
-  <div class="orb orb-3"></div>
 
+  <!-- Navigation -->
   <nav>
     <div class="nav-inner">
-      <a href="/" class="logo">
-        <div class="logo-icon">◆</div>
-        HubServis
+      <a href="/" class="logo-container">
+        <!-- SVG Arc overlapping the text -->
+        <svg class="logo-arc" viewBox="0 0 300 100" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="arcGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#ffffff" stop-opacity="0" />
+              <stop offset="50%" stop-color="#ffffff" stop-opacity="1" />
+              <stop offset="100%" stop-color="#ffffff" stop-opacity="0" />
+            </linearGradient>
+          </defs>
+          <!-- A sharp swooping arc -->
+          <path d="M 0,90 Q 150,-10 300,50" />
+        </svg>
+        <h1 class="logo-text">HUBSERVIS</h1>
       </a>
+      
       <div class="nav-links">
         <a href="#xizmatlar" class="hide-mobile">Xizmatlar</a>
         <a href="#qanday" class="hide-mobile">Qanday ishlaydi</a>
-        <a href="/admin/login" class="btn btn-ghost">Admin</a>
-        <a href="#yuklab" class="btn btn-primary">Ilovani yuklab olish</a>
+        <a href="/admin/login" class="btn btn-ghost hide-mobile">Admin Panel</a>
+        <a href="#yuklab" class="btn btn-primary">Ilovani yuklash</a>
       </div>
     </div>
   </nav>
 
   <main class="wrap">
-    <section class="hero">
-      <div class="badge">🇺🇿 O'zbekiston uchun xizmatlar platformasi</div>
-      <h1>Barcha xizmatlar<br><span>bir joyda</span></h1>
-      <p>Sartarosh, usta, tozalash, avto-yordam, kuryerlik va yana 19+ xizmatni bir ilova orqali toping va buyurtma bering.</p>
+    <!-- Hero Section -->
+    <section class="hero reveal">
+      <div class="badge">Eksklyuziv Xizmatlar Platformasi</div>
+      <h1>BARCHA XIZMATLAR<br>BIR JOYDA</h1>
+      <p>Sartarosh, usta, tozalash, avto-yordam, kuryerlik va boshqa 19+ premium xizmatlarni bitta ilovadan osonlik bilan toping va buyurtma bering.</p>
       <div class="hero-cta">
-        <a href="#yuklab" class="btn btn-primary">Bepul boshlash</a>
-        <a href="#hamkor" class="btn btn-ghost">Usta sifatida qo'shilish</a>
+        <a href="#yuklab" class="btn btn-primary">Xizmatlarni ko'rish</a>
+        <a href="/admin/login" class="btn btn-ghost">Hamkor bo'lish</a>
       </div>
     </section>
 
-    <div class="stats">
-      <div class="stat-card"><strong>19+</strong><span>Xizmat kategoriyasi</span></div>
-      <div class="stat-card"><strong>40+</strong><span>Soha egalari</span></div>
-      <div class="stat-card"><strong>24/7</strong><span>Onlayn buyurtma</span></div>
-      <div class="stat-card"><strong>1%</strong><span>Cashback</span></div>
+    <!-- Statistics -->
+    <div class="stats reveal">
+      <div class="stat-card"><strong>19+</strong><span>Kategoriyalar</span></div>
+      <div class="stat-card"><strong>40+</strong><span>Mutaxassislar</span></div>
+      <div class="stat-card"><strong>24/7</strong><span>Qo'llab-quvvatlash</span></div>
+      <div class="stat-card"><strong>1%</strong><span>Keshbek</span></div>
     </div>
 
-    <section id="xizmatlar">
-      <h2 class="section-title">Xizmatlar</h2>
-      <p class="section-sub">Kerakli xizmatni tanlang — yaqin mutaxassis topiladi</p>
-      <div class="services-grid">
-        <div class="service-card"><div class="service-icon" style="background:rgba(99,102,241,0.15)">✂️</div><h3>Sartarosh</h3></div>
-        <div class="service-card"><div class="service-icon" style="background:rgba(245,158,11,0.15)">⚡</div><h3>Elektrik</h3></div>
-        <div class="service-card"><div class="service-icon" style="background:rgba(59,130,246,0.15)">💧</div><h3>Santexnik</h3></div>
-        <div class="service-card"><div class="service-icon" style="background:rgba(16,185,129,0.15)">🧹</div><h3>Tozalash</h3></div>
-        <div class="service-card"><div class="service-icon" style="background:rgba(236,72,153,0.15)">💅</div><h3>Salon</h3></div>
-        <div class="service-card"><div class="service-icon" style="background:rgba(34,197,94,0.15)">⚽</div><h3>Futbol maydoni</h3></div>
-        <div class="service-card"><div class="service-icon" style="background:rgba(234,88,12,0.15)">🚗</div><h3>Avto-yordam</h3></div>
-        <div class="service-card"><div class="service-icon" style="background:rgba(6,182,212,0.15)">📦</div><h3>Kuryerlik</h3></div>
+    <!-- Services Section -->
+    <section id="xizmatlar" class="reveal">
+      <div class="section-header">
+        <h2 class="section-title">PREMIUM XIZMATLAR</h2>
+        <p class="section-sub">O'zingizga kerakli soha ustalarini sanoqli soniyalarda toping.</p>
+      </div>
+      
+      <div class="services-grid" id="servicesGrid">
+        <div class="service-card">
+          <div class="service-icon">✂️</div>
+          <h3>Sartarosh / Go'zallik</h3>
+          <p>Professional soch turmaklash va go'zallik salonlari xizmatlari sizning hududingizda.</p>
+        </div>
+        <div class="service-card">
+          <div class="service-icon">⚡</div>
+          <h3>Elektrik</h3>
+          <p>Uyingizdagi nosozliklarni bartaraf etish uchun malakali elektr ustalarini chaqiring.</p>
+        </div>
+        <div class="service-card">
+          <div class="service-icon">💧</div>
+          <h3>Santexnik</h3>
+          <p>Quvurlar, kranlar va isitish tizimlarini ta'mirlash uchun ishonchli ustalar.</p>
+        </div>
+        <div class="service-card">
+          <div class="service-icon">🧹</div>
+          <h3>Klinik / Tozalash</h3>
+          <p>Xonadon, ofis va yirik obyektlarni mukammal tozalash bo'yicha mutaxassislar.</p>
+        </div>
+        <div class="service-card">
+          <div class="service-icon">🚗</div>
+          <h3>Avto-yordam</h3>
+          <p>Yo'lda qolib ketdingizmi? Evakuator va tezkor texnik yordam xizmati.</p>
+        </div>
+        <div class="service-card">
+          <div class="service-icon">📦</div>
+          <h3>Kuryerlik</h3>
+          <p>Pochta, sovg'a va boshqa jo'natmalarni xavfsiz hamda tezkor yetkazib berish.</p>
+        </div>
+        <div class="service-card">
+          <div class="service-icon">🛒</div>
+          <h3>Bozorchi</h3>
+          <p>Bozor va do'konlardan kerakli mahsulotlarni siz uchun xarid qilib yetkazamiz.</p>
+        </div>
+        <div class="service-card">
+          <div class="service-icon">📚</div>
+          <h3>Repetitor</h3>
+          <p>Turli fanlar va tillar bo'yicha malakali o'qituvchilar hamda o'quv markazlari.</p>
+        </div>
       </div>
     </section>
 
-    <section id="qanday">
-      <h2 class="section-title">Qanday ishlaydi?</h2>
-      <p class="section-sub">3 oddiy qadam — xizmat eshigingizgacha</p>
+    <!-- How it works -->
+    <section id="qanday" class="reveal">
+      <div class="section-header">
+        <h2 class="section-title">QANDAY ISHLAYDI?</h2>
+        <p class="section-sub">Foydalanish oson va qulay. 3 ta tezkor qadam.</p>
+      </div>
       <div class="steps">
         <div class="step">
-          <div class="step-num">1</div>
-          <h3>Xizmatni tanlang</h3>
-          <p>19 dan ortiq kategoriyadan kerakli xizmatni toping va narxni ko'ring.</p>
+          <div class="step-num">01</div>
+          <h3>Tanlash</h3>
+          <p>Dasturga kiring va 19+ kategoriyadan o'zingizga kerakli xizmat turini belgilang.</p>
         </div>
         <div class="step">
-          <div class="step-num">2</div>
-          <h3>Buyurtma bering</h3>
-          <p>Vaqt, manzil va xizmat turini tanlang — yaqin mutaxassis biriktiriladi.</p>
+          <div class="step-num">02</div>
+          <h3>Buyurtma</h3>
+          <p>Tafsilotlar va manzilingizni kiriting. Tizim avtomatik ravishda eng yaqin va mos ustani biriktiradi.</p>
         </div>
         <div class="step">
-          <div class="step-num">3</div>
-          <h3>Baholang</h3>
-          <p>Xizmat tugagach reyting qoldiring va cashback oling.</p>
+          <div class="step-num">03</div>
+          <h3>Natija & Baho</h3>
+          <p>Xizmat ko'rsatilgandan so'ng, ustani baholang va hisobingizga keshbek qabul qiling.</p>
         </div>
       </div>
     </section>
 
-    <div class="cta-box" id="hamkor">
-      <h2>Siz xizmat ko'rsatuvchimisiz?</h2>
-      <p>HubServis platformasiga qo'shiling — mijozlar sizni topadi, buyurtmalar keladi.</p>
-      <a href="/admin/login" class="btn btn-primary">Hamkor bo'lish</a>
+    <!-- Call to action -->
+    <div class="cta-container reveal" id="yuklab">
+      <div class="cta-content">
+        <h2>MOBIL ILOVANI YUKLAB OLING</h2>
+        <p>Barcha imkoniyatlardan qulay foydalanish uchun rasmiy HubServis ilovasini o'rnating. iOS va Android platformalarida mavjud.</p>
+        <div style="display:flex; gap:16px; justify-content:center; flex-wrap:wrap;">
+          <a href="#" class="btn btn-primary">App Store</a>
+          <a href="#" class="btn btn-ghost">Google Play</a>
+        </div>
+      </div>
     </div>
 
-    <div class="cta-box" id="yuklab" style="background:linear-gradient(135deg,rgba(6,182,212,0.9),rgba(99,102,241,0.85))">
-      <h2>Mobil ilova tez orada</h2>
-      <p>Android va iOS uchun HubServis ilovasi App Store va Google Play da chiqadi.</p>
-      <a href="https://api.hubservis.uz/docs" class="btn btn-ghost">API hujjatlari</a>
-    </div>
   </main>
 
+  <!-- Footer -->
   <footer>
-    <p>© 2026 HubServis. Barcha huquqlar himoyalangan.</p>
-    <p style="margin-top:8px">
-      <a href="/admin/login">Admin panel</a> ·
-      <a href="https://api.hubservis.uz/api/v1/health">API</a>
-    </p>
+    <a href="/" class="footer-logo">HUBSERVIS</a>
+    <div class="footer-links">
+      <a href="#xizmatlar">Xizmatlar</a>
+      <a href="/admin/login">Hamkorlar (Admin)</a>
+      <a href="https://api.hubservis.uz/docs">API Dokumentatsiya</a>
+      <a href="#">Maxfiylik siyosati</a>
+    </div>
+    <div class="copyright">© 2026 HUBSERVIS. Barcha huquqlar himoyalangan.</div>
   </footer>
+
+  <script>
+    // Reveal animations on scroll
+    const reveals = document.querySelectorAll('.reveal');
+    function reveal() {
+      const windowHeight = window.innerHeight;
+      const elementVisible = 100;
+      
+      reveals.forEach(el => {
+        const elementTop = el.getBoundingClientRect().top;
+        if (elementTop < windowHeight - elementVisible) {
+          el.classList.add('active');
+        }
+      });
+    }
+    window.addEventListener('scroll', reveal);
+    reveal(); // Trigger on load
+
+    // Hover glow effect on service cards
+    document.getElementById('servicesGrid').onmousemove = e => {
+      for(const card of document.querySelectorAll('.service-card')) {
+        const rect = card.getBoundingClientRect(),
+              x = e.clientX - rect.left,
+              y = e.clientY - rect.top;
+        card.style.setProperty('--mouse-x', `${x}px`);
+        card.style.setProperty('--mouse-y', `${y}px`);
+      }
+    };
+  </script>
 </body>
 </html>
