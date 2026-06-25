@@ -1,6 +1,7 @@
+import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:geocoding/geocoding.dart';
+import 'package:http/http.dart' as http;
 import 'package:dio/dio.dart';
 import 'api_service.dart';
 
@@ -35,10 +36,24 @@ class WeatherService {
       }
 
       Position position = await Geolocator.getCurrentPosition();
-      List<Placemark> placemarks = await placemarkFromCoordinates(position.latitude, position.longitude);
 
-      if (placemarks.isNotEmpty) {
-        currentCity = placemarks.first.locality ?? placemarks.first.administrativeArea ?? 'Tashkent';
+      // Nominatim orqali shahar nomini aniqlash
+      try {
+        final uri = Uri.parse(
+          'https://nominatim.openstreetmap.org/reverse'
+          '?lat=${position.latitude}&lon=${position.longitude}'
+          '&format=json&accept-language=uz,ru,en',
+        );
+        final res = await http.get(uri, headers: {
+          'User-Agent': 'HubServis/1.0 (uz.hubservis.app)',
+        }).timeout(const Duration(seconds: 8));
+        if (res.statusCode == 200) {
+          final data = jsonDecode(res.body) as Map<String, dynamic>;
+          final addr = data['address'] as Map<String, dynamic>? ?? {};
+          currentCity = (addr['city'] ?? addr['town'] ?? addr['village'] ?? addr['county'] ?? 'Tashkent').toString();
+        }
+      } catch (_) {
+        currentCity = 'Tashkent';
       }
 
       final w = await api.getWeather(currentCity, lat: position.latitude, lng: position.longitude);

@@ -1,8 +1,9 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:http/http.dart' as http;
 import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:geocoding/geocoding.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 class LocationPickerScreen extends StatefulWidget {
@@ -43,28 +44,34 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
     if (!mounted) return;
     setState(() => _isLoadingAddress = true);
     try {
-      List<Placemark> placemarks = await placemarkFromCoordinates(pos.latitude, pos.longitude);
-      if (placemarks.isNotEmpty) {
-        final place = placemarks.first;
-        final parts = [place.street, place.subLocality, place.locality]
-            .where((e) => e != null && e.isNotEmpty)
-            .toList();
-        if (mounted) {
-          setState(() {
-            _currentAddress = parts.isNotEmpty ? parts.join(', ') : "Noma'lum manzil";
-          });
-        }
+      final uri = Uri.parse(
+        'https://nominatim.openstreetmap.org/reverse'
+        '?lat=${pos.latitude}&lon=${pos.longitude}'
+        '&format=json&accept-language=uz,ru,en',
+      );
+      final response = await http.get(uri, headers: {
+        'User-Agent': 'HubServis/1.0 (uz.hubservis.app)',
+      }).timeout(const Duration(seconds: 10));
+
+      if (response.statusCode == 200 && mounted) {
+        final data = jsonDecode(response.body) as Map<String, dynamic>;
+        final addr = data['address'] as Map<String, dynamic>? ?? {};
+        final parts = <String>[];
+        final road = addr['road'] ?? addr['pedestrian'] ?? addr['footway'];
+        final suburb = addr['suburb'] ?? addr['neighbourhood'] ?? addr['quarter'];
+        final city = addr['city'] ?? addr['town'] ?? addr['village'] ?? addr['county'];
+        if (road != null) parts.add(road.toString());
+        if (suburb != null) parts.add(suburb.toString());
+        if (city != null) parts.add(city.toString());
+        final result = parts.isNotEmpty
+            ? parts.join(', ')
+            : (data['display_name']?.toString().split(',').take(3).join(', ') ?? "Noma'lum manzil");
+        if (mounted) setState(() => _currentAddress = result);
       }
     } catch (e) {
-      if (mounted) {
-        setState(() {
-          _currentAddress = "Manzilni aniqlab bo'lmadi";
-        });
-      }
+      if (mounted) setState(() => _currentAddress = "Manzilni aniqlab bo'lmadi");
     } finally {
-      if (mounted) {
-        setState(() => _isLoadingAddress = false);
-      }
+      if (mounted) setState(() => _isLoadingAddress = false);
     }
   }
 
