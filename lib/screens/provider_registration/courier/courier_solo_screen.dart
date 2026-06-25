@@ -5,7 +5,7 @@ import '../../../providers/auth_provider.dart';
 import '../../../services/courier_portal_service.dart';
 import '../../../utils/phone_utils.dart';
 import '../../provider_side/provider_theme.dart';
-import '../provider_success_screen.dart';
+import 'courier_pending_screen.dart';
 
 /// Kuryer — faqat yakka kuryer.
 class CourierSoloScreen extends StatefulWidget {
@@ -59,11 +59,7 @@ class _CourierSoloScreenState extends State<CourierSoloScreen> {
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(
-          builder: (_) => ProviderSuccessScreen(
-            providerName: name,
-            categoryName: 'Kuryer',
-            categoryId: 'courier',
-          ),
+          builder: (_) => CourierPendingScreen(providerName: name),
         ),
         (_) => false,
       );
