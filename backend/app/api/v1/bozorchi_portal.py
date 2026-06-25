@@ -4,7 +4,7 @@ from pydantic import BaseModel
 from typing import List, Optional
 
 from app.db.session import get_db
-from app.services.auth_service import get_current_user
+from app.api.dependencies import get_current_user
 from app.services.bozorchi_service import BozorchiService
 from app.models.user import User
 
