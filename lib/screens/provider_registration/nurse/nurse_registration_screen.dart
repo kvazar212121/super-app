@@ -2,12 +2,14 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../models/nurse_service.dart';
 import '../../../providers/auth_provider.dart';
 import '../../../services/nurse_portal_service.dart';
 import '../../../services/api_service.dart';
 import '../../../utils/phone_utils.dart';
 import '../../provider_side/provider_theme.dart';
+import '../../map_address_picker_screen.dart';
 import 'nurse_pending_screen.dart';
 
 class NurseRegistrationScreen extends StatefulWidget {
@@ -247,9 +249,40 @@ class _NurseRegistrationScreenState extends State<NurseRegistrationScreen> {
               const SizedBox(height: 12),
 
               // Hudud
-              TextField(
-                controller: _areaCtrl,
-                decoration: const InputDecoration(labelText: 'Xizmat hududi'),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: _areaCtrl,
+                      decoration: const InputDecoration(labelText: 'Xizmat hududi (manzil)'),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Container(
+                    height: 56,
+                    decoration: BoxDecoration(
+                      color: accent.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(color: accent, width: 1.5),
+                    ),
+                    child: IconButton(
+                      icon: const Icon(LucideIcons.map, color: accent),
+                      onPressed: () async {
+                        final picked = await Navigator.push<String>(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const MapAddressPickerScreen(),
+                          ),
+                        );
+                        if (picked != null && picked.isNotEmpty) {
+                          setState(() {
+                            _areaCtrl.text = picked;
+                          });
+                        }
+                      },
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(height: 12),
 
