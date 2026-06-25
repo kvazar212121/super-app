@@ -1512,6 +1512,38 @@
                     '<div class="detail-item"><div class="detail-label">Hudud</div><div class="detail-value">' + (meta.service_area || '-') + '</div></div>' +
                     '<div class="detail-item"><div class="detail-label">Tasdiqlash</div><div class="detail-value">' + (meta.verification_status || (p.is_active ? 'verified' : 'pending')) + '</div></div>';
             }
+            if (meta.type === 'nurse') {
+                var medTypes = (meta.medical_types || []).join(', ');
+                var docUrl = meta.document_url || null;
+                var passUrl = meta.passport_url || null;
+                function docCard(label, url) {
+                    if (!url) return '<div class="detail-item"><div class="detail-label">' + label + '</div><div class="detail-value" style="color:#94a3b8;">Yuklanmagan</div></div>';
+                    return '<div class="detail-item" style="grid-column:1/-1;">' +
+                        '<div class="detail-label">' + label + '</div>' +
+                        '<div class="detail-value">' +
+                            '<a href="' + url + '" target="_blank" style="display:inline-block;">' +
+                                '<img src="' + url + '" alt="' + label + '" style="max-width:100%;max-height:200px;border-radius:8px;border:1px solid #e2e8f0;cursor:pointer;" ' +
+                                'onerror="this.style.display=\'none\'; this.nextSibling.style.display=\'inline-block\';">' +
+                                '<span style="display:none; padding:6px 12px; background:#f1f5f9; border-radius:6px; color:#3b82f6; text-decoration:underline;">Hujjatni ochish ↗</span>' +
+                            '</a>' +
+                        '</div>' +
+                    '</div>';
+                }
+                extra = '<div class="detail-item"><div class="detail-label">Turi</div><div class="detail-value">Hamshira (uyga borish)</div></div>' +
+                    (meta.service_area ? '<div class="detail-item"><div class="detail-label">Hudud</div><div class="detail-value">' + meta.service_area + '</div></div>' : '') +
+                    (meta.qualifications ? '<div class="detail-item"><div class="detail-label">Malaka</div><div class="detail-value">' + meta.qualifications + '</div></div>' : '') +
+                    (medTypes ? '<div class="detail-item"><div class="detail-label">Tibbiy xizmatlar</div><div class="detail-value">' + medTypes + '</div></div>' : '') +
+                    '<div class="detail-item"><div class="detail-label">Tasdiqlash holati</div><div class="detail-value">' +
+                        '<span style="padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600;background:' +
+                        (meta.verification_status === 'pending' ? '#fef3c7;color:#d97706' : meta.verification_status === 'rejected' ? '#fee2e2;color:#dc2626' : '#dcfce7;color:#16a34a') +
+                        ';">' + (meta.verification_status || 'pending') + '</span>' +
+                    '</div></div>' +
+                    '<div style="grid-column:1/-1;margin:8px 0;border-top:1px solid #f1f5f9;padding-top:12px;">' +
+                        '<div style="font-weight:600;font-size:13px;color:#475569;margin-bottom:10px;">📋 Hujjatlar</div>' +
+                    '</div>' +
+                    docCard('Diplom / Sertifikat', docUrl) +
+                    docCard('Pasport', passUrl);
+            }
             return '<div class="detail-grid">' +
                 '<div class="detail-item"><div class="detail-label">ID</div><div class="detail-value">' + p.id + '</div></div>' +
                 '<div class="detail-item"><div class="detail-label">Nomi</div><div class="detail-value">' + p.name + '</div></div>' +
