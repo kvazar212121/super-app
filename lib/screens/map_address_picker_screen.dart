@@ -1,8 +1,9 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:http/http.dart' as http;
 import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:geocoding/geocoding.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 /// Xaritadan manzil tanlash ekrani.
@@ -28,6 +29,9 @@ class _MapAddressPickerScreenState extends State<MapAddressPickerScreen> {
   bool _loadingAddress = false;
   bool _locating = false;
 
+  // Xaritani harakatlantirishni kechiktirish (debounce)
+  DateTime? _lastMoveTime;
+
   @override
   void initState() {
     super.initState();
@@ -36,7 +40,6 @@ class _MapAddressPickerScreenState extends State<MapAddressPickerScreen> {
       _center = widget.initialPosition!;
       _pinPosition = widget.initialPosition!;
     }
-    // Birinchi marta manzilni yuklash
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _reverseGeocode(_pinPosition);
     });
@@ -48,20 +51,43 @@ class _MapAddressPickerScreenState extends State<MapAddressPickerScreen> {
     super.dispose();
   }
 
+  /// Nominatim (OpenStreetMap) orqali koordinatdan manzil aniqlash.
+  /// Bu Google xizmatiga bog'liq emas, emulatorlarda ham ishlaydi.
   Future<void> _reverseGeocode(LatLng pos) async {
     setState(() => _loadingAddress = true);
     try {
-      final placemarks = await placemarkFromCoordinates(pos.latitude, pos.longitude);
-      if (placemarks.isNotEmpty && mounted) {
-        final p = placemarks.first;
+      final uri = Uri.parse(
+        'https://nominatim.openstreetmap.org/reverse'
+        '?lat=${pos.latitude}&lon=${pos.longitude}'
+        '&format=json&accept-language=uz,ru,en',
+      );
+      final response = await http.get(uri, headers: {
+        'User-Agent': 'HubServis/1.0 (uz.hubservis.app)',
+      }).timeout(const Duration(seconds: 10));
+
+      if (response.statusCode == 200 && mounted) {
+        final data = jsonDecode(response.body) as Map<String, dynamic>;
+        final addr = data['address'] as Map<String, dynamic>? ?? {};
+        // Manzilni qurish: ko'cha, tuman, shahar
         final parts = <String>[];
-        if (p.street?.isNotEmpty == true) parts.add(p.street!);
-        if (p.subLocality?.isNotEmpty == true) parts.add(p.subLocality!);
-        if (p.locality?.isNotEmpty == true) parts.add(p.locality!);
-        setState(() => _address = parts.isNotEmpty ? parts.join(', ') : 'Aniq manzil topilmadi');
+        final road = addr['road'] ?? addr['pedestrian'] ?? addr['footway'] ?? addr['path'];
+        final suburb = addr['suburb'] ?? addr['neighbourhood'] ?? addr['quarter'];
+        final city = addr['city'] ?? addr['town'] ?? addr['village'] ?? addr['county'];
+        if (road != null) parts.add(road.toString());
+        if (suburb != null) parts.add(suburb.toString());
+        if (city != null) parts.add(city.toString());
+
+        final result = parts.isNotEmpty
+            ? parts.join(', ')
+            : (data['display_name']?.toString().split(',').take(3).join(', ') ?? 'Noma\'lum manzil');
+        setState(() => _address = result);
       }
     } catch (_) {
-      if (mounted) setState(() => _address = 'Manzil aniqlanmadi');
+      // Tarmoq muammosi bo'lsa koordinatlarni ko'rsatamiz
+      if (mounted) {
+        setState(() => _address =
+            '${pos.latitude.toStringAsFixed(5)}, ${pos.longitude.toStringAsFixed(5)}');
+      }
     } finally {
       if (mounted) setState(() => _loadingAddress = false);
     }
@@ -114,6 +140,14 @@ class _MapAddressPickerScreenState extends State<MapAddressPickerScreen> {
               onPositionChanged: (pos, hasGesture) {
                 if (hasGesture) {
                   setState(() => _pinPosition = pos.center);
+                  // Debounce: faqat harakatlanish to'xtagach manzilni aniqlash
+                  _lastMoveTime = DateTime.now();
+                  final capturedTime = _lastMoveTime;
+                  Future.delayed(const Duration(milliseconds: 600), () {
+                    if (_lastMoveTime == capturedTime && mounted) {
+                      _reverseGeocode(_pinPosition);
+                    }
+                  });
                 }
               },
               onMapReady: () {

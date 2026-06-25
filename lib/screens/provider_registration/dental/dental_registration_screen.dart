@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:provider/provider.dart';
 import '../../../providers/auth_provider.dart';
 import '../../../services/dental_portal_service.dart';
 import '../../../utils/phone_utils.dart';
 import '../../provider_side/provider_theme.dart';
+import '../../map_address_picker_screen.dart';
 import 'dental_pending_screen.dart';
 
 class DentalRegistrationScreen extends StatefulWidget {
@@ -18,6 +20,8 @@ class _DentalRegistrationScreenState extends State<DentalRegistrationScreen> {
   final _phoneCtrl = TextEditingController();
   final _addressCtrl = TextEditingController();
   bool _submitting = false;
+
+  static const accent = Color(0xFF0EA5E9);
 
   @override
   void dispose() {
@@ -61,7 +65,6 @@ class _DentalRegistrationScreenState extends State<DentalRegistrationScreen> {
 
   @override
   Widget build(BuildContext context) {
-    const accent = Color(0xFF0EA5E9);
     return ProviderTheme(
       child: Scaffold(
         appBar: AppBar(title: const Text('Stomatologiya klinikasi')),
@@ -75,22 +78,80 @@ class _DentalRegistrationScreenState extends State<DentalRegistrationScreen> {
                 style: TextStyle(height: 1.4),
               ),
               const SizedBox(height: 20),
-              TextField(controller: _nameCtrl, decoration: const InputDecoration(labelText: 'Klinika nomi')),
-              const SizedBox(height: 12),
-              TextField(controller: _phoneCtrl, decoration: const InputDecoration(labelText: 'Telefon'), keyboardType: TextInputType.phone),
+              TextField(
+                controller: _nameCtrl,
+                decoration: const InputDecoration(labelText: 'Klinika nomi'),
+              ),
               const SizedBox(height: 12),
               TextField(
-                controller: _addressCtrl,
-                decoration: const InputDecoration(labelText: 'Klinika manzili'),
-                maxLines: 2,
+                controller: _phoneCtrl,
+                decoration: const InputDecoration(labelText: 'Telefon'),
+                keyboardType: TextInputType.phone,
+              ),
+              const SizedBox(height: 12),
+              // Manzil + xarita tugmasi
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: _addressCtrl,
+                      decoration: const InputDecoration(
+                        labelText: 'Klinika manzili',
+                        hintText: 'Ko\'cha, bino, mo\'ljal...',
+                      ),
+                      maxLines: 2,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Container(
+                    height: 56,
+                    margin: const EdgeInsets.only(top: 8),
+                    decoration: BoxDecoration(
+                      color: accent.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(color: accent, width: 1.5),
+                    ),
+                    child: IconButton(
+                      icon: const Icon(LucideIcons.map, color: accent),
+                      tooltip: 'Xaritadan tanlash',
+                      onPressed: () async {
+                        final picked = await Navigator.push<String>(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const MapAddressPickerScreen(),
+                          ),
+                        );
+                        if (picked != null && picked.isNotEmpty) {
+                          setState(() => _addressCtrl.text = picked);
+                        }
+                      },
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(height: 24),
               SizedBox(
                 width: double.infinity,
                 child: FilledButton(
                   onPressed: _submitting ? null : _submit,
-                  style: FilledButton.styleFrom(backgroundColor: accent, padding: const EdgeInsets.symmetric(vertical: 16)),
-                  child: _submitting ? const CircularProgressIndicator(color: Colors.white) : const Text('Yuborish'),
+                  style: FilledButton.styleFrom(
+                    backgroundColor: accent,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                  ),
+                  child: _submitting
+                      ? const SizedBox(
+                          width: 22,
+                          height: 22,
+                          child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5),
+                        )
+                      : const Text(
+                          'Yuborish',
+                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                        ),
                 ),
               ),
             ],
