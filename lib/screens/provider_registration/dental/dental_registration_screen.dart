@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:provider/provider.dart';
+import '../../../config/provider_category_config.dart';
 import '../../../providers/auth_provider.dart';
 import '../../../services/dental_portal_service.dart';
 import '../../../utils/phone_utils.dart';
 import '../../provider_side/provider_theme.dart';
+import '../../provider_side/unified_provider_dashboard_screen.dart';
 import '../../map_address_picker_screen.dart';
-import 'dental_pending_screen.dart';
 
 class DentalRegistrationScreen extends StatefulWidget {
   const DentalRegistrationScreen({super.key});
@@ -49,9 +50,14 @@ class _DentalRegistrationScreenState extends State<DentalRegistrationScreen> {
     try {
       await DentalPortalService().register(name: name, phone: phone, address: address);
       if (!mounted) return;
+      // Stomatologiya darhol faol — admin tasdiqlovchi ekransiz to'g'ridan-to'g'ri dashboardga
       Navigator.pushAndRemoveUntil(
         context,
-        MaterialPageRoute(builder: (_) => DentalPendingScreen(providerName: name)),
+        MaterialPageRoute(
+          builder: (_) => UnifiedProviderDashboardScreen(
+            config: ProviderCategoryConfig.dental,
+          ),
+        ),
         (_) => false,
       );
     } catch (e) {

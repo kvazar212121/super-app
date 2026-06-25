@@ -1420,7 +1420,7 @@
         function providerNeedsApproval(p) {
             var meta = providerMeta(p);
             var t = meta.type || '';
-            if (t === 'nanny' || t === 'tutor' || t === 'education_center' || t === 'disinfection' || t === 'massage' || t === 'nurse' || t === 'dental_clinic' || t === 'event_organizer') {
+            if (t === 'nanny' || t === 'tutor' || t === 'education_center' || t === 'disinfection' || t === 'massage' || t === 'nurse' || t === 'event_organizer') {
                 return p.is_active === false || meta.verification_status === 'pending';
             }
             return p.is_active === false;
