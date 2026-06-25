@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../../config/provider_category_config.dart';
 import '../../../models/disinfection_service.dart';
 import '../../../providers/auth_provider.dart';
 import '../../../services/disinfection_portal_service.dart';
 import '../../../utils/phone_utils.dart';
 import '../../provider_side/provider_theme.dart';
-import 'disinfection_pending_screen.dart';
+import '../../provider_side/unified_provider_dashboard_screen.dart';
 
 /// Dezinfeksiya xizmati — ro'yxatdan o'tish.
 class DisinfectionRegistrationScreen extends StatefulWidget {
@@ -70,7 +71,9 @@ class _DisinfectionRegistrationScreenState
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(
-          builder: (_) => DisinfectionPendingScreen(providerName: name),
+          builder: (_) => UnifiedProviderDashboardScreen(
+            config: ProviderCategoryConfig.disinfection,
+          ),
         ),
         (_) => false,
       );
@@ -97,7 +100,7 @@ class _DisinfectionRegistrationScreenState
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Uy, ofis, mashina va maktablarni professional dezinfeksiya qilasiz. Administrator tasdiqlagach mijozlarga ko\'rinasiz.',
+                'Uy, ofis, mashina va maktablarni professional dezinfeksiya qilasiz. Ro\'yxatdan o\'tishi bilan darhol ishlashni boshlashingiz mumkin.',
                 style: TextStyle(color: Colors.grey[700], height: 1.4),
               ),
               const SizedBox(height: 24),

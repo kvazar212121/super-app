@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../../config/provider_category_config.dart';
 import '../../../providers/auth_provider.dart';
 import '../../../services/tutor_portal_service.dart';
 import '../../../utils/phone_utils.dart';
 import '../../provider_side/provider_theme.dart';
-import 'tutor_pending_screen.dart';
+import '../../provider_side/unified_provider_dashboard_screen.dart';
 
 class TutorCenterScreen extends StatefulWidget {
   const TutorCenterScreen({super.key});
@@ -68,7 +69,9 @@ class _TutorCenterScreenState extends State<TutorCenterScreen> {
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(
-          builder: (_) => TutorPendingScreen(providerName: name),
+          builder: (_) => UnifiedProviderDashboardScreen(
+            config: ProviderCategoryConfig.tutor,
+          ),
         ),
         (_) => false,
       );
@@ -94,7 +97,7 @@ class _TutorCenterScreenState extends State<TutorCenterScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Markaz manzili va kurslar — mijozlar vaqt bron qiladi.',
+                'Markaz manzili va kurslar — ro\'yxatdan o\'tishi bilan mijozlar vaqt bron qilishni boshlaydi.',
                 style: TextStyle(color: Colors.grey[700], height: 1.4),
               ),
               const SizedBox(height: 24),

@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../../config/provider_category_config.dart';
 import '../../../models/tutor_service.dart';
 import '../../../providers/auth_provider.dart';
 import '../../../services/tutor_portal_service.dart';
 import '../../../utils/phone_utils.dart';
 import '../../provider_side/provider_theme.dart';
-import 'tutor_pending_screen.dart';
+import '../../provider_side/unified_provider_dashboard_screen.dart';
 
 class TutorSoloScreen extends StatefulWidget {
   const TutorSoloScreen({super.key});
@@ -80,7 +81,9 @@ class _TutorSoloScreenState extends State<TutorSoloScreen> {
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(
-          builder: (_) => TutorPendingScreen(providerName: name),
+          builder: (_) => UnifiedProviderDashboardScreen(
+            config: ProviderCategoryConfig.tutor,
+          ),
         ),
         (_) => false,
       );

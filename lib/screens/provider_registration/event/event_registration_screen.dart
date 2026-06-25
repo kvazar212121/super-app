@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../../config/provider_category_config.dart';
 import '../../../models/event_planning.dart';
 import '../../../providers/auth_provider.dart';
 import '../../../services/event_portal_service.dart';
 import '../../../utils/phone_utils.dart';
 import '../../provider_side/provider_theme.dart';
-import 'event_pending_screen.dart';
+import '../../provider_side/unified_provider_dashboard_screen.dart';
 
 class EventRegistrationScreen extends StatefulWidget {
   const EventRegistrationScreen({super.key});
@@ -76,7 +77,11 @@ class _EventRegistrationScreenState extends State<EventRegistrationScreen> {
       if (!mounted) return;
       Navigator.pushAndRemoveUntil(
         context,
-        MaterialPageRoute(builder: (_) => EventPendingScreen(providerName: name)),
+        MaterialPageRoute(
+          builder: (_) => UnifiedProviderDashboardScreen(
+            config: ProviderCategoryConfig.events,
+          ),
+        ),
         (_) => false,
       );
     } catch (e) {
@@ -100,7 +105,7 @@ class _EventRegistrationScreenState extends State<EventRegistrationScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text(
-                'Qishloq va shaharda sahna, ovoz, dekoratsiya va to\'liq tadbir tashkiloti. Administrator tasdiqlagach buyurtmalar keladi.',
+                'Qishloq va shaharda sahna, ovoz, dekoratsiya va to\'liq tadbir tashkiloti. Ro\'yxatdan o\'tishi bilan darhol buyurtmalar qabul qila boshlaysiz.',
                 style: TextStyle(height: 1.4),
               ),
               const SizedBox(height: 20),
