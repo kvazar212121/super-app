@@ -1,4 +1,5 @@
-from typing import Optional
+import json
+from typing import Optional, List
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -14,27 +15,33 @@ from app.api.v1.admin.dependencies import require_admin
 
 router = APIRouter()
 
-
 class FinanceStatsOut(BaseModel):
-    total_revenue: float
-    total_commission: float
-    total_cashback_given: float
-    total_payouts: float
-    platform_balance: float
-    commission_rate: float
-    total_topups: float
-    total_refunds: float
+    total_topup: float
+    total_lead_fee: float
+    total_premium: float
+    total_admin_withdraw: float
+    net_profit: float
 
-
-class CommissionUpdate(BaseModel):
-    rate: float = Field(..., ge=0, le=50)
-
-
-class ProviderTransactionRequest(BaseModel):
+class TopupRequest(BaseModel):
     provider_id: int
     amount: float = Field(..., gt=0)
-    type: str # 'topup', 'refund'
     note: Optional[str] = None
+
+class AdminWithdrawRequest(BaseModel):
+    amount: float = Field(..., gt=0)
+    note: Optional[str] = None
+
+class PremiumPurchaseRequest(BaseModel):
+    amount: float = Field(..., gt=0)
+    note: Optional[str] = None
+
+class BonusRule(BaseModel):
+    min_amount: float
+    max_amount: float
+    bonus_amount: float
+
+class BonusRulesUpdate(BaseModel):
+    rules: List[BonusRule]
 
 
 @router.get("/finance/stats", response_model=FinanceStatsOut)
@@ -42,24 +49,7 @@ async def finance_stats(
     _admin: User = Depends(require_admin),
     db: AsyncSession = Depends(get_db),
 ):
-    total_revenue = float(
-        await db.scalar(
-            select(func.coalesce(func.sum(Order.price), 0)).where(
-                Order.status == OrderStatus.completed
-            )
-        ) or 0
-    )
-
-    total_commission = float(
-        await db.scalar(
-            select(func.coalesce(func.sum(func.abs(Transaction.amount)), 0)).where(
-                Transaction.type == "commission_fee",
-                Transaction.status == "completed"
-            )
-        ) or 0
-    )
-
-    total_topups = float(
+    total_topup = float(
         await db.scalar(
             select(func.coalesce(func.sum(Transaction.amount), 0)).where(
                 Transaction.type == "topup",
@@ -68,88 +58,163 @@ async def finance_stats(
         ) or 0
     )
 
-    total_refunds = float(
+    total_lead_fee = float(
         await db.scalar(
             select(func.coalesce(func.sum(func.abs(Transaction.amount)), 0)).where(
-                Transaction.type == "refund",
+                Transaction.type == "lead_fee",
                 Transaction.status == "completed"
             )
         ) or 0
     )
 
-    total_cashback_given = 0.0
-    
-    setting = await db.scalar(select(PlatformSetting).where(PlatformSetting.key == "commission_rate"))
-    commission_rate = float(setting.value) if setting else 15.0
+    total_premium = float(
+        await db.scalar(
+            select(func.coalesce(func.sum(Transaction.amount), 0)).where(
+                Transaction.type == "premium_subscription",
+                Transaction.status == "completed"
+            )
+        ) or 0
+    )
+
+    total_admin_withdraw = float(
+        await db.scalar(
+            select(func.coalesce(func.sum(func.abs(Transaction.amount)), 0)).where(
+                Transaction.type == "admin_withdraw",
+                Transaction.status == "completed"
+            )
+        ) or 0
+    )
+
+    net_profit = total_lead_fee + total_premium - total_admin_withdraw
 
     return FinanceStatsOut(
-        total_revenue=total_revenue,
-        total_commission=round(total_commission, 2),
-        total_cashback_given=total_cashback_given,
-        total_payouts=0.0,
-        platform_balance=round(total_commission - total_cashback_given, 2),
-        commission_rate=commission_rate,
-        total_topups=round(total_topups, 2),
-        total_refunds=round(total_refunds, 2),
+        total_topup=round(total_topup, 2),
+        total_lead_fee=round(total_lead_fee, 2),
+        total_premium=round(total_premium, 2),
+        total_admin_withdraw=round(total_admin_withdraw, 2),
+        net_profit=round(net_profit, 2),
     )
 
 
-@router.patch("/finance/commission")
-async def update_commission_rate(
-    data: CommissionUpdate,
+@router.get("/finance/bonus-rules")
+async def get_bonus_rules(
     _admin: User = Depends(require_admin),
     db: AsyncSession = Depends(get_db),
 ):
-    setting = await db.scalar(select(PlatformSetting).where(PlatformSetting.key == "commission_rate"))
+    setting = await db.scalar(select(PlatformSetting).where(PlatformSetting.key == "topup_bonus_rules"))
+    if not setting or not setting.value:
+        return []
+    try:
+        return json.loads(setting.value)
+    except:
+        return []
+
+@router.post("/finance/bonus-rules")
+async def update_bonus_rules(
+    data: BonusRulesUpdate,
+    _admin: User = Depends(require_admin),
+    db: AsyncSession = Depends(get_db),
+):
+    setting = await db.scalar(select(PlatformSetting).where(PlatformSetting.key == "topup_bonus_rules"))
+    rules_json = json.dumps([r.dict() for r in data.rules])
     if not setting:
-        setting = PlatformSetting(key="commission_rate", value=str(data.rate), description="Komissiya foizi (%)")
+        setting = PlatformSetting(key="topup_bonus_rules", value=rules_json, description="Top-up bonus rules")
         db.add(setting)
     else:
-        setting.value = str(data.rate)
+        setting.value = rules_json
     await db.commit()
-    return {"message": "Komissiya yangilandi", "rate": data.rate}
+    return {"message": "Bonus qoidalari saqlandi"}
 
 
-@router.post("/finance/provider-transaction")
-async def create_provider_transaction(
-    data: ProviderTransactionRequest,
+@router.post("/finance/topup")
+async def topup_provider_balance(
+    data: TopupRequest,
     _admin: User = Depends(require_admin),
     db: AsyncSession = Depends(get_db),
 ):
-    result = await db.execute(select(Provider).where(Provider.id == data.provider_id))
-    provider = result.scalar_one_or_none()
+    provider = await db.get(Provider, data.provider_id)
     if not provider:
         raise HTTPException(status_code=404, detail="Provayder topilmadi")
 
-    if data.type not in ["topup", "refund"]:
-        raise HTTPException(status_code=400, detail="Noto'g'ri tranzaksiya turi")
-
-    amount = data.amount if data.type == "topup" else -data.amount
-
-    if data.type == "refund" and provider.balance < data.amount:
-        # We can allow refunding to negative, or block it. Let's allow it but maybe warn.
-        pass
-
-    provider.balance += amount
-
-    transaction = Transaction(
+    # Add main topup
+    provider.balance += data.amount
+    tx = Transaction(
         provider_id=provider.id,
         user_id=provider.owner_user_id,
-        type=data.type,
-        amount=amount,
-        description=data.note or f"Admin: {data.type}",
+        type="topup",
+        amount=data.amount,
+        description=data.note or "Balans to'ldirildi",
         status="completed"
     )
-    db.add(transaction)
+    db.add(tx)
+
+    # Check for bonuses
+    setting = await db.scalar(select(PlatformSetting).where(PlatformSetting.key == "topup_bonus_rules"))
+    bonus_amount = 0
+    if setting and setting.value:
+        try:
+            rules = json.loads(setting.value)
+            for rule in rules:
+                if rule["min_amount"] <= data.amount <= rule["max_amount"]:
+                    bonus_amount = rule["bonus_amount"]
+                    break
+        except Exception as e:
+            pass
+    
+    if bonus_amount > 0:
+        provider.balance += bonus_amount
+        bonus_tx = Transaction(
+            provider_id=provider.id,
+            user_id=provider.owner_user_id,
+            type="topup_bonus",
+            amount=bonus_amount,
+            description=f"{data.amount} summalik to'ldirish uchun bonus",
+            status="completed"
+        )
+        db.add(bonus_tx)
+
     await db.commit()
 
     return {
-        "message": "Tranzaksiya muvaffaqiyatli amalga oshirildi",
-        "provider_id": data.provider_id,
-        "new_balance": provider.balance,
-        "type": data.type,
-        "amount": amount
+        "message": "Balans muvaffaqiyatli to'ldirildi",
+        "provider_id": provider.id,
+        "amount": data.amount,
+        "bonus_amount": bonus_amount,
+        "new_balance": provider.balance
     }
+
+@router.post("/finance/admin-withdraw")
+async def admin_withdraw(
+    data: AdminWithdrawRequest,
+    _admin: User = Depends(require_admin),
+    db: AsyncSession = Depends(get_db),
+):
+    tx = Transaction(
+        type="admin_withdraw",
+        amount=-data.amount,
+        description=data.note or "Platformadan xarajat qilingan/yechib olingan summa",
+        status="completed"
+    )
+    db.add(tx)
+    await db.commit()
+    return {"message": "Muvaffaqiyatli saqlandi"}
+
+@router.post("/finance/premium-purchase")
+async def add_premium_purchase(
+    data: PremiumPurchaseRequest,
+    _admin: User = Depends(require_admin),
+    db: AsyncSession = Depends(get_db),
+):
+    tx = Transaction(
+        type="premium_subscription",
+        amount=data.amount,
+        description=data.note or "Premium obuna tushumi",
+        status="completed"
+    )
+    db.add(tx)
+    await db.commit()
+    return {"message": "Muvaffaqiyatli saqlandi"}
+
 
 @router.get("/finance/providers")
 async def get_providers_for_finance(
@@ -163,7 +228,50 @@ async def get_providers_for_finance(
             "id": p.id,
             "name": p.name,
             "phone": p.phone,
-            "balance": p.balance
+            "balance": p.balance,
+            "lead_fee": p.lead_fee
         }
         for p in providers
     ]
+
+@router.get("/finance/transactions")
+async def get_all_transactions(
+    page: int = 1,
+    per_page: int = 50,
+    _admin: User = Depends(require_admin),
+    db: AsyncSession = Depends(get_db),
+):
+    from sqlalchemy.orm import selectinload
+    
+    count_query = select(func.count(Transaction.id))
+    total = (await db.execute(count_query)).scalar() or 0
+    
+    query = (
+        select(Transaction)
+        .options(selectinload(Transaction.provider), selectinload(Transaction.user), selectinload(Transaction.order))
+        .order_by(Transaction.created_at.desc())
+        .offset((page - 1) * per_page)
+        .limit(per_page)
+    )
+    result = await db.execute(query)
+    transactions = result.scalars().all()
+    
+    return {
+        "items": [
+            {
+                "id": t.id,
+                "type": t.type,
+                "amount": float(t.amount),
+                "description": t.description,
+                "status": t.status,
+                "created_at": t.created_at.isoformat() if t.created_at else None,
+                "provider_name": t.provider.name if t.provider else None,
+                "user_name": t.user.name if t.user else None,
+                "order_id": t.order_id
+            }
+            for t in transactions
+        ],
+        "total": total,
+        "pages": (total + per_page - 1) // per_page,
+        "page": page
+    }

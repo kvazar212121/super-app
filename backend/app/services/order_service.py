@@ -47,17 +47,30 @@ class OrderService:
         if provider.owner_user_id:
             owner_user = await db.get(User, provider.owner_user_id)
             if owner_user:
-                owner_user.balance -= 5000.0
-                from app.models.transaction import Transaction
-                tx = Transaction(
-                    user_id=owner_user.id,
-                    order_id=order.id,
-                    type="lead_fee",
-                    amount=-5000.0,
-                    description=f"Mijoz topilganligi uchun komissiya (Buyurtma #{order.id})",
-                    status="completed",
-                )
-                db.add(tx)
+                from app.models.setting import PlatformSetting
+                default_fee_setting = await db.scalar(select(PlatformSetting).where(PlatformSetting.key == "default_lead_fee"))
+                default_fee = float(default_fee_setting.value) if default_fee_setting else 5000.0
+                
+                actual_fee = default_fee
+                if provider.lead_fee is not None:
+                    actual_fee = provider.lead_fee
+                elif provider.category and provider.category.lead_fee is not None:
+                    actual_fee = provider.category.lead_fee
+                
+                if actual_fee > 0:
+                    provider.balance -= actual_fee
+                    
+                    from app.models.transaction import Transaction
+                    tx = Transaction(
+                        user_id=owner_user.id,
+                        provider_id=provider.id,
+                        order_id=order.id,
+                        type="lead_fee",
+                        amount=-actual_fee,
+                        description=f"Mijoz topilganligi uchun komissiya (Buyurtma #{order.id})",
+                        status="completed",
+                    )
+                    db.add(tx)
         
         import traceback
         try:
@@ -323,41 +336,7 @@ class OrderService:
     @staticmethod
     async def process_commission(db: AsyncSession, order) -> None:
         """
-        Process commission deduction from provider's balance when an order is completed.
+        Foizlik komissiya ushlab qolish tizimi bekor qilindi.
+        Buning o'rniga faqat buyurtma yaratilayotganda qat'iy "Lead fee" olinadi.
         """
-        from app.models.provider import Provider
-        from app.models.setting import PlatformSetting
-        from app.models.transaction import Transaction
-
-        # Check if already processed
-        result = await db.execute(
-            select(Transaction).where(
-                Transaction.order_id == order.id,
-                Transaction.type == "commission_fee"
-            )
-        )
-        if result.scalar_one_or_none():
-            return  # Already processed
-
-        setting = await db.scalar(select(PlatformSetting).where(PlatformSetting.key == "commission_rate"))
-        rate = float(setting.value) if setting else 15.0
-
-        if order.price and order.price > 0:
-            commission_amount = (order.price * rate) / 100.0
-
-            provider_result = await db.execute(select(Provider).where(Provider.id == order.provider_id))
-            provider = provider_result.scalar_one()
-
-            provider.balance -= commission_amount
-
-            transaction = Transaction(
-                user_id=provider.owner_user_id,
-                provider_id=provider.id,
-                order_id=order.id,
-                type="commission_fee",
-                amount=-commission_amount,
-                description=f"#{order.id} buyurtma uchun {rate}% komissiya ushlab qolindi",
-                status="completed"
-            )
-            db.add(transaction)
-            await db.flush()
+        pass

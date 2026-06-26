@@ -26,6 +26,7 @@ class Provider(Base):
         Integer, ForeignKey("users.id"), nullable=True, index=True
     )
     balance: Mapped[float] = mapped_column(Float, default=0.0)
+    lead_fee: Mapped[float | None] = mapped_column(Float, nullable=True)
     completed_orders_count: Mapped[int] = mapped_column(Integer, default=0)
     cancelled_orders_count: Mapped[int] = mapped_column(Integer, default=0)
 
@@ -51,6 +52,7 @@ class Provider(Base):
             "is_active": self.is_active,
             "is_paused": self.is_paused,
             "balance": self.balance,
+            "lead_fee": self.lead_fee,
             "completed_orders_count": self.completed_orders_count,
             "cancelled_orders_count": self.cancelled_orders_count,
         }

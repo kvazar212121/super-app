@@ -1,6 +1,6 @@
 // ===== API BASE =====
-        const API_BASE = '/api/v1/admin';
-        const API = '/api/v1';
+        const window.API_BASE = '/window.api/v1/admin';
+        const API = '/window.api/v1';
 
         // ===== AUTH TOKEN =====
         let authToken = localStorage.getItem('at');
@@ -48,7 +48,7 @@
         }
 
         function apiError(msg) {
-            showToast(msg || 'API xatoligi', 'error');
+            window.showToast(msg || 'API xatoligi', 'error');
         }
 
         // ===== UTILITY FUNCTIONS =====
@@ -109,9 +109,9 @@
             document.getElementById('modalOverlay').classList.remove('active');
         }
 
-        document.getElementById('modalClose').addEventListener('click', closeModal);
+        document.getElementById('modalClose').addEventListener('click', window.closeModal);
         document.getElementById('modalOverlay').addEventListener('click', function(e) {
-            if (e.target === e.currentTarget) closeModal();
+            if (e.target === e.currentTarget) window.closeModal();
         });
 
         // ===== SIDEBAR =====
@@ -139,7 +139,7 @@
         function navigateTo(page) {
             currentPage = page;
             navItems.forEach(function(n) { n.classList.toggle('active', n.dataset.page === page); });
-            renderPage(page);
+            window.renderPage(page);
         }
 
         async function renderPage(page) {
@@ -170,25 +170,25 @@
             let s = { orders_total: 0, users: 0, providers: 0, categories: 0, revenue_today: 0, revenue_month: 0, avg_rating: 0, orders_by_status: {} };
             let providers = [];
             try {
-                const r = await api(API_BASE + '/stats');
+                const r = await window.api(window.API_BASE + '/stats');
                 if (r && r.ok) s = await r.json();
-                const providersRes = await api(API_BASE + '/finance/providers');
+                const providersRes = await window.api(window.API_BASE + '/finance/providers');
                 if (providersRes && providersRes.ok) providers = await providersRes.json();
             } catch(e) { console.warn('Stats load error', e); apiError('Statistikani yuklab bo\'lmadi'); }
 
-            var providerOptions = providers.map(p => '<option value="' + p.id + '">' + p.name + ' (Balans: ' + formatMoney(p.balance) + ')</option>').join('');
+            var providerOptions = providers.map(p => '<option value="' + p.id + '">' + p.name + ' (Balans: ' + window.formatMoney(p.balance) + ')</option>').join('');
 
             var recentOrders = [];
             var topProviders = [];
             try {
-                const or = await api(API_BASE + '/orders?page=1&per_page=5');
+                const or = await window.api(window.API_BASE + '/orders?page=1&per_page=5');
                 if (or && or.ok) {
                     var od = await or.json();
                     recentOrders = (od.items || []).map(function(o) {
                         return { id: o.id, service: o.service_name || o.service, price: o.price, status: o.status };
                     });
                 }
-                const pr = await api(API_BASE + '/providers?page=1&per_page=5');
+                const pr = await window.api(window.API_BASE + '/providers?page=1&per_page=5');
                 if (pr && pr.ok) {
                     var pd = await pr.json();
                     topProviders = (pd.items || []).sort(function(a, b) { return (b.rating || 0) - (a.rating || 0); }).slice(0, 5);
@@ -197,7 +197,7 @@
 
             var weatherHtml = '<div class="widget-desc">Yuklanmoqda...</div>';
             try {
-                const wr = await api(API_BASE + '/utilities/weather?city=Tashkent');
+                const wr = await window.api(window.API_BASE + '/utilities/weather?city=Tashkent');
                 if (wr && wr.ok) {
                     var w = await wr.json();
                     weatherHtml = '<div class="widget-value">' + w.temperature_celsius + '°C, ' + w.condition + '</div>' +
@@ -207,7 +207,7 @@
 
             var currencyHtml = '<div class="widget-desc">Yuklanmoqda...</div>';
             try {
-                const cr = await api(API_BASE + '/utilities/currency');
+                const cr = await window.api(window.API_BASE + '/utilities/currency');
                 if (cr && cr.ok) {
                     var c = await cr.json();
                     if (c.rates && c.rates.length > 0) {
@@ -252,14 +252,14 @@
                             '<span class="stat-card-label">Bugungi tushum</span>' +
                             '<div class="stat-card-icon yellow">&#128176;</div>' +
                         '</div>' +
-                        '<div class="stat-card-value">' + formatMoney(s.revenue_today) + '</div>' +
+                        '<div class="stat-card-value">' + window.formatMoney(s.revenue_today) + '</div>' +
                     '</div>' +
                     '<div class="stat-card">' +
                         '<div class="stat-card-header">' +
                             '<span class="stat-card-label">Oylik tushum</span>' +
                             '<div class="stat-card-icon green">&#128200;</div>' +
                         '</div>' +
-                        '<div class="stat-card-value">' + formatMoney(s.revenue_month) + '</div>' +
+                        '<div class="stat-card-value">' + window.formatMoney(s.revenue_month) + '</div>' +
                     '</div>' +
                     '<div class="stat-card">' +
                         '<div class="stat-card-header">' +
@@ -291,7 +291,7 @@
                                     '<thead><tr><th>ID</th><th>Xizmat</th><th>Narx</th><th>Holat</th></tr></thead>' +
                                     '<tbody>' +
                                         recentOrders.map(function(o) {
-                            return '<tr><td>#' + o.id + '</td><td>' + o.service + '</td><td>' + formatMoney(o.price) + '</td><td>' + statusBadge(o.status) + '</td></tr>';
+                            return '<tr><td>#' + o.id + '</td><td>' + o.service + '</td><td>' + window.formatMoney(o.price) + '</td><td>' + window.statusBadge(o.status) + '</td></tr>';
                         }).join('') +
                                     '</tbody>' +
                                 '</table>' +
@@ -306,7 +306,7 @@
                                     '<thead><tr><th>#</th><th>Nomi</th><th>Reyting</th><th>Buyurtmalar</th></tr></thead>' +
                                     '<tbody>' +
                                         topProviders.map(function(p, i) {
-                            return '<tr><td>' + (i + 1) + '</td><td><div class="table-user"><div class="table-avatar">' + getInitials(p.name) + '</div><span>' + p.name + '</span></div></td><td>' + renderStars(Math.round(p.rating || 0)) + ' ' + (p.rating || 0) + '</td><td>' + (p.review_count || p.orders || 0) + '</td></tr>';
+                            return '<tr><td>' + (i + 1) + '</td><td><div class="table-user"><div class="table-avatar">' + window.getInitials(p.name) + '</div><span>' + p.name + '</span></div></td><td>' + window.renderStars(Math.round(p.rating || 0)) + ' ' + (p.rating || 0) + '</td><td>' + (p.review_count || p.orders || 0) + '</td></tr>';
                         }).join('') +
                                     '</tbody>' +
                                 '</table>' +
@@ -334,7 +334,7 @@
                 await loadCategoriesCache();
                 catLabels = categoriesCache.map(function(c) { return c.title_uz; });
                 catData = categoriesCache.map(function() { return 0; });
-                const r = await api(API_BASE + '/chart-data?days=30');
+                const r = await window.api(window.API_BASE + '/chart-data?days=30');
                 if (r && r.ok) {
                     chartDataCache = await r.json();
                     labels = chartDataCache.revenue.map(function(p) {
@@ -425,11 +425,11 @@
             var searchEl = document.getElementById('userSearch');
             if (searchEl) search = searchEl.value;
 
-            let url = API_BASE + '/users?page=' + page + '&per_page=20';
+            let url = window.API_BASE + '/users?page=' + page + '&per_page=20';
             if (search) url += '&search=' + encodeURIComponent(search);
 
             try {
-                const r = await api(url);
+                const r = await window.api(url);
                 if (r && r.ok) usersData = await r.json();
             } catch(e) {
                 usersData = emptyPage(); apiError('Foydalanuvchilarni yuklab bo\'lmadi');
@@ -475,10 +475,10 @@
             if (!users || users.length === 0) return '<tr><td colspan="8" style="text-align:center;color:var(--gray-400);padding:40px;">Foydalanuvchilar topilmadi</td></tr>';
             return users.map(function(u) {
                 var name = (u.name || '') + ' ' + (u.surname || '');
-                var created = u.created_at ? formatDate(u.created_at) : '—';
+                var created = u.created_at ? window.formatDate(u.created_at) : '—';
                 return '<tr>' +
                     '<td>' + u.id + '</td>' +
-                    '<td><div class="table-user"><div class="table-avatar">' + getInitials(name) + '</div><span>' + name.trim() + '</span></div></td>' +
+                    '<td><div class="table-user"><div class="table-avatar">' + window.getInitials(name) + '</div><span>' + name.trim() + '</span></div></td>' +
                     '<td>' + (u.phone || '') + '</td>' +
                     '<td>' + (u.is_premium ? '<span class="badge-status confirmed">Premium</span>' : '<span class="badge-status pending">Oddiy</span>') + '</td>' +
                     '<td>' + created + '</td>' +
@@ -504,41 +504,41 @@
 
         async function viewUserApi(id) {
             try {
-                const r = await api(API_BASE + '/users/' + id);
-                if (!r || !r.ok) { showToast('Foydalanuvchi topilmadi', 'error'); return; }
+                const r = await window.api(window.API_BASE + '/users/' + id);
+                if (!r || !r.ok) { window.showToast('Foydalanuvchi topilmadi', 'error'); return; }
                 var u = await r.json();
                 var name = (u.name || '') + ' ' + (u.surname || '');
-                openModal('Foydalanuvchi ma\'lumotlari',
+                window.openModal('Foydalanuvchi ma\'lumotlari',
                     '<div class="detail-grid">' +
                         '<div class="detail-item"><div class="detail-label">ID</div><div class="detail-value">' + u.id + '</div></div>' +
                         '<div class="detail-item"><div class="detail-label">Ism</div><div class="detail-value">' + name + '</div></div>' +
                         '<div class="detail-item"><div class="detail-label">Telefon</div><div class="detail-value">' + u.phone + '</div></div>' +
-                        '<div class="detail-item"><div class="detail-label">Balans</div><div class="detail-value">' + formatMoney(u.balance) + '</div></div>' +
-                        '<div class="detail-item"><div class="detail-label">Cashback</div><div class="detail-value">' + formatMoney(u.cashback) + '</div></div>' +
+                        '<div class="detail-item"><div class="detail-label">Balans</div><div class="detail-value">' + window.formatMoney(u.balance) + '</div></div>' +
+                        '<div class="detail-item"><div class="detail-label">Cashback</div><div class="detail-value">' + window.formatMoney(u.cashback) + '</div></div>' +
                         '<div class="detail-item"><div class="detail-label">Premium</div><div class="detail-value">' + (u.is_premium ? 'Ha' : 'Yo\'q') + '</div></div>' +
                         '<div class="detail-item"><div class="detail-label">Telegram</div><div class="detail-value">' + (u.telegram_username || '—') + '</div></div>' +
-                        '<div class="detail-item"><div class="detail-label">Sana</div><div class="detail-value">' + (u.created_at ? formatDate(u.created_at) : '—') + '</div></div>' +
+                        '<div class="detail-item"><div class="detail-label">Sana</div><div class="detail-value">' + (u.created_at ? window.formatDate(u.created_at) : '—') + '</div></div>' +
                     '</div>',
-                    '<button class="btn btn-secondary" onclick="closeModal()">Yopish</button>');
-            } catch(e) { showToast('Xatolik', 'error'); }
+                    '<button class="btn btn-secondary" onclick="window.closeModal()">Yopish</button>');
+            } catch(e) { window.showToast('Xatolik', 'error'); }
         }
 
         async function blockUserApi(id) {
             if (!confirm('Foydalanuvchini bloklash/blokdan chiqarish?')) return;
             try {
-                await api(API_BASE + '/users/' + id + '/block', { method: 'PATCH', body: JSON.stringify({ is_blocked: true }) });
-                showToast('Foydalanuvchi holati o\'zgartirildi', 'info');
+                await window.api(window.API_BASE + '/users/' + id + '/block', { method: 'PATCH', body: JSON.stringify({ is_blocked: true }) });
+                window.showToast('Foydalanuvchi holati o\'zgartirildi', 'info');
                 renderUsers(usersPage);
-            } catch(e) { showToast('Xatolik', 'error'); }
+            } catch(e) { window.showToast('Xatolik', 'error'); }
         }
 
         async function deleteUserApi(id) {
             if (!confirm('Rostdan ham bu foydalanuvchini o\'chirmoqchimisiz?')) return;
             try {
-                await api(API_BASE + '/users/' + id, { method: 'DELETE' });
-                showToast('Foydalanuvchi o\'chirildi', 'error');
+                await window.api(window.API_BASE + '/users/' + id, { method: 'DELETE' });
+                window.showToast('Foydalanuvchi o\'chirildi', 'error');
                 renderUsers(usersPage);
-            } catch(e) { showToast('Xatolik', 'error'); }
+            } catch(e) { window.showToast('Xatolik', 'error'); }
         }
 
 
@@ -549,7 +549,7 @@
 
         async function loadCategoriesCache() {
             try {
-                const r = await api(API_BASE + '/categories');
+                const r = await window.api(window.API_BASE + '/categories');
                 if (r && r.ok) categoriesCache = await r.json();
             } catch(e) {
                 categoriesCache = []; apiError('Kategoriyalarni yuklab bo\'lmadi');
@@ -566,7 +566,7 @@
             var searchEl = document.getElementById('providerSearch');
             if (searchEl) search = searchEl.value;
 
-            let url = API_BASE + '/providers?page=' + page + '&per_page=20';
+            let url = window.API_BASE + '/providers?page=' + page + '&per_page=20';
             if (search) url += '&search=' + encodeURIComponent(search);
             var statusFilterEl = document.getElementById('providerStatusFilter');
             var statusFilter = statusFilterEl ? statusFilterEl.value : '';
@@ -574,7 +574,7 @@
             else if (statusFilter === 'active') url += '&is_active=true';
 
             try {
-                const r = await api(url);
+                const r = await window.api(url);
                 if (r && r.ok) providersData = await r.json();
             } catch(e) {
                 providersData = emptyPage(); apiError('Provayderlarni yuklab bo\'lmadi');
@@ -670,11 +670,11 @@
                 actions += '<button class="btn-icon danger" title="O\'chirish" onclick="deleteProvider(' + p.id + ')">&#128465;</button>';
                 return '<tr>' +
                     '<td>' + p.id + '</td>' +
-                    '<td><div class="table-user"><div class="table-avatar">' + getInitials(p.name) + '</div><span>' + p.name + (typeLabel ? '<br><small style="color:#64748b">' + typeLabel + '</small>' : '') + '</span></div></td>' +
+                    '<td><div class="table-user"><div class="table-avatar">' + window.getInitials(p.name) + '</div><span>' + p.name + (typeLabel ? '<br><small style="color:#64748b">' + typeLabel + '</small>' : '') + '</span></div></td>' +
                     '<td>' + (p.category_title || p.category_key || '-') + '</td>' +
                     '<td>' + p.phone + '</td>' +
-                    '<td>' + renderStars(Math.round(p.rating || 0)) + ' ' + (p.rating || 0) + '</td>' +
-                    '<td>' + statusBadge(status) + '</td>' +
+                    '<td>' + window.renderStars(Math.round(p.rating || 0)) + ' ' + (p.rating || 0) + '</td>' +
+                    '<td>' + window.statusBadge(status) + '</td>' +
                     '<td><div class="action-group">' + actions + '</div></td>' +
                 '</tr>';
             }).join('');
@@ -793,21 +793,29 @@
                 '<div class="detail-item"><div class="detail-label">Kategoriya</div><div class="detail-value">' + (p.category_title || p.category || '-') + '</div></div>' +
                 '<div class="detail-item"><div class="detail-label">Telefon</div><div class="detail-value">' + p.phone + '</div></div>' +
                 '<div class="detail-item"><div class="detail-label">Manzil</div><div class="detail-value">' + (p.address || '-') + '</div></div>' +
-                '<div class="detail-item"><div class="detail-label">Holat</div><div class="detail-value">' + statusBadge(providerDisplayStatus(p)) + '</div></div>' +
-                '<div class="detail-item"><div class="detail-label">Reyting</div><div class="detail-value">' + (p.rating || 0) + ' ' + renderStars(Math.round(p.rating || 0)) + '</div></div>' +
+                '<div class="detail-item"><div class="detail-label">Holat</div><div class="detail-value">' + window.statusBadge(providerDisplayStatus(p)) + '</div></div>' +
+                '<div class="detail-item"><div class="detail-label">Reyting</div><div class="detail-value">' + (p.rating || 0) + ' ' + window.renderStars(Math.round(p.rating || 0)) + '</div></div>' +
                 extra +
+                '<div class="detail-item" style="grid-column:1/-1; margin-top: 10px; border-top: 1px solid #e2e8f0; padding-top: 10px;">' +
+                    '<div class="detail-label">Maxsus Komissiya (Mijoz topilganlik uchun)</div>' +
+                    '<div class="detail-value">' +
+                        '<input type="number" id="editProviderLeadFee_' + p.id + '" class="form-input" style="width: 150px; display: inline-block; margin-right: 10px;" value="' + (p.lead_fee || '') + '" placeholder="Standart 5000"> ' +
+                        '<button class="btn btn-primary btn-sm" onclick="saveProviderLeadFee(' + p.id + ')">Saqlash</button>' +
+                        '<p style="font-size: 11px; color: #64748b; margin-top: 4px;">Bo\'sh qoldirilsa tizimning standart komissiyasi olinadi.</p>' +
+                    '</div>' +
+                '</div>' +
             '</div>';
         }
 
         async function viewProvider(id) {
             var p = providersData.items.find(function(x) { return x.id === id; });
             if (!p) return;
-            var footer = '<button class="btn btn-secondary" onclick="closeModal()">Yopish</button>';
+            var footer = '<button class="btn btn-secondary" onclick="window.closeModal()">Yopish</button>';
             if (providerNeedsApproval(p)) {
-                footer = '<button class="btn btn-primary" onclick="approveProvider(' + p.id + '); closeModal();">Tasdiqlash</button>' +
-                    '<button class="btn btn-secondary" onclick="rejectProvider(' + p.id + '); closeModal();">Rad etish</button>' + footer;
+                footer = '<button class="btn btn-primary" onclick="approveProvider(' + p.id + '); window.closeModal();">Tasdiqlash</button>' +
+                    '<button class="btn btn-secondary" onclick="rejectProvider(' + p.id + '); window.closeModal();">Rad etish</button>' + footer;
             }
-            openModal('Soha egasi ma\'lumotlari', providerDetailHtml(p), footer);
+            window.openModal('Soha egasi ma\'lumotlari', providerDetailHtml(p), footer);
         }
 
         function editProvider(id) {
@@ -815,30 +823,52 @@
         }
 
         function saveProvider(id) {
-            closeModal();
+            window.closeModal();
+        }
+
+        async function saveProviderLeadFee(id) {
+            var input = document.getElementById('editProviderLeadFee_' + id);
+            if (!input) return;
+            var val = input.value;
+            var payload = { lead_fee: val ? parseFloat(val) : null };
+            try {
+                const r = await window.api(window.API_BASE + '/providers/' + id, {
+                    method: 'PATCH',
+                    body: JSON.stringify(payload)
+                });
+                if (r && r.ok) {
+                    window.showToast('Maxsus komissiya saqlandi');
+                    renderProviders(providersPage);
+                    window.closeModal();
+                } else {
+                    window.showToast('Saqlashda xatolik', 'error');
+                }
+            } catch (e) {
+                window.showToast('Xatolik yuz berdi', 'error');
+            }
         }
 
         async function approveProvider(id) {
             try {
-                await api(API_BASE + '/providers/' + id + '/approve', { method: 'PATCH' });
-                showToast('Soha egasi tasdiqlandi'); renderProviders();
-            } catch(e) { showToast('Xatolik', 'error'); }
+                await window.api(window.API_BASE + '/providers/' + id + '/approve', { method: 'PATCH' });
+                window.showToast('Soha egasi tasdiqlandi'); renderProviders();
+            } catch(e) { window.showToast('Xatolik', 'error'); }
         }
 
         async function rejectProvider(id) {
             if (!confirm('Bu soha egasini rad etmoqchimisiz?')) return;
             try {
-                await api(API_BASE + '/providers/' + id + '/reject', { method: 'PATCH' });
-                showToast('Soha egasi rad etildi', 'warning'); renderProviders();
-            } catch(e) { showToast('Xatolik', 'error'); }
+                await window.api(window.API_BASE + '/providers/' + id + '/reject', { method: 'PATCH' });
+                window.showToast('Soha egasi rad etildi', 'warning'); renderProviders();
+            } catch(e) { window.showToast('Xatolik', 'error'); }
         }
 
         async function deleteProvider(id) {
             if (!confirm('Rostdan ham bu soha egasini o\'chirmoqchimisiz?')) return;
             try {
-                await api(API_BASE + '/providers/' + id, { method: 'DELETE' });
-                showToast('Soha egasi o\'chirildi', 'error'); renderProviders();
-            } catch(e) { showToast('Xatolik', 'error'); }
+                await window.api(window.API_BASE + '/providers/' + id, { method: 'DELETE' });
+                window.showToast('Soha egasi o\'chirildi', 'error'); renderProviders();
+            } catch(e) { window.showToast('Xatolik', 'error'); }
         }
 
         // ===== PAGE: ORDERS =====
@@ -852,11 +882,11 @@
             var statusEl = document.getElementById('orderStatusFilter');
             if (statusEl) status = statusEl.value;
 
-            let url = API_BASE + '/orders?page=' + page + '&per_page=20';
+            let url = window.API_BASE + '/orders?page=' + page + '&per_page=20';
             if (status && status !== 'all') url += '&status=' + encodeURIComponent(status);
 
             try {
-                const r = await api(url);
+                const r = await window.api(url);
                 if (r && r.ok) ordersData = await r.json();
             } catch(e) {
                 ordersData = emptyPage(); apiError('Buyurtmalarni yuklab bo\'lmadi');
@@ -905,9 +935,9 @@
                     '<td>' + (o.service_name || o.service || '—') + '</td>' +
                     '<td>' + (o.user_name || '—') + '</td>' +
                     '<td>' + (o.provider_name || '—') + '</td>' +
-                    '<td>' + formatMoney(o.price || 0) + '</td>' +
-                    '<td>' + statusBadge(o.status || 'pending') + '</td>' +
-                    '<td>' + (o.created_at ? formatDate(o.created_at) : '—') + '</td>' +
+                    '<td>' + window.formatMoney(o.price || 0) + '</td>' +
+                    '<td>' + window.statusBadge(o.status || 'pending') + '</td>' +
+                    '<td>' + (o.created_at ? window.formatDate(o.created_at) : '—') + '</td>' +
                     '<td><div class="action-group">' +
                         '<select class="filter-select" style="padding:4px 24px 4px 8px;font-size:12px;" onchange="changeOrderStatus(' + o.id + ', this.value)">' +
                             '<option value="">Status</option>' +
@@ -924,10 +954,10 @@
         async function changeOrderStatus(id, status) {
             if (!status) return;
             try {
-                await api(API_BASE + '/orders/' + id + '/status', { method: 'PATCH', body: JSON.stringify({ status: status }) });
-                showToast('Buyurtma statusi yangilandi');
+                await window.api(window.API_BASE + '/orders/' + id + '/status', { method: 'PATCH', body: JSON.stringify({ status: status }) });
+                window.showToast('Buyurtma statusi yangilandi');
                 renderOrders(ordersPage);
-            } catch(e) { showToast('Xatolik', 'error'); }
+            } catch(e) { window.showToast('Xatolik', 'error'); }
         }
 
         // ===== PAGE: CATEGORIES =====
@@ -984,7 +1014,7 @@
                     html += '<div class="variant-item">' +
                         '<div><span class="variant-label">' + (v.label_uz || v.label) + '</span></div>' +
                         '<div style="display:flex; align-items:center; gap:12px;">' +
-                            '<span class="variant-price">' + formatMoney(v.base_price) + '</span>' +
+                            '<span class="variant-price">' + window.formatMoney(v.base_price) + '</span>' +
                             '<div class="action-group">' +
                                 '<button class="btn-icon danger" title="O\'chirish" onclick="deleteVariant(' + ci + ', ' + (c.id || 0) + ', ' + v.id + ')">&#128465;</button>' +
                             '</div>' +
@@ -1003,14 +1033,14 @@
         }
 
         function addCategoryModal() {
-            openModal('Yangi kategoriya qo\'shish',
+            window.openModal('Yangi kategoriya qo\'shish',
                 '<div class="form-group"><label class="form-label">Kalit (key)</label><input type="text" class="form-input" id="catKey" placeholder="masalan: elektr"></div>' +
                 '<div class="form-group"><label class="form-label">Nomi (o\'zbekcha)</label><input type="text" class="form-input" id="catTitle" placeholder="masalan: Elektrik xizmatlari"></div>' +
                 '<div class="form-row">' +
                     '<div class="form-group"><label class="form-label">Icon (emoji)</label><input type="text" class="form-input" id="catIcon" placeholder="&#9889;"></div>' +
                     '<div class="form-group"><label class="form-label">Rang</label><input type="color" class="form-input" id="catColor" value="#6366F1" style="height:40px; padding:4px;"></div>' +
                 '</div>',
-                '<button class="btn btn-secondary" onclick="closeModal()">Bekor qilish</button>' +
+                '<button class="btn btn-secondary" onclick="window.closeModal()">Bekor qilish</button>' +
                 '<button class="btn btn-primary" onclick="saveCategory()">Saqlash</button>');
         }
 
@@ -1019,17 +1049,17 @@
             var title = document.getElementById('catTitle').value.trim();
             var icon = document.getElementById('catIcon').value || '&#128194;';
             var color = document.getElementById('catColor').value;
-            if (!key || !title) { showToast('Kalit va nomi majburiy', 'error'); return; }
-            api(API_BASE + '/categories', {
+            if (!key || !title) { window.showToast('Kalit va nomi majburiy', 'error'); return; }
+            window.api(window.API_BASE + '/categories', {
                 method: 'POST',
                 body: JSON.stringify({ key: key, title_uz: title, icon: icon, accent_color: color })
             }).then(function(r) {
                 if (r && r.ok) {
-                    showToast('Kategoriya qo\'shildi');
-                    closeModal();
+                    window.showToast('Kategoriya qo\'shildi');
+                    window.closeModal();
                     renderCategories();
                 } else {
-                    showToast('Xatolik yuz berdi', 'error');
+                    window.showToast('Xatolik yuz berdi', 'error');
                 }
             });
         }
@@ -1037,14 +1067,14 @@
         function editCategoryModal(idx) {
             var c = categoriesCache[idx];
             if (!c) return;
-            openModal('Kategoriyani tahrirlash',
+            window.openModal('Kategoriyani tahrirlash',
                 '<div class="form-group"><label class="form-label">Kalit (key)</label><input type="text" class="form-input" id="catKey" value="' + c.key + '"></div>' +
                 '<div class="form-group"><label class="form-label">Nomi (o\'zbekcha)</label><input type="text" class="form-input" id="catTitle" value="' + c.title_uz + '"></div>' +
                 '<div class="form-row">' +
                     '<div class="form-group"><label class="form-label">Icon (emoji)</label><input type="text" class="form-input" id="catIcon" value="' + c.icon + '"></div>' +
                     '<div class="form-group"><label class="form-label">Rang</label><input type="color" class="form-input" id="catColor" value="' + c.accent_color + '" style="height:40px; padding:4px;"></div>' +
                 '</div>',
-                '<button class="btn btn-secondary" onclick="closeModal()">Bekor qilish</button>' +
+                '<button class="btn btn-secondary" onclick="window.closeModal()">Bekor qilish</button>' +
                 '<button class="btn btn-primary" onclick="updateCategory(' + idx + ', ' + c.id + ')">Saqlash</button>');
         }
 
@@ -1055,56 +1085,56 @@
                 icon: document.getElementById('catIcon').value,
                 accent_color: document.getElementById('catColor').value
             };
-            api(API_BASE + '/categories/' + catId, {
+            window.api(window.API_BASE + '/categories/' + catId, {
                 method: 'PATCH',
                 body: JSON.stringify(payload)
             }).then(function(r) {
                 if (r && r.ok) {
-                    showToast('Kategoriya yangilandi');
-                    closeModal();
+                    window.showToast('Kategoriya yangilandi');
+                    window.closeModal();
                     renderCategories();
                 } else {
-                    showToast('Xatolik yuz berdi', 'error');
+                    window.showToast('Xatolik yuz berdi', 'error');
                 }
             });
         }
 
         function deleteCategory(idx, catId) {
-            if (!catId) { showToast('Kategoriya ID topilmadi', 'error'); return; }
+            if (!catId) { window.showToast('Kategoriya ID topilmadi', 'error'); return; }
             if (confirm('Bu kategoriyani o\'chirmoqchimisiz?')) {
-                api(API_BASE + '/categories/' + catId, { method: 'DELETE' }).then(function(r) {
+                window.api(window.API_BASE + '/categories/' + catId, { method: 'DELETE' }).then(function(r) {
                     if (r && (r.ok || r.status === 204)) {
-                        showToast('Kategoriya o\'chirildi', 'error');
+                        window.showToast('Kategoriya o\'chirildi', 'error');
                         renderCategories();
                     } else {
-                        showToast('O\'chirib bo\'lmadi', 'error');
+                        window.showToast('O\'chirib bo\'lmadi', 'error');
                     }
                 });
             }
         }
 
         function addVariantModal(catIdx, catId) {
-            openModal('Yangi variant qo\'shish',
+            window.openModal('Yangi variant qo\'shish',
                 '<div class="form-group"><label class="form-label">Variant nomi</label><input type="text" class="form-input" id="varLabel" placeholder="masalan: Rozetka o\'rnatish"></div>' +
                 '<div class="form-group"><label class="form-label">Boshlang\'ich narx (so\'m)</label><input type="number" class="form-input" id="varPrice" placeholder="50000"></div>',
-                '<button class="btn btn-secondary" onclick="closeModal()">Bekor qilish</button>' +
+                '<button class="btn btn-secondary" onclick="window.closeModal()">Bekor qilish</button>' +
                 '<button class="btn btn-primary" onclick="saveVariant(' + catIdx + ', ' + catId + ')">Saqlash</button>');
         }
 
         function saveVariant(catIdx, catId) {
             var label = document.getElementById('varLabel').value.trim();
             var price = parseInt(document.getElementById('varPrice').value);
-            if (!label || !price) { showToast('Nomi va narx majburiy', 'error'); return; }
-            api(API_BASE + '/categories/' + catId + '/variants', {
+            if (!label || !price) { window.showToast('Nomi va narx majburiy', 'error'); return; }
+            window.api(window.API_BASE + '/categories/' + catId + '/variants', {
                 method: 'POST',
                 body: JSON.stringify({ label_uz: label, base_price: price })
             }).then(function(r) {
                 if (r && r.ok) {
-                    showToast('Variant qo\'shildi');
-                    closeModal();
+                    window.showToast('Variant qo\'shildi');
+                    window.closeModal();
                     renderCategories();
                 } else {
-                    showToast('Xatolik yuz berdi', 'error');
+                    window.showToast('Xatolik yuz berdi', 'error');
                 }
             });
         }
@@ -1114,10 +1144,10 @@
             if (!cat) return;
             var v = (cat.variants || []).find(function(x) { return x.id === varId; });
             if (!v) return;
-            openModal('Variantni tahrirlash',
+            window.openModal('Variantni tahrirlash',
                 '<div class="form-group"><label class="form-label">Variant nomi</label><input type="text" class="form-input" id="varLabel" value="' + (v.label_uz || v.label) + '"></div>' +
                 '<div class="form-group"><label class="form-label">Boshlang\'ich narx (so\'m)</label><input type="number" class="form-input" id="varPrice" value="' + v.base_price + '"></div>',
-                '<button class="btn btn-secondary" onclick="closeModal()">Bekor qilish</button>' +
+                '<button class="btn btn-secondary" onclick="window.closeModal()">Bekor qilish</button>' +
                 '<button class="btn btn-primary" onclick="updateVariant(' + catIdx + ', ' + cat.id + ', ' + varId + ')">Saqlash</button>');
         }
 
@@ -1126,28 +1156,28 @@
                 label_uz: document.getElementById('varLabel').value.trim(),
                 base_price: parseInt(document.getElementById('varPrice').value)
             };
-            api(API_BASE + '/categories/' + catId + '/variants/' + varId, {
+            window.api(window.API_BASE + '/categories/' + catId + '/variants/' + varId, {
                 method: 'PATCH',
                 body: JSON.stringify(payload)
             }).then(function(r) {
                 if (r && r.ok) {
-                    showToast('Variant yangilandi');
-                    closeModal();
+                    window.showToast('Variant yangilandi');
+                    window.closeModal();
                     renderCategories();
                 } else {
-                    showToast('Xatolik yuz berdi', 'error');
+                    window.showToast('Xatolik yuz berdi', 'error');
                 }
             });
         }
 
         function deleteVariant(catIdx, catId, varId) {
             if (confirm('Bu variantni o\'chirmoqchimisiz?')) {
-                api(API_BASE + '/categories/' + catId + '/variants/' + varId, { method: 'DELETE' }).then(function(r) {
+                window.api(window.API_BASE + '/categories/' + catId + '/variants/' + varId, { method: 'DELETE' }).then(function(r) {
                     if (r && (r.ok || r.status === 204)) {
-                        showToast('Variant o\'chirildi', 'error');
+                        window.showToast('Variant o\'chirildi', 'error');
                         renderCategories();
                     } else {
-                        showToast('O\'chirib bo\'lmadi', 'error');
+                        window.showToast('O\'chirib bo\'lmadi', 'error');
                     }
                 });
             }
@@ -1158,9 +1188,9 @@
 
         async function renderReviews(page) {
             if (page === undefined) page = 1;
-            let url = API_BASE + '/reviews?page=' + page + '&per_page=20';
+            let url = window.API_BASE + '/reviews?page=' + page + '&per_page=20';
             try {
-                const r = await api(url);
+                const r = await window.api(url);
                 if (r && r.ok) reviewsData = await r.json();
             } catch(e) {
                 reviewsData = emptyPage(); apiError('Sharhlarni yuklab bo\'lmadi');
@@ -1191,11 +1221,11 @@
             return reviews.map(function(r) {
                 return '<tr>' +
                     '<td>' + r.id + '</td>' +
-                    '<td><div class="table-user"><div class="table-avatar">' + getInitials(r.user_name || r.user || '?') + '</div><span>' + (r.user_name || r.user || '-') + '</span></div></td>' +
+                    '<td><div class="table-user"><div class="table-avatar">' + window.getInitials(r.user_name || r.user || '?') + '</div><span>' + (r.user_name || r.user || '-') + '</span></div></td>' +
                     '<td>' + (r.provider_name || r.provider || '-') + '</td>' +
-                    '<td>' + renderStars(r.rating) + '</td>' +
+                    '<td>' + window.renderStars(r.rating) + '</td>' +
                     '<td style="max-width:300px;">' + (r.comment || r.text || '') + '</td>' +
-                    '<td>' + formatDate(r.created_at) + '</td>' +
+                    '<td>' + window.formatDate(r.created_at) + '</td>' +
                     '<td><div class="action-group">' +
                         '<button class="btn-icon danger" title="O\'chirish" onclick="deleteReview(' + r.id + ')">&#128465;</button>' +
                     '</div></td>' +
@@ -1213,168 +1243,241 @@
 
         function deleteReview(id) {
             if (confirm('Bu sharhni o\'chirmoqchimisiz?')) {
-                api(API_BASE + '/reviews/' + id, { method: 'DELETE' }).then(function(r) {
+                window.api(window.API_BASE + '/reviews/' + id, { method: 'DELETE' }).then(function(r) {
                     if (r && (r.ok || r.status === 204)) {
-                        showToast('Sharh o\'chirildi', 'error');
+                        window.showToast('Sharh o\'chirildi', 'error');
                         renderReviews();
                     } else {
-                        showToast('O\'chirib bo\'lmadi', 'error');
+                        window.showToast('O\'chirib bo\'lmadi', 'error');
                     }
                 });
             }
         }
 
+        
         // ===== PAGE: FINANCE =====
         async function renderFinance() {
-            var f = { total_revenue: 0, total_commission: 0, total_cashback_given: 0, platform_balance: 0, commission_rate: 15, transactions: [] };
+            var f = { total_topup: 0, total_lead_fee: 0, total_premium: 0, total_admin_withdraw: 0, net_profit: 0 };
             try {
-                const r = await api(API_BASE + '/finance/stats');
-                if (r && r.ok) {
-                    var stats = await r.json();
-                    f.total_revenue = stats.total_revenue || 0;
-                    f.total_commission = stats.total_commission || 0;
-                    f.total_cashback_given = stats.total_cashback_given || 0;
-                    f.platform_balance = stats.platform_balance || 0;
-                    f.commission_rate = stats.commission_rate || 15;
-                }
+                const r = await window.api(window.API_BASE + '/finance/stats');
+                if (r && r.ok) f = await r.json();
             } catch(e) {}
 
-            await loadCategoriesCache();
             var providerOptions = '';
+            var providersTableRows = '';
             try {
-                const pr = await api(API_BASE + '/providers?per_page=100');
+                const pr = await window.api(window.API_BASE + '/finance/providers');
                 if (pr && pr.ok) {
                     var pdata = await pr.json();
-                    providerOptions = (pdata.items || []).filter(function(p) { return p.is_active; }).map(function(p) {
-                        return '<option value="' + p.id + '">' + p.name + '</option>';
+                    providerOptions = pdata.map(function(p) {
+                        return '<option value="' + p.id + '">' + p.name + ' (Balans: ' + window.formatMoney(p.balance) + ')</option>';
+                    }).join('');
+                    
+                    providersTableRows = pdata.map(function(p) {
+                        var balColor = p.balance < 0 ? 'var(--red-600)' : 'var(--green-600)';
+                        return '<tr>' +
+                            '<td>#' + p.id + '</td>' +
+                            '<td>' + p.name + '</td>' +
+                            '<td>' + p.phone + '</td>' +
+                            '<td><strong style="color:' + balColor + '">' + window.formatMoney(p.balance) + '</strong></td>' +
+                            '<td>' + (p.lead_fee ? window.formatMoney(p.lead_fee) : 'Standart (5 000)') + '</td>' +
+                            '</tr>';
                     }).join('');
                 }
             } catch(e) {}
+
+            var txRows = '';
+            try {
+                const tr = await window.api(window.API_BASE + '/finance/transactions?per_page=15');
+                if (tr && tr.ok) {
+                    var tdata = await tr.json();
+                    txRows = (tdata.items || []).map(function(t) {
+                        var tType = t.type;
+                        if(tType==='topup') tType='Balans to\'ldirish';
+                        else if(tType==='topup_bonus') tType='Top-up Bonus';
+                        else if(tType==='lead_fee') tType='Lead Fee (Komissiya)';
+                        else if(tType==='premium_subscription') tType='Premium Obuna';
+                        else if(tType==='admin_withdraw') tType='Platforma Xarajati';
+                        
+                        var amtColor = t.amount < 0 ? 'var(--red-600)' : 'var(--green-600)';
+                        var userProv = t.provider_name ? ('Prov: '+t.provider_name) : (t.user_name ? ('Mijoz: '+t.user_name) : '—');
+                        return '<tr>' +
+                            '<td>' + window.formatDate(t.created_at) + '</td>' +
+                            '<td>' + tType + '</td>' +
+                            '<td>' + userProv + '</td>' +
+                            '<td><strong style="color:' + amtColor + '">' + window.formatMoney(t.amount) + '</strong></td>' +
+                            '<td>' + (t.description || '—') + '</td>' +
+                            '</tr>';
+                    }).join('');
+                }
+            } catch(e) {}
+
+            var rulesHtml = '';
+            try {
+                const rls = await window.api(window.API_BASE + '/finance/bonus-rules');
+                if (rls && rls.ok) {
+                    var rules = await rls.json();
+                    rulesHtml = rules.map(function(r, idx) {
+                        return '<div style="margin-bottom:8px;font-size:13px;padding:8px;background:var(--gray-50);border-radius:4px;">' +
+                            '<b>#' + (idx+1) + ':</b> ' + window.formatMoney(r.min_amount) + ' dan ' + window.formatMoney(r.max_amount) + ' gacha -> <b>' + window.formatMoney(r.bonus_amount) + ' bonus</b>' +
+                            '</div>';
+                    }).join('');
+                }
+            } catch(e) {}
+
             mainContent.innerHTML =
                 '<div class="page-header">' +
-                    '<h1 class="page-title">Moliya</h1>' +
-                    '<p class="page-subtitle">Moliyaviy boshqaruv va hisobotlar</p>' +
+                    '<h1 class="page-title">Moliya (Yangi Tizim)</h1>' +
+                    '<p class="page-subtitle">Platforma daromadlari, komissiyalar va xarajatlar</p>' +
                 '</div>' +
                 '<div class="stats-grid">' +
                     '<div class="stat-card">' +
                         '<div class="stat-card-header">' +
-                            '<span class="stat-card-label">Jami tushum</span>' +
+                            '<span class="stat-card-label">Jami Top-up (Kirim)</span>' +
                             '<div class="stat-card-icon green">&#128200;</div>' +
                         '</div>' +
-                        '<div class="stat-card-value">' + formatMoney(f.total_revenue) + '</div>' +
-                        '<span class="stat-card-change up">&#8593; Bajarilgan buyurtmalar</span>' +
+                        '<div class="stat-card-value">' + window.formatMoney(f.total_topup) + '</div>' +
+                        '<span class="stat-card-change up">Mijoz/Usta hisob to\'ldirishi</span>' +
                     '</div>' +
                     '<div class="stat-card">' +
                         '<div class="stat-card-header">' +
-                            '<span class="stat-card-label">Komissiya (' + f.commission_rate + '%)</span>' +
+                            '<span class="stat-card-label">Sof Foyda (Daromad)</span>' +
                             '<div class="stat-card-icon purple">&#128176;</div>' +
                         '</div>' +
-                        '<div class="stat-card-value">' + formatMoney(f.total_commission) + '</div>' +
-                        '<span class="stat-card-change up">Platforma daromadi</span>' +
+                        '<div class="stat-card-value">' + window.formatMoney(f.net_profit) + '</div>' +
+                        '<span class="stat-card-change up">Komissiya + Premium - Xarajat</span>' +
                     '</div>' +
                     '<div class="stat-card">' +
                         '<div class="stat-card-header">' +
-                            '<span class="stat-card-label">Cashback berilgan</span>' +
-                            '<div class="stat-card-icon orange">&#127873;</div>' +
+                            '<span class="stat-card-label">Premium Obunalar</span>' +
+                            '<div class="stat-card-icon orange">&#11088;</div>' +
                         '</div>' +
-                        '<div class="stat-card-value">' + formatMoney(f.total_topups) + '</div>' +
-                        '<span class="stat-card-change up">Jami kiritilgan</span>' +
+                        '<div class="stat-card-value">' + window.formatMoney(f.total_premium) + '</div>' +
+                        '<span class="stat-card-change up">Mijozlar to\'lagan</span>' +
                     '</div>' +
                     '<div class="stat-card">' +
                         '<div class="stat-card-header">' +
-                            '<span class="stat-card-label">Qaytarilgan summalar (Refund)</span>' +
-                            '<div class="stat-card-icon blue">&#128178;</div>' +
+                            '<span class="stat-card-label">Platforma Xarajati (Yechish)</span>' +
+                            '<div class="stat-card-icon blue">&#128184;</div>' +
                         '</div>' +
-                        '<div class="stat-card-value">' + formatMoney(f.total_refunds) + '</div>' +
-                        '<span class="stat-card-change down">Foydalanuvchilarga</span>' +
+                        '<div class="stat-card-value">' + window.formatMoney(f.total_admin_withdraw) + '</div>' +
+                        '<span class="stat-card-change down">O\'zimiz yechib olgan</span>' +
                     '</div>' +
                 '</div>' +
-                '<div style="display:grid; grid-template-columns: 1fr 1fr; gap:24px;">' +
+                
+                '<div style="display:grid; grid-template-columns: 1fr; gap:24px; margin-top:24px;">' +
                     '<div class="card">' +
-                        '<div class="card-header"><h3 class="card-title">Provider hisobini boshqarish</h3></div>' +
-                        '<div class="card-body">' +
-                            '<div class="form-group">' +
-                                '<label class="form-label">Provider</label>' +
-                                '<select class="form-input" id="payoutProvider">' +
-                                    '<option value="">Tanlang...</option>' +
-                                    providerOptions +
-                                '</select>' +
-                            '</div>' +
-                            '<div class="form-group">' +
-                                '<label class="form-label">Amaliyot turi</label>' +
-                                '<select class="form-input" id="transactionType">' +
-                                    '<option value="topup">Pul qo\'shish (Top-up)</option>' +
-                                    '<option value="refund">Pul qaytarish / Yechish (Refund)</option>' +
-                                '</select>' +
-                            '</div>' +
-                            '<div class="form-group">' +
-                                '<label class="form-label">Summa (so\'m)</label>' +
-                                '<input type="number" class="form-input" id="payoutAmount" placeholder="500000">' +
-                            '</div>' +
-                            '<div class="form-group">' +
-                                '<label class="form-label">Izoh</label>' +
-                                '<textarea class="form-input" id="payoutNote" placeholder="O\'tkazma haqida qisqacha..." rows="3"></textarea>' +
-                            '</div>' +
-                            '<button class="btn btn-primary" onclick="processProviderTransaction()" style="width:100%;">Tranzaksiyani amalga oshirish</button>' +
-                        '</div>' +
-                    '</div>' +
-                    '<div class="card">' +
-                        '<div class="card-header"><h3 class="card-title">Komissiya stavkasi</h3></div>' +
-                        '<div class="card-body">' +
-                            '<div class="form-group">' +
-                                '<label class="form-label">Komissiya foizi (%)</label>' +
-                                '<input type="number" class="form-input" id="commissionRate" value="' + f.commission_rate + '" min="1" max="50">' +
-                            '</div>' +
-                            '<button class="btn btn-primary" onclick="updateCommissionRate()" style="width:100%;">Yangilash</button>' +
+                        '<div class="card-header"><h3 class="card-title">Ustalar Hisobi (Top-up & Lead fee)</h3></div>' +
+                        '<div class="card-body no-padding" style="max-height:300px;overflow-y:auto;">' +
+                            '<table class="data-table">' +
+                                '<thead><tr><th>ID</th><th>Ism</th><th>Telefon</th><th>Balans</th><th>Maxsus Fee</th></tr></thead>' +
+                                '<tbody>' + (providersTableRows || '<tr><td colspan="5">Topilmadi</td></tr>') + '</tbody>' +
+                            '</table>' +
                         '</div>' +
                     '</div>' +
                 '</div>' +
+
+                '<div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:24px; margin-top:24px;">' +
+                    '<div class="card">' +
+                        '<div class="card-header"><h3 class="card-title">Platformadan Yechib Olish</h3></div>' +
+                        '<div class="card-body">' +
+                            '<div class="form-group"><label class="form-label">Summa (so\'m)</label><input type="number" class="form-input" id="withdrawAmount"></div>' +
+                            '<div class="form-group"><label class="form-label">Izoh (Nimaga)</label><input type="text" class="form-input" id="withdrawNote"></div>' +
+                            '<button class="btn btn-primary" onclick="submitWithdraw()" style="width:100%; background:var(--red-600);border-color:var(--red-600);">Xarajat qilish / Yechish</button>' +
+                        '</div>' +
+                    '</div>' +
+                    '<div class="card">' +
+                        '<div class="card-header"><h3 class="card-title">Premium Tushum Qayd Etish</h3></div>' +
+                        '<div class="card-body">' +
+                            '<div class="form-group"><label class="form-label">Summa (so\'m)</label><input type="number" class="form-input" id="premiumAmount" value="20000"></div>' +
+                            '<div class="form-group"><label class="form-label">Izoh</label><input type="text" class="form-input" id="premiumNote" value="1 oylik premium"></div>' +
+                            '<button class="btn btn-primary" onclick="submitPremium()" style="width:100%; background:var(--orange-500);border-color:var(--orange-500);">Tushumni Qo\'shish</button>' +
+                        '</div>' +
+                    '</div>' +
+                    '<div class="card">' +
+                        '<div class="card-header"><h3 class="card-title">Top-up Bonus Qoidalari</h3></div>' +
+                        '<div class="card-body">' +
+                            rulesHtml +
+                            '<button class="btn btn-secondary btn-sm" onclick="showBonusRuleModal()" style="margin-top:8px;">Qoidalarni tahrirlash</button>' +
+                        '</div>' +
+                    '</div>' +
+                '</div>' +
+
                 '<div class="card" style="margin-top:24px;">' +
-                    '<div class="card-header"><h3 class="card-title">Moliyaviy ma\'lumotlar API dan yuklanadi</h3></div>' +
-                    '<div class="card-body"><p style="color:var(--text-muted);">Tranzaksiyalar tarixi tez orada qo\'shiladi.</p></div>' +
+                    '<div class="card-header"><h3 class="card-title">So\'nggi Tranzaksiyalar (Tarix)</h3></div>' +
+                    '<div class="card-body no-padding">' +
+                        '<table class="data-table">' +
+                            '<thead><tr><th>Sana</th><th>Turi</th><th>Shaxs</th><th>Summa</th><th>Izoh</th></tr></thead>' +
+                            '<tbody>' + (txRows || '<tr><td colspan="5">Tranzaksiyalar topilmadi</td></tr>') + '</tbody>' +
+                        '</table>' +
+                    '</div>' +
                 '</div>';
         }
 
-        function processProviderTransaction() {
-            var provider = document.getElementById('payoutProvider').value;
-            var amount = document.getElementById('payoutAmount').value;
-            var note = document.getElementById('payoutNote').value;
-            var type = document.getElementById('transactionType').value;
-            if (!provider || !amount) { showToast('Provider va summa majburiy', 'error'); return; }
-            api(API_BASE + '/finance/provider-transaction', {
-                method: 'POST',
-                body: JSON.stringify({ provider_id: parseInt(provider), amount: parseFloat(amount), type: type, note: note || null })
-            }).then(function(r) {
-                if (r && r.ok) {
-                    showToast('Tranzaksiya amalga oshirildi');
-                    document.getElementById('payoutAmount').value = '';
-                    document.getElementById('payoutNote').value = '';
-                    renderFinance(); // Refresh balances
-                } else {
-                    showToast('Tranzaksiya amalga oshmadi', 'error');
-                }
+        async function submitWithdraw() {
+            var amt = document.getElementById('withdrawAmount').value;
+            var note = document.getElementById('withdrawNote').value;
+            if(!amt) return;
+            const r = await window.api(window.API_BASE + '/finance/admin-withdraw', {
+                method: 'POST', body: JSON.stringify({amount: parseFloat(amt), note: note})
             });
+            if(r && r.ok) { window.showToast('Pul yechib olindi (Xarajat)'); renderFinance(); } else { window.showToast('Xatolik', 'error'); }
         }
 
-        function updateCommissionRate() {
-            var rate = parseFloat(document.getElementById('commissionRate').value);
-            api(API_BASE + '/finance/commission', {
-                method: 'PATCH',
-                body: JSON.stringify({ rate: rate })
-            }).then(function(r) {
-                if (r && r.ok) {
-                    showToast('Komissiya stavkasi ' + rate + '% ga yangilandi');
-                } else {
-                    showToast('Yangilab bo\'lmadi', 'error');
-                }
+        async function submitPremium() {
+            var amt = document.getElementById('premiumAmount').value;
+            var note = document.getElementById('premiumNote').value;
+            if(!amt) return;
+            const r = await window.api(window.API_BASE + '/finance/premium-purchase', {
+                method: 'POST', body: JSON.stringify({amount: parseFloat(amt), note: note})
             });
+            if(r && r.ok) { window.showToast('Premium tushum qo\'shildi'); renderFinance(); } else { window.showToast('Xatolik', 'error'); }
+        }
+
+        function showBonusRuleModal() {
+            window.openModal('Bonus Qoidalari',
+                '<p class="text-muted" style="margin-bottom:12px;">Yangi qoidani kiriting. Barcha eski qoidalar saqlanadi. (Masalan: 100000 dan 500000 gacha -> 10000 bonus)</p>' +
+                '<div class="form-row">' +
+                    '<div class="form-group"><label>Min</label><input type="number" id="brMin" class="form-input"></div>' +
+                    '<div class="form-group"><label>Max</label><input type="number" id="brMax" class="form-input"></div>' +
+                    '<div class="form-group"><label>Bonus</label><input type="number" id="brBonus" class="form-input"></div>' +
+                '</div>',
+                '<button class="btn btn-secondary" onclick="window.closeModal()">Yopish</button>' +
+                '<button class="btn btn-primary" onclick="addBonusRule()">Qo\'shish</button>'
+            );
+        }
+
+        async function addBonusRule() {
+            var minAmt = parseFloat(document.getElementById('brMin').value);
+            var maxAmt = parseFloat(document.getElementById('brMax').value);
+            var bonusAmt = parseFloat(document.getElementById('brBonus').value);
+            if(isNaN(minAmt) || isNaN(maxAmt) || isNaN(bonusAmt)) return;
+            
+            var existingRules = [];
+            try {
+                const r = await window.api(window.API_BASE + '/finance/bonus-rules');
+                if(r && r.ok) existingRules = await r.json();
+            } catch(e){}
+            
+            existingRules.push({min_amount: minAmt, max_amount: maxAmt, bonus_amount: bonusAmt});
+            
+            const req = await window.api(window.API_BASE + '/finance/bonus-rules', {
+                method: 'POST', body: JSON.stringify({rules: existingRules})
+            });
+            if(req && req.ok) {
+                window.showToast('Qoida qo\'shildi');
+                window.closeModal();
+                renderFinance();
+            } else {
+                window.showToast('Xatolik yuz berdi', 'error');
+            }
         }
 
         // ===== PAGE: PROMOS & BANNERS =====
         async function renderPromos() {
             var promos = [];
             try {
-                const r = await api(API_BASE + '/promos');
+                const r = await window.api(window.API_BASE + '/promos');
                 if (r && r.ok) promos = await r.json();
             } catch(e) { apiError('Aksiyalarni yuklab bo\'lmadi'); }
 
@@ -1453,12 +1556,12 @@
             if (!title || !subtitle || !badge || !colors) return;
 
             try {
-                const r = await api(API_BASE + '/promos', {
+                const r = await window.api(window.API_BASE + '/promos', {
                     method: 'POST',
                     body: JSON.stringify({ title, subtitle, badge, colors, image_url: image_url || null })
                 });
                 if (r && r.ok) {
-                    showToast('Yangi aksiya banneri qo\'shildi');
+                    window.showToast('Yangi aksiya banneri qo\'shildi');
                     renderPromos();
                 } else {
                     apiError('Banner qo\'shib bo\'lmadi');
@@ -1469,11 +1572,11 @@
         async function deletePromo(id) {
             if (!confirm('Ushbu aksiyani o\'chirishni xohlaysizmi?')) return;
             try {
-                const r = await api(API_BASE + '/promos/' + id, {
+                const r = await window.api(window.API_BASE + '/promos/' + id, {
                     method: 'DELETE'
                 });
                 if (r && r.ok) {
-                    showToast('Aksiya o\'chirildi');
+                    window.showToast('Aksiya o\'chirildi');
                     renderPromos();
                 } else {
                     apiError('O\'chirib bo\'lmadi');
@@ -1485,7 +1588,7 @@
         async function renderSettings() {
             var f = { commission_rate: 15, cashback_rate: 2, currency: 'UZS', min_withdrawal: 100000, maintenance_mode: false, registration_open: true, support_phone: '+998 71 200 00 00', support_telegram: '@superapp_support' };
             try {
-                const r = await api(API_BASE + '/settings');
+                const r = await window.api(window.API_BASE + '/settings');
                 if (r && r.ok) f = await r.json();
             } catch(e) {}
             mainContent.innerHTML =
@@ -1604,14 +1707,14 @@
                 support_phone: document.getElementById('settingSupportPhone').value,
                 support_telegram: document.getElementById('settingSupportTelegram').value
             };
-            api(API_BASE + '/settings', {
+            window.api(window.API_BASE + '/settings', {
                 method: 'PATCH',
                 body: JSON.stringify(payload)
             }).then(function(r) {
                 if (r && r.ok) {
-                    showToast('Sozlamalar muvaffaqiyatli saqlandi');
+                    window.showToast('Sozlamalar muvaffaqiyatli saqlandi');
                 } else {
-                    showToast('Saqlab bo\'lmadi', 'error');
+                    window.showToast('Saqlab bo\'lmadi', 'error');
                 }
             });
         }
@@ -1620,7 +1723,7 @@
         async function renderNotifications() {
             var notifItems = [];
             try {
-                const r = await api(API_BASE + '/notifications');
+                const r = await window.api(window.API_BASE + '/notifications');
                 if (r && r.ok) {
                     var data = await r.json();
                     notifItems = data.items || [];
@@ -1701,17 +1804,17 @@
             var selected = document.querySelector('#notifTypeSelector .type-option.selected');
             var type = selected ? selected.dataset.type : 'push';
 
-            if (!title || !message) { showToast('Sarlavha va xabar majburiy', 'error'); return; }
+            if (!title || !message) { window.showToast('Sarlavha va xabar majburiy', 'error'); return; }
 
-            api(API_BASE + '/notifications/send', {
+            window.api(window.API_BASE + '/notifications/send', {
                 method: 'POST',
                 body: JSON.stringify({ type: type, title: title, message: message, target: target })
             }).then(function(r) {
                 if (r && r.ok) {
-                    showToast('"' + title + '" bildirishnomasi yuborildi');
+                    window.showToast('"' + title + '" bildirishnomasi yuborildi');
                     renderNotifications();
                 } else {
-                    showToast('Yuborib bo\'lmadi', 'error');
+                    window.showToast('Yuborib bo\'lmadi', 'error');
                 }
             });
         }
@@ -1767,14 +1870,14 @@
                             '<span class="stat-card-label">Jami tushum</span>' +
                             '<div class="stat-card-icon yellow">&#128176;</div>' +
                         '</div>' +
-                        '<div class="stat-card-value" id="reportRevenue">' + formatMoney(0) + '</div>' +
+                        '<div class="stat-card-value" id="reportRevenue">' + window.formatMoney(0) + '</div>' +
                     '</div>' +
                     '<div class="stat-card">' +
                         '<div class="stat-card-header">' +
                             '<span class="stat-card-label">Komissiya</span>' +
                             '<div class="stat-card-icon blue">&#128178;</div>' +
                         '</div>' +
-                        '<div class="stat-card-value" id="reportCommission">' + formatMoney(0) + '</div>' +
+                        '<div class="stat-card-value" id="reportCommission">' + window.formatMoney(0) + '</div>' +
                     '</div>' +
                     '<div class="stat-card">' +
                         '<div class="stat-card-header">' +
@@ -1803,23 +1906,23 @@
             var periodEl = document.querySelector('#reportPeriodSelector .period-btn.active');
             var period = periodEl ? periodEl.dataset.period : 'monthly';
             try {
-                const r = await api(API_BASE + '/reports?period=' + period);
+                const r = await window.api(window.API_BASE + '/reports?period=' + period);
                 if (!r || !r.ok) { apiError('Hisobot yuklanmadi'); return; }
                 var rep = await r.json();
                 document.getElementById('reportTotalOrders').textContent = rep.total_orders.toLocaleString();
                 document.getElementById('reportCompleted').textContent = rep.completed_orders.toLocaleString();
                 document.getElementById('reportCancelled').textContent = rep.cancelled_orders.toLocaleString();
-                document.getElementById('reportRevenue').textContent = formatMoney(rep.total_revenue);
-                document.getElementById('reportCommission').textContent = formatMoney(rep.total_commission);
+                document.getElementById('reportRevenue').textContent = window.formatMoney(rep.total_revenue);
+                document.getElementById('reportCommission').textContent = window.formatMoney(rep.total_commission);
                 document.getElementById('reportNewUsers').textContent = rep.new_users.toLocaleString();
-                showToast('Hisobot yangilandi');
+                window.showToast('Hisobot yangilandi');
             } catch(e) { apiError('Hisobot yuklanmadi'); }
         }
 
         function exportCSV() {
             var periodEl = document.querySelector('#reportPeriodSelector .period-btn.active');
             var period = periodEl ? periodEl.dataset.period : 'monthly';
-            window.open(API_BASE + '/reports/export/csv?period=' + period, '_blank');
+            window.open(window.API_BASE + '/reports/export/csv?period=' + period, '_blank');
         }
 
         var reportChartInstance = null;
@@ -1865,7 +1968,7 @@
             if (e.key === 'Enter') {
                 var query = e.target.value.trim().toLowerCase();
                 if (!query) return;
-                showToast('"' + query + '" bo\'yicha qidirilmoqda...', 'info');
+                window.showToast('"' + query + '" bo\'yicha qidirilmoqda...', 'info');
             }
         });
 
@@ -1874,7 +1977,7 @@
             mainContent.innerHTML = '<div class="page-header"><h1 class="page-title">Foydalanuvchi odatlari</h1></div><div class="card"><div class="card-body">Yuklanmoqda...</div></div>';
             
             try {
-                const r = await api(API_BASE + '/analytics/user-insights');
+                const r = await window.api(window.API_BASE + '/analytics/user-insights');
                 if (!r || !r.ok) throw new Error();
                 const data = await r.json();
 
@@ -1885,7 +1988,7 @@
                 
                 // Top cards
                 html += '<div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap:24px; margin-bottom:24px;">' +
-                    '<div class="stat-card"><div class="stat-title">O\'rtacha bozorlik xarajati</div><div class="stat-value text-success">' + formatMoney(data.shopping.avg_price) + '</div><div class="stat-desc">' + data.shopping.total_lists + ' ta ro\'yxat asosida</div></div>' +
+                    '<div class="stat-card"><div class="stat-title">O\'rtacha bozorlik xarajati</div><div class="stat-value text-success">' + window.formatMoney(data.shopping.avg_price) + '</div><div class="stat-desc">' + data.shopping.total_lists + ' ta ro\'yxat asosida</div></div>' +
                     '<div class="stat-card"><div class="stat-title">Jami rejalar (Plans & Todos)</div><div class="stat-value">' + (data.planning.total_plans + data.planning.total_todos) + '</div><div class="stat-desc">Bajarilganlar: ' + (data.planning.completed_plans + data.planning.completed_todos) + '</div></div>' +
                     '</div>';
 
@@ -1946,7 +2049,7 @@
             html += '<div class="card"><div class="table-container"><table class="table"><thead><tr><th>ID</th><th>Foydalanuvchi</th><th>Sarlavha</th><th>Holati</th><th>Sana</th></tr></thead><tbody id="todosTableBody"></tbody></table></div></div>';
             mainContent.innerHTML = html;
             try {
-                const res = await api(API_BASE + '/user-data/todos');
+                const res = await window.api(window.API_BASE + '/user-data/todos');
                 if (res.ok) {
                     var data = await res.json();
                     var tbody = document.getElementById('todosTableBody');
@@ -1972,7 +2075,7 @@
             html += '<div class="card"><div class="table-container"><table class="table"><thead><tr><th>ID</th><th>Foydalanuvchi</th><th>Sarlavha</th><th>Mahsulotlar</th><th>Taxminiy narx</th><th>Asl narx</th><th>Holati</th></tr></thead><tbody id="shoppingTableBody"></tbody></table></div></div>';
             mainContent.innerHTML = html;
             try {
-                const res = await api(API_BASE + '/user-data/shopping');
+                const res = await window.api(window.API_BASE + '/user-data/shopping');
                 if (res.ok) {
                     var data = await res.json();
                     var tbody = document.getElementById('shoppingTableBody');
@@ -1984,8 +2087,8 @@
                                 '<td><div style="font-weight:600;">' + s.user_name + '</div></td>' +
                                 '<td>' + (s.name || '-') + '</td>' +
                                 '<td>' + s.item_count + ' ta</td>' +
-                                '<td>' + formatMoney(s.total_estimated_price) + '</td>' +
-                                '<td>' + formatMoney(s.total_actual_price) + '</td>' +
+                                '<td>' + window.formatMoney(s.total_estimated_price) + '</td>' +
+                                '<td>' + window.formatMoney(s.total_actual_price) + '</td>' +
                                 '<td><span class="status-badge ' + (s.is_completed ? 'status-success' : 'status-warning') + '">' + (s.is_completed ? 'Tugallangan' : 'Jarayonda') + '</span></td>' +
                             '</tr>';
                         }).join('');
@@ -2000,7 +2103,7 @@
             html += '<div class="card"><div class="table-container"><table class="table"><thead><tr><th>ID</th><th>Foydalanuvchi</th><th>Turi</th><th>Kategoriya</th><th>Summa</th><th>Izoh</th><th>Sana</th></tr></thead><tbody id="financeTableBody"></tbody></table></div></div>';
             mainContent.innerHTML = html;
             try {
-                const res = await api(API_BASE + '/user-data/finance');
+                const res = await window.api(window.API_BASE + '/user-data/finance');
                 if (res.ok) {
                     var data = await res.json();
                     var tbody = document.getElementById('financeTableBody');
@@ -2012,7 +2115,7 @@
                                 '<td><div style="font-weight:600;">' + f.user_name + '</div></td>' +
                                 '<td><span class="status-badge ' + (f.type === 'income' ? 'status-success' : 'status-danger') + '">' + (f.type === 'income' ? 'Daromad' : 'Xarajat') + '</span></td>' +
                                 '<td>' + (f.category || '-') + '</td>' +
-                                '<td style="font-weight:bold;color:' + (f.type === 'income' ? 'var(--success)' : 'var(--danger)') + ';">' + formatMoney(f.amount) + '</td>' +
+                                '<td style="font-weight:bold;color:' + (f.type === 'income' ? 'var(--success)' : 'var(--danger)') + ';">' + window.formatMoney(f.amount) + '</td>' +
                                 '<td>' + (f.note || '-') + '</td>' +
                                 '<td>' + (f.date ? f.date.substring(0,10) : '-') + '</td>' +
                             '</tr>';
@@ -2028,7 +2131,7 @@
             html += '<div class="card"><div class="table-container"><table class="table"><thead><tr><th>ID</th><th>Foydalanuvchi</th><th>Sarlavha</th><th>Izoh</th><th>Sana/Vaqt</th><th>Holati</th></tr></thead><tbody id="plansTableBody"></tbody></table></div></div>';
             mainContent.innerHTML = html;
             try {
-                const res = await api(API_BASE + '/user-data/plans');
+                const res = await window.api(window.API_BASE + '/user-data/plans');
                 if (res.ok) {
                     var data = await res.json();
                     var tbody = document.getElementById('plansTableBody');
@@ -2060,7 +2163,7 @@
             var searchEl = document.getElementById('productSearch');
             if (searchEl) search = searchEl.value;
 
-            let url = API_BASE + '/products?page=' + page + '&per_page=20';
+            let url = window.API_BASE + '/products?page=' + page + '&per_page=20';
             if (search) url += '&search=' + encodeURIComponent(search);
 
             mainContent.innerHTML =
@@ -2104,7 +2207,7 @@
 
         async function fetchAndRenderProductRows(url) {
             try {
-                const r = await api(url);
+                const r = await window.api(url);
                 if (r && r.ok) {
                     productsData = await r.json();
                     var tbody = document.getElementById('productsTableBody');
@@ -2124,7 +2227,7 @@
                             '<td>' + p.id + '</td>' +
                             '<td style="font-weight:600;">' + p.name + '</td>' +
                             '<td>' + p.unit + '</td>' +
-                            '<td style="font-weight:bold;color:var(--success);">' + (p.average_price > 0 ? formatMoney(p.average_price) : 'Kiritilmagan') + '</td>' +
+                            '<td style="font-weight:bold;color:var(--success);">' + (p.average_price > 0 ? window.formatMoney(p.average_price) : 'Kiritilmagan') + '</td>' +
                             '<td><div class="action-group">' +
                                 '<button class="btn btn-sm btn-secondary" title="Tarix" onclick="viewPriceHistory(' + p.id + ')">&#128338; Tarix</button>' +
                                 '<button class="btn btn-sm btn-secondary" title="Narx qo\'shish" style="color:var(--info)" onclick="openAddPriceModal(' + p.id + ')">+ Narx</button>' +
@@ -2161,9 +2264,9 @@
                     '<input type="number" class="form-input" id="newProdPrice" value="0">' +
                 '</div>';
             var footerHtml = 
-                '<button class="btn btn-secondary" onclick="closeModal()">Bekor qilish</button>' +
+                '<button class="btn btn-secondary" onclick="window.closeModal()">Bekor qilish</button>' +
                 '<button class="btn btn-primary" onclick="saveNewProduct()">Saqlash</button>';
-            openModal('Yangi mahsulot qo\'shish', bodyHtml, footerHtml);
+            window.openModal('Yangi mahsulot qo\'shish', bodyHtml, footerHtml);
         }
 
         async function saveNewProduct() {
@@ -2171,33 +2274,33 @@
             var unit = document.getElementById('newProdUnit').value;
             var price = parseFloat(document.getElementById('newProdPrice').value) || 0.0;
 
-            if (!name) { showToast('Mahsulot nomini kiriting', 'error'); return; }
+            if (!name) { window.showToast('Mahsulot nomini kiriting', 'error'); return; }
 
             try {
-                const r = await api('/api/v1/admin/products/', {
+                const r = await window.api('/window.api/v1/admin/products/', {
                     method: 'POST',
                     body: JSON.stringify({ name: name, unit: unit, average_price: price })
                 });
                 if (r && r.ok) {
-                    showToast('Mahsulot muvaffaqiyatli qo\'shildi');
-                    closeModal();
+                    window.showToast('Mahsulot muvaffaqiyatli qo\'shildi');
+                    window.closeModal();
                     renderProducts(productsPage);
                 } else {
                     const data = await r.json();
-                    showToast(data.detail || 'Qo\'shib bo\'lmadi', 'error');
+                    window.showToast(data.detail || 'Qo\'shib bo\'lmadi', 'error');
                 }
-            } catch(e) { showToast('Xatolik yuz berdi', 'error'); }
+            } catch(e) { window.showToast('Xatolik yuz berdi', 'error'); }
         }
 
         async function deleteProduct(id) {
             if (!confirm('Haqiqatdan ham bu mahsulotni o\'chirmoqchimisiz? Narxlar tarixi ham o\'chib ketadi.')) return;
             try {
-                const r = await api('/api/v1/admin/products/' + id, { method: 'DELETE' });
+                const r = await window.api('/window.api/v1/admin/products/' + id, { method: 'DELETE' });
                 if (r && r.ok) {
-                    showToast('Mahsulot o\'chirildi', 'error');
+                    window.showToast('Mahsulot o\'chirildi', 'error');
                     renderProducts(productsPage);
-                } else { showToast('O\'chirishda xatolik yuz berdi', 'error'); }
-            } catch(e) { showToast('Xatolik', 'error'); }
+                } else { window.showToast('O\'chirishda xatolik yuz berdi', 'error'); }
+            } catch(e) { window.showToast('Xatolik', 'error'); }
         }
 
         function openAddPriceModal(id) {
@@ -2207,38 +2310,38 @@
                     '<input type="number" class="form-input" id="manualPriceVal" placeholder="Masalan: 12000">' +
                 '</div>';
             var footerHtml = 
-                '<button class="btn btn-secondary" onclick="closeModal()">Bekor qilish</button>' +
+                '<button class="btn btn-secondary" onclick="window.closeModal()">Bekor qilish</button>' +
                 '<button class="btn btn-primary" onclick="saveAdminPrice(' + id + ')">Saqlash</button>';
-            openModal('Bozor narxini kiritish', bodyHtml, footerHtml);
+            window.openModal('Bozor narxini kiritish', bodyHtml, footerHtml);
         }
 
         async function saveAdminPrice(id) {
             var price = parseFloat(document.getElementById('manualPriceVal').value) || 0.0;
-            if (price <= 0) { showToast('Narx 0 dan katta bo\'lishi kerak', 'error'); return; }
+            if (price <= 0) { window.showToast('Narx 0 dan katta bo\'lishi kerak', 'error'); return; }
 
             try {
-                const r = await api('/api/v1/admin/products/' + id + '/price', {
+                const r = await window.api('/window.api/v1/admin/products/' + id + '/price', {
                     method: 'POST',
                     body: JSON.stringify({ source_type: 'admin', price: price })
                 });
                 if (r && r.ok) {
-                    showToast('Yangi narx kiritildi va o\'rtacha narx qayta hisoblandi');
-                    closeModal();
+                    window.showToast('Yangi narx kiritildi va o\'rtacha narx qayta hisoblandi');
+                    window.closeModal();
                     renderProducts(productsPage);
-                } else { showToast('Narxni kiritib bo\'lmadi', 'error'); }
-            } catch(e) { showToast('Xatolik', 'error'); }
+                } else { window.showToast('Narxni kiritib bo\'lmadi', 'error'); }
+            } catch(e) { window.showToast('Xatolik', 'error'); }
         }
 
         async function runAiEstimation(id) {
-            showToast('AI narx baholash boshlandi...', 'info');
+            window.showToast('AI narx baholash boshlandi...', 'info');
             try {
-                const r = await api('/api/v1/admin/products/' + id + '/ai-estimate', { method: 'POST' });
+                const r = await window.api('/window.api/v1/admin/products/' + id + '/ai-estimate', { method: 'POST' });
                 if (r && r.ok) {
                     const data = await r.json();
-                    showToast('AI narxi: ' + formatMoney(data.estimated_price) + ' qilib belgilandi va o\'rtacha narx yangilandi');
+                    window.showToast('AI narxi: ' + window.formatMoney(data.estimated_price) + ' qilib belgilandi va o\'rtacha narx yangilandi');
                     renderProducts(productsPage);
-                } else { showToast('AI baholashda xatolik', 'error'); }
-            } catch(e) { showToast('Xatolik', 'error'); }
+                } else { window.showToast('AI baholashda xatolik', 'error'); }
+            } catch(e) { window.showToast('Xatolik', 'error'); }
         }
 
         function viewPriceHistory(id) {
@@ -2255,15 +2358,15 @@
             var tableRows = entries.map(function(e) {
                 return '<tr>' +
                     '<td>' + (sourceBadges[e.source_type] || e.source_type) + '</td>' +
-                    '<td style="font-weight:bold;">' + formatMoney(e.price) + '</td>' +
-                    '<td>' + formatDate(e.created_at) + '</td>' +
+                    '<td style="font-weight:bold;">' + window.formatMoney(e.price) + '</td>' +
+                    '<td>' + window.formatDate(e.created_at) + '</td>' +
                 '</tr>';
             }).join('');
 
             var bodyHtml = 
                 '<div style="margin-bottom:12px;font-size:14px;">' +
                     'Mahsulot: <b>' + p.name + '</b> (' + p.unit + ')<br>' +
-                    'Hozirgi o\'rtacha narx: <b style="color:var(--success);">' + (p.average_price > 0 ? formatMoney(p.average_price) : 'Kiritilmagan') + '</b>' +
+                    'Hozirgi o\'rtacha narx: <b style="color:var(--success);">' + (p.average_price > 0 ? window.formatMoney(p.average_price) : 'Kiritilmagan') + '</b>' +
                 '</div>' +
                 '<div class="table-container" style="max-height:300px;overflow-y:auto;">' +
                     '<table class="data-table">' +
@@ -2272,10 +2375,10 @@
                     '</table>' +
                 '</div>';
 
-            var footerHtml = '<button class="btn btn-secondary" onclick="closeModal()">Yopish</button>';
-            openModal('Narxlar tarixi va manbalar', bodyHtml, footerHtml);
+            var footerHtml = '<button class="btn btn-secondary" onclick="window.closeModal()">Yopish</button>';
+            window.openModal('Narxlar tarixi va manbalar', bodyHtml, footerHtml);
         }
 
         // ===== INIT =====
-        renderPage('dashboard');
+        window.renderPage('dashboard');
         lucide.createIcons();

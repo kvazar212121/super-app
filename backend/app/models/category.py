@@ -13,6 +13,7 @@ class Category(Base):
     subtitle_uz: Mapped[str | None] = mapped_column(String(300), nullable=True)
     icon: Mapped[str] = mapped_column(String(50))
     accent_color: Mapped[str] = mapped_column(String(7), default="#4285F4")
+    lead_fee: Mapped[float | None] = mapped_column(Float, nullable=True)
 
     variants = relationship(
         "CategoryVariant", back_populates="category", lazy="selectin",
@@ -30,6 +31,7 @@ class Category(Base):
             "subtitle_uz": self.subtitle_uz,
             "icon": self.icon,
             "accent_color": self.accent_color,
+            "lead_fee": self.lead_fee,
             "variants": [v.to_dict() for v in self.variants],
         }
 

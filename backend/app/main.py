@@ -493,6 +493,33 @@ def create_app() -> FastAPI:
         name="admin_static",
     )
 
+    # General static files (favicon etc.)
+    static_dir = Path(__file__).resolve().parent / "static"
+    if static_dir.is_dir():
+        app.mount(
+            "/static",
+            StaticFiles(directory=str(static_dir)),
+            name="static_root",
+        )
+
+    # Favicon routes
+    @app.get("/favicon.ico", include_in_schema=False)
+    async def favicon_ico():
+        ico = static_dir / "favicon.ico"
+        png = static_dir / "favicon.png"
+        if ico.is_file():
+            return FileResponse(ico, media_type="image/x-icon")
+        if png.is_file():
+            return FileResponse(png, media_type="image/png")
+        return JSONResponse({"detail": "not found"}, status_code=404)
+
+    @app.get("/favicon.png", include_in_schema=False)
+    async def favicon_png():
+        png = static_dir / "favicon.png"
+        if png.is_file():
+            return FileResponse(png, media_type="image/png")
+        return JSONResponse({"detail": "not found"}, status_code=404)
+
     app.include_router(api_router, prefix=settings.api_v1_prefix)
     app.include_router(admin_panel_router)
     return app

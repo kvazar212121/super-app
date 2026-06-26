@@ -19,6 +19,7 @@ class ProviderOut(BaseModel):
     is_active: bool
     is_paused: bool
     owner_user_id: Optional[int] = None
+    lead_fee: Optional[float] = None
     completed_orders_count: int = 0
     cancelled_orders_count: int = 0
 
@@ -42,6 +43,7 @@ class ProviderOut(BaseModel):
             is_active=p.is_active,
             is_paused=p.is_paused,
             owner_user_id=p.owner_user_id,
+            lead_fee=getattr(p, "lead_fee", None),
             completed_orders_count=getattr(p, "completed_orders_count", 0),
             cancelled_orders_count=getattr(p, "cancelled_orders_count", 0),
         )
@@ -68,6 +70,7 @@ class ProviderUpdate(BaseModel):
     metadata_json: Optional[dict] = None
     is_active: Optional[bool] = None
     is_paused: Optional[bool] = None
+    lead_fee: Optional[float] = None
 
 
 class ReviewOut(BaseModel):
