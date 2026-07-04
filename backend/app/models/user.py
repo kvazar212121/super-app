@@ -38,6 +38,10 @@ class User(Base):
     finance_records = relationship("FinanceRecord", back_populates="user", lazy="selectin", cascade="all, delete-orphan")
     planned_payments = relationship("PlannedPayment", back_populates="user", lazy="selectin", cascade="all, delete-orphan")
     shopping_lists = relationship("ShoppingList", back_populates="user", lazy="selectin", cascade="all, delete-orphan")
+    workout_plans = relationship("WorkoutPlan", back_populates="user", lazy="selectin", cascade="all, delete-orphan")
+    workout_logs = relationship("WorkoutLog", back_populates="user", lazy="selectin", cascade="all, delete-orphan")
+    meal_logs = relationship("MealLog", back_populates="user", lazy="selectin", cascade="all, delete-orphan")
+    nutrition_profile = relationship("NutritionProfile", back_populates="user", uselist=False, lazy="selectin", cascade="all, delete-orphan")
     providers = relationship("Provider", primaryjoin="User.id==Provider.owner_user_id", lazy="selectin")
 
     def to_dict(self) -> dict:

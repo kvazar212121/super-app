@@ -19,6 +19,9 @@ from app.models.provider_fraud_stats import ProviderFraudStats
 from app.models.provider_blocked_time import ProviderBlockedTime
 from app.models.call_history import CallHistory
 from app.models.blocked_user import BlockedUser
+from app.models.exercise import Exercise
+from app.models.workout import WorkoutPlan, WorkoutLog
+from app.models.nutrition import NutritionProfile, MealLog
 
 __all__ = [
     "User",
@@ -43,4 +46,9 @@ __all__ = [
     "ProviderBlockedTime",
     "CallHistory",
     "BlockedUser",
+    "Exercise",
+    "WorkoutPlan",
+    "WorkoutLog",
+    "NutritionProfile",
+    "MealLog",
 ]

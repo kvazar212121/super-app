@@ -21,4 +21,6 @@ class CourierPortalService {
         vehicleType: vehicleType,
         address: address,
       );
+
+  Future<Map<String, dynamic>> getMe() => _api.getProviderMe('kuryer');
 }

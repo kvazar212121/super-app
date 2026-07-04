@@ -1430,4 +1430,120 @@ class ApiService {
     }
     return null;
   }
+
+  // ==================== Kaloriya hisoblagich ====================
+
+  Future<Map<String, dynamic>> analyzeFoodPhoto(String filePath) async {
+    final formData = FormData.fromMap({
+      'file': await MultipartFile.fromFile(filePath),
+    });
+    final response = await _dio.post(
+      '/calories/analyze',
+      data: formData,
+      options: Options(receiveTimeout: const Duration(seconds: 60)),
+    );
+    return response.data;
+  }
+
+  Future<Map<String, dynamic>> logMeal(Map<String, dynamic> data) async {
+    final response = await _dio.post('/calories/log', data: data);
+    return response.data;
+  }
+
+  Future<List<dynamic>> getMealLogs({String? date}) async {
+    final response = await _dio.get('/calories/log', queryParameters: {
+      if (date != null) 'date': date,
+    });
+    return response.data;
+  }
+
+  Future<void> deleteMealLog(int id) async {
+    await _dio.delete('/calories/log/$id');
+  }
+
+  Future<Map<String, dynamic>> getCalorieSummary({String? date}) async {
+    final response = await _dio.get('/calories/summary', queryParameters: {
+      if (date != null) 'date': date,
+    });
+    return response.data;
+  }
+
+  Future<Map<String, dynamic>?> getNutritionProfile() async {
+    try {
+      final response = await _dio.get('/calories/profile');
+      return response.data;
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 404) return null;
+      rethrow;
+    }
+  }
+
+  Future<Map<String, dynamic>> saveNutritionProfile(Map<String, dynamic> data) async {
+    final response = await _dio.put('/calories/profile', data: data);
+    return response.data;
+  }
+
+  // ==================== Fitnes trener ====================
+
+  Future<Map<String, dynamic>> getExercises({
+    String? bodyPart,
+    String? equipment,
+    String? target,
+    String? search,
+    int page = 1,
+    int pageSize = 20,
+  }) async {
+    final response = await _dio.get('/fitness/exercises', queryParameters: {
+      if (bodyPart != null) 'body_part': bodyPart,
+      if (equipment != null) 'equipment': equipment,
+      if (target != null) 'target': target,
+      if (search != null && search.isNotEmpty) 'search': search,
+      'page': page,
+      'page_size': pageSize,
+    });
+    return response.data;
+  }
+
+  Future<Map<String, dynamic>> getExerciseMeta() async {
+    final response = await _dio.get('/fitness/exercises/meta');
+    return response.data;
+  }
+
+  Future<Map<String, dynamic>> getExerciseDetail(int id) async {
+    final response = await _dio.get('/fitness/exercises/$id');
+    return response.data;
+  }
+
+  Future<Map<String, dynamic>> generateWorkoutPlan(Map<String, dynamic> data) async {
+    final response = await _dio.post('/fitness/plans/generate', data: data);
+    return response.data;
+  }
+
+  Future<Map<String, dynamic>?> getActiveWorkoutPlan() async {
+    try {
+      final response = await _dio.get('/fitness/plans/active');
+      return response.data;
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 404) return null;
+      rethrow;
+    }
+  }
+
+  Future<Map<String, dynamic>> updateWorkoutPlan(int id, Map<String, dynamic> data) async {
+    final response = await _dio.patch('/fitness/plans/$id', data: data);
+    return response.data;
+  }
+
+  Future<Map<String, dynamic>> logWorkout(Map<String, dynamic> data) async {
+    final response = await _dio.post('/fitness/logs', data: data);
+    return response.data;
+  }
+
+  Future<List<dynamic>> getWorkoutLogs({String? from, String? to}) async {
+    final response = await _dio.get('/fitness/logs', queryParameters: {
+      if (from != null) 'from': from,
+      if (to != null) 'to': to,
+    });
+    return response.data;
+  }
 }

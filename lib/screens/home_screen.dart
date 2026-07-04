@@ -12,6 +12,8 @@ import '../screens/shopping_list_screen.dart';
 import '../screens/finance_manager_screen.dart';
 import '../screens/all_categories_screen.dart';
 import '../screens/auth/auth_gate_screen.dart';
+import '../screens/calorie/calorie_home_screen.dart';
+import '../screens/fitness/fitness_home_screen.dart';
 import '../providers/auth_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -111,6 +113,44 @@ class HomeScreen extends StatelessWidget {
                 color: Colors.purpleAccent,
                 bgImage: 'assets/images/all_services.jpg',
                 onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AllCategoriesScreen())),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        Row(
+          children: [
+            Expanded(
+              child: _DailyBtn(
+                icon: LucideIcons.flame,
+                label: 'Kaloriya hisoblagich',
+                color: Colors.redAccent,
+                bgImage: 'assets/images/calorie_counter.jpg',
+                onTap: () {
+                  final auth = Provider.of<AuthProvider>(context, listen: false);
+                  if (!auth.isAuthenticated) {
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => const AuthGateScreen()));
+                  } else {
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => const CalorieHomeScreen()));
+                  }
+                },
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: _DailyBtn(
+                icon: LucideIcons.dumbbell,
+                label: 'Fitnes trener',
+                color: Colors.tealAccent,
+                bgImage: 'assets/images/fitness_trainer.jpg',
+                onTap: () {
+                  final auth = Provider.of<AuthProvider>(context, listen: false);
+                  if (!auth.isAuthenticated) {
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => const AuthGateScreen()));
+                  } else {
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => const FitnessHomeScreen()));
+                  }
+                },
               ),
             ),
           ],

@@ -60,6 +60,20 @@ class UploadService:
         return f"/uploads/avatars/{filename}"
 
     @staticmethod
+    async def upload_food_photo(file: UploadFile) -> str:
+        """Kaloriya hisoblagich uchun taom rasmini yuklash. URL qaytaradi."""
+        ext = UploadService._validate_file(file)
+        filename = f"food_{uuid.uuid4().hex}{ext}"
+        upload_dir = Path(settings.upload_dir) / "food"
+        upload_dir.mkdir(parents=True, exist_ok=True)
+
+        contents = await file.read()
+        filepath = upload_dir / filename
+        filepath.write_bytes(contents)
+
+        return f"/uploads/food/{filename}"
+
+    @staticmethod
     async def upload_cover(file: UploadFile) -> str:
         """Provayder muqova rasmini yuklash. URL qaytaradi."""
         ext = UploadService._validate_file(file)

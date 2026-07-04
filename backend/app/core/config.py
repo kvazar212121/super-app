@@ -69,6 +69,11 @@ class Settings(BaseSettings):
     groq_api_key: str = ""
     groq_model: str = "llama3-70b-8192"
     groq_max_tokens: int = 1024
+    groq_vision_model: str = "meta-llama/llama-4-scout-17b-16e-instruct"
+    groq_translate_model: str = "llama-3.3-70b-versatile"
+
+    # Fitnes mashqlari GIF manbasi (ExerciseDB CDN, faqat hotlink)
+    exercise_gif_base: str = "https://static.exercisedb.dev/media"
 
 
 @lru_cache
