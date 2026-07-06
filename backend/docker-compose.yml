@@ -5,15 +5,28 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: superapp
+    command: ["postgres", "-c", "max_connections=200"]
     ports:
       - "5435:5432"
     volumes:
       - superapp_pg:/var/lib/postgresql/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d superapp"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   redis:
     image: redis:7-alpine
     ports:
       - "6379:6379"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   backend:
     build: .
@@ -21,13 +34,26 @@ services:
       - "8000:8000"
     env_file:
       - .env
+    environment:
+      # Web worker soni (2 yadro uchun 3 maqbul). Bittasi scheduler-leader bo'ladi.
+      WEB_CONCURRENCY: 3
     depends_on:
-      - db
-      - redis
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     volumes:
       - ./app:/app/app
       - ./alembic:/app/alembic
       - ./alembic.ini:/app/alembic.ini
+      - superapp_uploads:/app/uploads   # yuklangan rasmlar rebuild'да yo'qolmasligi uchun
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:8000/api/v1/health')\" || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
 
   nginx:
     image: nginx:1.27-alpine
@@ -48,3 +74,4 @@ services:
 
 volumes:
   superapp_pg:
+  superapp_uploads:

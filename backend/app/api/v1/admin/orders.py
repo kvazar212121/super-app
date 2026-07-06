@@ -1,6 +1,7 @@
-from datetime import date
+from datetime import date, datetime, timezone
 from typing import Optional
 from fastapi import APIRouter, Depends, Query, HTTPException
+from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import func, select, or_, desc, and_
 from sqlalchemy.orm import selectinload
@@ -10,11 +11,91 @@ from app.models.user import User
 from app.models.category import Category
 from app.models.provider import Provider
 from app.models.order import Order, OrderStatus
+from app.models.dispute import Dispute
 from app.schemas.order import OrderOut, OrderStatusUpdate
 from app.schemas.common import PaginatedResponse
 from app.api.v1.admin.dependencies import require_admin
 
 router = APIRouter()
+
+
+# ─────────────────────── NIZOLAR (disputes) ───────────────────────
+
+class DisputeResolve(BaseModel):
+    resolution: Optional[str] = None
+    refund_amount: float = 0.0
+
+
+@router.get("/orders/disputes")
+async def list_disputes(
+    status: Optional[str] = Query(None),
+    _admin: User = Depends(require_admin),
+    db: AsyncSession = Depends(get_db),
+):
+    stmt = select(Dispute).order_by(desc(Dispute.created_at)).limit(300)
+    if status:
+        stmt = select(Dispute).where(Dispute.status == status).order_by(desc(Dispute.created_at)).limit(300)
+    rows = (await db.execute(stmt)).scalars().all()
+    out = []
+    for d in rows:
+        u = await db.get(User, d.user_id)
+        o = await db.get(Order, d.order_id)
+        out.append({
+            "id": d.id, "order_id": d.order_id,
+            "user_name": (f"{u.name} {u.surname}".strip() if u else None),
+            "user_phone": (u.phone if u else None),
+            "service_name": (o.service_name if o else None),
+            "order_price": (o.price if o else None),
+            "reason": d.reason, "status": d.status, "resolution": d.resolution,
+            "refund_amount": d.refund_amount,
+            "created_at": d.created_at.isoformat() if d.created_at else None,
+        })
+    return {"disputes": out}
+
+
+@router.post("/orders/disputes/{dispute_id}/resolve")
+async def resolve_dispute(
+    dispute_id: int,
+    data: DisputeResolve,
+    admin: User = Depends(require_admin),
+    db: AsyncSession = Depends(get_db),
+):
+    d = await db.get(Dispute, dispute_id)
+    if not d:
+        raise HTTPException(status_code=404, detail="Nizo topilmadi")
+    refund = max(0.0, float(data.refund_amount or 0))
+    if refund > 0:
+        user = await db.get(User, d.user_id)
+        if user:
+            user.balance = (user.balance or 0) + refund
+        d.refund_amount = refund
+    d.status = "resolved"
+    d.resolution = data.resolution
+    d.resolved_by = admin.id
+    d.resolved_at = datetime.now(timezone.utc)
+    order = await db.get(Order, d.order_id)
+    if order:
+        order.status = OrderStatus.cancelled if refund > 0 else OrderStatus.completed
+    await db.commit()
+    return {"status": "resolved", "refund_amount": refund}
+
+
+@router.post("/orders/disputes/{dispute_id}/reject")
+async def reject_dispute(
+    dispute_id: int,
+    data: DisputeResolve,
+    admin: User = Depends(require_admin),
+    db: AsyncSession = Depends(get_db),
+):
+    d = await db.get(Dispute, dispute_id)
+    if not d:
+        raise HTTPException(status_code=404, detail="Nizo topilmadi")
+    d.status = "rejected"
+    d.resolution = data.resolution
+    d.resolved_by = admin.id
+    d.resolved_at = datetime.now(timezone.utc)
+    await db.commit()
+    return {"status": "rejected"}
 
 
 class OrderDetailOut(OrderOut):

@@ -1,6 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'api_service.dart';
+import 'notification_helper.dart';
+import '../models/alarm.dart';
 import '../config/app_config.dart';
 
 /// AI yordamchi xizmati — backend proxy orqali Groq API ga ulanadi.
@@ -58,6 +60,12 @@ class AiService {
       final responseData = response.data;
       final aiReply = responseData['reply'] as String? ?? '';
 
+      // AI yon-amallarini bajaramiz (masalan budilnikni qurilmada rejalashtirish)
+      final actions = (responseData['actions'] as List?) ?? const [];
+      for (final act in actions) {
+        await _handleAction(Map<String, dynamic>.from(act as Map));
+      }
+
       if (aiReply.isNotEmpty) {
         _messages.add({'role': 'assistant', 'content': aiReply});
         return aiReply;
@@ -91,6 +99,19 @@ class AiService {
         _messages.removeLast();
       }
       return "Kutilmagan xatolik: $e";
+    }
+  }
+
+  /// AI qaytargan yon-amalni bajaradi.
+  Future<void> _handleAction(Map<String, dynamic> act) async {
+    try {
+      if (act['type'] == 'schedule_alarm' && act['alarm'] != null) {
+        final alarm = Alarm.fromJson(Map<String, dynamic>.from(act['alarm'] as Map));
+        await NotificationHelper().scheduleAlarm(alarm);
+        debugPrint('AI budilnik rejalashtirildi: ${alarm.timeLabel}');
+      }
+    } catch (e) {
+      debugPrint('AI action bajarishda xato: $e');
     }
   }
 

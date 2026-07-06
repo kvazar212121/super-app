@@ -76,7 +76,24 @@ class Settings(BaseSettings):
     # vision_provider = "openai" bo'lsa, kaloriya tahlili OpenAI orqali ishlaydi.
     openai_api_key: str = ""
     openai_vision_model: str = "gpt-4o"
+    openai_translate_model: str = "gpt-4o-mini"
+    openai_chat_model: str = "gpt-4o-mini"
+
+    # DeepSeek (OpenAI-mos API) — matn/chat/tarjima uchun. Vision yo'q.
+    deepseek_api_key: str = ""
+    deepseek_chat_model: str = "deepseek-chat"
     vision_provider: str = "groq"  # "groq" yoki "openai"
+    translate_provider: str = "groq"  # "groq" yoki "openai" (mashq tarjimasi uchun)
+    chat_provider: str = "groq"  # "groq" yoki "openai" (AI chat/agent uchun)
+
+    # Fon schedulerlari (eslatma/checkin/scraper) — ko'p worker ishlatilganда
+    # faqat BITTA protsessда True bo'lishi kerak (aks holda takroriy ishlaydi).
+    run_schedulers: bool = True
+
+    # DB bog'lanish puli — har WORKER uchun. Umumiy = (pool_size+max_overflow) × worker soni,
+    # bu Postgres max_connections'дан oshmasligi kerak. 2 yadро/3 worker uchun 10+5=15 → 45 < 100.
+    db_pool_size: int = 10
+    db_max_overflow: int = 5
 
     # Fitnes mashqlari GIF manbasi (ExerciseDB CDN, faqat hotlink)
     exercise_gif_base: str = "https://static.exercisedb.dev/media"

@@ -44,7 +44,24 @@ JAVOB FORMATI (JSON):
 {"items": [{"id": "0001", "name_uz": "...", "instructions_uz": ["...", "..."]}]}"""
 
 
+def _resolve_provider() -> tuple[str, str, str]:
+    """TRANSLATE_PROVIDER ga qarab (api_url, api_key, model) qaytaradi (OpenAI-mos format)."""
+    provider = (settings.translate_provider or "groq").strip().lower()
+    if provider == "openai":
+        return (
+            "https://api.openai.com/v1/chat/completions",
+            settings.openai_api_key,
+            settings.openai_translate_model,
+        )
+    return (
+        "https://api.groq.com/openai/v1/chat/completions",
+        settings.groq_api_key,
+        settings.groq_translate_model,
+    )
+
+
 def call_groq(batch: list[dict]) -> dict:
+    api_url, api_key, model = _resolve_provider()
     payload = [
         {"id": e["id"], "name": e["name"], "steps": e["steps"]}
         for e in batch
@@ -57,13 +74,13 @@ def call_groq(batch: list[dict]) -> dict:
     for attempt in range(MAX_RETRIES):
         try:
             response = httpx.post(
-                "https://api.groq.com/openai/v1/chat/completions",
+                api_url,
                 headers={
                     "Content-Type": "application/json",
-                    "Authorization": f"Bearer {settings.groq_api_key}",
+                    "Authorization": f"Bearer {api_key}",
                 },
                 json={
-                    "model": settings.groq_translate_model,
+                    "model": model,
                     "messages": [
                         {"role": "system", "content": SYSTEM_PROMPT},
                         {"role": "user", "content": user_msg},
@@ -112,9 +129,11 @@ def validate_item(item: dict, source: dict) -> bool:
 
 
 def main():
-    if not settings.groq_api_key:
-        print("XATO: GROQ_API_KEY .env faylida topilmadi.")
+    api_url, api_key, model = _resolve_provider()
+    if not api_key:
+        print(f"XATO: {settings.translate_provider} uchun API kalit .env faylida topilmadi.")
         sys.exit(1)
+    print(f"Provayder: {settings.translate_provider}, model: {model}")
 
     source = json.loads(SOURCE_FILE.read_text(encoding="utf-8"))
     exercises = [

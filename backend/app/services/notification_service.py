@@ -1,109 +1,128 @@
-import uuid
-from datetime import datetime, timezone
-from typing import Optional
+"""Bildirishnoma servisi — DB'ga (notifications jadvali) yozadi.
 
-from pydantic import BaseModel
+Ilgari xotiradagi dict ishlatilardi; bu ko'p worker/protsessда ishlamas va restartда
+yo'qolardi. Endi doimiy DB'ga yoziladi. Chaqiruv joylari sinxron bo'lgani uchun
+sync engine (sync_session) ishlatiladi — yozuvlar kichik, chaqiruvlarni async qilish shart emas.
+"""
+import logging
 
+from app.db.session import sync_session
+from app.models.notification import Notification as NotificationModel
 
-class Notification(BaseModel):
-    id: str
-    user_id: int
-    type: str
-    title: str
-    message: str
-    is_read: bool = False
-    created_at: datetime
-
-    model_config = {"from_attributes": True}
-
-    def to_dict(self) -> dict:
-        return {
-            "id": self.id,
-            "user_id": self.user_id,
-            "type": self.type,
-            "title": self.title,
-            "message": self.message,
-            "is_read": self.is_read,
-            "created_at": self.created_at.isoformat(),
-        }
+logger = logging.getLogger(__name__)
 
 
-# Xotirada saqlash — {user_id: [Notification, ...]}
-_notification_store: dict[int, list[Notification]] = {}
+def _to_dict(row: NotificationModel) -> dict:
+    return {
+        "id": row.id,
+        "user_id": row.user_id,
+        "type": row.type,
+        "title": row.title,
+        "message": row.message,
+        "is_read": row.is_read,
+        "created_at": row.created_at.isoformat() if row.created_at else None,
+    }
 
 
 class NotificationService:
 
     @staticmethod
-    def send_notification(
-        user_id: int,
-        ntype: str,
-        title: str,
-        message: str,
-    ) -> Notification:
-        """Yangi bildirishnoma yuborish."""
-        notification = Notification(
-            id=uuid.uuid4().hex,
-            user_id=user_id,
-            type=ntype,
-            title=title,
-            message=message,
-            created_at=datetime.now(timezone.utc),
-        )
-        if user_id not in _notification_store:
-            _notification_store[user_id] = []
-        _notification_store[user_id].append(notification)
-        return notification
+    def send_notification(user_id: int, ntype: str, title: str, message: str) -> dict | None:
+        """Yangi bildirishnoma yaratib DB'ga yozadi."""
+        try:
+            with sync_session() as db:
+                row = NotificationModel(
+                    user_id=user_id, type=ntype, title=title, message=message
+                )
+                db.add(row)
+                db.commit()
+                db.refresh(row)
+                return _to_dict(row)
+        except Exception as e:
+            logger.error(f"send_notification failed (user={user_id}): {e}")
+            return None
 
     @staticmethod
-    def get_notifications(user_id: int) -> list[Notification]:
-        """Foydalanuvchining barcha bildirishnomalarini qaytarish (yangi eski tartibda)."""
-        items = _notification_store.get(user_id, [])
-        return sorted(items, key=lambda n: n.created_at, reverse=True)
+    def get_notifications(user_id: int, limit: int = 100) -> list[dict]:
+        """Foydalanuvchining bildirishnomalari (yangidan eskiga)."""
+        try:
+            with sync_session() as db:
+                rows = (
+                    db.query(NotificationModel)
+                    .filter(NotificationModel.user_id == user_id)
+                    .order_by(NotificationModel.created_at.desc())
+                    .limit(limit)
+                    .all()
+                )
+                return [_to_dict(r) for r in rows]
+        except Exception as e:
+            logger.error(f"get_notifications failed (user={user_id}): {e}")
+            return []
 
     @staticmethod
-    def get_unread(user_id: int) -> list[Notification]:
-        """O'qilmagan bildirishnomalarni qaytarish."""
-        items = _notification_store.get(user_id, [])
-        return [n for n in items if not n.is_read]
-
-    @staticmethod
-    def mark_read(notification_id: str, user_id: int) -> None:
-        """Bildirishnomani o'qilgan deb belgilash."""
-        items = _notification_store.get(user_id, [])
-        for n in items:
-            if n.id == notification_id:
-                n.is_read = True
-                return
-        # Agar topilmasa — 404 xatolik
-        from fastapi import HTTPException, status
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Bildirishnoma topilmadi",
-        )
+    def get_unread(user_id: int) -> list[dict]:
+        """O'qilmagan bildirishnomalar."""
+        try:
+            with sync_session() as db:
+                rows = (
+                    db.query(NotificationModel)
+                    .filter(NotificationModel.user_id == user_id, NotificationModel.is_read.is_(False))
+                    .order_by(NotificationModel.created_at.desc())
+                    .all()
+                )
+                return [_to_dict(r) for r in rows]
+        except Exception as e:
+            logger.error(f"get_unread failed (user={user_id}): {e}")
+            return []
 
     @staticmethod
     def unread_count(user_id: int) -> int:
         """O'qilmagan bildirishnomalar soni."""
-        items = _notification_store.get(user_id, [])
-        return sum(1 for n in items if not n.is_read)
+        try:
+            with sync_session() as db:
+                return (
+                    db.query(NotificationModel)
+                    .filter(NotificationModel.user_id == user_id, NotificationModel.is_read.is_(False))
+                    .count()
+                )
+        except Exception as e:
+            logger.error(f"unread_count failed (user={user_id}): {e}")
+            return 0
 
     @staticmethod
-    def notify_order_status(user_id: int, order_id: int, status_label: str) -> Notification:
-        """Mijozga buyurtma holati o'zgarganda xabar."""
+    def mark_read(notification_id, user_id: int) -> None:
+        """Bildirishnomani o'qilgan deb belgilash."""
+        from fastapi import HTTPException, status
+
+        try:
+            nid = int(notification_id)
+        except (TypeError, ValueError):
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Bildirishnoma topilmadi")
+
+        with sync_session() as db:
+            row = (
+                db.query(NotificationModel)
+                .filter(NotificationModel.id == nid, NotificationModel.user_id == user_id)
+                .first()
+            )
+            if not row:
+                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Bildirishnoma topilmadi")
+            row.is_read = True
+            db.commit()
+
+    # ── Yordamchi (semantik) bildirishnomalar ─────────────────────────────
+
+    @staticmethod
+    def notify_order_status(user_id: int, order_id: int, status_label: str):
         return NotificationService.send_notification(
             user_id=user_id,
             ntype="order_status_changed",
             title="Buyurtma holati o'zgardi",
-            message=(
-                f"Sizning #{order_id} raqamli buyurtmangiz holati "
-                f"'{status_label}' ga o'zgardi."
-            ),
+            message=f"Sizning #{order_id} raqamli buyurtmangiz holati '{status_label}' ga o'zgardi.",
         )
 
     @staticmethod
-    def notify_new_order_for_provider(user_id: int, order_id: int) -> Notification:
-        """Provayder egasiga yangi buyurtma haqida xabar."""
+    def notify_new_order_for_provider(user_id: int, order_id: int):
         return NotificationService.send_notification(
             user_id=user_id,
             ntype="new_order",
@@ -112,8 +131,7 @@ class NotificationService:
         )
 
     @staticmethod
-    def notify_order_shifted(user_id: int, order_id: int, new_time_label: str) -> Notification:
-        """Mijozga navbati/vaqti oldinga surilganda xabar."""
+    def notify_order_shifted(user_id: int, order_id: int, new_time_label: str):
         return NotificationService.send_notification(
             user_id=user_id,
             ntype="order_time_shifted",
@@ -126,21 +144,16 @@ class NotificationService:
         )
 
     @staticmethod
-    def notify_booking_time_arrived(user_id: int, order_id: int, provider_name: str) -> Notification:
-        """Buyurtma vaqti kelganda (T+0) mijozga xabar."""
+    def notify_booking_time_arrived(user_id: int, order_id: int, provider_name: str):
         return NotificationService.send_notification(
             user_id=user_id,
             ntype="booking_time_arrived",
             title="Navbatingiz keldi! 🕐",
-            message=(
-                f"#{order_id} — {provider_name} da vaqtingiz keldi. "
-                f"Joyga boring va ilovadan tasdiqlang."
-            ),
+            message=f"#{order_id} — {provider_name} da vaqtingiz keldi. Joyga boring va ilovadan tasdiqlang.",
         )
 
     @staticmethod
-    def notify_provider_booking_time(provider_user_id: int, order_id: int, client_name: str) -> Notification:
-        """Buyurtma vaqti kelganda (T+0) soxa egasiga xabar."""
+    def notify_provider_booking_time(provider_user_id: int, order_id: int, client_name: str):
         return NotificationService.send_notification(
             user_id=provider_user_id,
             ntype="booking_time_arrived",

@@ -19,6 +19,8 @@ class CategoryOut(BaseModel):
     icon: str
     accent_color: str
     variants: list[VariantOut] = []
+    is_enabled: bool = True
+    coming_soon_message: Optional[str] = None
 
     model_config = {"from_attributes": True}
 

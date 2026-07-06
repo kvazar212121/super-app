@@ -123,10 +123,16 @@ import { navigateTo, renderPage } from '../router.js';
                     meta.type === 'nurse' ? 'Hamshira' :
                     meta.type === 'dental_clinic' ? 'Stomatologiya' :
                     meta.type === 'event_organizer' ? 'Tadbir guruhi (' + (meta.team_size || '?') + ' kishi)' : '';
-                var actions = '<button class="btn-icon" title="Ko\'rish" onclick="viewProvider(' + p.id + ')">&#128065;</button>';
+                var actions = '<button class="btn-icon" title="Ko\'rish / KYC" onclick="viewProviderKyc(' + p.id + ')">&#128065;</button>';
                 if (providerNeedsApproval(p)) {
                     actions += '<button class="btn-icon" title="Tasdiqlash" style="color:var(--success)" onclick="approveProvider(' + p.id + ')">&#10003;</button>';
                     actions += '<button class="btn-icon danger" title="Rad etish" onclick="rejectProvider(' + p.id + ')">&#10007;</button>';
+                }
+                actions += '<button class="btn-icon" title="Verified" style="color:#7c3aed" onclick="verifyProvider(' + p.id + ')">&#10004;</button>';
+                if (p.is_blocked) {
+                    actions += '<button class="btn-icon" title="Blokni olish" style="color:var(--success)" onclick="unblockProvider(' + p.id + ')">&#128275;</button>';
+                } else {
+                    actions += '<button class="btn-icon danger" title="Bloklash" onclick="blockProvider(' + p.id + ')">&#128683;</button>';
                 }
                 actions += '<button class="btn-icon danger" title="O\'chirish" onclick="deleteProvider(' + p.id + ')">&#128465;</button>';
                 return '<tr>' +
@@ -335,7 +341,42 @@ import { navigateTo, renderPage } from '../router.js';
         
 
 // Exports for ES6 modules
-export { providerMeta, renderProviderRowsApi, filterProviders, rejectProvider, providerDetailHtml, deleteProvider, renderProviderRows, saveProvider, providerNeedsApproval, editProvider, providerDisplayStatus, loadCategoriesCache, saveProviderLeadFee, renderProviders, approveProvider, viewProvider };
+        function _providerAction(id, path, label) {
+            window.api(window.API_BASE + '/providers/' + id + path, { method: 'PATCH' }).then(function(r) {
+                window.showToast(r && r.ok ? label : 'Xatolik', r && r.ok ? 'success' : 'error');
+                if (r && r.ok && window.renderProviders) window.renderProviders();
+            });
+        }
+        function verifyProvider(id) { _providerAction(id, '/verify', 'Tasdiqlandi (verified) ✅'); }
+        function blockProvider(id) { if (confirm('Provayderni bloklaysizmi? Ilovada ko\'rinmaydi.')) _providerAction(id, '/block', 'Bloklandi'); }
+        function unblockProvider(id) { _providerAction(id, '/unblock', 'Blok olindi'); }
+        async function viewProviderKyc(id) {
+            try {
+                var r = await window.api(window.API_BASE + '/providers/' + id + '/kyc');
+                if (!r || !r.ok) { window.showToast('KYC yuklanmadi', 'error'); return; }
+                var d = await r.json();
+                var docs = d.documents || {};
+                var docHtml = Object.keys(docs).length
+                    ? Object.keys(docs).map(function(k) {
+                        var v = docs[k];
+                        var val = (typeof v === 'string' && v.indexOf('http') === 0)
+                            ? '<a href="' + v + '" target="_blank">Faylni ochish</a>'
+                            : String(v);
+                        return '<div class="detail-item"><div class="detail-label">' + k + '</div><div class="detail-value">' + val + '</div></div>';
+                    }).join('')
+                    : '<p>Hujjat yuklanmagan</p>';
+                var html = '<div style="margin-bottom:10px;">' +
+                    '<b>Holat:</b> ' + (d.is_blocked ? '🚫 Bloklangan' : (d.is_verified ? '✅ Tasdiqlangan' : '⏳ Tasdiqlanmagan')) +
+                    ' | <b>verification:</b> ' + (d.verification_status || '—') + '</div>' + docHtml;
+                window.openModal('KYC / Hujjatlar — ' + (d.name || ''), html, '');
+            } catch (e) { window.showToast('Xatolik', 'error'); }
+        }
+        window.verifyProvider = verifyProvider;
+        window.blockProvider = blockProvider;
+        window.unblockProvider = unblockProvider;
+        window.viewProviderKyc = viewProviderKyc;
+
+export { providerMeta, renderProviderRowsApi, filterProviders, rejectProvider, providerDetailHtml, deleteProvider, renderProviderRows, saveProvider, providerNeedsApproval, editProvider, providerDisplayStatus, loadCategoriesCache, saveProviderLeadFee, renderProviders, approveProvider, viewProvider, verifyProvider, blockProvider, unblockProvider, viewProviderKyc };
 // Expose to window for inline onclick handlers
 window.providerMeta = providerMeta;
 window.renderProviderRowsApi = renderProviderRowsApi;

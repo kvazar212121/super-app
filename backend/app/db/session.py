@@ -7,11 +7,18 @@ from sqlalchemy import create_engine
 from app.core.config import settings
 
 engine = create_async_engine(
-    settings.database_url, echo=settings.debug, pool_size=20, max_overflow=10
+    settings.database_url,
+    echo=False,  # SQL echo hech qachon yoqilmaydi (prodda log toshqinini oldini oladi)
+    pool_size=settings.db_pool_size,       # har worker uchun (env: DB_POOL_SIZE)
+    max_overflow=settings.db_max_overflow, # env: DB_MAX_OVERFLOW
+    pool_pre_ping=True,   # bog'lanish tirikligini tekshiradi (stale connection xatolarini oldini oladi)
+    pool_recycle=1800,    # 30 daqiqada bog'lanishni yangilaydi
 )
 async_session = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 
-sync_engine = create_engine(settings.database_sync_url, echo=settings.debug)
+sync_engine = create_engine(
+    settings.database_sync_url, echo=False, pool_pre_ping=True, pool_recycle=1800
+)
 sync_session = sessionmaker(sync_engine, class_=Session, expire_on_commit=False)
 
 

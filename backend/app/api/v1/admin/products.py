@@ -1,8 +1,10 @@
 import random
 from fastapi import APIRouter, Depends, HTTPException, Query
+from starlette.requests import Request
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, update, func
 
+from app.core.limiter import limiter
 from app.db.session import get_db
 from app.api.v1.admin.dependencies import require_admin
 from app.models.user import User
@@ -242,7 +244,9 @@ async def ai_estimate_product_price(
 
 # ── POST admin/products/run-scraper (Auto Scraper) ─────────────────────────
 @router.post("/run-scraper")
+@limiter.limit("3/minute")
 async def run_market_scraper(
+    request: Request,
     db: AsyncSession = Depends(get_db),
     admin: User = Depends(require_admin)
 ):

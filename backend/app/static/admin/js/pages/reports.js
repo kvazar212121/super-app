@@ -17,6 +17,15 @@ import { navigateTo, renderPage } from '../router.js';
                     '<p class="page-subtitle">Haqiqiy moliyaviy siyosat asosida interaktiv tahlil</p>' +
                 '</div>' +
 
+                '<div class="card" style="margin-bottom:20px;"><div class="card-body">' +
+                    '<h3 class="settings-section-title" style="margin-bottom:10px;">📥 Ma\'lumot eksporti (CSV)</h3>' +
+                    '<div style="display:flex;gap:10px;flex-wrap:wrap;">' +
+                        '<button class="btn btn-primary" onclick="downloadCsv(\'/reports/export/orders.csv\',\'buyurtmalar.csv\')">⬇️ Buyurtmalar</button>' +
+                        '<button class="btn btn-primary" onclick="downloadCsv(\'/reports/export/users.csv\',\'foydalanuvchilar.csv\')">⬇️ Foydalanuvchilar</button>' +
+                        '<button class="btn btn-primary" onclick="downloadCsv(\'/reports/export/finance.csv\',\'moliya.csv\')">⬇️ Moliya</button>' +
+                    '</div>' +
+                '</div></div>' +
+
                 '<div class="card" style="margin-bottom:20px;">' +
                     '<div class="card-body" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">' +
                         '<div class="period-selector" id="reportPeriodSelector">' +
@@ -300,7 +309,21 @@ import { navigateTo, renderPage } from '../router.js';
         }
 
 // Exports for ES6 modules
-export { exportCSV, initReportChart, selectReportPeriod, renderReports, generateReport, initBarChart };
+function downloadCsv(path, filename) {
+    window.api(window.API_BASE + path).then(async function(r) {
+        if (!r || !r.ok) { window.showToast('Eksport qilib bo\'lmadi', 'error'); return; }
+        var blob = await r.blob();
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url; a.download = filename;
+        document.body.appendChild(a); a.click(); a.remove();
+        URL.revokeObjectURL(url);
+        window.showToast('Yuklab olindi ✅');
+    });
+}
+window.downloadCsv = downloadCsv;
+
+export { exportCSV, initReportChart, selectReportPeriod, renderReports, generateReport, initBarChart, downloadCsv };
 // Expose to window for inline onclick handlers
 window.exportCSV = exportCSV;
 window.initReportChart = initReportChart;

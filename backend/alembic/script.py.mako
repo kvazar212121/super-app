@@ -21,6 +21,5 @@ depends_on: Union[str, Sequence[str], None] = ${repr(depends_on)}
 def upgrade() -> None:
     ${upgrades if upgrades else "pass"}
 
-
 def downgrade() -> None:
     ${downgrades if downgrades else "pass"}

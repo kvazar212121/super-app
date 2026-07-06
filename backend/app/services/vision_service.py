@@ -46,23 +46,24 @@ def _num(value, default=0.0) -> float:
 
 
 def _resolve_provider() -> tuple[str, str, str]:
-    """VISION_PROVIDER ga qarab (api_url, api_key, model) qaytaradi.
+    """Vision provayder+model tanlovini admin sozlamalaridan (DB) yoki env'dan oladi.
 
-    OpenAI va Groq bir xil (OpenAI-mos) chat/completions formatidan foydalanadi,
-    shuning uchun faqat manzil, kalit va model tanlanadi — qolgan kod bir xil.
+    OpenAI va Groq bir xil (OpenAI-mos) chat/completions formatidan foydalanadi.
     """
-    provider = (settings.vision_provider or "groq").strip().lower()
-    if provider == "openai":
-        return (
-            "https://api.openai.com/v1/chat/completions",
-            settings.openai_api_key,
-            settings.openai_vision_model,
-        )
-    # default: groq
-    return (
-        "https://api.groq.com/openai/v1/chat/completions",
-        settings.groq_api_key,
-        settings.groq_vision_model,
+    from app.services import settings_service
+    return settings_service.resolve_ai(
+        feature="vision",
+        env_provider=settings.vision_provider,
+        keys={
+            "openai": settings.openai_api_key,
+            "groq": settings.groq_api_key,
+            "deepseek": settings.deepseek_api_key,
+        },
+        default_models={
+            "openai": settings.openai_vision_model,
+            "groq": settings.groq_vision_model,
+            "deepseek": settings.deepseek_chat_model,
+        },
     )
 
 

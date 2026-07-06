@@ -2,98 +2,284 @@ import { API_BASE, apiError, api, getAuthHeaders, emptyPage, logout } from '../a
 import { statusBadge, openModal, formatMoney, formatDate, closeModal, getInitials, renderStars, showToast } from '../ui.js';
 import { navigateTo, renderPage } from '../router.js';
 
+// AI bo'limlari ta'riflari (kalit -> ko'rinadigan nom)
+var AI_FEATURES = [
+    { key: 'vision', label: 'Rasm tahlili (Vision)', hint: 'Kaloriya hisoblagich va budilnik rasm-vazifasi' },
+    { key: 'chat', label: 'AI Yordamchi (Chat/Agent)', hint: 'Suhbat, budilnik va bron qilish' },
+    { key: 'translate', label: 'Tarjima', hint: 'Fitnes mashqlari tarjimasi' }
+];
+
 // ===== PAGE: SETTINGS =====
-        async function renderSettings() {
-            var f = { commission_rate: 15, cashback_rate: 2, currency: 'UZS', min_withdrawal: 100000, maintenance_mode: false, registration_open: true, support_phone: '+998 71 200 00 00', support_telegram: '@superapp_support' };
-            try {
-                const r = await window.api(window.API_BASE + '/settings');
-                if (r && r.ok) f = await r.json();
-            } catch(e) {}
-            mainContent.innerHTML =
-                '<div class="page-header">' +
-                    '<h1 class="page-title">Sozlamalar</h1>' +
-                    '<p class="page-subtitle">Platforma parametrlarini boshqarish</p>' +
+async function renderSettings() {
+    var f = { maintenance_mode: false, registration_open: true, support_phone: '+998 71 200 00 00', support_telegram: '@superapp_support' };
+    var ai = null;
+    var flags = [];
+    var cats = [];
+    try { const r = await window.api(window.API_BASE + '/settings'); if (r && r.ok) f = await r.json(); } catch(e) {}
+    try { const r = await window.api(window.API_BASE + '/ai-config'); if (r && r.ok) ai = await r.json(); } catch(e) {}
+    try { const r = await window.api(window.API_BASE + '/feature-flags'); if (r && r.ok) { const d = await r.json(); flags = d.flags || []; } } catch(e) {}
+    try { const r = await window.api(window.API_BASE + '/category-flags'); if (r && r.ok) { const d = await r.json(); cats = d.categories || []; } } catch(e) {}
+    window.__catKeys = cats.map(function(c){ return c.key; });
+    var legal = [];
+    try { const r = await window.api(window.API_BASE + '/legal'); if (r && r.ok) { const d = await r.json(); legal = d.docs || []; } } catch(e) {}
+
+    var providerOptions = (ai && ai.provider_options) ? ai.provider_options : ['openai', 'groq'];
+
+    // AI sozlamalari bo'limi
+    var aiRows = '';
+    AI_FEATURES.forEach(function(feat) {
+        var conf = (ai && ai[feat.key]) ? ai[feat.key] : { provider: 'openai', model: '' };
+        var opts = providerOptions.map(function(p) {
+            return '<option value="' + p + '"' + (conf.provider === p ? ' selected' : '') + '>' + p + '</option>';
+        }).join('');
+        aiRows +=
+            '<div class="setting-row">' +
+                '<div class="setting-info">' +
+                    '<div class="setting-label">' + feat.label + '</div>' +
+                    '<div class="setting-description">' + feat.hint + '</div>' +
                 '</div>' +
-                '<div class="card">' +
-                    '<div class="card-body">' +
-                        '<div class="settings-section">' +
-                            '<h3 class="settings-section-title">Tizim sozlamalari</h3>' +
-                            '<div class="setting-row">' +
-                                '<div class="setting-info">' +
-                                    '<div class="setting-label">Maintenance rejimi</div>' +
-                                    '<div class="setting-description">Yoqilganda platforma vaqtinchalik to\'xtatiladi</div>' +
-                                '</div>' +
-                                '<div class="setting-control">' +
-                                    '<label class="toggle-switch">' +
-                                        '<input type="checkbox" id="settingMaintenance"' + (f.maintenance_mode ? ' checked' : '') + '>' +
-                                        '<span class="toggle-slider"></span>' +
-                                    '</label>' +
-                                '</div>' +
-                            '</div>' +
-                            '<div class="setting-row">' +
-                                '<div class="setting-info">' +
-                                    '<div class="setting-label">Registratsiya ochiq</div>' +
-                                    '<div class="setting-description">Yangi foydalanuvchilar ro\'yxatdan o\'tishi mumkin</div>' +
-                                '</div>' +
-                                '<div class="setting-control">' +
-                                    '<label class="toggle-switch">' +
-                                        '<input type="checkbox" id="settingRegistration"' + (f.registration_open !== false ? ' checked' : '') + '>' +
-                                        '<span class="toggle-slider"></span>' +
-                                    '</label>' +
-                                '</div>' +
-                            '</div>' +
+                '<div class="setting-control" style="display:flex; gap:8px;">' +
+                    '<select class="form-input" id="ai_' + feat.key + '_provider" style="width:110px;">' + opts + '</select>' +
+                    '<input type="text" class="form-input" id="ai_' + feat.key + '_model" value="' + (conf.model || '') + '" placeholder="model nomi" style="width:230px;">' +
+                '</div>' +
+            '</div>';
+    });
+
+    // Xizmat kategoriyalari (26 ta) — qatorlar
+    var catRows = '';
+    cats.forEach(function(c) {
+        var stId = 'cat_' + c.key + '_state';
+        catRows +=
+            '<div class="setting-row">' +
+                '<div class="setting-info">' +
+                    '<div class="setting-label">' + (c.title || c.key) + '</div>' +
+                    '<input type="text" class="form-input" id="cat_' + c.key + '_msg" value="' + (c.enabled ? '' : (c.message || '')) + '" placeholder="Yopiq bo\'lganda chiqadigan xabar (ixtiyoriy)" style="width:320px; margin-top:6px; font-size:12px;">' +
+                '</div>' +
+                '<div class="setting-control" style="display:flex; align-items:center; gap:10px;">' +
+                    '<span id="' + stId + '" style="font-size:13px; font-weight:700; color:' + (c.enabled ? '#16a34a' : '#dc2626') + ';">' + (c.enabled ? 'Ochiq' : 'Yopiq') + '</span>' +
+                    '<label class="toggle-switch">' +
+                        '<input type="checkbox" id="cat_' + c.key + '_enabled" onchange="updToggle(this, \'' + stId + '\')"' + (c.enabled ? ' checked' : '') + '>' +
+                        '<span class="toggle-slider"></span>' +
+                    '</label>' +
+                '</div>' +
+            '</div>';
+    });
+
+    // Ilova bo'limlari (feature flags)
+    var flagRows = '';
+    flags.forEach(function(fl) {
+        var stId = 'flag_' + fl.key + '_state';
+        flagRows +=
+            '<div class="setting-row">' +
+                '<div class="setting-info">' +
+                    '<div class="setting-label">' + (fl.label || fl.key) + '</div>' +
+                    '<input type="text" class="form-input" id="flag_' + fl.key + '_msg" value="' + (fl.enabled ? '' : (fl.message || '')) + '" placeholder="Yopiq bo\'lganda chiqadigan xabar (ixtiyoriy)" style="width:320px; margin-top:6px; font-size:12px;">' +
+                '</div>' +
+                '<div class="setting-control" style="display:flex; align-items:center; gap:10px;">' +
+                    '<span id="' + stId + '" style="font-size:13px; font-weight:700; color:' + (fl.enabled ? '#16a34a' : '#dc2626') + ';">' + (fl.enabled ? 'Ochiq' : 'Yopiq') + '</span>' +
+                    '<label class="toggle-switch">' +
+                        '<input type="checkbox" id="flag_' + fl.key + '_enabled" onchange="updToggle(this, \'' + stId + '\')"' + (fl.enabled ? ' checked' : '') + '>' +
+                        '<span class="toggle-slider"></span>' +
+                    '</label>' +
+                '</div>' +
+            '</div>';
+    });
+
+    var legalRows = legal.map(function(d){
+        var safe = (d.content || '').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+        return '<div style="margin-bottom:16px;">' +
+            '<label style="display:block;font-weight:700;margin-bottom:6px;">' + d.label + '</label>' +
+            '<textarea class="form-input" id="legal_' + d.key + '" rows="8" style="width:100%;font-size:13px;line-height:1.5;">' + safe + '</textarea>' +
+        '</div>';
+    }).join('');
+
+    mainContent.innerHTML =
+        '<div class="page-header">' +
+            '<h1 class="page-title">Sozlamalar</h1>' +
+            '<p class="page-subtitle">Platforma parametrlari, AI modellari va bo\'limlarni boshqarish</p>' +
+        '</div>' +
+
+        // ── AI Sozlamalari ──
+        '<div class="card">' +
+            '<div class="card-body">' +
+                '<div class="settings-section">' +
+                    '<h3 class="settings-section-title">🤖 AI provayder va modellar</h3>' +
+                    '<p class="setting-description" style="margin-bottom:12px;">Har bir qism uchun provayder (OpenAI/Groq) va model tanlang. O\'zgarish darhol kuchga kiradi (kod o\'zgartirish shart emas).</p>' +
+                    aiRows +
+                    '<div style="padding-top:12px;">' +
+                        '<button class="btn btn-primary" onclick="saveAiConfig()">💾 AI sozlamalarini saqlash</button>' +
+                    '</div>' +
+                '</div>' +
+            '</div>' +
+        '</div>' +
+
+        // ── Ilova bo'limlari (feature flags) ──
+        '<div class="card">' +
+            '<div class="card-body">' +
+                '<div class="settings-section">' +
+                    '<h3 class="settings-section-title">📱 Ilova bo\'limlari (yoqish/o\'chirish)</h3>' +
+                    '<p class="setting-description" style="margin-bottom:12px;"><b>O\'ng tarafdagi tugmani</b> "Yopiq" qilsangiz — bo\'lim ilovaда "tez orada ishga tushadi" bilan ko\'rinadi. Xabar maydoni ixtiyoriy.</p>' +
+                    flagRows +
+                    '<div style="padding-top:12px;">' +
+                        '<button class="btn btn-primary" onclick="saveFeatureFlags()">💾 Bo\'limlarni saqlash</button>' +
+                    '</div>' +
+                '</div>' +
+            '</div>' +
+        '</div>' +
+
+        // ── Xizmat kategoriyalari (26 ta) ──
+        '<div class="card">' +
+            '<div class="card-body">' +
+                '<div class="settings-section">' +
+                    '<h3 class="settings-section-title">🛠️ Xizmatlar (' + cats.length + ' ta) — yoqish/o\'chirish</h3>' +
+                    '<p class="setting-description" style="margin-bottom:12px;"><b>O\'ng tarafdagi tugmani</b> "Yopiq" qilsangiz — xizmat ilovaда "tez orada" bilan ko\'rinadi. Xabar maydoni faqat yopiq holatда ishlatiladi (ixtiyoriy, yozilmasa standart matn chiqadi).</p>' +
+                    '<div style="max-height:420px; overflow-y:auto;">' + catRows + '</div>' +
+                    '<div style="padding-top:12px;">' +
+                        '<button class="btn btn-primary" onclick="saveCategoryFlags()">💾 Xizmatlarni saqlash</button>' +
+                    '</div>' +
+                '</div>' +
+            '</div>' +
+        '</div>' +
+
+        // ── Huquqiy hujjatlar (CMS) ──
+        '<div class="card">' +
+            '<div class="card-body">' +
+                '<div class="settings-section">' +
+                    '<h3 class="settings-section-title">📄 Huquqiy hujjatlar</h3>' +
+                    '<p class="setting-description" style="margin-bottom:12px;">Foydalanish shartlari, maxfiylik va FAQ matnlari. O\'zgarish darhol ilova (/terms) va veb-saytda ko\'rinadi.</p>' +
+                    legalRows +
+                    '<div style="padding-top:8px;">' +
+                        '<button class="btn btn-primary" onclick="saveLegal()">💾 Hujjatlarni saqlash</button>' +
+                    '</div>' +
+                '</div>' +
+            '</div>' +
+        '</div>' +
+
+        // ── Tizim sozlamalari ──
+        '<div class="card">' +
+            '<div class="card-body">' +
+                '<div class="settings-section">' +
+                    '<h3 class="settings-section-title">Tizim</h3>' +
+                    '<div class="setting-row">' +
+                        '<div class="setting-info">' +
+                            '<div class="setting-label">Maintenance rejimi</div>' +
+                            '<div class="setting-description">Yoqilganda platforma vaqtinchalik to\'xtatiladi</div>' +
                         '</div>' +
-                        '<div class="settings-section">' +
-                            '<h3 class="settings-section-title">Qo\'llab-quvvatlash</h3>' +
-                            '<div class="setting-row">' +
-                                '<div class="setting-info">' +
-                                    '<div class="setting-label">Support telefon</div>' +
-                                    '<div class="setting-description">Mijozlar uchun qo\'llab-quvvatlash raqami</div>' +
-                                '</div>' +
-                                '<div class="setting-control">' +
-                                    '<input type="text" class="form-input" id="settingSupportPhone" value="' + (f.support_phone || '+998 71 200 00 00') + '" style="width:200px;">' +
-                                '</div>' +
-                            '</div>' +
-                            '<div class="setting-row">' +
-                                '<div class="setting-info">' +
-                                    '<div class="setting-label">Support Telegram</div>' +
-                                    '<div class="setting-description">Telegram support kanali yoki bot</div>' +
-                                '</div>' +
-                                '<div class="setting-control">' +
-                                    '<input type="text" class="form-input" id="settingSupportTelegram" value="' + (f.support_telegram || '@superapp_support') + '" style="width:200px;">' +
-                                '</div>' +
-                            '</div>' +
-                        '</div>' +
-                        '<div style="padding-top:16px;">' +
-                            '<button class="btn btn-primary" onclick="saveSettings()">&#128190; Saqlash</button>' +
+                        '<div class="setting-control">' +
+                            '<label class="toggle-switch"><input type="checkbox" id="settingMaintenance"' + (f.maintenance_mode ? ' checked' : '') + '><span class="toggle-slider"></span></label>' +
                         '</div>' +
                     '</div>' +
-                '</div>';
-        }
+                    '<div class="setting-row">' +
+                        '<div class="setting-info">' +
+                            '<div class="setting-label">Registratsiya ochiq</div>' +
+                            '<div class="setting-description">Yangi foydalanuvchilar ro\'yxatdan o\'tishi mumkin</div>' +
+                        '</div>' +
+                        '<div class="setting-control">' +
+                            '<label class="toggle-switch"><input type="checkbox" id="settingRegistration"' + (f.registration_open !== false ? ' checked' : '') + '><span class="toggle-slider"></span></label>' +
+                        '</div>' +
+                    '</div>' +
+                    '<div class="setting-row">' +
+                        '<div class="setting-info"><div class="setting-label">Support telefon</div></div>' +
+                        '<div class="setting-control"><input type="text" class="form-input" id="settingSupportPhone" value="' + (f.support_phone || '') + '" style="width:200px;"></div>' +
+                    '</div>' +
+                    '<div class="setting-row">' +
+                        '<div class="setting-info"><div class="setting-label">Support Telegram</div></div>' +
+                        '<div class="setting-control"><input type="text" class="form-input" id="settingSupportTelegram" value="' + (f.support_telegram || '') + '" style="width:200px;"></div>' +
+                    '</div>' +
+                    '<div style="padding-top:16px;">' +
+                        '<button class="btn btn-primary" onclick="saveSettings()">💾 Saqlash</button>' +
+                    '</div>' +
+                '</div>' +
+            '</div>' +
+        '</div>';
+}
 
-        function saveSettings() {
-            var payload = {
-                maintenance_mode: document.getElementById('settingMaintenance').checked,
-                registration_open: document.getElementById('settingRegistration').checked,
-                support_phone: document.getElementById('settingSupportPhone').value,
-                support_telegram: document.getElementById('settingSupportTelegram').value
-            };
-            window.api(window.API_BASE + '/settings', {
-                method: 'PATCH',
-                body: JSON.stringify(payload)
-            }).then(function(r) {
-                if (r && r.ok) {
-                    window.showToast('Sozlamalar muvaffaqiyatli saqlandi');
-                } else {
-                    window.showToast('Saqlab bo\'lmadi', 'error');
-                }
-            });
-        }
+// Toggle bosilganда "Ochiq/Yopiq" yozuvini yangilaydi
+function updToggle(cb, spanId) {
+    var s = document.getElementById(spanId);
+    if (s) {
+        s.textContent = cb.checked ? 'Ochiq' : 'Yopiq';
+        s.style.color = cb.checked ? '#16a34a' : '#dc2626';
+    }
+}
 
-        
+function saveAiConfig() {
+    var payload = {};
+    AI_FEATURES.forEach(function(feat) {
+        payload[feat.key] = {
+            provider: document.getElementById('ai_' + feat.key + '_provider').value,
+            model: document.getElementById('ai_' + feat.key + '_model').value
+        };
+    });
+    window.api(window.API_BASE + '/ai-config', { method: 'PUT', body: JSON.stringify(payload) })
+        .then(function(r) {
+            window.showToast(r && r.ok ? 'AI sozlamalari saqlandi ✅' : 'Saqlab bo\'lmadi', r && r.ok ? 'success' : 'error');
+        });
+}
+
+function saveFeatureFlags() {
+    var flagsList = [];
+    ['plans','finance','shopping','services','calorie','fitness','alarm','ai_chat'].forEach(function(key) {
+        var cb = document.getElementById('flag_' + key + '_enabled');
+        var msgEl = document.getElementById('flag_' + key + '_msg');
+        if (cb) {
+            flagsList.push({ key: key, enabled: cb.checked, message: msgEl ? msgEl.value : '' });
+        }
+    });
+    window.api(window.API_BASE + '/feature-flags', { method: 'PUT', body: JSON.stringify({ flags: flagsList }) })
+        .then(function(r) {
+            window.showToast(r && r.ok ? 'Bo\'limlar saqlandi ✅' : 'Saqlab bo\'lmadi', r && r.ok ? 'success' : 'error');
+        });
+}
+
+function saveLegal() {
+    var payload = {};
+    ['terms', 'privacy', 'faq'].forEach(function(k) {
+        var el = document.getElementById('legal_' + k);
+        if (el) payload[k] = el.value;
+    });
+    window.api(window.API_BASE + '/legal', { method: 'PUT', body: JSON.stringify(payload) })
+        .then(function(r) {
+            window.showToast(r && r.ok ? 'Hujjatlar saqlandi ✅' : 'Saqlab bo\'lmadi', r && r.ok ? 'success' : 'error');
+        });
+}
+
+function saveCategoryFlags() {
+    var keys = window.__catKeys || [];
+    var flagsList = [];
+    keys.forEach(function(key) {
+        var cb = document.getElementById('cat_' + key + '_enabled');
+        var msgEl = document.getElementById('cat_' + key + '_msg');
+        if (cb) {
+            flagsList.push({ key: key, enabled: cb.checked, message: msgEl ? msgEl.value : '' });
+        }
+    });
+    window.api(window.API_BASE + '/category-flags', { method: 'PUT', body: JSON.stringify({ flags: flagsList }) })
+        .then(function(r) {
+            window.showToast(r && r.ok ? 'Xizmatlar saqlandi ✅' : 'Saqlab bo\'lmadi', r && r.ok ? 'success' : 'error');
+        });
+}
+
+function saveSettings() {
+    var payload = {
+        maintenance_mode: document.getElementById('settingMaintenance').checked,
+        registration_open: document.getElementById('settingRegistration').checked,
+        support_phone: document.getElementById('settingSupportPhone').value,
+        support_telegram: document.getElementById('settingSupportTelegram').value
+    };
+    window.api(window.API_BASE + '/settings', { method: 'PATCH', body: JSON.stringify(payload) })
+        .then(function(r) {
+            window.showToast(r && r.ok ? 'Sozlamalar muvaffaqiyatli saqlandi' : 'Saqlab bo\'lmadi', r && r.ok ? 'success' : 'error');
+        });
+}
 
 // Exports for ES6 modules
-export { saveSettings, renderSettings };
+export { saveSettings, saveAiConfig, saveFeatureFlags, saveCategoryFlags, saveLegal, updToggle, renderSettings };
 // Expose to window for inline onclick handlers
 window.saveSettings = saveSettings;
+window.saveAiConfig = saveAiConfig;
+window.saveFeatureFlags = saveFeatureFlags;
+window.saveCategoryFlags = saveCategoryFlags;
+window.saveLegal = saveLegal;
+window.updToggle = updToggle;
 window.renderSettings = renderSettings;

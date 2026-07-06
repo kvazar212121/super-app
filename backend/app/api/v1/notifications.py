@@ -14,7 +14,7 @@ async def get_notifications(
     """Foydalanuvchining bildirishnomalarini olish."""
     notifications = NotificationService.get_notifications(current_user.id)
     return {
-        "notifications": [n.to_dict() for n in notifications],
+        "notifications": notifications,
         "total": len(notifications),
     }
 

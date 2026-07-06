@@ -16,6 +16,8 @@ import '../screens/fitness/fitness_home_screen.dart';
 import '../screens/alarm/alarm_home_screen.dart';
 import '../screens/chat_screen.dart';
 import '../providers/auth_provider.dart';
+import '../services/feature_service.dart';
+import 'premium/premium_screen.dart';
 import 'package:provider/provider.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -45,6 +47,41 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
+  /// Bo'lim yopiq bo'lsa "tez orada" ko'rsatadi, aks holda (kerak bo'lsa auth tekshirib) ochadi.
+  void _openFeature(BuildContext context, String key, Widget Function() builder, {bool needAuth = true}) {
+    if (!FeatureService().isEnabled(key)) {
+      showDialog(
+        context: context,
+        builder: (_) => AlertDialog(
+          title: const Text('Tez orada 🚧'),
+          content: Text(FeatureService().message(key)),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(context), child: const Text('Tushunarli')),
+          ],
+        ),
+      );
+      return;
+    }
+    // Premium bo'lim — foydalanuvchi premium bo'lmasa obuna ekraniga
+    if (FeatureService().isPremiumFeature(key) && !FeatureService().isUserPremium) {
+      final auth = Provider.of<AuthProvider>(context, listen: false);
+      if (!auth.isAuthenticated) {
+        Navigator.push(context, MaterialPageRoute(builder: (_) => const AuthGateScreen()));
+        return;
+      }
+      Navigator.push(context, MaterialPageRoute(builder: (_) => const PremiumScreen()));
+      return;
+    }
+    if (needAuth) {
+      final auth = Provider.of<AuthProvider>(context, listen: false);
+      if (!auth.isAuthenticated) {
+        Navigator.push(context, MaterialPageRoute(builder: (_) => const AuthGateScreen()));
+        return;
+      }
+    }
+    Navigator.push(context, MaterialPageRoute(builder: (_) => builder()));
+  }
+
   Widget _buildMainGrid(BuildContext context) {
     return Column(
       children: [
@@ -56,14 +93,7 @@ class HomeScreen extends StatelessWidget {
                 label: 'Rejalarim',
                 color: Colors.blueAccent,
                 bgImage: 'assets/images/my_plans.jpg',
-                onTap: () {
-                  final auth = Provider.of<AuthProvider>(context, listen: false);
-                  if (!auth.isAuthenticated) {
-                    Navigator.push(context, MaterialPageRoute(builder: (_) => const AuthGateScreen()));
-                  } else {
-                    Navigator.push(context, MaterialPageRoute(builder: (_) => const TodoScreen()));
-                  }
-                },
+                onTap: () => _openFeature(context, 'plans', () => const TodoScreen()),
               ),
             ),
             const SizedBox(width: 12),
@@ -73,14 +103,7 @@ class HomeScreen extends StatelessWidget {
                 label: 'Mening moliyam',
                 color: Colors.greenAccent,
                 bgImage: 'assets/images/my_finance.jpg',
-                onTap: () {
-                  final auth = Provider.of<AuthProvider>(context, listen: false);
-                  if (!auth.isAuthenticated) {
-                    Navigator.push(context, MaterialPageRoute(builder: (_) => const AuthGateScreen()));
-                  } else {
-                    Navigator.push(context, MaterialPageRoute(builder: (_) => const FinanceManagerScreen()));
-                  }
-                },
+                onTap: () => _openFeature(context, 'finance', () => const FinanceManagerScreen()),
               ),
             ),
           ],
@@ -94,14 +117,7 @@ class HomeScreen extends StatelessWidget {
                 label: 'Aqlli savdo',
                 color: Colors.orangeAccent,
                 bgImage: 'assets/images/smart_shopping.jpg',
-                onTap: () {
-                  final auth = Provider.of<AuthProvider>(context, listen: false);
-                  if (!auth.isAuthenticated) {
-                    Navigator.push(context, MaterialPageRoute(builder: (_) => const AuthGateScreen()));
-                  } else {
-                    Navigator.push(context, MaterialPageRoute(builder: (_) => const ShoppingListScreen()));
-                  }
-                },
+                onTap: () => _openFeature(context, 'shopping', () => const ShoppingListScreen()),
               ),
             ),
             const SizedBox(width: 12),
@@ -111,7 +127,7 @@ class HomeScreen extends StatelessWidget {
                 label: 'Barcha xizmatlar',
                 color: Colors.purpleAccent,
                 bgImage: 'assets/images/all_services.jpg',
-                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AllCategoriesScreen())),
+                onTap: () => _openFeature(context, 'services', () => const AllCategoriesScreen(), needAuth: false),
               ),
             ),
           ],
@@ -125,14 +141,7 @@ class HomeScreen extends StatelessWidget {
                 label: 'Kaloriya hisoblagich',
                 color: Colors.redAccent,
                 bgImage: 'assets/images/calorie_counter.jpg',
-                onTap: () {
-                  final auth = Provider.of<AuthProvider>(context, listen: false);
-                  if (!auth.isAuthenticated) {
-                    Navigator.push(context, MaterialPageRoute(builder: (_) => const AuthGateScreen()));
-                  } else {
-                    Navigator.push(context, MaterialPageRoute(builder: (_) => const CalorieHomeScreen()));
-                  }
-                },
+                onTap: () => _openFeature(context, 'calorie', () => const CalorieHomeScreen()),
               ),
             ),
             const SizedBox(width: 12),
@@ -142,14 +151,7 @@ class HomeScreen extends StatelessWidget {
                 label: 'Fitnes trener',
                 color: Colors.tealAccent,
                 bgImage: 'assets/images/fitness_trainer.jpg',
-                onTap: () {
-                  final auth = Provider.of<AuthProvider>(context, listen: false);
-                  if (!auth.isAuthenticated) {
-                    Navigator.push(context, MaterialPageRoute(builder: (_) => const AuthGateScreen()));
-                  } else {
-                    Navigator.push(context, MaterialPageRoute(builder: (_) => const FitnessHomeScreen()));
-                  }
-                },
+                onTap: () => _openFeature(context, 'fitness', () => const FitnessHomeScreen()),
               ),
             ),
           ],
@@ -162,14 +164,7 @@ class HomeScreen extends StatelessWidget {
                 icon: LucideIcons.alarmClock,
                 label: 'Majburlovchi budilnik',
                 color: Colors.indigoAccent,
-                onTap: () {
-                  final auth = Provider.of<AuthProvider>(context, listen: false);
-                  if (!auth.isAuthenticated) {
-                    Navigator.push(context, MaterialPageRoute(builder: (_) => const AuthGateScreen()));
-                  } else {
-                    Navigator.push(context, MaterialPageRoute(builder: (_) => const AlarmHomeScreen()));
-                  }
-                },
+                onTap: () => _openFeature(context, 'alarm', () => const AlarmHomeScreen()),
               ),
             ),
             const SizedBox(width: 12),
@@ -178,10 +173,7 @@ class HomeScreen extends StatelessWidget {
                 icon: LucideIcons.bot,
                 label: 'AI Yordamchi',
                 color: const Color(0xFF06B6D4),
-                onTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const ChatScreen()),
-                ),
+                onTap: () => _openFeature(context, 'ai_chat', () => const ChatScreen(), needAuth: false),
               ),
             ),
           ],

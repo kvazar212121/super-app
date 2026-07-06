@@ -1,3 +1,5 @@
+import csv
+import io
 from datetime import datetime, date, timedelta
 from enum import Enum
 from typing import Optional, List
@@ -5,16 +7,68 @@ from fastapi import APIRouter, Depends, Query
 from fastapi.responses import PlainTextResponse
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import func, select, and_
+from sqlalchemy import func, select, and_, desc as sa_desc
 
 from app.db.session import get_db
 from app.models.user import User
 from app.models.category import Category
 from app.models.order import Order, OrderStatus
 from app.models.provider import Provider
+from app.models.finance_record import FinanceRecord
 from app.api.v1.admin.dependencies import require_admin
 
 router = APIRouter()
+
+
+def _csv_response(filename: str, header: list, rows: list) -> PlainTextResponse:
+    buf = io.StringIO()
+    w = csv.writer(buf)
+    w.writerow(header)
+    for r in rows:
+        w.writerow(r)
+    return PlainTextResponse(
+        content=buf.getvalue(),
+        media_type="text/csv; charset=utf-8",
+        headers={"Content-Disposition": f"attachment; filename={filename}"},
+    )
+
+
+@router.get("/reports/export/orders.csv")
+async def export_orders(_admin: User = Depends(require_admin), db: AsyncSession = Depends(get_db)):
+    rows = (await db.execute(select(Order).order_by(sa_desc(Order.id)).limit(5000))).scalars().all()
+    data = [
+        [o.id, o.user_id, o.provider_id, o.service_name, o.price,
+         (o.status.value if hasattr(o.status, "value") else o.status),
+         o.date.isoformat() if o.date else "",
+         o.created_at.isoformat() if o.created_at else ""]
+        for o in rows
+    ]
+    return _csv_response("orders.csv",
+        ["id", "user_id", "provider_id", "service_name", "price", "status", "date", "created_at"], data)
+
+
+@router.get("/reports/export/users.csv")
+async def export_users(_admin: User = Depends(require_admin), db: AsyncSession = Depends(get_db)):
+    rows = (await db.execute(select(User).order_by(sa_desc(User.id)).limit(10000))).scalars().all()
+    data = [
+        [u.id, u.name, u.surname, u.phone, u.balance, u.cashback,
+         u.is_premium, u.is_admin, u.created_at.isoformat() if u.created_at else ""]
+        for u in rows
+    ]
+    return _csv_response("users.csv",
+        ["id", "name", "surname", "phone", "balance", "cashback", "is_premium", "is_admin", "created_at"], data)
+
+
+@router.get("/reports/export/finance.csv")
+async def export_finance(_admin: User = Depends(require_admin), db: AsyncSession = Depends(get_db)):
+    rows = (await db.execute(select(FinanceRecord).order_by(sa_desc(FinanceRecord.id)).limit(10000))).scalars().all()
+    data = [
+        [f.id, f.user_id, f.type, f.amount, f.category, (f.description or ""),
+         f.date.isoformat() if f.date else ""]
+        for f in rows
+    ]
+    return _csv_response("finance.csv",
+        ["id", "user_id", "type", "amount", "category", "description", "date"], data)
 
 
 class ReportPeriod(str, Enum):

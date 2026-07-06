@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import '../models/service_hub_kind.dart';
+import '../services/feature_service.dart';
 import '../theme/glass_tokens.dart';
 import '../widgets/glass/glass_scaffold.dart';
 import '../widgets/glass/glass_surface.dart';
@@ -147,13 +148,31 @@ class _AllCategoriesScreenState extends State<AllCategoriesScreen> {
                                 itemBuilder: (ctx, i) {
                                   final k = group.items[i];
                                   final isDark = Theme.of(context).brightness == Brightness.dark;
-                                  return InkWell(
-                                    onTap: () => Navigator.push(
-                                      context,
-                                      MaterialPageRoute<void>(
-                                        builder: (_) => ServiceHubScreen(kind: k, accentColor: k.accent),
-                                      ),
-                                    ),
+                                  final enabled = FeatureService().isCategoryEnabled(k.key);
+                                  return Opacity(
+                                    opacity: enabled ? 1.0 : 0.45,
+                                    child: InkWell(
+                                    onTap: () {
+                                      if (!enabled) {
+                                        showDialog(
+                                          context: context,
+                                          builder: (_) => AlertDialog(
+                                            title: const Text('Tez orada 🚧'),
+                                            content: Text(FeatureService().categoryMessage(k.key)),
+                                            actions: [
+                                              TextButton(onPressed: () => Navigator.pop(context), child: const Text('Tushunarli')),
+                                            ],
+                                          ),
+                                        );
+                                        return;
+                                      }
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute<void>(
+                                          builder: (_) => ServiceHubScreen(kind: k, accentColor: k.accent),
+                                        ),
+                                      );
+                                    },
                                     borderRadius: BorderRadius.circular(GlassTokens.radiusMd),
                                     child: Container(
                                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -190,6 +209,7 @@ class _AllCategoriesScreenState extends State<AllCategoriesScreen> {
                                         ],
                                       ),
                                     ),
+                                  ),
                                   );
                                 },
                               ),

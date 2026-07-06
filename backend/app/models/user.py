@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import DateTime, Float, Integer, String, Boolean, func
+from sqlalchemy import DateTime, Float, Integer, String, Boolean, ForeignKey, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
@@ -21,7 +21,13 @@ class User(Base):
     balance: Mapped[float] = mapped_column(Float, default=0.0)
     cashback: Mapped[float] = mapped_column(Float, default=0.0)
     is_premium: Mapped[bool] = mapped_column(Boolean, default=False)
+    premium_until: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     is_admin: Mapped[bool] = mapped_column(Boolean, default=False)
+    # RBAC: super admin barcha ruxsatga ega; oddiy adminга rol biriktiriladi
+    is_super_admin: Mapped[bool] = mapped_column(Boolean, default=False)
+    admin_role_id: Mapped[int | None] = mapped_column(
+        Integer, ForeignKey("admin_roles.id", ondelete="SET NULL"), nullable=True
+    )
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     reminder_offset_minutes: Mapped[int] = mapped_column(Integer, default=10)
     created_at: Mapped[datetime] = mapped_column(

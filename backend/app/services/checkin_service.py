@@ -255,7 +255,8 @@ class CheckinService:
         """
         from datetime import timedelta
 
-        now = datetime.now(timezone.utc)
+        # Order.date ustuni tz-siz (naive) saqlanadi — solishtirish uchun naive UTC ishlatamiz
+        now = datetime.now(timezone.utc).replace(tzinfo=None)
         cutoff = now - timedelta(minutes=20)
 
         # Tasdiqlangan lekin vaqti o'tgan buyurtmalar
@@ -418,7 +419,8 @@ class CheckinScheduler:
         from datetime import timedelta
         from sqlalchemy.orm import selectinload
 
-        now = datetime.now(timezone.utc)
+        # Order.date ustuni tz-siz (naive) saqlanadi — solishtirish uchun naive UTC ishlatamiz
+        now = datetime.now(timezone.utc).replace(tzinfo=None)
 
         # Vaqti 5 daqiqa oldin o'tgan va hali checkin qilinmagan buyurtmalar
         window_start = now - timedelta(minutes=6)

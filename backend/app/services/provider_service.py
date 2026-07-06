@@ -35,9 +35,9 @@ class ProviderService:
         base = (
             select(Provider)
             .options(selectinload(Provider.category))
-            .where(Provider.is_active == True, Provider.is_paused == False)
+            .where(Provider.is_active == True, Provider.is_paused == False, Provider.is_blocked == False)
         )
-        count_base = select(func.count(Provider.id)).where(Provider.is_active == True, Provider.is_paused == False)
+        count_base = select(func.count(Provider.id)).where(Provider.is_active == True, Provider.is_paused == False, Provider.is_blocked == False)
 
         if category_id:
             base = base.where(Provider.category_id == category_id)

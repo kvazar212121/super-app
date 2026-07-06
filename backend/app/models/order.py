@@ -42,15 +42,15 @@ class Order(Base):
     service_icon: Mapped[str | None] = mapped_column(String(50), nullable=True)
     address: Mapped[str] = mapped_column(String(500))
     notes: Mapped[str | None] = mapped_column(String(1000), nullable=True)
-    date: Mapped[datetime] = mapped_column(DateTime)
+    date: Mapped[datetime] = mapped_column(DateTime, index=True)
     price: Mapped[float] = mapped_column(Float)
     cashback_earned: Mapped[float] = mapped_column(Float, default=0.0)
     status: Mapped[OrderStatus] = mapped_column(
-        SAEnum(OrderStatus), default=OrderStatus.pending
+        SAEnum(OrderStatus), default=OrderStatus.pending, index=True
     )
     booking_mode: Mapped[str] = mapped_column(String(50), default="fixed")
     created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), server_default="now()"
+        DateTime(timezone=True), server_default="now()", index=True
     )
 
     user = relationship("User", back_populates="orders")

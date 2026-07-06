@@ -34,6 +34,15 @@ enum ServiceHubKind {
 }
 
 extension ServiceHubKindX on ServiceHubKind {
+  /// Backend kategoriya kaliti (ko'pchilik enum nomi bilan bir xil, 4 tasi farq qiladi).
+  String get key => switch (this) {
+        ServiceHubKind.gameZona => 'game_zona',
+        ServiceHubKind.sportMaydon => 'sport_maydon',
+        ServiceHubKind.kompUsta => 'kompyuter_usta',
+        ServiceHubKind.boshqa => 'boshqa_xizmatlar',
+        _ => name,
+      };
+
   String get title => switch (this) {
         ServiceHubKind.sartarosh => 'Sartarosh',
         ServiceHubKind.salon => 'Salon',

@@ -4,22 +4,27 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="HubServis — barcha xizmatlar bir joyda. Sartarosh, usta, tozalash, avto-yordam va yana 19+ xizmat.">
+  <meta name="theme-color" content="#050505">
   <title>HubServis — Premium Xizmatlar</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
       --bg: #050505;
-      --bg-surface: #111111;
-      --bg-surface-hover: #1A1A1A;
+      --bg-surface: #101012;
+      --bg-surface-hover: #17171b;
       --text: #F3F4F6;
       --text-muted: #9CA3AF;
       --border: rgba(255, 255, 255, 0.1);
-      --border-hover: rgba(255, 255, 255, 0.25);
+      --border-hover: rgba(255, 255, 255, 0.28);
       --metallic: linear-gradient(180deg, #FFFFFF 0%, #D4D4D8 40%, #71717A 100%);
-      --accent-glow: 0 0 20px rgba(255, 255, 255, 0.15);
+      --accent1: #6366F1;
+      --accent2: #22D3EE;
+      --accent3: #A855F7;
+      --accent-grad: linear-gradient(120deg, #6366F1, #22D3EE 55%, #A855F7);
+      --accent-glow: 0 0 24px rgba(99,102,241,0.35);
     }
     html { scroll-behavior: smooth; }
     body {
@@ -30,270 +35,260 @@
       overflow-x: hidden;
       line-height: 1.5;
     }
-    
+
+    /* ── Scroll progress bar ── */
+    #progress {
+      position: fixed; top: 0; left: 0; height: 3px; width: 0%;
+      background: var(--accent-grad); z-index: 300;
+      box-shadow: 0 0 12px rgba(34,211,238,0.6);
+      transition: width 0.1s linear;
+    }
+
+    /* ── Animated aurora background ── */
+    .aurora { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
+    .aurora span {
+      position: absolute; display: block; border-radius: 50%;
+      filter: blur(90px); opacity: 0.5; mix-blend-mode: screen;
+    }
+    .aurora .a1 { width: 46vw; height: 46vw; left: -8vw; top: -6vw; background: radial-gradient(circle, var(--accent1), transparent 65%); animation: drift1 22s ease-in-out infinite; }
+    .aurora .a2 { width: 40vw; height: 40vw; right: -6vw; top: 8vw; background: radial-gradient(circle, var(--accent2), transparent 65%); animation: drift2 26s ease-in-out infinite; }
+    .aurora .a3 { width: 42vw; height: 42vw; left: 20vw; bottom: -12vw; background: radial-gradient(circle, var(--accent3), transparent 65%); animation: drift3 30s ease-in-out infinite; }
+    @keyframes drift1 { 0%,100%{transform:translate(0,0) scale(1)} 50%{transform:translate(6vw,4vw) scale(1.12)} }
+    @keyframes drift2 { 0%,100%{transform:translate(0,0) scale(1)} 50%{transform:translate(-5vw,6vw) scale(1.08)} }
+    @keyframes drift3 { 0%,100%{transform:translate(0,0) scale(1)} 50%{transform:translate(4vw,-5vw) scale(1.15)} }
+
     /* Background grid effect */
     body::before {
       content: '';
       position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
-      background-image: 
-        linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px);
-      background-size: 40px 40px;
+      inset: 0;
+      background-image:
+        linear-gradient(to right, rgba(255,255,255,0.035) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255,255,255,0.035) 1px, transparent 1px);
+      background-size: 44px 44px;
       pointer-events: none;
-      z-index: 0;
-      mask-image: radial-gradient(ellipse at center, black 40%, transparent 80%);
-      -webkit-mask-image: radial-gradient(ellipse at center, black 40%, transparent 80%);
+      z-index: 1;
+      mask-image: radial-gradient(ellipse at center, black 35%, transparent 78%);
+      -webkit-mask-image: radial-gradient(ellipse at center, black 35%, transparent 78%);
     }
 
-    .wrap { position: relative; z-index: 1; max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+    /* ── Cursor glow ── */
+    .cursor-glow {
+      position: fixed; top: 0; left: 0; width: 420px; height: 420px;
+      margin: -210px 0 0 -210px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(99,102,241,0.12), rgba(34,211,238,0.06) 40%, transparent 70%);
+      pointer-events: none; z-index: 2; transition: opacity 0.4s; opacity: 0;
+      will-change: transform;
+    }
+
+    .wrap { position: relative; z-index: 5; max-width: 1200px; margin: 0 auto; padding: 0 24px; }
 
     /* Nav */
     nav {
       position: sticky; top: 0; z-index: 100;
-      background: rgba(5, 5, 5, 0.8);
+      background: rgba(5, 5, 5, 0.55);
       backdrop-filter: blur(24px);
       -webkit-backdrop-filter: blur(24px);
-      border-bottom: 1px solid var(--border);
+      border-bottom: 1px solid transparent;
+      transition: background 0.4s, border-color 0.4s, height 0.4s;
     }
+    nav.scrolled { background: rgba(5,5,5,0.82); border-bottom-color: var(--border); }
     .nav-inner {
       display: flex; align-items: center; justify-content: space-between;
       height: 80px; max-width: 1200px; margin: 0 auto; padding: 0 24px;
+      transition: height 0.4s;
     }
-    
-    /* Custom Logo matching screenshot */
-    .logo-container {
-      position: relative;
-      display: inline-block;
-      text-decoration: none;
-      user-select: none;
-    }
+    nav.scrolled .nav-inner { height: 66px; }
+
+    .logo-container { position: relative; display: inline-block; text-decoration: none; user-select: none; }
     .logo-text {
-      font-size: 2.2rem;
-      font-weight: 900;
-      letter-spacing: -1px;
-      text-transform: uppercase;
+      font-family: 'Sora', sans-serif;
+      font-size: 2.1rem; font-weight: 800; letter-spacing: -1px; text-transform: uppercase;
       background: var(--metallic);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      margin: 0;
-      line-height: 1;
-      position: relative;
-      z-index: 2;
-      /* Adding a slight drop shadow to make metal pop */
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      margin: 0; line-height: 1; position: relative; z-index: 2;
       filter: drop-shadow(0 4px 6px rgba(0,0,0,0.5));
     }
-    .logo-arc {
-      position: absolute;
-      top: 50%;
-      left: -5%;
-      width: 110%;
-      height: 150%;
-      transform: translateY(-50%);
-      pointer-events: none;
-      z-index: 3;
-    }
-    .logo-arc path {
-      fill: none;
-      stroke: url(#arcGradient);
-      stroke-width: 3.5;
-      stroke-linecap: round;
-    }
+    .logo-arc { position: absolute; top: 50%; left: -5%; width: 110%; height: 150%; transform: translateY(-50%); pointer-events: none; z-index: 3; }
+    .logo-arc path { fill: none; stroke: url(#arcGradient); stroke-width: 3.5; stroke-linecap: round; }
 
     .nav-links { display: flex; align-items: center; gap: 16px; }
-    .nav-links a {
-      text-decoration: none; color: var(--text-muted); font-weight: 500; font-size: 0.95rem;
-      transition: color 0.3s;
+    .nav-links a { text-decoration: none; color: var(--text-muted); font-weight: 500; font-size: 0.95rem; transition: color 0.3s; }
+    .nav-links > a:not(.btn):hover { color: #FFF; }
+    .nav-links > a:not(.btn) { position: relative; }
+    .nav-links > a:not(.btn)::after {
+      content:''; position:absolute; left:0; bottom:-6px; height:2px; width:0; background: var(--accent-grad); transition: width 0.3s;
     }
-    .nav-links a:hover { color: #FFF; }
-    
+    .nav-links > a:not(.btn):hover::after { width:100%; }
+
     .btn {
       display: inline-flex; align-items: center; justify-content: center;
-      padding: 12px 24px; border-radius: 8px; font-weight: 600; font-size: 0.95rem;
-      text-decoration: none; cursor: pointer; transition: all 0.3s ease;
+      padding: 12px 24px; border-radius: 10px; font-weight: 600; font-size: 0.95rem;
+      text-decoration: none; cursor: pointer; transition: all 0.3s ease; position: relative; overflow: hidden;
     }
-    .btn-primary {
-      background: #FFFFFF; color: #000000;
-      box-shadow: var(--accent-glow);
+    .btn-primary { background: #FFFFFF; color: #000000; box-shadow: var(--accent-glow); }
+    .btn-primary:hover { background: #fff; box-shadow: 0 0 34px rgba(99,102,241,0.55); transform: translateY(-2px); }
+    /* shine sweep */
+    .btn-primary::after {
+      content:''; position:absolute; top:0; left:-120%; width:60%; height:100%;
+      background: linear-gradient(120deg, transparent, rgba(255,255,255,0.7), transparent); transform: skewX(-20deg);
+      transition: left 0.6s;
     }
-    .btn-primary:hover {
-      background: #E5E7EB;
-      box-shadow: 0 0 30px rgba(255,255,255,0.3);
-      transform: translateY(-2px);
-    }
-    .btn-ghost {
-      background: transparent; color: #FFFFFF;
-      border: 1px solid var(--border);
-    }
-    .btn-ghost:hover {
-      background: var(--bg-surface);
-      border-color: var(--border-hover);
-    }
+    .btn-primary:hover::after { left: 140%; }
+    .btn-ghost { background: rgba(255,255,255,0.02); color: #FFFFFF; border: 1px solid var(--border); }
+    .btn-ghost:hover { background: var(--bg-surface); border-color: var(--border-hover); transform: translateY(-2px); }
 
     /* Hero */
-    .hero { padding: 120px 0 80px; text-align: center; position: relative; }
-    
-    .hero::after {
-      content: '';
-      position: absolute;
-      top: 50%; left: 50%;
-      width: 600px; height: 600px;
-      background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 70%);
-      transform: translate(-50%, -50%);
-      z-index: -1;
-      pointer-events: none;
-    }
-
+    .hero { padding: 128px 0 72px; text-align: center; position: relative; }
     .badge {
-      display: inline-block; padding: 6px 16px; border-radius: 100px;
-      font-size: 0.85rem; font-weight: 600; letter-spacing: 1px;
-      text-transform: uppercase; margin-bottom: 32px;
-      background: var(--bg-surface); border: 1px solid var(--border);
-      color: var(--text-muted);
+      display: inline-flex; align-items:center; gap:8px; padding: 7px 18px; border-radius: 100px;
+      font-size: 0.82rem; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 30px;
+      background: rgba(255,255,255,0.03); border: 1px solid var(--border); color: var(--text-muted);
+      backdrop-filter: blur(8px);
     }
+    .badge .dot { width:8px; height:8px; border-radius:50%; background: var(--accent2); box-shadow: 0 0 10px var(--accent2); animation: pulse 1.8s infinite; }
+    @keyframes pulse { 0%,100%{ transform:scale(1); opacity:1 } 50%{ transform:scale(1.5); opacity:0.5 } }
+
     .hero h1 {
-      font-size: clamp(3rem, 7vw, 5rem); font-weight: 900;
-      line-height: 1.05; letter-spacing: -0.04em; margin-bottom: 24px;
+      font-family: 'Sora', sans-serif;
+      font-size: clamp(3rem, 8vw, 5.4rem); font-weight: 800;
+      line-height: 1.02; letter-spacing: -0.04em; margin-bottom: 26px; position: relative;
       background: var(--metallic);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-      text-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      text-shadow: 0 10px 40px rgba(0,0,0,0.5);
     }
-    .hero p {
-      font-size: 1.25rem; color: var(--text-muted); max-width: 600px;
-      margin: 0 auto 48px; line-height: 1.6;
+    /* shimmer sweep across headline */
+    .hero h1::after {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(110deg, transparent 30%, rgba(255,255,255,0.85) 50%, transparent 70%);
+      -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent;
+      background-size: 250% 100%; animation: shimmer 5.5s ease-in-out infinite; mix-blend-mode: screen;
     }
+    @keyframes shimmer { 0% { background-position: 150% 0; } 60%,100% { background-position: -150% 0; } }
+
+    .hero .rotator { display:inline-block; background: var(--accent-grad); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
+    .hero p { font-size: 1.22rem; color: var(--text-muted); max-width: 620px; margin: 0 auto 44px; line-height: 1.6; }
     .hero-cta { display: flex; flex-wrap: wrap; gap: 16px; justify-content: center; }
 
-    /* Stats Box */
+    /* ── Marquee ticker ── */
+    .marquee { margin: 64px 0 0; -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent); mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent); overflow: hidden; }
+    .marquee-track { display: flex; gap: 14px; width: max-content; animation: scroll-x 32s linear infinite; }
+    .marquee:hover .marquee-track { animation-play-state: paused; }
+    .chip {
+      display: inline-flex; align-items:center; gap:8px; padding: 10px 18px; border-radius: 100px;
+      border: 1px solid var(--border); color: var(--text-muted); font-size: 0.92rem; font-weight: 500; white-space: nowrap;
+      background: rgba(255,255,255,0.02);
+    }
+    @keyframes scroll-x { to { transform: translateX(-50%); } }
+
+    /* Stats */
     .stats {
       display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
       gap: 1px; background: var(--border); border: 1px solid var(--border);
-      border-radius: 16px; overflow: hidden; margin: 0 auto 100px;
-      max-width: 1000px; box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+      border-radius: 20px; overflow: hidden; margin: 90px auto 0; max-width: 1000px;
+      box-shadow: 0 30px 60px rgba(0,0,0,0.5);
     }
-    .stat-card {
-      background: var(--bg-surface); padding: 40px 24px; text-align: center;
-      transition: background 0.3s;
-    }
+    .stat-card { background: rgba(16,16,18,0.9); padding: 42px 24px; text-align: center; transition: background 0.3s; position: relative; }
     .stat-card:hover { background: var(--bg-surface-hover); }
-    .stat-card strong { 
-      display: block; font-size: 2.5rem; font-weight: 900; 
-      background: var(--metallic); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-      margin-bottom: 8px;
+    .stat-card strong {
+      display: block; font-family:'Sora',sans-serif; font-size: 2.6rem; font-weight: 800;
+      background: var(--metallic); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 8px;
     }
-    .stat-card span { font-size: 0.9rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+    .stat-card span { font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
 
-    /* Services Section */
-    section { padding: 80px 0; }
-    .section-header { text-align: center; margin-bottom: 64px; }
-    .section-title {
-      font-size: 2.5rem; font-weight: 800; letter-spacing: -0.03em;
-      margin-bottom: 16px; color: #FFF;
-    }
+    /* Sections */
+    section { padding: 90px 0; }
+    .section-header { text-align: center; margin-bottom: 60px; }
+    .section-title { font-family:'Sora',sans-serif; font-size: clamp(2rem,4vw,2.6rem); font-weight: 800; letter-spacing: -0.03em; margin-bottom: 14px; color: #FFF; }
     .section-sub { color: var(--text-muted); font-size: 1.1rem; }
-    
-    .services-grid {
-      display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 24px;
-    }
+
+    .services-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 22px; }
     .service-card {
-      background: var(--bg-surface);
-      border: 1px solid var(--border); border-radius: 16px;
-      padding: 32px 24px; transition: all 0.4s ease;
-      position: relative; overflow: hidden;
-      display: flex; flex-direction: column; align-items: flex-start;
-      cursor: pointer;
+      background: var(--bg-surface); border: 1px solid var(--border); border-radius: 18px;
+      padding: 30px 24px; transition: transform 0.35s cubic-bezier(.16,1,.3,1), border-color 0.35s, box-shadow 0.35s;
+      position: relative; overflow: hidden; display: flex; flex-direction: column; align-items: flex-start; cursor: pointer;
+      transform-style: preserve-3d;
     }
     .service-card::before {
-      content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-      background: radial-gradient(800px circle at var(--mouse-x, 0) var(--mouse-y, 0), rgba(255,255,255,0.06), transparent 40%);
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(600px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(99,102,241,0.14), transparent 40%);
       opacity: 0; transition: opacity 0.3s; pointer-events: none;
     }
-    .service-card:hover { 
-      transform: translateY(-4px); 
-      border-color: var(--border-hover);
-      box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+    /* gradient border on hover */
+    .service-card::after {
+      content:''; position:absolute; inset:0; border-radius:18px; padding:1px;
+      background: linear-gradient(130deg, rgba(99,102,241,0.6), rgba(34,211,238,0.5), transparent 60%);
+      -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+      -webkit-mask-composite: xor; mask-composite: exclude; opacity:0; transition: opacity 0.35s;
     }
-    .service-card:hover::before { opacity: 1; }
+    .service-card:hover { transform: translateY(-6px); box-shadow: 0 18px 50px rgba(0,0,0,0.55); }
+    .service-card:hover::before, .service-card:hover::after { opacity: 1; }
     .service-icon {
-      font-size: 32px; margin-bottom: 24px;
-      filter: grayscale(100%) brightness(200%);
+      font-size: 30px; margin-bottom: 22px; width: 58px; height: 58px; display:flex; align-items:center; justify-content:center;
+      border-radius: 14px; background: rgba(255,255,255,0.04); border: 1px solid var(--border);
+      transition: transform 0.35s;
     }
-    .service-card h3 { font-size: 1.25rem; font-weight: 700; margin-bottom: 8px; color: #FFF; }
-    .service-card p { font-size: 0.9rem; color: var(--text-muted); line-height: 1.5; }
+    .service-card:hover .service-icon { transform: translateY(-3px) scale(1.06); }
+    .service-card h3 { font-size: 1.2rem; font-weight: 700; margin-bottom: 8px; color: #FFF; }
+    .service-card p { font-size: 0.9rem; color: var(--text-muted); line-height: 1.55; }
 
     /* Steps */
-    .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; }
-    .step {
-      background: transparent; border-left: 2px solid var(--border);
-      padding: 24px 32px; position: relative; transition: border-color 0.3s;
-    }
-    .step:hover { border-color: #FFF; }
+    .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 22px; }
+    .step { background: rgba(16,16,18,0.5); border: 1px solid var(--border); border-left: 2px solid var(--border); border-radius: 16px; padding: 28px 30px; position: relative; transition: border-color 0.3s, transform 0.3s; overflow:hidden; }
+    .step:hover { border-color: var(--border-hover); border-left-color: var(--accent2); transform: translateY(-4px); }
     .step-num {
-      font-size: 4rem; font-weight: 900; line-height: 1;
+      font-family:'Sora',sans-serif; font-size: 4rem; font-weight: 800; line-height: 1;
       color: transparent; -webkit-text-stroke: 1px var(--border-hover);
-      position: absolute; top: -10px; right: 20px; opacity: 0.3; transition: all 0.3s;
+      position: absolute; top: -6px; right: 18px; opacity: 0.35; transition: all 0.3s;
     }
-    .step:hover .step-num { color: rgba(255,255,255,0.05); -webkit-text-stroke: 1px #FFF; opacity: 1; }
-    .step h3 { font-size: 1.5rem; margin-bottom: 12px; color: #FFF; }
+    .step:hover .step-num { -webkit-text-stroke: 1px var(--accent2); opacity: 0.9; }
+    .step h3 { font-size: 1.4rem; margin-bottom: 10px; color: #FFF; }
     .step p { color: var(--text-muted); font-size: 1rem; line-height: 1.6; }
 
-    /* CTA Section */
-    .cta-container {
-      margin: 100px 0;
-      background: var(--bg-surface);
-      border: 1px solid var(--border);
-      border-radius: 24px;
-      padding: 80px 40px;
-      text-align: center;
-      position: relative;
-      overflow: hidden;
-    }
+    /* CTA */
+    .cta-container { margin: 100px 0; background: var(--bg-surface); border: 1px solid var(--border); border-radius: 26px; padding: 84px 40px; text-align: center; position: relative; overflow: hidden; }
     .cta-container::after {
       content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
-      background: conic-gradient(from 0deg at 50% 50%, transparent 0%, rgba(255,255,255,0.05) 50%, transparent 100%);
-      animation: rotate 20s linear infinite; pointer-events: none; z-index: 0;
+      background: conic-gradient(from 0deg at 50% 50%, transparent 0%, rgba(99,102,241,0.10) 25%, rgba(34,211,238,0.08) 50%, transparent 75%);
+      animation: rotate 18s linear infinite; pointer-events: none; z-index: 0;
     }
     @keyframes rotate { 100% { transform: rotate(360deg); } }
     .cta-content { position: relative; z-index: 1; }
-    .cta-content h2 { font-size: 2.5rem; font-weight: 900; margin-bottom: 16px; color: #FFF; }
-    .cta-content p { font-size: 1.1rem; color: var(--text-muted); margin-bottom: 40px; max-width: 500px; margin-left: auto; margin-right: auto; }
+    .cta-content h2 { font-family:'Sora',sans-serif; font-size: clamp(2rem,4vw,2.6rem); font-weight: 800; margin-bottom: 16px; color: #FFF; }
+    .cta-content p { font-size: 1.1rem; color: var(--text-muted); margin: 0 auto 38px; max-width: 520px; }
 
-    footer {
-      border-top: 1px solid var(--border); padding: 48px 0;
-      display: flex; flex-direction: column; align-items: center; gap: 24px;
-      background: #000;
-    }
-    .footer-logo {
-      font-size: 1.5rem; font-weight: 900; letter-spacing: -1px;
-      color: #FFF; text-decoration: none;
-    }
-    .footer-links { display: flex; gap: 24px; }
+    footer { border-top: 1px solid var(--border); padding: 48px 0; display: flex; flex-direction: column; align-items: center; gap: 22px; background: #000; position: relative; z-index: 5; }
+    .footer-logo { font-family:'Sora',sans-serif; font-size: 1.4rem; font-weight: 800; letter-spacing: -1px; color: #FFF; text-decoration: none; }
+    .footer-links { display: flex; gap: 24px; flex-wrap: wrap; justify-content: center; }
     .footer-links a { color: var(--text-muted); text-decoration: none; font-size: 0.9rem; transition: color 0.3s; }
     .footer-links a:hover { color: #FFF; }
-    .copyright { color: #52525B; font-size: 0.85rem; }
+    .copyright { color: #52525B; font-size: 0.85rem; text-align:center; }
 
-    /* Animations */
-    .reveal { opacity: 0; transform: translateY(30px); transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
+    /* Reveal */
+    .reveal { opacity: 0; transform: translateY(34px); transition: opacity 0.8s cubic-bezier(0.16,1,0.3,1), transform 0.8s cubic-bezier(0.16,1,0.3,1); }
     .reveal.active { opacity: 1; transform: translateY(0); }
 
     @media (max-width: 768px) {
       .nav-links .hide-mobile { display: none; }
-      .hero h1 { font-size: 2.5rem; }
-      .hero { padding: 80px 0 60px; }
+      .hero { padding: 88px 0 56px; }
       .stat-card strong { font-size: 2rem; }
-      .cta-container { padding: 40px 20px; }
-      .cta-content h2 { font-size: 2rem; }
+      .cta-container { padding: 48px 22px; }
+      .cursor-glow { display: none; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .aurora span, .hero h1::after, .marquee-track, .cta-container::after, .badge .dot { animation: none !important; }
     }
   </style>
 </head>
 <body>
+  <div id="progress"></div>
+  <div class="aurora"><span class="a1"></span><span class="a2"></span><span class="a3"></span></div>
+  <div class="cursor-glow" id="cursorGlow"></div>
 
   <!-- Navigation -->
-  <nav>
+  <nav id="nav">
     <div class="nav-inner">
       <a href="/" class="logo-container">
-        <!-- SVG Arc overlapping the text -->
         <svg class="logo-arc" viewBox="0 0 300 100" preserveAspectRatio="none">
           <defs>
             <linearGradient id="arcGradient" x1="0%" y1="0%" x2="100%" y2="0%">
@@ -302,12 +297,11 @@
               <stop offset="100%" stop-color="#ffffff" stop-opacity="0" />
             </linearGradient>
           </defs>
-          <!-- A sharp swooping arc -->
           <path d="M 0,90 Q 150,-10 300,50" />
         </svg>
         <h1 class="logo-text">HUBSERVIS</h1>
       </a>
-      
+
       <div class="nav-links">
         <a href="#xizmatlar" class="hide-mobile">Xizmatlar</a>
         <a href="#qanday" class="hide-mobile">Qanday ishlaydi</a>
@@ -318,73 +312,45 @@
   </nav>
 
   <main class="wrap">
-    <!-- Hero Section -->
+    <!-- Hero -->
     <section class="hero reveal">
-      <div class="badge">Eksklyuziv Xizmatlar Platformasi</div>
-      <h1>BARCHA XIZMATLAR<br>BIR JOYDA</h1>
+      <div class="badge"><span class="dot"></span> Eksklyuziv Xizmatlar Platformasi</div>
+      <h1>BARCHA XIZMATLAR<br><span class="rotator" id="rotator">BIR JOYDA</span></h1>
       <p>Sartarosh, usta, tozalash, avto-yordam, kuryerlik va boshqa 19+ premium xizmatlarni bitta ilovadan osonlik bilan toping va buyurtma bering.</p>
       <div class="hero-cta">
-        <a href="#yuklab" class="btn btn-primary">Xizmatlarni ko'rish</a>
-        <a href="/admin/login" class="btn btn-ghost">Hamkor bo'lish</a>
+        <a href="#yuklab" class="btn btn-primary" data-magnetic>Xizmatlarni ko'rish</a>
+        <a href="/admin/login" class="btn btn-ghost" data-magnetic>Hamkor bo'lish</a>
+      </div>
+
+      <!-- Marquee ticker -->
+      <div class="marquee">
+        <div class="marquee-track" id="marqueeTrack"></div>
       </div>
     </section>
 
     <!-- Statistics -->
     <div class="stats reveal">
-      <div class="stat-card"><strong>19+</strong><span>Kategoriyalar</span></div>
-      <div class="stat-card"><strong>40+</strong><span>Mutaxassislar</span></div>
-      <div class="stat-card"><strong>24/7</strong><span>Qo'llab-quvvatlash</span></div>
-      <div class="stat-card"><strong>1%</strong><span>Keshbek</span></div>
+      <div class="stat-card"><strong data-count="19" data-suffix="+">0</strong><span>Kategoriyalar</span></div>
+      <div class="stat-card"><strong data-count="40" data-suffix="+">0</strong><span>Mutaxassislar</span></div>
+      <div class="stat-card"><strong data-static="24/7">24/7</strong><span>Qo'llab-quvvatlash</span></div>
+      <div class="stat-card"><strong data-count="1" data-suffix="%">0</strong><span>Keshbek</span></div>
     </div>
 
-    <!-- Services Section -->
+    <!-- Services -->
     <section id="xizmatlar" class="reveal">
       <div class="section-header">
         <h2 class="section-title">PREMIUM XIZMATLAR</h2>
         <p class="section-sub">O'zingizga kerakli soha ustalarini sanoqli soniyalarda toping.</p>
       </div>
-      
       <div class="services-grid" id="servicesGrid">
-        <div class="service-card">
-          <div class="service-icon">✂️</div>
-          <h3>Sartarosh / Go'zallik</h3>
-          <p>Professional soch turmaklash va go'zallik salonlari xizmatlari sizning hududingizda.</p>
-        </div>
-        <div class="service-card">
-          <div class="service-icon">⚡</div>
-          <h3>Elektrik</h3>
-          <p>Uyingizdagi nosozliklarni bartaraf etish uchun malakali elektr ustalarini chaqiring.</p>
-        </div>
-        <div class="service-card">
-          <div class="service-icon">💧</div>
-          <h3>Santexnik</h3>
-          <p>Quvurlar, kranlar va isitish tizimlarini ta'mirlash uchun ishonchli ustalar.</p>
-        </div>
-        <div class="service-card">
-          <div class="service-icon">🧹</div>
-          <h3>Klinik / Tozalash</h3>
-          <p>Xonadon, ofis va yirik obyektlarni mukammal tozalash bo'yicha mutaxassislar.</p>
-        </div>
-        <div class="service-card">
-          <div class="service-icon">🚗</div>
-          <h3>Avto-yordam</h3>
-          <p>Yo'lda qolib ketdingizmi? Evakuator va tezkor texnik yordam xizmati.</p>
-        </div>
-        <div class="service-card">
-          <div class="service-icon">📦</div>
-          <h3>Kuryerlik</h3>
-          <p>Pochta, sovg'a va boshqa jo'natmalarni xavfsiz hamda tezkor yetkazib berish.</p>
-        </div>
-        <div class="service-card">
-          <div class="service-icon">🛒</div>
-          <h3>Bozorchi</h3>
-          <p>Bozor va do'konlardan kerakli mahsulotlarni siz uchun xarid qilib yetkazamiz.</p>
-        </div>
-        <div class="service-card">
-          <div class="service-icon">📚</div>
-          <h3>Repetitor</h3>
-          <p>Turli fanlar va tillar bo'yicha malakali o'qituvchilar hamda o'quv markazlari.</p>
-        </div>
+        <div class="service-card"><div class="service-icon">✂️</div><h3>Sartarosh / Go'zallik</h3><p>Professional soch turmaklash va go'zallik salonlari xizmatlari sizning hududingizda.</p></div>
+        <div class="service-card"><div class="service-icon">⚡</div><h3>Elektrik</h3><p>Uyingizdagi nosozliklarni bartaraf etish uchun malakali elektr ustalarini chaqiring.</p></div>
+        <div class="service-card"><div class="service-icon">💧</div><h3>Santexnik</h3><p>Quvurlar, kranlar va isitish tizimlarini ta'mirlash uchun ishonchli ustalar.</p></div>
+        <div class="service-card"><div class="service-icon">🧹</div><h3>Klinik / Tozalash</h3><p>Xonadon, ofis va yirik obyektlarni mukammal tozalash bo'yicha mutaxassislar.</p></div>
+        <div class="service-card"><div class="service-icon">🚗</div><h3>Avto-yordam</h3><p>Yo'lda qolib ketdingizmi? Evakuator va tezkor texnik yordam xizmati.</p></div>
+        <div class="service-card"><div class="service-icon">📦</div><h3>Kuryerlik</h3><p>Pochta, sovg'a va boshqa jo'natmalarni xavfsiz hamda tezkor yetkazib berish.</p></div>
+        <div class="service-card"><div class="service-icon">🛒</div><h3>Bozorchi</h3><p>Bozor va do'konlardan kerakli mahsulotlarni siz uchun xarid qilib yetkazamiz.</p></div>
+        <div class="service-card"><div class="service-icon">📚</div><h3>Repetitor</h3><p>Turli fanlar va tillar bo'yicha malakali o'qituvchilar hamda o'quv markazlari.</p></div>
       </div>
     </section>
 
@@ -395,77 +361,125 @@
         <p class="section-sub">Foydalanish oson va qulay. 3 ta tezkor qadam.</p>
       </div>
       <div class="steps">
-        <div class="step">
-          <div class="step-num">01</div>
-          <h3>Tanlash</h3>
-          <p>Dasturga kiring va 19+ kategoriyadan o'zingizga kerakli xizmat turini belgilang.</p>
-        </div>
-        <div class="step">
-          <div class="step-num">02</div>
-          <h3>Buyurtma</h3>
-          <p>Tafsilotlar va manzilingizni kiriting. Tizim avtomatik ravishda eng yaqin va mos ustani biriktiradi.</p>
-        </div>
-        <div class="step">
-          <div class="step-num">03</div>
-          <h3>Natija & Baho</h3>
-          <p>Xizmat ko'rsatilgandan so'ng, ustani baholang va hisobingizga keshbek qabul qiling.</p>
-        </div>
+        <div class="step"><div class="step-num">01</div><h3>Tanlash</h3><p>Dasturga kiring va 19+ kategoriyadan o'zingizga kerakli xizmat turini belgilang.</p></div>
+        <div class="step"><div class="step-num">02</div><h3>Buyurtma</h3><p>Tafsilotlar va manzilingizni kiriting. Tizim avtomatik ravishda eng yaqin va mos ustani biriktiradi.</p></div>
+        <div class="step"><div class="step-num">03</div><h3>Natija & Baho</h3><p>Xizmat ko'rsatilgandan so'ng, ustani baholang va hisobingizga keshbek qabul qiling.</p></div>
       </div>
     </section>
 
-    <!-- Call to action -->
+    <!-- CTA -->
     <div class="cta-container reveal" id="yuklab">
       <div class="cta-content">
         <h2>MOBIL ILOVANI YUKLAB OLING</h2>
         <p>Barcha imkoniyatlardan qulay foydalanish uchun rasmiy HubServis ilovasini o'rnating. iOS va Android platformalarida mavjud.</p>
         <div style="display:flex; gap:16px; justify-content:center; flex-wrap:wrap;">
-          <a href="#" class="btn btn-primary">App Store</a>
-          <a href="#" class="btn btn-ghost">Google Play</a>
+          <a href="#" class="btn btn-primary" data-magnetic>App Store</a>
+          <a href="#" class="btn btn-ghost" data-magnetic>Google Play</a>
         </div>
       </div>
     </div>
-
   </main>
 
-  <!-- Footer -->
   <footer>
     <a href="/" class="footer-logo">HUBSERVIS</a>
     <div class="footer-links">
       <a href="#xizmatlar">Xizmatlar</a>
       <a href="/admin/login">Hamkorlar (Admin)</a>
       <a href="https://api.hubservis.uz/docs">API Dokumentatsiya</a>
-      <a href="#">Maxfiylik siyosati</a>
+      <a href="/terms">Foydalanish shartlari</a>
     </div>
     <div class="copyright">© 2026 HUBSERVIS. Barcha huquqlar himoyalangan.</div>
   </footer>
 
   <script>
-    // Reveal animations on scroll
-    const reveals = document.querySelectorAll('.reveal');
-    function reveal() {
-      const windowHeight = window.innerHeight;
-      const elementVisible = 100;
-      
-      reveals.forEach(el => {
-        const elementTop = el.getBoundingClientRect().top;
-        if (elementTop < windowHeight - elementVisible) {
-          el.classList.add('active');
+    // ── Scroll progress + nav shrink ──
+    const nav = document.getElementById('nav');
+    const progress = document.getElementById('progress');
+    function onScroll() {
+      const h = document.documentElement;
+      const sc = h.scrollTop / (h.scrollHeight - h.clientHeight);
+      progress.style.width = (sc * 100) + '%';
+      nav.classList.toggle('scrolled', h.scrollTop > 20);
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+
+    // ── Reveal on scroll (IntersectionObserver, staggered) ──
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e, i) => {
+        if (e.isIntersecting) {
+          setTimeout(() => e.target.classList.add('active'), i * 80);
+          io.unobserve(e.target);
         }
       });
-    }
-    window.addEventListener('scroll', reveal);
-    reveal(); // Trigger on load
+    }, { threshold: 0.12 });
+    document.querySelectorAll('.reveal').forEach(el => io.observe(el));
 
-    // Hover glow effect on service cards
-    document.getElementById('servicesGrid').onmousemove = e => {
-      for(const card of document.querySelectorAll('.service-card')) {
-        const rect = card.getBoundingClientRect(),
-              x = e.clientX - rect.left,
-              y = e.clientY - rect.top;
-        card.style.setProperty('--mouse-x', `${x}px`);
-        card.style.setProperty('--mouse-y', `${y}px`);
+    // ── Count-up stats ──
+    const countObs = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (!e.isIntersecting) return;
+        const el = e.target;
+        if (el.dataset.static) { countObs.unobserve(el); return; }
+        const target = parseInt(el.dataset.count, 10);
+        const suffix = el.dataset.suffix || '';
+        let cur = 0;
+        const step = Math.max(1, Math.round(target / 40));
+        const t = setInterval(() => {
+          cur += step;
+          if (cur >= target) { cur = target; clearInterval(t); }
+          el.textContent = cur + suffix;
+        }, 28);
+        countObs.unobserve(el);
+      });
+    }, { threshold: 0.5 });
+    document.querySelectorAll('.stat-card strong').forEach(el => countObs.observe(el));
+
+    // ── Rotating hero word ──
+    const words = ['BIR JOYDA', 'BIR ILOVADA', 'BIR TUGMADA'];
+    let wi = 0;
+    const rotator = document.getElementById('rotator');
+    setInterval(() => {
+      wi = (wi + 1) % words.length;
+      rotator.style.transition = 'opacity 0.3s';
+      rotator.style.opacity = '0';
+      setTimeout(() => { rotator.textContent = words[wi]; rotator.style.opacity = '1'; }, 300);
+    }, 2800);
+
+    // ── Marquee content ──
+    const chips = ['✂️ Sartarosh','⚡ Elektrik','💧 Santexnik','🧹 Tozalash','🚗 Avto-yordam','📦 Kuryer','🛒 Bozorchi','📚 Repetitor','💅 Salon','🩺 Hamshira','🦷 Stomatolog','🎉 Tadbir','👶 Enaga','❄️ Konditsioner','🐜 Dezinfeksiya','💆 Massaj'];
+    const track = document.getElementById('marqueeTrack');
+    const buildChip = (t) => { const s = document.createElement('span'); s.className='chip'; s.textContent=t; return s; };
+    [...chips, ...chips].forEach(c => track.appendChild(buildChip(c)));
+
+    // ── Cursor glow ──
+    const glow = document.getElementById('cursorGlow');
+    window.addEventListener('pointermove', (e) => {
+      if (e.pointerType === 'touch') return;
+      glow.style.opacity = '1';
+      glow.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
+    });
+    window.addEventListener('pointerleave', () => glow.style.opacity = '0');
+
+    // ── Service card spotlight ──
+    document.getElementById('servicesGrid').addEventListener('pointermove', (e) => {
+      for (const card of document.querySelectorAll('.service-card')) {
+        const r = card.getBoundingClientRect();
+        card.style.setProperty('--mouse-x', (e.clientX - r.left) + 'px');
+        card.style.setProperty('--mouse-y', (e.clientY - r.top) + 'px');
       }
-    };
+    });
+
+    // ── Magnetic buttons ──
+    document.querySelectorAll('[data-magnetic]').forEach(btn => {
+      btn.addEventListener('pointermove', (e) => {
+        const r = btn.getBoundingClientRect();
+        const x = e.clientX - r.left - r.width / 2;
+        const y = e.clientY - r.top - r.height / 2;
+        btn.style.transform = `translate(${x * 0.25}px, ${y * 0.35}px)`;
+      });
+      btn.addEventListener('pointerleave', () => { btn.style.transform = ''; });
+    });
   </script>
 </body>
 </html>

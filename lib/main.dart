@@ -18,6 +18,7 @@ import 'package:flutter/services.dart';
 import 'services/call_history_service.dart';
 import 'services/weather_service.dart';
 import 'services/firebase_service.dart';
+import 'services/feature_service.dart';
 
 import 'providers/saved_places_provider.dart';
 
@@ -135,6 +136,9 @@ void main() async {
 
   // Ob-havo ma'lumotlarini orqa fonda avtomatik yuklashni boshlash (App ochilishini kutib turmasligi uchun await qilinmaydi)
   WeatherService().prefetchWeather();
+
+  // Bo'lim (feature) holatlarini orqa fonda yuklash (admin yopgan bo'limlar uchun)
+  FeatureService().load();
 
   initializeDateFormatting('uz_UZ', null).then((_) {
     runApp(const MyApp());

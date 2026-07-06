@@ -23,6 +23,9 @@ from app.models.exercise import Exercise
 from app.models.workout import WorkoutPlan, WorkoutLog
 from app.models.nutrition import NutritionProfile, MealLog
 from app.models.alarm import Alarm, AlarmLog
+from app.models.admin_role import AdminRole, AuditLog
+from app.models.premium import PremiumPayment
+from app.models.dispute import Dispute
 
 __all__ = [
     "User",
@@ -54,4 +57,8 @@ __all__ = [
     "MealLog",
     "Alarm",
     "AlarmLog",
+    "AdminRole",
+    "AuditLog",
+    "PremiumPayment",
+    "Dispute",
 ]

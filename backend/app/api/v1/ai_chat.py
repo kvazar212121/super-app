@@ -38,10 +38,15 @@ ILOVANING ASOSIY BO'LIMLARI VA FUNKSIYALARI:
 3. Aqlli savdo: Bozorga borishdan oldin mahsulot ro'yxatini tuzish.
 4. Barcha xizmatlar: Ustalar, tozalash, repetitor kabi xizmatlarga buyurtma berish.
 5. Aksiyalar: Chegirma kodlari.
+6. Majburlovchi budilnik: Foydalanuvchi uchun budilnik qo'yish (o'chirish uchun vazifa bajariladi).
 
 QOIDALAR:
 - Faqat o'zbek tilida, qisqa va aniq javob bering. Emojilardan foydalaning.
-- Agar foydalanuvchi biron bir xarajat ("bugun oshga 50 ming ketdi"), daromad, reja ("ertaga soat 10 da majlis"), yoki bozorlik ("bozorlikka 2kg go'sht qo'sh") haqida yozsa, MAJBURIY ravishda mos tool ni chaqiring.
+- Agar foydalanuvchi biron bir xarajat ("bugun oshga 50 ming ketdi"), daromad, reja ("ertaga soat 10 da majlis"), bozorlik ("bozorlikka 2kg go'sht qo'sh"), yoki budilnik ("ertalab 7 da budilnik qo'y", "6:30 ga uyg'ot") haqida yozsa, MAJBURIY ravishda mos tool ni chaqiring.
+- BRON (xizmat buyurtma qilish): foydalanuvchi biror xizmat/usta so'rasa ("sartarosh kerak", "uyga tozalash chaqir", "santexnik bron qil"):
+  1) AVVAL `search_providers` ni chaqirib mos ustalarni toping va foydalanuvchiga 2-3 tasini (nomi, reytingi) taklif qiling.
+  2) Foydalanuvchi ustani tanlagach, MANZIL va VAQTni so'rang (agar aytilmagan bo'lsa).
+  3) So'ng `create_booking` ni chaqirib buyurtmani rasmiylashtiring. Buyurtmadan keyin "Buyurtmalarim"da ko'rish mumkinligini ayting.
 - Hozirgi sana va vaqt (UTC): {current_time}
 - Siz tool ni chaqirganingizdan keyin, tizim sizga natijani qaytaradi va siz foydalanuvchiga "Xarajat qo'shildi", "Reja saqlandi" degan ma'noda javob qilasiz. Qachonki tool result "success" bo'lsa, qisqa tasdiqlovchi matn yozing."""
 
@@ -96,8 +101,66 @@ TOOLS = [
                 "required": ["name", "qty", "unit"]
             }
         }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "set_alarm",
+            "description": "Foydalanuvchi uchun majburlovchi budilnik qo'shish. 'ertalab 7 da budilnik qo'y', '6:30 ga uyg'ot' kabi so'rovlarda chaqiring.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "hour": {"type": "integer", "description": "Soat (0-23)"},
+                    "minute": {"type": "integer", "description": "Daqiqa (0-59)"},
+                    "label": {"type": "string", "description": "Budilnik nomi (masalan 'Ishga uyg'onish')"},
+                    "repeat_days": {"type": "string", "description": "Takror kunlar ISO CSV (1=Dushanba..7=Yakshanba). Har kuni uchun '1,2,3,4,5,6,7', ish kunlari '1,2,3,4,5'. Bir martalik uchun bo'sh."},
+                    "mission_type": {"type": "string", "enum": ["math", "photo", "speech"], "description": "O'chirish vazifasi: matematik misol (math), rasmga olish (photo) yoki matn o'qish (speech). Default: math."}
+                },
+                "required": ["hour", "minute"]
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "search_providers",
+            "description": "Xizmat ustalarini (sartarosh, santexnik, tozalash, repetitor, avto-yordam va h.k.) qidirish. Bron qilishdan OLDIN chaqiriladi.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "service_query": {"type": "string", "description": "Xizmat turi yoki usta nomi (masalan 'sartarosh', 'santexnik', 'tozalash')"}
+                },
+                "required": ["service_query"]
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "create_booking",
+            "description": "Tanlangan ustaga xizmat buyurtmasini (bron) rasmiylashtirish. search_providers'дан keyin, manzil va vaqt aniqlangач chaqiriladi.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "provider_id": {"type": "integer", "description": "search_providers qaytargan usta id'si"},
+                    "service_name": {"type": "string", "description": "Xizmat nomi (masalan 'Soch olish', 'Uy tozalash')"},
+                    "date": {"type": "string", "description": "ISO 8601 sana va vaqt (masalan '2026-07-07T15:00:00Z')"},
+                    "address": {"type": "string", "description": "Xizmat ko'rsatiladigan manzil"},
+                    "price": {"type": "number", "description": "Kelishilган narx (so'mda). Noma'lum bo'lsa search natijasidagi taxminiy narx."}
+                },
+                "required": ["provider_id", "service_name", "date", "address", "price"]
+            }
+        }
     }
 ]
+
+
+def _build_alarm_mission_config(mission_type: str) -> dict:
+    if mission_type == "photo":
+        return {"target_uz": "kran (yuvinish joyi)", "target_en": "bathroom sink or faucet"}
+    if mission_type == "speech":
+        return {"random": True}
+    return {"difficulty": "medium", "count": 1}
 
 class ChatMessage(BaseModel):
     role: str = Field(..., pattern=r"^(user|assistant)$")
@@ -108,10 +171,12 @@ class ChatRequest(BaseModel):
 
 class ChatResponse(BaseModel):
     reply: str
+    # Mobil ilova bajaradigan yon-amallar (masalan budilnikni lokal rejalashtirish)
+    actions: list[dict] = []
 
 
-async def handle_tool_call(db: AsyncSession, user_id: int, tool_call: dict) -> str:
-    """Tool (function) ni lokal bazada bajarish."""
+async def handle_tool_call(db: AsyncSession, user_id: int, tool_call: dict) -> tuple[str, dict | None]:
+    """Tool (function) ni lokal bazada bajarish. (natija_json, client_action|None) qaytaradi."""
     try:
         func_name = tool_call["function"]["name"]
         args = json.loads(tool_call["function"]["arguments"])
@@ -125,7 +190,7 @@ async def handle_tool_call(db: AsyncSession, user_id: int, tool_call: dict) -> s
             )
             db.add(plan)
             await db.commit()
-            return '{"status": "success", "message": "Reja muvaffaqiyatli qo\'shildi."}'
+            return '{"status": "success", "message": "Reja muvaffaqiyatli qo\'shildi."}', None
             
         elif func_name == "add_finance_record":
             record = FinanceRecord(
@@ -138,7 +203,7 @@ async def handle_tool_call(db: AsyncSession, user_id: int, tool_call: dict) -> s
             )
             db.add(record)
             await db.commit()
-            return '{"status": "success", "message": "Moliya yozuvi muvaffaqiyatli qo\'shildi."}'
+            return '{"status": "success", "message": "Moliya yozuvi muvaffaqiyatli qo\'shildi."}', None
             
         elif func_name == "add_shopping_item":
             # Active shopping list ni topish yoki yaratish
@@ -174,13 +239,128 @@ async def handle_tool_call(db: AsyncSession, user_id: int, tool_call: dict) -> s
             s_list.total_estimated_price = total_est
             
             await db.commit()
-            return '{"status": "success", "message": "Mahsulot bozorlik ro\'yxatiga muvaffaqiyatli qo\'shildi."}'
-            
+            return '{"status": "success", "message": "Mahsulot bozorlik ro\'yxatiga muvaffaqiyatli qo\'shildi."}', None
+
+        elif func_name == "set_alarm":
+            from app.models.alarm import Alarm
+            hour = max(0, min(23, int(args.get("hour"))))
+            minute = max(0, min(59, int(args.get("minute"))))
+            mission_type = args.get("mission_type") or "math"
+            if mission_type not in ("math", "photo", "speech"):
+                mission_type = "math"
+            mission_config = _build_alarm_mission_config(mission_type)
+            alarm = Alarm(
+                user_id=user_id,
+                label=args.get("label") or "Budilnik",
+                hour=hour,
+                minute=minute,
+                repeat_days=args.get("repeat_days") or "",
+                mission_type=mission_type,
+                mission_config=mission_config,
+            )
+            db.add(alarm)
+            await db.commit()
+            await db.refresh(alarm)
+            # Mobil ilova buni olib, budilnikni QURILMADA lokal rejalashtiradi
+            action = {
+                "type": "schedule_alarm",
+                "alarm": {
+                    "id": alarm.id,
+                    "label": alarm.label,
+                    "hour": alarm.hour,
+                    "minute": alarm.minute,
+                    "repeat_days": alarm.repeat_days,
+                    "ringtone": alarm.ringtone,
+                    "mission_type": alarm.mission_type,
+                    "mission_config": alarm.mission_config,
+                    "snooze_enabled": alarm.snooze_enabled,
+                    "snooze_minutes": alarm.snooze_minutes,
+                    "is_enabled": alarm.is_enabled,
+                },
+            }
+            return '{"status": "success", "message": "Budilnik qo\'shildi va rejalashtirildi."}', action
+
+        elif func_name == "search_providers":
+            from app.models.provider import Provider
+            from app.models.category import Category
+            query = (args.get("service_query") or "").strip()
+            ql = query.lower()
+            cats = (await db.execute(select(Category))).scalars().all()
+            matched_cat = None
+            for c in cats:
+                key_l = (c.key or "").lower()
+                name_l = (c.title_uz or "").lower()
+                if ql and (ql in key_l or ql in name_l or (name_l and name_l in ql) or (key_l and key_l in ql)):
+                    matched_cat = c
+                    break
+            pstmt = select(Provider).where(Provider.is_active == True, Provider.is_paused == False)
+            if matched_cat:
+                pstmt = pstmt.where(Provider.category_id == matched_cat.id)
+            elif query:
+                pstmt = pstmt.where(Provider.name.ilike(f"%{query}%"))
+            pstmt = pstmt.order_by(Provider.rating.desc()).limit(5)
+            provs = (await db.execute(pstmt)).scalars().all()
+            results = [
+                {
+                    "id": p.id, "name": p.name, "category_id": p.category_id,
+                    "rating": p.rating, "review_count": p.review_count, "address": p.address,
+                }
+                for p in provs
+            ]
+            payload = {
+                "status": "success",
+                "providers": results,
+                "matched_category": (
+                    {"id": matched_cat.id, "key": matched_cat.key, "name": matched_cat.title_uz}
+                    if matched_cat else None
+                ),
+            }
+            return json.dumps(payload, ensure_ascii=False), None
+
+        elif func_name == "create_booking":
+            from app.models.provider import Provider
+            from app.models.order import Order, OrderStatus
+            from app.services.notification_service import NotificationService
+            provider_id = int(args.get("provider_id"))
+            prov = (await db.execute(select(Provider).where(Provider.id == provider_id))).scalar_one_or_none()
+            if not prov:
+                return '{"status": "error", "message": "Usta topilmadi"}', None
+            price = float(args.get("price") or 0)
+            if price <= 0:
+                price = 50000.0
+            try:
+                booking_date = datetime.fromisoformat(
+                    (args.get("date") or "").replace("Z", "+00:00")
+                ).replace(tzinfo=None)
+            except Exception:
+                booking_date = datetime.now()
+            order = Order(
+                user_id=user_id,
+                category_id=prov.category_id,
+                provider_id=prov.id,
+                service_name=args.get("service_name") or "Xizmat",
+                address=args.get("address") or "Manzil kiritilmagan",
+                date=booking_date,
+                price=price,
+                status=OrderStatus.pending,
+                booking_mode="fixed",
+            )
+            db.add(order)
+            await db.commit()
+            await db.refresh(order)
+            if prov.owner_user_id:
+                NotificationService.notify_new_order_for_provider(prov.owner_user_id, order.id)
+            action = {"type": "booking_created", "order_id": order.id, "provider_name": prov.name}
+            return json.dumps(
+                {"status": "success", "message": "Buyurtma yaratildi", "order_id": order.id},
+                ensure_ascii=False,
+            ), action
+
         else:
-            return '{"status": "error", "message": "Noma\'lum funksiya"}'
+            return '{"status": "error", "message": "Noma\'lum funksiya"}', None
     except Exception as e:
         logger.error(f"Tool execution failed: {e}")
-        return f'{{"status": "error", "message": "Xatolik: {str(e)}"}}'
+        return f'{{"status": "error", "message": "Xatolik: {str(e)}"}}', None
 async def fallback_local_parse(user_msg: str, user_id: int, db: AsyncSession) -> ChatResponse:
     """
     Failsafe / Local keyword parsing to handle user intents when Groq is unavailable,
@@ -285,7 +465,34 @@ async def fallback_local_parse(user_msg: str, user_id: int, db: AsyncSession) ->
             }
         }
 
+    # 1.4 Budilnik check
+    if not parsed and any(x in text_lc for x in ["budilnik", "uyg'ot", "uygot", "uyg'onish", "alarm"]):
+        hour, minute = 7, 0
+        tm = re.search(r'\b(\d{1,2})[:.](\d{2})\b', text_lc)
+        if tm:
+            hour, minute = int(tm.group(1)), int(tm.group(2))
+        elif digits:
+            h = int(digits[0])
+            if 0 <= h <= 23:
+                hour = h
+        repeat = ""
+        if any(x in text_lc for x in ["har kuni", "kunlik", "har kun"]):
+            repeat = "1,2,3,4,5,6,7"
+        elif any(x in text_lc for x in ["ish kun", "budni"]):
+            repeat = "1,2,3,4,5"
+        parsed = {
+            "tool": "set_alarm",
+            "arguments": {
+                "hour": max(0, min(23, hour)),
+                "minute": max(0, min(59, minute)),
+                "label": "Budilnik",
+                "repeat_days": repeat,
+                "mission_type": "math",
+            }
+        }
+
     # 2. Execute if parsed, else general reply
+    action = None
     if parsed:
         tool_call = {
             "id": "mock_call_id",
@@ -294,7 +501,7 @@ async def fallback_local_parse(user_msg: str, user_id: int, db: AsyncSession) ->
                 "arguments": json.dumps(parsed["arguments"])
             }
         }
-        res_str = await handle_tool_call(db, user_id, tool_call)
+        res_str, action = await handle_tool_call(db, user_id, tool_call)
         res_data = json.loads(res_str)
         if res_data.get("status") == "success":
             if parsed["tool"] == "add_finance_record":
@@ -309,6 +516,10 @@ async def fallback_local_parse(user_msg: str, user_id: int, db: AsyncSession) ->
                     reply = f"📅 Reja muvaffaqiyatli saqlandi! '{parsed['arguments']['title']}' vazifasi rejalaringiz ro'yxatiga qo'shildi. 📝"
             elif parsed["tool"] == "add_shopping_item":
                 reply = f"🛒 Bozorlik ro'yxatiga muvaffaqiyatli qo'shildi: {parsed['arguments']['qty']} {parsed['arguments']['unit']} {parsed['arguments']['name']}. Uni 'Aqlli savdo' bo'limida ko'rishingiz mumkin! 🍎"
+            elif parsed["tool"] == "set_alarm":
+                a = parsed['arguments']
+                tstr = f"{a['hour']:02d}:{a['minute']:02d}"
+                reply = f"⏰ Budilnik {tstr} ga qo'yildi! O'chirish uchun vazifa bajarasiz. 'Majburlovchi budilnik' bo'limida ko'rishingiz mumkin. 💪"
             else:
                 reply = "Muvaffaqiyatli bajarildi! 👍"
         else:
@@ -329,7 +540,7 @@ async def fallback_local_parse(user_msg: str, user_id: int, db: AsyncSession) ->
         else:
             reply = "Sizni tushunishga harakat qilyapman! 🤖 Menga:\n- Reja qo'shish ('ertaga soat 5 da ish')\n- Xarajat yozish ('taksiga 15000 so'm ketdi')\n- Bozorlik yozish ('ro'yxatga 2 litr sut qo'sh')\nkabi ko'rsatmalarni bersangiz, ularni avtomatik tarzda tegishli bo'limga qo'shib qo'yaman! 💡"
 
-    return ChatResponse(reply=reply)
+    return ChatResponse(reply=reply, actions=[action] if action else [])
 
 
 @router.post("/chat", response_model=ChatResponse)
@@ -357,7 +568,24 @@ async def ai_chat(
     )
     user_msg_clean = emoji_pattern.sub(r'', user_msg).strip()
 
-    if not settings.groq_api_key:
+    # Chat provayderi — admin panelдан (DB) tanlanadi, aks holda env (CHAT_PROVIDER)
+    from app.services import settings_service
+    _chat_url, _chat_key, _chat_model = settings_service.resolve_ai(
+        feature="chat",
+        env_provider=settings.chat_provider,
+        keys={
+            "openai": settings.openai_api_key,
+            "groq": settings.groq_api_key,
+            "deepseek": settings.deepseek_api_key,
+        },
+        default_models={
+            "openai": settings.openai_chat_model,
+            "groq": settings.groq_model,
+            "deepseek": settings.deepseek_chat_model,
+        },
+    )
+
+    if not _chat_key:
         return await fallback_local_parse(user_msg_clean, current_user.id, db)
 
     current_time_str = datetime.now(timezone.utc).isoformat()
@@ -373,13 +601,13 @@ async def ai_chat(
     async def call_groq(messages):
         async with httpx.AsyncClient(timeout=30.0) as client:
             return await client.post(
-                "https://api.groq.com/openai/v1/chat/completions",
+                _chat_url,
                 headers={
                     "Content-Type": "application/json",
-                    "Authorization": f"Bearer {settings.groq_api_key}",
+                    "Authorization": f"Bearer {_chat_key}",
                 },
                 json={
-                    "model": settings.groq_model,
+                    "model": _chat_model,
                     "messages": messages,
                     "tools": TOOLS,
                     "tool_choice": "auto",
@@ -389,45 +617,40 @@ async def ai_chat(
             )
 
     try:
-        response = await call_groq(groq_messages)
-        if response.status_code != 200:
-            logger.warning(f"Groq API returned status {response.status_code}. Falling back to local parse.")
-            return await fallback_local_parse(user_msg_clean, current_user.id, db)
+        # Agentic loop — model bir turда bir necha tool chaqira oladi (masalan: search → book → javob).
+        actions: list[dict] = []
+        final_reply = ""
+        MAX_TOOL_ROUNDS = 5
+        for _round in range(MAX_TOOL_ROUNDS):
+            response = await call_groq(groq_messages)
+            if response.status_code != 200:
+                logger.warning(f"AI API status {response.status_code}. Falling back to local parse.")
+                return await fallback_local_parse(user_msg_clean, current_user.id, db)
 
-        data = response.json()
-        message = data["choices"][0]["message"]
-        
-        # Agar model Tool (funksiya) chaqirsa
-        if message.get("tool_calls"):
-            groq_messages.append(message) # Append assistant's tool_call request
-            
+            message = response.json()["choices"][0]["message"]
+
+            if not message.get("tool_calls"):
+                final_reply = message.get("content") or ""
+                break
+
+            # Model tool(lar) chaqirdi — bajarib, natijani qaytaramiz
+            groq_messages.append(message)
             for tool_call in message["tool_calls"]:
-                tool_call_id = tool_call["id"]
-                tool_result_str = await handle_tool_call(db, current_user.id, tool_call)
-                
-                # Append tool result to messages
+                tool_result_str, action = await handle_tool_call(db, current_user.id, tool_call)
+                if action:
+                    actions.append(action)
                 groq_messages.append({
                     "role": "tool",
-                    "tool_call_id": tool_call_id,
+                    "tool_call_id": tool_call["id"],
                     "name": tool_call["function"]["name"],
-                    "content": tool_result_str
+                    "content": tool_result_str,
                 })
-            
-            # Ikkinchi marta so'rov yuborish (natijani aytib berish uchun)
-            second_response = await call_groq(groq_messages)
-            if second_response.status_code != 200:
-                logger.warning(f"Groq API second response returned status {second_response.status_code}. Falling back to local parse.")
-                return await fallback_local_parse(user_msg_clean, current_user.id, db)
-                
-            second_data = second_response.json()
-            final_reply = second_data["choices"][0]["message"]["content"]
-            
         else:
-            final_reply = message["content"]
+            final_reply = "So'rovingiz bajarildi."  # tool rounds limiti
 
         # Clean <think> blocks just in case
         final_reply = re.sub(r"<think>.*?</think>", "", final_reply, flags=re.DOTALL).strip()
-        return ChatResponse(reply=final_reply)
+        return ChatResponse(reply=final_reply, actions=actions)
 
     except (httpx.TimeoutException, httpx.HTTPError) as e:
         logger.error(f"Groq API communication error ({type(e).__name__}): {e}. Falling back to local parse.")

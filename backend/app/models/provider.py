@@ -22,6 +22,9 @@ class Provider(Base):
     metadata_json: Mapped[dict | None] = mapped_column(JSON, nullable=True)
     is_active: Mapped[bool] = mapped_column(default=True)
     is_paused: Mapped[bool] = mapped_column(default=False)
+    # Moderatsiya: tasdiqlangan / bloklangan
+    is_verified: Mapped[bool] = mapped_column(default=False)
+    is_blocked: Mapped[bool] = mapped_column(default=False)
     owner_user_id: Mapped[int | None] = mapped_column(
         Integer, ForeignKey("users.id"), nullable=True, index=True
     )
@@ -51,6 +54,8 @@ class Provider(Base):
             "metadata": self.metadata_json,
             "is_active": self.is_active,
             "is_paused": self.is_paused,
+            "is_verified": self.is_verified,
+            "is_blocked": self.is_blocked,
             "balance": self.balance,
             "lead_fee": self.lead_fee,
             "completed_orders_count": self.completed_orders_count,

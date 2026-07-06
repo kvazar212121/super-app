@@ -156,6 +156,57 @@ async def reject_provider(
     return {"message": "Provayder rad etildi", "provider_id": provider_id}
 
 
+async def _get_provider(db, provider_id):
+    p = (await db.execute(select(Provider).where(Provider.id == provider_id))).scalar_one_or_none()
+    if not p:
+        raise HTTPException(status_code=404, detail="Provayder topilmadi")
+    return p
+
+
+@router.patch("/providers/{provider_id}/verify")
+async def verify_provider(provider_id: int, _admin: User = Depends(require_admin), db: AsyncSession = Depends(get_db)):
+    p = await _get_provider(db, provider_id)
+    p.is_verified = True
+    meta = dict(p.metadata_json or {})
+    meta["verification_status"] = "verified"
+    p.metadata_json = meta
+    await db.flush()
+    return {"message": "Provayder tasdiqlandi (verified)", "provider_id": provider_id}
+
+
+@router.patch("/providers/{provider_id}/block")
+async def block_provider(provider_id: int, _admin: User = Depends(require_admin), db: AsyncSession = Depends(get_db)):
+    p = await _get_provider(db, provider_id)
+    p.is_blocked = True
+    p.is_active = False
+    await db.flush()
+    return {"message": "Provayder bloklandi", "provider_id": provider_id}
+
+
+@router.patch("/providers/{provider_id}/unblock")
+async def unblock_provider(provider_id: int, _admin: User = Depends(require_admin), db: AsyncSession = Depends(get_db)):
+    p = await _get_provider(db, provider_id)
+    p.is_blocked = False
+    p.is_active = True
+    await db.flush()
+    return {"message": "Blok olindi", "provider_id": provider_id}
+
+
+@router.get("/providers/{provider_id}/kyc")
+async def provider_kyc(provider_id: int, _admin: User = Depends(require_admin), db: AsyncSession = Depends(get_db)):
+    p = await _get_provider(db, provider_id)
+    meta = p.metadata_json or {}
+    return {
+        "provider_id": provider_id,
+        "name": p.name,
+        "is_verified": p.is_verified,
+        "is_blocked": p.is_blocked,
+        "verification_status": meta.get("verification_status"),
+        "documents": meta.get("documents") or {},
+        "metadata": meta,
+    }
+
+
 @router.patch("/providers/{provider_id}/rating")
 async def update_provider_rating(
     provider_id: int,

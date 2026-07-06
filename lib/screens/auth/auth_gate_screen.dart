@@ -8,6 +8,7 @@ import '../../theme/glass_tokens.dart';
 import '../../widgets/auth/otp_auth_panel.dart';
 import '../../widgets/glass/glass_surface.dart';
 import '../../widgets/glass/mesh_background.dart';
+import '../legal/terms_screen.dart';
 
 /// Buyurtma berishdan oldin ochiladigan kirish / ro'yxatdan o'tish (SMS OTP).
 class AuthGateScreen extends StatefulWidget {
@@ -28,6 +29,7 @@ class _AuthGateScreenState extends State<AuthGateScreen> {
   final _password = TextEditingController();
   final _passwordConfirm = TextEditingController();
   bool _obscure = true;
+  bool _agreedToTerms = false;
 
   @override
   void dispose() {
@@ -58,6 +60,10 @@ class _AuthGateScreenState extends State<AuthGateScreen> {
     }
     if (_password.text != _passwordConfirm.text) {
       _toast('Parollar mos emas');
+      return;
+    }
+    if (!_agreedToTerms) {
+      _toast('Davom etish uchun foydalanish shartlariga rozilik bering');
       return;
     }
     if (_verifiedPhone == null || _verificationToken == null) return;
@@ -225,12 +231,52 @@ class _AuthGateScreenState extends State<AuthGateScreen> {
             prefixIcon: Icon(LucideIcons.shieldCheck, size: 20),
           ),
         ),
-        const SizedBox(height: 24),
+        const SizedBox(height: 16),
+        // Foydalanish shartlariga rozilik (majburiy)
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            SizedBox(
+              width: 28,
+              height: 28,
+              child: Checkbox(
+                value: _agreedToTerms,
+                onChanged: (v) => setState(() => _agreedToTerms = v ?? false),
+              ),
+            ),
+            const SizedBox(width: 6),
+            Expanded(
+              child: Wrap(
+                crossAxisAlignment: WrapCrossAlignment.center,
+                children: [
+                  Text('Men ', style: TextStyle(color: GlassTokens.secondaryText(context), fontSize: 13)),
+                  GestureDetector(
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const TermsScreen()),
+                    ),
+                    child: const Text(
+                      'foydalanish shartlariga',
+                      style: TextStyle(
+                        color: Color(0xFF6366F1),
+                        fontWeight: FontWeight.w700,
+                        fontSize: 13,
+                        decoration: TextDecoration.underline,
+                      ),
+                    ),
+                  ),
+                  Text(' roziman', style: TextStyle(color: GlassTokens.secondaryText(context), fontSize: 13)),
+                ],
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
         SizedBox(
           width: double.infinity,
           height: 52,
           child: FilledButton(
-            onPressed: auth.isLoading ? null : _completeRegister,
+            onPressed: (auth.isLoading || !_agreedToTerms) ? null : _completeRegister,
             child: auth.isLoading
                 ? const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2.5))
                 : const Text('Ro\'yxatdan o\'tish'),

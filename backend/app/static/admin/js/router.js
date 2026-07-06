@@ -44,6 +44,8 @@ import { statusBadge, openModal, formatMoney, formatDate, closeModal, getInitial
                 notifications: renderNotifications,
                 reports: renderReports,
                 user_analytics: renderUserAnalytics,
+                premium: renderPremium,
+                admins: renderAdmins,
             };
             if (renderers[page]) {
                 await renderers[page]();

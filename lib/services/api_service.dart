@@ -1562,6 +1562,52 @@ class ApiService {
     return response.data;
   }
 
+  // ==================== Feature flags (bo'lim holati) ====================
+
+  /// Admin panelдан boshqariladigan bo'lim holati: {key: {enabled, message}}
+  Future<Map<String, dynamic>> getFeatureFlags() async {
+    final response = await _dio.get('/config/features');
+    return Map<String, dynamic>.from(response.data['features'] ?? {});
+  }
+
+  /// Xizmat kategoriyalari holati: {cat_key: {enabled, message}}
+  Future<Map<String, dynamic>> getCategoryFlags() async {
+    final response = await _dio.get('/config/categories');
+    return Map<String, dynamic>.from(response.data['categories'] ?? {});
+  }
+
+  /// Huquqiy hujjatlar matni: {terms, privacy, faq}
+  Future<Map<String, dynamic>> getLegal() async {
+    final response = await _dio.get('/config/legal');
+    return Map<String, dynamic>.from(response.data['legal'] ?? {});
+  }
+
+  // ==================== Premium obuna ====================
+
+  Future<Map<String, dynamic>> getPremiumStatus() async {
+    final response = await _dio.get('/premium/status');
+    return Map<String, dynamic>.from(response.data);
+  }
+
+  /// method: "balance" (balansdan yechish) yoki "manual" (admin tasdiqlaydi)
+  Future<Map<String, dynamic>> subscribePremium(String method) async {
+    final response = await _dio.post('/premium/subscribe', data: {'method': method});
+    return Map<String, dynamic>.from(response.data);
+  }
+
+  // ==================== Nizolar (disputes) ====================
+
+  /// Buyurtma bo'yicha nizo ochish (shikoyat).
+  Future<Map<String, dynamic>> createDispute(int orderId, String reason) async {
+    final response = await _dio.post('/disputes', data: {'order_id': orderId, 'reason': reason});
+    return Map<String, dynamic>.from(response.data);
+  }
+
+  Future<List<dynamic>> getMyDisputes() async {
+    final response = await _dio.get('/disputes/my');
+    return response.data as List<dynamic>;
+  }
+
   // ==================== Majburlovchi budilnik ====================
 
   Future<List<dynamic>> getAlarms() async {

@@ -208,15 +208,20 @@ async def finance_reminder_scheduler():
                 user_res = await db.execute(user_stmt)
                 users = user_res.scalars().all()
                 
+                from app.models.notification import Notification as NotificationModel
+                from datetime import timedelta
+                week_ago = now - timedelta(days=7)
                 for u in users:
-                    from app.services.notification_service import _notification_store
-                    user_notifs = _notification_store.get(u.id, [])
-                    recent_ai_notifs = [
-                        n for n in user_notifs 
-                        if n.type == "ai_spending_advice" and (now - n.created_at).days < 7
-                    ]
-                    
-                    if not recent_ai_notifs:
+                    recent_res = await db.execute(
+                        select(NotificationModel.id).where(
+                            NotificationModel.user_id == u.id,
+                            NotificationModel.type == "ai_spending_advice",
+                            NotificationModel.created_at >= week_ago,
+                        ).limit(1)
+                    )
+                    has_recent = recent_res.first() is not None
+
+                    if not has_recent:
                         start_of_month = datetime(now.year, now.month, 1, tzinfo=timezone.utc)
                         records_stmt = select(FinanceRecord).where(
                             FinanceRecord.user_id == u.id,
@@ -358,6 +363,71 @@ async def market_scraper_scheduler():
             await asyncio.sleep(3600) # xato bo'lsa 1 soat kutish
 
 
+def _start_scheduler_children():
+    """Barcha fon schedulerlarини ishga tushiradi va tasklar ro'yxatini qaytaradi."""
+    return [
+        asyncio.create_task(plan_reminder_scheduler()),
+        asyncio.create_task(finance_reminder_scheduler()),
+        asyncio.create_task(checkin_scheduler()),
+        asyncio.create_task(order_completion_scheduler()),
+        asyncio.create_task(market_scraper_scheduler()),
+    ]
+
+
+async def scheduler_supervisor():
+    """Redis-lock 'leader' saylovi — ko'p workerда schedulerlar FAQAT bittasида ishlaydi.
+
+    Leader vafot etsa (TTL tugasa), boshqa worker leaderlikni oladi va schedulerlarни boshlaydi.
+    Redis bo'lmasa — shu protsessда ishga tushadi (bitta worker deb faraz qilinadi).
+    """
+    import uuid
+    from app.core.call_manager import manager as call_manager
+
+    KEY = "scheduler_leader"
+    children = []
+    try:
+        redis = await call_manager._get_redis()
+        if redis is None:
+            logger.warning("Schedulers: Redis yo'q — leader saylovsiz shu protsessда ishga tushdi.")
+            children = _start_scheduler_children()
+            while True:
+                await asyncio.sleep(3600)
+
+        me = uuid.uuid4().hex
+        # Leaderlikni olguncha kutamiz (30s'da bir urinib)
+        while True:
+            try:
+                got = await redis.set(KEY, me, nx=True, ex=60)
+            except Exception:
+                got = None
+            if got:
+                break
+            await asyncio.sleep(30)
+
+        logger.info("Scheduler leader saylandi — fon schedulerlari ishga tushdi.")
+        children = _start_scheduler_children()
+
+        # Leaderlikni ushlab turish (har 20s'da TTL yangilanadi)
+        while True:
+            await asyncio.sleep(20)
+            try:
+                if await redis.get(KEY) == me:
+                    await redis.expire(KEY, 60)
+                else:
+                    await redis.set(KEY, me, ex=60)  # qayta egallaymiz
+            except Exception:
+                pass
+    except asyncio.CancelledError:
+        for t in children:
+            t.cancel()
+        for t in children:
+            try:
+                await t
+            except asyncio.CancelledError:
+                pass
+        raise
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Loggingni sozlash
@@ -365,118 +435,144 @@ async def lifespan(app: FastAPI):
     root_logger = logging.getLogger()
     root_logger.addFilter(request_id_filter)
 
-    # Create tables + yangi ustunlar
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
-        await conn.execute(text(
-            "ALTER TABLE providers ADD COLUMN IF NOT EXISTS owner_user_id INTEGER REFERENCES users(id)"
-        ))
-        await conn.execute(text(
-            "CREATE INDEX IF NOT EXISTS ix_providers_owner_user_id ON providers (owner_user_id)"
-        ))
-        await conn.execute(text(
-            "ALTER TABLE plans ADD COLUMN IF NOT EXISTS is_notified BOOLEAN DEFAULT FALSE"
-        ))
-        await conn.execute(text(
-            "ALTER TABLE users ADD COLUMN IF NOT EXISTS reminder_offset_minutes INTEGER DEFAULT 10"
-        ))
-        await conn.execute(text(
-            "ALTER TABLE orders ADD COLUMN IF NOT EXISTS booking_mode VARCHAR(50) DEFAULT 'fixed'"
-        ))
-        # Shopping list new columns
-        await conn.execute(text(
-            "ALTER TABLE shopping_lists ADD COLUMN IF NOT EXISTS name VARCHAR(255) DEFAULT 'Bozorlik'"
-        ))
-        await conn.execute(text(
-            "ALTER TABLE shopping_lists ADD COLUMN IF NOT EXISTS total_actual_price FLOAT DEFAULT 0.0"
-        ))
-        await conn.execute(text(
-            "ALTER TABLE shopping_lists ADD COLUMN IF NOT EXISTS is_completed BOOLEAN DEFAULT FALSE"
-        ))
-        # Provider yangi ustunlari
-        await conn.execute(text(
-            "ALTER TABLE providers ADD COLUMN IF NOT EXISTS is_paused BOOLEAN DEFAULT FALSE"
-        ))
+    # Startup DDL + seed — ko'p workerда FAQAT bitta worker bajaradi (concurrent DDL deadlock oldini olish).
+    # DB'да schema+data mavjud bo'lgani uchun boshqa workerlar bemalol o'tkazib yuboradi.
+    _do_startup_init = True
+    try:
+        from app.core.call_manager import manager as _init_cm
+        _init_redis = await _init_cm._get_redis()
+        if _init_redis is not None:
+            _do_startup_init = bool(await _init_redis.set("startup_init_lock", "1", nx=True, ex=120))
+    except Exception:
+        _do_startup_init = True
 
-    # Seed admin user & default promos
-    async with async_session() as db:
-        result = await db.execute(
-            select(User).where(User.phone == settings.admin_default_phone)
-        )
-        if not result.scalar_one_or_none():
-            admin = User(
-                name="Admin",
-                surname="SuperApp",
-                phone=settings.admin_default_phone,
-                hashed_password=hash_password(settings.admin_default_password),
-                is_admin=True,
-                is_active=True,
+    if not _do_startup_init:
+        logger.info("Startup init boshqa workerда bajarilmoqda — o'tkazib yuborildi.")
+    else:
+        # Create tables + yangi ustunlar
+        async with engine.begin() as conn:
+            await conn.run_sync(Base.metadata.create_all)
+            await conn.execute(text(
+                "ALTER TABLE providers ADD COLUMN IF NOT EXISTS owner_user_id INTEGER REFERENCES users(id)"
+            ))
+            await conn.execute(text(
+                "CREATE INDEX IF NOT EXISTS ix_providers_owner_user_id ON providers (owner_user_id)"
+            ))
+            await conn.execute(text(
+                "ALTER TABLE plans ADD COLUMN IF NOT EXISTS is_notified BOOLEAN DEFAULT FALSE"
+            ))
+            await conn.execute(text(
+                "ALTER TABLE users ADD COLUMN IF NOT EXISTS reminder_offset_minutes INTEGER DEFAULT 10"
+            ))
+            await conn.execute(text(
+                "ALTER TABLE orders ADD COLUMN IF NOT EXISTS booking_mode VARCHAR(50) DEFAULT 'fixed'"
+            ))
+            # Shopping list new columns
+            await conn.execute(text(
+                "ALTER TABLE shopping_lists ADD COLUMN IF NOT EXISTS name VARCHAR(255) DEFAULT 'Bozorlik'"
+            ))
+            await conn.execute(text(
+                "ALTER TABLE shopping_lists ADD COLUMN IF NOT EXISTS total_actual_price FLOAT DEFAULT 0.0"
+            ))
+            await conn.execute(text(
+                "ALTER TABLE shopping_lists ADD COLUMN IF NOT EXISTS is_completed BOOLEAN DEFAULT FALSE"
+            ))
+            # Provider yangi ustunlari
+            await conn.execute(text(
+                "ALTER TABLE providers ADD COLUMN IF NOT EXISTS is_paused BOOLEAN DEFAULT FALSE"
+            ))
+            # RBAC: admin rol ustunlari
+            await conn.execute(text(
+                "ALTER TABLE users ADD COLUMN IF NOT EXISTS is_super_admin BOOLEAN DEFAULT FALSE"
+            ))
+            await conn.execute(text(
+                "ALTER TABLE users ADD COLUMN IF NOT EXISTS admin_role_id INTEGER REFERENCES admin_roles(id)"
+            ))
+            # Birinchi migratsiya: hali super admin yo'q bo'lsa, mavjud adminlarni super qilamiz
+            _sa = (await conn.execute(text("SELECT COUNT(*) FROM users WHERE is_super_admin = TRUE"))).scalar()
+            if not _sa:
+                await conn.execute(text("UPDATE users SET is_super_admin = TRUE WHERE is_admin = TRUE"))
+            # Premium obuna ustuni
+            await conn.execute(text(
+                "ALTER TABLE users ADD COLUMN IF NOT EXISTS premium_until TIMESTAMPTZ"
+            ))
+            # Provayder moderatsiyasi ustunlari
+            await conn.execute(text(
+                "ALTER TABLE providers ADD COLUMN IF NOT EXISTS is_verified BOOLEAN DEFAULT FALSE"
+            ))
+            await conn.execute(text(
+                "ALTER TABLE providers ADD COLUMN IF NOT EXISTS is_blocked BOOLEAN DEFAULT FALSE"
+            ))
+
+        # Seed admin user & default promos
+        async with async_session() as db:
+            result = await db.execute(
+                select(User).where(User.phone == settings.admin_default_phone)
             )
-            db.add(admin)
-            await db.commit()
-
-        # Seed default promos if empty
-        promo_count = (await db.execute(select(func.count(Promo.id)))).scalar() or 0
-        if promo_count == 0:
-            default_promos = [
-                Promo(
-                    title="Sartarosh — 25% chegirma",
-                    subtitle="Dushanba–chorshanba, barcha xizmatlar",
-                    badge="-25%",
-                    colors="#6366F1,#A855F7"
-                ),
-                Promo(
-                    title="Tozalash — birinchi buyurtma",
-                    subtitle="30% gacha chegirma, kod: TOZA30",
-                    badge="AKSIYA",
-                    colors="#0D9488,#06B6D4"
-                ),
-                Promo(
-                    title="Avto-yordam tungi tarif",
-                    subtitle="Evakuator 20% arzonroq 22:00 dan keyin",
-                    badge="-20%",
-                    colors="#EA580C,#F59E0B"
+            if not result.scalar_one_or_none():
+                admin = User(
+                    name="Admin",
+                    surname="SuperApp",
+                    phone=settings.admin_default_phone,
+                    hashed_password=hash_password(settings.admin_default_password),
+                    is_admin=True,
+                    is_active=True,
                 )
-            ]
-            db.add_all(default_promos)
-            await db.commit()
-            
-    # Start the background tasks
-    reminder_task = asyncio.create_task(plan_reminder_scheduler())
-    finance_task = asyncio.create_task(finance_reminder_scheduler())
-    checkin_task = asyncio.create_task(checkin_scheduler())
-    completion_task = asyncio.create_task(order_completion_scheduler())
-    scraper_task = asyncio.create_task(market_scraper_scheduler())
-    
+                db.add(admin)
+                await db.commit()
+
+            # Seed default promos if empty
+            promo_count = (await db.execute(select(func.count(Promo.id)))).scalar() or 0
+            if promo_count == 0:
+                default_promos = [
+                    Promo(
+                        title="Sartarosh — 25% chegirma",
+                        subtitle="Dushanba–chorshanba, barcha xizmatlar",
+                        badge="-25%",
+                        colors="#6366F1,#A855F7"
+                    ),
+                    Promo(
+                        title="Tozalash — birinchi buyurtma",
+                        subtitle="30% gacha chegirma, kod: TOZA30",
+                        badge="AKSIYA",
+                        colors="#0D9488,#06B6D4"
+                    ),
+                    Promo(
+                        title="Avto-yordam tungi tarif",
+                        subtitle="Evakuator 20% arzonroq 22:00 dan keyin",
+                        badge="-20%",
+                        colors="#EA580C,#F59E0B"
+                    )
+                ]
+                db.add_all(default_promos)
+                await db.commit()
+
+    # Qo'ng'iroq signali Redis subscriber — HAR workerда ishlaydi (worker'lar aro signal)
+    from app.core.call_manager import manager as call_manager
+    call_sub_task = asyncio.create_task(call_manager.start_subscriber())
+
+    # Schedulerlar — Redis-lock leader orqali faqat BITTA workerда ishlaydi.
+    # RUN_SCHEDULERS=false bo'lsa (masalan alohida web-only konteyner) umuman ishga tushmaydi.
+    supervisor_task = None
+    if settings.run_schedulers:
+        supervisor_task = asyncio.create_task(scheduler_supervisor())
+    else:
+        logger.info("RUN_SCHEDULERS=false — bu protsessda schedulerlar ishga tushmadi.")
+
     yield
-    
+
     # Cancel the background tasks
-    reminder_task.cancel()
-    finance_task.cancel()
-    checkin_task.cancel()
-    completion_task.cancel()
-    scraper_task.cancel()
-    try:
-        await reminder_task
-    except asyncio.CancelledError:
-        pass
-    try:
-        await finance_task
-    except asyncio.CancelledError:
-        pass
-    try:
-        await checkin_task
-    except asyncio.CancelledError:
-        pass
-    try:
-        await completion_task
-    except asyncio.CancelledError:
-        pass
-    try:
-        await scraper_task
-    except asyncio.CancelledError:
-        pass
-        
+    call_sub_task.cancel()
+    if supervisor_task:
+        supervisor_task.cancel()
+    for task in [call_sub_task, supervisor_task]:
+        if task is None:
+            continue
+        try:
+            await task
+        except asyncio.CancelledError:
+            pass
+
     await engine.dispose()
 
 
@@ -506,6 +602,43 @@ def create_app() -> FastAPI:
             "docs": "/docs",
             "health": f"{settings.api_v1_prefix}/health",
         }
+
+    import html as _htmlmod
+    from fastapi.responses import HTMLResponse
+    from app.services import settings_service as _settings_svc
+
+    def _legal_page(title: str, content: str) -> str:
+        paras = "".join(
+            f"<section><p>{p.replace(chr(10), '<br>')}</p></section>"
+            for p in _htmlmod.escape(content or "").split("\n\n") if p.strip()
+        )
+        return (
+            "<!DOCTYPE html><html lang=\"uz\"><head><meta charset=\"UTF-8\">"
+            "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">"
+            f"<title>HubServis — {_htmlmod.escape(title)}</title>"
+            "<style>*{box-sizing:border-box;margin:0;padding:0}"
+            "body{font-family:Inter,system-ui,sans-serif;background:#050505;color:#E5E7EB;line-height:1.65}"
+            "nav{position:sticky;top:0;background:rgba(5,5,5,.85);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,.1)}"
+            ".ni{max-width:820px;margin:0 auto;padding:16px 24px;display:flex;justify-content:space-between;align-items:center}"
+            ".lg{font-weight:800;font-size:1.4rem;letter-spacing:-1px;color:#fff;text-decoration:none}"
+            ".bk{color:#9CA3AF;text-decoration:none;font-size:.9rem}main{max-width:820px;margin:0 auto;padding:40px 24px 72px}"
+            "h1{font-size:2rem;font-weight:800;margin-bottom:24px}"
+            "section{margin-bottom:18px;padding:18px 22px;background:#101012;border:1px solid rgba(255,255,255,.1);border-radius:14px}"
+            "p{color:#D1D5DB;font-size:.98rem}footer{border-top:1px solid rgba(255,255,255,.1);text-align:center;padding:28px;color:#52525B;font-size:.85rem}"
+            "@media(prefers-color-scheme:light){body{background:#fff;color:#0F172A}nav{background:rgba(255,255,255,.9);border-color:rgba(0,0,0,.08)}"
+            ".lg{color:#0F172A}section{background:#F8FAFC;border-color:rgba(0,0,0,.08)}p{color:#334155}}</style></head><body>"
+            "<nav><div class=\"ni\"><a href=\"/\" class=\"lg\">HUBSERVIS</a><a href=\"/\" class=\"bk\">← Bosh sahifa</a></div></nav>"
+            f"<main><h1>{_htmlmod.escape(title)}</h1>{paras}</main>"
+            "<footer>© 2026 HUBSERVIS. Barcha huquqlar himoyalangan.</footer></body></html>"
+        )
+
+    @app.get("/terms", include_in_schema=False)
+    async def terms():
+        return HTMLResponse(_legal_page("Foydalanish shartlari", _settings_svc.get_legal("terms")))
+
+    @app.get("/privacy", include_in_schema=False)
+    async def privacy():
+        return HTMLResponse(_legal_page("Maxfiylik siyosati", _settings_svc.get_legal("privacy")))
 
     # CORS
     if settings.cors_allow_all:
