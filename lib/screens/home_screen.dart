@@ -3,7 +3,6 @@ import '../widgets/active_order_banner.dart';
 import '../widgets/home_promo_section.dart';
 import '../widgets/home_header_widget.dart';
 import '../widgets/provider_portal_entry.dart';
-import '../widgets/ai_assistant_banner.dart';
 
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../widgets/daily_utilities_widget.dart';
@@ -15,6 +14,7 @@ import '../screens/auth/auth_gate_screen.dart';
 import '../screens/calorie/calorie_home_screen.dart';
 import '../screens/fitness/fitness_home_screen.dart';
 import '../screens/alarm/alarm_home_screen.dart';
+import '../screens/chat_screen.dart';
 import '../providers/auth_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -37,8 +37,6 @@ class HomeScreen extends StatelessWidget {
             _buildMainGrid(context),
             const SizedBox(height: 22),
             const ActiveOrderBanner(),
-            const SizedBox(height: 22),
-            const AIAssistantBanner(),
             const SizedBox(height: 22),
             const ProviderPortalEntry(),
           ],
@@ -175,7 +173,17 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 12),
-            const Expanded(child: SizedBox()),
+            Expanded(
+              child: _DailyBtn(
+                icon: LucideIcons.bot,
+                label: 'AI Yordamchi',
+                color: const Color(0xFF06B6D4),
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const ChatScreen()),
+                ),
+              ),
+            ),
           ],
         ),
       ],
