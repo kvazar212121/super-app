@@ -904,6 +904,21 @@ class ApiService {
     return response.data as Map<String, dynamic>;
   }
 
+  Future<Map<String, dynamic>> registerBozorchi({
+    required String name,
+    required String phone,
+    required String serviceArea,
+    required String vehicleType,
+  }) async {
+    final response = await _dio.post('/providers/bozorchi/register', data: {
+      'name': name,
+      'phone': phone,
+      'service_area': serviceArea,
+      'vehicle_type': vehicleType,
+    });
+    return response.data as Map<String, dynamic>;
+  }
+
   // ─────────────── AUTO HELP PORTAL ───────────────
 
   Future<Map<String, dynamic>> registerAutoMobile({
