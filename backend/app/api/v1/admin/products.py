@@ -239,3 +239,16 @@ async def ai_estimate_product_price(
         "detail": "AI narx baholash muvaffaqiyatli yakunlandi",
         "estimated_price": estimated_price
     }
+
+# ── POST admin/products/run-scraper (Auto Scraper) ─────────────────────────
+@router.post("/run-scraper")
+async def run_market_scraper(
+    db: AsyncSession = Depends(get_db),
+    admin: User = Depends(require_admin)
+):
+    from app.services.scraper_service import ScraperService
+    result = await ScraperService.run_scraper(db)
+    if result.get("status") == "error":
+        raise HTTPException(status_code=400, detail=result.get("message", "Xatolik"))
+    return result
+

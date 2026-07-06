@@ -72,6 +72,12 @@ class Settings(BaseSettings):
     groq_vision_model: str = "meta-llama/llama-4-scout-17b-16e-instruct"
     groq_translate_model: str = "llama-3.3-70b-versatile"
 
+    # OpenAI API (aqlliroq vision — taom rasmidan kaloriya hisoblash uchun)
+    # vision_provider = "openai" bo'lsa, kaloriya tahlili OpenAI orqali ishlaydi.
+    openai_api_key: str = ""
+    openai_vision_model: str = "gpt-4o"
+    vision_provider: str = "groq"  # "groq" yoki "openai"
+
     # Fitnes mashqlari GIF manbasi (ExerciseDB CDN, faqat hotlink)
     exercise_gif_base: str = "https://static.exercisedb.dev/media"
 

@@ -1561,4 +1561,53 @@ class ApiService {
     });
     return response.data;
   }
+
+  // ==================== Majburlovchi budilnik ====================
+
+  Future<List<dynamic>> getAlarms() async {
+    final response = await _dio.get('/alarms');
+    return response.data;
+  }
+
+  Future<Map<String, dynamic>> createAlarm(Map<String, dynamic> data) async {
+    final response = await _dio.post('/alarms', data: data);
+    return response.data;
+  }
+
+  Future<Map<String, dynamic>> updateAlarm(int id, Map<String, dynamic> data) async {
+    final response = await _dio.put('/alarms/$id', data: data);
+    return response.data;
+  }
+
+  Future<Map<String, dynamic>> toggleAlarm(int id) async {
+    final response = await _dio.patch('/alarms/$id/toggle');
+    return response.data;
+  }
+
+  Future<void> deleteAlarm(int id) async {
+    await _dio.delete('/alarms/$id');
+  }
+
+  /// Budilnik rasm-vazifasi: rasmda `target` bor-yo'qligini AI tekshiradi.
+  Future<Map<String, dynamic>> verifyAlarmPhoto(String filePath, String target) async {
+    final formData = FormData.fromMap({
+      'file': await MultipartFile.fromFile(filePath),
+      'target': target,
+    });
+    final response = await _dio.post(
+      '/alarms/verify-photo',
+      data: formData,
+      options: Options(receiveTimeout: const Duration(seconds: 60)),
+    );
+    return response.data;
+  }
+
+  Future<void> logAlarmEvent(int id, Map<String, dynamic> data) async {
+    await _dio.post('/alarms/$id/event', data: data);
+  }
+
+  Future<Map<String, dynamic>> getAlarmStats() async {
+    final response = await _dio.get('/alarms/stats');
+    return response.data;
+  }
 }

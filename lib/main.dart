@@ -1,7 +1,11 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'theme/app_theme.dart';
+import 'models/alarm.dart';
+import 'screens/alarm/alarm_ring_screen.dart';
 import 'providers/app_provider.dart';
 import 'providers/auth_provider.dart';
 import 'screens/auth/splash_screen.dart';
@@ -35,6 +39,37 @@ void main() async {
 
   await NotificationHelper().init();
   await CallHistoryService().init();
+
+  // Budilnik jiringlaganda (bildirishnoma bosilганда yoki to'liq-ekranda) jiringlash ekranini ochamiz
+  void openAlarmRing(String jsonPayload) {
+    void doPush() {
+      final ctx = navigatorKey.currentContext;
+      if (ctx != null) {
+        try {
+          final alarm = Alarm.fromJson(
+            Map<String, dynamic>.from(jsonDecode(jsonPayload) as Map),
+          );
+          Navigator.of(ctx).push(
+            MaterialPageRoute(builder: (_) => AlarmRingScreen(alarm: alarm)),
+          );
+        } catch (e) {
+          debugPrint('openAlarmRing parse error: $e');
+        }
+      } else {
+        Future.delayed(const Duration(milliseconds: 200), doPush);
+      }
+    }
+    doPush();
+  }
+
+  NotificationHelper().onAlarmPayload = openAlarmRing;
+
+  // Ilova o'chiq holatdan budilnik orqali ochilgan bo'lsa — darhol jiringlash ekranini ochamiz
+  final pending = NotificationHelper().pendingAlarmPayload;
+  if (pending != null) {
+    NotificationHelper().pendingAlarmPayload = null;
+    openAlarmRing(pending);
+  }
 
   // CallKit tizim darajasidagi qo'ng'iroq UI ni ishga tushirish
   await CallKitService().init();

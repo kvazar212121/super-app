@@ -22,6 +22,7 @@ from app.models.blocked_user import BlockedUser
 from app.models.exercise import Exercise
 from app.models.workout import WorkoutPlan, WorkoutLog
 from app.models.nutrition import NutritionProfile, MealLog
+from app.models.alarm import Alarm, AlarmLog
 
 __all__ = [
     "User",
@@ -51,4 +52,6 @@ __all__ = [
     "WorkoutLog",
     "NutritionProfile",
     "MealLog",
+    "Alarm",
+    "AlarmLog",
 ]

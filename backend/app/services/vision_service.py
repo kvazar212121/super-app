@@ -45,9 +45,34 @@ def _num(value, default=0.0) -> float:
         return default
 
 
+def _resolve_provider() -> tuple[str, str, str]:
+    """VISION_PROVIDER ga qarab (api_url, api_key, model) qaytaradi.
+
+    OpenAI va Groq bir xil (OpenAI-mos) chat/completions formatidan foydalanadi,
+    shuning uchun faqat manzil, kalit va model tanlanadi — qolgan kod bir xil.
+    """
+    provider = (settings.vision_provider or "groq").strip().lower()
+    if provider == "openai":
+        return (
+            "https://api.openai.com/v1/chat/completions",
+            settings.openai_api_key,
+            settings.openai_vision_model,
+        )
+    # default: groq
+    return (
+        "https://api.groq.com/openai/v1/chat/completions",
+        settings.groq_api_key,
+        settings.groq_vision_model,
+    )
+
+
 async def analyze_food(image_bytes: bytes, content_type: str) -> dict:
-    """Taom rasmini Groq vision orqali tahlil qiladi. Normallashgan dict qaytaradi."""
-    if not settings.groq_api_key:
+    """Taom rasmini vision model (OpenAI yoki Groq) orqali tahlil qiladi.
+
+    VISION_PROVIDER sozlamasiga qarab provayder tanlanadi. Normallashgan dict qaytaradi.
+    """
+    api_url, api_key, model = _resolve_provider()
+    if not api_key:
         raise HTTPException(status_code=503, detail="AI xizmati hozircha sozlanmagan")
 
     if len(image_bytes) > MAX_IMAGE_BYTES:
@@ -62,13 +87,13 @@ async def analyze_food(image_bytes: bytes, content_type: str) -> dict:
     async with httpx.AsyncClient(timeout=60.0) as client:
         try:
             response = await client.post(
-                "https://api.groq.com/openai/v1/chat/completions",
+                api_url,
                 headers={
                     "Content-Type": "application/json",
-                    "Authorization": f"Bearer {settings.groq_api_key}",
+                    "Authorization": f"Bearer {api_key}",
                 },
                 json={
-                    "model": settings.groq_vision_model,
+                    "model": model,
                     "messages": [
                         {
                             "role": "user",
@@ -84,18 +109,18 @@ async def analyze_food(image_bytes: bytes, content_type: str) -> dict:
                 },
             )
         except httpx.HTTPError as exc:
-            logger.error(f"Groq vision so'rovi muvaffaqiyatsiz: {exc}")
+            logger.error(f"Vision ({model}) so'rovi muvaffaqiyatsiz: {exc}")
             raise HTTPException(status_code=502, detail="AI xizmatiga ulanib bo'lmadi")
 
     if response.status_code != 200:
-        logger.error(f"Groq vision status {response.status_code}: {response.text[:300]}")
+        logger.error(f"Vision ({model}) status {response.status_code}: {response.text[:300]}")
         raise HTTPException(status_code=502, detail="AI xizmati vaqtincha ishlamayapti")
 
     try:
         content = response.json()["choices"][0]["message"]["content"]
         parsed = json.loads(content)
     except (KeyError, IndexError, json.JSONDecodeError) as exc:
-        logger.error(f"Groq vision javobini o'qib bo'lmadi: {exc}")
+        logger.error(f"Vision ({model}) javobini o'qib bo'lmadi: {exc}")
         raise HTTPException(status_code=502, detail="AI javobini o'qib bo'lmadi")
 
     if not parsed.get("is_food"):
@@ -110,4 +135,79 @@ async def analyze_food(image_bytes: bytes, content_type: str) -> dict:
         "fat_g": _num(parsed.get("fat_g")),
         "carbs_g": _num(parsed.get("carbs_g")),
         "confidence": min(max(_num(parsed.get("confidence"), 0.5), 0.0), 1.0),
+    }
+
+
+VERIFY_SYSTEM_PROMPT = """Siz rasmni tekshiruvchi AI siz. Foydalanuvchi budilnikni o'chirish uchun
+ma'lum bir narsani rasmga olishi kerak. Rasmda talab qilingan narsa haqiqatan bor-yo'qligini aniqlang.
+
+FAQAT quyidagi JSON formatda javob bering (boshqa matn yozmang):
+{
+  "matched": true yoki false (talab qilingan narsa rasmda aniq ko'rinyaptimi),
+  "confidence": 0 dan 1 gacha ishonch darajasi (son),
+  "detail_uz": "qisqa izoh o'zbekcha (nima ko'rinayotgani)"
+}
+
+Qattiqqo'l bo'ling: agar talab qilingan narsa aniq ko'rinmasa yoki shubhali bo'lsa matched=false qiling."""
+
+
+async def verify_photo_contains(image_bytes: bytes, content_type: str, target: str) -> dict:
+    """Budilnik vazifasi: rasmda `target` (masalan 'bathroom sink') bor-yo'qligini AI orqali tekshiradi."""
+    api_url, api_key, model = _resolve_provider()
+    if not api_key:
+        raise HTTPException(status_code=503, detail="AI xizmati hozircha sozlanmagan")
+
+    if len(image_bytes) > MAX_IMAGE_BYTES:
+        raise HTTPException(
+            status_code=400,
+            detail="Rasm hajmi juda katta. Iltimos, kichikroq rasm yuboring (3MB gacha).",
+        )
+
+    b64 = base64.b64encode(image_bytes).decode()
+    data_url = f"data:{content_type};base64,{b64}"
+    user_text = f"{VERIFY_SYSTEM_PROMPT}\n\nTALAB QILINGAN NARSA: {target}"
+
+    async with httpx.AsyncClient(timeout=60.0) as client:
+        try:
+            response = await client.post(
+                api_url,
+                headers={
+                    "Content-Type": "application/json",
+                    "Authorization": f"Bearer {api_key}",
+                },
+                json={
+                    "model": model,
+                    "messages": [
+                        {
+                            "role": "user",
+                            "content": [
+                                {"type": "text", "text": user_text},
+                                {"type": "image_url", "image_url": {"url": data_url}},
+                            ],
+                        }
+                    ],
+                    "response_format": {"type": "json_object"},
+                    "temperature": 0.0,
+                    "max_tokens": 256,
+                },
+            )
+        except httpx.HTTPError as exc:
+            logger.error(f"Vision ({model}) verify so'rovi muvaffaqiyatsiz: {exc}")
+            raise HTTPException(status_code=502, detail="AI xizmatiga ulanib bo'lmadi")
+
+    if response.status_code != 200:
+        logger.error(f"Vision ({model}) verify status {response.status_code}: {response.text[:300]}")
+        raise HTTPException(status_code=502, detail="AI xizmati vaqtincha ishlamayapti")
+
+    try:
+        content = response.json()["choices"][0]["message"]["content"]
+        parsed = json.loads(content)
+    except (KeyError, IndexError, json.JSONDecodeError) as exc:
+        logger.error(f"Vision ({model}) verify javobini o'qib bo'lmadi: {exc}")
+        raise HTTPException(status_code=502, detail="AI javobini o'qib bo'lmadi")
+
+    return {
+        "matched": bool(parsed.get("matched")),
+        "confidence": min(max(_num(parsed.get("confidence"), 0.5), 0.0), 1.0),
+        "detail": str(parsed.get("detail_uz") or ""),
     }

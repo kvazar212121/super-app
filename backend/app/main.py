@@ -321,6 +321,42 @@ async def order_completion_scheduler():
         except Exception as e:
             logger.error(f"Error in order completion scheduler: {e}")
 
+async def market_scraper_scheduler():
+    """Bozor narxlarini har haftada avtomatik yangilash"""
+    logger.info("Market scraper scheduler starting...")
+    while True:
+        try:
+            # Haftada bir marta Dushanba kuni soat 03:00 da ishlash
+            from datetime import datetime, timezone, timedelta
+            now = datetime.now(timezone.utc)
+            # Find next Monday 03:00 UTC
+            days_ahead = 0 - now.weekday()
+            if days_ahead <= 0: # Target day already happened this week
+                days_ahead += 7
+            next_run = now + timedelta(days=days_ahead)
+            next_run = next_run.replace(hour=3, minute=0, second=0, microsecond=0)
+            
+            # Agar hozirgi vaqt 03:00 dan oldin va dushanba bo'lsa, bugun ishlaydi
+            if now.weekday() == 0 and now.hour < 3:
+                next_run = now.replace(hour=3, minute=0, second=0, microsecond=0)
+                
+            sleep_seconds = (next_run - now).total_seconds()
+            logger.info(f"Next market scraping scheduled in {sleep_seconds} seconds (at {next_run})")
+            
+            await asyncio.sleep(sleep_seconds)
+            
+            logger.info("Running scheduled market scraper...")
+            async with async_session() as db:
+                from app.services.scraper_service import ScraperService
+                await ScraperService.run_scraper(db)
+                
+        except asyncio.CancelledError:
+            logger.info("Market scraper scheduler cancelled.")
+            break
+        except Exception as e:
+            logger.error(f"Error in market scraper scheduler: {e}")
+            await asyncio.sleep(3600) # xato bo'lsa 1 soat kutish
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -410,6 +446,7 @@ async def lifespan(app: FastAPI):
     finance_task = asyncio.create_task(finance_reminder_scheduler())
     checkin_task = asyncio.create_task(checkin_scheduler())
     completion_task = asyncio.create_task(order_completion_scheduler())
+    scraper_task = asyncio.create_task(market_scraper_scheduler())
     
     yield
     
@@ -417,6 +454,8 @@ async def lifespan(app: FastAPI):
     reminder_task.cancel()
     finance_task.cancel()
     checkin_task.cancel()
+    completion_task.cancel()
+    scraper_task.cancel()
     try:
         await reminder_task
     except asyncio.CancelledError:
@@ -427,6 +466,14 @@ async def lifespan(app: FastAPI):
         pass
     try:
         await checkin_task
+    except asyncio.CancelledError:
+        pass
+    try:
+        await completion_task
+    except asyncio.CancelledError:
+        pass
+    try:
+        await scraper_task
     except asyncio.CancelledError:
         pass
         

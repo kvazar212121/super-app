@@ -14,6 +14,7 @@ import '../screens/all_categories_screen.dart';
 import '../screens/auth/auth_gate_screen.dart';
 import '../screens/calorie/calorie_home_screen.dart';
 import '../screens/fitness/fitness_home_screen.dart';
+import '../screens/alarm/alarm_home_screen.dart';
 import '../providers/auth_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -153,6 +154,28 @@ class HomeScreen extends StatelessWidget {
                 },
               ),
             ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        Row(
+          children: [
+            Expanded(
+              child: _DailyBtn(
+                icon: LucideIcons.alarmClock,
+                label: 'Majburlovchi budilnik',
+                color: Colors.indigoAccent,
+                onTap: () {
+                  final auth = Provider.of<AuthProvider>(context, listen: false);
+                  if (!auth.isAuthenticated) {
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => const AuthGateScreen()));
+                  } else {
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => const AlarmHomeScreen()));
+                  }
+                },
+              ),
+            ),
+            const SizedBox(width: 12),
+            const Expanded(child: SizedBox()),
           ],
         ),
       ],

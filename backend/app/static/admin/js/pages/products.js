@@ -23,12 +23,15 @@ import { navigateTo, renderPage } from '../router.js';
                 '</div>' +
                 '<div class="card">' +
                     '<div class="card-header">' +
-                        '<div class="filters-bar" style="margin-bottom:0; width:100%;">' +
-                            '<div class="filter-search">' +
+                        '<div class="filters-bar" style="margin-bottom:0; width:100%; display:flex; justify-content:space-between; align-items:center;">' +
+                            '<div class="filter-search" style="flex-grow:1; max-width:400px;">' +
                                 '<span class="search-icon">&#128269;</span>' +
                                 '<input type="text" placeholder="Mahsulot nomi bo\'yicha qidirish..." id="productSearch" value="' + (search || '') + '">' +
                             '</div>' +
-                            '<button class="btn btn-primary" onclick="openAddProductModal()">+ Yangi mahsulot</button>' +
+                            '<div style="display:flex; gap:10px;">' +
+                                '<button class="btn btn-secondary" onclick="runMarketScraper()" id="btnRunScraper">🔄 Bozor narxlarini avto-yangilash</button>' +
+                                '<button class="btn btn-primary" onclick="openAddProductModal()">+ Yangi mahsulot</button>' +
+                            '</div>' +
                         '</div>' +
                     '</div>' +
                     '<div class="card-body no-padding">' +
@@ -182,6 +185,51 @@ import { navigateTo, renderPage } from '../router.js';
             } catch(e) { window.showToast('Xatolik', 'error'); }
         }
 
+        async function savePriceEntry() {
+            var priceEl = document.getElementById('newPriceValue');
+            var price = parseFloat(priceEl.value);
+            if (!price || isNaN(price)) {
+                showToast("Iltimos, narxni to'g'ri kiriting", "error");
+                return;
+            }
+
+            try {
+                const res = await api('/products/' + currentProductId + '/price', {
+                    method: 'POST',
+                    body: JSON.stringify({ price: price })
+                });
+                closePriceModal();
+                showToast("Narx qo'shildi", "success");
+                renderProducts(productsPage);
+            } catch (err) {
+                console.error(err);
+                showToast("Xatolik: " + err.message, "error");
+            }
+        }
+
+        async function runMarketScraper() {
+            const btn = document.getElementById('btnRunScraper');
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = 'Kuting...';
+            }
+            try {
+                const res = await api('/products/run-scraper', {
+                    method: 'POST'
+                });
+                showToast(res.message + ` (Yangi: ${res.new_count}, Yangilandi: ${res.updated_count})`, "success");
+                renderProducts(productsPage);
+            } catch (err) {
+                console.error(err);
+                showToast("Xatolik: " + err.message, "error");
+            } finally {
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = '🔄 Bozor narxlarini avto-yangilash';
+                }
+            }
+        }
+
         async function runAiEstimation(id) {
             window.showToast('AI narx baholash boshlandi...', 'info');
             try {
@@ -232,7 +280,7 @@ import { navigateTo, renderPage } from '../router.js';
         
 
 // Exports for ES6 modules
-export { openAddProductModal, runAiEstimation, deleteProduct, viewPriceHistory, fetchAndRenderProductRows, openAddPriceModal, renderProducts, saveAdminPrice, saveNewProduct };
+export { openAddProductModal, runAiEstimation, deleteProduct, viewPriceHistory, fetchAndRenderProductRows, openAddPriceModal, renderProducts, saveAdminPrice, saveNewProduct, runMarketScraper };
 // Expose to window for inline onclick handlers
 window.openAddProductModal = openAddProductModal;
 window.runAiEstimation = runAiEstimation;
@@ -243,3 +291,9 @@ window.openAddPriceModal = openAddPriceModal;
 window.renderProducts = renderProducts;
 window.saveAdminPrice = saveAdminPrice;
 window.saveNewProduct = saveNewProduct;
+window.runMarketScraper = runMarketScraper;
+
+// Export for router
+export default {
+    render: renderProducts
+};
