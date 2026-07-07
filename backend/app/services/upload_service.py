@@ -1,6 +1,9 @@
+import io
 import uuid
 from pathlib import Path
+
 from fastapi import HTTPException, status, UploadFile
+from PIL import Image
 
 from app.core.config import settings
 
@@ -12,19 +15,17 @@ ALLOWED_CONTENT_TYPES = {
     "image/webp",
 }
 
-# Fayl kengaytmalari xaritasi
-CONTENT_TYPE_TO_EXT = {
-    "image/jpeg": ".jpg",
-    "image/png": ".png",
-    "image/webp": ".webp",
-}
-
 
 class UploadService:
+    """Barcha rasm yuklamalari JPEG'ga o'tkazilib, kichraytirilib saqlanadi.
+
+    Maqsad: diskda va AI'ga jo'natishda rasm hajmi kichik bo'lishi
+    (odatda bir necha o'n KB). PNG/WebP ham JPEG bo'lib saqlanadi.
+    """
 
     @staticmethod
-    def _validate_file(file: UploadFile) -> str:
-        """Fayl turini va hajmini tekshirish. Kengaytmani qaytaradi."""
+    def _validate_file(file: UploadFile) -> None:
+        """Fayl turini va hajmini tekshirish."""
         if file.content_type not in ALLOWED_CONTENT_TYPES:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
@@ -43,60 +44,65 @@ class UploadService:
 
         # Fayl ko'rsatkichini boshiga qaytarish
         file.file.seek(0)
-        return CONTENT_TYPE_TO_EXT[file.content_type]
+
+    @staticmethod
+    def _compress_to_jpeg(contents: bytes, max_side: int, quality: int) -> bytes:
+        """Rasmni JPEG'ga o'tkazib, eng katta tomonini max_side gacha kichraytiradi."""
+        try:
+            img = Image.open(io.BytesIO(contents))
+            img.load()
+        except Exception:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Rasmni o'qib bo'lmadi. Buzilmagan jpg/png/webp yuboring.",
+            )
+
+        # Shaffof fonli PNG/WebP — oq fonga tushiriladi
+        if img.mode in ("RGBA", "LA"):
+            background = Image.new("RGB", img.size, (255, 255, 255))
+            background.paste(img, mask=img.split()[-1])
+            img = background
+        elif img.mode != "RGB":
+            img = img.convert("RGB")
+
+        img.thumbnail((max_side, max_side), Image.LANCZOS)
+
+        buffer = io.BytesIO()
+        img.save(buffer, "JPEG", quality=quality, optimize=True)
+        return buffer.getvalue()
+
+    @staticmethod
+    async def _save_compressed(
+        file: UploadFile, subdir: str, prefix: str, max_side: int, quality: int
+    ) -> str:
+        """Validatsiya + siqish + saqlash. Ommaviy URL qaytaradi."""
+        UploadService._validate_file(file)
+        contents = await file.read()
+        compressed = UploadService._compress_to_jpeg(contents, max_side, quality)
+
+        filename = f"{prefix}_{uuid.uuid4().hex}.jpg"
+        upload_dir = Path(settings.upload_dir) / subdir
+        upload_dir.mkdir(parents=True, exist_ok=True)
+        (upload_dir / filename).write_bytes(compressed)
+
+        return f"/uploads/{subdir}/{filename}"
 
     @staticmethod
     async def upload_avatar(file: UploadFile) -> str:
         """Foydalanuvchi avatarini yuklash. URL qaytaradi."""
-        ext = UploadService._validate_file(file)
-        filename = f"avatar_{uuid.uuid4().hex}{ext}"
-        upload_dir = Path(settings.upload_dir) / "avatars"
-        upload_dir.mkdir(parents=True, exist_ok=True)
-
-        contents = await file.read()
-        filepath = upload_dir / filename
-        filepath.write_bytes(contents)
-
-        return f"/uploads/avatars/{filename}"
+        return await UploadService._save_compressed(file, "avatars", "avatar", 512, 75)
 
     @staticmethod
     async def upload_promo_image(file: UploadFile) -> str:
         """Aksiya banneri fon rasmini yuklash (admin panel). URL qaytaradi."""
-        ext = UploadService._validate_file(file)
-        filename = f"promo_{uuid.uuid4().hex}{ext}"
-        upload_dir = Path(settings.upload_dir) / "promos"
-        upload_dir.mkdir(parents=True, exist_ok=True)
-
-        contents = await file.read()
-        filepath = upload_dir / filename
-        filepath.write_bytes(contents)
-
-        return f"/uploads/promos/{filename}"
+        return await UploadService._save_compressed(file, "promos", "promo", 1280, 72)
 
     @staticmethod
     async def upload_food_photo(file: UploadFile) -> str:
         """Kaloriya hisoblagich uchun taom rasmini yuklash. URL qaytaradi."""
-        ext = UploadService._validate_file(file)
-        filename = f"food_{uuid.uuid4().hex}{ext}"
-        upload_dir = Path(settings.upload_dir) / "food"
-        upload_dir.mkdir(parents=True, exist_ok=True)
-
-        contents = await file.read()
-        filepath = upload_dir / filename
-        filepath.write_bytes(contents)
-
-        return f"/uploads/food/{filename}"
+        return await UploadService._save_compressed(file, "food", "food", 1024, 70)
 
     @staticmethod
     async def upload_cover(file: UploadFile) -> str:
         """Provayder muqova rasmini yuklash. URL qaytaradi."""
-        ext = UploadService._validate_file(file)
-        filename = f"cover_{uuid.uuid4().hex}{ext}"
-        upload_dir = Path(settings.upload_dir) / "covers"
-        upload_dir.mkdir(parents=True, exist_ok=True)
-
-        contents = await file.read()
-        filepath = upload_dir / filename
-        filepath.write_bytes(contents)
-
-        return f"/uploads/covers/{filename}"
+        return await UploadService._save_compressed(file, "covers", "cover", 1280, 75)
