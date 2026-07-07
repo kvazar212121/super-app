@@ -496,6 +496,7 @@ def create_app() -> FastAPI:
     app.add_middleware(RequestLoggingMiddleware)
 
     LANDING_HTML = Path(__file__).resolve().parent / "static" / "landing" / "index.html"
+    PRIVACY_HTML = Path(__file__).resolve().parent / "static" / "landing" / "privacy.html"
 
     @app.get("/")
     async def root():
@@ -506,6 +507,13 @@ def create_app() -> FastAPI:
             "docs": "/docs",
             "health": f"{settings.api_v1_prefix}/health",
         }
+
+    @app.get("/privacy", include_in_schema=False)
+    async def privacy_policy():
+        """Maxfiylik siyosati (Google Play uchun ham talab qilinadi)."""
+        if PRIVACY_HTML.is_file():
+            return FileResponse(PRIVACY_HTML, media_type="text/html")
+        return JSONResponse(status_code=404, content={"detail": "Sahifa topilmadi"})
 
     # CORS
     if settings.cors_allow_all:
