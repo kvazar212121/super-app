@@ -1,7 +1,11 @@
+import 'dart:io' show Platform;
+
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:provider/provider.dart';
+import 'package:smart_auth/smart_auth.dart';
 
 import '../../providers/auth_provider.dart';
 import '../../theme/glass_tokens.dart';
@@ -63,6 +67,9 @@ class OtpCodeFieldState extends State<OtpCodeField> {
   }
 
   String get code => _controllers.map((c) => c.text).join();
+
+  /// SMS'dan avtomatik kelgan kodni joylash (barcha kataklar to'ldiriladi).
+  void setCode(String digits) => _pasteCode(digits);
 
   void clear() {
     for (final c in _controllers) {
@@ -187,8 +194,31 @@ class _OtpAuthPanelState extends State<OtpAuthPanel> {
 
   @override
   void dispose() {
+    if (!kIsWeb && Platform.isAndroid) {
+      SmartAuth.instance.removeUserConsentApiListener();
+    }
     _phoneCtrl.dispose();
     super.dispose();
+  }
+
+  /// SMS kelishini kutib, koddan avtomatik to'ldirish (Android User Consent API).
+  /// Tizim bitta ruxsat so'raydi — foydalanuvchi "Allow" bossa kod o'zi kiritiladi.
+  Future<void> _listenForSms() async {
+    if (kIsWeb || !Platform.isAndroid) return;
+    try {
+      // Oldingi kutish bo'lsa bekor qilamiz (qayta yuborishda)
+      await SmartAuth.instance.removeUserConsentApiListener();
+      final result = await SmartAuth.instance.getSmsWithUserConsentApi();
+      if (!mounted || !result.hasData) return;
+
+      final sms = result.requireData;
+      final code = sms.code ?? RegExp(r'\b\d{6}\b').firstMatch(sms.sms)?.group(0);
+      if (code != null && code.length == 6) {
+        _otpFieldKey.currentState?.setCode(code);
+      }
+    } catch (e) {
+      debugPrint('SMS avtoto\'ldirish xatosi: $e');
+    }
   }
 
   Future<void> _sendOtp() async {
@@ -215,6 +245,7 @@ class _OtpAuthPanelState extends State<OtpAuthPanel> {
       _resendSeconds = 60;
     });
     _startResendTimer();
+    _listenForSms();
   }
 
   void _startResendTimer() {
