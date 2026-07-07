@@ -53,10 +53,13 @@ android {
         }
     }
 
+    // debugSign=true (build-apk.sh dan keladi) — APK eski debug kalit bilan chiqadi,
+    // telefonga to'g'ridan-to'g'ri o'rnatish uchun. AAB (Play Market) esa doim release kalit bilan.
+    val useDebugSigning = (project.findProperty("debugSign") as String?) == "true"
+
     buildTypes {
         release {
-            // key.properties bo'lsa haqiqiy kalit, bo'lmasa debug (flutter run --release ishlashi uchun)
-            signingConfig = if (keystorePropertiesFile.exists()) {
+            signingConfig = if (keystorePropertiesFile.exists() && !useDebugSigning) {
                 signingConfigs.getByName("release")
             } else {
                 signingConfigs.getByName("debug")
