@@ -221,7 +221,6 @@ class _BaseCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: isDark ? Color.lerp(const Color(0xFF1E293B), color, 0.15) : Color.lerp(Colors.white, color, 0.1),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: isDark ? color : color),
       ),
       child: Row(
         children: [

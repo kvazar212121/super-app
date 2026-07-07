@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
@@ -6,9 +6,21 @@ from app.db.session import get_db
 from app.models.user import User
 from app.models.promo import Promo
 from app.schemas.promo import PromoCreate, PromoOut
+from app.schemas.common import UrlResponse
+from app.services.upload_service import UploadService
 from app.api.v1.admin.dependencies import require_admin
 
 router = APIRouter()
+
+
+@router.post("/promos/upload", response_model=UrlResponse)
+async def admin_upload_promo_image(
+    file: UploadFile = File(...),
+    _admin: User = Depends(require_admin),
+):
+    """Banner fon rasmini yuklash — URL qaytaradi."""
+    url = await UploadService.upload_promo_image(file)
+    return UrlResponse(url=url)
 
 
 @router.get("/promos", response_model=list[PromoOut])

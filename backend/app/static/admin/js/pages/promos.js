@@ -65,9 +65,11 @@ import { navigateTo, renderPage } from '../router.js';
                                     '<small class="text-muted" style="display:block;margin-top:4px;">Ikkita HEX rangni vergul bilan ajratib yozing.</small>' +
                                 '</div>' +
                                 '<div class="form-group">' +
-                                    '<label class="form-label">Rasm (URL)</label>' +
-                                    '<input type="url" class="form-input" id="promoImageUrl" placeholder="https://example.com/banner.png">' +
-                                    '<small class="text-muted" style="display:block;margin-top:4px;">Ixtiyoriy. Banner rasmi havolasini kiriting.</small>' +
+                                    '<label class="form-label">Banner fon rasmi</label>' +
+                                    '<input type="file" class="form-input" id="promoImageFile" accept="image/jpeg,image/png,image/webp" onchange="uploadPromoImage()">' +
+                                    '<small class="text-muted" style="display:block;margin-top:4px;">Ixtiyoriy. Kompyuterdan rasm tanlang — avtomatik yuklanadi.</small>' +
+                                    '<div id="promoImagePreview" style="margin-top:8px;"></div>' +
+                                    '<input type="text" class="form-input" id="promoImageUrl" placeholder="yoki tayyor rasm URL manzili" style="margin-top:8px;">' +
                                 '</div>' +
                                 '<button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;margin-top:8px;">Qo\'shish</button>' +
                             '</form>' +
@@ -98,6 +100,34 @@ import { navigateTo, renderPage } from '../router.js';
             } catch(e) { apiError('Banner qo\'shib bo\'lmadi'); }
         }
 
+        async function uploadPromoImage() {
+            const input = document.getElementById('promoImageFile');
+            if (!input || !input.files || !input.files[0]) return;
+
+            const fd = new FormData();
+            fd.append('file', input.files[0]);
+            const token = localStorage.getItem('at');
+
+            try {
+                // window.api ishlatilmaydi: u Content-Type: application/json majburlaydi,
+                // multipart uchun brauzer boundary'ni o'zi qo'yishi kerak
+                const r = await fetch(window.API_BASE + '/promos/upload', {
+                    method: 'POST',
+                    headers: { 'Authorization': 'Bearer ' + token },
+                    body: fd
+                });
+                if (r && r.ok) {
+                    const data = await r.json();
+                    document.getElementById('promoImageUrl').value = data.url;
+                    document.getElementById('promoImagePreview').innerHTML =
+                        '<img src="' + data.url + '" style="width:100%;max-height:120px;object-fit:cover;border-radius:8px;border:1px solid var(--gray-200);">';
+                    window.showToast('Rasm yuklandi');
+                } else {
+                    apiError('Rasm yuklab bo\'lmadi');
+                }
+            } catch(e) { apiError('Rasm yuklab bo\'lmadi'); }
+        }
+
         async function deletePromo(id) {
             if (!confirm('Ushbu aksiyani o\'chirishni xohlaysizmi?')) return;
             try {
@@ -116,8 +146,9 @@ import { navigateTo, renderPage } from '../router.js';
         
 
 // Exports for ES6 modules
-export { createPromo, renderPromos, deletePromo };
+export { createPromo, renderPromos, deletePromo, uploadPromoImage };
 // Expose to window for inline onclick handlers
 window.createPromo = createPromo;
 window.renderPromos = renderPromos;
 window.deletePromo = deletePromo;
+window.uploadPromoImage = uploadPromoImage;

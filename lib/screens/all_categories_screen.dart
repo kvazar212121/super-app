@@ -160,7 +160,6 @@ class _AllCategoriesScreenState extends State<AllCategoriesScreen> {
                                       decoration: BoxDecoration(
                                         color: isDark ? const Color(0xFF1E293B) : Colors.white,
                                         borderRadius: BorderRadius.circular(GlassTokens.radiusMd),
-                                        border: Border.all(color: k.accent),
                                       ),
                                       child: Row(
                                         children: [

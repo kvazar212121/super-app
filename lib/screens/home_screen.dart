@@ -162,6 +162,7 @@ class HomeScreen extends StatelessWidget {
                 icon: LucideIcons.alarmClock,
                 label: 'Majburlovchi budilnik',
                 color: Colors.indigoAccent,
+                bgImage: 'assets/images/majburolovchi.jpg',
                 onTap: () {
                   final auth = Provider.of<AuthProvider>(context, listen: false);
                   if (!auth.isAuthenticated) {
@@ -178,6 +179,7 @@ class HomeScreen extends StatelessWidget {
                 icon: LucideIcons.bot,
                 label: 'AI Yordamchi',
                 color: const Color(0xFF06B6D4),
+                bgImage: 'assets/images/ai.jpg',
                 onTap: () => Navigator.push(
                   context,
                   MaterialPageRoute(builder: (_) => const ChatScreen()),
@@ -218,7 +220,6 @@ class _DailyBtn extends StatelessWidget {
         decoration: BoxDecoration(
           color: isDark ? const Color(0xFF1E293B) : Colors.white,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: isDark ? color : color),
           boxShadow: [
             BoxShadow(
               color: Colors.black,
@@ -242,11 +243,6 @@ class _DailyBtn extends StatelessWidget {
                       color: isDark ? Color.lerp(const Color(0xFF1E293B), color, 0.15) : Color.lerp(Colors.white, color, 0.1),
                       child: Icon(icon, color: color, size: 30),
                     ),
-            ),
-            // Ramkadan ajratib turuvchi chiziq
-            Container(
-              height: 1.5,
-              color: isDark ? color : color,
             ),
             // Kichik yozuv maydoni (Oq fon va qora yozuv)
             Container(
