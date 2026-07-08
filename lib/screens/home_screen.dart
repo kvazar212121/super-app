@@ -49,37 +49,39 @@ class HomeScreen extends StatelessWidget {
   }
 
   /// Bo'lim yopiq bo'lsa "tez orada" ko'rsatadi, aks holda (kerak bo'lsa auth tekshirib) ochadi.
-  void _openFeature(BuildContext context, String key, Widget Function() builder, {bool needAuth = true}) {
+  Future<void> _openFeature(BuildContext context, String key, Widget Function() builder, {bool needAuth = true}) async {
     if (!FeatureService().isEnabled(key)) {
       showDialog(
         context: context,
         builder: (_) => AlertDialog(
-          title: const Text('Tez orada 🚧'),
+          title: Text('Tez orada 🚧'.tr),
           content: Text(FeatureService().message(key)),
           actions: [
-            TextButton(onPressed: () => Navigator.pop(context), child: const Text('Tushunarli')),
+            TextButton(onPressed: () => Navigator.pop(context), child: Text('Tushunarli'.tr)),
           ],
         ),
       );
       return;
     }
-    // Premium bo'lim — foydalanuvchi premium bo'lmasa obuna ekraniga
-    if (FeatureService().isPremiumFeature(key) && !FeatureService().isUserPremium) {
-      final auth = Provider.of<AuthProvider>(context, listen: false);
-      if (!auth.isAuthenticated) {
-        Navigator.push(context, MaterialPageRoute(builder: (_) => const AuthGateScreen()));
-        return;
-      }
-      Navigator.push(context, MaterialPageRoute(builder: (_) => const PremiumScreen()));
-      return;
-    }
-    if (needAuth) {
+    final isPremiumFeature = FeatureService().isPremiumFeature(key);
+    // Premium bo'lim yoki auth talab qilinsa — avval login shart
+    if (isPremiumFeature || needAuth) {
       final auth = Provider.of<AuthProvider>(context, listen: false);
       if (!auth.isAuthenticated) {
         Navigator.push(context, MaterialPageRoute(builder: (_) => const AuthGateScreen()));
         return;
       }
     }
+    // Premium bo'lim — serverdan eng so'nggi holatni tekshirib, premium bo'lmasa obuna ekraniga
+    if (isPremiumFeature) {
+      await FeatureService().refreshPremium();
+      if (!FeatureService().isUserPremium) {
+        if (!context.mounted) return;
+        Navigator.push(context, MaterialPageRoute(builder: (_) => const PremiumScreen()));
+        return;
+      }
+    }
+    if (!context.mounted) return;
     Navigator.push(context, MaterialPageRoute(builder: (_) => builder()));
   }
 
