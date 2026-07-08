@@ -1,6 +1,8 @@
 import 'dart:ui';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import '../config/app_config.dart';
 import '../services/api_service.dart';
 import '../theme/glass_tokens.dart';
 import '../screens/promotion_map_screen.dart';
@@ -65,11 +67,15 @@ class _HomePromoSectionState extends State<HomePromoSection> {
           parsedColors.addAll([const Color(0xFF6366F1), const Color(0xFFA855F7)]);
         }
 
+        final rawImageUrl = (item['image_url'] as String?)?.trim();
         loaded.add(_PromoItem(
           title: title,
           subtitle: subtitle,
           badge: badge,
           colors: parsedColors,
+          imageUrl: (rawImageUrl != null && rawImageUrl.isNotEmpty)
+              ? AppConfig.formatImageUrl(rawImageUrl)
+              : null,
         ));
       }
       if (mounted) {
@@ -140,7 +146,6 @@ class _HomePromoSectionState extends State<HomePromoSection> {
                     ),
                     child: Container(
                       width: double.infinity,
-                      padding: const EdgeInsets.fromLTRB(18, 14, 14, 14),
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                           colors: [
@@ -151,9 +156,6 @@ class _HomePromoSectionState extends State<HomePromoSection> {
                           end: Alignment.bottomRight,
                         ),
                         borderRadius: BorderRadius.circular(22),
-                        border: Border.all(
-                          color: Colors.white,
-                        ),
                         boxShadow: [
                           BoxShadow(
                             color: p.colors[0],
@@ -162,7 +164,33 @@ class _HomePromoSectionState extends State<HomePromoSection> {
                           ),
                         ],
                       ),
-                      child: Row(
+                      child: Stack(
+                        fit: StackFit.expand,
+                        children: [
+                          // Rasm-fon (admin panel orqali yuklangan bo'lsa)
+                          if (p.imageUrl != null)
+                            CachedNetworkImage(
+                              imageUrl: p.imageUrl!,
+                              fit: BoxFit.cover,
+                              errorWidget: (_, __, ___) => const SizedBox.shrink(),
+                            ),
+                          // Matn o'qilishi uchun qoraytiruvchi qatlam
+                          if (p.imageUrl != null)
+                            Container(
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  colors: [
+                                    Colors.black.withValues(alpha: 0.55),
+                                    Colors.black.withValues(alpha: 0.15),
+                                  ],
+                                  begin: Alignment.centerLeft,
+                                  end: Alignment.centerRight,
+                                ),
+                              ),
+                            ),
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(18, 14, 14, 14),
+                            child: Row(
                         children: [
                           Expanded(
                             child: Column(
@@ -201,17 +229,17 @@ class _HomePromoSectionState extends State<HomePromoSection> {
                             decoration: BoxDecoration(
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(12),
-                              border: Border.all(
-                                color: Colors.white,
-                              ),
                             ),
                             child: Text(
                               p.badge,
-                              style: const TextStyle(
-                                color: Colors.white,
+                              style: TextStyle(
+                                color: p.colors[0],
                                 fontWeight: FontWeight.w800,
                                 fontSize: 12,
                               ),
+                            ),
+                          ),
+                              ],
                             ),
                           ),
                         ],
@@ -233,11 +261,13 @@ class _PromoItem {
   final String subtitle;
   final String badge;
   final List<Color> colors;
+  final String? imageUrl;
 
   const _PromoItem({
     required this.title,
     required this.subtitle,
     required this.badge,
     required this.colors,
+    this.imageUrl,
   });
 }

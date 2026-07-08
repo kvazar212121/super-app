@@ -1,13 +1,11 @@
 """Kaloriya hisoblagich mini-ilovasi API: rasm tahlili, ovqat jurnali, kunlik xulosalar."""
 from datetime import date, datetime
-from pathlib import Path
 
 from fastapi import APIRouter, Depends, HTTPException, Query, UploadFile, File
 from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.requests import Request
 
-from app.core.config import settings
 from app.core.limiter import limiter
 from app.db.session import get_db
 from app.api.dependencies import get_current_user
@@ -84,13 +82,13 @@ async def analyze_food_photo(
     file: UploadFile = File(...),
     current_user: User = Depends(get_current_user),
 ):
-    # Avval rasmni saqlaymiz (validatsiya UploadService ichida)
-    photo_url = await UploadService.upload_food_photo(file)
-    photo_path = Path(settings.upload_dir) / photo_url.removeprefix("/uploads/")
-    image_bytes = photo_path.read_bytes()
+    # Rasm diskka YOZILMAYDI — xotirada siqilib to'g'ridan-to'g'ri AI'ga jo'natiladi
+    UploadService._validate_file(file)
+    contents = await file.read()
+    compressed = UploadService._compress_to_jpeg(contents, 1024, 70)
 
-    result = await analyze_food(image_bytes, file.content_type or "image/jpeg")
-    result["photo_url"] = photo_url
+    result = await analyze_food(compressed, "image/jpeg")
+    result["photo_url"] = None
     return result
 
 

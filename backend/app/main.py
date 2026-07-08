@@ -592,6 +592,7 @@ def create_app() -> FastAPI:
     app.add_middleware(RequestLoggingMiddleware)
 
     LANDING_HTML = Path(__file__).resolve().parent / "static" / "landing" / "index.html"
+    PRIVACY_HTML = Path(__file__).resolve().parent / "static" / "landing" / "privacy.html"
 
     @app.get("/")
     async def root():

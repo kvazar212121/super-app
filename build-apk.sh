@@ -8,6 +8,10 @@ export PATH="$JAVA_HOME/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/cmdline-t
 
 cd "$(dirname "$0")"
 
+# APK telefonga to'g'ridan-to'g'ri o'rnatish uchun eski (debug) kalit bilan imzolanadi.
+# Play Market'ga boradigan AAB esa release kalit bilan: flutter build appbundle --release
+export ORG_GRADLE_PROJECT_debugSign=true
+
 echo "=== Flutter APK (release) yig'ilmoqda ==="
 flutter build apk --release
 

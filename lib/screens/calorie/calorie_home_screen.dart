@@ -113,9 +113,9 @@ class _CalorieHomeScreenState extends State<CalorieHomeScreen> {
       final compressedFile = await FlutterImageCompress.compressAndGetFile(
         pickedFile.path,
         targetPath,
-        quality: 70,
-        minWidth: 1024,
-        minHeight: 1024,
+        quality: 65,
+        minWidth: 800,
+        minHeight: 800,
         format: CompressFormat.jpeg,
       );
       if (compressedFile == null || !mounted) return;
