@@ -121,7 +121,6 @@ const Map<String, String> kTranslationsRu = {
   'Budilnik': 'Будильник',
   'Yangi budilnik': 'Новый будильник',
   'Snooze': 'Отложить',
-  'Tasdiqlash': 'Подтвердить',
 
   // ── Kaloriya / Fitnes ──
   'Kaloriya': 'Калории',
