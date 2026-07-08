@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import '../models/service_hub_kind.dart';
 import '../services/feature_service.dart';
+import '../l10n/locale_controller.dart';
 import '../theme/glass_tokens.dart';
 import '../widgets/glass/glass_scaffold.dart';
 import '../widgets/glass/glass_surface.dart';
@@ -125,7 +126,7 @@ class _AllCategoriesScreenState extends State<AllCategoriesScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                group.title,
+                                group.title.tr,
                                 style: TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.w900,
@@ -196,7 +197,7 @@ class _AllCategoriesScreenState extends State<AllCategoriesScreen> {
                                           const SizedBox(width: 12),
                                           Expanded(
                                             child: Text(
-                                              k.title,
+                                              k.title.tr,
                                               style: TextStyle(
                                                 fontWeight: FontWeight.w700,
                                                 fontSize: 14,

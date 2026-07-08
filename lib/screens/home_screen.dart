@@ -17,6 +17,7 @@ import '../screens/alarm/alarm_home_screen.dart';
 import '../screens/chat_screen.dart';
 import '../providers/auth_provider.dart';
 import '../services/feature_service.dart';
+import '../l10n/locale_controller.dart';
 import 'premium/premium_screen.dart';
 import 'package:provider/provider.dart';
 
@@ -246,7 +247,7 @@ class _DailyBtn extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 6),
               alignment: Alignment.center,
               child: Text(
-                label,
+                label.tr,
                 textAlign: TextAlign.center,
                 style: const TextStyle(
                   fontWeight: FontWeight.w800,

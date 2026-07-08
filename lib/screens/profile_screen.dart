@@ -10,6 +10,7 @@ import '../widgets/glass/glass_scaffold.dart';
 import '../widgets/glass/glass_surface.dart';
 import '../widgets/provider_portal_entry.dart';
 import '../theme/glass_tokens.dart';
+import '../l10n/locale_controller.dart';
 import 'auth/auth_gate_screen.dart';
 import '../services/call_history_service.dart';
 import '../services/call_service.dart';
@@ -92,8 +93,29 @@ class ProfileScreen extends StatelessWidget {
                   ],
                 ),
               ),
+              const SizedBox(height: 12),
+              // Til almashtirgich (UZ / RU)
+              GlassSurface(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                opacity: 0.55,
+                child: Row(
+                  children: [
+                    Icon(Icons.language, color: GlassTokens.primaryText(context)),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        'Ilova tili'.tr,
+                        style: TextStyle(fontWeight: FontWeight.w600, color: GlassTokens.primaryText(context)),
+                      ),
+                    ),
+                    _langBtn(context, 'uz', "O'zbek"),
+                    const SizedBox(width: 8),
+                    _langBtn(context, 'ru', 'Русский'),
+                  ],
+                ),
+              ),
               const SizedBox(height: 16),
-              _sectionTitle(context, 'Soha egasi'),
+              _sectionTitle(context, 'Soha egasi'.tr),
               const ProviderPortalEntry(compact: true),
               const SizedBox(height: 16),
               if (user.isProvider) ...[
@@ -278,6 +300,31 @@ class ProfileScreen extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _langBtn(BuildContext context, String lang, String label) {
+    final active = LocaleController.instance.lang == lang;
+    return GestureDetector(
+      onTap: () => LocaleController.instance.setLang(lang),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+        decoration: BoxDecoration(
+          color: active ? const Color(0xFF6366F1) : Colors.transparent,
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(
+            color: active ? const Color(0xFF6366F1) : GlassTokens.secondaryText(context).withOpacity(0.4),
+          ),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            color: active ? Colors.white : GlassTokens.primaryText(context),
+            fontWeight: FontWeight.w700,
+            fontSize: 13,
+          ),
+        ),
       ),
     );
   }

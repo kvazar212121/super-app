@@ -278,6 +278,35 @@
     @media (prefers-reduced-motion: reduce) {
       .aurora span, .hero h1::after, .marquee-track, .cta-container::after, .badge .dot { animation: none !important; }
     }
+
+    /* ── Ilova imkoniyatlari kartalari ── */
+    .features-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 26px;
+    }
+    .feat-card {
+      position: relative; min-height: 420px; border-radius: 24px; overflow: hidden;
+      background-size: cover; background-position: center;
+      border: 1px solid var(--border); display: flex; align-items: flex-end;
+      text-decoration: none; transition: transform 0.4s cubic-bezier(.16,1,.3,1), box-shadow 0.4s, border-color 0.4s;
+    }
+    .feat-card:hover { transform: translateY(-8px); border-color: var(--border-hover); box-shadow: 0 24px 60px rgba(0,0,0,0.6); }
+    .feat-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(180deg, rgba(5,5,5,0) 35%, rgba(5,5,5,0.55) 62%, rgba(5,5,5,0.95) 100%);
+    }
+    .feat-emoji { position: absolute; top: 26px; left: 26px; font-size: 64px; z-index: 1; filter: drop-shadow(0 6px 16px rgba(0,0,0,.55)); }
+    .feat-content { position: relative; z-index: 2; padding: 28px; }
+    .feat-content h3 { font-family: 'Sora', sans-serif; font-size: 1.5rem; font-weight: 800; color: #fff; margin-bottom: 8px; }
+    .feat-content p { font-size: 0.98rem; color: #E5E7EB; line-height: 1.55; }
+    @media (max-width: 720px) {
+      .features-grid { grid-template-columns: 1fr; }
+      .feat-card { min-height: 380px; }
+    }
+    .feat-badge {
+      display: inline-block; margin-bottom: 10px; padding: 4px 12px; border-radius: 100px;
+      font-size: 0.72rem; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase;
+      background: rgba(255,255,255,0.12); color: #fff; backdrop-filter: blur(6px);
+    }
   </style>
 </head>
 <body>
@@ -303,6 +332,7 @@
       </a>
 
       <div class="nav-links">
+        <a href="#imkoniyatlar" class="hide-mobile">Imkoniyatlar</a>
         <a href="#xizmatlar" class="hide-mobile">Xizmatlar</a>
         <a href="#qanday" class="hide-mobile">Qanday ishlaydi</a>
         <a href="/admin/login" class="btn btn-ghost hide-mobile">Admin Panel</a>
@@ -335,6 +365,91 @@
       <div class="stat-card"><strong data-static="24/7">24/7</strong><span>Qo'llab-quvvatlash</span></div>
       <div class="stat-card"><strong data-count="1" data-suffix="%">0</strong><span>Keshbek</span></div>
     </div>
+
+    <!-- Ilova imkoniyatlari -->
+    <section id="imkoniyatlar" class="reveal">
+      <div class="section-header">
+        <h2 class="section-title">ILOVA IMKONIYATLARI</h2>
+        <p class="section-sub">Bitta ilovada — kundalik hayotingiz uchun kerak bo'lgan hamma narsa.</p>
+      </div>
+      <div class="features-grid">
+
+        <div class="feat-card" style="background-image:url('/static/landing/img/all_services.jpg')">
+          <div class="feat-overlay"></div>
+          <div class="feat-content">
+            <span class="feat-badge">26+ xizmat</span>
+            <h3>Barcha xizmatlar</h3>
+            <p>Sartarosh, usta, tozalash, avto-yordam va boshqa 26+ xizmatni sanoqli soniyada toping va bron qiling.</p>
+          </div>
+        </div>
+
+        <div class="feat-card" style="background-image:url('/static/landing/img/smart_shopping.jpg')">
+          <div class="feat-overlay"></div>
+          <div class="feat-content">
+            <span class="feat-badge">Tejamkor</span>
+            <h3>Aqlli savdo</h3>
+            <p>Bozorlik ro'yxatini tuzing — o'rtacha narxlar bilan xarajatni oldindan hisoblang.</p>
+          </div>
+        </div>
+
+        <div class="feat-card" style="background-image:url('/static/landing/img/calorie_counter.jpg')">
+          <div class="feat-overlay"></div>
+          <div class="feat-content">
+            <span class="feat-badge">AI Vision</span>
+            <h3>Kaloriya hisoblagich</h3>
+            <p>Taom rasmini oling — sun'iy intellekt kaloriya, oqsil, yog' va uglevodni hisoblab beradi.</p>
+          </div>
+        </div>
+
+        <div class="feat-card" style="background-image:url('/static/landing/img/fitness_trainer.jpg')">
+          <div class="feat-overlay"></div>
+          <div class="feat-content">
+            <span class="feat-badge">1300+ mashq</span>
+            <h3>Fitnes trener</h3>
+            <p>Shaxsiy mashg'ulot rejasi va 1300+ mashqli kutubxona — maqsadingizga mos dastur.</p>
+          </div>
+        </div>
+
+        <div class="feat-card" style="background-image:url('/static/landing/img/my_finance.jpg')">
+          <div class="feat-overlay"></div>
+          <div class="feat-content">
+            <span class="feat-badge">Nazorat</span>
+            <h3>Mening moliyam</h3>
+            <p>Daromad va xarajatlarni kuzating, byudjetni boshqaring, AI moliyaviy maslahat bering.</p>
+          </div>
+        </div>
+
+        <div class="feat-card" style="background-image:url('/static/landing/img/my_plans.jpg')">
+          <div class="feat-overlay"></div>
+          <div class="feat-content">
+            <span class="feat-badge">Eslatma</span>
+            <h3>Rejalarim</h3>
+            <p>Kunlik rejalar va vazifalar — muhim ishlarni belgilangan vaqtda eslatib turadi.</p>
+          </div>
+        </div>
+
+        <div class="feat-card" style="background:linear-gradient(135deg,#DC2626,#F59E0B)">
+          <div class="feat-emoji">⏰</div>
+          <div class="feat-overlay"></div>
+          <div class="feat-content">
+            <span class="feat-badge">Uyg'onish</span>
+            <h3>Majburlovchi budilnik</h3>
+            <p>O'chirish uchun misol yeching, rasm oling yoki matn o'qing — endi uyquni yenging!</p>
+          </div>
+        </div>
+
+        <div class="feat-card" style="background:linear-gradient(135deg,#6366F1,#22D3EE)">
+          <div class="feat-emoji">🤖</div>
+          <div class="feat-overlay"></div>
+          <div class="feat-content">
+            <span class="feat-badge">AI Agent</span>
+            <h3>AI Yordamchi</h3>
+            <p>Ovoz yoki matn bilan buyruq bering — reja qo'shadi, budilnik quradi, hatto xizmat bron qiladi.</p>
+          </div>
+        </div>
+
+      </div>
+    </section>
 
     <!-- Services -->
     <section id="xizmatlar" class="reveal">

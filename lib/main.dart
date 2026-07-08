@@ -6,6 +6,7 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'theme/app_theme.dart';
 import 'models/alarm.dart';
 import 'screens/alarm/alarm_ring_screen.dart';
+import 'l10n/locale_controller.dart';
 import 'providers/app_provider.dart';
 import 'providers/auth_provider.dart';
 import 'screens/auth/splash_screen.dart';
@@ -140,6 +141,9 @@ void main() async {
   // Bo'lim (feature) holatlarini orqa fonda yuklash (admin yopgan bo'limlar uchun)
   FeatureService().load();
 
+  // Ilova tilini (uz/ru) yuklash
+  await LocaleController.instance.load();
+
   initializeDateFormatting('uz_UZ', null).then((_) {
     runApp(const MyApp());
   });
@@ -156,18 +160,22 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => AppProvider()),
         ChangeNotifierProvider(create: (_) => SavedPlacesProvider()..loadSavedPlaces()),
       ],
-      child: Consumer<AppProvider>(
+      child: AnimatedBuilder(
+        animation: LocaleController.instance,
+        builder: (context, _) => Consumer<AppProvider>(
         builder: (context, appProvider, _) {
           return MaterialApp(
             navigatorKey: navigatorKey,
             title: 'HubServis',
             debugShowCheckedModeBanner: false,
+            locale: LocaleController.instance.locale,
             theme: AppTheme.lightTheme,
             darkTheme: AppTheme.darkTheme,
             themeMode: ThemeMode.dark,
             home: const SplashScreen(),
           );
         },
+        ),
       ),
     );
   }
