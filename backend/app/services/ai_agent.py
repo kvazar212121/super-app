@@ -349,8 +349,15 @@ async def handle_tool_call(db: AsyncSession, user_id: int, tool_call: dict) -> t
         else:
             return '{"status": "error", "message": "Noma\'lum funksiya"}', None
     except Exception as e:
+        # Sessiyani tozalaymiz — aks holda keyingi barcha tool chaqiruvlari PendingRollbackError bilan yiqiladi
+        try:
+            await db.rollback()
+        except Exception:
+            pass
         logger.error(f"Tool execution failed: {e}")
-        return f'{{"status": "error", "message": "Xatolik: {str(e)}"}}', None
+        return '{"status": "error", "message": "Amalni bajarishda xatolik yuz berdi."}', None
+
+
 async def fallback_local_parse(user_msg: str, user_id: int, db: AsyncSession) -> ChatResponse:
     """
     Failsafe / Local keyword parsing to handle user intents when Groq is unavailable,

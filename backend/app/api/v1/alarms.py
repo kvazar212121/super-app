@@ -24,6 +24,7 @@ from app.schemas.alarm import (
     AlarmStatsOut,
 )
 from app.services.vision_service import verify_photo_contains
+from app.services.upload_service import UploadService
 
 router = APIRouter(prefix="/alarms", tags=["alarms"])
 
@@ -112,10 +113,14 @@ async def verify_alarm_photo(
     current_user: User = Depends(get_current_user),
 ):
     """Budilnik rasm-vazifasi: yuborilgan rasmda `target` bor-yo'qligini AI tekshiradi."""
-    image_bytes = await file.read()
-    if not image_bytes:
+    # Content-type allowlist + o'lcham cheki (katta body bilan OOM/DoS oldini oladi)
+    UploadService._validate_file(file)
+    contents = await file.read()
+    if not contents:
         raise HTTPException(status_code=400, detail="Rasm bo'sh")
-    return await verify_photo_contains(image_bytes, file.content_type or "image/jpeg", target)
+    # Xotirada JPEG'ga siqamiz — o'zboshimcha content-type provayderga o'tmaydi
+    compressed = UploadService._compress_to_jpeg(contents, 1024, 70)
+    return await verify_photo_contains(compressed, "image/jpeg", target)
 
 
 @router.post("/{alarm_id}/event", status_code=204)

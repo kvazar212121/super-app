@@ -198,6 +198,13 @@ async def update_admin(
     if not admin or not admin.is_admin:
         raise HTTPException(status_code=404, detail="Admin topilmadi")
 
+    # Super admin hisobini faqat super admin tahrirlay oladi (parol/rol/is_active ni ham)
+    if admin.is_super_admin and not current.is_super_admin:
+        raise HTTPException(
+            status_code=403,
+            detail="Super admin hisobini faqat super admin o'zgartira oladi",
+        )
+
     if data.role_id is not None:
         if data.role_id and not await db.get(AdminRole, data.role_id):
             raise HTTPException(status_code=400, detail="Rol topilmadi")

@@ -10,6 +10,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.db.session import get_db
 from app.models.user import User
 from app.models.premium import PremiumPayment
+from app.models.transaction import Transaction
 from app.api.v1.admin.dependencies import require_admin
 from app.services import settings_service
 
@@ -117,6 +118,8 @@ async def confirm_payment(
         raise HTTPException(status_code=404, detail="To'lov topilmadi")
     if p.status == "confirmed":
         return {"status": "already_confirmed"}
+    if p.status != "pending":
+        raise HTTPException(status_code=400, detail="Faqat kutilayotgan to'lovni tasdiqlash mumkin")
     user = await db.get(User, p.user_id)
     if not user:
         raise HTTPException(status_code=404, detail="Foydalanuvchi topilmadi")
@@ -124,6 +127,11 @@ async def confirm_payment(
     p.status = "confirmed"
     p.confirmed_at = datetime.now(timezone.utc)
     p.confirmed_by = admin.id
+    # Moliya defteri: premium daromadi (admin hisobotida ko'rinishi uchun)
+    db.add(Transaction(
+        user_id=user.id, type="premium_subscription", amount=p.amount,
+        description="Premium obuna (admin tasdiqladi)", status="completed",
+    ))
     await db.commit()
     return {"status": "confirmed", "premium_until": user.premium_until.isoformat() if user.premium_until else None}
 
@@ -133,6 +141,8 @@ async def reject_payment(payment_id: int, _admin: User = Depends(require_admin),
     p = await db.get(PremiumPayment, payment_id)
     if not p:
         raise HTTPException(status_code=404, detail="To'lov topilmadi")
+    if p.status != "pending":
+        raise HTTPException(status_code=400, detail="Faqat kutilayotgan to'lovni rad etish mumkin")
     p.status = "rejected"
     await db.commit()
     return {"status": "rejected"}

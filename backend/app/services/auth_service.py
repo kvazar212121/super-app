@@ -126,6 +126,11 @@ class AuthService:
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="Foydalanuvchi topilmadi",
             )
+        if not user.is_active:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Hisobingiz bloklangan yoki faol emas",
+            )
         return AuthService._build_token_response(user)
 
     @staticmethod

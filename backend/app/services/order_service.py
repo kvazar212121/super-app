@@ -159,6 +159,19 @@ class OrderService:
         order = await OrderService.get_by_id(db, user_id, order_id)
         old_status = order.status
         new_status = OrderStatus(data.status)
+
+        # Mijoz buyurtmani o'zi YAKUNLAY olmaydi — yakunlash ikki tomonlama tasdiq orqali.
+        # Mijozga faqat bekor qilish ruxsat etiladi (yakunlangan holatdan tashqari).
+        TERMINAL = {OrderStatus.completed, OrderStatus.cancelled, OrderStatus.no_show}
+        if new_status != old_status:
+            if old_status in TERMINAL:
+                raise HTTPException(status_code=400, detail="Bu buyurtma allaqachon yakunlangan")
+            if new_status != OrderStatus.cancelled:
+                raise HTTPException(
+                    status_code=403,
+                    detail="Buyurtma holatini bu tarzda o'zgartirib bo'lmaydi",
+                )
+
         order.status = new_status
         await db.flush()
         await db.refresh(order)

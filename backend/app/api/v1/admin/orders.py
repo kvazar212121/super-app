@@ -63,6 +63,8 @@ async def resolve_dispute(
     d = await db.get(Dispute, dispute_id)
     if not d:
         raise HTTPException(status_code=404, detail="Nizo topilmadi")
+    if d.status != "open":
+        raise HTTPException(status_code=400, detail="Nizo allaqachon hal qilingan")
     refund = max(0.0, float(data.refund_amount or 0))
     if refund > 0:
         user = await db.get(User, d.user_id)
