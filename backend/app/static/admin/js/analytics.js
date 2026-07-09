@@ -33,7 +33,7 @@ import { navigateTo, renderPage } from './router.js';
                     html += '<tr><td colspan="3" style="text-align:center;padding:24px;color:var(--gray-400);">Ma\'lumot yo\'q</td></tr>';
                 } else {
                     data.shopping.top_items.forEach((item, index) => {
-                        html += '<tr><td>' + (index + 1) + '</td><td><b>' + item.name + '</b></td><td>' + item.count + ' marta</td></tr>';
+                        html += '<tr><td>' + (index + 1) + '</td><td><b>' + window.escapeHtml(item.name) + '</b></td><td>' + item.count + ' marta</td></tr>';
                     });
                 }
                 html += '</tbody></table></div></div></div>';

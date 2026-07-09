@@ -30,10 +30,10 @@ import { navigateTo, renderPage } from '../router.js';
                                             }).join('');
                                             return '<tr>' +
                                                 '<td>#' + p.id + '</td>' +
-                                                '<td><b>' + (p.title || '—') + '</b></td>' +
-                                                '<td>' + (p.subtitle || '—') + '</td>' +
-                                                '<td><span class="badge-status active">' + (p.badge || 'AKSIYA') + '</span></td>' +
-                                                '<td>' + colorBadges + ' ' + (p.colors || '') + '</td>' +
+                                                '<td><b>' + window.escapeHtml(p.title || '—') + '</b></td>' +
+                                                '<td>' + window.escapeHtml(p.subtitle || '—') + '</td>' +
+                                                '<td><span class="badge-status active">' + window.escapeHtml(p.badge || 'AKSIYA') + '</span></td>' +
+                                                '<td>' + colorBadges + ' ' + window.escapeHtml(p.colors || '') + '</td>' +
                                                 '<td>' + (p.image_url ? '<img src="'+p.image_url+'" style="width:40px;height:40px;object-fit:cover;border-radius:4px;border:1px solid var(--gray-200);">' : '—') + '</td>' +
                                                 '<td><button class="btn btn-sm btn-danger" onclick="deletePromo(' + p.id + ')">O\'chirish</button></td>' +
                                             '</tr>';

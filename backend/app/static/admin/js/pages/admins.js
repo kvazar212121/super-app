@@ -25,22 +25,22 @@ async function renderAdmins() {
     } catch (e) {}
 
     var roleOpts = '<option value="">— rol tanlang —</option>' +
-        _roles.map(function (r) { return '<option value="' + r.id + '">' + r.name + '</option>'; }).join('');
+        _roles.map(function (r) { return '<option value="' + r.id + '">' + window.escapeHtml(r.name) + '</option>'; }).join('');
 
     // Rollar jadvali
     var roleRows = _roles.map(function (r) {
         var summary = Object.keys(r.permissions || {}).map(function (k) {
             return k + '(' + (r.permissions[k] || []).join('/') + ')';
         }).join(', ') || '—';
-        return '<tr><td>' + r.name + '</td><td style="font-size:12px;color:#64748b;">' + summary + '</td>' +
+        return '<tr><td>' + window.escapeHtml(r.name) + '</td><td style="font-size:12px;color:#64748b;">' + summary + '</td>' +
             '<td><button class="btn btn-sm" onclick="editRole(' + r.id + ')">✏️</button> ' +
             '<button class="btn btn-sm" onclick="deleteRole(' + r.id + ')">🗑️</button></td></tr>';
     }).join('');
 
     // Adminlar jadvali
     var adminRows = admins.map(function (a) {
-        var badge = a.is_super_admin ? '<span style="color:#7c3aed;font-weight:700;">SUPER ADMIN</span>' : (a.role_name || '—');
-        return '<tr><td>' + a.name + ' ' + a.surname + '</td><td>' + a.phone + '</td><td>' + badge + '</td>' +
+        var badge = a.is_super_admin ? '<span style="color:#7c3aed;font-weight:700;">SUPER ADMIN</span>' : window.escapeHtml(a.role_name || '—');
+        return '<tr><td>' + window.escapeHtml(a.name) + ' ' + window.escapeHtml(a.surname) + '</td><td>' + window.escapeHtml(a.phone) + '</td><td>' + badge + '</td>' +
             '<td>' + (a.is_active ? '✅' : '⛔') + '</td>' +
             '<td>' + (a.is_super_admin ? '' :
                 '<button class="btn btn-sm" onclick="changeAdminRole(' + a.id + ')">Rol</button> ' +
@@ -51,8 +51,8 @@ async function renderAdmins() {
     // Audit jadvali
     var auditRows = audit.map(function (x) {
         var t = x.created_at ? new Date(x.created_at).toLocaleString() : '';
-        return '<tr><td style="font-size:12px;">' + t + '</td><td>' + (x.admin_name || '#' + x.admin_user_id) + '</td>' +
-            '<td>' + x.section + '</td><td>' + x.action + '</td><td style="font-size:12px;color:#64748b;">' + x.path + '</td></tr>';
+        return '<tr><td style="font-size:12px;">' + t + '</td><td>' + window.escapeHtml(x.admin_name || '#' + x.admin_user_id) + '</td>' +
+            '<td>' + window.escapeHtml(x.section) + '</td><td>' + window.escapeHtml(x.action) + '</td><td style="font-size:12px;color:#64748b;">' + window.escapeHtml(x.path) + '</td></tr>';
     }).join('');
 
     mainContent.innerHTML =
@@ -105,12 +105,12 @@ function _roleEditorHtml(role) {
             var checked = cur.indexOf(act) !== -1 ? ' checked' : '';
             return '<label style="margin-right:14px;"><input type="checkbox" id="' + id + '"' + checked + '> ' + act + '</label>';
         }).join('');
-        return '<div class="setting-row"><div class="setting-info"><div class="setting-label">' + s.label + '</div></div>' +
+        return '<div class="setting-row"><div class="setting-info"><div class="setting-label">' + window.escapeHtml(s.label) + '</div></div>' +
             '<div class="setting-control">' + checks + '</div></div>';
     }).join('');
     return '<div style="padding:16px; background:#f8fafc; border-radius:12px;">' +
         '<b>' + (isEdit ? 'Rolni tahrirlash' : 'Yangi rol') + '</b>' +
-        '<input class="form-input" id="role_name" placeholder="Rol nomi" value="' + (role ? role.name : '') + '" style="width:260px; margin:10px 0;">' +
+        '<input class="form-input" id="role_name" placeholder="Rol nomi" value="' + window.escapeHtml(role ? role.name : '') + '" style="width:260px; margin:10px 0;">' +
         rows +
         '<div style="padding-top:12px;">' +
         '<button class="btn btn-primary" onclick="saveRole(' + (role ? role.id : 'null') + ')">💾 Saqlash</button> ' +

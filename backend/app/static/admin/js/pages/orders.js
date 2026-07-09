@@ -64,9 +64,9 @@ import { navigateTo, renderPage } from '../router.js';
             return items.map(function(o) {
                 return '<tr>' +
                     '<td>#' + o.id + '</td>' +
-                    '<td>' + (o.service_name || o.service || '—') + '</td>' +
-                    '<td>' + (o.user_name || '—') + '</td>' +
-                    '<td>' + (o.provider_name || '—') + '</td>' +
+                    '<td>' + window.escapeHtml(o.service_name || o.service || '—') + '</td>' +
+                    '<td>' + window.escapeHtml(o.user_name || '—') + '</td>' +
+                    '<td>' + window.escapeHtml(o.provider_name || '—') + '</td>' +
                     '<td>' + window.formatMoney(o.price || 0) + '</td>' +
                     '<td>' + window.statusBadge(o.status || 'pending') + '</td>' +
                     '<td>' + (o.created_at ? window.formatDate(o.created_at) : '—') + '</td>' +
@@ -95,9 +95,9 @@ import { navigateTo, renderPage } from '../router.js';
             if (!disputes.length) { area.innerHTML = ''; return; }
             var rows = disputes.map(function (x) {
                 return '<tr><td>#' + x.id + ' (buyurtma ' + x.order_id + ')</td>' +
-                    '<td>' + (x.user_name || '') + '<br><small>' + (x.user_phone || '') + '</small></td>' +
-                    '<td>' + (x.service_name || '') + '</td>' +
-                    '<td style="max-width:260px;">' + (x.reason || '') + '</td>' +
+                    '<td>' + window.escapeHtml(x.user_name || '') + '<br><small>' + window.escapeHtml(x.user_phone || '') + '</small></td>' +
+                    '<td>' + window.escapeHtml(x.service_name || '') + '</td>' +
+                    '<td style="max-width:260px;">' + window.escapeHtml(x.reason || '') + '</td>' +
                     '<td><input type="number" id="refund_' + x.id + '" placeholder="Refund (so\'m)" style="width:120px;" class="form-input"></td>' +
                     '<td><button class="btn btn-sm btn-primary" onclick="resolveDispute(' + x.id + ')">✅ Hal qilish</button> ' +
                     '<button class="btn btn-sm" onclick="rejectDispute(' + x.id + ')">❌ Rad</button></td></tr>';

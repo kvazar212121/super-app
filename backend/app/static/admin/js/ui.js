@@ -1,6 +1,17 @@
 import { API_BASE, apiError, api, getAuthHeaders, emptyPage, logout } from './api.js';
 
 // ===== UTILITY FUNCTIONS =====
+        // XSS himoyasi: innerHTML'ga qo'yiladigan har qanday foydalanuvchi ma'lumotini escape qiladi
+        function escapeHtml(v) {
+            if (v === null || v === undefined) return '';
+            return String(v)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
         function formatMoney(amount) {
             return new Intl.NumberFormat('uz-UZ').format(amount) + ' so\'m';
         }
@@ -66,8 +77,9 @@ import { API_BASE, apiError, api, getAuthHeaders, emptyPage, logout } from './ap
         
 
 // Exports for ES6 modules
-export { statusBadge, openModal, formatMoney, formatDate, closeModal, getInitials, renderStars, showToast };
+export { escapeHtml, statusBadge, openModal, formatMoney, formatDate, closeModal, getInitials, renderStars, showToast };
 // Expose to window for inline onclick handlers
+window.escapeHtml = escapeHtml;
 window.statusBadge = statusBadge;
 window.openModal = openModal;
 window.formatMoney = formatMoney;

@@ -37,8 +37,8 @@ import { navigateTo, renderPage } from '../router.js';
                     '<div class="category-header" onclick="toggleCategory(' + ci + ')">' +
                         '<div class="category-icon" style="background:' + (c.accent_color || '#6366F1') + '20; color:' + (c.accent_color || '#6366F1') + ';">' + getCategoryEmoji(c.icon) + '</div>' +
                         '<div class="category-info">' +
-                            '<div class="category-name">' + c.title_uz + '</div>' +
-                            '<div class="category-key">' + c.key + '</div>' +
+                            '<div class="category-name">' + window.escapeHtml(c.title_uz) + '</div>' +
+                            '<div class="category-key">' + window.escapeHtml(c.key) + '</div>' +
                         '</div>' +
                         '<span class="category-variants-count">' + variants.length + ' ta variant</span>' +
                         '<div class="action-group">' +
@@ -54,7 +54,7 @@ import { navigateTo, renderPage } from '../router.js';
                         '</div>';
                 variants.forEach(function(v) {
                     html += '<div class="variant-item">' +
-                        '<div><span class="variant-label">' + (v.label_uz || v.label) + '</span></div>' +
+                        '<div><span class="variant-label">' + window.escapeHtml(v.label_uz || v.label) + '</span></div>' +
                         '<div style="display:flex; align-items:center; gap:12px;">' +
                             '<span class="variant-price">' + window.formatMoney(v.base_price) + '</span>' +
                             '<div class="action-group">' +
@@ -110,11 +110,11 @@ import { navigateTo, renderPage } from '../router.js';
             var c = window.categoriesCache[idx];
             if (!c) return;
             window.openModal('Kategoriyani tahrirlash',
-                '<div class="form-group"><label class="form-label">Kalit (key)</label><input type="text" class="form-input" id="catKey" value="' + c.key + '"></div>' +
-                '<div class="form-group"><label class="form-label">Nomi (o\'zbekcha)</label><input type="text" class="form-input" id="catTitle" value="' + c.title_uz + '"></div>' +
+                '<div class="form-group"><label class="form-label">Kalit (key)</label><input type="text" class="form-input" id="catKey" value="' + window.escapeHtml(c.key) + '"></div>' +
+                '<div class="form-group"><label class="form-label">Nomi (o\'zbekcha)</label><input type="text" class="form-input" id="catTitle" value="' + window.escapeHtml(c.title_uz) + '"></div>' +
                 '<div class="form-row">' +
-                    '<div class="form-group"><label class="form-label">Icon (emoji)</label><input type="text" class="form-input" id="catIcon" value="' + c.icon + '"></div>' +
-                    '<div class="form-group"><label class="form-label">Rang</label><input type="color" class="form-input" id="catColor" value="' + c.accent_color + '" style="height:40px; padding:4px;"></div>' +
+                    '<div class="form-group"><label class="form-label">Icon (emoji)</label><input type="text" class="form-input" id="catIcon" value="' + window.escapeHtml(c.icon) + '"></div>' +
+                    '<div class="form-group"><label class="form-label">Rang</label><input type="color" class="form-input" id="catColor" value="' + window.escapeHtml(c.accent_color) + '" style="height:40px; padding:4px;"></div>' +
                 '</div>',
                 '<button class="btn btn-secondary" onclick="window.closeModal()">Bekor qilish</button>' +
                 '<button class="btn btn-primary" onclick="updateCategory(' + idx + ', ' + c.id + ')">Saqlash</button>');
@@ -187,7 +187,7 @@ import { navigateTo, renderPage } from '../router.js';
             var v = (cat.variants || []).find(function(x) { return x.id === varId; });
             if (!v) return;
             window.openModal('Variantni tahrirlash',
-                '<div class="form-group"><label class="form-label">Variant nomi</label><input type="text" class="form-input" id="varLabel" value="' + (v.label_uz || v.label) + '"></div>' +
+                '<div class="form-group"><label class="form-label">Variant nomi</label><input type="text" class="form-input" id="varLabel" value="' + window.escapeHtml(v.label_uz || v.label) + '"></div>' +
                 '<div class="form-group"><label class="form-label">Boshlang\'ich narx (so\'m)</label><input type="number" class="form-input" id="varPrice" value="' + v.base_price + '"></div>',
                 '<button class="btn btn-secondary" onclick="window.closeModal()">Bekor qilish</button>' +
                 '<button class="btn btn-primary" onclick="updateVariant(' + catIdx + ', ' + cat.id + ', ' + varId + ')">Saqlash</button>');

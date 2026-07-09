@@ -10,7 +10,7 @@ async function renderPremium() {
     // Premium funksiyalar (belgilash)
     var featRows = (cfg.features || []).map(function (f) {
         var stId = 'prem_' + f.key + '_state';
-        return '<div class="setting-row"><div class="setting-info"><div class="setting-label">' + (f.label || f.key) + '</div></div>' +
+        return '<div class="setting-row"><div class="setting-info"><div class="setting-label">' + window.escapeHtml(f.label || f.key) + '</div></div>' +
             '<div class="setting-control" style="display:flex;align-items:center;gap:10px;">' +
             '<span id="' + stId + '" style="font-size:13px;font-weight:700;color:' + (f.premium ? '#7c3aed' : '#94a3b8') + ';">' + (f.premium ? 'PREMIUM' : 'Bepul') + '</span>' +
             '<label class="toggle-switch"><input type="checkbox" id="prem_' + f.key + '" onchange="updPremState(this,\'' + stId + '\')"' + (f.premium ? ' checked' : '') + '><span class="toggle-slider"></span></label>' +
@@ -26,8 +26,8 @@ async function renderPremium() {
         var actions = p.status === 'pending' ?
             '<button class="btn btn-sm btn-primary" onclick="confirmPayment(' + p.id + ')">✅ Tasdiqlash</button> ' +
             '<button class="btn btn-sm" onclick="rejectPayment(' + p.id + ')">❌</button>' : '';
-        return '<tr><td>' + p.id + '</td><td>' + (p.user_name || '#' + p.user_id) + '<br><small>' + (p.user_phone || '') + '</small></td>' +
-            '<td>' + (p.amount || 0).toLocaleString() + " so'm</td><td>" + p.duration_days + ' kun</td><td>' + p.method + '</td><td>' + st + '</td>' +
+        return '<tr><td>' + p.id + '</td><td>' + window.escapeHtml(p.user_name || '#' + p.user_id) + '<br><small>' + window.escapeHtml(p.user_phone || '') + '</small></td>' +
+            '<td>' + (p.amount || 0).toLocaleString() + " so'm</td><td>" + p.duration_days + ' kun</td><td>' + window.escapeHtml(p.method) + '</td><td>' + st + '</td>' +
             '<td style="font-size:12px;">' + t + '</td><td>' + actions + '</td></tr>';
     }).join('');
 

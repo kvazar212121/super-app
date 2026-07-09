@@ -26,7 +26,7 @@ import { navigateTo, renderPage } from '../router.js';
                         '<div class="filters-bar" style="margin-bottom:0; width:100%; display:flex; justify-content:space-between; align-items:center;">' +
                             '<div class="filter-search" style="flex-grow:1; max-width:400px;">' +
                                 '<span class="search-icon">&#128269;</span>' +
-                                '<input type="text" placeholder="Mahsulot nomi bo\'yicha qidirish..." id="productSearch" value="' + (search || '') + '">' +
+                                '<input type="text" placeholder="Mahsulot nomi bo\'yicha qidirish..." id="productSearch" value="' + window.escapeHtml(search || '') + '">' +
                             '</div>' +
                             '<div style="display:flex; gap:10px;">' +
                                 '<button class="btn btn-secondary" onclick="runMarketScraper()" id="btnRunScraper">🔄 Bozor narxlarini avto-yangilash</button>' +
@@ -78,8 +78,8 @@ import { navigateTo, renderPage } from '../router.js';
                     tbody.innerHTML = productsData.items.map(function(p) {
                         return '<tr>' +
                             '<td>' + p.id + '</td>' +
-                            '<td style="font-weight:600;">' + p.name + '</td>' +
-                            '<td>' + p.unit + '</td>' +
+                            '<td style="font-weight:600;">' + window.escapeHtml(p.name) + '</td>' +
+                            '<td>' + window.escapeHtml(p.unit) + '</td>' +
                             '<td style="font-weight:bold;color:var(--success);">' + (p.average_price > 0 ? window.formatMoney(p.average_price) : 'Kiritilmagan') + '</td>' +
                             '<td><div class="action-group">' +
                                 '<button class="btn btn-sm btn-secondary" title="Tarix" onclick="viewPriceHistory(' + p.id + ')">&#128338; Tarix</button>' +
@@ -255,7 +255,7 @@ import { navigateTo, renderPage } from '../router.js';
 
             var tableRows = entries.map(function(e) {
                 return '<tr>' +
-                    '<td>' + (sourceBadges[e.source_type] || e.source_type) + '</td>' +
+                    '<td>' + (sourceBadges[e.source_type] || window.escapeHtml(e.source_type)) + '</td>' +
                     '<td style="font-weight:bold;">' + window.formatMoney(e.price) + '</td>' +
                     '<td>' + window.formatDate(e.created_at) + '</td>' +
                 '</tr>';
@@ -263,7 +263,7 @@ import { navigateTo, renderPage } from '../router.js';
 
             var bodyHtml = 
                 '<div style="margin-bottom:12px;font-size:14px;">' +
-                    'Mahsulot: <b>' + p.name + '</b> (' + p.unit + ')<br>' +
+                    'Mahsulot: <b>' + window.escapeHtml(p.name) + '</b> (' + window.escapeHtml(p.unit) + ')<br>' +
                     'Hozirgi o\'rtacha narx: <b style="color:var(--success);">' + (p.average_price > 0 ? window.formatMoney(p.average_price) : 'Kiritilmagan') + '</b>' +
                 '</div>' +
                 '<div class="table-container" style="max-height:300px;overflow-y:auto;">' +

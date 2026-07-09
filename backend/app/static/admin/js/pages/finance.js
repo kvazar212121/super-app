@@ -17,15 +17,15 @@ import { navigateTo, renderPage } from '../router.js';
                 if (pr && pr.ok) {
                     var pdata = await pr.json();
                     providerOptions = pdata.map(function(p) {
-                        return '<option value="' + p.id + '">' + p.name + ' (Balans: ' + window.formatMoney(p.balance) + ')</option>';
+                        return '<option value="' + p.id + '">' + window.escapeHtml(p.name) + ' (Balans: ' + window.formatMoney(p.balance) + ')</option>';
                     }).join('');
                     
                     providersTableRows = pdata.map(function(p) {
                         var balColor = p.balance < 0 ? 'var(--red-600)' : 'var(--green-600)';
                         return '<tr>' +
                             '<td>#' + p.id + '</td>' +
-                            '<td>' + p.name + '</td>' +
-                            '<td>' + p.phone + '</td>' +
+                            '<td>' + window.escapeHtml(p.name) + '</td>' +
+                            '<td>' + window.escapeHtml(p.phone) + '</td>' +
                             '<td><strong style="color:' + balColor + '">' + window.formatMoney(p.balance) + '</strong></td>' +
                             '<td>' + (p.lead_fee ? window.formatMoney(p.lead_fee) : 'Standart (5 000)') + '</td>' +
                             '</tr>';
@@ -47,13 +47,13 @@ import { navigateTo, renderPage } from '../router.js';
                         else if(tType==='admin_withdraw') tType='Platforma Xarajati';
                         
                         var amtColor = t.amount < 0 ? 'var(--red-600)' : 'var(--green-600)';
-                        var userProv = t.provider_name ? ('Prov: '+t.provider_name) : (t.user_name ? ('Mijoz: '+t.user_name) : '—');
+                        var userProv = t.provider_name ? ('Prov: '+window.escapeHtml(t.provider_name)) : (t.user_name ? ('Mijoz: '+window.escapeHtml(t.user_name)) : '—');
                         return '<tr>' +
                             '<td>' + window.formatDate(t.created_at) + '</td>' +
-                            '<td>' + tType + '</td>' +
+                            '<td>' + window.escapeHtml(tType) + '</td>' +
                             '<td>' + userProv + '</td>' +
                             '<td><strong style="color:' + amtColor + '">' + window.formatMoney(t.amount) + '</strong></td>' +
-                            '<td>' + (t.description || '—') + '</td>' +
+                            '<td>' + window.escapeHtml(t.description || '—') + '</td>' +
                             '</tr>';
                     }).join('');
                 }
@@ -80,7 +80,7 @@ import { navigateTo, renderPage } from '../router.js';
                     var cdata = await cr.json();
                     categoriesHtml = cdata.map(function(cat) {
                         return '<tr>' +
-                            '<td><b>' + cat.title_uz + '</b></td>' +
+                            '<td><b>' + window.escapeHtml(cat.title_uz) + '</b></td>' +
                             '<td>' + (cat.lead_fee ? window.formatMoney(cat.lead_fee) : 'Standart (5 000)') + '</td>' +
                             '<td><button class="btn btn-sm btn-secondary" onclick="openCategoryFeeModal(' + cat.id + ', ' + (cat.lead_fee || 0) + ')">Narx belgilash</button></td>' +
                             '</tr>';

@@ -657,6 +657,39 @@ def create_app() -> FastAPI:
         allow_headers=["*"],
     )
 
+    # Xavfsizlik header'lari (barcha javoblarga)
+    _CSP = (
+        "default-src 'self'; "
+        "script-src 'self' 'unsafe-inline'; "
+        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
+        "img-src 'self' data: https:; "
+        "font-src 'self' https://fonts.gstatic.com data:; "
+        "connect-src 'self'; "
+        "frame-ancestors 'self'; "
+        "object-src 'none'; "
+        "base-uri 'self'; "
+        "form-action 'self'"
+    )
+
+    @app.middleware("http")
+    async def security_headers(request: Request, call_next):
+        response = await call_next(request)
+        path = request.url.path
+        # Swagger/Redoc CDN'lardan yuklanadi — ularga CSP qo'ymaymiz
+        if not (path.startswith("/docs") or path.startswith("/redoc") or path.startswith("/openapi")):
+            response.headers.setdefault("Content-Security-Policy", _CSP)
+        response.headers.setdefault("X-Content-Type-Options", "nosniff")
+        response.headers.setdefault("X-Frame-Options", "SAMEORIGIN")
+        response.headers.setdefault("Referrer-Policy", "strict-origin-when-cross-origin")
+        response.headers.setdefault(
+            "Permissions-Policy", "geolocation=(), microphone=(), camera=(), payment=()"
+        )
+        if request.url.scheme == "https":
+            response.headers.setdefault(
+                "Strict-Transport-Security", "max-age=31536000; includeSubDomains"
+            )
+        return response
+
     # Static files for uploads
     upload_dir = Path(settings.upload_dir)
     upload_dir.mkdir(exist_ok=True)

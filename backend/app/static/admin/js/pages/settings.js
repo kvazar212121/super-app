@@ -30,7 +30,7 @@ async function renderSettings() {
     AI_FEATURES.forEach(function(feat) {
         var conf = (ai && ai[feat.key]) ? ai[feat.key] : { provider: 'openai', model: '' };
         var opts = providerOptions.map(function(p) {
-            return '<option value="' + p + '"' + (conf.provider === p ? ' selected' : '') + '>' + p + '</option>';
+            return '<option value="' + p + '"' + (conf.provider === p ? ' selected' : '') + '>' + window.escapeHtml(p) + '</option>';
         }).join('');
         aiRows +=
             '<div class="setting-row">' +
@@ -40,7 +40,7 @@ async function renderSettings() {
                 '</div>' +
                 '<div class="setting-control" style="display:flex; gap:8px;">' +
                     '<select class="form-input" id="ai_' + feat.key + '_provider" style="width:110px;">' + opts + '</select>' +
-                    '<input type="text" class="form-input" id="ai_' + feat.key + '_model" value="' + (conf.model || '') + '" placeholder="model nomi" style="width:230px;">' +
+                    '<input type="text" class="form-input" id="ai_' + feat.key + '_model" value="' + window.escapeHtml(conf.model || '') + '" placeholder="model nomi" style="width:230px;">' +
                 '</div>' +
             '</div>';
     });
@@ -52,8 +52,8 @@ async function renderSettings() {
         catRows +=
             '<div class="setting-row">' +
                 '<div class="setting-info">' +
-                    '<div class="setting-label">' + (c.title || c.key) + '</div>' +
-                    '<input type="text" class="form-input" id="cat_' + c.key + '_msg" value="' + (c.enabled ? '' : (c.message || '')) + '" placeholder="Yopiq bo\'lganda chiqadigan xabar (ixtiyoriy)" style="width:320px; margin-top:6px; font-size:12px;">' +
+                    '<div class="setting-label">' + window.escapeHtml(c.title || c.key) + '</div>' +
+                    '<input type="text" class="form-input" id="cat_' + c.key + '_msg" value="' + window.escapeHtml(c.enabled ? '' : (c.message || '')) + '" placeholder="Yopiq bo\'lganda chiqadigan xabar (ixtiyoriy)" style="width:320px; margin-top:6px; font-size:12px;">' +
                 '</div>' +
                 '<div class="setting-control" style="display:flex; align-items:center; gap:10px;">' +
                     '<span id="' + stId + '" style="font-size:13px; font-weight:700; color:' + (c.enabled ? '#16a34a' : '#dc2626') + ';">' + (c.enabled ? 'Ochiq' : 'Yopiq') + '</span>' +
@@ -72,8 +72,8 @@ async function renderSettings() {
         flagRows +=
             '<div class="setting-row">' +
                 '<div class="setting-info">' +
-                    '<div class="setting-label">' + (fl.label || fl.key) + '</div>' +
-                    '<input type="text" class="form-input" id="flag_' + fl.key + '_msg" value="' + (fl.enabled ? '' : (fl.message || '')) + '" placeholder="Yopiq bo\'lganda chiqadigan xabar (ixtiyoriy)" style="width:320px; margin-top:6px; font-size:12px;">' +
+                    '<div class="setting-label">' + window.escapeHtml(fl.label || fl.key) + '</div>' +
+                    '<input type="text" class="form-input" id="flag_' + fl.key + '_msg" value="' + window.escapeHtml(fl.enabled ? '' : (fl.message || '')) + '" placeholder="Yopiq bo\'lganda chiqadigan xabar (ixtiyoriy)" style="width:320px; margin-top:6px; font-size:12px;">' +
                 '</div>' +
                 '<div class="setting-control" style="display:flex; align-items:center; gap:10px;">' +
                     '<span id="' + stId + '" style="font-size:13px; font-weight:700; color:' + (fl.enabled ? '#16a34a' : '#dc2626') + ';">' + (fl.enabled ? 'Ochiq' : 'Yopiq') + '</span>' +
@@ -88,7 +88,7 @@ async function renderSettings() {
     var legalRows = legal.map(function(d){
         var safe = (d.content || '').replace(/</g,'&lt;').replace(/>/g,'&gt;');
         return '<div style="margin-bottom:16px;">' +
-            '<label style="display:block;font-weight:700;margin-bottom:6px;">' + d.label + '</label>' +
+            '<label style="display:block;font-weight:700;margin-bottom:6px;">' + window.escapeHtml(d.label) + '</label>' +
             '<textarea class="form-input" id="legal_' + d.key + '" rows="8" style="width:100%;font-size:13px;line-height:1.5;">' + safe + '</textarea>' +
         '</div>';
     }).join('');
@@ -180,11 +180,11 @@ async function renderSettings() {
                     '</div>' +
                     '<div class="setting-row">' +
                         '<div class="setting-info"><div class="setting-label">Support telefon</div></div>' +
-                        '<div class="setting-control"><input type="text" class="form-input" id="settingSupportPhone" value="' + (f.support_phone || '') + '" style="width:200px;"></div>' +
+                        '<div class="setting-control"><input type="text" class="form-input" id="settingSupportPhone" value="' + window.escapeHtml(f.support_phone || '') + '" style="width:200px;"></div>' +
                     '</div>' +
                     '<div class="setting-row">' +
                         '<div class="setting-info"><div class="setting-label">Support Telegram</div></div>' +
-                        '<div class="setting-control"><input type="text" class="form-input" id="settingSupportTelegram" value="' + (f.support_telegram || '') + '" style="width:200px;"></div>' +
+                        '<div class="setting-control"><input type="text" class="form-input" id="settingSupportTelegram" value="' + window.escapeHtml(f.support_telegram || '') + '" style="width:200px;"></div>' +
                     '</div>' +
                     '<div style="padding-top:16px;">' +
                         '<button class="btn btn-primary" onclick="saveSettings()">💾 Saqlash</button>' +

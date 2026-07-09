@@ -51,11 +51,11 @@ import { navigateTo, renderPage } from '../router.js';
                         '<div class="filters-bar" style="margin-bottom:0; width:100%;">' +
                             '<div class="filter-search">' +
                                 '<span class="search-icon">&#128269;</span>' +
-                                '<input type="text" placeholder="Nomi yoki telefon bo\'yicha qidirish..." id="providerSearch" value="' + (search || '') + '">' +
+                                '<input type="text" placeholder="Nomi yoki telefon bo\'yicha qidirish..." id="providerSearch" value="' + window.escapeHtml(search || '') + '">' +
                             '</div>' +
                             '<select class="filter-select" id="providerCategoryFilter">' +
                                 '<option value="all">Barcha kategoriyalar</option>' +
-                                window.categoriesCache.map(function(c) { return '<option value="' + c.key + '">' + c.title_uz + '</option>'; }).join('') +
+                                window.categoriesCache.map(function(c) { return '<option value="' + window.escapeHtml(c.key) + '">' + window.escapeHtml(c.title_uz) + '</option>'; }).join('') +
                             '</select>' +
                             '<select class="filter-select" id="providerStatusFilter">' +
                                 '<option value="">Barcha holatlar</option>' +
@@ -137,9 +137,9 @@ import { navigateTo, renderPage } from '../router.js';
                 actions += '<button class="btn-icon danger" title="O\'chirish" onclick="deleteProvider(' + p.id + ')">&#128465;</button>';
                 return '<tr>' +
                     '<td>' + p.id + '</td>' +
-                    '<td><div class="table-user"><div class="table-avatar">' + window.getInitials(p.name) + '</div><span>' + p.name + (typeLabel ? '<br><small style="color:#64748b">' + typeLabel + '</small>' : '') + '</span></div></td>' +
-                    '<td>' + (p.category_title || p.category_key || '-') + '</td>' +
-                    '<td>' + p.phone + '</td>' +
+                    '<td><div class="table-user"><div class="table-avatar">' + window.getInitials(p.name) + '</div><span>' + window.escapeHtml(p.name) + (typeLabel ? '<br><small style="color:#64748b">' + typeLabel + '</small>' : '') + '</span></div></td>' +
+                    '<td>' + window.escapeHtml(p.category_title || p.category_key || '-') + '</td>' +
+                    '<td>' + window.escapeHtml(p.phone) + '</td>' +
                     '<td>' + window.renderStars(Math.round(p.rating || 0)) + ' ' + (p.rating || 0) + '</td>' +
                     '<td>' + window.statusBadge(status) + '</td>' +
                     '<td><div class="action-group">' + actions + '</div></td>' +
@@ -165,8 +165,8 @@ import { navigateTo, renderPage } from '../router.js';
                 var modes = (meta.lesson_modes || []).join(', ');
                 extra = '<div class="detail-item"><div class="detail-label">Turi</div><div class="detail-value">' +
                     (meta.type === 'tutor' ? 'Yakka repetitor' : 'O\'quv markazi') + '</div></div>' +
-                    (subs ? '<div class="detail-item"><div class="detail-label">Fanlar / kurslar</div><div class="detail-value">' + subs + '</div></div>' : '') +
-                    (modes ? '<div class="detail-item"><div class="detail-label">Dars formati</div><div class="detail-value">' + modes + '</div></div>' : '') +
+                    (subs ? '<div class="detail-item"><div class="detail-label">Fanlar / kurslar</div><div class="detail-value">' + window.escapeHtml(subs) + '</div></div>' : '') +
+                    (modes ? '<div class="detail-item"><div class="detail-label">Dars formati</div><div class="detail-value">' + window.escapeHtml(modes) + '</div></div>' : '') +
                     '<div class="detail-item"><div class="detail-label">Tasdiqlash</div><div class="detail-value">' + (meta.verification_status || (p.is_active ? 'verified' : 'pending')) + '</div></div>';
             }
             if (meta.type === 'nanny') {
@@ -175,7 +175,7 @@ import { navigateTo, renderPage } from '../router.js';
             if (meta.type === 'disinfection') {
                 var areas = (meta.area_types || []).join(', ');
                 extra = '<div class="detail-item"><div class="detail-label">Turi</div><div class="detail-value">Dezinfeksiya xizmati</div></div>' +
-                    (areas ? '<div class="detail-item"><div class="detail-label">Hudud turlari</div><div class="detail-value">' + areas + '</div></div>' : '') +
+                    (areas ? '<div class="detail-item"><div class="detail-label">Hudud turlari</div><div class="detail-value">' + window.escapeHtml(areas) + '</div></div>' : '') +
                     '<div class="detail-item"><div class="detail-label">Sertifikat</div><div class="detail-value">' + (meta.is_certified ? 'Ha' : 'Yo\'q') + '</div></div>' +
                     '<div class="detail-item"><div class="detail-label">Tasdiqlash</div><div class="detail-value">' + (meta.verification_status || (p.is_active ? 'verified' : 'pending')) + '</div></div>';
             }
@@ -199,7 +199,7 @@ import { navigateTo, renderPage } from '../router.js';
                 }
 
                 extra = '<div class="detail-item"><div class="detail-label">Turi</div><div class="detail-value">' + (meta.massage_role === 'salon' ? 'Salon' : 'Yakka mutaxassis') + '</div></div>' +
-                    (vm ? '<div class="detail-item"><div class="detail-label">Qabul usuli</div><div class="detail-value">' + vm + '</div></div>' : '') +
+                    (vm ? '<div class="detail-item"><div class="detail-label">Qabul usuli</div><div class="detail-value">' + window.escapeHtml(vm) + '</div></div>' : '') +
                     '<div class="detail-item"><div class="detail-label">Jinsiyat</div><div class="detail-value">' + (meta.gender || 'both') + '</div></div>' +
                     '<div class="detail-item"><div class="detail-label">Tasdiqlash holati</div><div class="detail-value">' +
                         '<span style="padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600;background:' +
@@ -217,9 +217,9 @@ import { navigateTo, renderPage } from '../router.js';
                 var vt = (meta.venue_types || []).join(', ');
                 extra = '<div class="detail-item"><div class="detail-label">Turi</div><div class="detail-value">Tadbir tashkil etuvchi guruh</div></div>' +
                     '<div class="detail-item"><div class="detail-label">Jamoa</div><div class="detail-value">' + (meta.team_size || '-') + ' kishi</div></div>' +
-                    (ot ? '<div class="detail-item"><div class="detail-label">Xizmatlar</div><div class="detail-value">' + ot + '</div></div>' : '') +
-                    (vt ? '<div class="detail-item"><div class="detail-label">Joy turlari</div><div class="detail-value">' + vt + '</div></div>' : '') +
-                    '<div class="detail-item"><div class="detail-label">Hudud</div><div class="detail-value">' + (meta.service_area || '-') + '</div></div>' +
+                    (ot ? '<div class="detail-item"><div class="detail-label">Xizmatlar</div><div class="detail-value">' + window.escapeHtml(ot) + '</div></div>' : '') +
+                    (vt ? '<div class="detail-item"><div class="detail-label">Joy turlari</div><div class="detail-value">' + window.escapeHtml(vt) + '</div></div>' : '') +
+                    '<div class="detail-item"><div class="detail-label">Hudud</div><div class="detail-value">' + window.escapeHtml(meta.service_area || '-') + '</div></div>' +
                     '<div class="detail-item"><div class="detail-label">Tasdiqlash</div><div class="detail-value">' + (meta.verification_status || (p.is_active ? 'verified' : 'pending')) + '</div></div>';
             }
             if (meta.type === 'nurse') {
@@ -240,9 +240,9 @@ import { navigateTo, renderPage } from '../router.js';
                     '</div>';
                 }
                 extra = '<div class="detail-item"><div class="detail-label">Turi</div><div class="detail-value">Hamshira (uyga borish)</div></div>' +
-                    (meta.service_area ? '<div class="detail-item"><div class="detail-label">Hudud</div><div class="detail-value">' + meta.service_area + '</div></div>' : '') +
-                    (meta.qualifications ? '<div class="detail-item"><div class="detail-label">Malaka</div><div class="detail-value">' + meta.qualifications + '</div></div>' : '') +
-                    (medTypes ? '<div class="detail-item"><div class="detail-label">Tibbiy xizmatlar</div><div class="detail-value">' + medTypes + '</div></div>' : '') +
+                    (meta.service_area ? '<div class="detail-item"><div class="detail-label">Hudud</div><div class="detail-value">' + window.escapeHtml(meta.service_area) + '</div></div>' : '') +
+                    (meta.qualifications ? '<div class="detail-item"><div class="detail-label">Malaka</div><div class="detail-value">' + window.escapeHtml(meta.qualifications) + '</div></div>' : '') +
+                    (medTypes ? '<div class="detail-item"><div class="detail-label">Tibbiy xizmatlar</div><div class="detail-value">' + window.escapeHtml(medTypes) + '</div></div>' : '') +
                     '<div class="detail-item"><div class="detail-label">Tasdiqlash holati</div><div class="detail-value">' +
                         '<span style="padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600;background:' +
                         (meta.verification_status === 'pending' ? '#fef3c7;color:#d97706' : meta.verification_status === 'rejected' ? '#fee2e2;color:#dc2626' : '#dcfce7;color:#16a34a') +
@@ -256,10 +256,10 @@ import { navigateTo, renderPage } from '../router.js';
             }
             return '<div class="detail-grid">' +
                 '<div class="detail-item"><div class="detail-label">ID</div><div class="detail-value">' + p.id + '</div></div>' +
-                '<div class="detail-item"><div class="detail-label">Nomi</div><div class="detail-value">' + p.name + '</div></div>' +
-                '<div class="detail-item"><div class="detail-label">Kategoriya</div><div class="detail-value">' + (p.category_title || p.category || '-') + '</div></div>' +
-                '<div class="detail-item"><div class="detail-label">Telefon</div><div class="detail-value">' + p.phone + '</div></div>' +
-                '<div class="detail-item"><div class="detail-label">Manzil</div><div class="detail-value">' + (p.address || '-') + '</div></div>' +
+                '<div class="detail-item"><div class="detail-label">Nomi</div><div class="detail-value">' + window.escapeHtml(p.name) + '</div></div>' +
+                '<div class="detail-item"><div class="detail-label">Kategoriya</div><div class="detail-value">' + window.escapeHtml(p.category_title || p.category || '-') + '</div></div>' +
+                '<div class="detail-item"><div class="detail-label">Telefon</div><div class="detail-value">' + window.escapeHtml(p.phone) + '</div></div>' +
+                '<div class="detail-item"><div class="detail-label">Manzil</div><div class="detail-value">' + window.escapeHtml(p.address || '-') + '</div></div>' +
                 '<div class="detail-item"><div class="detail-label">Holat</div><div class="detail-value">' + window.statusBadge(providerDisplayStatus(p)) + '</div></div>' +
                 '<div class="detail-item"><div class="detail-label">Reyting</div><div class="detail-value">' + (p.rating || 0) + ' ' + window.renderStars(Math.round(p.rating || 0)) + '</div></div>' +
                 extra +
@@ -361,8 +361,8 @@ import { navigateTo, renderPage } from '../router.js';
                         var v = docs[k];
                         var val = (typeof v === 'string' && v.indexOf('http') === 0)
                             ? '<a href="' + v + '" target="_blank">Faylni ochish</a>'
-                            : String(v);
-                        return '<div class="detail-item"><div class="detail-label">' + k + '</div><div class="detail-value">' + val + '</div></div>';
+                            : window.escapeHtml(String(v));
+                        return '<div class="detail-item"><div class="detail-label">' + window.escapeHtml(k) + '</div><div class="detail-value">' + val + '</div></div>';
                     }).join('')
                     : '<p>Hujjat yuklanmagan</p>';
                 var html = '<div style="margin-bottom:10px;">' +

@@ -34,7 +34,7 @@ import { navigateTo, renderPage } from '../router.js';
                         '<div class="filters-bar" style="margin-bottom:0; width:100%;">' +
                             '<div class="filter-search">' +
                                 '<span class="search-icon">&#128269;</span>' +
-                                '<input type="text" placeholder="Ism yoki telefon bo\'yicha qidirish..." id="userSearch" value="' + (search || '') + '">' +
+                                '<input type="text" placeholder="Ism yoki telefon bo\'yicha qidirish..." id="userSearch" value="' + window.escapeHtml(search || '') + '">' +
                             '</div>' +
                         '</div>' +
                     '</div>' +
@@ -67,8 +67,8 @@ import { navigateTo, renderPage } from '../router.js';
                 var created = u.created_at ? window.formatDate(u.created_at) : '—';
                 return '<tr>' +
                     '<td>' + u.id + '</td>' +
-                    '<td><div class="table-user"><div class="table-avatar">' + window.getInitials(name) + '</div><span>' + name.trim() + '</span></div></td>' +
-                    '<td>' + (u.phone || '') + '</td>' +
+                    '<td><div class="table-user"><div class="table-avatar">' + window.getInitials(name) + '</div><span>' + window.escapeHtml(name.trim()) + '</span></div></td>' +
+                    '<td>' + window.escapeHtml(u.phone || '') + '</td>' +
                     '<td>' + (u.is_premium ? '<span class="badge-status confirmed">Premium</span>' : '<span class="badge-status pending">Oddiy</span>') + '</td>' +
                     '<td>' + created + '</td>' +
                     '<td><div class="action-group">' +
@@ -100,12 +100,12 @@ import { navigateTo, renderPage } from '../router.js';
                 window.openModal('Foydalanuvchi ma\'lumotlari',
                     '<div class="detail-grid">' +
                         '<div class="detail-item"><div class="detail-label">ID</div><div class="detail-value">' + u.id + '</div></div>' +
-                        '<div class="detail-item"><div class="detail-label">Ism</div><div class="detail-value">' + name + '</div></div>' +
-                        '<div class="detail-item"><div class="detail-label">Telefon</div><div class="detail-value">' + u.phone + '</div></div>' +
+                        '<div class="detail-item"><div class="detail-label">Ism</div><div class="detail-value">' + window.escapeHtml(name) + '</div></div>' +
+                        '<div class="detail-item"><div class="detail-label">Telefon</div><div class="detail-value">' + window.escapeHtml(u.phone) + '</div></div>' +
                         '<div class="detail-item"><div class="detail-label">Balans</div><div class="detail-value">' + window.formatMoney(u.balance) + '</div></div>' +
                         '<div class="detail-item"><div class="detail-label">Cashback</div><div class="detail-value">' + window.formatMoney(u.cashback) + '</div></div>' +
                         '<div class="detail-item"><div class="detail-label">Premium</div><div class="detail-value">' + (u.is_premium ? 'Ha' : 'Yo\'q') + '</div></div>' +
-                        '<div class="detail-item"><div class="detail-label">Telegram</div><div class="detail-value">' + (u.telegram_username || '—') + '</div></div>' +
+                        '<div class="detail-item"><div class="detail-label">Telegram</div><div class="detail-value">' + window.escapeHtml(u.telegram_username || '—') + '</div></div>' +
                         '<div class="detail-item"><div class="detail-label">Sana</div><div class="detail-value">' + (u.created_at ? window.formatDate(u.created_at) : '—') + '</div></div>' +
                     '</div>',
                     '<button class="btn btn-secondary" onclick="window.closeModal()">Yopish</button>');

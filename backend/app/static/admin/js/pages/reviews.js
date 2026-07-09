@@ -40,10 +40,10 @@ import { navigateTo, renderPage } from '../router.js';
             return reviews.map(function(r) {
                 return '<tr>' +
                     '<td>' + r.id + '</td>' +
-                    '<td><div class="table-user"><div class="table-avatar">' + window.getInitials(r.user_name || r.user || '?') + '</div><span>' + (r.user_name || r.user || '-') + '</span></div></td>' +
-                    '<td>' + (r.provider_name || r.provider || '-') + '</td>' +
+                    '<td><div class="table-user"><div class="table-avatar">' + window.getInitials(r.user_name || r.user || '?') + '</div><span>' + window.escapeHtml(r.user_name || r.user || '-') + '</span></div></td>' +
+                    '<td>' + window.escapeHtml(r.provider_name || r.provider || '-') + '</td>' +
                     '<td>' + window.renderStars(r.rating) + '</td>' +
-                    '<td style="max-width:300px;">' + (r.comment || r.text || '') + '</td>' +
+                    '<td style="max-width:300px;">' + window.escapeHtml(r.comment || r.text || '') + '</td>' +
                     '<td>' + window.formatDate(r.created_at) + '</td>' +
                     '<td><div class="action-group">' +
                         '<button class="btn-icon danger" title="O\'chirish" onclick="deleteReview(' + r.id + ')">&#128465;</button>' +

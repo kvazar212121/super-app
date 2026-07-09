@@ -14,7 +14,7 @@ import { navigateTo, renderPage } from '../router.js';
                 if (providersRes && providersRes.ok) providers = await providersRes.json();
             } catch(e) { console.warn('Stats load error', e); apiError('Statistikani yuklab bo\'lmadi'); }
 
-            var providerOptions = providers.map(p => '<option value="' + p.id + '">' + p.name + ' (Balans: ' + window.formatMoney(p.balance) + ')</option>').join('');
+            var providerOptions = providers.map(p => '<option value="' + p.id + '">' + window.escapeHtml(p.name) + ' (Balans: ' + window.formatMoney(p.balance) + ')</option>').join('');
 
             var recentOrders = [];
             var topProviders = [];
@@ -129,7 +129,7 @@ import { navigateTo, renderPage } from '../router.js';
                                     '<thead><tr><th>ID</th><th>Xizmat</th><th>Narx</th><th>Holat</th></tr></thead>' +
                                     '<tbody>' +
                                         recentOrders.map(function(o) {
-                            return '<tr><td>#' + o.id + '</td><td>' + o.service + '</td><td>' + window.formatMoney(o.price) + '</td><td>' + window.statusBadge(o.status) + '</td></tr>';
+                            return '<tr><td>#' + o.id + '</td><td>' + window.escapeHtml(o.service) + '</td><td>' + window.formatMoney(o.price) + '</td><td>' + window.statusBadge(o.status) + '</td></tr>';
                         }).join('') +
                                     '</tbody>' +
                                 '</table>' +
@@ -144,7 +144,7 @@ import { navigateTo, renderPage } from '../router.js';
                                     '<thead><tr><th>#</th><th>Nomi</th><th>Reyting</th><th>Buyurtmalar</th></tr></thead>' +
                                     '<tbody>' +
                                         topProviders.map(function(p, i) {
-                            return '<tr><td>' + (i + 1) + '</td><td><div class="table-user"><div class="table-avatar">' + window.getInitials(p.name) + '</div><span>' + p.name + '</span></div></td><td>' + window.renderStars(Math.round(p.rating || 0)) + ' ' + (p.rating || 0) + '</td><td>' + (p.review_count || p.orders || 0) + '</td></tr>';
+                            return '<tr><td>' + (i + 1) + '</td><td><div class="table-user"><div class="table-avatar">' + window.getInitials(p.name) + '</div><span>' + window.escapeHtml(p.name) + '</span></div></td><td>' + window.renderStars(Math.round(p.rating || 0)) + ' ' + (p.rating || 0) + '</td><td>' + (p.review_count || p.orders || 0) + '</td></tr>';
                         }).join('') +
                                     '</tbody>' +
                                 '</table>' +

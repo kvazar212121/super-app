@@ -18,8 +18,8 @@ import { navigateTo, renderPage } from './router.js';
                         tbody.innerHTML = data.map(function(t) {
                             return '<tr>' +
                                 '<td>#' + t.id + '</td>' +
-                                '<td><div style="font-weight:600;">' + t.user_name + '</div></td>' +
-                                '<td>' + (t.title || '-') + '</td>' +
+                                '<td><div style="font-weight:600;">' + window.escapeHtml(t.user_name) + '</div></td>' +
+                                '<td>' + window.escapeHtml(t.title || '-') + '</td>' +
                                 '<td><span class="status-badge ' + (t.is_completed ? 'status-success' : 'status-warning') + '">' + (t.is_completed ? 'Bajarilgan' : 'Bajarilmagan') + '</span></td>' +
                                 '<td>' + (t.created_at ? t.created_at.substring(0,10) : '-') + '</td>' +
                             '</tr>';
@@ -44,8 +44,8 @@ import { navigateTo, renderPage } from './router.js';
                         tbody.innerHTML = data.map(function(s) {
                             return '<tr>' +
                                 '<td>#' + s.id + '</td>' +
-                                '<td><div style="font-weight:600;">' + s.user_name + '</div></td>' +
-                                '<td>' + (s.name || '-') + '</td>' +
+                                '<td><div style="font-weight:600;">' + window.escapeHtml(s.user_name) + '</div></td>' +
+                                '<td>' + window.escapeHtml(s.name || '-') + '</td>' +
                                 '<td>' + s.item_count + ' ta</td>' +
                                 '<td>' + window.formatMoney(s.total_estimated_price) + '</td>' +
                                 '<td>' + window.formatMoney(s.total_actual_price) + '</td>' +
@@ -72,11 +72,11 @@ import { navigateTo, renderPage } from './router.js';
                         tbody.innerHTML = data.map(function(f) {
                             return '<tr>' +
                                 '<td>#' + f.id + '</td>' +
-                                '<td><div style="font-weight:600;">' + f.user_name + '</div></td>' +
+                                '<td><div style="font-weight:600;">' + window.escapeHtml(f.user_name) + '</div></td>' +
                                 '<td><span class="status-badge ' + (f.type === 'income' ? 'status-success' : 'status-danger') + '">' + (f.type === 'income' ? 'Daromad' : 'Xarajat') + '</span></td>' +
-                                '<td>' + (f.category || '-') + '</td>' +
+                                '<td>' + window.escapeHtml(f.category || '-') + '</td>' +
                                 '<td style="font-weight:bold;color:' + (f.type === 'income' ? 'var(--success)' : 'var(--danger)') + ';">' + window.formatMoney(f.amount) + '</td>' +
-                                '<td>' + (f.note || '-') + '</td>' +
+                                '<td>' + window.escapeHtml(f.note || '-') + '</td>' +
                                 '<td>' + (f.date ? f.date.substring(0,10) : '-') + '</td>' +
                             '</tr>';
                         }).join('');
@@ -100,9 +100,9 @@ import { navigateTo, renderPage } from './router.js';
                         tbody.innerHTML = data.map(function(p) {
                             return '<tr>' +
                                 '<td>#' + p.id + '</td>' +
-                                '<td><div style="font-weight:600;">' + p.user_name + '</div></td>' +
-                                '<td>' + (p.title || '-') + '</td>' +
-                                '<td>' + (p.description || '-') + '</td>' +
+                                '<td><div style="font-weight:600;">' + window.escapeHtml(p.user_name) + '</div></td>' +
+                                '<td>' + window.escapeHtml(p.title || '-') + '</td>' +
+                                '<td>' + window.escapeHtml(p.description || '-') + '</td>' +
                                 '<td>' + (p.date ? p.date.substring(0,10) : '') + ' ' + (p.time ? p.time.substring(0,5) : '') + '</td>' +
                                 '<td><span class="status-badge ' + (p.is_completed ? 'status-success' : 'status-warning') + '">' + (p.is_completed ? 'Bajarilgan' : 'Bajarilmagan') + '</span></td>' +
                             '</tr>';

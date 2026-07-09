@@ -63,11 +63,11 @@ import { navigateTo, renderPage } from '../router.js';
                 var targetLabel = n.target === 'all' ? 'Barcha' : n.target === 'users' ? 'Foydalanuvchilar' : 'Providerlar';
                 html += '<tr>' +
                     '<td>' + (n.id || '-') + '</td>' +
-                    '<td><span class="badge-status ' + typeClass + '">' + (n.type || 'in_app').toUpperCase() + '</span></td>' +
-                    '<td>' + (n.title || '') + '</td>' +
+                    '<td><span class="badge-status ' + typeClass + '">' + window.escapeHtml((n.type || 'in_app').toUpperCase()) + '</span></td>' +
+                    '<td>' + window.escapeHtml(n.title || '') + '</td>' +
                     '<td>' + targetLabel + '</td>' +
                     '<td>' + (n.count || 0).toLocaleString() + '</td>' +
-                    '<td>' + (n.sent_at || n.created_at || '-') + '</td>' +
+                    '<td>' + window.escapeHtml(n.sent_at || n.created_at || '-') + '</td>' +
                 '</tr>';
             });
 
