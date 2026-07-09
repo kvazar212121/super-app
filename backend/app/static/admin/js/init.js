@@ -32,6 +32,14 @@ window.canEdit = function (section) {
     var perms = (me && me.permissions) || {};
     var firstAllowed = null;
 
+    // Topbar'da admin ismi va roli
+    var roleEl = document.getElementById('topbarRole');
+    if (roleEl && me) {
+        var label = isSuper ? 'Super Admin' : (me.role_name || 'Admin');
+        var nm = ((me.name || '') + ' ' + (me.surname || '')).trim();
+        roleEl.textContent = nm ? (nm + ' · ' + label) : label;
+    }
+
     document.querySelectorAll('.nav-item[data-page]').forEach(function (item) {
         var page = item.dataset.page;
         var section = PAGE_SECTION[page] || page;
