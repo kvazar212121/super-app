@@ -8,6 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.session import get_db
 from app.core.security import hash_password
+from app.utils.phone import normalize_phone
 from app.models.user import User
 from app.models.admin_role import AdminRole, AuditLog
 from app.api.v1.admin.dependencies import require_admin
@@ -166,13 +167,16 @@ async def list_admins(db: AsyncSession = Depends(get_db)):
 
 @router.post("/admins", response_model=AdminOut, status_code=201)
 async def create_admin(data: AdminCreate, db: AsyncSession = Depends(get_db)):
-    exists = (await db.execute(select(User).where(User.phone == data.phone))).scalar_one_or_none()
+    phone = normalize_phone(data.phone)
+    exists = (await db.execute(
+        select(User).where(User.phone.in_([phone, data.phone]))
+    )).scalars().first()
     if exists:
         raise HTTPException(status_code=400, detail="Bu telefon raqami allaqachon ro'yxatda")
     if data.role_id is not None and not await db.get(AdminRole, data.role_id):
         raise HTTPException(status_code=400, detail="Rol topilmadi")
     admin = User(
-        name=data.name, surname=data.surname, phone=data.phone,
+        name=data.name, surname=data.surname, phone=phone,
         hashed_password=hash_password(data.password),
         is_admin=True, is_active=True, is_super_admin=False,
         admin_role_id=data.role_id,

@@ -43,14 +43,28 @@ class AuthService:
         if phone == settings.admin_default_phone or data.phone == settings.admin_default_phone:
             return await AuthService._admin_password_login(db, data)
 
+        # Foydalanuvchini normalize qilingan yoki xom telefon bo'yicha topamiz
+        result = await db.execute(
+            select(User).where(User.phone.in_([phone, data.phone]))
+        )
+        user = result.scalars().first()
+
+        # Admin foydalanuvchilar (panelda yaratilgan) — parol bilan kiradi, OTP shart emas
+        if user is not None and user.is_admin:
+            if not user.is_active or not verify_password(data.password, user.hashed_password):
+                raise HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail="Telefon raqam yoki parol noto'g'ri",
+                )
+            return AuthService._build_token_response(user)
+
+        # Oddiy foydalanuvchilar uchun SMS OTP majburiy bo'lishi mumkin
         if settings.require_otp_auth:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="Kirish uchun telefon raqamingizga yuborilgan SMS kodini kiriting",
             )
 
-        result = await db.execute(select(User).where(User.phone == phone))
-        user = result.scalar_one_or_none()
         if not user or not verify_password(data.password, user.hashed_password):
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
