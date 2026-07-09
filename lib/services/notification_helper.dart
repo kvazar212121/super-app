@@ -36,9 +36,20 @@ class NotificationHelper {
     const AndroidInitializationSettings initializationSettingsAndroid =
         AndroidInitializationSettings('@mipmap/ic_launcher');
 
-    // Combine settings (only Android required for status bar notifications)
+    // iOS/macOS (Darwin) Settings — talab qilinadi, aks holda iOS'da
+    // "iOS settings must be set when targeting iOS platform" xatosi chiqadi.
+    const DarwinInitializationSettings initializationSettingsDarwin =
+        DarwinInitializationSettings(
+      requestAlertPermission: true,
+      requestBadgePermission: true,
+      requestSoundPermission: true,
+    );
+
+    // Combine settings (Android + iOS/macOS)
     const InitializationSettings initializationSettings = InitializationSettings(
       android: initializationSettingsAndroid,
+      iOS: initializationSettingsDarwin,
+      macOS: initializationSettingsDarwin,
     );
 
     try {
