@@ -17,7 +17,14 @@ engine = create_async_engine(
 async_session = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 
 sync_engine = create_engine(
-    settings.database_sync_url, echo=False, pool_pre_ping=True, pool_recycle=1800
+    settings.database_sync_url,
+    echo=False,
+    pool_pre_ping=True,
+    pool_recycle=1800,
+    # Kichik pool — sync engine faqat notification/settings uchun ishlatiladi.
+    # Async(15) + sync(5) = 20/worker × 3 = 60 < Postgres max_connections(200).
+    pool_size=2,
+    max_overflow=3,
 )
 sync_session = sessionmaker(sync_engine, class_=Session, expire_on_commit=False)
 

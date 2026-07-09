@@ -90,6 +90,22 @@ async def run_startup_init():
             "ALTER TABLE providers ADD COLUMN IF NOT EXISTS is_blocked BOOLEAN DEFAULT FALSE"
         ))
 
+        # ── Performance index'lari (tez-tez ishlaydigan scheduler/qidiruv filtrlari) ──
+        # plan_reminder_scheduler har 15s: is_completed=false AND is_notified=false
+        await conn.execute(text(
+            "CREATE INDEX IF NOT EXISTS ix_plans_pending "
+            "ON plans (due_date) WHERE is_completed = false AND is_notified = false"
+        ))
+        # finance_reminder_scheduler har 30s: is_paid=false AND is_notified=false
+        await conn.execute(text(
+            "CREATE INDEX IF NOT EXISTS ix_planned_payments_pending "
+            "ON planned_payments (due_date) WHERE is_paid = false AND is_notified = false"
+        ))
+        # Provayder ro'yxati/AI qidiruvi: ORDER BY rating DESC
+        await conn.execute(text(
+            "CREATE INDEX IF NOT EXISTS ix_providers_rating ON providers (rating)"
+        ))
+
     # Seed admin user & default promos
     async with async_session() as db:
         result = await db.execute(
