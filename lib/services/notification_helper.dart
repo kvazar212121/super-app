@@ -29,6 +29,39 @@ class NotificationHelper {
   /// to'qnashmasligi uchun). Har budilnik uchun: base + alarm.id*10 + kun-indeksi.
   static const int alarmIdBase = 100000;
 
+  /// Umumiy bildirishnoma kanali. ID'da "_v2" bor — Android'da kanal bir marta
+  /// yaratilgach sozlamasi (ovoz/muhimlik) o'zgarmaydi, shuning uchun eski ovozsiz
+  /// kanalni chetlab o'tish uchun YANGI ID ishlatamiz.
+  static const String _generalChannelId = 'super_app_channel_v2';
+
+  /// Kanallarni aniq (ovoz + tebranish bilan) yaratadi. Init'da chaqiriladi.
+  Future<void> _createChannels() async {
+    final android = _notificationsPlugin
+        .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>();
+    if (android == null) return;
+
+    const generalChannel = AndroidNotificationChannel(
+      _generalChannelId,
+      'Eslatmalar va bildirishnomalar',
+      description: 'Buyurtmalar, rejalar va umumiy bildirishnomalar',
+      importance: Importance.max,
+      playSound: true,
+      enableVibration: true,
+    );
+    await android.createNotificationChannel(generalChannel);
+
+    const fitnessChannel = AndroidNotificationChannel(
+      'fitness_reminders',
+      'Fitnes Eslatmalar',
+      description: 'Mashg\'ulot kunlari uchun eslatma kanali',
+      importance: Importance.max,
+      playSound: true,
+      enableVibration: true,
+    );
+    await android.createNotificationChannel(fitnessChannel);
+  }
+
   Future<void> init() async {
     if (_isInitialized) return;
 
@@ -73,6 +106,9 @@ class NotificationHelper {
           }
         },
       );
+      // Kanallarni ovoz bilan yaratamiz (Android 8+ uchun majburiy)
+      await _createChannels();
+
       // Ilova budilnik bildirishnomasi orqali ochilgan bo'lsa, payloadни ushlab qolamiz
       final launch = await _notificationsPlugin.getNotificationAppLaunchDetails();
       if (launch?.didNotificationLaunchApp == true) {
@@ -96,12 +132,14 @@ class NotificationHelper {
     }
 
     const AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
-      'super_app_channel_id',
-      'Super App Eslatmalar',
-      channelDescription: 'Rejalar va eslatmalar uchun bildirishnoma kanali',
+      _generalChannelId,
+      'Eslatmalar va bildirishnomalar',
+      channelDescription: 'Buyurtmalar, rejalar va umumiy bildirishnomalar',
       importance: Importance.max,
       priority: Priority.high,
       showWhen: true,
+      playSound: true,
+      enableVibration: true,
     );
 
     const NotificationDetails platformDetails = NotificationDetails(

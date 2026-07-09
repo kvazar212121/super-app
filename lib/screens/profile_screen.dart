@@ -304,10 +304,29 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
+  Future<void> _switchLang(BuildContext context, String lang) async {
+    if (LocaleController.instance.lang == lang) return;
+    // Loading overlay — til o'zgarib, butun ilova qayta chizilguncha
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const Center(
+        child: Padding(
+          padding: EdgeInsets.all(24),
+          child: CircularProgressIndicator(),
+        ),
+      ),
+    );
+    await LocaleController.instance.setLang(lang);
+    // Qayta chizishga ulgurishi uchun qisqa pauza
+    await Future.delayed(const Duration(milliseconds: 450));
+    if (context.mounted) Navigator.of(context, rootNavigator: true).pop();
+  }
+
   Widget _langBtn(BuildContext context, String lang, String label) {
     final active = LocaleController.instance.lang == lang;
     return GestureDetector(
-      onTap: () => LocaleController.instance.setLang(lang),
+      onTap: () => _switchLang(context, lang),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
         decoration: BoxDecoration(
