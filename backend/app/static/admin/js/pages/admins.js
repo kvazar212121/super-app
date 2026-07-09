@@ -72,14 +72,14 @@ async function renderAdmins() {
         // Adminlar
         '<div class="card"><div class="card-body">' +
         '<h3 class="settings-section-title">👤 Adminlar</h3>' +
-        '<table class="data-table"><thead><tr><th>Ism</th><th>Telefon</th><th>Rol</th><th>Faol</th><th>Amal</th></tr></thead><tbody>' +
+        '<table class="data-table"><thead><tr><th>Ism</th><th>Login</th><th>Rol</th><th>Faol</th><th>Amal</th></tr></thead><tbody>' +
         (adminRows || '<tr><td colspan="5">—</td></tr>') + '</tbody></table>' +
         '<div style="margin-top:16px; padding:16px; background:#f8fafc; border-radius:12px;">' +
         '<b>Yangi admin qo\'shish</b>' +
         '<div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:10px;">' +
         '<input class="form-input" id="na_name" placeholder="Ism" style="width:140px;">' +
         '<input class="form-input" id="na_surname" placeholder="Familiya" style="width:140px;">' +
-        '<input class="form-input" id="na_phone" placeholder="+998..." style="width:150px;">' +
+        '<input class="form-input" id="na_phone" placeholder="Login (yoki telefon)" style="width:160px;">' +
         '<input class="form-input" id="na_pass" placeholder="Parol" type="password" style="width:130px;">' +
         '<select class="form-input" id="na_role" style="width:180px;">' + roleOpts + '</select>' +
         '<button class="btn btn-primary" onclick="createAdmin()">Qo\'shish</button>' +

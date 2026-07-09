@@ -348,15 +348,15 @@
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label" for="phone">Telefon</label>
+                    <label class="form-label" for="phone">Login</label>
                     <div class="input-wrapper">
                         <input
-                            type="tel"
+                            type="text"
                             id="phone"
                             name="phone"
                             class="form-input"
-                            placeholder="+998 90 123 45 67"
-                            autocomplete="tel"
+                            placeholder="Login (yoki telefon)"
+                            autocomplete="username"
                             required
                         >
                     </div>
@@ -462,7 +462,7 @@
                 const password = passwordInput.value;
 
                 if (!phone) {
-                    showError('Telefon raqamingizni kiriting');
+                    showError('Login kiriting');
                     phoneInput.classList.add('error');
                     phoneInput.focus();
                     return;
