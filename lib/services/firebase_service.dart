@@ -48,7 +48,8 @@ class FirebaseService {
 
       // Tokenni olish (Buni backend ga yuborishingiz kerak)
       String? token = await FirebaseMessaging.instance.getToken();
-      debugPrint("FCM Token: $token");
+      // Token qiymati LOG'ga chiqarilmaydi (maxfiy). Faqat debug'da holat.
+      if (kDebugMode) debugPrint("FCM Token olindi: ${token != null}");
       
       // Ilova ochiq turganda (Foreground) kelgan xabarlarni tutish
       FirebaseMessaging.onMessage.listen((RemoteMessage message) {

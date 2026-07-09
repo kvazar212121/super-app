@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import '../config/app_config.dart';
 
@@ -66,24 +67,42 @@ class ApiService {
   }
 
   // ─────────────── Token Management ───────────────
+  // Token'lar shifrlangan xotirada saqlanadi (Keychain/Keystore), oddiy
+  // SharedPreferences'da EMAS — root'langan qurilmada o'g'irlanmasligi uchun.
+  static const _secure = FlutterSecureStorage(
+    aOptions: AndroidOptions(encryptedSharedPreferences: true),
+  );
 
   Future<void> loadTokens() async {
-    final prefs = await SharedPreferences.getInstance();
-    _accessToken = prefs.getString('access_token');
-    _refreshToken = prefs.getString('refresh_token');
+    _accessToken = await _secure.read(key: 'access_token');
+    _refreshToken = await _secure.read(key: 'refresh_token');
+
+    // Eski versiyadan migratsiya: token SharedPreferences'da bo'lsa, xavfsizga ko'chiramiz
+    if (_accessToken == null) {
+      final prefs = await SharedPreferences.getInstance();
+      final oldAccess = prefs.getString('access_token');
+      final oldRefresh = prefs.getString('refresh_token');
+      if (oldAccess != null && oldRefresh != null) {
+        await saveTokens(oldAccess, oldRefresh);
+        await prefs.remove('access_token');
+        await prefs.remove('refresh_token');
+      }
+    }
   }
 
   Future<void> saveTokens(String access, String refresh) async {
     _accessToken = access;
     _refreshToken = refresh;
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('access_token', access);
-    await prefs.setString('refresh_token', refresh);
+    await _secure.write(key: 'access_token', value: access);
+    await _secure.write(key: 'refresh_token', value: refresh);
   }
 
   Future<void> clearTokens() async {
     _accessToken = null;
     _refreshToken = null;
+    await _secure.delete(key: 'access_token');
+    await _secure.delete(key: 'refresh_token');
+    // Eski joyda qolgani bo'lsa ham tozalaymiz
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('access_token');
     await prefs.remove('refresh_token');
