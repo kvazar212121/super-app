@@ -318,6 +318,28 @@ def create_app() -> FastAPI:
             return FileResponse(png, media_type="image/png")
         return JSONResponse({"detail": "not found"}, status_code=404)
 
+    @app.get("/robots.txt", include_in_schema=False)
+    async def robots_txt():
+        body = (
+            "User-agent: *\n"
+            "Allow: /\n"
+            "Disallow: /admin\n"
+            "Disallow: /api/\n"
+            "Sitemap: https://hubservis.uz/sitemap.xml\n"
+        )
+        return Response(content=body, media_type="text/plain")
+
+    @app.get("/sitemap.xml", include_in_schema=False)
+    async def sitemap_xml():
+        urls = ["https://hubservis.uz/", "https://hubservis.uz/terms", "https://hubservis.uz/privacy"]
+        items = "".join(f"<url><loc>{u}</loc><changefreq>weekly</changefreq></url>" for u in urls)
+        body = (
+            '<?xml version="1.0" encoding="UTF-8"?>'
+            '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
+            f"{items}</urlset>"
+        )
+        return Response(content=body, media_type="application/xml")
+
     app.include_router(api_router, prefix=settings.api_v1_prefix)
     app.include_router(admin_panel_router)
     return app
