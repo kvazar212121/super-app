@@ -79,14 +79,14 @@ class ProfileScreen extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Eslatmalar vaqti',
+                            'Eslatmalar vaqti'.tr,
                             style: TextStyle(
                               fontWeight: FontWeight.w600,
                               color: GlassTokens.primaryText(context),
                             ),
                           ),
                           Text(
-                            'Rejadan ${user.reminderOffsetMinutes} daqiqa oldin xabar berish',
+                            '${'Rejadan'.tr} ${user.reminderOffsetMinutes} ${'daqiqa oldin xabar berish'.tr}',
                             style: TextStyle(
                               fontSize: 12,
                               color: GlassTokens.secondaryText(context),
@@ -544,9 +544,9 @@ class ProfileScreen extends StatelessWidget {
           borderRadius: BorderRadius.circular(GlassTokens.radiusMd),
           side: BorderSide(color: Colors.white),
         ),
-        title: const Text(
-          'Eslatma vaqtini tanlang',
-          style: TextStyle(
+        title: Text(
+          'Eslatma vaqtini tanlang'.tr,
+          style: const TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.bold,
             fontSize: 18,
@@ -558,7 +558,7 @@ class ProfileScreen extends StatelessWidget {
             final isSelected = mins == currentOffset;
             return ListTile(
               title: Text(
-                '$mins daqiqa oldin',
+                '$mins ${'daqiqa oldin'.tr}',
                 style: const TextStyle(color: Colors.white),
               ),
               trailing: isSelected
@@ -572,7 +572,7 @@ class ProfileScreen extends StatelessWidget {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text(
-                          'Eslatma vaqti $mins daqiqaga o\'zgartirildi',
+                          '${'Eslatma vaqti'.tr} $mins ${'daqiqaga o\'zgartirildi'.tr}',
                         ),
                       ),
                     );
@@ -580,8 +580,8 @@ class ProfileScreen extends StatelessWidget {
                 } catch (e) {
                   if (context.mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Sozlamani saqlab bo\'lmadi'),
+                      SnackBar(
+                        content: Text('Sozlamani saqlab bo\'lmadi'.tr),
                       ),
                     );
                   }
@@ -593,9 +593,9 @@ class ProfileScreen extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text(
-              'Bekor qilish',
-              style: TextStyle(color: Colors.grey),
+            child: Text(
+              'Bekor qilish'.tr,
+              style: const TextStyle(color: Colors.grey),
             ),
           ),
         ],

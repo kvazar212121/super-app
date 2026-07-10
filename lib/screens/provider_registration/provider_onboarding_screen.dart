@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import '../../l10n/locale_controller.dart';
 import '../provider_side/provider_theme.dart';
 import 'provider_category_selection_screen.dart';
 
@@ -15,7 +16,7 @@ class ProviderOnboardingScreen extends StatelessWidget {
 
           return Scaffold(
             appBar: AppBar(
-              title: const Text('Xizmat ko\'rsatish'),
+              title: Text('Xizmat ko\'rsatish'.tr),
               elevation: 0,
             ),
             body: SafeArea(
@@ -31,7 +32,7 @@ class ProviderOnboardingScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 24),
                     Text(
-                      'O\'z xizmatingizni taqdim eting',
+                      'O\'z xizmatingizni taqdim eting'.tr,
                       style: theme.textTheme.headlineMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                         color: theme.colorScheme.onSurface,
@@ -39,7 +40,7 @@ class ProviderOnboardingScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      'Bizning platformada minglab mijozlar o\'ziga kerakli ustani qidirmoqda. Siz ham ular orasida bo\'ling!',
+                      'Bizning platformada minglab mijozlar o\'ziga kerakli ustani qidirmoqda. Siz ham ular orasida bo\'ling!'.tr,
                       style: theme.textTheme.bodyLarge?.copyWith(
                         color: theme.colorScheme.onSurface,
                       ),
@@ -48,22 +49,22 @@ class ProviderOnboardingScreen extends StatelessWidget {
                     _buildFeatureItem(
                       context,
                       LucideIcons.users,
-                      'Mijozlar oqimini ko\'paytiring',
-                      'Doimiy mijozlar va ko\'proq buyurtmalar oling.',
+                      'Mijozlar oqimini ko\'paytiring'.tr,
+                      'Doimiy mijozlar va ko\'proq buyurtmalar oling.'.tr,
                     ),
                     const SizedBox(height: 20),
                     _buildFeatureItem(
                       context,
                       LucideIcons.clock,
-                      'Erkin ish grafigi',
-                      'O\'zingizga qulay vaqtda va joyda ishlang.',
+                      'Erkin ish grafigi'.tr,
+                      'O\'zingizga qulay vaqtda va joyda ishlang.'.tr,
                     ),
                     const SizedBox(height: 20),
                     _buildFeatureItem(
                       context,
                       LucideIcons.shieldCheck,
-                      'Ishonchli to\'lov',
-                      'Xizmatlaringiz uchun kafolatlangan to\'lovlar.',
+                      'Ishonchli to\'lov'.tr,
+                      'Xizmatlaringiz uchun kafolatlangan to\'lovlar.'.tr,
                     ),
                     const Spacer(),
                     SizedBox(
@@ -84,9 +85,9 @@ class ProviderOnboardingScreen extends StatelessWidget {
                             borderRadius: BorderRadius.circular(16),
                           ),
                         ),
-                        child: const Text(
-                          'Davom etish',
-                          style: TextStyle(
+                        child: Text(
+                          'Davom etish'.tr,
+                          style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
                           ),

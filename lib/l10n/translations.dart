@@ -927,4 +927,20 @@ const Map<String, String> kTranslationsRu = {
   'Yopiq maydon': 'Крытая площадка',
   'Yuk': 'Груз',
   'Yuk tashuvchi': 'Грузчик',
+
+  // ── Eslatma dialog + provider onboarding ──
+  'Eslatma vaqtini tanlang': 'Выберите время напоминания',
+  'daqiqa oldin': 'минут до',
+  'Rejadan': 'До плана за',
+  'daqiqa oldin xabar berish': 'минут до напоминать',
+  'Eslatma vaqti': 'Время напоминания',
+  'daqiqaga o\'zgartirildi': 'минут изменено на',
+  'Sozlamani saqlab bo\'lmadi': 'Не удалось сохранить настройку',
+  'Bizning platformada minglab mijozlar o\'ziga kerakli ustani qidirmoqda. Siz ham ular orasida bo\'ling!': 'На нашей платформе тысячи клиентов ищут нужного мастера. Будьте среди них!',
+  'Mijozlar oqimini ko\'paytiring': 'Увеличьте поток клиентов',
+  'Doimiy mijozlar va ko\'proq buyurtmalar oling.': 'Получайте постоянных клиентов и больше заказов.',
+  'Erkin ish grafigi': 'Свободный график',
+  'O\'zingizga qulay vaqtda va joyda ishlang.': 'Работайте в удобное время и в удобном месте.',
+  'Ishonchli to\'lov': 'Надёжная оплата',
+  'Xizmatlaringiz uchun kafolatlangan to\'lovlar.': 'Гарантированная оплата за ваши услуги.',
 };
