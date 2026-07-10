@@ -10,6 +10,7 @@ import '../theme/glass_tokens.dart';
 import '../widgets/glass/glass_scaffold.dart';
 import '../widgets/glass/glass_surface.dart';
 import 'tutor_booking_screen.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 class TutorProfileScreen extends StatelessWidget {
   final TutorService tutor;
@@ -25,7 +26,11 @@ class TutorProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final currency = NumberFormat.currency(locale: 'uz_UZ', symbol: 'so\'m', decimalDigits: 0);
+    final currency = NumberFormat.currency(
+      locale: 'uz_UZ',
+      symbol: 'so\'m',
+      decimalDigits: 0,
+    );
 
     return GlassScaffold(
       showBackButton: true,
@@ -47,31 +52,37 @@ class TutorProfileScreen extends StatelessWidget {
                   address: tutor.serviceArea ?? tutor.address,
                   rating: tutor.rating,
                   type: 'tutor',
-                  rawJson: tutor.rawJson ?? {
-                    'id': tutor.id,
-                    'name': tutor.name,
-                    'phone': tutor.phoneNumber,
-                    'rating': tutor.rating,
-                    'review_count': tutor.reviewCount,
-                    'lat': tutor.latitude,
-                    'lng': tutor.longitude,
-                    'address': tutor.address,
-                    'metadata': {
-                      'type': 'tutor',
-                      'experience_years': tutor.experienceYears,
-                      'subjects': tutor.subjects,
-                      'lesson_modes': tutor.lessonModes.map((m) => m.key).toList(),
-                      'services': tutor.services,
-                      'prices': tutor.prices,
-                      'time_slots': tutor.timeSlots,
-                    }
-                  },
+                  rawJson:
+                      tutor.rawJson ??
+                      {
+                        'id': tutor.id,
+                        'name': tutor.name,
+                        'phone': tutor.phoneNumber,
+                        'rating': tutor.rating,
+                        'review_count': tutor.reviewCount,
+                        'lat': tutor.latitude,
+                        'lng': tutor.longitude,
+                        'address': tutor.address,
+                        'metadata': {
+                          'type': 'tutor',
+                          'experience_years': tutor.experienceYears,
+                          'subjects': tutor.subjects,
+                          'lesson_modes': tutor.lessonModes
+                              .map((m) => m.key)
+                              .toList(),
+                          'services': tutor.services,
+                          'prices': tutor.prices,
+                          'time_slots': tutor.timeSlots,
+                        },
+                      },
                 );
                 savedPlaces.toggleSave(savedItem);
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(
-                      isSaved ? 'Sevimli ro\'yxatidan o\'chirildi' : 'Sevimli ro\'yxatiga qo\'shildi',
+                      isSaved
+                          ? 'Sevimli ro\'yxatidan o\'chirildi'
+                          : 'Sevimli ro\'yxatiga qo\'shildi',
                     ),
                     duration: const Duration(seconds: 1),
                   ),
@@ -92,7 +103,11 @@ class TutorProfileScreen extends StatelessWidget {
                 CircleAvatar(
                   radius: 44,
                   backgroundColor: _accent,
-                  child: const Icon(LucideIcons.bookOpen, color: _accent, size: 40),
+                  child: const Icon(
+                    LucideIcons.bookOpen,
+                    color: _accent,
+                    size: 40,
+                  ),
                 ),
                 const SizedBox(height: 16),
                 Text(
@@ -132,9 +147,24 @@ class TutorProfileScreen extends StatelessWidget {
             }).toList(),
           ),
           const SizedBox(height: 16),
-          _infoTile(context, LucideIcons.mapPin, 'Hudud', tutor.serviceArea ?? tutor.address),
-          _infoTile(context, LucideIcons.calendar, 'Tajriba', '${tutor.experienceYears} yil'),
-          _infoTile(context, LucideIcons.bookOpen, 'Fanlar', tutor.subjectsLabel),
+          _infoTile(
+            context,
+            LucideIcons.mapPin,
+            'Hudud',
+            tutor.serviceArea ?? tutor.address,
+          ),
+          _infoTile(
+            context,
+            LucideIcons.calendar,
+            'Tajriba',
+            '${tutor.experienceYears} yil',
+          ),
+          _infoTile(
+            context,
+            LucideIcons.bookOpen,
+            'Fanlar',
+            tutor.subjectsLabel,
+          ),
           const SizedBox(height: 16),
           Text(
             'Darslar va narxlar',
@@ -153,10 +183,18 @@ class TutorProfileScreen extends StatelessWidget {
               borderRadius: GlassTokens.radiusMd,
               child: Row(
                 children: [
-                  Expanded(child: Text(s, style: const TextStyle(fontWeight: FontWeight.w600))),
+                  Expanded(
+                    child: Text(
+                      s,
+                      style: const TextStyle(fontWeight: FontWeight.w600),
+                    ),
+                  ),
                   Text(
                     currency.format(price),
-                    style: const TextStyle(fontWeight: FontWeight.bold, color: _accent),
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: _accent,
+                    ),
                   ),
                 ],
               ),
@@ -177,8 +215,8 @@ class TutorProfileScreen extends StatelessWidget {
                   ),
                 );
               },
-              icon: const Icon(LucideIcons.calendarCheck),
-              label: const Text('Dars bron qilish'),
+              icon: Icon(LucideIcons.calendarCheck),
+              label: Text('Dars bron qilish'.tr),
               style: FilledButton.styleFrom(
                 backgroundColor: _accent,
                 padding: const EdgeInsets.symmetric(vertical: 16),
@@ -190,7 +228,12 @@ class TutorProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _infoTile(BuildContext context, IconData icon, String label, String value) {
+  Widget _infoTile(
+    BuildContext context,
+    IconData icon,
+    String label,
+    String value,
+  ) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Row(
@@ -202,8 +245,20 @@ class TutorProfileScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(label, style: TextStyle(fontSize: 12, color: GlassTokens.secondaryText(context))),
-                Text(value, style: TextStyle(fontWeight: FontWeight.w600, color: GlassTokens.primaryText(context))),
+                Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: GlassTokens.secondaryText(context),
+                  ),
+                ),
+                Text(
+                  value,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    color: GlassTokens.primaryText(context),
+                  ),
+                ),
               ],
             ),
           ),

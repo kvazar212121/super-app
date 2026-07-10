@@ -7,6 +7,8 @@ class FootballDashboardScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return UnifiedProviderDashboardScreen(config: ProviderCategoryConfig.futbol);
+    return UnifiedProviderDashboardScreen(
+      config: ProviderCategoryConfig.futbol,
+    );
   }
 }

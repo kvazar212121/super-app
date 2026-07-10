@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 /// Tadbir turi
 enum EventType {
@@ -30,37 +31,37 @@ extension EventTypeX on EventType {
   }
 
   String get key => switch (this) {
-        EventType.wedding => 'wedding',
-        EventType.birthday => 'birthday',
-        EventType.corporate => 'corporate',
-        EventType.graduation => 'graduation',
-        EventType.anniversary => 'anniversary',
-        EventType.babyShower => 'baby_shower',
-        EventType.engagement => 'engagement',
-        EventType.memorial => 'memorial',
-      };
+    EventType.wedding => 'wedding',
+    EventType.birthday => 'birthday',
+    EventType.corporate => 'corporate',
+    EventType.graduation => 'graduation',
+    EventType.anniversary => 'anniversary',
+    EventType.babyShower => 'baby_shower',
+    EventType.engagement => 'engagement',
+    EventType.memorial => 'memorial',
+  };
 
   String get label => switch (this) {
-        EventType.wedding => 'To\'y',
-        EventType.birthday => 'Tug\'ilgan kun',
-        EventType.corporate => 'Korporativ',
-        EventType.graduation => 'Bitiruv kechasi',
-        EventType.anniversary => 'Yubiley',
-        EventType.babyShower => 'Baby shower',
-        EventType.engagement => 'Unashuv',
-        EventType.memorial => 'Marosim',
-      };
+    EventType.wedding => 'To\'y',
+    EventType.birthday => 'Tug\'ilgan kun',
+    EventType.corporate => 'Korporativ',
+    EventType.graduation => 'Bitiruv kechasi',
+    EventType.anniversary => 'Yubiley',
+    EventType.babyShower => 'Baby shower',
+    EventType.engagement => 'Unashuv',
+    EventType.memorial => 'Marosim',
+  };
 
   IconData get icon => switch (this) {
-        EventType.wedding => LucideIcons.heart,
-        EventType.birthday => LucideIcons.gift,
-        EventType.corporate => LucideIcons.building,
-        EventType.graduation => LucideIcons.graduationCap,
-        EventType.anniversary => LucideIcons.flower2,
-        EventType.babyShower => LucideIcons.baby,
-        EventType.engagement => LucideIcons.diamond,
-        EventType.memorial => LucideIcons.flower,
-      };
+    EventType.wedding => LucideIcons.heart,
+    EventType.birthday => LucideIcons.gift,
+    EventType.corporate => LucideIcons.building,
+    EventType.graduation => LucideIcons.graduationCap,
+    EventType.anniversary => LucideIcons.flower2,
+    EventType.babyShower => LucideIcons.baby,
+    EventType.engagement => LucideIcons.diamond,
+    EventType.memorial => LucideIcons.flower,
+  };
 }
 
 /// Guruh qanday xizmat ko'rsatadi
@@ -86,28 +87,28 @@ extension OrganizerServiceTypeX on OrganizerServiceType {
   }
 
   String get key => switch (this) {
-        OrganizerServiceType.stageSetup => 'stage_setup',
-        OrganizerServiceType.soundLight => 'sound_light',
-        OrganizerServiceType.decor => 'decor',
-        OrganizerServiceType.fullOrganization => 'full_organization',
-        OrganizerServiceType.villageEvents => 'village_events',
-      };
+    OrganizerServiceType.stageSetup => 'stage_setup',
+    OrganizerServiceType.soundLight => 'sound_light',
+    OrganizerServiceType.decor => 'decor',
+    OrganizerServiceType.fullOrganization => 'full_organization',
+    OrganizerServiceType.villageEvents => 'village_events',
+  };
 
   String get label => switch (this) {
-        OrganizerServiceType.stageSetup => 'Sahna va podiyom',
-        OrganizerServiceType.soundLight => 'Ovoz va yoritish',
-        OrganizerServiceType.decor => 'Dekoratsiya',
-        OrganizerServiceType.fullOrganization => 'To\'liq tashkilot',
-        OrganizerServiceType.villageEvents => 'Qishloq / ochiq maydon',
-      };
+    OrganizerServiceType.stageSetup => 'Sahna va podiyom',
+    OrganizerServiceType.soundLight => 'Ovoz va yoritish',
+    OrganizerServiceType.decor => 'Dekoratsiya',
+    OrganizerServiceType.fullOrganization => 'To\'liq tashkilot',
+    OrganizerServiceType.villageEvents => 'Qishloq / ochiq maydon',
+  };
 
   IconData get icon => switch (this) {
-        OrganizerServiceType.stageSetup => LucideIcons.tent,
-        OrganizerServiceType.soundLight => LucideIcons.volume2,
-        OrganizerServiceType.decor => LucideIcons.sparkles,
-        OrganizerServiceType.fullOrganization => LucideIcons.partyPopper,
-        OrganizerServiceType.villageEvents => LucideIcons.trees,
-      };
+    OrganizerServiceType.stageSetup => LucideIcons.tent,
+    OrganizerServiceType.soundLight => LucideIcons.volume2,
+    OrganizerServiceType.decor => LucideIcons.sparkles,
+    OrganizerServiceType.fullOrganization => LucideIcons.partyPopper,
+    OrganizerServiceType.villageEvents => LucideIcons.trees,
+  };
 }
 
 /// Tadbir joyi turi
@@ -135,22 +136,22 @@ extension EventVenueTypeX on EventVenueType {
   }
 
   String get key => switch (this) {
-        EventVenueType.villageYard => 'village_yard',
-        EventVenueType.openField => 'open_field',
-        EventVenueType.restaurant => 'restaurant',
-        EventVenueType.garden => 'garden',
-        EventVenueType.hall => 'hall',
-        EventVenueType.clientLocation => 'client_location',
-      };
+    EventVenueType.villageYard => 'village_yard',
+    EventVenueType.openField => 'open_field',
+    EventVenueType.restaurant => 'restaurant',
+    EventVenueType.garden => 'garden',
+    EventVenueType.hall => 'hall',
+    EventVenueType.clientLocation => 'client_location',
+  };
 
   String get label => switch (this) {
-        EventVenueType.villageYard => 'Qishloq hovli',
-        EventVenueType.openField => 'Ochiq maydon',
-        EventVenueType.restaurant => 'Restoran / to\'yxona',
-        EventVenueType.garden => 'Bog\' / dam olish',
-        EventVenueType.hall => 'Zal',
-        EventVenueType.clientLocation => 'Mijoz ko\'rsatgan joy',
-      };
+    EventVenueType.villageYard => 'Qishloq hovli',
+    EventVenueType.openField => 'Ochiq maydon',
+    EventVenueType.restaurant => 'Restoran / to\'yxona',
+    EventVenueType.garden => 'Bog\' / dam olish',
+    EventVenueType.hall => 'Zal',
+    EventVenueType.clientLocation => 'Mijoz ko\'rsatgan joy',
+  };
 }
 
 /// Tadbir tashkil etuvchi guruh
@@ -212,7 +213,10 @@ class EventPlanning {
     final eventKeys = (meta['event_types'] as List<dynamic>? ?? [])
         .map((e) => e.toString())
         .toList();
-    var events = eventKeys.map(EventTypeX.fromKey).whereType<EventType>().toList();
+    var events = eventKeys
+        .map(EventTypeX.fromKey)
+        .whereType<EventType>()
+        .toList();
     if (events.isEmpty) {
       events = [EventType.wedding, EventType.birthday, EventType.corporate];
     }
@@ -220,8 +224,10 @@ class EventPlanning {
     final orgKeys = (meta['organizer_types'] as List<dynamic>? ?? [])
         .map((e) => e.toString())
         .toList();
-    var orgs =
-        orgKeys.map(OrganizerServiceTypeX.fromKey).whereType<OrganizerServiceType>().toList();
+    var orgs = orgKeys
+        .map(OrganizerServiceTypeX.fromKey)
+        .whereType<OrganizerServiceType>()
+        .toList();
     if (orgs.isEmpty) {
       orgs = [
         OrganizerServiceType.stageSetup,
@@ -232,7 +238,10 @@ class EventPlanning {
     final venueKeys = (meta['venue_types'] as List<dynamic>? ?? [])
         .map((e) => e.toString())
         .toList();
-    final venues = venueKeys.map(EventVenueTypeX.fromKey).whereType<EventVenueType>().toList();
+    final venues = venueKeys
+        .map(EventVenueTypeX.fromKey)
+        .whereType<EventVenueType>()
+        .toList();
     final venueLabels = venues.isEmpty
         ? ['Qishloq hovli', 'Ochiq maydon', 'Restoran', 'Bog\'']
         : venues.map((v) => v.label).toList();

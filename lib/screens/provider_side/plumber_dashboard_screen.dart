@@ -7,6 +7,8 @@ class PlumberDashboardScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return UnifiedProviderDashboardScreen(config: ProviderCategoryConfig.plumber);
+    return UnifiedProviderDashboardScreen(
+      config: ProviderCategoryConfig.plumber,
+    );
   }
 }

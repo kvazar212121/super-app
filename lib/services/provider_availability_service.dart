@@ -25,8 +25,15 @@ class ProviderAvailability {
   }
 
   static const defaultSlots = [
-    '09:00', '10:00', '11:00', '12:00',
-    '14:00', '15:00', '16:00', '17:00', '18:00',
+    '09:00',
+    '10:00',
+    '11:00',
+    '12:00',
+    '14:00',
+    '15:00',
+    '16:00',
+    '17:00',
+    '18:00',
   ];
 
   /// API ishlamasa — barcha slotlar ochiq.
@@ -61,10 +68,7 @@ class ProviderAvailabilityService {
       return ProviderAvailability.fallback(date);
     }
     try {
-      final data = await _api.getProviderAvailability(
-        providerId,
-        date: date,
-      );
+      final data = await _api.getProviderAvailability(providerId, date: date);
       return ProviderAvailability.fromJson(data);
     } catch (_) {
       return ProviderAvailability.fallback(date);

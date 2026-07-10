@@ -7,6 +7,8 @@ class ElectricianDashboardScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return UnifiedProviderDashboardScreen(config: ProviderCategoryConfig.electrician);
+    return UnifiedProviderDashboardScreen(
+      config: ProviderCategoryConfig.electrician,
+    );
   }
 }

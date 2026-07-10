@@ -41,7 +41,10 @@ class _SearchResultsWidgetState extends State<SearchResultsWidget> {
     });
     try {
       if (widget.query.isEmpty) {
-        final res = await _api.getProviders(categoryKey: 'sartarosh', perPage: 20);
+        final res = await _api.getProviders(
+          categoryKey: 'sartarosh',
+          perPage: 20,
+        );
         final items = (res['items'] as List<dynamic>? ?? [])
             .cast<Map<String, dynamic>>();
         _providers = items.map(BarberShop.fromProviderJson).toList();
@@ -75,7 +78,10 @@ class _SearchResultsWidgetState extends State<SearchResultsWidget> {
     }
     if (_error != null) {
       return Center(
-        child: Text(_error!, style: TextStyle(color: GlassTokens.secondaryText(context))),
+        child: Text(
+          _error!,
+          style: TextStyle(color: GlassTokens.secondaryText(context)),
+        ),
       );
     }
 
@@ -112,7 +118,9 @@ class _SearchResultsWidgetState extends State<SearchResultsWidget> {
 
     final categoryTiles = _categories.map((c) {
       final key = c['key'] as String? ?? '';
-      final kind = ServiceHubKind.values.where((e) => e.name == key).firstOrNull;
+      final kind = ServiceHubKind.values
+          .where((e) => e.name == key)
+          .firstOrNull;
       return _CategoryTile(
         title: c['title_uz'] as String? ?? key,
         icon: kind?.icon ?? LucideIcons.layoutGrid,

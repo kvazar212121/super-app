@@ -12,6 +12,7 @@ import '../providers/app_provider.dart';
 import '../utils/auth_guard.dart';
 import '../widgets/booking_common_widgets.dart';
 import '../widgets/glass/mesh_background.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 class MassageBookingScreen extends StatefulWidget {
   final MassageHijoma service;
@@ -39,8 +40,16 @@ class _MassageBookingScreenState extends State<MassageBookingScreen> {
   List<String> get _timeSlots => widget.service.timeSlots.isNotEmpty
       ? widget.service.timeSlots
       : const [
-          '09:00', '10:00', '11:00', '12:00',
-          '14:00', '15:00', '16:00', '17:00', '18:00', '19:00',
+          '09:00',
+          '10:00',
+          '11:00',
+          '12:00',
+          '14:00',
+          '15:00',
+          '16:00',
+          '17:00',
+          '18:00',
+          '19:00',
         ];
 
   List<MassageVisitMode> get _availableVisitModes {
@@ -71,7 +80,9 @@ class _MassageBookingScreenState extends State<MassageBookingScreen> {
     if (_selectedPriceOption == null) return null;
     var total = (widget.service.prices[_selectedPriceOption] ?? 0).toDouble();
     if (_visitMode == MassageVisitMode.homeVisit) {
-      final travel = widget.service.isTravelFeeIncluded ? 0.0 : widget.service.travelFee;
+      final travel = widget.service.isTravelFeeIncluded
+          ? 0.0
+          : widget.service.travelFee;
       total += travel;
     }
     return total;
@@ -95,8 +106,11 @@ class _MassageBookingScreenState extends State<MassageBookingScreen> {
   @override
   Widget build(BuildContext context) {
     const accentColor = Color(0xFFE11D48);
-    final currencyFormat =
-        NumberFormat.currency(locale: 'uz_UZ', symbol: "so'm", decimalDigits: 0);
+    final currencyFormat = NumberFormat.currency(
+      locale: 'uz_UZ',
+      symbol: "so'm",
+      decimalDigits: 0,
+    );
 
     return GlassBackdrop(
       child: Scaffold(
@@ -106,145 +120,164 @@ class _MassageBookingScreenState extends State<MassageBookingScreen> {
           bottom: true,
           child: CustomScrollView(
             slivers: [
-            BookingSliverAppBar(
-              color: accentColor,
-              icon: LucideIcons.heartPulse,
-              rawJson: widget.service.rawJson,
-            ),
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    ServiceProfileHeader(
-                      name: widget.service.name,
-                      rating: widget.service.rating,
-                      phone: widget.service.phoneNumber,
-                      accent: accentColor,
-                      onCallPressed: () {
-                        CallHelper.makeDirectCall(context, widget.service.ownerUserId, widget.service.name);
-                      },
-                      contactLabel: "Mutaxassis bilan bog'lanish",
-                    ),
-                    if (widget.service.visitModesLabel.isNotEmpty) ...[
-                      const SizedBox(height: 8),
-                      Text(
-                        widget.service.visitModesLabel,
-                        style: TextStyle(color: Colors.grey[600], fontSize: 13),
+              BookingSliverAppBar(
+                color: accentColor,
+                icon: LucideIcons.heartPulse,
+                rawJson: widget.service.rawJson,
+              ),
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ServiceProfileHeader(
+                        name: widget.service.name,
+                        rating: widget.service.rating,
+                        phone: widget.service.phoneNumber,
+                        accent: accentColor,
+                        onCallPressed: () {
+                          CallHelper.makeDirectCall(
+                            context,
+                            widget.service.ownerUserId,
+                            widget.service.name,
+                          );
+                        },
+                        contactLabel: "Mutaxassis bilan bog'lanish",
                       ),
-                    ],
-                    const SizedBox(height: 24),
-                    if (widget.service.address.isNotEmpty) ...[
-                      const SizedBox(height: 12),
-                      Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.all(14),
-                        decoration: BoxDecoration(
-                          color: accentColor,
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: accentColor),
+                      if (widget.service.visitModesLabel.isNotEmpty) ...[
+                        const SizedBox(height: 8),
+                        Text(
+                          widget.service.visitModesLabel,
+                          style: TextStyle(
+                            color: Colors.grey[600],
+                            fontSize: 13,
+                          ),
                         ),
-                        child: Row(
-                           children: [
-                            Icon(LucideIcons.mapPin, color: accentColor, size: 20),
-                            const SizedBox(width: 10),
-                            Expanded(
-                              child: Text(
-                                widget.service.address,
-                                style: const TextStyle(fontWeight: FontWeight.w600),
+                      ],
+                      const SizedBox(height: 24),
+                      if (widget.service.address.isNotEmpty) ...[
+                        const SizedBox(height: 12),
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(14),
+                          decoration: BoxDecoration(
+                            color: accentColor,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: accentColor),
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(
+                                LucideIcons.mapPin,
+                                color: accentColor,
+                                size: 20,
                               ),
-                            ),
-                          ],
+                              const SizedBox(width: 10),
+                              Expanded(
+                                child: Text(
+                                  widget.service.address,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
-                    if (_visitMode == MassageVisitMode.homeVisit) ...[
-                      const SizedBox(height: 16),
-                      BookingInputField(
-                        controller: _addressCtrl,
-                        hint: 'Uy manzili (ko\'cha, uy, kvartira)',
-                        icon: LucideIcons.home,
+                      ],
+                      if (_visitMode == MassageVisitMode.homeVisit) ...[
+                        const SizedBox(height: 16),
+                        BookingInputField(
+                          controller: _addressCtrl,
+                          hint: 'Uy manzili (ko\'cha, uy, kvartira)',
+                          icon: LucideIcons.home,
+                          accent: accentColor,
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          widget.service.isTravelFeeIncluded
+                              ? 'Yo\'l kira: Bepul (narx ichida)'
+                              : 'Yo\'l kira: +${currencyFormat.format(widget.service.travelFee)}',
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            color: widget.service.isTravelFeeIncluded
+                                ? Colors.green[800]
+                                : Colors.amber[900],
+                          ),
+                        ),
+                      ],
+                      const SizedBox(height: 24),
+                      const SectionTitle('Xizmat turi'),
+                      const SizedBox(height: 12),
+                      SelectableIconGrid<ServiceType>(
+                        items: widget.service.serviceTypes,
+                        selected: _selectedServiceType,
+                        iconOf: (t) => t.icon,
+                        labelOf: (t) => t.label,
+                        onSelect: (t) =>
+                            setState(() => _selectedServiceType = t),
                         accent: accentColor,
                       ),
-                      const SizedBox(height: 8),
-                      Text(
-                        widget.service.isTravelFeeIncluded
-                            ? 'Yo\'l kira: Bepul (narx ichida)'
-                            : 'Yo\'l kira: +${currencyFormat.format(widget.service.travelFee)}',
-                        style: TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                          color: widget.service.isTravelFeeIncluded ? Colors.green[800] : Colors.amber[900],
+                      const SizedBox(height: 24),
+                      const SectionTitle('Narx variantlari'),
+                      const SizedBox(height: 12),
+                      PriceOptionList(
+                        prices: Map.fromEntries(
+                          widget.service.prices.entries.where(
+                            (e) => !e.key.contains("Uyga chiqish qo'shimcha"),
+                          ),
                         ),
+                        selected: _selectedPriceOption,
+                        onSelect: (o) =>
+                            setState(() => _selectedPriceOption = o),
+                        accent: accentColor,
+                        format: currencyFormat,
                       ),
+                      const SizedBox(height: 24),
+                      const SectionTitle('Jinsiyat'),
+                      const SizedBox(height: 12),
+                      _buildGenderSelector(accentColor),
+                      const SizedBox(height: 24),
+                      const SectionTitle('Sana'),
+                      const SizedBox(height: 12),
+                      HorizontalDatePicker(
+                        selectedDate: _selectedDate,
+                        accentColor: accentColor,
+                        onDateSelected: (date) =>
+                            setState(() => _selectedDate = date),
+                        daysCount: 14,
+                        startDaysOffset: 1,
+                      ),
+                      const SizedBox(height: 24),
+                      const SectionTitle('Vaqt'),
+                      const SizedBox(height: 12),
+                      TimeSlotGrid(
+                        timeSlots: _timeSlots,
+                        selectedTimeSlot: _selectedTimeSlot,
+                        accentColor: accentColor,
+                        onTimeSelected: (slot) =>
+                            setState(() => _selectedTimeSlot = slot),
+                        crossAxisCount: 5,
+                      ),
+                      const SizedBox(height: 32),
+                      BookingActionBar(
+                        accent: accentColor,
+                        primaryLabel: _canBook
+                            ? "Band qilish — ${currencyFormat.format(_totalPrice)}"
+                            : 'Band qilish',
+                        onPrimary: _canBook
+                            ? () => _confirmBooking(currencyFormat, _totalPrice)
+                            : null,
+                      ),
+                      const SizedBox(height: 40),
                     ],
-                    const SizedBox(height: 24),
-                    const SectionTitle('Xizmat turi'),
-                    const SizedBox(height: 12),
-                    SelectableIconGrid<ServiceType>(
-                      items: widget.service.serviceTypes,
-                      selected: _selectedServiceType,
-                      iconOf: (t) => t.icon,
-                      labelOf: (t) => t.label,
-                      onSelect: (t) => setState(() => _selectedServiceType = t),
-                      accent: accentColor,
-                    ),
-                    const SizedBox(height: 24),
-                    const SectionTitle('Narx variantlari'),
-                    const SizedBox(height: 12),
-                    PriceOptionList(
-                      prices: Map.fromEntries(
-                        widget.service.prices.entries.where(
-                          (e) => !e.key.contains("Uyga chiqish qo'shimcha"),
-                        ),
-                      ),
-                      selected: _selectedPriceOption,
-                      onSelect: (o) => setState(() => _selectedPriceOption = o),
-                      accent: accentColor,
-                      format: currencyFormat,
-                    ),
-                    const SizedBox(height: 24),
-                    const SectionTitle('Jinsiyat'),
-                    const SizedBox(height: 12),
-                    _buildGenderSelector(accentColor),
-                    const SizedBox(height: 24),
-                    const SectionTitle('Sana'),
-                    const SizedBox(height: 12),
-                    HorizontalDatePicker(
-                      selectedDate: _selectedDate,
-                      accentColor: accentColor,
-                      onDateSelected: (date) => setState(() => _selectedDate = date),
-                      daysCount: 14,
-                      startDaysOffset: 1,
-                    ),
-                    const SizedBox(height: 24),
-                    const SectionTitle('Vaqt'),
-                    const SizedBox(height: 12),
-                    TimeSlotGrid(
-                      timeSlots: _timeSlots,
-                      selectedTimeSlot: _selectedTimeSlot,
-                      accentColor: accentColor,
-                      onTimeSelected: (slot) => setState(() => _selectedTimeSlot = slot),
-                      crossAxisCount: 5,
-                    ),
-                    const SizedBox(height: 32),
-                    BookingActionBar(
-                      accent: accentColor,
-                      primaryLabel: _canBook
-                          ? "Band qilish — ${currencyFormat.format(_totalPrice)}"
-                          : 'Band qilish',
-                      onPrimary: _canBook
-                          ? () => _confirmBooking(currencyFormat, _totalPrice)
-                          : null,
-                    ),
-                    const SizedBox(height: 40),
-                  ],
+                  ),
                 ),
               ),
-            ),
-          ],
-        ),
+            ],
+          ),
         ),
       ),
     );
@@ -284,13 +317,18 @@ class _MassageBookingScreenState extends State<MassageBookingScreen> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(gender.icon,
-                      size: 20, color: isSelected ? color : Colors.grey[500]),
+                  Icon(
+                    gender.icon,
+                    size: 20,
+                    color: isSelected ? color : Colors.grey[500],
+                  ),
                   const SizedBox(width: 8),
                   Text(
                     gender.label,
                     style: TextStyle(
-                      fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                      fontWeight: isSelected
+                          ? FontWeight.bold
+                          : FontWeight.normal,
                       color: isSelected ? color : Colors.black87,
                     ),
                   ),
@@ -331,11 +369,12 @@ class _MassageBookingScreenState extends State<MassageBookingScreen> {
             if (_visitMode == MassageVisitMode.homeVisit) ...[
               DetailRow(
                 label: "Yo'l kira",
-                value: widget.service.isTravelFeeIncluded ? "Bepul (narx ichida)" : currencyFormat.format(widget.service.travelFee),
+                value: widget.service.isTravelFeeIncluded
+                    ? "Bepul (narx ichida)"
+                    : currencyFormat.format(widget.service.travelFee),
               ),
               DetailRow(label: 'Manzil', value: _addressCtrl.text.trim()),
-            ]
-            else if (widget.service.address.isNotEmpty)
+            ] else if (widget.service.address.isNotEmpty)
               DetailRow(label: 'Salon', value: widget.service.address),
             DetailRow(
               label: 'Vaqt',
@@ -386,8 +425,7 @@ class _MassageBookingScreenState extends State<MassageBookingScreen> {
                     providerName: widget.service.name,
                     variant: _selectedPriceOption!,
                     address: widget.service.address,
-                    notes:
-                        'Mutaxassis jinsi: ${_selectedGender!.label}',
+                    notes: 'Mutaxassis jinsi: ${_selectedGender!.label}',
                     date: dateTime,
                     price: totalPrice ?? 150000.0,
                     status: OrderStatus.pending,
@@ -398,8 +436,8 @@ class _MassageBookingScreenState extends State<MassageBookingScreen> {
                   Navigator.pop(context);
                   Navigator.pop(context);
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Muvaffaqiyatli band qilindi!'),
+                    SnackBar(
+                      content: Text('Muvaffaqiyatli band qilindi!'.tr),
                       backgroundColor: Colors.green,
                     ),
                   );

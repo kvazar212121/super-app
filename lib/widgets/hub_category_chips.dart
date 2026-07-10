@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../theme/glass_tokens.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 class HubCategoryChips extends StatelessWidget {
   final List<String> categories;
@@ -30,21 +31,25 @@ class HubCategoryChips extends StatelessWidget {
           if (index == 0) {
             final isSelected = selectedCategory == null;
             return ChoiceChip(
-              label: const Text('Barchasi'),
+              label: Text('Barchasi'.tr),
               selected: isSelected,
               onSelected: (selected) {
                 if (selected) onCategorySelected(null);
               },
               selectedColor: accentColor.withValues(alpha: 0.2),
               labelStyle: TextStyle(
-                color: isSelected ? accentColor : GlassTokens.primaryText(context),
+                color: isSelected
+                    ? accentColor
+                    : GlassTokens.primaryText(context),
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
               ),
               backgroundColor: GlassTokens.glassFill(context),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20),
                 side: BorderSide(
-                  color: isSelected ? accentColor : GlassTokens.glassBorder(context),
+                  color: isSelected
+                      ? accentColor
+                      : GlassTokens.glassBorder(context),
                 ),
               ),
             );
@@ -64,14 +69,18 @@ class HubCategoryChips extends StatelessWidget {
             },
             selectedColor: accentColor.withValues(alpha: 0.2),
             labelStyle: TextStyle(
-              color: isSelected ? accentColor : GlassTokens.primaryText(context),
+              color: isSelected
+                  ? accentColor
+                  : GlassTokens.primaryText(context),
               fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
             ),
             backgroundColor: GlassTokens.glassFill(context),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(20),
               side: BorderSide(
-                color: isSelected ? accentColor : GlassTokens.glassBorder(context),
+                color: isSelected
+                    ? accentColor
+                    : GlassTokens.glassBorder(context),
               ),
             ),
           );

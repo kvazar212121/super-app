@@ -10,6 +10,7 @@ import '../providers/app_provider.dart';
 import '../utils/auth_guard.dart';
 import '../widgets/booking_common_widgets.dart';
 import '../widgets/glass/mesh_background.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 class AutoMobileDispatchScreen extends StatefulWidget {
   final AutoMobileService service;
@@ -17,7 +18,8 @@ class AutoMobileDispatchScreen extends StatefulWidget {
   const AutoMobileDispatchScreen({super.key, required this.service});
 
   @override
-  State<AutoMobileDispatchScreen> createState() => _AutoMobileDispatchScreenState();
+  State<AutoMobileDispatchScreen> createState() =>
+      _AutoMobileDispatchScreenState();
 }
 
 class _AutoMobileDispatchScreenState extends State<AutoMobileDispatchScreen> {
@@ -33,8 +35,7 @@ class _AutoMobileDispatchScreenState extends State<AutoMobileDispatchScreen> {
       : (widget.service.prices[_selectedService] ?? 0);
 
   bool get _canSubmit =>
-      _selectedService != null &&
-      _locationCtrl.text.trim().length >= 5;
+      _selectedService != null && _locationCtrl.text.trim().length >= 5;
 
   @override
   void dispose() {
@@ -48,7 +49,11 @@ class _AutoMobileDispatchScreenState extends State<AutoMobileDispatchScreen> {
     if (!await ensureAuthenticated(context)) return;
     if (!_canSubmit || !mounted) return;
 
-    final currency = NumberFormat.currency(locale: 'uz_UZ', symbol: 'so\'m', decimalDigits: 0);
+    final currency = NumberFormat.currency(
+      locale: 'uz_UZ',
+      symbol: 'so\'m',
+      decimalDigits: 0,
+    );
     final location = _locationCtrl.text.trim();
     final car = _carCtrl.text.trim();
     final notes = _notesCtrl.text.trim();
@@ -86,7 +91,9 @@ class _AutoMobileDispatchScreenState extends State<AutoMobileDispatchScreen> {
       date: DateTime.now(), // ASAP
       price: _selectedPrice,
       status: OrderStatus.pending,
-      providerId: widget.service.providerId > 0 ? widget.service.providerId : null,
+      providerId: widget.service.providerId > 0
+          ? widget.service.providerId
+          : null,
     );
 
     try {
@@ -95,7 +102,9 @@ class _AutoMobileDispatchScreenState extends State<AutoMobileDispatchScreen> {
       Navigator.pop(context);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Chaqiruv qabul qilindi! ${widget.service.name} tez orada aloqaga chiqadi va yetib keladi.'),
+          content: Text(
+            'Chaqiruv qabul qilindi! ${widget.service.name} tez orada aloqaga chiqadi va yetib keladi.',
+          ),
           backgroundColor: Colors.green,
         ),
       );
@@ -110,7 +119,11 @@ class _AutoMobileDispatchScreenState extends State<AutoMobileDispatchScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final currency = NumberFormat.currency(locale: 'uz_UZ', symbol: 'so\'m', decimalDigits: 0);
+    final currency = NumberFormat.currency(
+      locale: 'uz_UZ',
+      symbol: 'so\'m',
+      decimalDigits: 0,
+    );
 
     return GlassBackdrop(
       child: Scaffold(
@@ -118,7 +131,7 @@ class _AutoMobileDispatchScreenState extends State<AutoMobileDispatchScreen> {
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           elevation: 0,
-          title: const Text('Joyiga chaqirish'),
+          title: Text('Joyiga chaqirish'.tr),
         ),
         body: SingleChildScrollView(
           padding: const EdgeInsets.all(20),
@@ -136,15 +149,31 @@ class _AutoMobileDispatchScreenState extends State<AutoMobileDispatchScreen> {
                     CircleAvatar(
                       radius: 28,
                       backgroundColor: _accent.withOpacity(0.1),
-                      child: Icon(widget.service.vehicleType.icon, color: _accent, size: 24),
+                      child: Icon(
+                        widget.service.vehicleType.icon,
+                        color: _accent,
+                        size: 24,
+                      ),
                     ),
                     const SizedBox(width: 16),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(widget.service.name, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                          Text('Tezkor yordam', style: TextStyle(color: _accent, fontWeight: FontWeight.w600)),
+                          Text(
+                            widget.service.name,
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Text(
+                            'Tezkor yordam',
+                            style: TextStyle(
+                              color: _accent,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -155,7 +184,7 @@ class _AutoMobileDispatchScreenState extends State<AutoMobileDispatchScreen> {
               const SectionTitle('Xizmat turini tanlang'),
               const SizedBox(height: 12),
               if (widget.service.services.isEmpty)
-                const Text('Maxsus xizmatlar topilmadi.')
+                Text('Maxsus xizmatlar topilmadi.'.tr)
               else
                 ...widget.service.services.map((service) {
                   final selected = _selectedService == service;
@@ -183,12 +212,15 @@ class _AutoMobileDispatchScreenState extends State<AutoMobileDispatchScreen> {
                               ),
                             ),
                           ),
-                          if (widget.service.prices[service] != null && widget.service.prices[service]! > 0)
+                          if (widget.service.prices[service] != null &&
+                              widget.service.prices[service]! > 0)
                             Text(
                               currency.format(widget.service.prices[service]),
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
-                                color: selected ? Colors.white70 : Colors.black54,
+                                color: selected
+                                    ? Colors.white70
+                                    : Colors.black54,
                               ),
                             ),
                         ],
@@ -208,7 +240,10 @@ class _AutoMobileDispatchScreenState extends State<AutoMobileDispatchScreen> {
                   prefixIcon: const Icon(LucideIcons.mapPin),
                   filled: true,
                   fillColor: Colors.white,
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: BorderSide.none,
+                  ),
                 ),
               ),
               const SizedBox(height: 24),
@@ -237,9 +272,14 @@ class _AutoMobileDispatchScreenState extends State<AutoMobileDispatchScreen> {
                   onPressed: _canSubmit ? _confirmDispatch : null,
                   style: FilledButton.styleFrom(
                     backgroundColor: _accent,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
                   ),
-                  child: const Text('Zudlik bilan chaqirish', style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold)),
+                  child: const Text(
+                    'Zudlik bilan chaqirish',
+                    style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
+                  ),
                 ),
               ),
               const SizedBox(height: 40),

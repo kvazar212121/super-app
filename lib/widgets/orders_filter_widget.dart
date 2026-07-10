@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../theme/glass_tokens.dart';
 import 'glass/glass_surface.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 class OrdersFilterWidget extends StatelessWidget {
   final String currentFilter;

@@ -1,7 +1,8 @@
 import 'api_service.dart';
 
 class DisinfectionPortalService {
-  static final DisinfectionPortalService _instance = DisinfectionPortalService._();
+  static final DisinfectionPortalService _instance =
+      DisinfectionPortalService._();
   factory DisinfectionPortalService() => _instance;
   DisinfectionPortalService._();
 
@@ -14,13 +15,12 @@ class DisinfectionPortalService {
     String? address,
     List<String> areaTypes = const [],
     bool isCertified = false,
-  }) =>
-      _api.registerDisinfection(
-        name: name,
-        phone: phone,
-        serviceArea: serviceArea,
-        address: address,
-        areaTypes: areaTypes,
-        isCertified: isCertified,
-      );
+  }) => _api.registerDisinfection(
+    name: name,
+    phone: phone,
+    serviceArea: serviceArea,
+    address: address,
+    areaTypes: areaTypes,
+    isCertified: isCertified,
+  );
 }

@@ -10,6 +10,7 @@ import '../providers/app_provider.dart';
 import '../utils/auth_guard.dart';
 import '../widgets/booking_common_widgets.dart';
 import '../widgets/glass/mesh_background.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 class AutoWorkshopDispatchScreen extends StatefulWidget {
   final AutoWorkshop workshop;
@@ -17,10 +18,12 @@ class AutoWorkshopDispatchScreen extends StatefulWidget {
   const AutoWorkshopDispatchScreen({super.key, required this.workshop});
 
   @override
-  State<AutoWorkshopDispatchScreen> createState() => _AutoWorkshopDispatchScreenState();
+  State<AutoWorkshopDispatchScreen> createState() =>
+      _AutoWorkshopDispatchScreenState();
 }
 
-class _AutoWorkshopDispatchScreenState extends State<AutoWorkshopDispatchScreen> {
+class _AutoWorkshopDispatchScreenState
+    extends State<AutoWorkshopDispatchScreen> {
   String? _selectedService;
   final _carCtrl = TextEditingController();
   final _notesCtrl = TextEditingController();
@@ -45,7 +48,11 @@ class _AutoWorkshopDispatchScreenState extends State<AutoWorkshopDispatchScreen>
     if (!await ensureAuthenticated(context)) return;
     if (!_canSubmit || !mounted) return;
 
-    final currency = NumberFormat.currency(locale: 'uz_UZ', symbol: 'so\'m', decimalDigits: 0);
+    final currency = NumberFormat.currency(
+      locale: 'uz_UZ',
+      symbol: 'so\'m',
+      decimalDigits: 0,
+    );
     final car = _carCtrl.text.trim();
     final notes = _notesCtrl.text.trim();
 
@@ -82,7 +89,9 @@ class _AutoWorkshopDispatchScreenState extends State<AutoWorkshopDispatchScreen>
       date: _selectedDate,
       price: _selectedPrice,
       status: OrderStatus.pending,
-      providerId: widget.workshop.providerId > 0 ? widget.workshop.providerId : null,
+      providerId: widget.workshop.providerId > 0
+          ? widget.workshop.providerId
+          : null,
     );
 
     try {
@@ -91,7 +100,9 @@ class _AutoWorkshopDispatchScreenState extends State<AutoWorkshopDispatchScreen>
       Navigator.pop(context);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('So\'rov yuborildi! ${widget.workshop.name} siz bilan tez orada aloqaga chiqadi.'),
+          content: Text(
+            'So\'rov yuborildi! ${widget.workshop.name} siz bilan tez orada aloqaga chiqadi.',
+          ),
           backgroundColor: Colors.green,
         ),
       );
@@ -106,7 +117,11 @@ class _AutoWorkshopDispatchScreenState extends State<AutoWorkshopDispatchScreen>
 
   @override
   Widget build(BuildContext context) {
-    final currency = NumberFormat.currency(locale: 'uz_UZ', symbol: 'so\'m', decimalDigits: 0);
+    final currency = NumberFormat.currency(
+      locale: 'uz_UZ',
+      symbol: 'so\'m',
+      decimalDigits: 0,
+    );
 
     return GlassBackdrop(
       child: Scaffold(
@@ -114,7 +129,7 @@ class _AutoWorkshopDispatchScreenState extends State<AutoWorkshopDispatchScreen>
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           elevation: 0,
-          title: const Text('Qabulga yozilish'),
+          title: Text('Qabulga yozilish'.tr),
         ),
         body: SingleChildScrollView(
           padding: const EdgeInsets.all(20),
@@ -139,8 +154,20 @@ class _AutoWorkshopDispatchScreenState extends State<AutoWorkshopDispatchScreen>
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(widget.workshop.name, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                          Text(widget.workshop.address, style: TextStyle(color: Colors.grey.shade600, fontSize: 13)),
+                          Text(
+                            widget.workshop.name,
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Text(
+                            widget.workshop.address,
+                            style: TextStyle(
+                              color: Colors.grey.shade600,
+                              fontSize: 13,
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -151,7 +178,7 @@ class _AutoWorkshopDispatchScreenState extends State<AutoWorkshopDispatchScreen>
               const SectionTitle('Xizmat turini tanlang'),
               const SizedBox(height: 12),
               if (widget.workshop.services.isEmpty)
-                const Text('Maxsus xizmatlar topilmadi.')
+                Text('Maxsus xizmatlar topilmadi.'.tr)
               else
                 ...widget.workshop.services.map((service) {
                   final selected = _selectedService == service;
@@ -179,12 +206,15 @@ class _AutoWorkshopDispatchScreenState extends State<AutoWorkshopDispatchScreen>
                               ),
                             ),
                           ),
-                          if (widget.workshop.prices[service] != null && widget.workshop.prices[service]! > 0)
+                          if (widget.workshop.prices[service] != null &&
+                              widget.workshop.prices[service]! > 0)
                             Text(
                               currency.format(widget.workshop.prices[service]),
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
-                                color: selected ? Colors.white70 : Colors.black54,
+                                color: selected
+                                    ? Colors.white70
+                                    : Colors.black54,
                               ),
                             ),
                         ],
@@ -228,9 +258,14 @@ class _AutoWorkshopDispatchScreenState extends State<AutoWorkshopDispatchScreen>
                   onPressed: _canSubmit ? _confirmDispatch : null,
                   style: FilledButton.styleFrom(
                     backgroundColor: _accent,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
                   ),
-                  child: const Text('Qabulga yozilish', style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold)),
+                  child: const Text(
+                    'Qabulga yozilish',
+                    style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
+                  ),
                 ),
               ),
               const SizedBox(height: 40),

@@ -13,6 +13,7 @@ import '../services/barber_portal_service.dart';
 import '../services/salon_portal_service.dart';
 import '../theme/glass_tokens.dart';
 import 'glass/glass_surface.dart';
+import '../l10n/locale_controller.dart';
 
 /// Soha egasi paneliga kirish yoki ro'yxatdan o'tish.
 class ProviderPortalEntry extends StatefulWidget {
@@ -91,7 +92,7 @@ class _ProviderPortalEntryState extends State<ProviderPortalEntry> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              'Panelni tanlang',
+              'Panelni tanlang'.tr,
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w800,
@@ -127,7 +128,8 @@ class _ProviderPortalEntryState extends State<ProviderPortalEntry> {
           context,
           MaterialPageRoute(
             builder: (_) => BarberPendingScreen(
-              shopName: _barberStatus?['shop_name']?.toString() ?? 'Sartaroshxona',
+              shopName:
+                  _barberStatus?['shop_name']?.toString() ?? 'Sartaroshxona'.tr,
             ),
           ),
         );
@@ -140,7 +142,7 @@ class _ProviderPortalEntryState extends State<ProviderPortalEntry> {
           context,
           MaterialPageRoute(
             builder: (_) => SalonPendingScreen(
-              salonName: _salonStatus?['salon_name']?.toString() ?? 'Salon',
+              salonName: _salonStatus?['salon_name']?.toString() ?? 'Salon'.tr,
             ),
           ),
         );
@@ -160,7 +162,9 @@ class _ProviderPortalEntryState extends State<ProviderPortalEntry> {
   Widget build(BuildContext context) {
     final auth = context.watch<AuthProvider>();
     if (!auth.isAuthenticated) {
-      return widget.compact ? const SizedBox.shrink() : _buildGuestCard(context);
+      return widget.compact
+          ? const SizedBox.shrink()
+          : _buildGuestCard(context);
     }
     if (_loading) {
       return const Padding(
@@ -170,12 +174,15 @@ class _ProviderPortalEntryState extends State<ProviderPortalEntry> {
     }
 
     final hasProvider = _providers.isNotEmpty;
-    final title = hasProvider ? 'Soha egasi paneli' : 'Siz qaysi soha egasisiz?';
+    final title = hasProvider
+        ? 'Soha egasi paneli'.tr
+        : 'Siz qaysi soha egasisiz?'.tr;
     final subtitle = hasProvider
-        ? '${_providers.length} ta xizmat — buyurtmalar va statistika'
-        : 'Biz sizni ushbu platformaga qo\'shamiz — mijozlar sizni topadi.';
-    final buttonLabel =
-        hasProvider ? 'Panelga o\'tish' : 'Usta / xizmat sifatida qo\'shilish';
+        ? '${_providers.length} ' + 'ta xizmat — buyurtmalar va statistika'.tr
+        : 'Biz sizni ushbu platformaga qo\'shamiz — mijozlar sizni topadi.'.tr;
+    final buttonLabel = hasProvider
+        ? 'Panelga o\'tish'.tr
+        : 'Usta / xizmat sifatida qo\'shilish'.tr;
 
     if (widget.compact) {
       return GlassSurface(
@@ -184,7 +191,10 @@ class _ProviderPortalEntryState extends State<ProviderPortalEntry> {
         opacity: 0.5,
         child: Row(
           children: [
-            Icon(LucideIcons.briefcase, color: GlassTokens.primaryText(context)),
+            Icon(
+              LucideIcons.briefcase,
+              color: GlassTokens.primaryText(context),
+            ),
             const SizedBox(width: 12),
             Expanded(
               child: Text(
@@ -195,7 +205,10 @@ class _ProviderPortalEntryState extends State<ProviderPortalEntry> {
                 ),
               ),
             ),
-            Icon(Icons.chevron_right, color: GlassTokens.secondaryText(context)),
+            Icon(
+              Icons.chevron_right,
+              color: GlassTokens.secondaryText(context),
+            ),
           ],
         ),
       );
@@ -214,9 +227,7 @@ class _ProviderPortalEntryState extends State<ProviderPortalEntry> {
                 decoration: BoxDecoration(
                   color: const Color(0xFF6366F1),
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(
-                    color: const Color(0xFF6366F1),
-                  ),
+                  border: Border.all(color: const Color(0xFF6366F1)),
                 ),
                 child: const Icon(
                   LucideIcons.briefcase,
@@ -264,7 +275,7 @@ class _ProviderPortalEntryState extends State<ProviderPortalEntry> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Soha egasi bo\'lish',
+            'Soha egasi bo\'lish'.tr,
             style: TextStyle(
               fontWeight: FontWeight.w700,
               fontSize: 16,
@@ -273,13 +284,20 @@ class _ProviderPortalEntryState extends State<ProviderPortalEntry> {
           ),
           const SizedBox(height: 8),
           Text(
-            'Xizmat ko\'rsatuvchi sifatida ro\'yxatdan o\'tish uchun avval kiring.',
-            style: TextStyle(color: GlassTokens.secondaryText(context), height: 1.4),
+            'Xizmat ko\'rsatuvchi sifatida ro\'yxatdan o\'tish uchun avval kiring.'
+                .tr,
+            style: TextStyle(
+              color: GlassTokens.secondaryText(context),
+              height: 1.4,
+            ),
           ),
           const SizedBox(height: 16),
           SizedBox(
             width: double.infinity,
-            child: OutlinedButton(onPressed: _openOnboarding, child: const Text('Batafsil')),
+            child: OutlinedButton(
+              onPressed: _openOnboarding,
+              child: Text('Batafsil'.tr),
+            ),
           ),
         ],
       ),

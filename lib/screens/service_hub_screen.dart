@@ -55,6 +55,7 @@ import 'tutor_profile_screen.dart';
 import 'education_center_booking_screen.dart';
 import 'simple_call_booking_screen.dart';
 import 'service_hub/saved_places_screen.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 part 'service_hub/service_hub_map_section.dart';
 part 'service_hub/service_hub_action_list.dart';
@@ -98,9 +99,7 @@ class _ServiceHubScreenState extends State<ServiceHubScreen> {
       showBackButton: true,
       title: widget.kind.title,
       body: Container(
-        decoration: const BoxDecoration(
-          color: Colors.transparent,
-        ),
+        decoration: BoxDecoration(color: Colors.transparent),
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
           child: FutureBuilder<Map<String, dynamic>>(
@@ -110,22 +109,28 @@ class _ServiceHubScreenState extends State<ServiceHubScreen> {
                 return const Center(child: CircularProgressIndicator());
               }
               final resultMap = snapshot.data as Map<String, dynamic>? ?? {};
-              final data = resultMap['data'] as HubScreenData? ?? HubScreenData();
+              final data =
+                  resultMap['data'] as HubScreenData? ?? HubScreenData();
               final cats = resultMap['cats'] as List<dynamic>? ?? [];
 
-              final config = ProviderCategoryConfig.byCategoryKey(widget.kind.name);
+              final config = ProviderCategoryConfig.byCategoryKey(
+                widget.kind.name,
+              );
               List<String> subCategories = config?.subCategories ?? [];
-              
+
               for (final c in cats) {
                 if (c['key'] == widget.kind.name) {
                   final variants = c['variants'] as List<dynamic>? ?? [];
                   if (variants.isNotEmpty) {
-                    subCategories = variants.map((v) => v['label_uz']?.toString() ?? '').where((s) => s.isNotEmpty).toList();
+                    subCategories = variants
+                        .map((v) => v['label_uz']?.toString() ?? '')
+                        .where((s) => s.isNotEmpty)
+                        .toList();
                   }
                   break;
                 }
               }
-              
+
               final filteredData = _filterData(data);
 
               return Column(
@@ -144,8 +149,18 @@ class _ServiceHubScreenState extends State<ServiceHubScreen> {
                     ),
                     const SizedBox(height: 12),
                   ],
-                  _MapSection(kind: widget.kind, accentColor: widget.accentColor, data: filteredData),
-                  Expanded(child: _ActionList(kind: widget.kind, accentColor: widget.accentColor, data: filteredData)),
+                  _MapSection(
+                    kind: widget.kind,
+                    accentColor: widget.accentColor,
+                    data: filteredData,
+                  ),
+                  Expanded(
+                    child: _ActionList(
+                      kind: widget.kind,
+                      accentColor: widget.accentColor,
+                      data: filteredData,
+                    ),
+                  ),
                 ],
               );
             },
@@ -166,30 +181,64 @@ class _ServiceHubScreenState extends State<ServiceHubScreen> {
       final hasService = e.services.any((s) => s.toLowerCase().contains(query));
       return hasService || e.subCategory == _selectedSubCategory;
     }).toList();
-    
+
     filtered.salons = data.salons.where((e) {
       final hasService = e.services.any((s) => s.toLowerCase().contains(query));
       return hasService || e.subCategory == _selectedSubCategory;
     }).toList();
 
-    filtered.mobileBarbers = data.mobileBarbers.where((e) => e.subCategory == _selectedSubCategory).toList();
-    filtered.massage = data.massage.where((e) => e.subCategory == _selectedSubCategory).toList();
-    filtered.masters = data.masters.where((e) => e.subCategory == _selectedSubCategory).toList();
-    filtered.footballFields = data.footballFields.where((e) => e.subCategory == _selectedSubCategory).toList();
-    filtered.workers = data.workers.where((e) => e.subCategory == _selectedSubCategory).toList();
-    filtered.workshops = data.workshops.where((e) => e.subCategory == _selectedSubCategory).toList();
-    filtered.autoMobile = data.autoMobile.where((e) => e.subCategory == _selectedSubCategory).toList();
-    filtered.educationCenters = data.educationCenters.where((e) => e.subCategory == _selectedSubCategory).toList();
-    filtered.disinfection = data.disinfection.where((e) => e.subCategory == _selectedSubCategory).toList();
-    filtered.appliance = data.appliance.where((e) => e.subCategory == _selectedSubCategory).toList();
-    filtered.couriers = data.couriers.where((e) => e.subCategory == _selectedSubCategory).toList();
-    filtered.nannies = data.nannies.where((e) => e.subCategory == _selectedSubCategory).toList();
-    filtered.tutors = data.tutors.where((e) => e.subCategory == _selectedSubCategory).toList();
-    filtered.nurses = data.nurses.where((e) => e.subCategory == _selectedSubCategory).toList();
-    filtered.dentalClinics = data.dentalClinics.where((e) => e.subCategory == _selectedSubCategory).toList();
-    filtered.events = data.events.where((e) => e.subCategory == _selectedSubCategory).toList();
-    filtered.mobileStylists = data.mobileStylists.where((e) => e.subCategory == _selectedSubCategory).toList();
-    
+    filtered.mobileBarbers = data.mobileBarbers
+        .where((e) => e.subCategory == _selectedSubCategory)
+        .toList();
+    filtered.massage = data.massage
+        .where((e) => e.subCategory == _selectedSubCategory)
+        .toList();
+    filtered.masters = data.masters
+        .where((e) => e.subCategory == _selectedSubCategory)
+        .toList();
+    filtered.footballFields = data.footballFields
+        .where((e) => e.subCategory == _selectedSubCategory)
+        .toList();
+    filtered.workers = data.workers
+        .where((e) => e.subCategory == _selectedSubCategory)
+        .toList();
+    filtered.workshops = data.workshops
+        .where((e) => e.subCategory == _selectedSubCategory)
+        .toList();
+    filtered.autoMobile = data.autoMobile
+        .where((e) => e.subCategory == _selectedSubCategory)
+        .toList();
+    filtered.educationCenters = data.educationCenters
+        .where((e) => e.subCategory == _selectedSubCategory)
+        .toList();
+    filtered.disinfection = data.disinfection
+        .where((e) => e.subCategory == _selectedSubCategory)
+        .toList();
+    filtered.appliance = data.appliance
+        .where((e) => e.subCategory == _selectedSubCategory)
+        .toList();
+    filtered.couriers = data.couriers
+        .where((e) => e.subCategory == _selectedSubCategory)
+        .toList();
+    filtered.nannies = data.nannies
+        .where((e) => e.subCategory == _selectedSubCategory)
+        .toList();
+    filtered.tutors = data.tutors
+        .where((e) => e.subCategory == _selectedSubCategory)
+        .toList();
+    filtered.nurses = data.nurses
+        .where((e) => e.subCategory == _selectedSubCategory)
+        .toList();
+    filtered.dentalClinics = data.dentalClinics
+        .where((e) => e.subCategory == _selectedSubCategory)
+        .toList();
+    filtered.events = data.events
+        .where((e) => e.subCategory == _selectedSubCategory)
+        .toList();
+    filtered.mobileStylists = data.mobileStylists
+        .where((e) => e.subCategory == _selectedSubCategory)
+        .toList();
+
     filtered.genericProviders = data.genericProviders.where((e) {
       if (e is Map<String, dynamic>) {
         final meta = e['metadata'] as Map<String, dynamic>?;
@@ -202,4 +251,3 @@ class _ServiceHubScreenState extends State<ServiceHubScreen> {
     return filtered;
   }
 }
-

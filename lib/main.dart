@@ -28,16 +28,18 @@ final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   // Enable edge-to-edge mode for transparent system navigation and status bars
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
-  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-    systemNavigationBarColor: Colors.transparent,
-    systemNavigationBarDividerColor: Colors.transparent,
-    statusBarColor: Colors.transparent,
-    statusBarIconBrightness: Brightness.light,
-    systemNavigationBarIconBrightness: Brightness.light,
-  ));
+  SystemChrome.setSystemUIOverlayStyle(
+    SystemUiOverlayStyle(
+      systemNavigationBarColor: Colors.transparent,
+      systemNavigationBarDividerColor: Colors.transparent,
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.light,
+      systemNavigationBarIconBrightness: Brightness.light,
+    ),
+  );
 
   await NotificationHelper().init();
   await CallHistoryService().init();
@@ -61,6 +63,7 @@ void main() async {
         Future.delayed(const Duration(milliseconds: 200), doPush);
       }
     }
+
     doPush();
   }
 
@@ -83,7 +86,11 @@ void main() async {
     debugPrint("Firebase init failed: $e");
   }
 
-  void safePushCallScreen({required int id, required String name, Map<String, dynamic>? data}) {
+  void safePushCallScreen({
+    required int id,
+    required String name,
+    Map<String, dynamic>? data,
+  }) {
     void doPush() {
       final ctx = navigatorKey.currentContext;
       if (ctx != null) {
@@ -91,25 +98,27 @@ void main() async {
           MaterialPageRoute(
             builder: (_) => CallScreen(
               isIncoming: true,
-              incomingData: data ?? {
-                'sender_id': id,
-                'sender_name': name,
-              },
+              incomingData: data ?? {'sender_id': id, 'sender_name': name},
             ),
           ),
         );
       } else {
-        debugPrint('safePushCallScreen: context null, 100ms dan so\'ng qayta uriniladi...');
+        debugPrint(
+          'safePushCallScreen: context null, 100ms dan so\'ng qayta uriniladi...',
+        );
         Future.delayed(const Duration(milliseconds: 100), doPush);
       }
     }
+
     doPush();
   }
 
   // CallKit accept/decline eventlarini CallService ga ulash
   CallKitService().onCallAccepted = (callerId, callerName) {
     final id = int.tryParse(callerId) ?? 0;
-    final name = (callerName != 'Noma\'lum') ? callerName : CallService().remoteUserName;
+    final name = (callerName != 'Noma\'lum')
+        ? callerName
+        : CallService().remoteUserName;
     CallService().answerCall(id, name);
 
     safePushCallScreen(id: id, name: name);
@@ -129,7 +138,9 @@ void main() async {
   CallService().onIncomingCall = (data) {
     final senderId = data['sender_id'] as int? ?? 0;
     if (CallHistoryService().isUserBlocked(senderId)) {
-      debugPrint('Bloklangan foydalanuvchi qo\'ng\'iroq qildi: $senderId. Avtomatik rad etiladi.');
+      debugPrint(
+        'Bloklangan foydalanuvchi qo\'ng\'iroq qildi: $senderId. Avtomatik rad etiladi.',
+      );
       CallService().rejectCall();
       return;
     }
@@ -158,23 +169,25 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => AppProvider()),
-        ChangeNotifierProvider(create: (_) => SavedPlacesProvider()..loadSavedPlaces()),
+        ChangeNotifierProvider(
+          create: (_) => SavedPlacesProvider()..loadSavedPlaces(),
+        ),
       ],
       child: AnimatedBuilder(
         animation: LocaleController.instance,
         builder: (context, _) => Consumer<AppProvider>(
-        builder: (context, appProvider, _) {
-          return MaterialApp(
-            navigatorKey: navigatorKey,
-            title: 'HubServis',
-            debugShowCheckedModeBanner: false,
-            locale: LocaleController.instance.locale,
-            theme: AppTheme.lightTheme,
-            darkTheme: AppTheme.darkTheme,
-            themeMode: ThemeMode.dark,
-            home: const SplashScreen(),
-          );
-        },
+          builder: (context, appProvider, _) {
+            return MaterialApp(
+              navigatorKey: navigatorKey,
+              title: 'HubServis',
+              debugShowCheckedModeBanner: false,
+              locale: LocaleController.instance.locale,
+              theme: AppTheme.lightTheme,
+              darkTheme: AppTheme.darkTheme,
+              themeMode: ThemeMode.dark,
+              home: const SplashScreen(),
+            );
+          },
         ),
       ),
     );

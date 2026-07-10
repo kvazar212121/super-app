@@ -4,6 +4,8 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../services/api_service.dart';
 import '../theme/glass_tokens.dart';
 import 'weather_currency_modals.dart';
+import '../l10n/locale_controller.dart';
+
 class DailyUtilitiesWidget extends StatefulWidget {
   const DailyUtilitiesWidget({super.key});
 
@@ -13,10 +15,10 @@ class DailyUtilitiesWidget extends StatefulWidget {
 
 class _DailyUtilitiesWidgetState extends State<DailyUtilitiesWidget> {
   final ApiService _api = ApiService();
-  
+
   Map<String, dynamic>? weather;
   List<dynamic>? currencies;
-  
+
   int _currentCurrencyIndex = 0;
   Timer? _timer;
 
@@ -28,7 +30,8 @@ class _DailyUtilitiesWidgetState extends State<DailyUtilitiesWidget> {
       if (currencies != null && currencies!.isNotEmpty) {
         if (mounted) {
           setState(() {
-            _currentCurrencyIndex = (_currentCurrencyIndex + 1) % currencies!.length;
+            _currentCurrencyIndex =
+                (_currentCurrencyIndex + 1) % currencies!.length;
           });
         }
       }
@@ -67,9 +70,10 @@ class _DailyUtilitiesWidgetState extends State<DailyUtilitiesWidget> {
   }
 
   Widget _buildWeatherCard() {
-    String txt = 'Yuklanmoqda...';
+    String txt = 'Yuklanmoqda...'.tr;
     if (weather != null) {
-      final temp = weather!['temperature_celsius'] ?? weather!['temperature'] ?? '';
+      final temp =
+          weather!['temperature_celsius'] ?? weather!['temperature'] ?? '';
       final cond = weather!['condition'] ?? '';
       txt = '$temp°C • $cond';
     }
@@ -85,7 +89,7 @@ class _DailyUtilitiesWidgetState extends State<DailyUtilitiesWidget> {
       child: _BaseCard(
         icon: LucideIcons.cloudSun,
         color: Colors.blueAccent,
-        title: 'Ob-havo',
+        title: 'Ob-havo'.tr,
         customSubtitle: Text(
           txt,
           style: TextStyle(
@@ -100,14 +104,14 @@ class _DailyUtilitiesWidgetState extends State<DailyUtilitiesWidget> {
   }
 
   Widget _buildCurrencyCard() {
-    String txt = 'Yuklanmoqda...';
+    String txt = 'Yuklanmoqda...'.tr;
     if (currencies != null && currencies!.isNotEmpty) {
       final cur = currencies![_currentCurrencyIndex];
       final ccy = cur['Ccy'];
       final rate = cur['Rate'];
       txt = '1 $ccy = $rate UZS';
     }
-    
+
     return GestureDetector(
       onTap: () {
         showModalBottomSheet(
@@ -120,7 +124,7 @@ class _DailyUtilitiesWidgetState extends State<DailyUtilitiesWidget> {
       child: _BaseCard(
         icon: LucideIcons.circleDollarSign,
         color: Colors.greenAccent,
-        title: 'Valyuta kurslari',
+        title: 'Valyuta kurslari'.tr,
         customSubtitle: AnimatedSwitcher(
           duration: const Duration(milliseconds: 500),
           switchInCurve: Curves.easeOut,
@@ -178,15 +182,16 @@ class _PrayerWidgetState extends State<PrayerWidget> {
 
   @override
   Widget build(BuildContext context) {
-    String txt = 'Yuklanmoqda...';
+    String txt = 'Yuklanmoqda...'.tr;
     if (prayers != null && prayers!.containsKey('timings')) {
       final timings = prayers!['timings'];
-      txt = 'Bomdod: ${timings['Fajr']} • Peshin: ${timings['Dhuhr']}';
+      txt =
+          '${'Bomdod'.tr}: ${timings['Fajr']} • ${'Peshin'.tr}: ${timings['Dhuhr']}';
     }
     return _BaseCard(
       icon: LucideIcons.moon,
       color: Colors.deepPurpleAccent,
-      title: 'Namoz vaqtlari',
+      title: 'Namoz vaqtlari'.tr,
       customSubtitle: Text(
         txt,
         style: TextStyle(
@@ -219,7 +224,9 @@ class _BaseCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
       decoration: BoxDecoration(
-        color: isDark ? Color.lerp(const Color(0xFF1E293B), color, 0.15) : Color.lerp(Colors.white, color, 0.1),
+        color: isDark
+            ? Color.lerp(const Color(0xFF1E293B), color, 0.15)
+            : Color.lerp(Colors.white, color, 0.1),
         borderRadius: BorderRadius.circular(16),
       ),
       child: Row(
@@ -254,7 +261,7 @@ class _BaseCard extends StatelessWidget {
                 customSubtitle,
               ],
             ),
-          )
+          ),
         ],
       ),
     );

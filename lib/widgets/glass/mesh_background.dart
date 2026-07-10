@@ -25,7 +25,9 @@ class MeshBackground extends StatelessWidget {
           child: BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
             child: Container(
-              color: isDark ? Colors.black.withOpacity(0.45) : Colors.white.withOpacity(0.25),
+              color: isDark
+                  ? Colors.black.withOpacity(0.45)
+                  : Colors.white.withOpacity(0.25),
             ),
           ),
         ),
@@ -83,12 +85,7 @@ class _Orb extends StatelessWidget {
         height: size,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          gradient: RadialGradient(
-            colors: [
-              color,
-              color.withValues(alpha: 0),
-            ],
-          ),
+          gradient: RadialGradient(colors: [color, color.withValues(alpha: 0)]),
         ),
       ),
     );

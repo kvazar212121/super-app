@@ -10,6 +10,7 @@ import '../theme/glass_tokens.dart';
 import '../utils/call_helper.dart';
 import '../widgets/glass/glass_scaffold.dart';
 import '../widgets/glass/glass_surface.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 class OshxonaProfileScreen extends StatelessWidget {
   final Master oshxona;
@@ -46,7 +47,9 @@ class OshxonaProfileScreen extends StatelessWidget {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(
-                      isSaved ? 'Sevimli ro\'yxatidan o\'chirildi' : 'Sevimli ro\'yxatiga qo\'shildi',
+                      isSaved
+                          ? 'Sevimli ro\'yxatidan o\'chirildi'
+                          : 'Sevimli ro\'yxatiga qo\'shildi',
                     ),
                     duration: const Duration(seconds: 1),
                   ),
@@ -88,7 +91,10 @@ class OshxonaProfileScreen extends StatelessWidget {
                       const SizedBox(width: 4),
                       Text(
                         oshxona.serviceArea!,
-                        style: const TextStyle(color: accent, fontWeight: FontWeight.w500),
+                        style: const TextStyle(
+                          color: accent,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                     ],
                   ),
@@ -116,10 +122,7 @@ class OshxonaProfileScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 10),
-            Text(
-              oshxona.about!,
-              style: const TextStyle(height: 1.5),
-            ),
+            Text(oshxona.about!, style: const TextStyle(height: 1.5)),
             const SizedBox(height: 24),
           ],
           Container(
@@ -152,10 +155,18 @@ class OshxonaProfileScreen extends StatelessWidget {
                       );
                     },
                     icon: const Icon(LucideIcons.phone),
-                    label: const Text('Qo\'ng\'iroq qilish', style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold)),
+                    label: const Text(
+                      'Qo\'ng\'iroq qilish',
+                      style: TextStyle(
+                        fontSize: 17,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                     style: FilledButton.styleFrom(
                       backgroundColor: accent,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
                     ),
                   ),
                 ),

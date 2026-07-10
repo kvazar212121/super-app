@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'glass_tokens.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 class AppTheme {
   static ThemeData lightTheme = _build(Brightness.light);
@@ -17,15 +18,14 @@ class AppTheme {
     return ThemeData(
       useMaterial3: true,
       brightness: brightness,
-      scaffoldBackgroundColor:
-          isDark ? const Color(0xFF0B0B1A) : const Color(0xFFEEF2FF),
+      scaffoldBackgroundColor: isDark
+          ? const Color(0xFF0B0B1A)
+          : const Color(0xFFEEF2FF),
       colorScheme: ColorScheme.fromSeed(
         seedColor: const Color(0xFF3B82F6),
         secondary: const Color(0xFF06B6D4),
         brightness: brightness,
-        surface: isDark
-            ? const Color(0xFF1E1E2E)
-            : Colors.white,
+        surface: isDark ? const Color(0xFF1E1E2E) : Colors.white,
       ),
       textTheme: textTheme.copyWith(
         titleLarge: textTheme.titleLarge?.copyWith(
@@ -72,9 +72,7 @@ class AppTheme {
         style: OutlinedButton.styleFrom(
           foregroundColor: isDark ? Colors.white : const Color(0xFF6366F1),
           side: BorderSide(
-            color: isDark
-                ? Colors.white
-                : const Color(0xFF3B82F6),
+            color: isDark ? Colors.white : const Color(0xFF3B82F6),
           ),
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
           shape: RoundedRectangleBorder(
@@ -84,9 +82,7 @@ class AppTheme {
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: isDark
-            ? const Color(0xFF1E293B)
-            : Colors.white,
+        fillColor: isDark ? const Color(0xFF1E293B) : Colors.white,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(GlassTokens.radiusMd),
           borderSide: BorderSide.none,
@@ -94,9 +90,7 @@ class AppTheme {
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(GlassTokens.radiusMd),
           borderSide: BorderSide(
-            color: isDark
-                ? Colors.transparent
-                : Colors.white,
+            color: isDark ? Colors.transparent : Colors.white,
           ),
         ),
         focusedBorder: OutlineInputBorder(
@@ -104,15 +98,11 @@ class AppTheme {
           borderSide: const BorderSide(color: Color(0xFF3B82F6), width: 1.5),
         ),
         hintStyle: TextStyle(
-          color: isDark
-              ? const Color(0xFF64748B)
-              : const Color(0xFF94A3B8),
+          color: isDark ? const Color(0xFF64748B) : const Color(0xFF94A3B8),
         ),
       ),
       dividerTheme: DividerThemeData(
-        color: isDark
-            ? Colors.white
-            : Colors.black,
+        color: isDark ? Colors.white : Colors.black,
       ),
       floatingActionButtonTheme: FloatingActionButtonThemeData(
         backgroundColor: const Color(0xFF3B82F6),

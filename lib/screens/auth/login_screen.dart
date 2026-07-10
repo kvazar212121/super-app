@@ -9,6 +9,7 @@ import '../../widgets/glass/glass_surface.dart';
 import '../../widgets/glass/mesh_background.dart';
 import '../../widgets/hub_servis_brand.dart';
 import 'auth_gate_screen.dart';
+import '../../l10n/locale_controller.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -29,7 +30,10 @@ class _LoginScreenState extends State<LoginScreen>
       vsync: this,
       duration: const Duration(milliseconds: 900),
     );
-    _fadeAnim = CurvedAnimation(parent: _animController, curve: Curves.easeOutCubic);
+    _fadeAnim = CurvedAnimation(
+      parent: _animController,
+      curve: Curves.easeOutCubic,
+    );
     _animController.forward();
   }
 
@@ -61,7 +65,10 @@ class _LoginScreenState extends State<LoginScreen>
             backgroundColor: Colors.transparent,
             elevation: 0,
             leading: IconButton(
-              icon: Icon(LucideIcons.arrowLeft, color: GlassTokens.primaryText(context)),
+              icon: Icon(
+                LucideIcons.arrowLeft,
+                color: GlassTokens.primaryText(context),
+              ),
               onPressed: () => Navigator.of(context).pop(),
             ),
           ),
@@ -84,8 +91,10 @@ class _LoginScreenState extends State<LoginScreen>
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             OtpAuthPanel(
-                              title: 'Telefon orqali kirish',
-                              subtitle: 'SMS kod bilan tasdiqlang — parolsiz kirish mumkin emas',
+                              title: 'Telefon orqali kirish'.tr,
+                              subtitle:
+                                  'SMS kod bilan tasdiqlang — parolsiz kirish mumkin emas'
+                                      .tr,
                               onLoginSuccess: _finishLogin,
                               onNeedRegister: (_, __) {
                                 Navigator.pushReplacement(
@@ -113,11 +122,11 @@ class _LoginScreenState extends State<LoginScreen>
                                       color: GlassTokens.secondaryText(context),
                                       fontSize: 14,
                                     ),
-                                    children: const [
-                                      TextSpan(text: 'Hisobingiz yo\'qmi? '),
+                                    children: [
+                                      TextSpan(text: 'Hisobingiz yo\'qmi? '.tr),
                                       TextSpan(
-                                        text: 'Ro\'yxatdan o\'ting',
-                                        style: TextStyle(
+                                        text: 'Ro\'yxatdan o\'ting'.tr,
+                                        style: const TextStyle(
                                           color: Color(0xFF6366F1),
                                           fontWeight: FontWeight.w700,
                                         ),

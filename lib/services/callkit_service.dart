@@ -117,7 +117,9 @@ class CallKitService {
       );
 
       await FlutterCallkitIncoming.showCallkitIncoming(params);
-      debugPrint('CallKit: Kiruvchi qo\'ng\'iroq ekrani ko\'rsatildi — $callerName');
+      debugPrint(
+        'CallKit: Kiruvchi qo\'ng\'iroq ekrani ko\'rsatildi — $callerName',
+      );
     } catch (e) {
       debugPrint('CallKit: showIncomingCall xatolik — $e');
     }

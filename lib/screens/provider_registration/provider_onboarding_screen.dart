@@ -8,94 +8,107 @@ class ProviderOnboardingScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ProviderTheme(child: Builder(builder: (context) {
-    final theme = Theme.of(context);
+    return ProviderTheme(
+      child: Builder(
+        builder: (context) {
+          final theme = Theme.of(context);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Xizmat ko\'rsatish'),
-        elevation: 0,
-      ),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Icon(
-                LucideIcons.briefcase,
-                size: 64,
-                color: Colors.black,
-              ),
-              const SizedBox(height: 24),
-              Text(
-                'O\'z xizmatingizni taqdim eting',
-                style: theme.textTheme.headlineMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: theme.colorScheme.onSurface,
-                ),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                'Bizning platformada minglab mijozlar o\'ziga kerakli ustani qidirmoqda. Siz ham ular orasida bo\'ling!',
-                style: theme.textTheme.bodyLarge?.copyWith(
-                  color: theme.colorScheme.onSurface,
-                ),
-              ),
-              const SizedBox(height: 32),
-              _buildFeatureItem(
-                context,
-                LucideIcons.users,
-                'Mijozlar oqimini ko\'paytiring',
-                'Doimiy mijozlar va ko\'proq buyurtmalar oling.',
-              ),
-              const SizedBox(height: 20),
-              _buildFeatureItem(
-                context,
-                LucideIcons.clock,
-                'Erkin ish grafigi',
-                'O\'zingizga qulay vaqtda va joyda ishlang.',
-              ),
-              const SizedBox(height: 20),
-              _buildFeatureItem(
-                context,
-                LucideIcons.shieldCheck,
-                'Ishonchli to\'lov',
-                'Xizmatlaringiz uchun kafolatlangan to\'lovlar.',
-              ),
-              const Spacer(),
-              SizedBox(
-                width: double.infinity,
-                child: FilledButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const ProviderCategorySelectionScreen(),
-                      ),
-                    );
-                  },
-                  style: FilledButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
+          return Scaffold(
+            appBar: AppBar(
+              title: const Text('Xizmat ko\'rsatish'),
+              elevation: 0,
+            ),
+            body: SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.all(24.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Icon(
+                      LucideIcons.briefcase,
+                      size: 64,
+                      color: Colors.black,
                     ),
-                  ),
-                  child: const Text(
-                    'Davom etish',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
+                    const SizedBox(height: 24),
+                    Text(
+                      'O\'z xizmatingizni taqdim eting',
+                      style: theme.textTheme.headlineMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: theme.colorScheme.onSurface,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Bizning platformada minglab mijozlar o\'ziga kerakli ustani qidirmoqda. Siz ham ular orasida bo\'ling!',
+                      style: theme.textTheme.bodyLarge?.copyWith(
+                        color: theme.colorScheme.onSurface,
+                      ),
+                    ),
+                    const SizedBox(height: 32),
+                    _buildFeatureItem(
+                      context,
+                      LucideIcons.users,
+                      'Mijozlar oqimini ko\'paytiring',
+                      'Doimiy mijozlar va ko\'proq buyurtmalar oling.',
+                    ),
+                    const SizedBox(height: 20),
+                    _buildFeatureItem(
+                      context,
+                      LucideIcons.clock,
+                      'Erkin ish grafigi',
+                      'O\'zingizga qulay vaqtda va joyda ishlang.',
+                    ),
+                    const SizedBox(height: 20),
+                    _buildFeatureItem(
+                      context,
+                      LucideIcons.shieldCheck,
+                      'Ishonchli to\'lov',
+                      'Xizmatlaringiz uchun kafolatlangan to\'lovlar.',
+                    ),
+                    const Spacer(),
+                    SizedBox(
+                      width: double.infinity,
+                      child: FilledButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  const ProviderCategorySelectionScreen(),
+                            ),
+                          );
+                        },
+                        style: FilledButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                        ),
+                        child: const Text(
+                          'Davom etish',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ],
-          ),
-        ),
+            ),
+          );
+        },
       ),
     );
-    }));
   }
 
-  Widget _buildFeatureItem(BuildContext context, IconData icon, String title, String description) {
+  Widget _buildFeatureItem(
+    BuildContext context,
+    IconData icon,
+    String title,
+    String description,
+  ) {
     final theme = Theme.of(context);
     return Row(
       children: [
@@ -114,7 +127,9 @@ class ProviderOnboardingScreen extends StatelessWidget {
             children: [
               Text(
                 title,
-                style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               Text(
                 description,

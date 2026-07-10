@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
+import '../../l10n/locale_controller.dart';
 import '../../services/api_service.dart';
 import '../../theme/glass_tokens.dart';
 import '../../widgets/glass/glass_scaffold.dart';
@@ -74,26 +75,37 @@ class _CalorieAnalyzeScreenState extends State<CalorieAnalyzeScreen> {
         _photoUrl = result['photo_url'] as String?;
         _confidence = (result['confidence'] as num?)?.toDouble();
         _nameController.text = result['dish_name_uz'] as String? ?? '';
-        _portionController.text = ((result['portion_grams'] as num?)?.round() ?? '').toString();
-        _caloriesController.text = ((result['calories'] as num?)?.round() ?? 0).toString();
-        _proteinController.text = ((result['protein_g'] as num?)?.round() ?? 0).toString();
-        _fatController.text = ((result['fat_g'] as num?)?.round() ?? 0).toString();
-        _carbsController.text = ((result['carbs_g'] as num?)?.round() ?? 0).toString();
+        _portionController.text =
+            ((result['portion_grams'] as num?)?.round() ?? '').toString();
+        _caloriesController.text = ((result['calories'] as num?)?.round() ?? 0)
+            .toString();
+        _proteinController.text = ((result['protein_g'] as num?)?.round() ?? 0)
+            .toString();
+        _fatController.text = ((result['fat_g'] as num?)?.round() ?? 0)
+            .toString();
+        _carbsController.text = ((result['carbs_g'] as num?)?.round() ?? 0)
+            .toString();
       });
     } on DioException catch (e) {
       if (!mounted) return;
       final status = e.response?.statusCode;
       setState(() {
         if (status == 422) {
-          _errorMessage = 'Rasmda taom aniqlanmadi. Boshqa rasm olib ko\'ring.';
+          _errorMessage =
+              'Rasmda taom aniqlanmadi. Boshqa rasm olib ko\'ring.'.tr;
         } else {
-          _errorMessage = (e.response?.data is Map ? e.response?.data['detail'] as String? : null) ??
-              'AI bilan bog\'lanib bo\'lmadi. Qayta urinib ko\'ring.';
+          _errorMessage =
+              (e.response?.data is Map
+                  ? e.response?.data['detail'] as String?
+                  : null) ??
+              'AI bilan bog\'lanib bo\'lmadi. Qayta urinib ko\'ring.'.tr;
         }
       });
     } catch (e) {
       if (!mounted) return;
-      setState(() => _errorMessage = 'Xatolik yuz berdi. Qayta urinib ko\'ring.');
+      setState(
+        () => _errorMessage = 'Xatolik yuz berdi. Qayta urinib ko\'ring.'.tr,
+      );
     } finally {
       if (mounted) setState(() => _isAnalyzing = false);
     }
@@ -124,7 +136,9 @@ class _CalorieAnalyzeScreenState extends State<CalorieAnalyzeScreen> {
       debugPrint('Saqlashda xato: $e');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Saqlab bo\'lmadi. Qayta urinib ko\'ring.')),
+          SnackBar(
+            content: Text('Saqlab bo\'lmadi. Qayta urinib ko\'ring.'.tr),
+          ),
         );
       }
     } finally {
@@ -136,17 +150,13 @@ class _CalorieAnalyzeScreenState extends State<CalorieAnalyzeScreen> {
   Widget build(BuildContext context) {
     return GlassScaffold(
       showBackButton: true,
-      title: 'Taom tahlili',
+      title: 'Taom tahlili'.tr,
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(GlassTokens.radiusMd),
-            child: Image.file(
-              widget.imageFile,
-              height: 220,
-              fit: BoxFit.cover,
-            ),
+            child: Image.file(widget.imageFile, height: 220, fit: BoxFit.cover),
           ),
           const SizedBox(height: 16),
           if (_isAnalyzing)
@@ -168,13 +178,19 @@ class _CalorieAnalyzeScreenState extends State<CalorieAnalyzeScreen> {
           const CircularProgressIndicator(color: Colors.redAccent),
           const SizedBox(height: 16),
           Text(
-            'AI taomni aniqlamoqda…',
-            style: TextStyle(fontWeight: FontWeight.w700, color: GlassTokens.primaryText(context)),
+            'AI taomni aniqlamoqda…'.tr,
+            style: TextStyle(
+              fontWeight: FontWeight.w700,
+              color: GlassTokens.primaryText(context),
+            ),
           ),
           const SizedBox(height: 4),
           Text(
-            'Bu bir necha soniya olishi mumkin',
-            style: TextStyle(fontSize: 13, color: GlassTokens.secondaryText(context)),
+            'Bu bir necha soniya olishi mumkin'.tr,
+            style: TextStyle(
+              fontSize: 13,
+              color: GlassTokens.secondaryText(context),
+            ),
           ),
         ],
       ),
@@ -186,7 +202,11 @@ class _CalorieAnalyzeScreenState extends State<CalorieAnalyzeScreen> {
       padding: const EdgeInsets.symmetric(vertical: 32),
       child: Column(
         children: [
-          const Icon(LucideIcons.imageOff, size: 48, color: Colors.orangeAccent),
+          const Icon(
+            LucideIcons.imageOff,
+            size: 48,
+            color: Colors.orangeAccent,
+          ),
           const SizedBox(height: 12),
           Text(
             _errorMessage!,
@@ -199,15 +219,20 @@ class _CalorieAnalyzeScreenState extends State<CalorieAnalyzeScreen> {
             children: [
               OutlinedButton.icon(
                 onPressed: () => Navigator.pop(context, false),
-                icon: const Icon(LucideIcons.camera),
-                label: const Text('Boshqa rasm'),
+                icon: Icon(LucideIcons.camera),
+                label: Text('Boshqa rasm'.tr),
               ),
               const SizedBox(width: 12),
               ElevatedButton.icon(
                 onPressed: _analyze,
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.redAccent,
+                ),
                 icon: const Icon(LucideIcons.refreshCw, color: Colors.white),
-                label: const Text('Qayta urinish', style: TextStyle(color: Colors.white)),
+                label: Text(
+                  'Qayta urinish'.tr,
+                  style: const TextStyle(color: Colors.white),
+                ),
               ),
             ],
           ),
@@ -229,41 +254,86 @@ class _CalorieAnalyzeScreenState extends State<CalorieAnalyzeScreen> {
             ),
             child: Row(
               children: [
-                const Icon(LucideIcons.info, size: 16, color: Colors.orangeAccent),
+                const Icon(
+                  LucideIcons.info,
+                  size: 16,
+                  color: Colors.orangeAccent,
+                ),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    'Taxminiy baho (ishonch: ${(_confidence! * 100).round()}%). Kerak bo\'lsa tahrirlang.',
-                    style: TextStyle(fontSize: 12, color: GlassTokens.secondaryText(context)),
+                    '${'Taxminiy baho'.tr} (${'ishonch'.tr}: ${(_confidence! * 100).round()}%). ${'Kerak bo\'lsa tahrirlang.'.tr}',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: GlassTokens.secondaryText(context),
+                    ),
                   ),
                 ),
               ],
             ),
           ),
-        const SizedBox(height: 16),
-        _buildTextField(_nameController, 'Taom nomi', LucideIcons.utensils),
+        SizedBox(height: 16),
+        _buildTextField(_nameController, 'Taom nomi'.tr, LucideIcons.utensils),
         const SizedBox(height: 12),
         Row(
           children: [
-            Expanded(child: _buildTextField(_portionController, 'Porsiya (g)', LucideIcons.scale, isNumber: true)),
+            Expanded(
+              child: _buildTextField(
+                _portionController,
+                'Porsiya (g)'.tr,
+                LucideIcons.scale,
+                isNumber: true,
+              ),
+            ),
             const SizedBox(width: 12),
-            Expanded(child: _buildTextField(_caloriesController, 'Kaloriya (kkal)', LucideIcons.flame, isNumber: true)),
+            Expanded(
+              child: _buildTextField(
+                _caloriesController,
+                'Kaloriya (kkal)'.tr,
+                LucideIcons.flame,
+                isNumber: true,
+              ),
+            ),
           ],
         ),
         const SizedBox(height: 12),
         Row(
           children: [
-            Expanded(child: _buildTextField(_proteinController, 'Oqsil (g)', LucideIcons.beef, isNumber: true)),
+            Expanded(
+              child: _buildTextField(
+                _proteinController,
+                'Oqsil (g)'.tr,
+                LucideIcons.beef,
+                isNumber: true,
+              ),
+            ),
             const SizedBox(width: 12),
-            Expanded(child: _buildTextField(_fatController, 'Yog\' (g)', LucideIcons.droplet, isNumber: true)),
+            Expanded(
+              child: _buildTextField(
+                _fatController,
+                'Yog\' (g)'.tr,
+                LucideIcons.droplet,
+                isNumber: true,
+              ),
+            ),
             const SizedBox(width: 12),
-            Expanded(child: _buildTextField(_carbsController, 'Uglevod (g)', LucideIcons.wheat, isNumber: true)),
+            Expanded(
+              child: _buildTextField(
+                _carbsController,
+                'Uglevod (g)'.tr,
+                LucideIcons.wheat,
+                isNumber: true,
+              ),
+            ),
           ],
         ),
         const SizedBox(height: 16),
         Text(
-          'Qaysi ovqat?',
-          style: TextStyle(fontWeight: FontWeight.w700, color: GlassTokens.primaryText(context)),
+          'Qaysi ovqat?'.tr,
+          style: TextStyle(
+            fontWeight: FontWeight.w700,
+            color: GlassTokens.primaryText(context),
+          ),
         ),
         const SizedBox(height: 8),
         Wrap(
@@ -271,11 +341,13 @@ class _CalorieAnalyzeScreenState extends State<CalorieAnalyzeScreen> {
           children: kMealTypeNames.entries.map((entry) {
             final selected = _mealType == entry.key;
             return ChoiceChip(
-              label: Text(entry.value),
+              label: Text(entry.value.tr),
               selected: selected,
               selectedColor: Colors.redAccent,
               labelStyle: TextStyle(
-                color: selected ? Colors.white : GlassTokens.primaryText(context),
+                color: selected
+                    ? Colors.white
+                    : GlassTokens.primaryText(context),
                 fontWeight: FontWeight.w600,
               ),
               onSelected: (_) => setState(() => _mealType = entry.key),
@@ -290,26 +362,51 @@ class _CalorieAnalyzeScreenState extends State<CalorieAnalyzeScreen> {
             onPressed: _isSaving ? null : _save,
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.redAccent,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(GlassTokens.radiusSm)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(GlassTokens.radiusSm),
+              ),
             ),
             child: _isSaving
-                ? const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                : const Text('Saqlash', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w800)),
+                ? const SizedBox(
+                    width: 22,
+                    height: 22,
+                    child: CircularProgressIndicator(
+                      color: Colors.white,
+                      strokeWidth: 2,
+                    ),
+                  )
+                : Text(
+                    'Saqlash'.tr,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
           ),
         ),
       ],
     );
   }
 
-  Widget _buildTextField(TextEditingController controller, String label, IconData icon, {bool isNumber = false}) {
+  Widget _buildTextField(
+    TextEditingController controller,
+    String label,
+    IconData icon, {
+    bool isNumber = false,
+  }) {
     return TextField(
       controller: controller,
-      keyboardType: isNumber ? const TextInputType.numberWithOptions(decimal: true) : TextInputType.text,
+      keyboardType: isNumber
+          ? const TextInputType.numberWithOptions(decimal: true)
+          : TextInputType.text,
       style: TextStyle(color: GlassTokens.primaryText(context)),
       decoration: InputDecoration(
         labelText: label,
         prefixIcon: Icon(icon, size: 18),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(GlassTokens.radiusSm)),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(GlassTokens.radiusSm),
+        ),
       ),
     );
   }

@@ -5,6 +5,7 @@ import '../widgets/booking_common_widgets.dart' hide SectionTitle;
 import '../widgets/sport_facility_widgets.dart';
 import '../widgets/glass/mesh_background.dart';
 import '../utils/call_helper.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 class SportFacilityBookingScreen extends StatefulWidget {
   final SportFacility facility;
@@ -12,10 +13,12 @@ class SportFacilityBookingScreen extends StatefulWidget {
   const SportFacilityBookingScreen({super.key, required this.facility});
 
   @override
-  State<SportFacilityBookingScreen> createState() => _SportFacilityBookingScreenState();
+  State<SportFacilityBookingScreen> createState() =>
+      _SportFacilityBookingScreenState();
 }
 
-class _SportFacilityBookingScreenState extends State<SportFacilityBookingScreen> {
+class _SportFacilityBookingScreenState
+    extends State<SportFacilityBookingScreen> {
   final Set<int> _selectedAmenities = {};
   double _totalPrice = 0.0;
   final _notesCtrl = TextEditingController();
@@ -95,8 +98,9 @@ class _SportFacilityBookingScreenState extends State<SportFacilityBookingScreen>
             TextFormField(
               controller: _notesCtrl,
               maxLines: 2,
-              decoration: const InputDecoration(
-                hintText: 'Masalan: raketkalar tayyor turishini xohlayman...',
+              decoration: InputDecoration(
+                hintText:
+                    'Masalan: raketkalar tayyor turishini xohlayman...'.tr,
                 border: OutlineInputBorder(),
               ),
             ),
@@ -114,7 +118,9 @@ class _SportFacilityBookingScreenState extends State<SportFacilityBookingScreen>
               child: FilledButton.icon(
                 style: FilledButton.styleFrom(
                   backgroundColor: _accent,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
                 ),
                 onPressed: _startCall,
                 icon: const Icon(Icons.phone_in_talk, size: 22),

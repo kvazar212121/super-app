@@ -1,3 +1,5 @@
+import 'package:super_app/l10n/locale_controller.dart';
+
 class TodoItem {
   final String id;
   final String title;
@@ -75,7 +77,10 @@ class ShoppingListItem {
   factory ShoppingListItem.fromJson(Map<String, dynamic> json) {
     return ShoppingListItem(
       name: json['name'] ?? '',
-      qty: (json['qty'] as num?)?.toDouble() ?? (json['quantity'] as num?)?.toDouble() ?? 1.0,
+      qty:
+          (json['qty'] as num?)?.toDouble() ??
+          (json['quantity'] as num?)?.toDouble() ??
+          1.0,
       unit: json['unit'] ?? 'dona',
       unitPrice: (json['unit_price'] as num?)?.toDouble() ?? 0.0,
       estimatedPrice: (json['estimated_price'] as num?)?.toDouble() ?? 0.0,
@@ -122,10 +127,15 @@ class ShoppingListModel {
   factory ShoppingListModel.fromJson(Map<String, dynamic> json) {
     var itemsList = json['items'] as List? ?? [];
     return ShoppingListModel(
-      id: json['id'] is int ? json['id'] : int.tryParse(json['id'].toString()) ?? 0,
+      id: json['id'] is int
+          ? json['id']
+          : int.tryParse(json['id'].toString()) ?? 0,
       name: json['name'] ?? 'Bozorlik',
-      items: itemsList.map((e) => ShoppingListItem.fromJson(e as Map<String, dynamic>)).toList(),
-      totalEstimatedPrice: (json['total_estimated_price'] as num?)?.toDouble() ?? 0.0,
+      items: itemsList
+          .map((e) => ShoppingListItem.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      totalEstimatedPrice:
+          (json['total_estimated_price'] as num?)?.toDouble() ?? 0.0,
       totalActualPrice: (json['total_actual_price'] as num?)?.toDouble() ?? 0.0,
       isCompleted: json['is_completed'] ?? false,
       createdAt: json['created_at'] != null

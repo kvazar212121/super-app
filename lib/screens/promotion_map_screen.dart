@@ -5,6 +5,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'dart:ui';
 import '../theme/glass_tokens.dart';
 import '../widgets/glass/glass_scaffold.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 class PromotionMapScreen extends StatefulWidget {
   final String title;
@@ -27,7 +28,7 @@ class PromotionMapScreen extends StatefulWidget {
 class _PromotionMapScreenState extends State<PromotionMapScreen> {
   final MapController _mapController = MapController();
   final LatLng _tashkentCenter = const LatLng(41.2995, 69.2401);
-  
+
   // Aksiya joylari uchun mock markerlar
   final List<LatLng> _promoLocations = [
     const LatLng(41.3111, 69.2797),
@@ -42,12 +43,7 @@ class _PromotionMapScreenState extends State<PromotionMapScreen> {
     return GlassScaffold(
       showBackButton: true,
       title: 'Aksiya Xaritasi',
-      body: Stack(
-        children: [
-          _buildMap(),
-          _buildTopBanner(context),
-        ],
-      ),
+      body: Stack(children: [_buildMap(), _buildTopBanner(context)]),
     );
   }
 
@@ -87,10 +83,18 @@ class _PromotionMapScreenState extends State<PromotionMapScreen> {
                         shape: BoxShape.circle,
                         border: Border.all(color: Colors.white, width: 2),
                         boxShadow: const [
-                          BoxShadow(color: Colors.black38, blurRadius: 4, offset: Offset(0, 2))
+                          BoxShadow(
+                            color: Colors.black38,
+                            blurRadius: 4,
+                            offset: Offset(0, 2),
+                          ),
                         ],
                       ),
-                      child: const Icon(LucideIcons.mapPin, color: Colors.white, size: 20),
+                      child: const Icon(
+                        LucideIcons.mapPin,
+                        color: Colors.white,
+                        size: 20,
+                      ),
                     ),
                   ],
                 ),
@@ -110,7 +114,10 @@ class _PromotionMapScreenState extends State<PromotionMapScreen> {
       child: ClipRRect(
         borderRadius: BorderRadius.circular(16),
         child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: GlassTokens.glassBlur, sigmaY: GlassTokens.glassBlur),
+          filter: ImageFilter.blur(
+            sigmaX: GlassTokens.glassBlur,
+            sigmaY: GlassTokens.glassBlur,
+          ),
           child: Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
@@ -157,7 +164,10 @@ class _PromotionMapScreenState extends State<PromotionMapScreen> {
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(12),
@@ -200,7 +210,10 @@ class _PromotionMapScreenState extends State<PromotionMapScreen> {
             const SizedBox(height: 8),
             Text(
               widget.title,
-              style: TextStyle(color: widget.colors[0], fontWeight: FontWeight.w600),
+              style: TextStyle(
+                color: widget.colors[0],
+                fontWeight: FontWeight.w600,
+              ),
             ),
             const SizedBox(height: 16),
             const Text(
@@ -214,11 +227,13 @@ class _PromotionMapScreenState extends State<PromotionMapScreen> {
                 onPressed: () {
                   Navigator.pop(context);
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text("Ma'muriyatga qo'ng'iroq qilinmoqda...")),
+                    SnackBar(
+                      content: Text("Ma'muriyatga qo'ng'iroq qilinmoqda...".tr),
+                    ),
                   );
                 },
-                icon: const Icon(LucideIcons.phone),
-                label: const Text("Qo'ng'iroq qilish"),
+                icon: Icon(LucideIcons.phone),
+                label: Text("Qo'ng'iroq qilish".tr),
                 style: FilledButton.styleFrom(
                   backgroundColor: widget.colors[0],
                   padding: const EdgeInsets.symmetric(vertical: 16),

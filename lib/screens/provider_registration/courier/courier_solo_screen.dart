@@ -6,6 +6,7 @@ import '../../../services/courier_portal_service.dart';
 import '../../../utils/phone_utils.dart';
 import '../../provider_side/provider_theme.dart';
 import 'courier_pending_screen.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 /// Kuryer — faqat yakka kuryer.
 class CourierSoloScreen extends StatefulWidget {
@@ -36,7 +37,7 @@ class _CourierSoloScreenState extends State<CourierSoloScreen> {
     final area = _areaCtrl.text.trim();
     if (name.isEmpty || area.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Ism va xizmat hududini kiriting')),
+        SnackBar(content: Text('Ism va xizmat hududini kiriting'.tr)),
       );
       return;
     }
@@ -65,9 +66,9 @@ class _CourierSoloScreenState extends State<CourierSoloScreen> {
       );
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Xatolik: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Xatolik: $e')));
       }
     } finally {
       if (mounted) setState(() => _submitting = false);
@@ -78,7 +79,7 @@ class _CourierSoloScreenState extends State<CourierSoloScreen> {
   Widget build(BuildContext context) {
     return ProviderTheme(
       child: Scaffold(
-        appBar: AppBar(title: const Text('Kuryer sifatida')),
+        appBar: AppBar(title: Text('Kuryer sifatida'.tr)),
         body: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
           child: Column(
@@ -91,31 +92,40 @@ class _CourierSoloScreenState extends State<CourierSoloScreen> {
               const SizedBox(height: 24),
               TextField(
                 controller: _nameCtrl,
-                decoration: const InputDecoration(labelText: 'Ismingiz yoki xizmat nomi'),
+                decoration: InputDecoration(
+                  labelText: 'Ismingiz yoki xizmat nomi'.tr,
+                ),
               ),
               const SizedBox(height: 16),
               TextField(
                 controller: _phoneCtrl,
-                decoration: const InputDecoration(labelText: 'Telefon'),
+                decoration: InputDecoration(labelText: 'Telefon'.tr),
               ),
               const SizedBox(height: 16),
               TextField(
                 controller: _areaCtrl,
                 maxLines: 2,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: 'Xizmat ko\'rsatadigan hudud',
-                  hintText: 'Masalan: Toshkent, Yunusobod, Sergeli',
+                  hintText: 'Masalan: Toshkent, Yunusobod, Sergeli'.tr,
                 ),
               ),
               const SizedBox(height: 16),
-              Text('Transport turi', style: TextStyle(color: Colors.grey[700], fontWeight: FontWeight.w600)),
+              Text(
+                'Transport turi',
+                style: TextStyle(
+                  color: Colors.grey[700],
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
               const SizedBox(height: 8),
               SegmentedButton<VehicleType>(
                 segments: VehicleType.values
                     .map((v) => ButtonSegment(value: v, label: Text(v.label)))
                     .toList(),
                 selected: {_vehicleType},
-                onSelectionChanged: (s) => setState(() => _vehicleType = s.first),
+                onSelectionChanged: (s) =>
+                    setState(() => _vehicleType = s.first),
               ),
               const SizedBox(height: 32),
               SizedBox(
@@ -123,7 +133,11 @@ class _CourierSoloScreenState extends State<CourierSoloScreen> {
                 child: FilledButton(
                   onPressed: _submitting ? null : _submit,
                   child: _submitting
-                      ? const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2))
+                      ? const SizedBox(
+                          width: 22,
+                          height: 22,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
                       : const Text('Ro\'yxatdan o\'tish'),
                 ),
               ),

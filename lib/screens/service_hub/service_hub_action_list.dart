@@ -5,7 +5,11 @@ class _ActionList extends StatelessWidget {
   final Color accentColor;
   final HubScreenData data;
 
-  const _ActionList({required this.kind, required this.accentColor, required this.data});
+  const _ActionList({
+    required this.kind,
+    required this.accentColor,
+    required this.data,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -16,20 +20,35 @@ class _ActionList extends StatelessWidget {
       children: [
         if (kind == ServiceHubKind.sartarosh) ...[
           BarberHubSection(shops: data.barberShops, accentColor: accentColor),
-          MobileBarberHubSection(barbers: data.mobileBarbers, accentColor: accentColor),
+          MobileBarberHubSection(
+            barbers: data.mobileBarbers,
+            accentColor: accentColor,
+          ),
         ],
         if (kind == ServiceHubKind.salon) ...[
           SalonHubSection(salons: data.salons, accentColor: accentColor),
-          MobileSalonHubSection(stylists: data.mobileStylists, accentColor: accentColor),
+          MobileSalonHubSection(
+            stylists: data.mobileStylists,
+            accentColor: accentColor,
+          ),
         ],
         if (kind == ServiceHubKind.futbol)
-          FootballHubSection(fields: data.footballFields, accentColor: accentColor),
+          FootballHubSection(
+            fields: data.footballFields,
+            accentColor: accentColor,
+          ),
         if (kind == ServiceHubKind.tozalash)
           CleaningHubSection(cleaners: data.masters, accentColor: accentColor),
         if (kind == ServiceHubKind.usta)
-          MasterDispatchHubSection(masters: data.masters, accentColor: accentColor),
+          MasterDispatchHubSection(
+            masters: data.masters,
+            accentColor: accentColor,
+          ),
         if (kind == ServiceHubKind.elektrik)
-          ElectricianHubSection(electricians: data.masters, accentColor: accentColor),
+          ElectricianHubSection(
+            electricians: data.masters,
+            accentColor: accentColor,
+          ),
         if (kind == ServiceHubKind.santexnik)
           PlumberHubSection(plumbers: data.masters, accentColor: accentColor),
         if (kind == ServiceHubKind.konditsioner)
@@ -41,7 +60,10 @@ class _ActionList extends StatelessWidget {
         if (kind == ServiceHubKind.avtoYordam)
           AutoHelpHubSection(units: data.autoMobile, accentColor: accentColor),
         if (kind == ServiceHubKind.avtoYordam)
-          AutoWorkshopHubSection(workshops: data.workshops, accentColor: accentColor),
+          AutoWorkshopHubSection(
+            workshops: data.workshops,
+            accentColor: accentColor,
+          ),
         if (kind == ServiceHubKind.repetitor) ...[
           TutorHubSection(tutors: data.tutors, accentColor: accentColor),
           Padding(
@@ -62,12 +84,13 @@ class _ActionList extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 20),
               itemCount: data.educationCenters.length,
               separatorBuilder: (_, __) => const SizedBox(width: 12),
-              itemBuilder: (_, i) => EducationCenterSmallCard(center: data.educationCenters[i]),
+              itemBuilder: (_, i) =>
+                  EducationCenterSmallCard(center: data.educationCenters[i]),
             ),
           ),
           const SizedBox(height: 16),
         ],
-        
+
         if (kind == ServiceHubKind.usta) ...[
           Padding(
             padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),
@@ -87,32 +110,64 @@ class _ActionList extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 20),
               itemCount: data.workshops.length,
               separatorBuilder: (_, __) => const SizedBox(width: 12),
-              itemBuilder: (_, i) => WorkshopSmallCard(workshop: data.workshops[i]),
+              itemBuilder: (_, i) =>
+                  WorkshopSmallCard(workshop: data.workshops[i]),
             ),
           ),
           const SizedBox(height: 16),
         ],
-        if (kind == ServiceHubKind.ishchi) _buildSection(context, "Yaqin ishchilar", data.workers.map((w) => WorkerSmallCard(worker: w)).toList()),
-        if (kind == ServiceHubKind.dezinfeksiya) _buildSection(context, "Dezinfeksiya xizmatlari", data.disinfection.map((s) => DisinfectionSmallCard(service: s)).toList()),
-        if (kind == ServiceHubKind.texnikaUstasi) _buildSection(context, "Texnika ustalari", data.appliance.map((s) => ApplianceSmallCard(service: s)).toList()),
+        if (kind == ServiceHubKind.ishchi)
+          _buildSection(
+            context,
+            "Yaqin ishchilar",
+            data.workers.map((w) => WorkerSmallCard(worker: w)).toList(),
+          ),
+        if (kind == ServiceHubKind.dezinfeksiya)
+          _buildSection(
+            context,
+            "Dezinfeksiya xizmatlari",
+            data.disinfection
+                .map((s) => DisinfectionSmallCard(service: s))
+                .toList(),
+          ),
+        if (kind == ServiceHubKind.texnikaUstasi)
+          _buildSection(
+            context,
+            "Texnika ustalari",
+            data.appliance.map((s) => ApplianceSmallCard(service: s)).toList(),
+          ),
         if (kind == ServiceHubKind.massajHijoma) ...[
           MassageCenterHubSection(
             centers: data.massage.where((m) => m.supportsAtCenter).toList(),
             accentColor: accentColor,
           ),
           MobileMassageHubSection(
-            specialists: data.massage.where((m) => m.supportsHomeVisit).toList(),
+            specialists: data.massage
+                .where((m) => m.supportsHomeVisit)
+                .toList(),
             accentColor: accentColor,
           ),
         ],
-        if (kind == ServiceHubKind.hamshira) _buildSection(context, "Hamshira xizmatlari", data.nurses.map((s) => NurseSmallCard(service: s)).toList()),
-        if (kind == ServiceHubKind.stomatologiya) _buildSection(context, "Stomatologiya klinikalari", data.dentalClinics.map((c) => DentalSmallCard(clinic: c)).toList()),
+        if (kind == ServiceHubKind.hamshira)
+          _buildSection(
+            context,
+            "Hamshira xizmatlari",
+            data.nurses.map((s) => NurseSmallCard(service: s)).toList(),
+          ),
+        if (kind == ServiceHubKind.stomatologiya)
+          _buildSection(
+            context,
+            "Stomatologiya klinikalari",
+            data.dentalClinics.map((c) => DentalSmallCard(clinic: c)).toList(),
+          ),
         if (kind == ServiceHubKind.tadbirlar) ...[
           if (data.genericProviders.isNotEmpty)
             _buildSection(
               context,
               "Tadbir o'tkazish joylari",
-              data.genericProviders.map((f) => EventVenueSmallCard(venue: f)).toList(),
+              data.genericProviders
+                  .map((f) => EventVenueSmallCard(venue: f))
+                  .toList(),
             ),
           if (data.events.isNotEmpty)
             _buildSection(
@@ -126,7 +181,9 @@ class _ActionList extends StatelessWidget {
             _buildSection(
               context,
               "PS5 va Kompyuter klublari",
-              data.genericProviders.map((f) => GameZoneSmallCard(zone: f)).toList(),
+              data.genericProviders
+                  .map((f) => GameZoneSmallCard(zone: f))
+                  .toList(),
             ),
         ],
         if (kind == ServiceHubKind.sportMaydon) ...[
@@ -134,20 +191,42 @@ class _ActionList extends StatelessWidget {
             _buildSection(
               context,
               "Sport maydonchalari",
-              data.genericProviders.map((f) => SportFacilitySmallCard(facility: f)).toList(),
+              data.genericProviders
+                  .map((f) => SportFacilitySmallCard(facility: f))
+                  .toList(),
             ),
         ],
-        if (kind == ServiceHubKind.bozorchi) _buildSection(context, "Bozorchi va kuryerlar", data.masters.map((m) => MasterSmallCard(master: m)).toList()),
-        if (kind == ServiceHubKind.oshxona) _buildSection(context, "Oshxona va Restoranlar", data.masters.map((m) => MasterSmallCard(master: m)).toList()),
-        
+        if (kind == ServiceHubKind.bozorchi)
+          _buildSection(
+            context,
+            "Bozorchi va kuryerlar",
+            data.masters.map((m) => MasterSmallCard(master: m)).toList(),
+          ),
+        if (kind == ServiceHubKind.oshxona)
+          _buildSection(
+            context,
+            "Oshxona va Restoranlar",
+            data.masters.map((m) => MasterSmallCard(master: m)).toList(),
+          ),
+
         if (actions.isNotEmpty)
           Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
-              children: actions.map((a) => Padding(
-                padding: const EdgeInsets.only(bottom: 10),
-                child: HubActionCard(title: a.title, subtitle: a.subtitle, icon: a.icon, accentColor: accentColor, onTap: a.onTap),
-              )).toList(),
+              children: actions
+                  .map(
+                    (a) => Padding(
+                      padding: const EdgeInsets.only(bottom: 10),
+                      child: HubActionCard(
+                        title: a.title,
+                        subtitle: a.subtitle,
+                        icon: a.icon,
+                        accentColor: accentColor,
+                        onTap: a.onTap,
+                      ),
+                    ),
+                  )
+                  .toList(),
             ),
           ),
       ],
@@ -202,7 +281,8 @@ class _ActionList extends StatelessWidget {
   }
 
   List<_HubActionSpec> _actions(BuildContext context) {
-    void toast(String m) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(m)));
+    void toast(String m) =>
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(m)));
 
     void openEvent({OrganizerServiceType? organizer, EventType? eventType}) {
       if (data.events.isEmpty) {
@@ -275,25 +355,30 @@ class _ActionList extends StatelessWidget {
             children: [
               const Padding(
                 padding: EdgeInsets.all(16),
-                child: Text('Mobil sartarosh tanlang', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                child: Text(
+                  'Mobil sartarosh tanlang',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                ),
               ),
-              ...data.mobileBarbers.map((b) => ListTile(
-                    leading: const Icon(LucideIcons.scissors),
-                    title: Text(b.name),
-                    subtitle: Text(b.serviceArea ?? 'Uyga xizmat'),
-                    onTap: () {
-                      Navigator.pop(ctx);
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => ProviderProfileScreen(
-                            master: b,
-                            category: ServiceHubKind.sartarosh,
-                          ),
+              ...data.mobileBarbers.map(
+                (b) => ListTile(
+                  leading: const Icon(LucideIcons.scissors),
+                  title: Text(b.name),
+                  subtitle: Text(b.serviceArea ?? 'Uyga xizmat'),
+                  onTap: () {
+                    Navigator.pop(ctx);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => ProviderProfileScreen(
+                          master: b,
+                          category: ServiceHubKind.sartarosh,
                         ),
-                      );
-                    },
-                  )),
+                      ),
+                    );
+                  },
+                ),
+              ),
             ],
           ),
         ),
@@ -338,25 +423,34 @@ class _ActionList extends StatelessWidget {
             children: [
               const Padding(
                 padding: EdgeInsets.all(16),
-                child: Text('General tozalash jamoasi', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                child: Text(
+                  'General tozalash jamoasi',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                ),
               ),
-              ...teams.map((m) => ListTile(
-                leading: const Icon(LucideIcons.users),
-                title: Text(m.name),
-                subtitle: Text(m.teamSize != null ? '${m.teamSize} kishilik jamoa' : 'Tozalash jamoasi'),
-                onTap: () {
-                  Navigator.pop(ctx);
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => ProviderProfileScreen(
-                        master: m,
-                        category: ServiceHubKind.tozalash,
+              ...teams.map(
+                (m) => ListTile(
+                  leading: const Icon(LucideIcons.users),
+                  title: Text(m.name),
+                  subtitle: Text(
+                    m.teamSize != null
+                        ? '${m.teamSize} kishilik jamoa'
+                        : 'Tozalash jamoasi',
+                  ),
+                  onTap: () {
+                    Navigator.pop(ctx);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => ProviderProfileScreen(
+                          master: m,
+                          category: ServiceHubKind.tozalash,
+                        ),
                       ),
-                    ),
-                  );
-                },
-              )),
+                    );
+                  },
+                ),
+              ),
             ],
           ),
         ),
@@ -401,25 +495,34 @@ class _ActionList extends StatelessWidget {
             children: [
               const Padding(
                 padding: EdgeInsets.all(16),
-                child: Text('Ustalar brigadasi', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                child: Text(
+                  'Ustalar brigadasi',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                ),
               ),
-              ...brigades.map((m) => ListTile(
-                leading: const Icon(LucideIcons.users),
-                title: Text(m.name),
-                subtitle: Text(m.teamSize != null ? '${m.teamSize} kishilik brigada' : 'Ustalar brigadasi'),
-                onTap: () {
-                  Navigator.pop(ctx);
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => ProviderProfileScreen(
-                        master: m,
-                        category: ServiceHubKind.usta,
+              ...brigades.map(
+                (m) => ListTile(
+                  leading: const Icon(LucideIcons.users),
+                  title: Text(m.name),
+                  subtitle: Text(
+                    m.teamSize != null
+                        ? '${m.teamSize} kishilik brigada'
+                        : 'Ustalar brigadasi',
+                  ),
+                  onTap: () {
+                    Navigator.pop(ctx);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => ProviderProfileScreen(
+                          master: m,
+                          category: ServiceHubKind.usta,
+                        ),
                       ),
-                    ),
-                  );
-                },
-              )),
+                    );
+                  },
+                ),
+              ),
             ],
           ),
         ),
@@ -451,25 +554,30 @@ class _ActionList extends StatelessWidget {
             children: [
               const Padding(
                 padding: EdgeInsets.all(16),
-                child: Text('Mobil kosmetolog', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                child: Text(
+                  'Mobil kosmetolog',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                ),
               ),
-              ...data.mobileStylists.map((s) => ListTile(
-                leading: const Icon(LucideIcons.sparkles),
-                title: Text(s.name),
-                subtitle: Text(s.serviceArea ?? 'Uyga xizmat'),
-                onTap: () {
-                  Navigator.pop(ctx);
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => ProviderProfileScreen(
-                        master: s,
-                        category: ServiceHubKind.salon,
+              ...data.mobileStylists.map(
+                (s) => ListTile(
+                  leading: const Icon(LucideIcons.sparkles),
+                  title: Text(s.name),
+                  subtitle: Text(s.serviceArea ?? 'Uyga xizmat'),
+                  onTap: () {
+                    Navigator.pop(ctx);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => ProviderProfileScreen(
+                          master: s,
+                          category: ServiceHubKind.salon,
+                        ),
                       ),
-                    ),
-                  );
-                },
-              )),
+                    );
+                  },
+                ),
+              ),
             ],
           ),
         ),
@@ -477,35 +585,64 @@ class _ActionList extends StatelessWidget {
     }
 
     return switch (kind) {
-      ServiceHubKind.sartarosh => <_HubActionSpec>[],
-      ServiceHubKind.salon => <_HubActionSpec>[],
-      ServiceHubKind.bozorchi => <_HubActionSpec>[],
-      ServiceHubKind.oshxona => <_HubActionSpec>[],
-      ServiceHubKind.futbol => <_HubActionSpec>[],
-      ServiceHubKind.elektrik => <_HubActionSpec>[],
-      ServiceHubKind.santexnik => <_HubActionSpec>[],
-      ServiceHubKind.tozalash => <_HubActionSpec>[],
-      ServiceHubKind.avtoYordam => <_HubActionSpec>[],
-      ServiceHubKind.konditsioner => <_HubActionSpec>[],
-      ServiceHubKind.enaga => <_HubActionSpec>[],
-      ServiceHubKind.repetitor => <_HubActionSpec>[],
-      ServiceHubKind.ishchi => <_HubActionSpec>[],
-      ServiceHubKind.usta => <_HubActionSpec>[],
-      // 6 ta YANGI:
-      ServiceHubKind.dezinfeksiya => <_HubActionSpec>[],
-      ServiceHubKind.texnikaUstasi => <_HubActionSpec>[],
-      ServiceHubKind.kuryerlik => <_HubActionSpec>[],
-      ServiceHubKind.massajHijoma => <_HubActionSpec>[],
-      ServiceHubKind.hamshira => <_HubActionSpec>[],
-      ServiceHubKind.stomatologiya => <_HubActionSpec>[],
-      ServiceHubKind.tadbirlar => <_HubActionSpec>[],
-      ServiceHubKind.gameZona || ServiceHubKind.sportMaydon || ServiceHubKind.bozorchi || ServiceHubKind.oshxona || ServiceHubKind.kompUsta || ServiceHubKind.boshqa => <_HubActionSpec>[],
-      _ => <_HubActionSpec>[],
-    } + [
-      _HubActionSpec(LucideIcons.bookmark, 'Saqlangan joylar', 'Saqlab qo‘yilgan joylar va ustalar', () => Navigator.push(context, MaterialPageRoute(builder: (_) => SavedPlacesScreen(category: kind)))),
-      _HubActionSpec(LucideIcons.layoutGrid, 'Barcha xizmatlar', 'To‘liq katalog', () => Navigator.push(context, MaterialPageRoute(builder: (_) => AllCategoriesScreen()))),
-      _HubActionSpec(LucideIcons.headphones, 'Qo‘llab-quvvatlash', 'Chat yoki qo‘ng‘iroq', () => toast('Support — tez orada')),
-    ];
+          ServiceHubKind.sartarosh => <_HubActionSpec>[],
+          ServiceHubKind.salon => <_HubActionSpec>[],
+          ServiceHubKind.bozorchi => <_HubActionSpec>[],
+          ServiceHubKind.oshxona => <_HubActionSpec>[],
+          ServiceHubKind.futbol => <_HubActionSpec>[],
+          ServiceHubKind.elektrik => <_HubActionSpec>[],
+          ServiceHubKind.santexnik => <_HubActionSpec>[],
+          ServiceHubKind.tozalash => <_HubActionSpec>[],
+          ServiceHubKind.avtoYordam => <_HubActionSpec>[],
+          ServiceHubKind.konditsioner => <_HubActionSpec>[],
+          ServiceHubKind.enaga => <_HubActionSpec>[],
+          ServiceHubKind.repetitor => <_HubActionSpec>[],
+          ServiceHubKind.ishchi => <_HubActionSpec>[],
+          ServiceHubKind.usta => <_HubActionSpec>[],
+          // 6 ta YANGI:
+          ServiceHubKind.dezinfeksiya => <_HubActionSpec>[],
+          ServiceHubKind.texnikaUstasi => <_HubActionSpec>[],
+          ServiceHubKind.kuryerlik => <_HubActionSpec>[],
+          ServiceHubKind.massajHijoma => <_HubActionSpec>[],
+          ServiceHubKind.hamshira => <_HubActionSpec>[],
+          ServiceHubKind.stomatologiya => <_HubActionSpec>[],
+          ServiceHubKind.tadbirlar => <_HubActionSpec>[],
+          ServiceHubKind.gameZona ||
+          ServiceHubKind.sportMaydon ||
+          ServiceHubKind.bozorchi ||
+          ServiceHubKind.oshxona ||
+          ServiceHubKind.kompUsta ||
+          ServiceHubKind.boshqa => <_HubActionSpec>[],
+          _ => <_HubActionSpec>[],
+        } +
+        [
+          _HubActionSpec(
+            LucideIcons.bookmark,
+            'Saqlangan joylar',
+            'Saqlab qo‘yilgan joylar va ustalar',
+            () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => SavedPlacesScreen(category: kind),
+              ),
+            ),
+          ),
+          _HubActionSpec(
+            LucideIcons.layoutGrid,
+            'Barcha xizmatlar',
+            'To‘liq katalog',
+            () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => AllCategoriesScreen()),
+            ),
+          ),
+          _HubActionSpec(
+            LucideIcons.headphones,
+            'Qo‘llab-quvvatlash',
+            'Chat yoki qo‘ng‘iroq',
+            () => toast('Support — tez orada'),
+          ),
+        ];
   }
 }
 

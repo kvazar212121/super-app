@@ -12,6 +12,7 @@ import 'calls/call_screen.dart';
 import '../widgets/glass/glass_scaffold.dart';
 import '../widgets/glass/glass_surface.dart';
 import '../widgets/order_status_timeline.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 class OrderDetailScreen extends StatefulWidget {
   final String orderId;
@@ -57,17 +58,17 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
         response: response,
       );
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Javobingiz qabul qilindi')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Javobingiz qabul qilindi'.tr)));
       }
       await _fetchCheckinStatus();
       await app.fetchOrders();
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(e.toString())),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(e.toString())));
       }
     }
   }
@@ -83,14 +84,17 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
     final ok = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Buyurtmani bekor qilish'),
-        content: const Text('Haqiqatan ham buyurtmani bekor qilmoqchimisiz?'),
+        title: Text('Buyurtmani bekor qilish'.tr),
+        content: Text('Haqiqatan ham buyurtmani bekor qilmoqchimisiz?'.tr),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Yo\'q')),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Yo\'q'),
+          ),
           FilledButton(
             onPressed: () => Navigator.pop(ctx, true),
             style: FilledButton.styleFrom(backgroundColor: Colors.red),
-            child: const Text('Bekor qilish'),
+            child: Text('Bekor qilish'.tr),
           ),
         ],
       ),
@@ -101,36 +105,42 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
     try {
       await p.cancelOrder(order.id);
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Buyurtma bekor qilindi')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Buyurtma bekor qilindi'.tr)));
       }
     } catch (_) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Bekor qilib bo\'lmadi')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Bekor qilib bo\'lmadi')));
       }
     } finally {
       if (mounted) setState(() => _cancelling = false);
     }
   }
 
-  Future<void> _confirmCompletion(AppProvider p, ServiceOrder order, bool confirm) async {
+  Future<void> _confirmCompletion(
+    AppProvider p,
+    ServiceOrder order,
+    bool confirm,
+  ) async {
     setState(() => _cancelling = true);
     try {
       await p.api.confirmCompletion(int.parse(order.id), confirm: confirm);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(confirm ? 'Tasdiqlandi!' : 'Shikoyat yuborildi')),
+          SnackBar(
+            content: Text(confirm ? 'Tasdiqlandi!' : 'Shikoyat yuborildi'),
+          ),
         );
       }
       await p.fetchOrders();
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Xatolik: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Xatolik: $e')));
       }
     } finally {
       if (mounted) setState(() => _cancelling = false);
@@ -146,7 +156,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
       context: context,
       builder: (ctx) => StatefulBuilder(
         builder: (context, setState) => AlertDialog(
-          title: const Text('Ustani baholang'),
+          title: Text('Ustani baholang'.tr),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -167,8 +177,8 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
               ),
               const SizedBox(height: 16),
               TextField(
-                decoration: const InputDecoration(
-                  labelText: 'Izoh (ixtiyoriy)',
+                decoration: InputDecoration(
+                  labelText: 'Izoh (ixtiyoriy)'.tr,
                   border: OutlineInputBorder(),
                 ),
                 maxLines: 3,
@@ -179,7 +189,10 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx),
-              child: const Text('Yopish', style: TextStyle(color: Colors.black)),
+              child: const Text(
+                'Yopish',
+                style: TextStyle(color: Colors.black),
+              ),
             ),
             FilledButton(
               onPressed: submitting
@@ -187,27 +200,43 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                   : () async {
                       setState(() => submitting = true);
                       try {
-                        await p.api.submitReview(order.providerId!, rating, comment);
+                        await p.api.submitReview(
+                          order.providerId!,
+                          rating,
+                          comment,
+                        );
                         if (mounted) {
                           Navigator.pop(ctx);
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Baho yuborildi! Rahmat!')),
+                            SnackBar(
+                              content: Text('Baho yuborildi! Rahmat!'.tr),
+                            ),
                           );
                         }
                       } catch (_) {
                         if (mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Xatolik yuz berdi')),
+                            SnackBar(content: Text('Xatolik yuz berdi'.tr)),
                           );
                         }
                       } finally {
                         if (mounted) setState(() => submitting = false);
                       }
                     },
-              style: FilledButton.styleFrom(backgroundColor: Colors.amber, foregroundColor: Colors.black),
+              style: FilledButton.styleFrom(
+                backgroundColor: Colors.amber,
+                foregroundColor: Colors.black,
+              ),
               child: submitting
-                  ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(color: Colors.black, strokeWidth: 2))
-                  : const Text('Yuborish'),
+                  ? const SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(
+                        color: Colors.black,
+                        strokeWidth: 2,
+                      ),
+                    )
+                  : Text('Yuborish'.tr),
             ),
           ],
         ),
@@ -216,13 +245,13 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
   }
 
   Color _statusColor(OrderStatus s) => switch (s) {
-        OrderStatus.pending => const Color(0xFFF59E0B),
-        OrderStatus.accepted => const Color(0xFF3B82F6),
-        OrderStatus.inProgress => const Color(0xFFA855F7),
-        OrderStatus.completed => const Color(0xFF10B981),
-        OrderStatus.cancelled => const Color(0xFFEF4444),
-        _ => const Color(0xFF6B7280),
-      };
+    OrderStatus.pending => const Color(0xFFF59E0B),
+    OrderStatus.accepted => const Color(0xFF3B82F6),
+    OrderStatus.inProgress => const Color(0xFFA855F7),
+    OrderStatus.completed => const Color(0xFF10B981),
+    OrderStatus.cancelled => const Color(0xFFEF4444),
+    _ => const Color(0xFF6B7280),
+  };
 
   @override
   Widget build(BuildContext context) {
@@ -241,7 +270,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
               const SizedBox(height: 16),
               TextButton(
                 onPressed: () => app.fetchOrders(),
-                child: const Text('Yangilash'),
+                child: Text('Yangilash'.tr),
               ),
             ],
           ),
@@ -299,7 +328,9 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                         ),
                         Text(
                           order.providerName,
-                          style: TextStyle(color: GlassTokens.secondaryText(context)),
+                          style: TextStyle(
+                            color: GlassTokens.secondaryText(context),
+                          ),
                         ),
                       ],
                     ),
@@ -308,11 +339,18 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                     IconButton(
                       icon: const Icon(LucideIcons.phone, color: Colors.green),
                       onPressed: () {
-                        CallHelper.startCallWithPurposeCheck(context, order.providerId!, order.providerName);
+                        CallHelper.startCallWithPurposeCheck(
+                          context,
+                          order.providerId!,
+                          order.providerName,
+                        );
                       },
                     ),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 6,
+                    ),
                     decoration: BoxDecoration(
                       color: statusColor.withOpacity(0.15),
                       borderRadius: BorderRadius.circular(20),
@@ -368,23 +406,33 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                       const SizedBox(height: 8),
                       Text(
                         'Buyurtma vaqti yaqin. Yetib keldingizmi?',
-                        style: TextStyle(color: GlassTokens.secondaryText(context)),
+                        style: TextStyle(
+                          color: GlassTokens.secondaryText(context),
+                        ),
                       ),
                       const SizedBox(height: 16),
                       Row(
                         children: [
                           Expanded(
                             child: FilledButton(
-                              style: FilledButton.styleFrom(backgroundColor: Colors.green),
+                              style: FilledButton.styleFrom(
+                                backgroundColor: Colors.green,
+                              ),
                               onPressed: () => _submitCheckin('arrived'),
-                              child: const Text('Keldim', style: TextStyle(fontSize: 13)),
+                              child: const Text(
+                                'Keldim',
+                                style: TextStyle(fontSize: 13),
+                              ),
                             ),
                           ),
                           const SizedBox(width: 8),
                           Expanded(
                             child: FilledButton.tonal(
                               onPressed: () => _submitCheckin('delayed'),
-                              child: const Text('Kechikaman', style: TextStyle(fontSize: 13)),
+                              child: const Text(
+                                'Kechikaman',
+                                style: TextStyle(fontSize: 13),
+                              ),
                             ),
                           ),
                         ],
@@ -393,9 +441,14 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                       SizedBox(
                         width: double.infinity,
                         child: OutlinedButton(
-                          style: OutlinedButton.styleFrom(foregroundColor: Colors.red),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: Colors.red,
+                          ),
                           onPressed: () => _submitCheckin('cant_come'),
-                          child: const Text('Bora olmayman', style: TextStyle(fontSize: 13)),
+                          child: const Text(
+                            'Bora olmayman',
+                            style: TextStyle(fontSize: 13),
+                          ),
                         ),
                       ),
                     ],
@@ -413,7 +466,9 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                       Expanded(
                         child: Text(
                           'Siz javob bergansiz. Usta tasdiqlashi kutilmoqda...',
-                          style: TextStyle(color: GlassTokens.primaryText(context)),
+                          style: TextStyle(
+                            color: GlassTokens.primaryText(context),
+                          ),
                         ),
                       ),
                     ],
@@ -439,17 +494,26 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                     const SizedBox(height: 8),
                     Text(
                       'Usta o\'z ishini yakunlaganini xabar qildi. Buni tasdiqlaysizmi?',
-                      style: TextStyle(color: GlassTokens.secondaryText(context)),
+                      style: TextStyle(
+                        color: GlassTokens.secondaryText(context),
+                      ),
                     ),
                     const SizedBox(height: 16),
                     Row(
                       children: [
                         Expanded(
                           child: FilledButton.icon(
-                            style: FilledButton.styleFrom(backgroundColor: Colors.green),
-                            onPressed: _cancelling ? null : () => _confirmCompletion(app, order, true),
+                            style: FilledButton.styleFrom(
+                              backgroundColor: Colors.green,
+                            ),
+                            onPressed: _cancelling
+                                ? null
+                                : () => _confirmCompletion(app, order, true),
                             icon: const Icon(Icons.check, size: 18),
-                            label: const Text('Ha, bajardi', style: TextStyle(fontSize: 13)),
+                            label: const Text(
+                              'Ha, bajardi',
+                              style: TextStyle(fontSize: 13),
+                            ),
                           ),
                         ),
                       ],
@@ -458,10 +522,17 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                     SizedBox(
                       width: double.infinity,
                       child: OutlinedButton.icon(
-                        style: OutlinedButton.styleFrom(foregroundColor: Colors.red),
-                        onPressed: _cancelling ? null : () => _confirmCompletion(app, order, false),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: Colors.red,
+                        ),
+                        onPressed: _cancelling
+                            ? null
+                            : () => _confirmCompletion(app, order, false),
                         icon: const Icon(Icons.close, size: 18),
-                        label: const Text('Yo\'q, usta kelmadi', style: TextStyle(fontSize: 13)),
+                        label: const Text(
+                          'Yo\'q, usta kelmadi',
+                          style: TextStyle(fontSize: 13),
+                        ),
                       ),
                     ),
                   ],
@@ -477,11 +548,21 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                   _infoRow(context, LucideIcons.calendar, 'Vaqt', dateStr),
                   if (order.address.isNotEmpty) ...[
                     const SizedBox(height: 12),
-                    _infoRow(context, LucideIcons.mapPin, 'Manzil', order.address),
+                    _infoRow(
+                      context,
+                      LucideIcons.mapPin,
+                      'Manzil',
+                      order.address,
+                    ),
                   ],
                   if (order.notes.isNotEmpty) ...[
                     const SizedBox(height: 12),
-                    _infoRow(context, LucideIcons.messageSquare, 'Izoh', order.notes),
+                    _infoRow(
+                      context,
+                      LucideIcons.messageSquare,
+                      'Izoh',
+                      order.notes,
+                    ),
                   ],
                   const Divider(height: 28),
                   Row(
@@ -512,15 +593,17 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
               SizedBox(
                 width: double.infinity,
                 child: OutlinedButton.icon(
-                  onPressed: _cancelling ? null : () => _cancelOrder(app, order),
+                  onPressed: _cancelling
+                      ? null
+                      : () => _cancelOrder(app, order),
                   icon: _cancelling
                       ? const SizedBox(
                           width: 18,
                           height: 18,
                           child: CircularProgressIndicator(strokeWidth: 2),
                         )
-                      : const Icon(LucideIcons.xCircle),
-                  label: const Text('Buyurtmani bekor qilish'),
+                      : Icon(LucideIcons.xCircle),
+                  label: Text('Buyurtmani bekor qilish'.tr),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: Colors.red,
                     side: const BorderSide(color: Colors.red),
@@ -529,14 +612,15 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                 ),
               ),
             ],
-            if (order.status == OrderStatus.completed && order.providerId != null) ...[
+            if (order.status == OrderStatus.completed &&
+                order.providerId != null) ...[
               const SizedBox(height: 24),
               SizedBox(
                 width: double.infinity,
                 child: FilledButton.icon(
                   onPressed: () => _rateProvider(app, order),
-                  icon: const Icon(Icons.star, color: Colors.amber),
-                  label: const Text('Ustani baholash'),
+                  icon: Icon(Icons.star, color: Colors.amber),
+                  label: Text('Ustani baholash'.tr),
                   style: FilledButton.styleFrom(
                     backgroundColor: Colors.black,
                     foregroundColor: Colors.white,
@@ -552,7 +636,12 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
     );
   }
 
-  Widget _infoRow(BuildContext context, IconData icon, String label, String value) {
+  Widget _infoRow(
+    BuildContext context,
+    IconData icon,
+    String label,
+    String value,
+  ) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -562,7 +651,13 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(label, style: TextStyle(fontSize: 12, color: GlassTokens.secondaryText(context))),
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 12,
+                  color: GlassTokens.secondaryText(context),
+                ),
+              ),
               Text(
                 value,
                 style: TextStyle(

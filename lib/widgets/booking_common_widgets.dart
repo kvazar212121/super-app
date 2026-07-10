@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../theme/glass_tokens.dart';
 import '../config/app_config.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 /// Booking ekranlari uchun umumiy ranglar.
 /// Kartalar har doim OQ fonda, shuning uchun ulardagi matn qat'iy qora.
@@ -52,11 +53,13 @@ class BookingSliverAppBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final String? resolvedCoverUrl = coverUrl ??
+    final String? resolvedCoverUrl =
+        coverUrl ??
         rawJson?['metadata']?['cover_url'] ??
         rawJson?['cover_image'];
 
-    final bool hasImage = resolvedCoverUrl != null && resolvedCoverUrl.trim().isNotEmpty;
+    final bool hasImage =
+        resolvedCoverUrl != null && resolvedCoverUrl.trim().isNotEmpty;
 
     return SliverAppBar(
       expandedHeight: expandedHeight,
@@ -68,14 +71,18 @@ class BookingSliverAppBar extends StatelessWidget {
         title: title,
         background: Container(
           decoration: BoxDecoration(
-            gradient: hasImage ? null : LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [color, color],
-            ),
+            gradient: hasImage
+                ? null
+                : LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [color, color],
+                  ),
             image: hasImage
                 ? DecorationImage(
-                    image: CachedNetworkImageProvider(AppConfig.formatImageUrl(resolvedCoverUrl)),
+                    image: CachedNetworkImageProvider(
+                      AppConfig.formatImageUrl(resolvedCoverUrl),
+                    ),
                     fit: BoxFit.cover,
                     colorFilter: ColorFilter.mode(
                       Colors.black.withOpacity(0.3),
@@ -86,9 +93,7 @@ class BookingSliverAppBar extends StatelessWidget {
           ),
           child: hasImage
               ? const SizedBox.shrink()
-              : Center(
-                  child: Icon(icon, size: 64, color: Colors.white),
-                ),
+              : Center(child: Icon(icon, size: 64, color: Colors.white)),
         ),
       ),
     );
@@ -144,7 +149,10 @@ class ServiceProfileHeader extends StatelessWidget {
                   foregroundColor: accent,
                   elevation: 0,
                   minimumSize: const Size(0, 36),
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                     side: BorderSide(color: accent.withOpacity(0.4)),
@@ -171,7 +179,11 @@ class ServiceProfileHeader extends StatelessWidget {
                   const SizedBox(width: 4),
                   Text(
                     rating.toString(),
-                    style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white, fontSize: 13),
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                      fontSize: 13,
+                    ),
                   ),
                 ],
               ),
@@ -239,8 +251,11 @@ class SelectableIconGrid<T> extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(iconOf(item),
-                    color: isSelected ? Colors.white : kBookingSub, size: 20),
+                Icon(
+                  iconOf(item),
+                  color: isSelected ? Colors.white : kBookingSub,
+                  size: 20,
+                ),
                 const SizedBox(width: 8),
                 Flexible(
                   child: Text(
@@ -249,8 +264,9 @@ class SelectableIconGrid<T> extends StatelessWidget {
                     softWrap: true,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
-                      fontWeight:
-                          isSelected ? FontWeight.bold : FontWeight.normal,
+                      fontWeight: isSelected
+                          ? FontWeight.bold
+                          : FontWeight.normal,
                       color: isSelected ? Colors.white : kBookingInk,
                       height: 1.1,
                     ),
@@ -320,6 +336,7 @@ class PriceOptionList extends StatelessWidget {
   final ValueChanged<String> onSelect;
   final Color accent;
   final NumberFormat format;
+
   /// Har bir variant ostidagi qo'shimcha matn (masalan: "30-45 daqiqa").
   final String? Function(String option)? subtitleOf;
 
@@ -382,7 +399,10 @@ class PriceOptionList extends StatelessWidget {
                 const SizedBox(width: 8),
                 Text(
                   format.format(prices[option]),
-                  style: TextStyle(fontWeight: FontWeight.bold, color: isSelected ? Colors.white : accent),
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: isSelected ? Colors.white : accent,
+                  ),
                 ),
               ],
             ),
@@ -524,27 +544,40 @@ class BookingActionBar extends StatelessWidget {
           width: double.infinity,
           height: 56,
           child: ElevatedButton(
-            onPressed: onPrimary ?? (onPrimaryDisabled ?? () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text("Iltimos, barcha kerakli maydonlarni to'ldiring"),
-                  backgroundColor: Colors.redAccent,
-                ),
-              );
-            }),
+            onPressed:
+                onPrimary ??
+                (onPrimaryDisabled ??
+                    () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            "Iltimos, barcha kerakli maydonlarni to'ldiring".tr,
+                          ),
+                          backgroundColor: Colors.redAccent,
+                        ),
+                      );
+                    }),
             style: ElevatedButton.styleFrom(
-              backgroundColor: onPrimary != null ? accent : Colors.grey[300]!.withOpacity(0.5),
-              foregroundColor: onPrimary != null ? Colors.white : Colors.grey[500],
+              backgroundColor: onPrimary != null
+                  ? accent
+                  : Colors.grey[300]!.withOpacity(0.5),
+              foregroundColor: onPrimary != null
+                  ? Colors.white
+                  : Colors.grey[500],
               elevation: onPrimary != null ? 2 : 0,
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16)),
+                borderRadius: BorderRadius.circular(16),
+              ),
             ),
             child: FittedBox(
               fit: BoxFit.scaleDown,
               child: Text(
                 primaryLabel,
                 maxLines: 1,
-                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           ),
@@ -565,7 +598,8 @@ class BookingActionBar extends StatelessWidget {
                 foregroundColor: Colors.white,
                 side: const BorderSide(color: Colors.white),
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16)),
+                  borderRadius: BorderRadius.circular(16),
+                ),
               ),
             ),
           ),
@@ -587,7 +621,10 @@ class DetailRow extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: TextStyle(color: GlassTokens.secondaryText(context))),
+          Text(
+            label,
+            style: TextStyle(color: GlassTokens.secondaryText(context)),
+          ),
           const SizedBox(width: 12),
           Flexible(
             child: Text(
@@ -682,8 +719,7 @@ class SelectableStaffRow extends StatelessWidget {
                     ),
                     child: CircleAvatar(
                       radius: 28,
-                      backgroundColor:
-                          isSelected ? accent : kBookingCard,
+                      backgroundColor: isSelected ? accent : kBookingCard,
                       child: Icon(
                         isAny ? Icons.groups_outlined : Icons.person_outline,
                         color: isSelected ? Colors.white : kBookingSub,
@@ -699,8 +735,12 @@ class SelectableStaffRow extends StatelessWidget {
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 11,
-                      fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                      color: isSelected ? accent : GlassTokens.primaryText(context),
+                      fontWeight: isSelected
+                          ? FontWeight.w700
+                          : FontWeight.w500,
+                      color: isSelected
+                          ? accent
+                          : GlassTokens.primaryText(context),
                       height: 1.15,
                     ),
                   ),
@@ -770,7 +810,10 @@ Future<bool> showBookingConfirmSheet(
                 children: [
                   Expanded(
                     flex: 2,
-                    child: Text(d.key, style: const TextStyle(color: kBookingSub)),
+                    child: Text(
+                      d.key,
+                      style: const TextStyle(color: kBookingSub),
+                    ),
                   ),
                   Expanded(
                     flex: 3,
@@ -791,7 +834,10 @@ Future<bool> showBookingConfirmSheet(
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(totalLabel, style: const TextStyle(color: kBookingSub, fontSize: 15)),
+              Text(
+                totalLabel,
+                style: const TextStyle(color: kBookingSub, fontSize: 15),
+              ),
               Text(
                 totalValue,
                 style: TextStyle(
@@ -817,7 +863,10 @@ Future<bool> showBookingConfirmSheet(
               ),
               child: Text(
                 confirmLabel,
-                style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
+                style: const TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 16,
+                ),
               ),
             ),
           ),
@@ -855,10 +904,12 @@ class HorizontalDatePicker extends StatelessWidget {
         itemCount: daysCount,
         separatorBuilder: (_, __) => const SizedBox(width: 10),
         itemBuilder: (context, index) {
-          final date = DateTime.now().add(Duration(days: index + startDaysOffset));
+          final date = DateTime.now().add(
+            Duration(days: index + startDaysOffset),
+          );
           final isToday = showBugun && index == 0 && startDaysOffset == 0;
-          final isSelected = selectedDate.day == date.day &&
-              selectedDate.month == date.month;
+          final isSelected =
+              selectedDate.day == date.day && selectedDate.month == date.month;
           return GestureDetector(
             onTap: () => onDateSelected(date),
             child: Container(
@@ -935,13 +986,13 @@ class TimeSlotGrid extends StatelessWidget {
           onTap: isDisabled ? null : () => onTimeSelected(slot),
           child: Container(
             decoration: BoxDecoration(
-              color: isSelected 
-                  ? accentColor 
+              color: isSelected
+                  ? accentColor
                   : (isDisabled ? Colors.grey[50] : Colors.white),
               borderRadius: BorderRadius.circular(8),
               border: Border.all(
-                color: isSelected 
-                    ? accentColor 
+                color: isSelected
+                    ? accentColor
                     : (isDisabled ? Colors.grey[200]! : Colors.grey[300]!),
               ),
             ),
@@ -949,8 +1000,8 @@ class TimeSlotGrid extends StatelessWidget {
               child: Text(
                 slot,
                 style: TextStyle(
-                  color: isSelected 
-                      ? Colors.white 
+                  color: isSelected
+                      ? Colors.white
                       : (isDisabled ? Colors.grey[400] : Colors.black),
                   fontSize: 12,
                   fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,

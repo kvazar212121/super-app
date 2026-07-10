@@ -13,6 +13,7 @@ import '../widgets/booking_common_widgets.dart';
 import '../widgets/glass/mesh_background.dart';
 import 'provider_profile_screen.dart';
 import 'map_address_picker_screen.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 /// Usta / mobil mutaxassisni vaqtga chaqirish — mijoz manzili bilan.
 class MasterDispatchScreen extends StatefulWidget {
@@ -51,7 +52,9 @@ class _MasterDispatchScreenState extends State<MasterDispatchScreen> {
   double get _selectedPrice {
     if (_selectedService == null) return 0.0;
     final base = (widget.master.prices[_selectedService] ?? 100000).toDouble();
-    final travel = widget.master.isTravelFeeIncluded ? 0.0 : widget.master.travelFee;
+    final travel = widget.master.isTravelFeeIncluded
+        ? 0.0
+        : widget.master.travelFee;
     return base + travel;
   }
 
@@ -83,13 +86,16 @@ class _MasterDispatchScreenState extends State<MasterDispatchScreen> {
         providerId: widget.master.providerId,
         date: _selectedDate,
       );
-      _timeSlots = avail.slots.isNotEmpty ? avail.slots : ProviderAvailability.defaultSlots;
+      _timeSlots = avail.slots.isNotEmpty
+          ? avail.slots
+          : ProviderAvailability.defaultSlots;
       _bookedSlots = avail.booked;
     }
     if (mounted) {
       setState(() {
         _loadingSlots = false;
-        if (_selectedTimeSlot != null && _bookedSlots.contains(_selectedTimeSlot)) {
+        if (_selectedTimeSlot != null &&
+            _bookedSlots.contains(_selectedTimeSlot)) {
           _selectedTimeSlot = null;
         }
       });
@@ -102,11 +108,14 @@ class _MasterDispatchScreenState extends State<MasterDispatchScreen> {
     if (specialty.contains('elek')) return ServiceHubKind.elektrik;
     if (specialty.contains('sant')) return ServiceHubKind.santexnik;
     if (specialty.contains('toza')) return ServiceHubKind.tozalash;
-    if (specialty.contains('kosmet') || specialty.contains('mobil kos')) return ServiceHubKind.salon;
-    if (specialty.contains('avto') || specialty.contains('ko\'chir')) return ServiceHubKind.avtoYordam;
+    if (specialty.contains('kosmet') || specialty.contains('mobil kos'))
+      return ServiceHubKind.salon;
+    if (specialty.contains('avto') || specialty.contains('ko\'chir'))
+      return ServiceHubKind.avtoYordam;
     if (specialty.contains('kond')) return ServiceHubKind.konditsioner;
     if (specialty.contains('enag')) return ServiceHubKind.enaga;
-    if (specialty.contains('repa') || specialty.contains('repet')) return ServiceHubKind.repetitor;
+    if (specialty.contains('repa') || specialty.contains('repet'))
+      return ServiceHubKind.repetitor;
     return widget.category;
   }
 
@@ -114,16 +123,27 @@ class _MasterDispatchScreenState extends State<MasterDispatchScreen> {
     if (!await ensureAuthenticated(context)) return;
     if (!_canSubmit || !mounted) return;
 
-    final currency = NumberFormat.currency(locale: 'uz_UZ', symbol: 'so\'m', decimalDigits: 0);
+    final currency = NumberFormat.currency(
+      locale: 'uz_UZ',
+      symbol: 'so\'m',
+      decimalDigits: 0,
+    );
     final address = _addressCtrl.text.trim();
     final confirmed = await showBookingConfirmSheet(
       context,
-      title: widget.master.isHomeVisit ? 'Bronni tasdiqlang' : 'Chaqiruvni tasdiqlang',
+      title: widget.master.isHomeVisit
+          ? 'Bronni tasdiqlang'
+          : 'Chaqiruvni tasdiqlang',
       details: [
         MapEntry('Mutaxassis', widget.master.name),
         MapEntry('Xizmat', _selectedService!),
         MapEntry('Sana', DateFormat('dd.MM.yyyy').format(_selectedDate)),
-        MapEntry("Yo'l kira", widget.master.isTravelFeeIncluded ? "Bepul (narx ichida)" : currency.format(widget.master.travelFee)),
+        MapEntry(
+          "Yo'l kira",
+          widget.master.isTravelFeeIncluded
+              ? "Bepul (narx ichida)"
+              : currency.format(widget.master.travelFee),
+        ),
         MapEntry('Vaqt', _selectedTimeSlot!),
         MapEntry('Manzil', address),
       ],
@@ -132,9 +152,13 @@ class _MasterDispatchScreenState extends State<MasterDispatchScreen> {
       accent: _accent,
       confirmLabel: _isAppointment
           ? 'Yozilish'
-          : widget.master.isCleaner || widget.master.isElectrician || widget.master.isPlumber || widget.master.isAcTechnician || widget.master.isDispatchMaster
-              ? 'Chaqirish'
-              : (widget.master.isHomeVisit ? 'Bron qilish' : 'Chaqirish'),
+          : widget.master.isCleaner ||
+                widget.master.isElectrician ||
+                widget.master.isPlumber ||
+                widget.master.isAcTechnician ||
+                widget.master.isDispatchMaster
+          ? 'Chaqirish'
+          : (widget.master.isHomeVisit ? 'Bron qilish' : 'Chaqirish'),
     );
     if (!confirmed || !mounted) return;
 
@@ -150,7 +174,9 @@ class _MasterDispatchScreenState extends State<MasterDispatchScreen> {
     );
 
     final category = _resolveCategory();
-    final visitNote = widget.master.isHomeVisit ? 'Uyga borish' : 'Usta chaqiruv';
+    final visitNote = widget.master.isHomeVisit
+        ? 'Uyga borish'
+        : 'Usta chaqiruv';
 
     final order = ServiceOrder(
       id: DateTime.now().microsecondsSinceEpoch.toString(),
@@ -163,7 +189,9 @@ class _MasterDispatchScreenState extends State<MasterDispatchScreen> {
       date: dateTime,
       price: _selectedPrice,
       status: OrderStatus.pending,
-      providerId: widget.master.providerId > 0 ? widget.master.providerId : null,
+      providerId: widget.master.providerId > 0
+          ? widget.master.providerId
+          : null,
     );
 
     try {
@@ -176,18 +204,18 @@ class _MasterDispatchScreenState extends State<MasterDispatchScreen> {
             _isAppointment
                 ? 'Qabulga yozildingiz! ${widget.master.name} sizni kutadi.'
                 : widget.master.isCleaner
-                    ? 'Buyurtma qabul qilindi! ${widget.master.name} belgilangan vaqtda keladi.'
-                    : widget.master.isDispatchMaster
-                        ? 'Usta chaqirildi! ${widget.master.name} belgilangan vaqtda keladi.'
-                        : widget.master.isElectrician
-                            ? 'Elektrik chaqirildi! ${widget.master.name} belgilangan vaqtda keladi.'
-                            : widget.master.isPlumber
-                                ? 'Santexnik chaqirildi! ${widget.master.name} belgilangan vaqtda keladi.'
-                                : widget.master.isAcTechnician
-                                    ? 'Konditsioner chaqirildi! ${widget.master.name} belgilangan vaqtda keladi.'
-                                    : widget.master.isHomeVisit
-                            ? 'Bron qilindi! ${widget.master.name} belgilangan vaqtda keladi.'
-                            : 'Usta chaqirildi! Tez orada bog\'lanadi.',
+                ? 'Buyurtma qabul qilindi! ${widget.master.name} belgilangan vaqtda keladi.'
+                : widget.master.isDispatchMaster
+                ? 'Usta chaqirildi! ${widget.master.name} belgilangan vaqtda keladi.'
+                : widget.master.isElectrician
+                ? 'Elektrik chaqirildi! ${widget.master.name} belgilangan vaqtda keladi.'
+                : widget.master.isPlumber
+                ? 'Santexnik chaqirildi! ${widget.master.name} belgilangan vaqtda keladi.'
+                : widget.master.isAcTechnician
+                ? 'Konditsioner chaqirildi! ${widget.master.name} belgilangan vaqtda keladi.'
+                : widget.master.isHomeVisit
+                ? 'Bron qilindi! ${widget.master.name} belgilangan vaqtda keladi.'
+                : 'Usta chaqirildi! Tez orada bog\'lanadi.',
           ),
           backgroundColor: Colors.green,
         ),
@@ -203,7 +231,11 @@ class _MasterDispatchScreenState extends State<MasterDispatchScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final currency = NumberFormat.currency(locale: 'uz_UZ', symbol: 'so\'m', decimalDigits: 0);
+    final currency = NumberFormat.currency(
+      locale: 'uz_UZ',
+      symbol: 'so\'m',
+      decimalDigits: 0,
+    );
 
     return GlassBackdrop(
       child: Scaffold(
@@ -215,14 +247,14 @@ class _MasterDispatchScreenState extends State<MasterDispatchScreen> {
               icon: widget.master.isCleaner
                   ? LucideIcons.brush
                   : widget.master.isElectrician
-                      ? LucideIcons.zap
-                      : widget.master.isPlumber
-                          ? LucideIcons.droplets
-                          : widget.master.isAcTechnician
-                              ? LucideIcons.wind
-                              : _isAppointment
-                                  ? LucideIcons.heartPulse
-                                  : LucideIcons.wrench,
+                  ? LucideIcons.zap
+                  : widget.master.isPlumber
+                  ? LucideIcons.droplets
+                  : widget.master.isAcTechnician
+                  ? LucideIcons.wind
+                  : _isAppointment
+                  ? LucideIcons.heartPulse
+                  : LucideIcons.wrench,
               expandedHeight: 160,
               rawJson: widget.master.rawJson,
               actions: [
@@ -243,16 +275,18 @@ class _MasterDispatchScreenState extends State<MasterDispatchScreen> {
                 _isAppointment
                     ? 'Qabulga yozilish'
                     : widget.master.isCleaner
-                        ? 'Tozalash buyurtmasi'
-                        : widget.master.isDispatchMaster
-                            ? 'Ustani chaqirish'
-                            : widget.master.isElectrician
-                                ? 'Elektrikni chaqirish'
-                                : widget.master.isPlumber
-                                    ? 'Santexnikni chaqirish'
-                                    : widget.master.isAcTechnician
-                                        ? 'Konditsionerni chaqirish'
-                                        : (widget.master.isHomeVisit ? 'Uyga chaqirish' : 'Ustani chaqirish'),
+                    ? 'Tozalash buyurtmasi'
+                    : widget.master.isDispatchMaster
+                    ? 'Ustani chaqirish'
+                    : widget.master.isElectrician
+                    ? 'Elektrikni chaqirish'
+                    : widget.master.isPlumber
+                    ? 'Santexnikni chaqirish'
+                    : widget.master.isAcTechnician
+                    ? 'Konditsionerni chaqirish'
+                    : (widget.master.isHomeVisit
+                          ? 'Uyga chaqirish'
+                          : 'Ustani chaqirish'),
                 style: const TextStyle(fontSize: 16),
               ),
             ),
@@ -276,7 +310,9 @@ class _MasterDispatchScreenState extends State<MasterDispatchScreen> {
                             decoration: InputDecoration(
                               hintText: 'Ko\'cha, uy, orientir...',
                               prefixIcon: const Icon(LucideIcons.mapPin),
-                              border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(14),
+                              ),
                             ),
                           ),
                         ),
@@ -294,7 +330,8 @@ class _MasterDispatchScreenState extends State<MasterDispatchScreen> {
                               final picked = await Navigator.push<String>(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (_) => const MapAddressPickerScreen(),
+                                  builder: (_) =>
+                                      const MapAddressPickerScreen(),
                                 ),
                               );
                               if (picked != null && picked.isNotEmpty) {
@@ -331,15 +368,21 @@ class _MasterDispatchScreenState extends State<MasterDispatchScreen> {
                                   service,
                                   style: TextStyle(
                                     fontWeight: FontWeight.w600,
-                                    color: selected ? Colors.white : Colors.black87,
+                                    color: selected
+                                        ? Colors.white
+                                        : Colors.black87,
                                   ),
                                 ),
                               ),
                               Text(
-                                currency.format(widget.master.prices[service] ?? 0),
+                                currency.format(
+                                  widget.master.prices[service] ?? 0,
+                                ),
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
-                                  color: selected ? Colors.white : Colors.black54,
+                                  color: selected
+                                      ? Colors.white
+                                      : Colors.black54,
                                 ),
                               ),
                             ],
@@ -362,17 +405,20 @@ class _MasterDispatchScreenState extends State<MasterDispatchScreen> {
                     const SectionTitle('Vaqt'),
                     const SizedBox(height: 12),
                     if (_loadingSlots)
-                      const Center(child: Padding(
-                        padding: EdgeInsets.all(16),
-                        child: CircularProgressIndicator(),
-                      ))
+                      const Center(
+                        child: Padding(
+                          padding: EdgeInsets.all(16),
+                          child: CircularProgressIndicator(),
+                        ),
+                      )
                     else
                       TimeSlotGrid(
                         timeSlots: _timeSlots,
                         selectedTimeSlot: _selectedTimeSlot,
                         disabledTimeSlots: _bookedSlots,
                         accentColor: _accent,
-                        onTimeSelected: (s) => setState(() => _selectedTimeSlot = s),
+                        onTimeSelected: (s) =>
+                            setState(() => _selectedTimeSlot = s),
                         crossAxisCount: 4,
                       ),
                     const SizedBox(height: 32),
@@ -383,15 +429,26 @@ class _MasterDispatchScreenState extends State<MasterDispatchScreen> {
                         onPressed: _canSubmit ? _confirmDispatch : null,
                         style: FilledButton.styleFrom(
                           backgroundColor: _accent,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
                         ),
                         child: Text(
                           _isAppointment
                               ? 'Qabulga yozilish'
-                              : widget.master.isCleaner || widget.master.isElectrician || widget.master.isPlumber || widget.master.isAcTechnician || widget.master.isDispatchMaster
-                                  ? 'Chaqirish'
-                                  : (widget.master.isHomeVisit ? 'Bron qilish' : 'Ustani chaqirish'),
-                          style: const TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
+                              : widget.master.isCleaner ||
+                                    widget.master.isElectrician ||
+                                    widget.master.isPlumber ||
+                                    widget.master.isAcTechnician ||
+                                    widget.master.isDispatchMaster
+                              ? 'Chaqirish'
+                              : (widget.master.isHomeVisit
+                                    ? 'Bron qilish'
+                                    : 'Ustani chaqirish'),
+                          style: const TextStyle(
+                            fontSize: 17,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     ),
@@ -419,13 +476,24 @@ class _MasterDispatchScreenState extends State<MasterDispatchScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(widget.master.name, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-              Text(widget.master.specialty, style: TextStyle(color: _accent, fontWeight: FontWeight.w600)),
+              Text(
+                widget.master.name,
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              Text(
+                widget.master.specialty,
+                style: TextStyle(color: _accent, fontWeight: FontWeight.w600),
+              ),
               Row(
                 children: [
                   const Icon(Icons.star, size: 16, color: Colors.amber),
                   const SizedBox(width: 4),
-                  Text('${widget.master.rating} (${widget.master.reviewCount})'),
+                  Text(
+                    '${widget.master.rating} (${widget.master.reviewCount})',
+                  ),
                 ],
               ),
             ],
@@ -441,7 +509,7 @@ class _MasterDispatchScreenState extends State<MasterDispatchScreen> {
               ),
             ),
           ),
-          child: const Text('Profil'),
+          child: Text('Profil'.tr),
         ),
       ],
     );

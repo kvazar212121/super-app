@@ -9,25 +9,26 @@ import '../models/service_order.dart';
 import '../providers/app_provider.dart';
 import '../screens/order_detail_screen.dart';
 import '../theme/glass_tokens.dart';
+import '../l10n/locale_controller.dart';
 
 /// Asosiy ekrandagi "joriy buyurtma" — shaffof gradient glass karta.
 class ActiveOrderBanner extends StatelessWidget {
   const ActiveOrderBanner({super.key});
 
   Color _statusColor(OrderStatus s) => switch (s) {
-        OrderStatus.pending => const Color(0xFFF59E0B),
-        OrderStatus.accepted => const Color(0xFF3B82F6),
-        OrderStatus.onTheWay => const Color(0xFF0EA5E9),
-        OrderStatus.arrived => const Color(0xFF8B5CF6),
-        OrderStatus.preparing => const Color(0xFFF59E0B),
-        OrderStatus.inProgress => const Color(0xFFA855F7),
-        OrderStatus.delivered => const Color(0xFF10B981),
-        OrderStatus.completed => const Color(0xFF10B981),
-        OrderStatus.awaitingConfirmation => const Color(0xFF3B82F6),
-        OrderStatus.cancelled => const Color(0xFFEF4444),
-        OrderStatus.noShow => const Color(0xFF6B7280),
-        OrderStatus.disputed => const Color(0xFFDC2626),
-      };
+    OrderStatus.pending => const Color(0xFFF59E0B),
+    OrderStatus.accepted => const Color(0xFF3B82F6),
+    OrderStatus.onTheWay => const Color(0xFF0EA5E9),
+    OrderStatus.arrived => const Color(0xFF8B5CF6),
+    OrderStatus.preparing => const Color(0xFFF59E0B),
+    OrderStatus.inProgress => const Color(0xFFA855F7),
+    OrderStatus.delivered => const Color(0xFF10B981),
+    OrderStatus.completed => const Color(0xFF10B981),
+    OrderStatus.awaitingConfirmation => const Color(0xFF3B82F6),
+    OrderStatus.cancelled => const Color(0xFFEF4444),
+    OrderStatus.noShow => const Color(0xFF6B7280),
+    OrderStatus.disputed => const Color(0xFFDC2626),
+  };
 
   @override
   Widget build(BuildContext context) {
@@ -44,122 +45,118 @@ class ActiveOrderBanner extends StatelessWidget {
     return GestureDetector(
       onTap: () => Navigator.push(
         context,
-        MaterialPageRoute(
-          builder: (_) => OrderDetailScreen(orderId: order.id),
-        ),
+        MaterialPageRoute(builder: (_) => OrderDetailScreen(orderId: order.id)),
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(24),
         child: BackdropFilter(
-        filter: ImageFilter.blur(
-          sigmaX: GlassTokens.glassBlur,
-          sigmaY: GlassTokens.glassBlur,
-        ),
-        child: Container(
-          margin: const EdgeInsets.only(bottom: 18),
-          padding: const EdgeInsets.all(18),
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-                accent,
-                accent,
-              ],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-            borderRadius: BorderRadius.circular(24),
-            border: Border.all(color: Colors.white),
+          filter: ImageFilter.blur(
+            sigmaX: GlassTokens.glassBlur,
+            sigmaY: GlassTokens.glassBlur,
           ),
-          child: Row(
-            children: [
-              Container(
-                width: 50,
-                height: 50,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: Colors.white),
-                ),
-                child: Icon(order.category.icon, color: Colors.white, size: 26),
+          child: Container(
+            margin: const EdgeInsets.only(bottom: 18),
+            padding: const EdgeInsets.all(18),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [accent, accent],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
               ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 3,
-                          ),
-                          decoration: BoxDecoration(
-                            color: statusColor,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Text(
-                            order.statusText,
-                            style: const TextStyle(
-                              fontSize: 10,
-                              color: Colors.white,
-                              fontWeight: FontWeight.w700,
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(color: Colors.white),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  width: 50,
+                  height: 50,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: Colors.white),
+                  ),
+                  child: Icon(
+                    order.category.icon,
+                    color: Colors.white,
+                    size: 26,
+                  ),
+                ),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 3,
+                            ),
+                            decoration: BoxDecoration(
+                              color: statusColor,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text(
+                              order.statusText,
+                              style: const TextStyle(
+                                fontSize: 10,
+                                color: Colors.white,
+                                fontWeight: FontWeight.w700,
+                              ),
                             ),
                           ),
-                        ),
-                        const SizedBox(width: 8),
-                        Flexible(
-                          child: Row(
-                            children: [
-                              Icon(
-                                LucideIcons.clock,
-                                color: Colors.white,
-                                size: 12,
-                              ),
-                              const SizedBox(width: 4),
-                              Text(
-                                dateStr,
-                                style: TextStyle(
-                                  fontSize: 11,
+                          const SizedBox(width: 8),
+                          Flexible(
+                            child: Row(
+                              children: [
+                                Icon(
+                                  LucideIcons.clock,
                                   color: Colors.white,
+                                  size: 12,
                                 ),
-                              ),
-                            ],
+                                const SizedBox(width: 4),
+                                Text(
+                                  dateStr,
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        order.serviceName,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w800,
+                          fontSize: 15,
+                          letterSpacing: -0.2,
                         ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      order.serviceName,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w800,
-                        fontSize: 15,
-                        letterSpacing: -0.2,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      '${order.price.toStringAsFixed(0)} so‘m',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w600,
+                      const SizedBox(height: 2),
+                      Text(
+                        '${order.price.toStringAsFixed(0)} ' + 'so‘m'.tr,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-              Icon(
-                Icons.chevron_right_rounded,
-                color: Colors.white,
-              ),
-            ],
+                Icon(Icons.chevron_right_rounded, color: Colors.white),
+              ],
+            ),
           ),
         ),
-      ),
       ),
     );
   }

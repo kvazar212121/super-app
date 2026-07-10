@@ -11,6 +11,7 @@ import '../services/provider_availability_service.dart';
 import '../utils/auth_guard.dart';
 import '../widgets/booking_common_widgets.dart';
 import '../widgets/glass/mesh_background.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 class TutorBookingScreen extends StatefulWidget {
   final TutorService tutor;
@@ -47,17 +48,23 @@ class _TutorBookingScreenState extends State<TutorBookingScreen> {
   double get _selectedPrice {
     if (_selectedService == null) return 0.0;
     final base = (widget.tutor.prices[_selectedService] ?? 100000).toDouble();
-    final travel = (_lessonMode == LessonMode.homeVisit && !widget.tutor.isTravelFeeIncluded)
+    final travel =
+        (_lessonMode == LessonMode.homeVisit &&
+            !widget.tutor.isTravelFeeIncluded)
         ? widget.tutor.travelFee
         : 0.0;
     return base + travel;
   }
 
   bool get _canSubmit {
-    if (_selectedService == null || _selectedTimeSlot == null || _loadingSlots) return false;
+    if (_selectedService == null || _selectedTimeSlot == null || _loadingSlots)
+      return false;
     if (_studentCtrl.text.trim().length < 2) return false;
-    if (_lessonMode == LessonMode.homeVisit && _addressCtrl.text.trim().length < 5) return false;
-    if (_lessonMode == LessonMode.online && _onlineCtrl.text.trim().isEmpty) return false;
+    if (_lessonMode == LessonMode.homeVisit &&
+        _addressCtrl.text.trim().length < 5)
+      return false;
+    if (_lessonMode == LessonMode.online && _onlineCtrl.text.trim().isEmpty)
+      return false;
     return _lessonMode != null;
   }
 
@@ -105,14 +112,15 @@ class _TutorBookingScreenState extends State<TutorBookingScreen> {
       _timeSlots = avail.slots.isNotEmpty
           ? avail.slots
           : (widget.tutor.timeSlots.isNotEmpty
-              ? widget.tutor.timeSlots
-              : ProviderAvailability.defaultSlots);
+                ? widget.tutor.timeSlots
+                : ProviderAvailability.defaultSlots);
       _bookedSlots = avail.booked;
     }
     if (mounted) {
       setState(() {
         _loadingSlots = false;
-        if (_selectedTimeSlot != null && _bookedSlots.contains(_selectedTimeSlot)) {
+        if (_selectedTimeSlot != null &&
+            _bookedSlots.contains(_selectedTimeSlot)) {
           _selectedTimeSlot = null;
         }
       });
@@ -123,7 +131,11 @@ class _TutorBookingScreenState extends State<TutorBookingScreen> {
     if (!await ensureAuthenticated(context)) return;
     if (!_canSubmit || !mounted) return;
 
-    final currency = NumberFormat.currency(locale: 'uz_UZ', symbol: 'so\'m', decimalDigits: 0);
+    final currency = NumberFormat.currency(
+      locale: 'uz_UZ',
+      symbol: 'so\'m',
+      decimalDigits: 0,
+    );
     final student = _studentCtrl.text.trim();
     final goal = _goalCtrl.text.trim();
     final address = _addressCtrl.text.trim();
@@ -140,7 +152,12 @@ class _TutorBookingScreenState extends State<TutorBookingScreen> {
         MapEntry('O\'quvchi', student),
         if (goal.isNotEmpty) MapEntry('Maqsad', goal),
         if (_lessonMode == LessonMode.homeVisit) ...[
-          MapEntry("Yo'l kira", widget.tutor.isTravelFeeIncluded ? "Bepul (narx ichida)" : currency.format(widget.tutor.travelFee)),
+          MapEntry(
+            "Yo'l kira",
+            widget.tutor.isTravelFeeIncluded
+                ? "Bepul (narx ichida)"
+                : currency.format(widget.tutor.travelFee),
+          ),
           MapEntry('Manzil', address),
         ],
         if (_lessonMode == LessonMode.online) MapEntry('Onlayn', online),
@@ -207,7 +224,11 @@ class _TutorBookingScreenState extends State<TutorBookingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final currency = NumberFormat.currency(locale: 'uz_UZ', symbol: 'so\'m', decimalDigits: 0);
+    final currency = NumberFormat.currency(
+      locale: 'uz_UZ',
+      symbol: 'so\'m',
+      decimalDigits: 0,
+    );
 
     return GlassBackdrop(
       child: Scaffold(
@@ -257,7 +278,8 @@ class _TutorBookingScreenState extends State<TutorBookingScreen> {
                     const SizedBox(height: 12),
                     PriceOptionList(
                       prices: {
-                        for (final s in widget.tutor.services) s: widget.tutor.prices[s] ?? 0,
+                        for (final s in widget.tutor.services)
+                          s: widget.tutor.prices[s] ?? 0,
                       },
                       selected: _selectedService,
                       onSelect: (s) => setState(() => _selectedService = s),
@@ -296,7 +318,9 @@ class _TutorBookingScreenState extends State<TutorBookingScreen> {
                         style: TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w600,
-                          color: widget.tutor.isTravelFeeIncluded ? Colors.green[800] : Colors.amber[900],
+                          color: widget.tutor.isTravelFeeIncluded
+                              ? Colors.green[800]
+                              : Colors.amber[900],
                         ),
                       ),
                     ],
@@ -324,16 +348,19 @@ class _TutorBookingScreenState extends State<TutorBookingScreen> {
                     const SectionTitle('Vaqt'),
                     const SizedBox(height: 12),
                     if (_loadingSlots)
-                      const Center(child: Padding(
-                        padding: EdgeInsets.all(16),
-                        child: CircularProgressIndicator(),
-                      ))
+                      const Center(
+                        child: Padding(
+                          padding: EdgeInsets.all(16),
+                          child: CircularProgressIndicator(),
+                        ),
+                      )
                     else
                       TimeSlotGrid(
                         selectedTimeSlot: _selectedTimeSlot,
                         timeSlots: _timeSlots,
                         disabledTimeSlots: _bookedSlots,
-                        onTimeSelected: (slot) => setState(() => _selectedTimeSlot = slot),
+                        onTimeSelected: (slot) =>
+                            setState(() => _selectedTimeSlot = slot),
                         accentColor: _accent,
                       ),
                     const SizedBox(height: 16),

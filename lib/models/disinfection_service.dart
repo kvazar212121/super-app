@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 /// Dezinfeksiya xizmati turi
 enum AreaType {
@@ -18,25 +19,25 @@ enum AreaType {
 
 extension AreaTypeX on AreaType {
   String get key => switch (this) {
-        AreaType.apartment => 'apartment',
-        AreaType.office => 'office',
-        AreaType.vehicle => 'vehicle',
-        AreaType.school => 'school',
-      };
+    AreaType.apartment => 'apartment',
+    AreaType.office => 'office',
+    AreaType.vehicle => 'vehicle',
+    AreaType.school => 'school',
+  };
 
   String get label => switch (this) {
-        AreaType.apartment => 'Kvartira',
-        AreaType.office => 'Ofis',
-        AreaType.vehicle => 'Mashina',
-        AreaType.school => 'Maktab',
-      };
+    AreaType.apartment => 'Kvartira',
+    AreaType.office => 'Ofis',
+    AreaType.vehicle => 'Mashina',
+    AreaType.school => 'Maktab',
+  };
 
   IconData get icon => switch (this) {
-        AreaType.apartment => LucideIcons.home,
-        AreaType.office => LucideIcons.building2,
-        AreaType.vehicle => LucideIcons.car,
-        AreaType.school => LucideIcons.school,
-      };
+    AreaType.apartment => LucideIcons.home,
+    AreaType.office => LucideIcons.building2,
+    AreaType.vehicle => LucideIcons.car,
+    AreaType.school => LucideIcons.school,
+  };
 }
 
 /// Dezinfeksiya vositasi
@@ -72,7 +73,7 @@ class DisinfectionService {
 
   final String? subCategory;
 
-    final bool isTravelFeeIncluded;
+  final bool isTravelFeeIncluded;
   final double travelFee;
 
   DisinfectionService({
@@ -91,14 +92,18 @@ class DisinfectionService {
     this.timeSlots = const [],
     this.isCertified = false,
     this.rawJson,
-      this.subCategory,
-      this.isTravelFeeIncluded = true,
+    this.subCategory,
+    this.isTravelFeeIncluded = true,
     this.travelFee = 0.0,
   });
 
   static const _defaultChemicals = [
     ChemicalProduct(name: 'Viritsid', icon: LucideIcons.droplet),
-    ChemicalProduct(name: 'Eko-dezinfektant', icon: LucideIcons.leaf, isEcoFriendly: true),
+    ChemicalProduct(
+      name: 'Eko-dezinfektant',
+      icon: LucideIcons.leaf,
+      isEcoFriendly: true,
+    ),
     ChemicalProduct(name: 'Chlorheksidin', icon: LucideIcons.flaskConical),
   ];
 
@@ -118,9 +123,7 @@ class DisinfectionService {
             'Ofis dezinfeksiyasi': 250000.0,
             'Mashina dezinfeksiyasi': 100000.0,
           }
-        : pricesRaw.map(
-            (k, v) => MapEntry(k, (v as num?)?.toDouble() ?? 0),
-          );
+        : pricesRaw.map((k, v) => MapEntry(k, (v as num?)?.toDouble() ?? 0));
 
     final chemRaw = meta['chemicals'] as List<dynamic>? ?? [];
     final chemicals = chemRaw.isEmpty
@@ -154,8 +157,8 @@ class DisinfectionService {
           .toList(),
       isCertified: meta['is_certified'] == true,
       rawJson: json,
-          subCategory: meta['sub_category']?.toString(),
-          isTravelFeeIncluded: meta['is_travel_fee_included'] as bool? ?? true,
+      subCategory: meta['sub_category']?.toString(),
+      isTravelFeeIncluded: meta['is_travel_fee_included'] as bool? ?? true,
       travelFee: (meta['travel_fee'] as num?)?.toDouble() ?? 0.0,
     );
   }

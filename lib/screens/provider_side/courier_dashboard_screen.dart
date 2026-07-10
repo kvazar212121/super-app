@@ -7,6 +7,8 @@ class CourierDashboardScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return UnifiedProviderDashboardScreen(config: ProviderCategoryConfig.courier);
+    return UnifiedProviderDashboardScreen(
+      config: ProviderCategoryConfig.courier,
+    );
   }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 /// Qabul usuli — uyga chiqish yoki salonda
 enum MassageVisitMode {
@@ -16,24 +17,24 @@ enum MassageVisitMode {
 
 extension MassageVisitModeX on MassageVisitMode {
   String get key => switch (this) {
-        MassageVisitMode.homeVisit => 'home_visit',
-        MassageVisitMode.atCenter => 'at_center',
-      };
+    MassageVisitMode.homeVisit => 'home_visit',
+    MassageVisitMode.atCenter => 'at_center',
+  };
 
   String get label => switch (this) {
-        MassageVisitMode.homeVisit => 'Uyga chiqish',
-        MassageVisitMode.atCenter => 'Salonga borish',
-      };
+    MassageVisitMode.homeVisit => 'Uyga chiqish',
+    MassageVisitMode.atCenter => 'Salonga borish',
+  };
 
   String get shortLabel => switch (this) {
-        MassageVisitMode.homeVisit => 'Chaqirish',
-        MassageVisitMode.atCenter => 'Borish',
-      };
+    MassageVisitMode.homeVisit => 'Chaqirish',
+    MassageVisitMode.atCenter => 'Borish',
+  };
 
   IconData get icon => switch (this) {
-        MassageVisitMode.homeVisit => LucideIcons.home,
-        MassageVisitMode.atCenter => LucideIcons.building2,
-      };
+    MassageVisitMode.homeVisit => LucideIcons.home,
+    MassageVisitMode.atCenter => LucideIcons.building2,
+  };
 }
 
 /// Xizmat turi (Massaj / Hijoma)
@@ -61,26 +62,26 @@ enum ServiceType {
 
 extension ServiceTypeX on ServiceType {
   String get label => switch (this) {
-        ServiceType.classicMassage => 'Klassik massaj',
-        ServiceType.hijoma => 'Hijoma',
-        ServiceType.thaiMassage => 'Tailand massaji',
-        ServiceType.stoneMassage => 'Tosh massaji',
-        ServiceType.sportMassage => 'Sport massaji',
-        ServiceType.aromatherapy => 'Aromaterapiya',
-        ServiceType.cupping => 'Vanna massaji',
-        ServiceType.footMassage => 'Oyoq massaji',
-      };
+    ServiceType.classicMassage => 'Klassik massaj',
+    ServiceType.hijoma => 'Hijoma',
+    ServiceType.thaiMassage => 'Tailand massaji',
+    ServiceType.stoneMassage => 'Tosh massaji',
+    ServiceType.sportMassage => 'Sport massaji',
+    ServiceType.aromatherapy => 'Aromaterapiya',
+    ServiceType.cupping => 'Vanna massaji',
+    ServiceType.footMassage => 'Oyoq massaji',
+  };
 
   IconData get icon => switch (this) {
-        ServiceType.classicMassage => LucideIcons.hand,
-        ServiceType.hijoma => LucideIcons.droplets,
-        ServiceType.thaiMassage => LucideIcons.flower,
-        ServiceType.stoneMassage => LucideIcons.circleDot,
-        ServiceType.sportMassage => LucideIcons.dumbbell,
-        ServiceType.aromatherapy => LucideIcons.flame,
-        ServiceType.cupping => LucideIcons.circleDashed,
-        ServiceType.footMassage => LucideIcons.footprints,
-      };
+    ServiceType.classicMassage => LucideIcons.hand,
+    ServiceType.hijoma => LucideIcons.droplets,
+    ServiceType.thaiMassage => LucideIcons.flower,
+    ServiceType.stoneMassage => LucideIcons.circleDot,
+    ServiceType.sportMassage => LucideIcons.dumbbell,
+    ServiceType.aromatherapy => LucideIcons.flame,
+    ServiceType.cupping => LucideIcons.circleDashed,
+    ServiceType.footMassage => LucideIcons.footprints,
+  };
 }
 
 /// Jinsiyat bo'yicha xizmat
@@ -90,24 +91,24 @@ enum GenderType {
   both;
 
   static GenderType fromKey(String? key) => switch (key) {
-        'male' => GenderType.male,
-        'female' => GenderType.female,
-        _ => GenderType.both,
-      };
+    'male' => GenderType.male,
+    'female' => GenderType.female,
+    _ => GenderType.both,
+  };
 }
 
 extension GenderTypeX on GenderType {
   String get label => switch (this) {
-        GenderType.male => 'Erkaklar',
-        GenderType.female => 'Ayollar',
-        GenderType.both => 'Ikkalasi',
-      };
+    GenderType.male => 'Erkaklar',
+    GenderType.female => 'Ayollar',
+    GenderType.both => 'Ikkalasi',
+  };
 
   IconData get icon => switch (this) {
-        GenderType.male => LucideIcons.user,
-        GenderType.female => LucideIcons.userCircle,
-        GenderType.both => LucideIcons.users,
-      };
+    GenderType.male => LucideIcons.user,
+    GenderType.female => LucideIcons.userCircle,
+    GenderType.both => LucideIcons.users,
+  };
 }
 
 /// Massaj va Hijoma modeli
@@ -178,7 +179,10 @@ class MassageHijoma {
     final modeKeys = (meta['visit_modes'] as List<dynamic>? ?? [])
         .map((e) => e.toString())
         .toList();
-    var modes = modeKeys.map(MassageVisitMode.fromKey).whereType<MassageVisitMode>().toList();
+    var modes = modeKeys
+        .map(MassageVisitMode.fromKey)
+        .whereType<MassageVisitMode>()
+        .toList();
     if (modes.isEmpty) {
       modes = [MassageVisitMode.homeVisit, MassageVisitMode.atCenter];
     }
@@ -186,17 +190,17 @@ class MassageHijoma {
     final typeKeys = (meta['service_types'] as List<dynamic>? ?? [])
         .map((e) => e.toString())
         .toList();
-    var types = typeKeys.map(ServiceType.fromKey).whereType<ServiceType>().toList();
+    var types = typeKeys
+        .map(ServiceType.fromKey)
+        .whereType<ServiceType>()
+        .toList();
     if (types.isEmpty) {
       types = [ServiceType.classicMassage, ServiceType.hijoma];
     }
 
     final pricesRaw = meta['prices'] as Map<String, dynamic>? ?? {};
     final prices = pricesRaw.isEmpty
-        ? {
-            'Klassik massaj (60 min)': 150000.0,
-            'Hijoma': 120000.0,
-          }
+        ? {'Klassik massaj (60 min)': 150000.0, 'Hijoma': 120000.0}
         : pricesRaw.map<String, double>(
             (k, v) => MapEntry(k, (v as num?)?.toDouble() ?? 0.0),
           );
@@ -217,7 +221,8 @@ class MassageHijoma {
       prices: prices,
       gender: GenderType.fromKey(meta['gender']?.toString()),
       visitModes: modes,
-      homeVisitFee: (meta['home_visit_fee'] as num?)?.toDouble() ??
+      homeVisitFee:
+          (meta['home_visit_fee'] as num?)?.toDouble() ??
           (prices["Uyga chiqish qo'shimcha"] ?? 50000.0),
       timeSlots: (meta['time_slots'] as List<dynamic>? ?? [])
           .map((e) => e.toString())

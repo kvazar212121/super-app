@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 /// Yetkazib berish turi
 enum DeliveryType {
@@ -21,31 +22,31 @@ enum DeliveryType {
 
 extension DeliveryTypeX on DeliveryType {
   String get key => switch (this) {
-        DeliveryType.document => 'document',
-        DeliveryType.package => 'package',
-        DeliveryType.food => 'food',
-        DeliveryType.cargo => 'cargo',
-        DeliveryType.flowers => 'flowers',
-        DeliveryType.electronics => 'electronics',
-      };
+    DeliveryType.document => 'document',
+    DeliveryType.package => 'package',
+    DeliveryType.food => 'food',
+    DeliveryType.cargo => 'cargo',
+    DeliveryType.flowers => 'flowers',
+    DeliveryType.electronics => 'electronics',
+  };
 
   String get label => switch (this) {
-        DeliveryType.document => 'Hujjat',
-        DeliveryType.package => 'Paket / Quti',
-        DeliveryType.food => 'Ovqat',
-        DeliveryType.cargo => 'Katta yuk',
-        DeliveryType.flowers => 'Gullar',
-        DeliveryType.electronics => 'Elektronika',
-      };
+    DeliveryType.document => 'Hujjat',
+    DeliveryType.package => 'Paket / Quti',
+    DeliveryType.food => 'Ovqat',
+    DeliveryType.cargo => 'Katta yuk',
+    DeliveryType.flowers => 'Gullar',
+    DeliveryType.electronics => 'Elektronika',
+  };
 
   IconData get icon => switch (this) {
-        DeliveryType.document => LucideIcons.fileText,
-        DeliveryType.package => LucideIcons.package,
-        DeliveryType.food => LucideIcons.utensilsCrossed,
-        DeliveryType.cargo => LucideIcons.truck,
-        DeliveryType.flowers => LucideIcons.flower2,
-        DeliveryType.electronics => LucideIcons.cpu,
-      };
+    DeliveryType.document => LucideIcons.fileText,
+    DeliveryType.package => LucideIcons.package,
+    DeliveryType.food => LucideIcons.utensilsCrossed,
+    DeliveryType.cargo => LucideIcons.truck,
+    DeliveryType.flowers => LucideIcons.flower2,
+    DeliveryType.electronics => LucideIcons.cpu,
+  };
 }
 
 enum VehicleType {
@@ -67,16 +68,16 @@ enum VehicleType {
 
 extension VehicleTypeX on VehicleType {
   String get key => switch (this) {
-        VehicleType.bike => 'bike',
-        VehicleType.car => 'car',
-        VehicleType.van => 'van',
-      };
+    VehicleType.bike => 'bike',
+    VehicleType.car => 'car',
+    VehicleType.van => 'van',
+  };
 
   String get label => switch (this) {
-        VehicleType.bike => 'Velosiped',
-        VehicleType.car => 'Mashina',
-        VehicleType.van => 'Furgon',
-      };
+    VehicleType.bike => 'Velosiped',
+    VehicleType.car => 'Mashina',
+    VehicleType.van => 'Furgon',
+  };
 }
 
 /// Kuryer xizmati modeli
@@ -99,7 +100,7 @@ class CourierService {
 
   final String? subCategory;
 
-    final bool isTravelFeeIncluded;
+  final bool isTravelFeeIncluded;
   final double travelFee;
 
   CourierService({
@@ -118,8 +119,8 @@ class CourierService {
     this.serviceArea,
     this.vehicleType = VehicleType.bike,
     this.rawJson,
-      this.subCategory,
-      this.isTravelFeeIncluded = true,
+    this.subCategory,
+    this.isTravelFeeIncluded = true,
     this.travelFee = 0.0,
   });
 
@@ -165,7 +166,11 @@ class CourierService {
       phoneNumber: json['phone'] ?? '',
       deliveryTypes: deliveryTypes.isNotEmpty
           ? deliveryTypes
-          : const [DeliveryType.document, DeliveryType.package, DeliveryType.food],
+          : const [
+              DeliveryType.document,
+              DeliveryType.package,
+              DeliveryType.food,
+            ],
       prices: prices,
       maxWeight: maxWeight,
       isExpress: meta['is_express'] == true,
@@ -173,8 +178,8 @@ class CourierService {
       serviceArea: meta['service_area']?.toString(),
       vehicleType: VehicleType.fromKey(meta['vehicle_type']?.toString()),
       rawJson: json,
-          subCategory: meta['sub_category']?.toString(),
-          isTravelFeeIncluded: meta['is_travel_fee_included'] as bool? ?? true,
+      subCategory: meta['sub_category']?.toString(),
+      isTravelFeeIncluded: meta['is_travel_fee_included'] as bool? ?? true,
       travelFee: (meta['travel_fee'] as num?)?.toDouble() ?? 0.0,
     );
   }

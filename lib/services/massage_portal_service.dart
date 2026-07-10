@@ -20,19 +20,18 @@ class MassagePortalService {
     String gender = 'both',
     String? subCategory,
     int concurrentCapacity = 1,
-  }) =>
-      _api.registerMassage(
-        name: name,
-        phone: phone,
-        serviceArea: serviceArea,
-        address: address,
-        lat: lat,
-        lng: lng,
-        massageRole: massageRole,
-        visitModes: visitModes,
-        serviceTypes: serviceTypes,
-        gender: gender,
-        subCategory: subCategory,
-        concurrentCapacity: concurrentCapacity,
-      );
+  }) => _api.registerMassage(
+    name: name,
+    phone: phone,
+    serviceArea: serviceArea,
+    address: address,
+    lat: lat,
+    lng: lng,
+    massageRole: massageRole,
+    visitModes: visitModes,
+    serviceTypes: serviceTypes,
+    gender: gender,
+    subCategory: subCategory,
+    concurrentCapacity: concurrentCapacity,
+  );
 }

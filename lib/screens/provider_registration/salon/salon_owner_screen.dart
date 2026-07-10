@@ -9,6 +9,7 @@ import '../provider_success_screen.dart';
 import '../../location_picker_screen.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../services/hub_data_service.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 class SalonOwnerScreen extends StatefulWidget {
   const SalonOwnerScreen({super.key});
@@ -44,7 +45,7 @@ class _SalonOwnerScreenState extends State<SalonOwnerScreen> {
     final address = _addressCtrl.text.trim();
     if (name.isEmpty || address.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Salon nomi va manzilni kiriting')),
+        SnackBar(content: Text('Salon nomi va manzilni kiriting'.tr)),
       );
       return;
     }
@@ -60,7 +61,11 @@ class _SalonOwnerScreenState extends State<SalonOwnerScreen> {
 
     if (phone.isEmpty || phone.replaceAll(RegExp(r'\D'), '').length < 9) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Yaroqli telefon raqamini kiriting (kamida 9 ta raqam)')),
+        SnackBar(
+          content: Text(
+            'Yaroqli telefon raqamini kiriting (kamida 9 ta raqam)'.tr,
+          ),
+        ),
       );
       return;
     }
@@ -90,7 +95,9 @@ class _SalonOwnerScreenState extends State<SalonOwnerScreen> {
       );
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Xatolik: $e')));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Xatolik: $e')));
       }
     } finally {
       if (mounted) setState(() => _submitting = false);
@@ -101,7 +108,7 @@ class _SalonOwnerScreenState extends State<SalonOwnerScreen> {
   Widget build(BuildContext context) {
     return ProviderTheme(
       child: Scaffold(
-        appBar: AppBar(title: const Text('Salon egasi')),
+        appBar: AppBar(title: Text('Salon egasi'.tr)),
         body: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
           child: Column(
@@ -109,7 +116,10 @@ class _SalonOwnerScreenState extends State<SalonOwnerScreen> {
             children: [
               TextField(
                 controller: _nameCtrl,
-                decoration: const InputDecoration(labelText: 'Salon nomi', hintText: 'Masalan: Belleza Salon'),
+                decoration: InputDecoration(
+                  labelText: 'Salon nomi'.tr,
+                  hintText: 'Masalan: Belleza Salon'.tr,
+                ),
               ),
               const SizedBox(height: 16),
               Row(
@@ -119,7 +129,9 @@ class _SalonOwnerScreenState extends State<SalonOwnerScreen> {
                     child: TextField(
                       controller: _addressCtrl,
                       maxLines: 2,
-                      decoration: const InputDecoration(labelText: 'Manzil (to\'liq)'),
+                      decoration: InputDecoration(
+                        labelText: 'Manzil (to\'liq)',
+                      ),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -132,8 +144,10 @@ class _SalonOwnerScreenState extends State<SalonOwnerScreen> {
                           context,
                           MaterialPageRoute(
                             builder: (_) => LocationPickerScreen(
-                              initialLat: double.tryParse(_latCtrl.text) ?? 41.2995,
-                              initialLng: double.tryParse(_lngCtrl.text) ?? 69.2401,
+                              initialLat:
+                                  double.tryParse(_latCtrl.text) ?? 41.2995,
+                              initialLng:
+                                  double.tryParse(_lngCtrl.text) ?? 69.2401,
                             ),
                           ),
                         );
@@ -141,7 +155,9 @@ class _SalonOwnerScreenState extends State<SalonOwnerScreen> {
                           setState(() {
                             _latCtrl.text = result['lat'].toString();
                             _lngCtrl.text = result['lng'].toString();
-                            if (result['address'] != 'Noma\'lum manzil' && result['address'] != 'Manzilni aniqlab bo\'lmadi') {
+                            if (result['address'] != 'Noma\'lum manzil' &&
+                                result['address'] !=
+                                    'Manzilni aniqlab bo\'lmadi') {
                               _addressCtrl.text = result['address'];
                             }
                           });
@@ -153,14 +169,24 @@ class _SalonOwnerScreenState extends State<SalonOwnerScreen> {
               ),
 
               const SizedBox(height: 16),
-              TextField(controller: _phoneCtrl, decoration: const InputDecoration(labelText: 'Telefon')),
+              TextField(
+                controller: _phoneCtrl,
+                decoration: InputDecoration(labelText: 'Telefon'.tr),
+              ),
               const SizedBox(height: 16),
-              TextField(controller: _hoursCtrl, decoration: const InputDecoration(labelText: 'Ish vaqti (ixtiyoriy)')),
+              TextField(
+                controller: _hoursCtrl,
+                decoration: InputDecoration(
+                  labelText: 'Ish vaqti (ixtiyoriy)'.tr,
+                ),
+              ),
               const SizedBox(height: 20),
               SwitchListTile(
                 contentPadding: EdgeInsets.zero,
-                title: const Text('Men ham mutaxassisman'),
-                subtitle: const Text('O\'zingiz ham xizmat ko\'rsatasizmi yoki faqat egasi?'),
+                title: Text('Men ham mutaxassisman'.tr),
+                subtitle: const Text(
+                  'O\'zingiz ham xizmat ko\'rsatasizmi yoki faqat egasi?',
+                ),
                 value: _alsoStylist,
                 onChanged: (v) => setState(() => _alsoStylist = v),
               ),
@@ -170,7 +196,11 @@ class _SalonOwnerScreenState extends State<SalonOwnerScreen> {
                 child: FilledButton(
                   onPressed: _submitting ? null : _submit,
                   child: _submitting
-                      ? const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2))
+                      ? const SizedBox(
+                          width: 22,
+                          height: 22,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
                       : const Text('Ro\'yxatdan o\'tish'),
                 ),
               ),

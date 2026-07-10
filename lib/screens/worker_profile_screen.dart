@@ -13,14 +13,15 @@ import '../widgets/glass/glass_surface.dart';
 class WorkerProfileScreen extends StatelessWidget {
   final Worker worker;
 
-  const WorkerProfileScreen({
-    super.key,
-    required this.worker,
-  });
+  const WorkerProfileScreen({super.key, required this.worker});
 
   @override
   Widget build(BuildContext context) {
-    final currency = NumberFormat.currency(locale: 'uz_UZ', symbol: 'so\'m', decimalDigits: 0);
+    final currency = NumberFormat.currency(
+      locale: 'uz_UZ',
+      symbol: 'so\'m',
+      decimalDigits: 0,
+    );
 
     return GlassScaffold(
       showBackButton: true,
@@ -36,7 +37,11 @@ class WorkerProfileScreen extends StatelessWidget {
                 CircleAvatar(
                   radius: 44,
                   backgroundColor: Colors.orange[50],
-                  child: Icon(LucideIcons.user, color: Colors.orange[800], size: 40),
+                  child: Icon(
+                    LucideIcons.user,
+                    color: Colors.orange[800],
+                    size: 40,
+                  ),
                 ),
                 const SizedBox(height: 16),
                 Text(
@@ -49,7 +54,10 @@ class WorkerProfileScreen extends StatelessWidget {
                 ),
                 Text(
                   worker.type,
-                  style: TextStyle(color: Colors.orange[800], fontWeight: FontWeight.w600),
+                  style: TextStyle(
+                    color: Colors.orange[800],
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
                 const SizedBox(height: 8),
                 Row(
@@ -82,9 +90,17 @@ class WorkerProfileScreen extends StatelessWidget {
                 if (worker.age != null)
                   _infoRow(context, 'Yoshi', '${worker.age} yosh'),
                 if (worker.experienceYears != null)
-                  _infoRow(context, 'Tajribasi', '${worker.experienceYears} yil'),
+                  _infoRow(
+                    context,
+                    'Tajribasi',
+                    '${worker.experienceYears} yil',
+                  ),
                 if (worker.price != null)
-                  _infoRow(context, 'Narxi (taxminiy)', currency.format(worker.price)),
+                  _infoRow(
+                    context,
+                    'Narxi (taxminiy)',
+                    currency.format(worker.price),
+                  ),
               ],
             ),
           ),
@@ -102,11 +118,15 @@ class WorkerProfileScreen extends StatelessWidget {
             Wrap(
               spacing: 8,
               runSpacing: 8,
-              children: worker.skills.map((s) => Chip(
-                label: Text(s),
-                backgroundColor: Colors.orange[50],
-                side: BorderSide(color: Colors.orange[200]!),
-              )).toList(),
+              children: worker.skills
+                  .map(
+                    (s) => Chip(
+                      label: Text(s),
+                      backgroundColor: Colors.orange[50],
+                      side: BorderSide(color: Colors.orange[200]!),
+                    ),
+                  )
+                  .toList(),
             ),
           ],
           const SizedBox(height: 40),
@@ -115,7 +135,11 @@ class WorkerProfileScreen extends StatelessWidget {
             height: 56,
             child: FilledButton.icon(
               onPressed: () {
-                CallHelper.makeDirectCall(context, worker.ownerUserId, worker.name);
+                CallHelper.makeDirectCall(
+                  context,
+                  worker.ownerUserId,
+                  worker.name,
+                );
               },
               icon: const Icon(LucideIcons.phoneCall),
               label: const Text(
@@ -124,7 +148,9 @@ class WorkerProfileScreen extends StatelessWidget {
               ),
               style: FilledButton.styleFrom(
                 backgroundColor: Colors.orange[600],
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
               ),
             ),
           ),
@@ -139,8 +165,17 @@ class WorkerProfileScreen extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: TextStyle(color: GlassTokens.secondaryText(context))),
-          Text(value, style: TextStyle(fontWeight: FontWeight.w600, color: GlassTokens.primaryText(context))),
+          Text(
+            label,
+            style: TextStyle(color: GlassTokens.secondaryText(context)),
+          ),
+          Text(
+            value,
+            style: TextStyle(
+              fontWeight: FontWeight.w600,
+              color: GlassTokens.primaryText(context),
+            ),
+          ),
         ],
       ),
     );

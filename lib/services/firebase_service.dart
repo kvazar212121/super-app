@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'callkit_service.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 /// Firebase Orqa fon (Background) xabarlarini tutib oluvchi funksiya
 /// DIQQAT: Bu funksiya asosiy ilovadan tashqarida (boshqa izolyatsiyada) ishlaydi.
@@ -14,10 +15,10 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   if (message.data['type'] == 'incoming_call') {
     final callerId = message.data['caller_id']?.toString() ?? '0';
     final callerName = message.data['caller_name']?.toString() ?? "Noma'lum";
-    
+
     // CallKitService orqali qora ekranda qo'ng'iroqni ko'rsatish
     await CallKitService().showIncomingCall(
-      callerId: int.tryParse(callerId) ?? 0, 
+      callerId: int.tryParse(callerId) ?? 0,
       callerName: callerName,
     );
   }
@@ -31,17 +32,16 @@ class FirebaseService {
   Future<void> init() async {
     try {
       await Firebase.initializeApp();
-      
+
       // Orqa fondagi xabarlarni tinglash
-      FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-      
-      // Bildirishnomalar uchun ruxsat so'rash
-      NotificationSettings settings = await FirebaseMessaging.instance.requestPermission(
-        alert: true,
-        badge: true,
-        sound: true,
+      FirebaseMessaging.onBackgroundMessage(
+        _firebaseMessagingBackgroundHandler,
       );
-      
+
+      // Bildirishnomalar uchun ruxsat so'rash
+      NotificationSettings settings = await FirebaseMessaging.instance
+          .requestPermission(alert: true, badge: true, sound: true);
+
       if (settings.authorizationStatus == AuthorizationStatus.authorized) {
         debugPrint('FCM: Foydalanuvchi ruxsat berdi');
       }
@@ -50,15 +50,16 @@ class FirebaseService {
       String? token = await FirebaseMessaging.instance.getToken();
       // Token qiymati LOG'ga chiqarilmaydi (maxfiy). Faqat debug'da holat.
       if (kDebugMode) debugPrint("FCM Token olindi: ${token != null}");
-      
+
       // Ilova ochiq turganda (Foreground) kelgan xabarlarni tutish
       FirebaseMessaging.onMessage.listen((RemoteMessage message) {
         debugPrint('FCM Foreground xabar qabul qilindi: ${message.messageId}');
 
         if (message.data['type'] == 'incoming_call') {
           final callerId = message.data['caller_id']?.toString() ?? '0';
-          final callerName = message.data['caller_name']?.toString() ?? "Noma'lum";
-          
+          final callerName =
+              message.data['caller_name']?.toString() ?? "Noma'lum";
+
           CallKitService().showIncomingCall(
             callerId: int.tryParse(callerId) ?? 0,
             callerName: callerName,

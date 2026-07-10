@@ -15,6 +15,7 @@ import '../theme/glass_tokens.dart';
 import '../widgets/glass/glass_scaffold.dart';
 import '../widgets/glass/glass_surface.dart';
 import 'nanny_booking_screen.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 /// Enaga profili — tasdiqlash belgilari va xavfsiz booking oqimi.
 class NannyProfileScreen extends StatefulWidget {
@@ -48,7 +49,11 @@ class _NannyProfileScreenState extends State<NannyProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final currency = NumberFormat.currency(locale: 'uz_UZ', symbol: 'so\'m', decimalDigits: 0);
+    final currency = NumberFormat.currency(
+      locale: 'uz_UZ',
+      symbol: 'so\'m',
+      decimalDigits: 0,
+    );
 
     return GlassScaffold(
       showBackButton: true,
@@ -70,35 +75,41 @@ class _NannyProfileScreenState extends State<NannyProfileScreen> {
                   address: nanny.serviceArea ?? nanny.address,
                   rating: nanny.rating,
                   type: 'nanny',
-                  rawJson: nanny.rawJson ?? {
-                    'id': nanny.id,
-                    'name': nanny.name,
-                    'phone': nanny.phoneNumber,
-                    'rating': nanny.rating,
-                    'review_count': nanny.reviewCount,
-                    'lat': nanny.latitude,
-                    'lng': nanny.longitude,
-                    'address': nanny.address,
-                    'metadata': {
-                      'type': 'nanny',
-                      'experience_years': nanny.experienceYears,
-                      'age_groups': nanny.ageGroups,
-                      'languages': nanny.languages,
-                      'service_types': nanny.serviceTypes.map((t) => t.key).toList(),
-                      'services': nanny.services,
-                      'prices': nanny.prices,
-                      'time_slots': nanny.timeSlots,
-                      'verification_status': nanny.verificationStatus,
-                      'nanny_role': nanny.nannyRole,
-                      'repeat_families': nanny.repeatFamilies,
-                    }
-                  },
+                  rawJson:
+                      nanny.rawJson ??
+                      {
+                        'id': nanny.id,
+                        'name': nanny.name,
+                        'phone': nanny.phoneNumber,
+                        'rating': nanny.rating,
+                        'review_count': nanny.reviewCount,
+                        'lat': nanny.latitude,
+                        'lng': nanny.longitude,
+                        'address': nanny.address,
+                        'metadata': {
+                          'type': 'nanny',
+                          'experience_years': nanny.experienceYears,
+                          'age_groups': nanny.ageGroups,
+                          'languages': nanny.languages,
+                          'service_types': nanny.serviceTypes
+                              .map((t) => t.key)
+                              .toList(),
+                          'services': nanny.services,
+                          'prices': nanny.prices,
+                          'time_slots': nanny.timeSlots,
+                          'verification_status': nanny.verificationStatus,
+                          'nanny_role': nanny.nannyRole,
+                          'repeat_families': nanny.repeatFamilies,
+                        },
+                      },
                 );
                 savedPlaces.toggleSave(savedItem);
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(
-                      isSaved ? 'Sevimli ro\'yxatidan o\'chirildi' : 'Sevimli ro\'yxatiga qo\'shildi',
+                      isSaved
+                          ? 'Sevimli ro\'yxatidan o\'chirildi'
+                          : 'Sevimli ro\'yxatiga qo\'shildi',
                     ),
                     duration: const Duration(seconds: 1),
                   ),
@@ -156,10 +167,30 @@ class _NannyProfileScreenState extends State<NannyProfileScreen> {
           const SizedBox(height: 16),
           _badgesSection(context),
           const SizedBox(height: 16),
-          _infoTile(context, LucideIcons.mapPin, 'Hudud', nanny.serviceArea ?? nanny.address),
-          _infoTile(context, LucideIcons.calendar, 'Tajriba', '${nanny.experienceYears} yil'),
-          _infoTile(context, LucideIcons.users, 'Yosh guruhlari', nanny.ageGroupsLabel),
-          _infoTile(context, LucideIcons.languages, 'Tillari', nanny.languagesLabel),
+          _infoTile(
+            context,
+            LucideIcons.mapPin,
+            'Hudud',
+            nanny.serviceArea ?? nanny.address,
+          ),
+          _infoTile(
+            context,
+            LucideIcons.calendar,
+            'Tajriba',
+            '${nanny.experienceYears} yil',
+          ),
+          _infoTile(
+            context,
+            LucideIcons.users,
+            'Yosh guruhlari',
+            nanny.ageGroupsLabel,
+          ),
+          _infoTile(
+            context,
+            LucideIcons.languages,
+            'Tillari',
+            nanny.languagesLabel,
+          ),
           const SizedBox(height: 16),
           Text(
             'Xizmatlar va narxlar',
@@ -178,10 +209,18 @@ class _NannyProfileScreenState extends State<NannyProfileScreen> {
               borderRadius: GlassTokens.radiusMd,
               child: Row(
                 children: [
-                  Expanded(child: Text(s, style: const TextStyle(fontWeight: FontWeight.w600))),
+                  Expanded(
+                    child: Text(
+                      s,
+                      style: const TextStyle(fontWeight: FontWeight.w600),
+                    ),
+                  ),
                   Text(
                     currency.format(price),
-                    style: const TextStyle(fontWeight: FontWeight.bold, color: _accent),
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: _accent,
+                    ),
                   ),
                 ],
               ),
@@ -201,7 +240,11 @@ class _NannyProfileScreenState extends State<NannyProfileScreen> {
                 const SizedBox(height: 8),
                 Text(
                   'Bolalar xavfsizligi uchun avval enaga bilan qisqa suhbat qiling — telefon orqali yoki uchrashuv.',
-                  style: TextStyle(color: Colors.grey[700], height: 1.4, fontSize: 13),
+                  style: TextStyle(
+                    color: Colors.grey[700],
+                    height: 1.4,
+                    fontSize: 13,
+                  ),
                 ),
                 const SizedBox(height: 12),
                 OutlinedButton.icon(
@@ -213,14 +256,16 @@ class _NannyProfileScreenState extends State<NannyProfileScreen> {
                   contentPadding: EdgeInsets.zero,
                   title: const Text('Enaga bilan bog\'landim'),
                   value: _contactedNanny,
-                  onChanged: (v) => setState(() => _contactedNanny = v ?? false),
+                  onChanged: (v) =>
+                      setState(() => _contactedNanny = v ?? false),
                   controlAffinity: ListTileControlAffinity.leading,
                 ),
                 CheckboxListTile(
                   contentPadding: EdgeInsets.zero,
                   title: const Text('Profil va hujjatlarni ko\'rib chiqdim'),
                   value: _reviewedProfile,
-                  onChanged: (v) => setState(() => _reviewedProfile = v ?? false),
+                  onChanged: (v) =>
+                      setState(() => _reviewedProfile = v ?? false),
                   controlAffinity: ListTileControlAffinity.leading,
                 ),
               ],
@@ -243,8 +288,8 @@ class _NannyProfileScreenState extends State<NannyProfileScreen> {
                       );
                     }
                   : null,
-              icon: const Icon(LucideIcons.calendarCheck),
-              label: const Text('Buyurtma berish'),
+              icon: Icon(LucideIcons.calendarCheck),
+              label: Text('Buyurtma berish'.tr),
               style: FilledButton.styleFrom(
                 backgroundColor: _accent,
                 padding: const EdgeInsets.symmetric(vertical: 16),
@@ -268,9 +313,21 @@ class _NannyProfileScreenState extends State<NannyProfileScreen> {
   Widget _badgesSection(BuildContext context) {
     final docs = nanny.documents;
     final badges = <({String label, bool ok, IconData icon})>[
-      (label: 'Tibbiy spravka', ok: docs.medicalCert, icon: LucideIcons.heartPulse),
-      (label: 'ID tasdiqlangan', ok: docs.idVerified, icon: LucideIcons.badgeCheck),
-      (label: 'Sudlanganlik yo\'q', ok: docs.criminalRecord, icon: LucideIcons.shieldCheck),
+      (
+        label: 'Tibbiy spravka',
+        ok: docs.medicalCert,
+        icon: LucideIcons.heartPulse,
+      ),
+      (
+        label: 'ID tasdiqlangan',
+        ok: docs.idVerified,
+        icon: LucideIcons.badgeCheck,
+      ),
+      (
+        label: 'Sudlanganlik yo\'q',
+        ok: docs.criminalRecord,
+        icon: LucideIcons.shieldCheck,
+      ),
     ];
 
     return Wrap(
@@ -290,14 +347,16 @@ class _NannyProfileScreenState extends State<NannyProfileScreen> {
       decoration: BoxDecoration(
         color: (ok ? const Color(0xFF10B981) : Colors.grey),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: (ok ? const Color(0xFF10B981) : Colors.grey),
-        ),
+        border: Border.all(color: (ok ? const Color(0xFF10B981) : Colors.grey)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 16, color: ok ? const Color(0xFF10B981) : Colors.grey),
+          Icon(
+            icon,
+            size: 16,
+            color: ok ? const Color(0xFF10B981) : Colors.grey,
+          ),
           const SizedBox(width: 6),
           Text(
             label,
@@ -312,7 +371,12 @@ class _NannyProfileScreenState extends State<NannyProfileScreen> {
     );
   }
 
-  Widget _infoTile(BuildContext context, IconData icon, String label, String value) {
+  Widget _infoTile(
+    BuildContext context,
+    IconData icon,
+    String label,
+    String value,
+  ) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Row(
@@ -324,8 +388,20 @@ class _NannyProfileScreenState extends State<NannyProfileScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(label, style: TextStyle(fontSize: 12, color: GlassTokens.secondaryText(context))),
-                Text(value, style: TextStyle(fontWeight: FontWeight.w600, color: GlassTokens.primaryText(context))),
+                Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: GlassTokens.secondaryText(context),
+                  ),
+                ),
+                Text(
+                  value,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    color: GlassTokens.primaryText(context),
+                  ),
+                ),
               ],
             ),
           ),

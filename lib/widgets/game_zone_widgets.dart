@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../models/game_zone.dart';
 import '../theme/glass_tokens.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 // ===================================================================
 //              GAME ZONE VISUAL WIDGET
@@ -23,7 +24,11 @@ class GameZoneVisualWidget extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
         image: DecorationImage(
-          image: NetworkImage(zone.gallery.isNotEmpty ? zone.gallery.first : 'https://via.placeholder.com/600x400'),
+          image: NetworkImage(
+            zone.gallery.isNotEmpty
+                ? zone.gallery.first
+                : 'https://via.placeholder.com/600x400',
+          ),
           fit: BoxFit.cover,
         ),
         boxShadow: GlassTokens.glassShadow(context),
@@ -56,7 +61,10 @@ class GameZoneVisualWidget extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 4,
+                        ),
                         decoration: BoxDecoration(
                           color: accent.withOpacity(0.8),
                           borderRadius: BorderRadius.circular(12),
@@ -105,7 +113,9 @@ class GameZoneInfoCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: isDark ? Colors.white.withOpacity(0.05) : Colors.white.withOpacity(0.9),
+        color: isDark
+            ? Colors.white.withOpacity(0.05)
+            : Colors.white.withOpacity(0.9),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: GlassTokens.glassBorder(context)),
         boxShadow: GlassTokens.glassShadow(context),
@@ -116,7 +126,10 @@ class GameZoneInfoCard extends StatelessWidget {
           Row(
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 6,
+                ),
                 decoration: BoxDecoration(
                   color: Colors.deepPurpleAccent,
                   borderRadius: BorderRadius.circular(10),
@@ -141,7 +154,10 @@ class GameZoneInfoCard extends StatelessWidget {
               Expanded(
                 child: Text(
                   zone.address,
-                  style: TextStyle(color: GlassTokens.secondaryText(context), fontSize: 13),
+                  style: TextStyle(
+                    color: GlassTokens.secondaryText(context),
+                    fontSize: 13,
+                  ),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -153,8 +169,16 @@ class GameZoneInfoCard extends StatelessWidget {
             spacing: 8,
             runSpacing: 8,
             children: [
-              _InfoChip(icon: Icons.gamepad, label: zone.zoneType, color: Colors.deepPurpleAccent),
-              _InfoChip(icon: Icons.meeting_room, label: zone.roomType, color: Colors.blueAccent),
+              _InfoChip(
+                icon: Icons.gamepad,
+                label: zone.zoneType,
+                color: Colors.deepPurpleAccent,
+              ),
+              _InfoChip(
+                icon: Icons.meeting_room,
+                label: zone.roomType,
+                color: Colors.blueAccent,
+              ),
             ],
           ),
           const SizedBox(height: 16),
@@ -162,7 +186,11 @@ class GameZoneInfoCard extends StatelessWidget {
           const SizedBox(height: 12),
           Row(
             children: [
-              Icon(Icons.payments_outlined, size: 20, color: GlassTokens.secondaryText(context)),
+              Icon(
+                Icons.payments_outlined,
+                size: 20,
+                color: GlassTokens.secondaryText(context),
+              ),
               const SizedBox(width: 6),
               Text(
                 '${NumberFormat('#,###').format(zone.basePricePerHour)} soʻm / soat',
@@ -185,7 +213,11 @@ class _InfoChip extends StatelessWidget {
   final String label;
   final Color color;
 
-  const _InfoChip({required this.icon, required this.label, required this.color});
+  const _InfoChip({
+    required this.icon,
+    required this.label,
+    required this.color,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -200,10 +232,7 @@ class _InfoChip extends StatelessWidget {
         children: [
           Icon(icon, size: 14, color: color),
           const SizedBox(width: 4),
-          Text(
-            label,
-            style: TextStyle(fontSize: 11, color: color),
-          ),
+          Text(label, style: TextStyle(fontSize: 11, color: color)),
         ],
       ),
     );
@@ -247,14 +276,19 @@ class GameZonePriceSummaryCard extends StatelessWidget {
               const SizedBox(width: 8),
               const Text(
                 'Buyurtma xulosasi',
-                style: TextStyle(fontWeight: FontWeight.w700, fontSize: 15, color: Colors.white),
+                style: TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 15,
+                  color: Colors.white,
+                ),
               ),
             ],
           ),
           const SizedBox(height: 12),
           _PriceLine(
             label: 'Asosiy narxi (${zone.zoneType})',
-            value: '${NumberFormat('#,###').format(zone.basePricePerHour)} soʻm',
+            value:
+                '${NumberFormat('#,###').format(zone.basePricePerHour)} soʻm',
           ),
           if (selectedAmenities.isNotEmpty) ...[
             const SizedBox(height: 6),
@@ -279,7 +313,11 @@ class GameZonePriceSummaryCard extends StatelessWidget {
             children: [
               const Text(
                 'Jami (tahminiy):',
-                style: TextStyle(fontWeight: FontWeight.w800, fontSize: 16, color: Colors.white),
+                style: TextStyle(
+                  fontWeight: FontWeight.w800,
+                  fontSize: 16,
+                  color: Colors.white,
+                ),
               ),
               Text(
                 '${NumberFormat('#,###').format(totalPrice)} soʻm',

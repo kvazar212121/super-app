@@ -21,14 +21,8 @@ class CardItemWidget extends StatelessWidget {
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: isUzcard
-                  ? [
-                      const Color(0xFF00A8E1),
-                      const Color(0xFF0077B5),
-                    ]
-                  : [
-                      const Color(0xFF00C853),
-                      const Color(0xFF069668),
-                    ],
+                  ? [const Color(0xFF00A8E1), const Color(0xFF0077B5)]
+                  : [const Color(0xFF00C853), const Color(0xFF069668)],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
@@ -51,7 +45,10 @@ class CardItemWidget extends StatelessWidget {
                   ),
                   if (card.isDefault)
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 2,
+                      ),
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(8),
@@ -84,7 +81,10 @@ class CardItemWidget extends StatelessWidget {
                         'Karta egasi',
                         style: TextStyle(color: Colors.white, fontSize: 12),
                       ),
-                      Text(card.cardHolder, style: const TextStyle(color: Colors.white)),
+                      Text(
+                        card.cardHolder,
+                        style: const TextStyle(color: Colors.white),
+                      ),
                     ],
                   ),
                   Column(
@@ -94,7 +94,10 @@ class CardItemWidget extends StatelessWidget {
                         'Muddati',
                         style: TextStyle(color: Colors.white, fontSize: 12),
                       ),
-                      Text(card.expiryDate, style: const TextStyle(color: Colors.white)),
+                      Text(
+                        card.expiryDate,
+                        style: const TextStyle(color: Colors.white),
+                      ),
                     ],
                   ),
                 ],

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../utils/geo_utils.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 /// Futbol maydoni qoplama turi
 enum FieldSurface {
@@ -11,22 +12,22 @@ enum FieldSurface {
 
 extension FieldSurfaceX on FieldSurface {
   String get label => switch (this) {
-        FieldSurface.natural => 'Tabiiy maysa',
-        FieldSurface.artificial => 'Sunʼiy qoplama',
-        FieldSurface.parquet => 'Parket (zal)',
-      };
+    FieldSurface.natural => 'Tabiiy maysa',
+    FieldSurface.artificial => 'Sunʼiy qoplama',
+    FieldSurface.parquet => 'Parket (zal)',
+  };
 
   IconData get icon => switch (this) {
-        FieldSurface.natural => Icons.grass,
-        FieldSurface.artificial => Icons.sports_soccer,
-        FieldSurface.parquet => Icons.sports_basketball,
-      };
+    FieldSurface.natural => Icons.grass,
+    FieldSurface.artificial => Icons.sports_soccer,
+    FieldSurface.parquet => Icons.sports_basketball,
+  };
 
   Color get color => switch (this) {
-        FieldSurface.natural => const Color(0xFF4CAF50),
-        FieldSurface.artificial => const Color(0xFF2196F3),
-        FieldSurface.parquet => const Color(0xFFFF9800),
-      };
+    FieldSurface.natural => const Color(0xFF4CAF50),
+    FieldSurface.artificial => const Color(0xFF2196F3),
+    FieldSurface.parquet => const Color(0xFFFF9800),
+  };
 }
 
 /// Maydon o'lchami turi
@@ -38,28 +39,28 @@ enum FieldSize {
 
 extension FieldSizeX on FieldSize {
   String get label => switch (this) {
-        FieldSize.small => 'Kichik (5×5 / 6×6)',
-        FieldSize.medium => "O'rta (7×7 / 8×8)",
-        FieldSize.large => 'Katta (11×11)',
-      };
+    FieldSize.small => 'Kichik (5×5 / 6×6)',
+    FieldSize.medium => "O'rta (7×7 / 8×8)",
+    FieldSize.large => 'Katta (11×11)',
+  };
 
   String get shortLabel => switch (this) {
-        FieldSize.small => '5×5',
-        FieldSize.medium => '7×7',
-        FieldSize.large => '11×11',
-      };
+    FieldSize.small => '5×5',
+    FieldSize.medium => '7×7',
+    FieldSize.large => '11×11',
+  };
 
   int get minPlayers => switch (this) {
-        FieldSize.small => 10,
-        FieldSize.medium => 14,
-        FieldSize.large => 22,
-      };
+    FieldSize.small => 10,
+    FieldSize.medium => 14,
+    FieldSize.large => 22,
+  };
 
   int get maxPlayers => switch (this) {
-        FieldSize.small => 12,
-        FieldSize.medium => 16,
-        FieldSize.large => 22,
-      };
+    FieldSize.small => 12,
+    FieldSize.medium => 16,
+    FieldSize.large => 22,
+  };
 }
 
 /// Vaqt sloti
@@ -82,10 +83,9 @@ class TimeSlot {
       '${start.hour.toString().padLeft(2, '0')}:${start.minute.toString().padLeft(2, '0')} — '
       '${end.hour.toString().padLeft(2, '0')}:${end.minute.toString().padLeft(2, '0')}';
 
-  Duration get duration =>
-      Duration(
-        hours: end.hour - start.hour + (end.minute - start.minute) ~/ 60,
-      );
+  Duration get duration => Duration(
+    hours: end.hour - start.hour + (end.minute - start.minute) ~/ 60,
+  );
 
   TimeSlot copyWith({
     String? id,
@@ -93,14 +93,13 @@ class TimeSlot {
     TimeOfDay? end,
     bool? isAvailable,
     double? price,
-  }) =>
-      TimeSlot(
-        id: id ?? this.id,
-        start: start ?? this.start,
-        end: end ?? this.end,
-        isAvailable: isAvailable ?? this.isAvailable,
-        price: price ?? this.price,
-      );
+  }) => TimeSlot(
+    id: id ?? this.id,
+    start: start ?? this.start,
+    end: end ?? this.end,
+    isAvailable: isAvailable ?? this.isAvailable,
+    price: price ?? this.price,
+  );
 }
 
 /// Qo'shimcha xizmatlar
@@ -109,11 +108,7 @@ class FieldAmenity {
   final IconData icon;
   final double? price; // null bo'lsa bepul
 
-  const FieldAmenity({
-    required this.name,
-    required this.icon,
-    this.price,
-  });
+  const FieldAmenity({required this.name, required this.icon, this.price});
 }
 
 /// Futbol maydoni modeli
@@ -142,7 +137,7 @@ class FootballField {
   final Map<int, List<TimeSlot>> weeklySlots;
   final Map<String, dynamic>? rawJson;
 
-    final String? subCategory;
+  final String? subCategory;
 
   FootballField({
     required this.id,
@@ -165,7 +160,7 @@ class FootballField {
     this.hasCafe = false,
     this.weeklySlots = const {},
     this.rawJson,
-      this.subCategory,
+    this.subCategory,
   });
 
   /// Backend provider ID.
@@ -174,18 +169,19 @@ class FootballField {
   factory FootballField.fromProviderJson(Map<String, dynamic> json) {
     final meta = json['metadata'] as Map<String, dynamic>? ?? {};
     FieldSize parseSize(String? s) => switch (s) {
-          'small' => FieldSize.small,
-          'medium' => FieldSize.medium,
-          'large' => FieldSize.large,
-          _ => FieldSize.medium,
-        };
+      'small' => FieldSize.small,
+      'medium' => FieldSize.medium,
+      'large' => FieldSize.large,
+      _ => FieldSize.medium,
+    };
     FieldSurface parseSurface(String? s) => switch (s) {
-          'natural' => FieldSurface.natural,
-          'artificial' => FieldSurface.artificial,
-          'parquet' => FieldSurface.parquet,
-          _ => FieldSurface.artificial,
-        };
-    final basePrice = (meta['base_price_per_hour'] as num?)?.toDouble() ?? 200000;
+      'natural' => FieldSurface.natural,
+      'artificial' => FieldSurface.artificial,
+      'parquet' => FieldSurface.parquet,
+      _ => FieldSurface.artificial,
+    };
+    final basePrice =
+        (meta['base_price_per_hour'] as num?)?.toDouble() ?? 200000;
     final slotHours = (meta['time_slots'] as List<dynamic>?)
         ?.map((e) => e.toString())
         .toList();
@@ -207,10 +203,17 @@ class FootballField {
       hasShowers: meta['has_showers'] != false,
       hasCafe: meta['has_cafe'] == true,
       weeklySlots: slotHours != null && slotHours.isNotEmpty
-          ? {for (var d = 1; d <= 7; d++) d: _slotsFromHours(slotHours, basePrice, json['id']?.toString() ?? '')}
+          ? {
+              for (var d = 1; d <= 7; d++)
+                d: _slotsFromHours(
+                  slotHours,
+                  basePrice,
+                  json['id']?.toString() ?? '',
+                ),
+            }
           : const {},
       rawJson: json,
-          subCategory: meta['sub_category']?.toString(),
+      subCategory: meta['sub_category']?.toString(),
     );
   }
 
@@ -228,13 +231,15 @@ class FootballField {
       final endH = i + 1 < hours.length
           ? int.tryParse(hours[i + 1].split(':').first) ?? (h + 1)
           : h + 1;
-      slots.add(TimeSlot(
-        id: '${fieldId}_$key',
-        start: TimeOfDay(hour: h, minute: 0),
-        end: TimeOfDay(hour: endH, minute: 0),
-        isAvailable: !booked.contains(key) && !booked.contains(hours[i]),
-        price: basePrice,
-      ));
+      slots.add(
+        TimeSlot(
+          id: '${fieldId}_$key',
+          start: TimeOfDay(hour: h, minute: 0),
+          end: TimeOfDay(hour: endH, minute: 0),
+          isAvailable: !booked.contains(key) && !booked.contains(hours[i]),
+          price: basePrice,
+        ),
+      );
     }
     return slots;
   }
@@ -252,7 +257,10 @@ class FootballField {
   String get sizeSurfaceLabel => '${size.shortLabel} · ${surface.label}';
 
   /// Berilgan sana uchun slotlarni qaytaradi
-  List<TimeSlot> getSlotsForDate(DateTime date, {Set<String> booked = const {}}) {
+  List<TimeSlot> getSlotsForDate(
+    DateTime date, {
+    Set<String> booked = const {},
+  }) {
     final weekday = date.weekday; // 1=dushanba..7=yakshanba
     final isWeekend = weekday == 6 || weekday == 7;
 
@@ -261,22 +269,43 @@ class FootballField {
       return _defaultSlots(isWeekend, booked: booked);
     }
 
-    final base = weeklySlots[weekday] ?? _defaultSlots(isWeekend, booked: booked);
+    final base =
+        weeklySlots[weekday] ?? _defaultSlots(isWeekend, booked: booked);
     if (booked.isEmpty) return base;
     return base
-        .map((s) => s.copyWith(
-              isAvailable: s.isAvailable &&
-                  !booked.contains(_slotKey(s.start)),
-            ))
+        .map(
+          (s) => s.copyWith(
+            isAvailable: s.isAvailable && !booked.contains(_slotKey(s.start)),
+          ),
+        )
         .toList();
   }
 
   String _slotKey(TimeOfDay t) =>
       '${t.hour.toString().padLeft(2, '0')}:${t.minute.toString().padLeft(2, '0')}';
 
-  List<TimeSlot> _defaultSlots(bool isWeekend, {Set<String> booked = const {}}) {
+  List<TimeSlot> _defaultSlots(
+    bool isWeekend, {
+    Set<String> booked = const {},
+  }) {
     final slots = <TimeSlot>[];
-    final startHours = [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22];
+    final startHours = [
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+    ];
     final multiplier = isWeekend ? 1.3 : 1.0; // dam olish kunlari narx yuqori
 
     for (var i = 0; i < startHours.length - 1; i++) {
@@ -284,13 +313,15 @@ class FootballField {
       final nextH = startHours[i + 1];
       final key = '${h.toString().padLeft(2, '0')}:00';
       final isAvailable = !booked.contains(key);
-      slots.add(TimeSlot(
-        id: '${id}_${h}00',
-        start: TimeOfDay(hour: h, minute: 0),
-        end: TimeOfDay(hour: nextH, minute: 0),
-        isAvailable: isAvailable,
-        price: (basePricePerHour * multiplier).roundToDouble(),
-      ));
+      slots.add(
+        TimeSlot(
+          id: '${id}_${h}00',
+          start: TimeOfDay(hour: h, minute: 0),
+          end: TimeOfDay(hour: nextH, minute: 0),
+          isAvailable: isAvailable,
+          price: (basePricePerHour * multiplier).roundToDouble(),
+        ),
+      );
     }
     return slots;
   }

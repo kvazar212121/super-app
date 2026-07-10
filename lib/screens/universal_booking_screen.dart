@@ -6,6 +6,7 @@ import '../models/service_order.dart';
 import '../providers/app_provider.dart';
 import '../utils/auth_guard.dart';
 import '../widgets/glass/mesh_background.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 /// Yagona-sahifa universal bron formasi.
 /// Har bir xizmat hubidan ochiladi, [kind] bo'yicha variantlarni ko'rsatadi.
@@ -50,10 +51,7 @@ class _UniversalBookingScreenState extends State<UniversalBookingScreen> {
   }
 
   Future<void> _pickTime() async {
-    final picked = await showTimePicker(
-      context: context,
-      initialTime: _time,
-    );
+    final picked = await showTimePicker(context: context, initialTime: _time);
     if (picked != null) setState(() => _time = picked);
   }
 
@@ -99,106 +97,107 @@ class _UniversalBookingScreenState extends State<UniversalBookingScreen> {
     final accent = kind.accent;
     return GlassBackdrop(
       child: Scaffold(
-      backgroundColor: Colors.transparent,
-      appBar: AppBar(
-        title: Text('${kind.title} — bron'),
         backgroundColor: Colors.transparent,
-        foregroundColor: accent,
-      ),
-      body: Form(
-        key: _formKey,
-        child: ListView(
-          padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
-          children: [
-            _SectionTitle('Xizmat turi'),
-            const SizedBox(height: 8),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: List.generate(kind.variants.length, (i) {
-                final v = kind.variants[i];
-                final selected = i == _variantIndex;
-                return ChoiceChip(
-                  label: Text(v.label),
-                  selected: selected,
-                  selectedColor: accent,
-                  labelStyle: TextStyle(
-                    color: selected ? accent : Colors.black87,
-                    fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
-                  ),
-                  onSelected: (_) => setState(() => _variantIndex = i),
-                );
-              }),
-            ),
-            const SizedBox(height: 22),
-            _SectionTitle('Manzil'),
-            const SizedBox(height: 8),
-            TextFormField(
-              controller: _addressCtrl,
-              textInputAction: TextInputAction.next,
-              decoration: const InputDecoration(
-                hintText: 'Masalan: Toshkent, Chilonzor 5-mavze, 12-uy',
-                prefixIcon: Icon(Icons.location_on_outlined),
-                border: OutlineInputBorder(),
-              ),
-              validator: (v) =>
-                  (v == null || v.trim().length < 4) ? 'Manzilni kiriting' : null,
-            ),
-            const SizedBox(height: 22),
-            _SectionTitle('Sana va vaqt'),
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                Expanded(
-                  child: _PickerTile(
-                    icon: Icons.calendar_month_outlined,
-                    label: '${_date.day}.${_date.month}.${_date.year}',
-                    onTap: _pickDate,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: _PickerTile(
-                    icon: Icons.schedule,
-                    label: _time.format(context),
-                    onTap: _pickTime,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 22),
-            _SectionTitle('Qo‘shimcha izoh'),
-            const SizedBox(height: 8),
-            TextFormField(
-              controller: _notesCtrl,
-              maxLines: 3,
-              decoration: const InputDecoration(
-                hintText: 'Masalan: 3-qavat, lift ishlamayapti',
-                border: OutlineInputBorder(),
-              ),
-            ),
-            const SizedBox(height: 22),
-            _PriceCard(
-              accent: accent,
-              variant: _variant.label,
-              price: _variant.basePrice,
-            ),
-            const SizedBox(height: 22),
-            SizedBox(
-              height: 52,
-              child: FilledButton.icon(
-                style: FilledButton.styleFrom(backgroundColor: accent),
-                onPressed: _submit,
-                icon: const Icon(Icons.check_circle_outline),
-                label: const Text(
-                  'Buyurtma berish',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                ),
-              ),
-            ),
-          ],
+        appBar: AppBar(
+          title: Text('${kind.title} — bron'),
+          backgroundColor: Colors.transparent,
+          foregroundColor: accent,
         ),
-      ),
+        body: Form(
+          key: _formKey,
+          child: ListView(
+            padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
+            children: [
+              _SectionTitle('Xizmat turi'),
+              const SizedBox(height: 8),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: List.generate(kind.variants.length, (i) {
+                  final v = kind.variants[i];
+                  final selected = i == _variantIndex;
+                  return ChoiceChip(
+                    label: Text(v.label),
+                    selected: selected,
+                    selectedColor: accent,
+                    labelStyle: TextStyle(
+                      color: selected ? accent : Colors.black87,
+                      fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
+                    ),
+                    onSelected: (_) => setState(() => _variantIndex = i),
+                  );
+                }),
+              ),
+              const SizedBox(height: 22),
+              _SectionTitle('Manzil'),
+              const SizedBox(height: 8),
+              TextFormField(
+                controller: _addressCtrl,
+                textInputAction: TextInputAction.next,
+                decoration: InputDecoration(
+                  hintText: 'Masalan: Toshkent, Chilonzor 5-mavze, 12-uy'.tr,
+                  prefixIcon: Icon(Icons.location_on_outlined),
+                  border: OutlineInputBorder(),
+                ),
+                validator: (v) => (v == null || v.trim().length < 4)
+                    ? 'Manzilni kiriting'
+                    : null,
+              ),
+              const SizedBox(height: 22),
+              _SectionTitle('Sana va vaqt'),
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  Expanded(
+                    child: _PickerTile(
+                      icon: Icons.calendar_month_outlined,
+                      label: '${_date.day}.${_date.month}.${_date.year}',
+                      onTap: _pickDate,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _PickerTile(
+                      icon: Icons.schedule,
+                      label: _time.format(context),
+                      onTap: _pickTime,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 22),
+              _SectionTitle('Qo‘shimcha izoh'),
+              const SizedBox(height: 8),
+              TextFormField(
+                controller: _notesCtrl,
+                maxLines: 3,
+                decoration: InputDecoration(
+                  hintText: 'Masalan: 3-qavat, lift ishlamayapti'.tr,
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              const SizedBox(height: 22),
+              _PriceCard(
+                accent: accent,
+                variant: _variant.label,
+                price: _variant.basePrice,
+              ),
+              const SizedBox(height: 22),
+              SizedBox(
+                height: 52,
+                child: FilledButton.icon(
+                  style: FilledButton.styleFrom(backgroundColor: accent),
+                  onPressed: _submit,
+                  icon: const Icon(Icons.check_circle_outline),
+                  label: const Text(
+                    'Buyurtma berish',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -210,9 +209,9 @@ class _SectionTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Text(
-        text,
-        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
-      );
+    text,
+    style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+  );
 }
 
 class _PickerTile extends StatelessWidget {
@@ -278,7 +277,10 @@ class _PriceCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(variant, style: const TextStyle(fontWeight: FontWeight.w600)),
+                Text(
+                  variant,
+                  style: const TextStyle(fontWeight: FontWeight.w600),
+                ),
                 const SizedBox(height: 2),
                 const Text(
                   'Boshlang‘ich narx',

@@ -7,6 +7,7 @@ import '../../../services/tutor_portal_service.dart';
 import '../../../utils/phone_utils.dart';
 import '../../provider_side/provider_theme.dart';
 import '../../provider_side/unified_provider_dashboard_screen.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 class TutorSoloScreen extends StatefulWidget {
   const TutorSoloScreen({super.key});
@@ -49,14 +50,16 @@ class _TutorSoloScreenState extends State<TutorSoloScreen> {
     final name = _nameCtrl.text.trim();
     final area = _areaCtrl.text.trim();
     if (name.isEmpty || area.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Ism va hududni kiriting')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Ism va hududni kiriting'.tr)));
       return;
     }
     if (_subjects.isEmpty || _lessonModes.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Kamida bitta fan va dars formatini tanlang')),
+        SnackBar(
+          content: Text('Kamida bitta fan va dars formatini tanlang'.tr),
+        ),
       );
       return;
     }
@@ -89,9 +92,9 @@ class _TutorSoloScreenState extends State<TutorSoloScreen> {
       );
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Xatolik: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Xatolik: $e')));
       }
     } finally {
       if (mounted) setState(() => _submitting = false);
@@ -102,7 +105,7 @@ class _TutorSoloScreenState extends State<TutorSoloScreen> {
   Widget build(BuildContext context) {
     return ProviderTheme(
       child: Scaffold(
-        appBar: AppBar(title: const Text('Yakka repetitor')),
+        appBar: AppBar(title: Text('Yakka repetitor'.tr)),
         body: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
           child: Column(
@@ -113,26 +116,35 @@ class _TutorSoloScreenState extends State<TutorSoloScreen> {
                 style: TextStyle(color: Colors.grey[700], height: 1.4),
               ),
               const SizedBox(height: 24),
-              TextField(controller: _nameCtrl, decoration: const InputDecoration(labelText: 'Ismingiz')),
+              TextField(
+                controller: _nameCtrl,
+                decoration: InputDecoration(labelText: 'Ismingiz'.tr),
+              ),
               const SizedBox(height: 16),
-              TextField(controller: _phoneCtrl, decoration: const InputDecoration(labelText: 'Telefon')),
+              TextField(
+                controller: _phoneCtrl,
+                decoration: InputDecoration(labelText: 'Telefon'.tr),
+              ),
               const SizedBox(height: 16),
               TextField(
                 controller: _areaCtrl,
                 maxLines: 2,
-                decoration: const InputDecoration(
-                  labelText: 'Xizmat hududi',
-                  hintText: 'Masalan: Toshkent, Yunusobod',
+                decoration: InputDecoration(
+                  labelText: 'Xizmat hududi'.tr,
+                  hintText: 'Masalan: Toshkent, Yunusobod'.tr,
                 ),
               ),
               const SizedBox(height: 16),
               TextField(
                 controller: _experienceCtrl,
                 keyboardType: TextInputType.number,
-                decoration: const InputDecoration(labelText: 'Tajriba (yil)'),
+                decoration: InputDecoration(labelText: 'Tajriba (yil)'.tr),
               ),
               const SizedBox(height: 20),
-              const Text('Fanlar', style: TextStyle(fontWeight: FontWeight.w600)),
+              const Text(
+                'Fanlar',
+                style: TextStyle(fontWeight: FontWeight.w600),
+              ),
               const SizedBox(height: 8),
               Wrap(
                 spacing: 8,
@@ -154,9 +166,14 @@ class _TutorSoloScreenState extends State<TutorSoloScreen> {
                 }).toList(),
               ),
               const SizedBox(height: 20),
-              const Text('Dars formati', style: TextStyle(fontWeight: FontWeight.w600)),
+              const Text(
+                'Dars formati',
+                style: TextStyle(fontWeight: FontWeight.w600),
+              ),
               const SizedBox(height: 8),
-              ...LessonMode.values.where((m) => m != LessonMode.atCenter).map((m) {
+              ...LessonMode.values.where((m) => m != LessonMode.atCenter).map((
+                m,
+              ) {
                 return CheckboxListTile(
                   contentPadding: EdgeInsets.zero,
                   title: Text(m.label),
@@ -178,7 +195,11 @@ class _TutorSoloScreenState extends State<TutorSoloScreen> {
                 child: FilledButton(
                   onPressed: _submitting ? null : _submit,
                   child: _submitting
-                      ? const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2))
+                      ? const SizedBox(
+                          width: 22,
+                          height: 22,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
                       : const Text('Ro\'yxatdan o\'tish'),
                 ),
               ),

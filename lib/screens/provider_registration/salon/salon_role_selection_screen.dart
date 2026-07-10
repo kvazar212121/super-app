@@ -5,6 +5,7 @@ import '../../provider_side/provider_theme.dart';
 import 'salon_employee_join_screen.dart';
 import 'salon_mobile_screen.dart';
 import 'salon_owner_screen.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 class SalonRoleSelectionScreen extends StatelessWidget {
   const SalonRoleSelectionScreen({super.key});
@@ -25,13 +26,15 @@ class SalonRoleSelectionScreen extends StatelessWidget {
         builder: (context) {
           final theme = Theme.of(context);
           return Scaffold(
-            appBar: AppBar(title: const Text('Salon sifatida')),
+            appBar: AppBar(title: Text('Salon sifatida'.tr)),
             body: ListView(
               padding: const EdgeInsets.all(24),
               children: [
                 Text(
                   'Siz kimsiz?',
-                  style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+                  style: theme.textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 const SizedBox(height: 8),
                 Text(
@@ -44,7 +47,8 @@ class SalonRoleSelectionScreen extends StatelessWidget {
                 _RoleCard(
                   icon: LucideIcons.store,
                   title: 'Salon egasi',
-                  subtitle: 'O\'z saloningiz, joylashuv, xodimlar va taklif kodi',
+                  subtitle:
+                      'O\'z saloningiz, joylashuv, xodimlar va taklif kodi',
                   color: const Color(0xFFEC4899),
                   onTap: () => _open(context, SalonRegistrationRole.owner),
                 ),
@@ -52,7 +56,8 @@ class SalonRoleSelectionScreen extends StatelessWidget {
                 _RoleCard(
                   icon: LucideIcons.sparkles,
                   title: 'Salonda ishlayman',
-                  subtitle: 'Mavjud salonni tanlang yoki taklif kodi bilan qo\'shiling',
+                  subtitle:
+                      'Mavjud salonni tanlang yoki taklif kodi bilan qo\'shiling',
                   color: Colors.black,
                   onTap: () => _open(context, SalonRegistrationRole.employee),
                 ),
@@ -115,9 +120,22 @@ class _RoleCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
                   const SizedBox(height: 4),
-                  Text(subtitle, style: TextStyle(color: Colors.grey, height: 1.35, fontSize: 13)),
+                  Text(
+                    subtitle,
+                    style: TextStyle(
+                      color: Colors.grey,
+                      height: 1.35,
+                      fontSize: 13,
+                    ),
+                  ),
                 ],
               ),
             ),

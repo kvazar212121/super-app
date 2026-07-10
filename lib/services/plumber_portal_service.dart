@@ -12,11 +12,10 @@ class PlumberPortalService {
     required String phone,
     required String serviceArea,
     String? address,
-  }) =>
-      _api.registerPlumberSolo(
-        name: name,
-        phone: phone,
-        serviceArea: serviceArea,
-        address: address,
-      );
+  }) => _api.registerPlumberSolo(
+    name: name,
+    phone: phone,
+    serviceArea: serviceArea,
+    address: address,
+  );
 }

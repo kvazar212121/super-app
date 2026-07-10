@@ -38,6 +38,7 @@ import '../screens/nurse_booking_screen.dart';
 import '../screens/dental_booking_screen.dart';
 import '../screens/event_booking_screen.dart';
 import '../screens/worker_profile_screen.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 /// Oq kartalardagi matnlar (har doim oq fonda, shuning uchun qat'iy qora).
 const _cardTitleColor = Colors.black;
@@ -47,7 +48,11 @@ class ShopSmallCard extends StatelessWidget {
   final BarberShop shop;
   final Color accentColor;
 
-  const ShopSmallCard({super.key, required this.shop, required this.accentColor});
+  const ShopSmallCard({
+    super.key,
+    required this.shop,
+    required this.accentColor,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -75,15 +80,27 @@ class ShopSmallCard extends StatelessWidget {
                   color: accentColor,
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: Center(child: Icon(LucideIcons.scissors, color: Colors.white)),
+                child: Center(
+                  child: Icon(LucideIcons.scissors, color: Colors.white),
+                ),
               ),
               const SizedBox(height: 8),
-              Text(shop.name, style: const TextStyle(fontWeight: FontWeight.bold, color: _cardTitleColor), maxLines: 1),
+              Text(
+                shop.name,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: _cardTitleColor,
+                ),
+                maxLines: 1,
+              ),
               Row(
                 children: [
                   const Icon(Icons.star, size: 14, color: Colors.amber),
                   const SizedBox(width: 4),
-                  Text(shop.rating.toString(), style: const TextStyle(fontSize: 12, color: _cardSubColor)),
+                  Text(
+                    shop.rating.toString(),
+                    style: const TextStyle(fontSize: 12, color: _cardSubColor),
+                  ),
                 ],
               ),
             ],
@@ -126,15 +143,27 @@ class SalonSmallCard extends StatelessWidget {
                   color: accentColor,
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: const Center(child: Icon(LucideIcons.sparkles, color: Colors.white)),
+                child: const Center(
+                  child: Icon(LucideIcons.sparkles, color: Colors.white),
+                ),
               ),
               const SizedBox(height: 8),
-              Text(salon.name, style: const TextStyle(fontWeight: FontWeight.bold, color: _cardTitleColor), maxLines: 1),
+              Text(
+                salon.name,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: _cardTitleColor,
+                ),
+                maxLines: 1,
+              ),
               Row(
                 children: [
                   const Icon(Icons.star, size: 14, color: Colors.amber),
                   const SizedBox(width: 4),
-                  Text(salon.rating.toString(), style: const TextStyle(fontSize: 12, color: _cardSubColor)),
+                  Text(
+                    salon.rating.toString(),
+                    style: const TextStyle(fontSize: 12, color: _cardSubColor),
+                  ),
                 ],
               ),
             ],
@@ -163,7 +192,9 @@ class FieldSmallCard extends StatelessWidget {
       child: InkWell(
         onTap: () => Navigator.push(
           context,
-          MaterialPageRoute(builder: (_) => FootballFieldBookingScreen(field: field)),
+          MaterialPageRoute(
+            builder: (_) => FootballFieldBookingScreen(field: field),
+          ),
         ),
         borderRadius: BorderRadius.circular(16),
         child: Padding(
@@ -177,15 +208,27 @@ class FieldSmallCard extends StatelessWidget {
                   color: accentColor,
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: const Center(child: Icon(LucideIcons.trophy, color: Colors.white)),
+                child: Center(
+                  child: Icon(LucideIcons.trophy, color: Colors.white),
+                ),
               ),
               const SizedBox(height: 8),
-              Text(field.name, style: const TextStyle(fontWeight: FontWeight.bold, color: _cardTitleColor), maxLines: 1),
+              Text(
+                field.name,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: _cardTitleColor,
+                ),
+                maxLines: 1,
+              ),
               Row(
                 children: [
                   const Icon(Icons.star, size: 14, color: Colors.amber),
                   const SizedBox(width: 4),
-                  Text(field.rating.toString(), style: const TextStyle(fontSize: 12, color: _cardSubColor)),
+                  Text(
+                    field.rating.toString(),
+                    style: const TextStyle(fontSize: 12, color: _cardSubColor),
+                  ),
                 ],
               ),
             ],
@@ -214,7 +257,9 @@ class SportFacilitySmallCard extends StatelessWidget {
       child: InkWell(
         onTap: () => Navigator.push(
           context,
-          MaterialPageRoute(builder: (_) => SportFacilityBookingScreen(facility: facility)),
+          MaterialPageRoute(
+            builder: (_) => SportFacilityBookingScreen(facility: facility),
+          ),
         ),
         borderRadius: BorderRadius.circular(16),
         child: Padding(
@@ -227,16 +272,33 @@ class SportFacilitySmallCard extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: accentColor,
                   borderRadius: BorderRadius.circular(12),
-                  image: facility.gallery.isNotEmpty ? DecorationImage(
-                    image: NetworkImage(facility.gallery.first),
-                    fit: BoxFit.cover,
-                  ) : null,
+                  image: facility.gallery.isNotEmpty
+                      ? DecorationImage(
+                          image: NetworkImage(facility.gallery.first),
+                          fit: BoxFit.cover,
+                        )
+                      : null,
                 ),
-                child: facility.gallery.isEmpty ? const Center(child: Icon(Icons.sports_tennis, color: Colors.white)) : null,
+                child: facility.gallery.isEmpty
+                    ? const Center(
+                        child: Icon(Icons.sports_tennis, color: Colors.white),
+                      )
+                    : null,
               ),
               const SizedBox(height: 8),
-              Text(facility.name, style: const TextStyle(fontWeight: FontWeight.bold, color: _cardTitleColor), maxLines: 1),
-              Text(facility.sportType, style: TextStyle(fontSize: 11, color: accentColor), maxLines: 1),
+              Text(
+                facility.name,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: _cardTitleColor,
+                ),
+                maxLines: 1,
+              ),
+              Text(
+                facility.sportType,
+                style: TextStyle(fontSize: 11, color: accentColor),
+                maxLines: 1,
+              ),
             ],
           ),
         ),
@@ -276,16 +338,33 @@ class GameZoneSmallCard extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: accentColor,
                   borderRadius: BorderRadius.circular(12),
-                  image: zone.gallery.isNotEmpty ? DecorationImage(
-                    image: NetworkImage(zone.gallery.first),
-                    fit: BoxFit.cover,
-                  ) : null,
+                  image: zone.gallery.isNotEmpty
+                      ? DecorationImage(
+                          image: NetworkImage(zone.gallery.first),
+                          fit: BoxFit.cover,
+                        )
+                      : null,
                 ),
-                child: zone.gallery.isEmpty ? const Center(child: Icon(Icons.gamepad, color: Colors.white)) : null,
+                child: zone.gallery.isEmpty
+                    ? const Center(
+                        child: Icon(Icons.gamepad, color: Colors.white),
+                      )
+                    : null,
               ),
               const SizedBox(height: 8),
-              Text(zone.name, style: const TextStyle(fontWeight: FontWeight.bold, color: _cardTitleColor), maxLines: 1),
-              Text(zone.zoneType, style: TextStyle(fontSize: 11, color: accentColor), maxLines: 1),
+              Text(
+                zone.name,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: _cardTitleColor,
+                ),
+                maxLines: 1,
+              ),
+              Text(
+                zone.zoneType,
+                style: TextStyle(fontSize: 11, color: accentColor),
+                maxLines: 1,
+              ),
             ],
           ),
         ),
@@ -312,7 +391,9 @@ class EventVenueSmallCard extends StatelessWidget {
       child: InkWell(
         onTap: () => Navigator.push(
           context,
-          MaterialPageRoute(builder: (_) => EventVenueBookingScreen(venue: venue)),
+          MaterialPageRoute(
+            builder: (_) => EventVenueBookingScreen(venue: venue),
+          ),
         ),
         borderRadius: BorderRadius.circular(16),
         child: Padding(
@@ -325,16 +406,33 @@ class EventVenueSmallCard extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: accentColor,
                   borderRadius: BorderRadius.circular(12),
-                  image: venue.gallery.isNotEmpty ? DecorationImage(
-                    image: NetworkImage(venue.gallery.first),
-                    fit: BoxFit.cover,
-                  ) : null,
+                  image: venue.gallery.isNotEmpty
+                      ? DecorationImage(
+                          image: NetworkImage(venue.gallery.first),
+                          fit: BoxFit.cover,
+                        )
+                      : null,
                 ),
-                child: venue.gallery.isEmpty ? const Center(child: Icon(Icons.location_city, color: Colors.white)) : null,
+                child: venue.gallery.isEmpty
+                    ? const Center(
+                        child: Icon(Icons.location_city, color: Colors.white),
+                      )
+                    : null,
               ),
               const SizedBox(height: 8),
-              Text(venue.name, style: const TextStyle(fontWeight: FontWeight.bold, color: _cardTitleColor), maxLines: 1),
-              Text(venue.venueType, style: TextStyle(fontSize: 11, color: accentColor), maxLines: 1),
+              Text(
+                venue.name,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: _cardTitleColor,
+                ),
+                maxLines: 1,
+              ),
+              Text(
+                venue.venueType,
+                style: TextStyle(fontSize: 11, color: accentColor),
+                maxLines: 1,
+              ),
             ],
           ),
         ),
@@ -375,11 +473,24 @@ class EventTeamSmallCard extends StatelessWidget {
                   color: accentColor.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: Center(child: Icon(Icons.celebration, color: accentColor, size: 36)),
+                child: Center(
+                  child: Icon(Icons.celebration, color: accentColor, size: 36),
+                ),
               ),
               const SizedBox(height: 8),
-              Text(team.name, style: const TextStyle(fontWeight: FontWeight.bold, color: _cardTitleColor), maxLines: 1),
-              Text(team.capabilitiesLabel, style: TextStyle(fontSize: 11, color: accentColor), maxLines: 1),
+              Text(
+                team.name,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: _cardTitleColor,
+                ),
+                maxLines: 1,
+              ),
+              Text(
+                team.capabilitiesLabel,
+                style: TextStyle(fontSize: 11, color: accentColor),
+                maxLines: 1,
+              ),
             ],
           ),
         ),
@@ -412,21 +523,23 @@ class MasterSmallCard extends StatelessWidget {
           if (category == ServiceHubKind.oshxona) {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (_) => OshxonaProfileScreen(oshxona: master)),
+              MaterialPageRoute(
+                builder: (_) => OshxonaProfileScreen(oshxona: master),
+              ),
             );
           } else if (category == ServiceHubKind.bozorchi) {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (_) => BozorchiProfileScreen(bozorchi: master)),
+              MaterialPageRoute(
+                builder: (_) => BozorchiProfileScreen(bozorchi: master),
+              ),
             );
           } else {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (_) => ProviderProfileScreen(
-                  master: master,
-                  category: category,
-                ),
+                builder: (_) =>
+                    ProviderProfileScreen(master: master, category: category),
               ),
             );
           }
@@ -442,8 +555,19 @@ class MasterSmallCard extends StatelessWidget {
                 child: const Icon(LucideIcons.user, color: Color(0xFF0F172A)),
               ),
               const SizedBox(height: 8),
-              Text(master.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: _cardTitleColor), maxLines: 1),
-              Text(master.specialty, style: TextStyle(fontSize: 11, color: Colors.blue[700])),
+              Text(
+                master.name,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 13,
+                  color: _cardTitleColor,
+                ),
+                maxLines: 1,
+              ),
+              Text(
+                master.specialty,
+                style: TextStyle(fontSize: 11, color: Colors.blue[700]),
+              ),
             ],
           ),
         ),
@@ -469,7 +593,9 @@ class WorkerSmallCard extends StatelessWidget {
       child: InkWell(
         onTap: () => Navigator.push(
           context,
-          MaterialPageRoute(builder: (_) => WorkerProfileScreen(worker: worker)),
+          MaterialPageRoute(
+            builder: (_) => WorkerProfileScreen(worker: worker),
+          ),
         ),
         borderRadius: BorderRadius.circular(16),
         child: Padding(
@@ -482,8 +608,18 @@ class WorkerSmallCard extends StatelessWidget {
                 child: Icon(LucideIcons.user, color: Colors.orange[800]),
               ),
               const SizedBox(height: 8),
-              Text(worker.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: _cardTitleColor)),
-              Text(worker.type, style: TextStyle(fontSize: 10, color: Colors.grey[600])),
+              Text(
+                worker.name,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 13,
+                  color: _cardTitleColor,
+                ),
+              ),
+              Text(
+                worker.type,
+                style: TextStyle(fontSize: 10, color: Colors.grey[600]),
+              ),
             ],
           ),
         ),
@@ -548,7 +684,11 @@ class HubActionCard extends StatelessWidget {
               ],
             ),
           ),
-          Icon(LucideIcons.chevronRight, color: GlassTokens.secondaryText(context), size: 20),
+          Icon(
+            LucideIcons.chevronRight,
+            color: GlassTokens.secondaryText(context),
+            size: 20,
+          ),
         ],
       ),
     );
@@ -589,17 +729,39 @@ class WorkshopSmallCard extends StatelessWidget {
                   color: accentColor,
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: const Center(child: Icon(LucideIcons.home, color: Colors.white)),
+                child: const Center(
+                  child: Icon(LucideIcons.home, color: Colors.white),
+                ),
               ),
               const SizedBox(height: 8),
-              Text(workshop.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: _cardTitleColor), maxLines: 1),
-              Text(workshop.specializations.join(", "), style: TextStyle(fontSize: 10, color: Colors.grey[600]), maxLines: 1, overflow: TextOverflow.ellipsis),
+              Text(
+                workshop.name,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 13,
+                  color: _cardTitleColor,
+                ),
+                maxLines: 1,
+              ),
+              Text(
+                workshop.specializations.join(", "),
+                style: TextStyle(fontSize: 10, color: Colors.grey[600]),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
               const Spacer(),
               Row(
                 children: [
                   const Icon(Icons.star, size: 14, color: Colors.amber),
                   const SizedBox(width: 4),
-                  Text(workshop.rating.toString(), style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: _cardTitleColor)),
+                  Text(
+                    workshop.rating.toString(),
+                    style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: _cardTitleColor,
+                    ),
+                  ),
                 ],
               ),
             ],
@@ -644,17 +806,39 @@ class EducationCenterSmallCard extends StatelessWidget {
                   color: accentColor,
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: const Center(child: Icon(LucideIcons.bookOpen, color: Colors.white)),
+                child: const Center(
+                  child: Icon(LucideIcons.bookOpen, color: Colors.white),
+                ),
               ),
               const SizedBox(height: 8),
-              Text(center.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: _cardTitleColor), maxLines: 1),
-              Text(center.courses.join(", "), style: TextStyle(fontSize: 10, color: Colors.grey[600]), maxLines: 1, overflow: TextOverflow.ellipsis),
+              Text(
+                center.name,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 13,
+                  color: _cardTitleColor,
+                ),
+                maxLines: 1,
+              ),
+              Text(
+                center.courses.join(", "),
+                style: TextStyle(fontSize: 10, color: Colors.grey[600]),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
               const Spacer(),
               Row(
                 children: [
                   const Icon(Icons.star, size: 14, color: Colors.amber),
                   const SizedBox(width: 4),
-                  Text(center.rating.toString(), style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: _cardTitleColor)),
+                  Text(
+                    center.rating.toString(),
+                    style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: _cardTitleColor,
+                    ),
+                  ),
                 ],
               ),
             ],
@@ -684,7 +868,9 @@ class DisinfectionSmallCard extends StatelessWidget {
       child: InkWell(
         onTap: () => Navigator.push(
           context,
-          MaterialPageRoute(builder: (_) => DisinfectionProfileScreen(service: service)),
+          MaterialPageRoute(
+            builder: (_) => DisinfectionProfileScreen(service: service),
+          ),
         ),
         borderRadius: BorderRadius.circular(16),
         child: Padding(
@@ -698,15 +884,27 @@ class DisinfectionSmallCard extends StatelessWidget {
                   color: accentColor,
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: const Center(child: Icon(LucideIcons.shieldCheck, color: Colors.white)),
+                child: const Center(
+                  child: Icon(LucideIcons.shieldCheck, color: Colors.white),
+                ),
               ),
               const SizedBox(height: 8),
-              Text(service.name, style: const TextStyle(fontWeight: FontWeight.bold, color: _cardTitleColor), maxLines: 1),
+              Text(
+                service.name,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: _cardTitleColor,
+                ),
+                maxLines: 1,
+              ),
               Row(
                 children: [
                   const Icon(Icons.star, size: 14, color: Colors.amber),
                   const SizedBox(width: 4),
-                  Text(service.rating.toString(), style: const TextStyle(fontSize: 12, color: _cardSubColor)),
+                  Text(
+                    service.rating.toString(),
+                    style: const TextStyle(fontSize: 12, color: _cardSubColor),
+                  ),
                 ],
               ),
             ],
@@ -735,7 +933,9 @@ class ApplianceSmallCard extends StatelessWidget {
       child: InkWell(
         onTap: () => Navigator.push(
           context,
-          MaterialPageRoute(builder: (_) => ApplianceProfileScreen(service: service)),
+          MaterialPageRoute(
+            builder: (_) => ApplianceProfileScreen(service: service),
+          ),
         ),
         borderRadius: BorderRadius.circular(16),
         child: Padding(
@@ -749,15 +949,27 @@ class ApplianceSmallCard extends StatelessWidget {
                   color: accentColor,
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: const Center(child: Icon(LucideIcons.monitor, color: Colors.white)),
+                child: const Center(
+                  child: Icon(LucideIcons.monitor, color: Colors.white),
+                ),
               ),
               const SizedBox(height: 8),
-              Text(service.name, style: const TextStyle(fontWeight: FontWeight.bold, color: _cardTitleColor), maxLines: 1),
+              Text(
+                service.name,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: _cardTitleColor,
+                ),
+                maxLines: 1,
+              ),
               Row(
                 children: [
                   const Icon(Icons.star, size: 14, color: Colors.amber),
                   const SizedBox(width: 4),
-                  Text(service.rating.toString(), style: const TextStyle(fontSize: 12, color: _cardSubColor)),
+                  Text(
+                    service.rating.toString(),
+                    style: const TextStyle(fontSize: 12, color: _cardSubColor),
+                  ),
                 ],
               ),
             ],
@@ -786,7 +998,9 @@ class CourierSmallCard extends StatelessWidget {
       child: InkWell(
         onTap: () => Navigator.push(
           context,
-          MaterialPageRoute(builder: (_) => CourierProfileScreen(service: service)),
+          MaterialPageRoute(
+            builder: (_) => CourierProfileScreen(service: service),
+          ),
         ),
         borderRadius: BorderRadius.circular(16),
         child: Padding(
@@ -800,15 +1014,27 @@ class CourierSmallCard extends StatelessWidget {
                   color: accentColor,
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: const Center(child: Icon(LucideIcons.bike, color: Colors.white)),
+                child: const Center(
+                  child: Icon(LucideIcons.bike, color: Colors.white),
+                ),
               ),
               const SizedBox(height: 8),
-              Text(service.name, style: const TextStyle(fontWeight: FontWeight.bold, color: _cardTitleColor), maxLines: 1),
+              Text(
+                service.name,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: _cardTitleColor,
+                ),
+                maxLines: 1,
+              ),
               Row(
                 children: [
                   const Icon(Icons.star, size: 14, color: Colors.amber),
                   const SizedBox(width: 4),
-                  Text(service.rating.toString(), style: const TextStyle(fontSize: 12, color: _cardSubColor)),
+                  Text(
+                    service.rating.toString(),
+                    style: const TextStyle(fontSize: 12, color: _cardSubColor),
+                  ),
                 ],
               ),
             ],
@@ -837,7 +1063,9 @@ class MassageSmallCard extends StatelessWidget {
       child: InkWell(
         onTap: () => Navigator.push(
           context,
-          MaterialPageRoute(builder: (_) => MassageBookingScreen(service: service)),
+          MaterialPageRoute(
+            builder: (_) => MassageBookingScreen(service: service),
+          ),
         ),
         borderRadius: BorderRadius.circular(16),
         child: Padding(
@@ -851,10 +1079,19 @@ class MassageSmallCard extends StatelessWidget {
                   color: accentColor,
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: const Center(child: Icon(LucideIcons.heartPulse, color: Colors.white)),
+                child: const Center(
+                  child: Icon(LucideIcons.heartPulse, color: Colors.white),
+                ),
               ),
               const SizedBox(height: 8),
-              Text(service.name, style: const TextStyle(fontWeight: FontWeight.bold, color: _cardTitleColor), maxLines: 1),
+              Text(
+                service.name,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: _cardTitleColor,
+                ),
+                maxLines: 1,
+              ),
               Text(
                 service.visitModesLabel,
                 style: const TextStyle(fontSize: 10, color: _cardSubColor),
@@ -865,7 +1102,10 @@ class MassageSmallCard extends StatelessWidget {
                 children: [
                   const Icon(Icons.star, size: 14, color: Colors.amber),
                   const SizedBox(width: 4),
-                  Text(service.rating.toString(), style: const TextStyle(fontSize: 12, color: _cardSubColor)),
+                  Text(
+                    service.rating.toString(),
+                    style: const TextStyle(fontSize: 12, color: _cardSubColor),
+                  ),
                 ],
               ),
             ],
@@ -894,7 +1134,9 @@ class NurseSmallCard extends StatelessWidget {
       child: InkWell(
         onTap: () => Navigator.push(
           context,
-          MaterialPageRoute(builder: (_) => NurseBookingScreen(service: service)),
+          MaterialPageRoute(
+            builder: (_) => NurseBookingScreen(service: service),
+          ),
         ),
         borderRadius: BorderRadius.circular(16),
         child: Padding(
@@ -908,10 +1150,19 @@ class NurseSmallCard extends StatelessWidget {
                   color: accentColor,
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: const Center(child: Icon(LucideIcons.heartPulse, color: Colors.white)),
+                child: const Center(
+                  child: Icon(LucideIcons.heartPulse, color: Colors.white),
+                ),
               ),
               const SizedBox(height: 8),
-              Text(service.name, style: const TextStyle(fontWeight: FontWeight.bold, color: _cardTitleColor), maxLines: 1),
+              Text(
+                service.name,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: _cardTitleColor,
+                ),
+                maxLines: 1,
+              ),
               Text(
                 service.visitLabel,
                 style: const TextStyle(fontSize: 10, color: _cardSubColor),
@@ -922,7 +1173,10 @@ class NurseSmallCard extends StatelessWidget {
                 children: [
                   const Icon(Icons.star, size: 14, color: Colors.amber),
                   const SizedBox(width: 4),
-                  Text(service.rating.toString(), style: const TextStyle(fontSize: 12, color: _cardSubColor)),
+                  Text(
+                    service.rating.toString(),
+                    style: const TextStyle(fontSize: 12, color: _cardSubColor),
+                  ),
                 ],
               ),
             ],
@@ -951,7 +1205,9 @@ class DentalSmallCard extends StatelessWidget {
       child: InkWell(
         onTap: () => Navigator.push(
           context,
-          MaterialPageRoute(builder: (_) => DentalBookingScreen(clinic: clinic)),
+          MaterialPageRoute(
+            builder: (_) => DentalBookingScreen(clinic: clinic),
+          ),
         ),
         borderRadius: BorderRadius.circular(16),
         child: Padding(
@@ -965,10 +1221,19 @@ class DentalSmallCard extends StatelessWidget {
                   color: accentColor,
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: const Center(child: Icon(LucideIcons.smile, color: Colors.white)),
+                child: const Center(
+                  child: Icon(LucideIcons.smile, color: Colors.white),
+                ),
               ),
               const SizedBox(height: 8),
-              Text(clinic.name, style: const TextStyle(fontWeight: FontWeight.bold, color: _cardTitleColor), maxLines: 1),
+              Text(
+                clinic.name,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: _cardTitleColor,
+                ),
+                maxLines: 1,
+              ),
               Text(
                 'Klinikada vaqt bron',
                 style: const TextStyle(fontSize: 10, color: _cardSubColor),
@@ -979,7 +1244,10 @@ class DentalSmallCard extends StatelessWidget {
                 children: [
                   const Icon(Icons.star, size: 14, color: Colors.amber),
                   const SizedBox(width: 4),
-                  Text(clinic.rating.toString(), style: const TextStyle(fontSize: 12, color: _cardSubColor)),
+                  Text(
+                    clinic.rating.toString(),
+                    style: const TextStyle(fontSize: 12, color: _cardSubColor),
+                  ),
                 ],
               ),
             ],
@@ -1008,7 +1276,9 @@ class EventSmallCard extends StatelessWidget {
       child: InkWell(
         onTap: () => Navigator.push(
           context,
-          MaterialPageRoute(builder: (_) => EventBookingScreen(service: service)),
+          MaterialPageRoute(
+            builder: (_) => EventBookingScreen(service: service),
+          ),
         ),
         borderRadius: BorderRadius.circular(16),
         child: Padding(
@@ -1022,10 +1292,19 @@ class EventSmallCard extends StatelessWidget {
                   color: accentColor,
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: const Center(child: Icon(LucideIcons.partyPopper, color: Colors.white)),
+                child: const Center(
+                  child: Icon(LucideIcons.partyPopper, color: Colors.white),
+                ),
               ),
               const SizedBox(height: 8),
-              Text(service.name, style: const TextStyle(fontWeight: FontWeight.bold, color: _cardTitleColor), maxLines: 1),
+              Text(
+                service.name,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: _cardTitleColor,
+                ),
+                maxLines: 1,
+              ),
               Text(
                 service.teamSize > 1
                     ? '${service.teamSize} kishi · ${service.capabilitiesLabel}'
@@ -1038,7 +1317,10 @@ class EventSmallCard extends StatelessWidget {
                 children: [
                   const Icon(Icons.star, size: 14, color: Colors.amber),
                   const SizedBox(width: 4),
-                  Text(service.rating.toString(), style: const TextStyle(fontSize: 12, color: _cardSubColor)),
+                  Text(
+                    service.rating.toString(),
+                    style: const TextStyle(fontSize: 12, color: _cardSubColor),
+                  ),
                 ],
               ),
             ],

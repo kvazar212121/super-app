@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/locale_controller.dart';
 import '../../services/api_service.dart';
 import '../../services/feature_service.dart';
 
@@ -29,7 +30,9 @@ class _PremiumScreenState extends State<PremiumScreen> {
     try {
       final s = await ApiService().getPremiumStatus();
       _price = (s['price'] is num) ? (s['price'] as num).toDouble() : 0;
-      _days = (s['duration_days'] is num) ? (s['duration_days'] as num).toInt() : 30;
+      _days = (s['duration_days'] is num)
+          ? (s['duration_days'] as num).toInt()
+          : 30;
       _balance = (s['balance'] is num) ? (s['balance'] as num).toDouble() : 0;
       _isPremium = s['is_premium'] == true;
       _until = s['premium_until'] as String?;
@@ -45,17 +48,21 @@ class _PremiumScreenState extends State<PremiumScreen> {
       await FeatureService().refreshPremium();
       if (!mounted) return;
       if (status == 'confirmed') {
-        _showMsg('Premium ochildi! 🎉', success: true);
+        _showMsg('Premium ochildi! 🎉'.tr, success: true);
         await _load();
       } else {
-        _showMsg(res['message'] ?? 'So\'rov yuborildi. Tasdiqlanishini kuting.', success: true);
+        _showMsg(
+          res['message'] ?? 'So\'rov yuborildi. Tasdiqlanishini kuting.'.tr,
+          success: true,
+        );
         await _load();
       }
     } catch (e) {
-      String msg = 'Xatolik';
+      String msg = 'Xatolik'.tr;
       // Dio error detail
       final d = e.toString();
-      if (d.contains('yetarli emas')) msg = 'Balansда mablag\' yetarli emas. Balansni to\'ldiring.';
+      if (d.contains('yetarli emas'))
+        msg = 'Balansда mablag\' yetarli emas. Balansni to\'ldiring.'.tr;
       _showMsg(msg);
     } finally {
       if (mounted) setState(() => _busy = false);
@@ -63,16 +70,18 @@ class _PremiumScreenState extends State<PremiumScreen> {
   }
 
   void _showMsg(String m, {bool success = false}) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text(m),
-      backgroundColor: success ? Colors.green.shade700 : null,
-    ));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(m),
+        backgroundColor: success ? Colors.green.shade700 : null,
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Premium obuna')),
+      appBar: AppBar(title: Text('Premium obuna'.tr)),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : ListView(
@@ -81,22 +90,37 @@ class _PremiumScreenState extends State<PremiumScreen> {
                 Container(
                   padding: const EdgeInsets.all(24),
                   decoration: BoxDecoration(
-                    gradient: const LinearGradient(colors: [Color(0xFF7C3AED), Color(0xFF6366F1)]),
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFF7C3AED), Color(0xFF6366F1)],
+                    ),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Icon(Icons.workspace_premium, color: Colors.white, size: 44),
+                      const Icon(
+                        Icons.workspace_premium,
+                        color: Colors.white,
+                        size: 44,
+                      ),
                       const SizedBox(height: 12),
-                      const Text('HubServis Premium',
-                          style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.w800)),
+                      Text(
+                        'HubServis Premium'.tr,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 24,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
                       const SizedBox(height: 6),
                       Text(
                         _isPremium
-                            ? 'Siz premium obunachisiz ✅'
-                            : 'Barcha premium funksiyalarni oching',
-                        style: const TextStyle(color: Colors.white70, fontSize: 15),
+                            ? 'Siz premium obunachisiz ✅'.tr
+                            : 'Barcha premium funksiyalarni oching'.tr,
+                        style: const TextStyle(
+                          color: Colors.white70,
+                          fontSize: 15,
+                        ),
                       ),
                     ],
                   ),
@@ -105,48 +129,81 @@ class _PremiumScreenState extends State<PremiumScreen> {
                 if (_isPremium) ...[
                   Card(
                     child: ListTile(
-                      leading: const Icon(Icons.check_circle, color: Colors.green),
-                      title: const Text('Obuna faol'),
-                      subtitle: Text(_until != null ? 'Amal qiladi: ${_until!.substring(0, 10)} gacha' : ''),
+                      leading: const Icon(
+                        Icons.check_circle,
+                        color: Colors.green,
+                      ),
+                      title: Text('Obuna faol'.tr),
+                      subtitle: Text(
+                        _until != null
+                            ? '${'Amal qiladi:'.tr} ${_until!.substring(0, 10)} ${'gacha'.tr}'
+                            : '',
+                      ),
                     ),
                   ),
                 ] else ...[
                   Center(
                     child: Column(
                       children: [
-                        Text('${_price.toStringAsFixed(0)} so\'m',
-                            style: const TextStyle(fontSize: 34, fontWeight: FontWeight.w900)),
-                        Text('$_days kunlik obuna', style: TextStyle(color: Theme.of(context).hintColor)),
+                        Text(
+                          '${_price.toStringAsFixed(0)} ${'so\'m'.tr}',
+                          style: const TextStyle(
+                            fontSize: 34,
+                            fontWeight: FontWeight.w900,
+                          ),
+                        ),
+                        Text(
+                          '$_days ${'kunlik obuna'.tr}',
+                          style: TextStyle(color: Theme.of(context).hintColor),
+                        ),
                       ],
                     ),
                   ),
                   const SizedBox(height: 20),
-                  Text('Balansingiz: ${_balance.toStringAsFixed(0)} so\'m',
-                      textAlign: TextAlign.center, style: TextStyle(color: Theme.of(context).hintColor)),
+                  Text(
+                    '${'Balansingiz:'.tr} ${_balance.toStringAsFixed(0)} ${'so\'m'.tr}',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: Theme.of(context).hintColor),
+                  ),
                   const SizedBox(height: 20),
                   SizedBox(
                     width: double.infinity,
                     child: FilledButton.icon(
-                      onPressed: _busy || _price <= 0 ? null : () => _subscribe('balance'),
+                      onPressed: _busy || _price <= 0
+                          ? null
+                          : () => _subscribe('balance'),
                       icon: const Icon(Icons.account_balance_wallet),
-                      label: Text(_busy ? 'Kuting...' : 'Balansdan to\'lash'),
-                      style: FilledButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 16)),
+                      label: Text(
+                        _busy ? 'Kuting...'.tr : 'Balansdan to\'lash'.tr,
+                      ),
+                      style: FilledButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                      ),
                     ),
                   ),
                   const SizedBox(height: 10),
                   SizedBox(
                     width: double.infinity,
                     child: OutlinedButton.icon(
-                      onPressed: _busy || _price <= 0 ? null : () => _subscribe('manual'),
+                      onPressed: _busy || _price <= 0
+                          ? null
+                          : () => _subscribe('manual'),
                       icon: const Icon(Icons.receipt_long),
-                      label: const Text('To\'lov so\'rovi yuborish (admin tasdiqlaydi)'),
-                      style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 16)),
+                      label: Text(
+                        'To\'lov so\'rovi yuborish (admin tasdiqlaydi)'.tr,
+                      ),
+                      style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                      ),
                     ),
                   ),
                   if (_price <= 0)
-                    const Padding(
-                      padding: EdgeInsets.only(top: 16),
-                      child: Text('Premium hozircha sozlanmagan.', textAlign: TextAlign.center),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 16),
+                      child: Text(
+                        'Premium hozircha sozlanmagan.'.tr,
+                        textAlign: TextAlign.center,
+                      ),
                     ),
                 ],
               ],

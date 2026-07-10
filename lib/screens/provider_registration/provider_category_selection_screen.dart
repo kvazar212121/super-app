@@ -19,6 +19,7 @@ import 'nurse/nurse_registration_screen.dart';
 import 'dental/dental_registration_screen.dart';
 import 'event/event_registration_screen.dart';
 import 'provider_data_entry_screen.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 class ProviderCategorySelectionScreen extends StatefulWidget {
   const ProviderCategorySelectionScreen({super.key});
@@ -106,7 +107,7 @@ class _ProviderCategorySelectionScreenState
           final theme = Theme.of(context);
 
           return Scaffold(
-            appBar: AppBar(title: const Text('Sohani tanlang')),
+            appBar: AppBar(title: Text('Sohani tanlang'.tr)),
             body: Padding(
               padding: const EdgeInsets.all(24.0),
               child: Column(
@@ -114,8 +115,9 @@ class _ProviderCategorySelectionScreenState
                 children: [
                   Text(
                     'Qaysi sohada xizmat ko\'rsatasiz?',
-                    style: theme.textTheme.headlineSmall
-                        ?.copyWith(fontWeight: FontWeight.bold),
+                    style: theme.textTheme.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   const SizedBox(height: 8),
                   Text(
@@ -135,16 +137,15 @@ class _ProviderCategorySelectionScreenState
                         : GridView.builder(
                             gridDelegate:
                                 const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 2,
-                              crossAxisSpacing: 16,
-                              mainAxisSpacing: 16,
-                              childAspectRatio: 1,
-                            ),
+                                  crossAxisCount: 2,
+                                  crossAxisSpacing: 16,
+                                  mainAxisSpacing: 16,
+                                  childAspectRatio: 1,
+                                ),
                             itemCount: _categories.length,
                             itemBuilder: (context, index) {
                               final cat = _categories[index];
-                              final isSelected =
-                                  _selectedCategory == cat['id'];
+                              final isSelected = _selectedCategory == cat['id'];
 
                               return InkWell(
                                 onTap: () {
@@ -187,13 +188,15 @@ class _ProviderCategorySelectionScreenState
                                           textAlign: TextAlign.center,
                                           style: theme.textTheme.titleMedium
                                               ?.copyWith(
-                                            fontWeight: isSelected
-                                                ? FontWeight.bold
-                                                : FontWeight.normal,
-                                            color: isSelected
-                                                ? Colors.black
-                                                : theme.colorScheme.onSurface,
-                                          ),
+                                                fontWeight: isSelected
+                                                    ? FontWeight.bold
+                                                    : FontWeight.normal,
+                                                color: isSelected
+                                                    ? Colors.black
+                                                    : theme
+                                                          .colorScheme
+                                                          .onSurface,
+                                              ),
                                         ),
                                       ),
                                     ],
@@ -280,7 +283,7 @@ class _ProviderCategorySelectionScreenState
                           borderRadius: BorderRadius.circular(16),
                         ),
                       ),
-                      child: const Text('Davom etish'),
+                      child: Text('Davom etish'.tr),
                     ),
                   ),
                 ],

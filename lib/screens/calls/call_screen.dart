@@ -39,7 +39,9 @@ class _CallScreenState extends State<CallScreen> with TickerProviderStateMixin {
 
   void _startRingingEffects() {
     if (widget.isIncoming && !_isAccepted) {
-      _vibrationTimer = Timer.periodic(const Duration(milliseconds: 1500), (timer) {
+      _vibrationTimer = Timer.periodic(const Duration(milliseconds: 1500), (
+        timer,
+      ) {
         HapticFeedback.vibrate();
       });
       HapticFeedback.vibrate();
@@ -62,9 +64,10 @@ class _CallScreenState extends State<CallScreen> with TickerProviderStateMixin {
       vsync: this,
       duration: const Duration(milliseconds: 1500),
     );
-    _pulseAnimation = Tween<double>(begin: 1.0, end: 1.4).animate(
-      CurvedAnimation(parent: _pulseController, curve: Curves.easeOut),
-    );
+    _pulseAnimation = Tween<double>(
+      begin: 1.0,
+      end: 1.4,
+    ).animate(CurvedAnimation(parent: _pulseController, curve: Curves.easeOut));
 
     // Ring animatsiya (telefon ikonka tebranishi)
     _ringController = AnimationController(
@@ -164,7 +167,8 @@ class _CallScreenState extends State<CallScreen> with TickerProviderStateMixin {
       builder: (context, _) {
         final bool showConnecting = _callService.isConnecting && _isAccepted;
         final bool showRinging =
-            !_isAccepted && widget.isIncoming; // Kiruvchi, hali qabul qilinmagan
+            !_isAccepted &&
+            widget.isIncoming; // Kiruvchi, hali qabul qilinmagan
         final bool showCalling =
             !_isAccepted && !widget.isIncoming; // Chiquvchi, kutilmoqda
         final bool showInCall =
@@ -186,7 +190,11 @@ class _CallScreenState extends State<CallScreen> with TickerProviderStateMixin {
           body: Container(
             decoration: const BoxDecoration(
               gradient: LinearGradient(
-                colors: [Color(0xFF1A1A2E), Color(0xFF16213E), Color(0xFF0F3460)],
+                colors: [
+                  Color(0xFF1A1A2E),
+                  Color(0xFF16213E),
+                  Color(0xFF0F3460),
+                ],
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
               ),
@@ -218,8 +226,9 @@ class _CallScreenState extends State<CallScreen> with TickerProviderStateMixin {
                             ? const Color(0xFF00D26A)
                             : Colors.white,
                         fontSize: showInCall ? 18 : 16,
-                        fontWeight:
-                            showInCall ? FontWeight.w600 : FontWeight.normal,
+                        fontWeight: showInCall
+                            ? FontWeight.w600
+                            : FontWeight.normal,
                       ),
                     ),
                   ),
@@ -275,8 +284,9 @@ class _CallScreenState extends State<CallScreen> with TickerProviderStateMixin {
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   border: Border.all(
-                    color: const Color(0xFF00D26A)
-                        .withValues(alpha: 1.0 - (_pulseAnimation.value - 1.0) * 2.5),
+                    color: const Color(0xFF00D26A).withValues(
+                      alpha: 1.0 - (_pulseAnimation.value - 1.0) * 2.5,
+                    ),
                     width: 2,
                   ),
                 ),
@@ -309,7 +319,11 @@ class _CallScreenState extends State<CallScreen> with TickerProviderStateMixin {
                   builder: (context, child) {
                     return Transform.rotate(
                       angle: _ringAnimation.value,
-                      child: const Icon(Icons.person, size: 60, color: Colors.white),
+                      child: const Icon(
+                        Icons.person,
+                        size: 60,
+                        color: Colors.white,
+                      ),
                     );
                   },
                 )
@@ -352,7 +366,9 @@ class _CallScreenState extends State<CallScreen> with TickerProviderStateMixin {
               onTap: _callService.toggleMute,
             ),
             _buildSmallButton(
-              icon: _callService.isSpeaker ? Icons.volume_up : Icons.volume_down,
+              icon: _callService.isSpeaker
+                  ? Icons.volume_up
+                  : Icons.volume_down,
               label: _callService.isSpeaker ? 'Karnay' : 'Quloq',
               isActive: _callService.isSpeaker,
               onTap: _callService.toggleSpeaker,
@@ -390,24 +406,14 @@ class _CallScreenState extends State<CallScreen> with TickerProviderStateMixin {
               color: color,
               shape: BoxShape.circle,
               boxShadow: [
-                BoxShadow(
-                  color: color,
-                  blurRadius: 15,
-                  spreadRadius: 2,
-                ),
+                BoxShadow(color: color, blurRadius: 15, spreadRadius: 2),
               ],
             ),
             child: Icon(icon, color: Colors.white, size: size * 0.45),
           ),
         ),
         const SizedBox(height: 10),
-        Text(
-          label,
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 13,
-          ),
-        ),
+        Text(label, style: TextStyle(color: Colors.white, fontSize: 13)),
       ],
     );
   }
@@ -444,13 +450,7 @@ class _CallScreenState extends State<CallScreen> with TickerProviderStateMixin {
           ),
         ),
         const SizedBox(height: 8),
-        Text(
-          label,
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 12,
-          ),
-        ),
+        Text(label, style: const TextStyle(color: Colors.white, fontSize: 12)),
       ],
     );
   }

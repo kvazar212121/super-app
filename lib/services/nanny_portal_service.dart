@@ -17,16 +17,15 @@ class NannyPortalService {
     List<String> languages = const [],
     List<String> serviceTypes = const [],
     Map<String, dynamic>? documents,
-  }) =>
-      _api.registerNanny(
-        name: name,
-        phone: phone,
-        serviceArea: serviceArea,
-        address: address,
-        experienceYears: experienceYears,
-        ageGroups: ageGroups,
-        languages: languages,
-        serviceTypes: serviceTypes,
-        documents: documents,
-      );
+  }) => _api.registerNanny(
+    name: name,
+    phone: phone,
+    serviceArea: serviceArea,
+    address: address,
+    experienceYears: experienceYears,
+    ageGroups: ageGroups,
+    languages: languages,
+    serviceTypes: serviceTypes,
+    documents: documents,
+  );
 }

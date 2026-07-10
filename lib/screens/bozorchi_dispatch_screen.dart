@@ -6,6 +6,7 @@ import '../models/daily_models.dart';
 import '../theme/glass_tokens.dart';
 import '../widgets/glass/glass_scaffold.dart';
 import '../widgets/glass/glass_surface.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 class BozorchiDispatchScreen extends StatefulWidget {
   final Master bozorchi;
@@ -36,7 +37,7 @@ class _BozorchiDispatchScreenState extends State<BozorchiDispatchScreen> {
   void _sendDispatch() {
     if (_addressController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Iltimos, manzilingizni kiriting')),
+        SnackBar(content: Text('Iltimos, manzilingizni kiriting'.tr)),
       );
       return;
     }
@@ -47,12 +48,14 @@ class _BozorchiDispatchScreenState extends State<BozorchiDispatchScreen> {
     Future.delayed(const Duration(seconds: 2), () {
       if (!mounted) return;
       setState(() => _isSending = false);
-      
+
       showDialog(
         context: context,
         barrierDismissible: false,
         builder: (ctx) => AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -64,7 +67,7 @@ class _BozorchiDispatchScreenState extends State<BozorchiDispatchScreen> {
               ),
               const SizedBox(height: 8),
               Text(
-                widget.shoppingList != null 
+                widget.shoppingList != null
                     ? '${widget.bozorchi.name} ro\'yxatingizni oldi. U siz bilan bog\'lanadi va bozorlikni boshlaydi.'
                     : '${widget.bozorchi.name} tez orada siz bilan aloqaga chiqadi.',
                 textAlign: TextAlign.center,
@@ -80,7 +83,7 @@ class _BozorchiDispatchScreenState extends State<BozorchiDispatchScreen> {
                       Navigator.pop(ctx); // Shopping listga qaytish
                     }
                   },
-                  child: const Text('Yopish'),
+                  child: Text('Yopish'.tr),
                 ),
               ),
             ],
@@ -127,11 +130,18 @@ class _BozorchiDispatchScreenState extends State<BozorchiDispatchScreen> {
                       ),
                       Row(
                         children: [
-                          const Icon(Icons.verified, color: Colors.blue, size: 14),
+                          const Icon(
+                            Icons.verified,
+                            color: Colors.blue,
+                            size: 14,
+                          ),
                           const SizedBox(width: 4),
                           Text(
                             'Tekshirilgan',
-                            style: TextStyle(color: GlassTokens.secondaryText(context), fontSize: 13),
+                            style: TextStyle(
+                              color: GlassTokens.secondaryText(context),
+                              fontSize: 13,
+                            ),
                           ),
                         ],
                       ),
@@ -156,7 +166,9 @@ class _BozorchiDispatchScreenState extends State<BozorchiDispatchScreen> {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: isDark ? Colors.white.withOpacity(0.05) : Colors.black.withOpacity(0.02),
+                color: isDark
+                    ? Colors.white.withOpacity(0.05)
+                    : Colors.black.withOpacity(0.02),
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(color: GlassTokens.glassBorder(context)),
               ),
@@ -177,25 +189,34 @@ class _BozorchiDispatchScreenState extends State<BozorchiDispatchScreen> {
                     ],
                   ),
                   const Divider(height: 24),
-                  ...widget.shoppingList!.items.map((item) => Padding(
-                    padding: const EdgeInsets.only(bottom: 8.0),
-                    child: Row(
-                      children: [
-                        const Text('•', style: TextStyle(fontSize: 18, color: Colors.grey)),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            item.name,
-                            style: TextStyle(color: GlassTokens.primaryText(context)),
+                  ...widget.shoppingList!.items.map(
+                    (item) => Padding(
+                      padding: const EdgeInsets.only(bottom: 8.0),
+                      child: Row(
+                        children: [
+                          const Text(
+                            '•',
+                            style: TextStyle(fontSize: 18, color: Colors.grey),
                           ),
-                        ),
-                        Text(
-                          '${item.qty} ${item.unit}',
-                          style: TextStyle(color: GlassTokens.secondaryText(context)),
-                        ),
-                      ],
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              item.name,
+                              style: TextStyle(
+                                color: GlassTokens.primaryText(context),
+                              ),
+                            ),
+                          ),
+                          Text(
+                            '${item.qty} ${item.unit}',
+                            style: TextStyle(
+                              color: GlassTokens.secondaryText(context),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  )),
+                  ),
                 ],
               ),
             ),
@@ -214,11 +235,13 @@ class _BozorchiDispatchScreenState extends State<BozorchiDispatchScreen> {
           TextField(
             controller: _addressController,
             decoration: InputDecoration(
-              hintText: 'Toshkent sh., Yunusobod tumani...',
+              hintText: 'Toshkent sh., Yunusobod tumani...'.tr,
               hintStyle: TextStyle(color: GlassTokens.secondaryText(context)),
               prefixIcon: Icon(LucideIcons.mapPin, color: accent),
               filled: true,
-              fillColor: isDark ? Colors.white.withOpacity(0.05) : Colors.white.withOpacity(0.8),
+              fillColor: isDark
+                  ? Colors.white.withOpacity(0.05)
+                  : Colors.white.withOpacity(0.8),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(16),
                 borderSide: BorderSide.none,
@@ -241,10 +264,12 @@ class _BozorchiDispatchScreenState extends State<BozorchiDispatchScreen> {
             controller: _notesController,
             maxLines: 3,
             decoration: InputDecoration(
-              hintText: "Sifatli go'sht tanlashni unutmang...",
+              hintText: "Sifatli go'sht tanlashni unutmang...".tr,
               hintStyle: TextStyle(color: GlassTokens.secondaryText(context)),
               filled: true,
-              fillColor: isDark ? Colors.white.withOpacity(0.05) : Colors.white.withOpacity(0.8),
+              fillColor: isDark
+                  ? Colors.white.withOpacity(0.05)
+                  : Colors.white.withOpacity(0.8),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(16),
                 borderSide: BorderSide.none,
@@ -252,7 +277,7 @@ class _BozorchiDispatchScreenState extends State<BozorchiDispatchScreen> {
             ),
             style: TextStyle(color: GlassTokens.primaryText(context)),
           ),
-          
+
           const SizedBox(height: 32),
           SizedBox(
             width: double.infinity,
@@ -261,19 +286,37 @@ class _BozorchiDispatchScreenState extends State<BozorchiDispatchScreen> {
               onPressed: _isSending ? null : _sendDispatch,
               style: FilledButton.styleFrom(
                 backgroundColor: accent,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
               ),
               child: _isSending
-                  ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                  : const Text("Jo'natish", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                  ? const SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                        strokeWidth: 2,
+                      ),
+                    )
+                  : const Text(
+                      "Jo'natish",
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
             ),
           ),
           const SizedBox(height: 12),
           Text(
             'Eslatma: Narxlar kelishuv asosida bozorchi bilan belgilanishi mumkin.',
             textAlign: TextAlign.center,
-            style: TextStyle(color: GlassTokens.secondaryText(context), fontSize: 12),
-          )
+            style: TextStyle(
+              color: GlassTokens.secondaryText(context),
+              fontSize: 12,
+            ),
+          ),
         ],
       ),
     );

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../providers/app_provider.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 class PostCallDialogs {
   /// Asosiy kirish nuqtasi: Qo'ng'iroq tugagandan so'ng chaqiriladi.
@@ -17,7 +18,12 @@ class PostCallDialogs {
     Navigator.of(context).pop();
 
     if (isProvider) {
-      _showUniversalProviderDialog(context, remoteUserId ?? 0, remoteUserName, appProvider);
+      _showUniversalProviderDialog(
+        context,
+        remoteUserId ?? 0,
+        remoteUserName,
+        appProvider,
+      );
     } else {
       if (isBookingCall || true) {
         // Universal client dialog for ALL booking calls
@@ -26,13 +32,19 @@ class PostCallDialogs {
     }
   }
 
-  static void _showUniversalClientDialog(BuildContext context, int providerId, String providerName) {
+  static void _showUniversalClientDialog(
+    BuildContext context,
+    int providerId,
+    String providerName,
+  ) {
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (ctx) => AlertDialog(
-        title: const Text('Kelisha oldingizmi?'),
-        content: Text('$providerName bilan narx va vaqt masalasida kelisha oldingizmi?'),
+        title: Text('Kelisha oldingizmi?'.tr),
+        content: Text(
+          '$providerName bilan narx va vaqt masalasida kelisha oldingizmi?',
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
@@ -41,22 +53,34 @@ class PostCallDialogs {
           FilledButton(
             onPressed: () {
               Navigator.pop(ctx);
-              _showUniversalDateForm(context, providerId, providerName, isClient: true);
+              _showUniversalDateForm(
+                context,
+                providerId,
+                providerName,
+                isClient: true,
+              );
             },
-            child: const Text('Ha, kelishdik'),
+            child: Text('Ha, kelishdik'.tr),
           ),
         ],
       ),
     );
   }
 
-  static void _showUniversalProviderDialog(BuildContext context, int clientId, String clientName, AppProvider appProvider) {
+  static void _showUniversalProviderDialog(
+    BuildContext context,
+    int clientId,
+    String clientName,
+    AppProvider appProvider,
+  ) {
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (ctx) => AlertDialog(
-        title: const Text('Buyurtma olindimi?'),
-        content: Text('$clientName bilan xizmat ko\'rsatish bo\'yicha kelishuvga erishdingizmi?'),
+        title: Text('Buyurtma olindimi?'.tr),
+        content: Text(
+          '$clientName bilan xizmat ko\'rsatish bo\'yicha kelishuvga erishdingizmi?',
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
@@ -65,31 +89,41 @@ class PostCallDialogs {
           FilledButton(
             onPressed: () {
               Navigator.pop(ctx);
-              _showUniversalDateForm(context, clientId, clientName, isClient: false);
+              _showUniversalDateForm(
+                context,
+                clientId,
+                clientName,
+                isClient: false,
+              );
             },
-            child: const Text('Ha, kelishdik'),
+            child: Text('Ha, kelishdik'.tr),
           ),
         ],
       ),
     );
   }
 
-  static void _showUniversalDateForm(BuildContext context, int otherId, String otherName, {required bool isClient}) {
+  static void _showUniversalDateForm(
+    BuildContext context,
+    int otherId,
+    String otherName, {
+    required bool isClient,
+  }) {
     DateTime selectedDate = DateTime.now();
     TimeOfDay selectedTime = TimeOfDay.now();
-    
+
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setState) {
           return AlertDialog(
-            title: const Text('Qachonga kelishdingiz?'),
+            title: Text('Qachonga kelishdingiz?'.tr),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 ListTile(
-                  title: const Text('Sana'),
+                  title: Text('Sana'.tr),
                   subtitle: Text(DateFormat('yyyy-MM-dd').format(selectedDate)),
                   trailing: const Icon(Icons.calendar_today),
                   onTap: () async {
@@ -103,7 +137,7 @@ class PostCallDialogs {
                   },
                 ),
                 ListTile(
-                  title: const Text('Vaqt'),
+                  title: Text('Vaqt'.tr),
                   subtitle: Text(selectedTime.format(context)),
                   trailing: const Icon(Icons.access_time),
                   onTap: () async {
@@ -119,17 +153,19 @@ class PostCallDialogs {
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(ctx),
-                child: const Text('Bekor qilish'),
+                child: Text('Bekor qilish'.tr),
               ),
               FilledButton(
                 onPressed: () {
                   Navigator.pop(ctx);
-                  final msg = isClient 
-                    ? 'Ajoyib! ${DateFormat('yyyy-MM-dd').format(selectedDate)} soat ${selectedTime.format(context)} ga band qilindi.'
-                    : 'Ajoyib! $otherName uchun ${DateFormat('yyyy-MM-dd').format(selectedDate)} soat ${selectedTime.format(context)} ga bron qildingiz.';
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
+                  final msg = isClient
+                      ? 'Ajoyib! ${DateFormat('yyyy-MM-dd').format(selectedDate)} soat ${selectedTime.format(context)} ga band qilindi.'
+                      : 'Ajoyib! $otherName uchun ${DateFormat('yyyy-MM-dd').format(selectedDate)} soat ${selectedTime.format(context)} ga bron qildingiz.';
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(SnackBar(content: Text(msg)));
                 },
-                child: const Text('Saqlash'),
+                child: Text('Saqlash'.tr),
               ),
             ],
           );

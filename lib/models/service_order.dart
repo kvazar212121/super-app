@@ -28,6 +28,7 @@ class ServiceOrder {
   final OrderStatus status;
   final DateTime createdAt;
   final int? providerId;
+
   /// 'fixed' = aniq vaqt, 'flexible' = tezkor navbat (oldinga surilishi mumkin)
   final String bookingMode;
 
@@ -50,13 +51,14 @@ class ServiceOrder {
   /// Eski kod `serviceIcon` (string) ishlatardi — `category.icon` mos keladi.
   /// Lekin moslashish uchun string nomi ham qaytaramiz.
   String get serviceIconKey => switch (category) {
-        ServiceHubKind.sartarosh => 'scissors',
-        ServiceHubKind.elektrik => 'zap',
-        ServiceHubKind.santexnik => 'droplet',
-        _ => category.name,
-      };
+    ServiceHubKind.sartarosh => 'scissors',
+    ServiceHubKind.elektrik => 'zap',
+    ServiceHubKind.santexnik => 'droplet',
+    _ => category.name,
+  };
 
-  ServiceOrder copyWith({OrderStatus? status, String? bookingMode}) => ServiceOrder(
+  ServiceOrder copyWith({OrderStatus? status, String? bookingMode}) =>
+      ServiceOrder(
         id: id,
         category: category,
         serviceName: serviceName,
@@ -118,7 +120,9 @@ class ServiceOrder {
       (e) => e.name == categoryKey,
       orElse: () {
         final catId = json['category_id'] as int?;
-        if (catId != null && catId > 0 && catId <= ServiceHubKind.values.length) {
+        if (catId != null &&
+            catId > 0 &&
+            catId <= ServiceHubKind.values.length) {
           return ServiceHubKind.values[catId - 1];
         }
         return ServiceHubKind.yana;
@@ -133,10 +137,14 @@ class ServiceOrder {
       variant: json['variant_label'] ?? '',
       address: json['address'] ?? '',
       notes: json['notes'] ?? '',
-      date: json['date'] != null ? DateTime.parse(json['date']) : DateTime.now(),
+      date: json['date'] != null
+          ? DateTime.parse(json['date'])
+          : DateTime.now(),
       price: (json['price'] as num?)?.toDouble() ?? 0.0,
       status: status,
-      createdAt: json['created_at'] != null ? DateTime.parse(json['created_at']) : DateTime.now(),
+      createdAt: json['created_at'] != null
+          ? DateTime.parse(json['created_at'])
+          : DateTime.now(),
       providerId: json['provider_id'] as int?,
       bookingMode: json['booking_mode'] as String? ?? 'fixed',
     );
@@ -196,7 +204,6 @@ class ServiceOrder {
       'booking_mode': bookingMode,
     };
   }
-
 
   String get statusText {
     switch (status) {

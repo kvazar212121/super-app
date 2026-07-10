@@ -23,7 +23,8 @@ class MassageCenterHubSection extends StatefulWidget {
   });
 
   @override
-  State<MassageCenterHubSection> createState() => _MassageCenterHubSectionState();
+  State<MassageCenterHubSection> createState() =>
+      _MassageCenterHubSectionState();
 }
 
 class _MassageCenterHubSectionState extends State<MassageCenterHubSection> {
@@ -34,8 +35,20 @@ class _MassageCenterHubSectionState extends State<MassageCenterHubSection> {
     switch (_filter) {
       case HubListFilter.nearest:
         list.sort(
-          (a, b) => distanceKm(kDefaultUserLat, kDefaultUserLng, a.latitude, a.longitude)
-              .compareTo(distanceKm(kDefaultUserLat, kDefaultUserLng, b.latitude, b.longitude)),
+          (a, b) =>
+              distanceKm(
+                kDefaultUserLat,
+                kDefaultUserLng,
+                a.latitude,
+                a.longitude,
+              ).compareTo(
+                distanceKm(
+                  kDefaultUserLat,
+                  kDefaultUserLng,
+                  b.latitude,
+                  b.longitude,
+                ),
+              ),
         );
       case HubListFilter.topRated:
         list.sort((a, b) => b.rating.compareTo(a.rating));
@@ -226,7 +239,9 @@ class MobileMassageHubSection extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          s.serviceTypes.isNotEmpty ? s.serviceTypes.first.label : 'Mutaxassis',
+                          s.serviceTypes.isNotEmpty
+                              ? s.serviceTypes.first.label
+                              : 'Mutaxassis',
                           style: TextStyle(
                             fontSize: 11,
                             color: accentColor,
@@ -262,7 +277,9 @@ Master _convertToMaster(MassageHijoma mh) {
     id: mh.id,
     providerId: mh.providerId,
     name: mh.name,
-    specialty: mh.serviceTypes.isNotEmpty ? mh.serviceTypes.first.label : 'Mutaxassis',
+    specialty: mh.serviceTypes.isNotEmpty
+        ? mh.serviceTypes.first.label
+        : 'Mutaxassis',
     rating: mh.rating,
     reviewCount: mh.reviewCount,
     phoneNumber: mh.phoneNumber,

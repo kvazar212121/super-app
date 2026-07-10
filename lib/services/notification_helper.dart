@@ -38,7 +38,8 @@ class NotificationHelper {
   Future<void> _createChannels() async {
     final android = _notificationsPlugin
         .resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>();
+          AndroidFlutterLocalNotificationsPlugin
+        >();
     if (android == null) return;
 
     const generalChannel = AndroidNotificationChannel(
@@ -73,17 +74,18 @@ class NotificationHelper {
     // "iOS settings must be set when targeting iOS platform" xatosi chiqadi.
     const DarwinInitializationSettings initializationSettingsDarwin =
         DarwinInitializationSettings(
-      requestAlertPermission: true,
-      requestBadgePermission: true,
-      requestSoundPermission: true,
-    );
+          requestAlertPermission: true,
+          requestBadgePermission: true,
+          requestSoundPermission: true,
+        );
 
     // Combine settings (Android + iOS/macOS)
-    const InitializationSettings initializationSettings = InitializationSettings(
-      android: initializationSettingsAndroid,
-      iOS: initializationSettingsDarwin,
-      macOS: initializationSettingsDarwin,
-    );
+    const InitializationSettings initializationSettings =
+        InitializationSettings(
+          android: initializationSettingsAndroid,
+          iOS: initializationSettingsDarwin,
+          macOS: initializationSettingsDarwin,
+        );
 
     try {
       // Rejalashtirilgan bildirishnomalar uchun timezone
@@ -93,7 +95,8 @@ class NotificationHelper {
       // Request permissions for Android 13+
       await _notificationsPlugin
           .resolvePlatformSpecificImplementation<
-              AndroidFlutterLocalNotificationsPlugin>()
+            AndroidFlutterLocalNotificationsPlugin
+          >()
           ?.requestNotificationsPermission();
 
       await _notificationsPlugin.initialize(
@@ -110,7 +113,8 @@ class NotificationHelper {
       await _createChannels();
 
       // Ilova budilnik bildirishnomasi orqali ochilgan bo'lsa, payloadни ushlab qolamiz
-      final launch = await _notificationsPlugin.getNotificationAppLaunchDetails();
+      final launch = await _notificationsPlugin
+          .getNotificationAppLaunchDetails();
       if (launch?.didNotificationLaunchApp == true) {
         final p = launch!.notificationResponse?.payload;
         if (p != null && p.startsWith('alarm:')) {
@@ -125,22 +129,27 @@ class NotificationHelper {
     }
   }
 
-  Future<void> showNotification(int id, String title, String body,
-      {String? payload}) async {
+  Future<void> showNotification(
+    int id,
+    String title,
+    String body, {
+    String? payload,
+  }) async {
     if (!_isInitialized) {
       await init();
     }
 
-    const AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
-      _generalChannelId,
-      'Eslatmalar va bildirishnomalar',
-      channelDescription: 'Buyurtmalar, rejalar va umumiy bildirishnomalar',
-      importance: Importance.max,
-      priority: Priority.high,
-      showWhen: true,
-      playSound: true,
-      enableVibration: true,
-    );
+    const AndroidNotificationDetails androidDetails =
+        AndroidNotificationDetails(
+          _generalChannelId,
+          'Eslatmalar va bildirishnomalar',
+          channelDescription: 'Buyurtmalar, rejalar va umumiy bildirishnomalar',
+          importance: Importance.max,
+          priority: Priority.high,
+          showWhen: true,
+          playSound: true,
+          enableVibration: true,
+        );
 
     const NotificationDetails platformDetails = NotificationDetails(
       android: androidDetails,
@@ -173,14 +182,15 @@ class NotificationHelper {
       await init();
     }
 
-    const AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
-      'fitness_reminders',
-      'Fitnes Eslatmalar',
-      channelDescription: 'Mashg\'ulot kunlari uchun eslatma kanali',
-      importance: Importance.max,
-      priority: Priority.high,
-      showWhen: true,
-    );
+    const AndroidNotificationDetails androidDetails =
+        AndroidNotificationDetails(
+          'fitness_reminders',
+          'Fitnes Eslatmalar',
+          channelDescription: 'Mashg\'ulot kunlari uchun eslatma kanali',
+          importance: Importance.max,
+          priority: Priority.high,
+          showWhen: true,
+        );
 
     try {
       await _notificationsPlugin.zonedSchedule(
@@ -201,7 +211,14 @@ class NotificationHelper {
 
   tz.TZDateTime _nextInstanceOf(int weekday, int hour, int minute) {
     final now = tz.TZDateTime.now(tz.local);
-    var scheduled = tz.TZDateTime(tz.local, now.year, now.month, now.day, hour, minute);
+    var scheduled = tz.TZDateTime(
+      tz.local,
+      now.year,
+      now.month,
+      now.day,
+      hour,
+      minute,
+    );
     while (scheduled.weekday != weekday || scheduled.isBefore(now)) {
       scheduled = scheduled.add(const Duration(days: 1));
     }
@@ -243,7 +260,8 @@ class NotificationHelper {
         importance: Importance.max,
         priority: Priority.high,
         category: AndroidNotificationCategory.alarm,
-        fullScreenIntent: true, // qulflangan ekranда ham to'liq ekranда ochiladi
+        fullScreenIntent:
+            true, // qulflangan ekranда ham to'liq ekranда ochiladi
         ongoing: true, // surib tashlab bo'lmaydi
         autoCancel: false,
         playSound: true,
@@ -251,7 +269,8 @@ class NotificationHelper {
         visibility: NotificationVisibility.public,
       );
 
-  int _alarmNotifId(int alarmId, int weekday) => alarmIdBase + alarmId * 10 + weekday;
+  int _alarmNotifId(int alarmId, int weekday) =>
+      alarmIdBase + alarmId * 10 + weekday;
 
   /// Budilnikni rejalashtirish. Takror kunlari bo'lsa har kun uchun haftalik takror,
   /// bo'lmasa keyingi mos vaqtga bir martalik.
@@ -301,11 +320,16 @@ class NotificationHelper {
   /// Snooze — belgilangan daqiqadan keyin qayta jiringlash (bir martalik).
   Future<void> snoozeAlarm(Alarm alarm) async {
     if (!_isInitialized) await init();
-    final when = tz.TZDateTime.now(tz.local).add(Duration(minutes: alarm.snoozeMinutes));
+    final when = tz.TZDateTime.now(
+      tz.local,
+    ).add(Duration(minutes: alarm.snoozeMinutes));
     final payload = 'alarm:${jsonEncode(alarm.toPayload()..['id'] = alarm.id)}';
     try {
       await _notificationsPlugin.zonedSchedule(
-        _alarmNotifId(alarm.id, 8), // 8 = snooze sloti (weekday 1-7 dan tashqarida)
+        _alarmNotifId(
+          alarm.id,
+          8,
+        ), // 8 = snooze sloti (weekday 1-7 dan tashqarida)
         alarm.label,
         'Snooze — budilnik qaytadi',
         when,
@@ -328,7 +352,14 @@ class NotificationHelper {
 
   tz.TZDateTime _nextInstanceOfTime(int hour, int minute) {
     final now = tz.TZDateTime.now(tz.local);
-    var scheduled = tz.TZDateTime(tz.local, now.year, now.month, now.day, hour, minute);
+    var scheduled = tz.TZDateTime(
+      tz.local,
+      now.year,
+      now.month,
+      now.day,
+      hour,
+      minute,
+    );
     if (scheduled.isBefore(now)) {
       scheduled = scheduled.add(const Duration(days: 1));
     }

@@ -7,6 +7,7 @@ import '../../services/provider_portal_service.dart';
 import '../../utils/phone_utils.dart';
 import '../provider_side/provider_theme.dart';
 import 'provider_success_screen.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 class ProviderDataEntryScreen extends StatefulWidget {
   final String categoryId;
@@ -21,7 +22,8 @@ class ProviderDataEntryScreen extends StatefulWidget {
   });
 
   @override
-  State<ProviderDataEntryScreen> createState() => _ProviderDataEntryScreenState();
+  State<ProviderDataEntryScreen> createState() =>
+      _ProviderDataEntryScreenState();
 }
 
 class _ProviderDataEntryScreenState extends State<ProviderDataEntryScreen> {
@@ -62,7 +64,9 @@ class _ProviderDataEntryScreenState extends State<ProviderDataEntryScreen> {
         : (user?['phone'] as String? ?? '');
 
     int? categoryId = widget.categoryDbId;
-    final regConfig = ProviderCategoryConfig.byRegistrationId(widget.categoryId);
+    final regConfig = ProviderCategoryConfig.byRegistrationId(
+      widget.categoryId,
+    );
     if (categoryId == null) {
       try {
         final cats = await ApiService().getCategories();
@@ -84,17 +88,21 @@ class _ProviderDataEntryScreenState extends State<ProviderDataEntryScreen> {
           address: address,
           phone: phone,
           metadata: {
-            if (_hoursCtrl.text.trim().isNotEmpty) 'hours': _hoursCtrl.text.trim(),
-            if (_priceCtrl.text.trim().isNotEmpty) 'price_note': _priceCtrl.text.trim(),
-            if (_extraCtrl.text.trim().isNotEmpty) 'extra': _extraCtrl.text.trim(),
-            if (_selectedSubCategory != null) 'sub_category': _selectedSubCategory,
+            if (_hoursCtrl.text.trim().isNotEmpty)
+              'hours': _hoursCtrl.text.trim(),
+            if (_priceCtrl.text.trim().isNotEmpty)
+              'price_note': _priceCtrl.text.trim(),
+            if (_extraCtrl.text.trim().isNotEmpty)
+              'extra': _extraCtrl.text.trim(),
+            if (_selectedSubCategory != null)
+              'sub_category': _selectedSubCategory,
           },
         );
       } catch (e) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Xatolik: $e')),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('Xatolik: $e')));
         }
       }
     }
@@ -116,68 +124,119 @@ class _ProviderDataEntryScreenState extends State<ProviderDataEntryScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return ProviderTheme(child: Builder(builder: (context) {
-    final theme = Theme.of(context);
+    return ProviderTheme(
+      child: Builder(
+        builder: (context) {
+          final theme = Theme.of(context);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('${widget.categoryName} sifatida ro\'yxatdan o\'tish'),
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Malumotlaringizni to\'ldiring',
-              style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 6),
-            Text(
-              'Ma\'lumotlar serverga yuboriladi. Admin tasdiqlagach ko\'rinadi.',
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurface,
+          return Scaffold(
+            appBar: AppBar(
+              title: Text(
+                '${widget.categoryName} sifatida ro\'yxatdan o\'tish',
               ),
             ),
-            const SizedBox(height: 24),
-            if (ProviderCategoryConfig.byRegistrationId(widget.categoryId)?.subCategories != null &&
-                ProviderCategoryConfig.byRegistrationId(widget.categoryId)!.subCategories!.isNotEmpty) ...[
-              DropdownButtonFormField<String>(
-                decoration: const InputDecoration(labelText: 'Kategoriya tanlang'),
-                value: _selectedSubCategory,
-                items: ProviderCategoryConfig.byRegistrationId(widget.categoryId)!
-                    .subCategories!
-                    .map((sc) => DropdownMenuItem(value: sc, child: Text(sc)))
-                    .toList(),
-                onChanged: (val) => setState(() => _selectedSubCategory = val),
-              ),
-              const SizedBox(height: 16),
-            ],
-            TextField(controller: _nameCtrl, decoration: const InputDecoration(labelText: 'Nomi / Salon nomi')),
-            const SizedBox(height: 16),
-            TextField(controller: _addressCtrl, decoration: const InputDecoration(labelText: 'Manzil')),
-            const SizedBox(height: 16),
-            TextField(controller: _phoneCtrl, decoration: const InputDecoration(labelText: 'Telefon')),
-            const SizedBox(height: 16),
-            TextField(controller: _hoursCtrl, decoration: const InputDecoration(labelText: 'Ish vaqti')),
-            const SizedBox(height: 16),
-            TextField(controller: _priceCtrl, decoration: const InputDecoration(labelText: 'Narxlar (ixtiyoriy)')),
-            const SizedBox(height: 16),
-            TextField(controller: _extraCtrl, decoration: const InputDecoration(labelText: 'Qo\'shimcha ma\'lumot')),
-            const SizedBox(height: 32),
-            SizedBox(
-              width: double.infinity,
-              child: FilledButton(
-                onPressed: _submitting ? null : _submitProvider,
-                child: _submitting
-                    ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2))
-                    : const Text('Yuborish'),
+            body: SingleChildScrollView(
+              padding: const EdgeInsets.all(24.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Malumotlaringizni to\'ldiring',
+                    style: theme.textTheme.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    'Ma\'lumotlar serverga yuboriladi. Admin tasdiqlagach ko\'rinadi.',
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: theme.colorScheme.onSurface,
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  if (ProviderCategoryConfig.byRegistrationId(
+                            widget.categoryId,
+                          )?.subCategories !=
+                          null &&
+                      ProviderCategoryConfig.byRegistrationId(
+                        widget.categoryId,
+                      )!.subCategories!.isNotEmpty) ...[
+                    DropdownButtonFormField<String>(
+                      decoration: InputDecoration(
+                        labelText: 'Kategoriya tanlang'.tr,
+                      ),
+                      value: _selectedSubCategory,
+                      items:
+                          ProviderCategoryConfig.byRegistrationId(
+                                widget.categoryId,
+                              )!.subCategories!
+                              .map(
+                                (sc) => DropdownMenuItem(
+                                  value: sc,
+                                  child: Text(sc),
+                                ),
+                              )
+                              .toList(),
+                      onChanged: (val) =>
+                          setState(() => _selectedSubCategory = val),
+                    ),
+                    const SizedBox(height: 16),
+                  ],
+                  TextField(
+                    controller: _nameCtrl,
+                    decoration: InputDecoration(
+                      labelText: 'Nomi / Salon nomi'.tr,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  TextField(
+                    controller: _addressCtrl,
+                    decoration: InputDecoration(labelText: 'Manzil'.tr),
+                  ),
+                  const SizedBox(height: 16),
+                  TextField(
+                    controller: _phoneCtrl,
+                    decoration: InputDecoration(labelText: 'Telefon'.tr),
+                  ),
+                  const SizedBox(height: 16),
+                  TextField(
+                    controller: _hoursCtrl,
+                    decoration: InputDecoration(labelText: 'Ish vaqti'.tr),
+                  ),
+                  const SizedBox(height: 16),
+                  TextField(
+                    controller: _priceCtrl,
+                    decoration: InputDecoration(
+                      labelText: 'Narxlar (ixtiyoriy)'.tr,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  TextField(
+                    controller: _extraCtrl,
+                    decoration: InputDecoration(
+                      labelText: 'Qo\'shimcha ma\'lumot',
+                    ),
+                  ),
+                  const SizedBox(height: 32),
+                  SizedBox(
+                    width: double.infinity,
+                    child: FilledButton(
+                      onPressed: _submitting ? null : _submitProvider,
+                      child: _submitting
+                          ? const SizedBox(
+                              width: 24,
+                              height: 24,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : Text('Yuborish'.tr),
+                    ),
+                  ),
+                ],
               ),
             ),
-          ],
-        ),
+          );
+        },
       ),
     );
-    }));
   }
 }

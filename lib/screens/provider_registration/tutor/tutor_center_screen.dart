@@ -6,6 +6,7 @@ import '../../../services/tutor_portal_service.dart';
 import '../../../utils/phone_utils.dart';
 import '../../provider_side/provider_theme.dart';
 import '../../provider_side/unified_provider_dashboard_screen.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 class TutorCenterScreen extends StatefulWidget {
   const TutorCenterScreen({super.key});
@@ -46,7 +47,7 @@ class _TutorCenterScreenState extends State<TutorCenterScreen> {
     final address = _addressCtrl.text.trim();
     if (name.isEmpty || address.length < 5) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Markaz nomi va manzilni kiriting')),
+        SnackBar(content: Text('Markaz nomi va manzilni kiriting'.tr)),
       );
       return;
     }
@@ -77,9 +78,9 @@ class _TutorCenterScreenState extends State<TutorCenterScreen> {
       );
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Xatolik: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Xatolik: $e')));
       }
     } finally {
       if (mounted) setState(() => _submitting = false);
@@ -101,20 +102,29 @@ class _TutorCenterScreenState extends State<TutorCenterScreen> {
                 style: TextStyle(color: Colors.grey[700], height: 1.4),
               ),
               const SizedBox(height: 24),
-              TextField(controller: _nameCtrl, decoration: const InputDecoration(labelText: 'Markaz nomi')),
+              TextField(
+                controller: _nameCtrl,
+                decoration: InputDecoration(labelText: 'Markaz nomi'.tr),
+              ),
               const SizedBox(height: 16),
-              TextField(controller: _phoneCtrl, decoration: const InputDecoration(labelText: 'Telefon')),
+              TextField(
+                controller: _phoneCtrl,
+                decoration: InputDecoration(labelText: 'Telefon'.tr),
+              ),
               const SizedBox(height: 16),
               TextField(
                 controller: _addressCtrl,
                 maxLines: 2,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: 'To\'liq manzil',
                   hintText: 'Ko\'cha, kvartal, orientir',
                 ),
               ),
               const SizedBox(height: 20),
-              const Text('Kurslar / yo\'nalishlar', style: TextStyle(fontWeight: FontWeight.w600)),
+              const Text(
+                'Kurslar / yo\'nalishlar',
+                style: TextStyle(fontWeight: FontWeight.w600),
+              ),
               const SizedBox(height: 8),
               Wrap(
                 spacing: 8,
@@ -141,7 +151,11 @@ class _TutorCenterScreenState extends State<TutorCenterScreen> {
                 child: FilledButton(
                   onPressed: _submitting ? null : _submit,
                   child: _submitting
-                      ? const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2))
+                      ? const SizedBox(
+                          width: 22,
+                          height: 22,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
                       : const Text('Ro\'yxatdan o\'tish'),
                 ),
               ),

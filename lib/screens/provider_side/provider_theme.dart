@@ -17,10 +17,9 @@ class ProviderTheme extends StatelessWidget {
     const primary = Colors.black;
     final base = ThemeData.light(useMaterial3: true);
 
-    final textTheme = GoogleFonts.interTextTheme(base.textTheme).apply(
-      bodyColor: ink,
-      displayColor: ink,
-    );
+    final textTheme = GoogleFonts.interTextTheme(
+      base.textTheme,
+    ).apply(bodyColor: ink, displayColor: ink);
 
     return Theme(
       data: base.copyWith(

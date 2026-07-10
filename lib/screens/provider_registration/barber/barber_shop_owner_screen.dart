@@ -10,6 +10,7 @@ import '../provider_success_screen.dart';
 import '../../location_picker_screen.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../services/hub_data_service.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 class BarberShopOwnerScreen extends StatefulWidget {
   final int? categoryDbId;
@@ -48,7 +49,7 @@ class _BarberShopOwnerScreenState extends State<BarberShopOwnerScreen> {
     final address = _addressCtrl.text.trim();
     if (name.isEmpty || address.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Xona nomi va manzilni kiriting')),
+        SnackBar(content: Text('Xona nomi va manzilni kiriting'.tr)),
       );
       return;
     }
@@ -86,9 +87,9 @@ class _BarberShopOwnerScreenState extends State<BarberShopOwnerScreen> {
       );
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Xatolik: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Xatolik: $e')));
       }
     } finally {
       if (mounted) setState(() => _submitting = false);
@@ -99,7 +100,7 @@ class _BarberShopOwnerScreenState extends State<BarberShopOwnerScreen> {
   Widget build(BuildContext context) {
     return ProviderTheme(
       child: Scaffold(
-        appBar: AppBar(title: const Text('Sartarosh xona egasi')),
+        appBar: AppBar(title: Text('Sartarosh xona egasi'.tr)),
         body: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
           child: Column(
@@ -112,9 +113,9 @@ class _BarberShopOwnerScreenState extends State<BarberShopOwnerScreen> {
               const SizedBox(height: 16),
               TextField(
                 controller: _nameCtrl,
-                decoration: const InputDecoration(
-                  labelText: 'Sartaroshxona nomi',
-                  hintText: 'Masalan: Style Barbershop',
+                decoration: InputDecoration(
+                  labelText: 'Sartaroshxona nomi'.tr,
+                  hintText: 'Masalan: Style Barbershop'.tr,
                 ),
               ),
               const SizedBox(height: 16),
@@ -125,7 +126,7 @@ class _BarberShopOwnerScreenState extends State<BarberShopOwnerScreen> {
                     child: TextField(
                       controller: _addressCtrl,
                       maxLines: 2,
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                         labelText: 'Manzil (to\'liq)',
                         hintText: 'Tuman, ko\'cha, uy raqami',
                       ),
@@ -141,8 +142,10 @@ class _BarberShopOwnerScreenState extends State<BarberShopOwnerScreen> {
                           context,
                           MaterialPageRoute(
                             builder: (_) => LocationPickerScreen(
-                              initialLat: double.tryParse(_latCtrl.text) ?? 41.2995,
-                              initialLng: double.tryParse(_lngCtrl.text) ?? 69.2401,
+                              initialLat:
+                                  double.tryParse(_latCtrl.text) ?? 41.2995,
+                              initialLng:
+                                  double.tryParse(_lngCtrl.text) ?? 69.2401,
                             ),
                           ),
                         );
@@ -150,7 +153,9 @@ class _BarberShopOwnerScreenState extends State<BarberShopOwnerScreen> {
                           setState(() {
                             _latCtrl.text = result['lat'].toString();
                             _lngCtrl.text = result['lng'].toString();
-                            if (result['address'] != 'Noma\'lum manzil' && result['address'] != 'Manzilni aniqlab bo\'lmadi') {
+                            if (result['address'] != 'Noma\'lum manzil' &&
+                                result['address'] !=
+                                    'Manzilni aniqlab bo\'lmadi') {
                               _addressCtrl.text = result['address'];
                             }
                           });
@@ -164,31 +169,38 @@ class _BarberShopOwnerScreenState extends State<BarberShopOwnerScreen> {
               const SizedBox(height: 16),
               TextField(
                 controller: _phoneCtrl,
-                decoration: const InputDecoration(labelText: 'Telefon'),
+                decoration: InputDecoration(labelText: 'Telefon'.tr),
               ),
               const SizedBox(height: 16),
               TextField(
                 controller: _hoursCtrl,
-                decoration: const InputDecoration(labelText: 'Ish vaqti (ixtiyoriy)'),
+                decoration: InputDecoration(
+                  labelText: 'Ish vaqti (ixtiyoriy)'.tr,
+                ),
               ),
               const SizedBox(height: 16),
               if (ProviderCategoryConfig.barber.subCategories != null &&
                   ProviderCategoryConfig.barber.subCategories!.isNotEmpty) ...[
                 DropdownButtonFormField<String>(
-                  decoration: const InputDecoration(labelText: 'Kategoriya tanlang'),
+                  decoration: InputDecoration(
+                    labelText: 'Kategoriya tanlang'.tr,
+                  ),
                   value: _selectedSubCategory,
                   items: ProviderCategoryConfig.barber.subCategories!
                       .map((sc) => DropdownMenuItem(value: sc, child: Text(sc)))
                       .toList(),
-                  onChanged: (val) => setState(() => _selectedSubCategory = val),
+                  onChanged: (val) =>
+                      setState(() => _selectedSubCategory = val),
                 ),
                 const SizedBox(height: 16),
               ],
               const SizedBox(height: 4),
               SwitchListTile(
                 contentPadding: EdgeInsets.zero,
-                title: const Text('Men ham sartaroshman'),
-                subtitle: const Text('O\'zingiz ham kesim qilasizmi yoki faqat egasi?'),
+                title: Text('Men ham sartaroshman'.tr),
+                subtitle: const Text(
+                  'O\'zingiz ham kesim qilasizmi yoki faqat egasi?',
+                ),
                 value: _alsoBarber,
                 onChanged: (v) => setState(() => _alsoBarber = v),
               ),
@@ -198,7 +210,11 @@ class _BarberShopOwnerScreenState extends State<BarberShopOwnerScreen> {
                 child: FilledButton(
                   onPressed: _submitting ? null : _submit,
                   child: _submitting
-                      ? const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2))
+                      ? const SizedBox(
+                          width: 22,
+                          height: 22,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
                       : const Text('Ro\'yxatdan o\'tish'),
                 ),
               ),

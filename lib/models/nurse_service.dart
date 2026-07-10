@@ -34,43 +34,43 @@ enum MedicalService {
 
 extension MedicalServiceX on MedicalService {
   String get key => switch (this) {
-        MedicalService.injection => 'injection',
-        MedicalService.bloodTest => 'blood_test',
-        MedicalService.drip => 'drip',
-        MedicalService.woundCare => 'wound_care',
-        MedicalService.physiotherapy => 'physiotherapy',
-        MedicalService.vaccination => 'vaccination',
-        MedicalService.postOpCare => 'post_op_care',
-        MedicalService.elderlyCare => 'elderly_care',
-        MedicalService.diabetesMonitoring => 'diabetes_monitoring',
-        MedicalService.ecg => 'ecg',
-      };
+    MedicalService.injection => 'injection',
+    MedicalService.bloodTest => 'blood_test',
+    MedicalService.drip => 'drip',
+    MedicalService.woundCare => 'wound_care',
+    MedicalService.physiotherapy => 'physiotherapy',
+    MedicalService.vaccination => 'vaccination',
+    MedicalService.postOpCare => 'post_op_care',
+    MedicalService.elderlyCare => 'elderly_care',
+    MedicalService.diabetesMonitoring => 'diabetes_monitoring',
+    MedicalService.ecg => 'ecg',
+  };
 
   String get label => switch (this) {
-        MedicalService.injection => 'Ukol',
-        MedicalService.bloodTest => 'Qon tahlili',
-        MedicalService.drip => 'Tomchilatma',
-        MedicalService.woundCare => 'Yara parvarishi',
-        MedicalService.physiotherapy => 'Fizioterapiya',
-        MedicalService.vaccination => 'Emash',
-        MedicalService.postOpCare => 'Operatsiyadan keyingi parvarish',
-        MedicalService.elderlyCare => 'Keksalarga parvarish',
-        MedicalService.diabetesMonitoring => 'Qandli diabet nazorati',
-        MedicalService.ecg => 'EKG',
-      };
+    MedicalService.injection => 'Ukol',
+    MedicalService.bloodTest => 'Qon tahlili',
+    MedicalService.drip => 'Tomchilatma',
+    MedicalService.woundCare => 'Yara parvarishi',
+    MedicalService.physiotherapy => 'Fizioterapiya',
+    MedicalService.vaccination => 'Emash',
+    MedicalService.postOpCare => 'Operatsiyadan keyingi parvarish',
+    MedicalService.elderlyCare => 'Keksalarga parvarish',
+    MedicalService.diabetesMonitoring => 'Qandli diabet nazorati',
+    MedicalService.ecg => 'EKG',
+  };
 
   IconData get icon => switch (this) {
-        MedicalService.injection => LucideIcons.syringe,
-        MedicalService.bloodTest => LucideIcons.flaskConical,
-        MedicalService.drip => LucideIcons.droplet,
-        MedicalService.woundCare => LucideIcons.heart,
-        MedicalService.physiotherapy => LucideIcons.activity,
-        MedicalService.vaccination => LucideIcons.shield,
-        MedicalService.postOpCare => LucideIcons.heartPulse,
-        MedicalService.elderlyCare => LucideIcons.user,
-        MedicalService.diabetesMonitoring => LucideIcons.droplet,
-        MedicalService.ecg => LucideIcons.activity,
-      };
+    MedicalService.injection => LucideIcons.syringe,
+    MedicalService.bloodTest => LucideIcons.flaskConical,
+    MedicalService.drip => LucideIcons.droplet,
+    MedicalService.woundCare => LucideIcons.heart,
+    MedicalService.physiotherapy => LucideIcons.activity,
+    MedicalService.vaccination => LucideIcons.shield,
+    MedicalService.postOpCare => LucideIcons.heartPulse,
+    MedicalService.elderlyCare => LucideIcons.user,
+    MedicalService.diabetesMonitoring => LucideIcons.droplet,
+    MedicalService.ecg => LucideIcons.activity,
+  };
 }
 
 /// Hamshira — faqat uyga chiqish (chaqirish)
@@ -123,17 +123,21 @@ class NurseService {
     final typeKeys = (meta['medical_types'] as List<dynamic>? ?? [])
         .map((e) => e.toString())
         .toList();
-    var types = typeKeys.map(MedicalService.fromKey).whereType<MedicalService>().toList();
+    var types = typeKeys
+        .map(MedicalService.fromKey)
+        .whereType<MedicalService>()
+        .toList();
     if (types.isEmpty) {
-      types = [MedicalService.injection, MedicalService.bloodTest, MedicalService.drip];
+      types = [
+        MedicalService.injection,
+        MedicalService.bloodTest,
+        MedicalService.drip,
+      ];
     }
 
     final pricesRaw = meta['prices'] as Map<String, dynamic>? ?? {};
     final prices = pricesRaw.isEmpty
-        ? {
-            "Ukol (in'ektsiya)": 35000.0,
-            'Qon tahlili (uyda)': 120000.0,
-          }
+        ? {"Ukol (in'ektsiya)": 35000.0, 'Qon tahlili (uyda)': 120000.0}
         : pricesRaw.map((k, v) => MapEntry(k, (v as num?)?.toDouble() ?? 0));
 
     return NurseService(
@@ -148,7 +152,8 @@ class NurseService {
       serviceArea: meta['service_area']?.toString(),
       medicalServices: types,
       prices: prices,
-      qualifications: meta['qualifications']?.toString() ?? 'Litsenziyalangan hamshira',
+      qualifications:
+          meta['qualifications']?.toString() ?? 'Litsenziyalangan hamshira',
       timeSlots: (meta['time_slots'] as List<dynamic>? ?? [])
           .map((e) => e.toString())
           .toList(),

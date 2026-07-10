@@ -3,6 +3,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../provider_side/provider_theme.dart';
 import 'tutor_solo_screen.dart';
 import 'tutor_center_screen.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 class TutorRoleSelectionScreen extends StatelessWidget {
   const TutorRoleSelectionScreen({super.key});
@@ -11,13 +12,15 @@ class TutorRoleSelectionScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return ProviderTheme(
       child: Scaffold(
-        appBar: AppBar(title: const Text('Repetitor')),
+        appBar: AppBar(title: Text('Repetitor'.tr)),
         body: ListView(
           padding: const EdgeInsets.all(24),
           children: [
             Text(
               'Qanday xizmat ko\'rsatasiz?',
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+              style: Theme.of(
+                context,
+              ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
             Text(
@@ -28,7 +31,8 @@ class TutorRoleSelectionScreen extends StatelessWidget {
             _RoleCard(
               icon: LucideIcons.user,
               title: 'Yakka repetitor',
-              subtitle: 'Onlayn (Zoom/Telegram) yoki uyga kelib individual dars',
+              subtitle:
+                  'Onlayn (Zoom/Telegram) yoki uyga kelib individual dars',
               color: const Color(0xFF7C3AED),
               onTap: () => Navigator.push(
                 context,
@@ -95,9 +99,22 @@ class _RoleCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
                   const SizedBox(height: 4),
-                  Text(subtitle, style: TextStyle(color: Colors.grey, height: 1.35, fontSize: 13)),
+                  Text(
+                    subtitle,
+                    style: TextStyle(
+                      color: Colors.grey,
+                      height: 1.35,
+                      fontSize: 13,
+                    ),
+                  ),
                 ],
               ),
             ),

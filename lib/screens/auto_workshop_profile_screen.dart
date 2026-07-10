@@ -12,6 +12,7 @@ import '../utils/call_helper.dart';
 import '../widgets/glass/glass_scaffold.dart';
 import '../widgets/glass/glass_surface.dart';
 import 'auto_workshop_dispatch_screen.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 class AutoWorkshopProfileScreen extends StatelessWidget {
   final AutoWorkshop workshop;
@@ -21,7 +22,11 @@ class AutoWorkshopProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const accent = Color(0xFF334155); // Slate
-    final currency = NumberFormat.currency(locale: 'uz_UZ', symbol: 'so\'m', decimalDigits: 0);
+    final currency = NumberFormat.currency(
+      locale: 'uz_UZ',
+      symbol: 'so\'m',
+      decimalDigits: 0,
+    );
 
     return GlassScaffold(
       showBackButton: true,
@@ -49,7 +54,9 @@ class AutoWorkshopProfileScreen extends StatelessWidget {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(
-                      isSaved ? 'Sevimli ro\'yxatidan o\'chirildi' : 'Sevimli ro\'yxatiga qo\'shildi',
+                      isSaved
+                          ? 'Sevimli ro\'yxatidan o\'chirildi'
+                          : 'Sevimli ro\'yxatiga qo\'shildi',
                     ),
                     duration: const Duration(seconds: 1),
                   ),
@@ -92,7 +99,10 @@ class AutoWorkshopProfileScreen extends StatelessWidget {
                       child: Text(
                         workshop.address,
                         textAlign: TextAlign.center,
-                        style: const TextStyle(color: accent, fontWeight: FontWeight.w500),
+                        style: const TextStyle(
+                          color: accent,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                     ),
                   ],
@@ -123,11 +133,15 @@ class AutoWorkshopProfileScreen extends StatelessWidget {
             Wrap(
               spacing: 8,
               runSpacing: 8,
-              children: workshop.specializations.map((t) => Chip(
-                label: Text(t),
-                backgroundColor: accent.withOpacity(0.1),
-                side: BorderSide(color: accent.withOpacity(0.3)),
-              )).toList(),
+              children: workshop.specializations
+                  .map(
+                    (t) => Chip(
+                      label: Text(t),
+                      backgroundColor: accent.withOpacity(0.1),
+                      side: BorderSide(color: accent.withOpacity(0.3)),
+                    ),
+                  )
+                  .toList(),
             ),
             const SizedBox(height: 20),
           ],
@@ -147,8 +161,19 @@ class AutoWorkshopProfileScreen extends StatelessWidget {
               borderRadius: GlassTokens.radiusMd,
               child: Row(
                 children: [
-                  Expanded(child: Text(e.key, style: const TextStyle(fontWeight: FontWeight.w600))),
-                  Text(currency.format(e.value), style: const TextStyle(fontWeight: FontWeight.bold, color: accent)),
+                  Expanded(
+                    child: Text(
+                      e.key,
+                      style: const TextStyle(fontWeight: FontWeight.w600),
+                    ),
+                  ),
+                  Text(
+                    currency.format(e.value),
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: accent,
+                    ),
+                  ),
                 ],
               ),
             );
@@ -159,7 +184,11 @@ class AutoWorkshopProfileScreen extends StatelessWidget {
               Expanded(
                 child: OutlinedButton.icon(
                   onPressed: () {
-                    CallHelper.startCallWithPurposeCheck(context, workshop.providerId, workshop.name);
+                    CallHelper.startCallWithPurposeCheck(
+                      context,
+                      workshop.providerId,
+                      workshop.name,
+                    );
                   },
                   icon: const Icon(LucideIcons.phoneCall),
                   label: const Text('Qo\'ng\'iroq'),
@@ -167,7 +196,9 @@ class AutoWorkshopProfileScreen extends StatelessWidget {
                     foregroundColor: accent,
                     side: const BorderSide(color: accent, width: 2),
                     padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
                   ),
                 ),
               ),
@@ -179,16 +210,19 @@ class AutoWorkshopProfileScreen extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (_) => AutoWorkshopDispatchScreen(workshop: workshop),
+                        builder: (_) =>
+                            AutoWorkshopDispatchScreen(workshop: workshop),
                       ),
                     );
                   },
-                  icon: const Icon(LucideIcons.wrench),
-                  label: const Text('Qabulga yozilish'),
+                  icon: Icon(LucideIcons.wrench),
+                  label: Text('Qabulga yozilish'.tr),
                   style: FilledButton.styleFrom(
                     backgroundColor: accent,
                     padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
                   ),
                 ),
               ),

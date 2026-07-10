@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 
 import '../models/football_field.dart';
 import 'football_field_booking_screen.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 /// Barcha futbol maydonlari aks etgan interaktiv xarita ekrani.
 /// Marker ustiga tegish bilan maydon haqida ma'lumot ko'rinadi,
@@ -74,7 +75,10 @@ class _FootballFieldMapScreenState extends State<FootballFieldMapScreen> {
             children: [
               // Maydon icon marker
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 6,
+                ),
                 decoration: BoxDecoration(
                   color: field.surface.color,
                   borderRadius: BorderRadius.circular(10),
@@ -89,11 +93,7 @@ class _FootballFieldMapScreenState extends State<FootballFieldMapScreen> {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(
-                      field.surface.icon,
-                      color: Colors.white,
-                      size: 16,
-                    ),
+                    Icon(field.surface.icon, color: Colors.white, size: 16),
                     const SizedBox(width: 4),
                     Flexible(
                       child: Text(
@@ -117,12 +117,7 @@ class _FootballFieldMapScreenState extends State<FootballFieldMapScreen> {
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(6),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black,
-                      blurRadius: 4,
-                    ),
-                  ],
+                  boxShadow: [BoxShadow(color: Colors.black, blurRadius: 4)],
                 ),
                 child: Text(
                   '${NumberFormat('#,###').format(field.basePricePerHour)} soʻm',
@@ -143,7 +138,7 @@ class _FootballFieldMapScreenState extends State<FootballFieldMapScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Futbol maydonlari'),
+        title: Text('Futbol maydonlari'.tr),
         backgroundColor: const Color(0xFF4CAF50),
         foregroundColor: Colors.white,
         actions: [
@@ -155,13 +150,22 @@ class _FootballFieldMapScreenState extends State<FootballFieldMapScreen> {
           ),
           // Saralash
           PopupMenuButton<String>(
-            icon: const Icon(Icons.sort),
-            tooltip: 'Saralash',
+            icon: Icon(Icons.sort),
+            tooltip: 'Saralash'.tr,
             onSelected: (v) => setState(() => _sortBy = v),
             itemBuilder: (_) => [
-              const PopupMenuItem(value: 'rating', child: Text('Reyting boʻyicha')),
-              const PopupMenuItem(value: 'price', child: Text('Narx (arzon)')),
-              const PopupMenuItem(value: 'price_desc', child: Text('Narx (qimmat)')),
+              PopupMenuItem(
+                value: 'rating',
+                child: Text('Reyting boʻyicha'.tr),
+              ),
+              PopupMenuItem(
+                value: 'price',
+                child: Text('Narx (arzon)'.tr),
+              ),
+              PopupMenuItem(
+                value: 'price_desc',
+                child: Text('Narx (qimmat)'.tr),
+              ),
             ],
           ),
         ],
@@ -207,17 +211,16 @@ class _FootballFieldMapScreenState extends State<FootballFieldMapScreen> {
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(20),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black,
-                    blurRadius: 8,
-                  ),
-                ],
+                boxShadow: [BoxShadow(color: Colors.black, blurRadius: 8)],
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(Icons.sports_soccer, size: 18, color: Color(0xFF4CAF50)),
+                  const Icon(
+                    Icons.sports_soccer,
+                    size: 18,
+                    color: Color(0xFF4CAF50),
+                  ),
                   const SizedBox(width: 6),
                   Text(
                     '${_filteredFields.length} ta maydon',
@@ -283,7 +286,7 @@ class _FilterPanel extends StatelessWidget {
               child: Row(
                 children: [
                   FilterChip(
-                    label: const Text('Barchasi'),
+                    label: Text('Barchasi'.tr),
                     selected: sizeFilter == null,
                     onSelected: (_) => onSizeChanged(null),
                   ),
@@ -295,9 +298,8 @@ class _FilterPanel extends StatelessWidget {
                         label: Text(s.shortLabel),
                         selected: sizeFilter == s,
                         selectedColor: const Color(0xFF4CAF50),
-                        onSelected: (_) => onSizeChanged(
-                          sizeFilter == s ? null : s,
-                        ),
+                        onSelected: (_) =>
+                            onSizeChanged(sizeFilter == s ? null : s),
                       ),
                     );
                   }),
@@ -318,9 +320,8 @@ class _FilterPanel extends StatelessWidget {
                         label: Text(s.label),
                         selected: surfaceFilter == s,
                         selectedColor: s.color,
-                        onSelected: (_) => onSurfaceChanged(
-                          surfaceFilter == s ? null : s,
-                        ),
+                        onSelected: (_) =>
+                            onSurfaceChanged(surfaceFilter == s ? null : s),
                       ),
                     );
                   }),
@@ -341,10 +342,7 @@ class _FieldListView extends StatelessWidget {
   final List<FootballField> fields;
   final ValueChanged<FootballField> onFieldSelected;
 
-  const _FieldListView({
-    required this.fields,
-    required this.onFieldSelected,
-  });
+  const _FieldListView({required this.fields, required this.onFieldSelected});
 
   @override
   Widget build(BuildContext context) {
@@ -356,8 +354,10 @@ class _FieldListView extends StatelessWidget {
           borderRadius: BorderRadius.circular(16),
         ),
         child: const Center(
-          child: Text('Hech qanday maydon topilmadi',
-              style: TextStyle(fontSize: 16)),
+          child: Text(
+            'Hech qanday maydon topilmadi',
+            style: TextStyle(fontSize: 16),
+          ),
         ),
       );
     }
@@ -366,12 +366,7 @@ class _FieldListView extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black,
-            blurRadius: 12,
-          ),
-        ],
+        boxShadow: [BoxShadow(color: Colors.black, blurRadius: 12)],
       ),
       child: ListView.separated(
         padding: const EdgeInsets.all(12),
@@ -473,7 +468,9 @@ class _FieldBottomSheet extends StatelessWidget {
                           children: [
                             Container(
                               padding: const EdgeInsets.symmetric(
-                                  horizontal: 8, vertical: 4),
+                                horizontal: 8,
+                                vertical: 4,
+                              ),
                               decoration: BoxDecoration(
                                 color: Colors.amber,
                                 borderRadius: BorderRadius.circular(8),
@@ -481,8 +478,11 @@ class _FieldBottomSheet extends StatelessWidget {
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  Icon(Icons.star,
-                                      size: 16, color: Colors.amber[700]),
+                                  Icon(
+                                    Icons.star,
+                                    size: 16,
+                                    color: Colors.amber[700],
+                                  ),
                                   const SizedBox(width: 4),
                                   Text(
                                     '${field.rating} (${field.reviewCount})',
@@ -497,10 +497,11 @@ class _FieldBottomSheet extends StatelessWidget {
                             const SizedBox(width: 10),
                             Container(
                               padding: const EdgeInsets.symmetric(
-                                  horizontal: 8, vertical: 4),
+                                horizontal: 8,
+                                vertical: 4,
+                              ),
                               decoration: BoxDecoration(
-                                color: field.surface.color
-                                    ,
+                                color: field.surface.color,
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: Text(
@@ -537,8 +538,11 @@ class _FieldBottomSheet extends StatelessWidget {
               // Manzil
               Row(
                 children: [
-                  Icon(Icons.location_on_outlined,
-                      size: 18, color: Colors.grey[600]),
+                  Icon(
+                    Icons.location_on_outlined,
+                    size: 18,
+                    color: Colors.grey[600],
+                  ),
                   const SizedBox(width: 6),
                   Expanded(
                     child: Text(
@@ -549,8 +553,6 @@ class _FieldBottomSheet extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 8),
-
-
 
               // Qulayliklar
               const Text(
@@ -563,19 +565,19 @@ class _FieldBottomSheet extends StatelessWidget {
                 runSpacing: 8,
                 children: [
                   if (field.hasLighting)
-                    _AmenityChip(
-                      icon: Icons.light_mode, label: 'Yoritish'),
+                    _AmenityChip(icon: Icons.light_mode, label: 'Yoritish'),
                   if (field.hasParking)
                     _AmenityChip(
-                      icon: Icons.local_parking, label: 'Avtoturargoh'),
+                      icon: Icons.local_parking,
+                      label: 'Avtoturargoh',
+                    ),
                   if (field.hasShowers)
                     _AmenityChip(icon: Icons.shower, label: 'Dush'),
                   if (field.hasCafe)
                     _AmenityChip(icon: Icons.local_cafe, label: 'Kafe'),
-                  ...field.amenities.map((a) => _AmenityChip(
-                        icon: a.icon,
-                        label: a.name,
-                      )),
+                  ...field.amenities.map(
+                    (a) => _AmenityChip(icon: a.icon, label: a.name),
+                  ),
                 ],
               ),
               const SizedBox(height: 20),
@@ -588,8 +590,7 @@ class _FieldBottomSheet extends StatelessWidget {
                     children: [
                       const Text(
                         'Narx',
-                        style: TextStyle(
-                            fontSize: 12, color: Colors.grey),
+                        style: TextStyle(fontSize: 12, color: Colors.grey),
                       ),
                       Text(
                         '${NumberFormat('#,###').format(field.basePricePerHour)} soʻm / soat',
@@ -662,8 +663,7 @@ class _AmenityChip extends StatelessWidget {
           const SizedBox(width: 4),
           Text(
             label,
-            style: const TextStyle(
-                fontSize: 12, color: Color(0xFF4CAF50)),
+            style: const TextStyle(fontSize: 12, color: Color(0xFF4CAF50)),
           ),
         ],
       ),

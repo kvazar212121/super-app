@@ -68,9 +68,7 @@ class _AllCategoriesScreenState extends State<AllCategoriesScreen> {
       ServiceHubKind.gameZona,
       ServiceHubKind.tadbirlar,
     ]),
-    _CategoryGroup('IT va Kompyuter Xizmatlari', [
-      ServiceHubKind.kompUsta,
-    ]),
+    _CategoryGroup('IT va Kompyuter Xizmatlari', [ServiceHubKind.kompUsta]),
     _CategoryGroup('Boshqa Xizmatlar', [
       ServiceHubKind.boshqa,
       ServiceHubKind.yana,
@@ -87,11 +85,9 @@ class _AllCategoriesScreenState extends State<AllCategoriesScreen> {
   Widget build(BuildContext context) {
     return GlassScaffold(
       showBackButton: true,
-      title: 'Barcha xizmatlar',
+      title: 'Barcha xizmatlar'.tr,
       body: Container(
-        decoration: const BoxDecoration(
-          color: Colors.transparent,
-        ),
+        decoration: BoxDecoration(color: Colors.transparent),
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
           child: Column(
@@ -111,14 +107,19 @@ class _AllCategoriesScreenState extends State<AllCategoriesScreen> {
                 child: _searchController.text.isNotEmpty
                     ? Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: SearchResultsWidget(query: _searchController.text),
+                        child: SearchResultsWidget(
+                          query: _searchController.text,
+                        ),
                       )
                     : ListView.separated(
                         padding: const EdgeInsets.fromLTRB(16, 8, 16, 90),
                         itemCount: _groups.length,
                         separatorBuilder: (context, index) => Padding(
                           padding: const EdgeInsets.symmetric(vertical: 24),
-                          child: Divider(color: GlassTokens.primaryText(context), thickness: 1),
+                          child: Divider(
+                            color: GlassTokens.primaryText(context),
+                            thickness: 1,
+                          ),
                         ),
                         itemBuilder: (context, index) {
                           final group = _groups[index];
@@ -140,76 +141,109 @@ class _AllCategoriesScreenState extends State<AllCategoriesScreen> {
                                 physics: const NeverScrollableScrollPhysics(),
                                 padding: EdgeInsets.zero,
                                 itemCount: group.items.length,
-                                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 2,
-                                  crossAxisSpacing: 12,
-                                  mainAxisSpacing: 10,
-                                  mainAxisExtent: 68,
-                                ),
+                                gridDelegate:
+                                    const SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: 2,
+                                      crossAxisSpacing: 12,
+                                      mainAxisSpacing: 10,
+                                      mainAxisExtent: 68,
+                                    ),
                                 itemBuilder: (ctx, i) {
                                   final k = group.items[i];
-                                  final isDark = Theme.of(context).brightness == Brightness.dark;
-                                  final enabled = FeatureService().isCategoryEnabled(k.key);
+                                  final isDark =
+                                      Theme.of(context).brightness ==
+                                      Brightness.dark;
+                                  final enabled = FeatureService()
+                                      .isCategoryEnabled(k.key);
                                   return Opacity(
                                     opacity: enabled ? 1.0 : 0.45,
                                     child: InkWell(
-                                    onTap: () {
-                                      if (!enabled) {
-                                        showDialog(
-                                          context: context,
-                                          builder: (_) => AlertDialog(
-                                            title: const Text('Tez orada 🚧'),
-                                            content: Text(FeatureService().categoryMessage(k.key)),
-                                            actions: [
-                                              TextButton(onPressed: () => Navigator.pop(context), child: const Text('Tushunarli')),
-                                            ],
+                                      onTap: () {
+                                        if (!enabled) {
+                                          showDialog(
+                                            context: context,
+                                            builder: (_) => AlertDialog(
+                                              title: Text('Tez orada 🚧'.tr),
+                                              content: Text(
+                                                FeatureService()
+                                                    .categoryMessage(k.key),
+                                              ),
+                                              actions: [
+                                                TextButton(
+                                                  onPressed: () =>
+                                                      Navigator.pop(context),
+                                                  child: Text('Tushunarli'.tr),
+                                                ),
+                                              ],
+                                            ),
+                                          );
+                                          return;
+                                        }
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute<void>(
+                                            builder: (_) => ServiceHubScreen(
+                                              kind: k,
+                                              accentColor: k.accent,
+                                            ),
                                           ),
                                         );
-                                        return;
-                                      }
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute<void>(
-                                          builder: (_) => ServiceHubScreen(kind: k, accentColor: k.accent),
-                                        ),
-                                      );
-                                    },
-                                    borderRadius: BorderRadius.circular(GlassTokens.radiusMd),
-                                    child: Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                                      decoration: BoxDecoration(
-                                        color: isDark ? const Color(0xFF1E293B) : Colors.white,
-                                        borderRadius: BorderRadius.circular(GlassTokens.radiusMd),
+                                      },
+                                      borderRadius: BorderRadius.circular(
+                                        GlassTokens.radiusMd,
                                       ),
-                                      child: Row(
-                                        children: [
-                                          Container(
-                                            width: 44,
-                                            height: 44,
-                                            decoration: BoxDecoration(
-                                              color: k.accent,
-                                              borderRadius: BorderRadius.circular(14),
-                                              border: Border.all(color: k.accent),
-                                            ),
-                                            child: Icon(k.icon, color: Colors.white, size: 22),
+                                      child: Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 12,
+                                          vertical: 8,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: isDark
+                                              ? const Color(0xFF1E293B)
+                                              : Colors.white,
+                                          borderRadius: BorderRadius.circular(
+                                            GlassTokens.radiusMd,
                                           ),
-                                          const SizedBox(width: 12),
-                                          Expanded(
-                                            child: Text(
-                                              k.title.tr,
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.w700,
-                                                fontSize: 14,
-                                                color: GlassTokens.primaryText(context),
+                                        ),
+                                        child: Row(
+                                          children: [
+                                            Container(
+                                              width: 44,
+                                              height: 44,
+                                              decoration: BoxDecoration(
+                                                color: k.accent,
+                                                borderRadius:
+                                                    BorderRadius.circular(14),
+                                                border: Border.all(
+                                                  color: k.accent,
+                                                ),
                                               ),
-                                              maxLines: 2,
-                                              overflow: TextOverflow.ellipsis,
+                                              child: Icon(
+                                                k.icon,
+                                                color: Colors.white,
+                                                size: 22,
+                                              ),
                                             ),
-                                          ),
-                                        ],
+                                            const SizedBox(width: 12),
+                                            Expanded(
+                                              child: Text(
+                                                k.title.tr,
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.w700,
+                                                  fontSize: 14,
+                                                  color:
+                                                      GlassTokens.primaryText(
+                                                        context,
+                                                      ),
+                                                ),
+                                                maxLines: 2,
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
                                       ),
                                     ),
-                                  ),
                                   );
                                 },
                               ),

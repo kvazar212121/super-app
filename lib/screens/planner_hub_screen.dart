@@ -3,6 +3,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'todo_screen.dart';
 import 'shopping_list_screen.dart';
 import '../widgets/daily_utilities_widget.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 class PlannerHubScreen extends StatelessWidget {
   const PlannerHubScreen({super.key});
@@ -10,9 +11,7 @@ class PlannerHubScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Rejalar'),
-      ),
+      appBar: AppBar(title: Text('Rejalar'.tr)),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -24,7 +23,10 @@ class PlannerHubScreen extends StatelessWidget {
               color: Colors.blueAccent,
               bgImage: 'assets/images/my_plans.jpg',
               onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (_) => const TodoScreen()));
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const TodoScreen()),
+                );
               },
             ),
             const SizedBox(height: 16),
@@ -35,7 +37,10 @@ class PlannerHubScreen extends StatelessWidget {
               color: Colors.orangeAccent,
               bgImage: 'assets/images/smart_shopping.jpg',
               onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (_) => const ShoppingListScreen()));
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const ShoppingListScreen()),
+                );
               },
             ),
             const SizedBox(height: 16),
@@ -67,7 +72,9 @@ class _HubActionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final textColor = bgImage != null ? Colors.white : (isDark ? Colors.white : Colors.black87);
+    final textColor = bgImage != null
+        ? Colors.white
+        : (isDark ? Colors.white : Colors.black87);
     final iconBgColor = bgImage != null ? Colors.white24 : color;
     final iconColor = bgImage != null ? Colors.white : color;
     final chevronColor = bgImage != null ? Colors.white70 : color;
@@ -78,19 +85,23 @@ class _HubActionCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: bgImage != null 
-              ? Colors.black 
-              : (isDark ? Color.lerp(const Color(0xFF1E293B), color, 0.15) : Color.lerp(Colors.white, color, 0.1)),
+          color: bgImage != null
+              ? Colors.black
+              : (isDark
+                    ? Color.lerp(const Color(0xFF1E293B), color, 0.15)
+                    : Color.lerp(Colors.white, color, 0.1)),
           borderRadius: BorderRadius.circular(16),
           border: Border.all(color: isDark ? color : color),
-          image: bgImage != null ? DecorationImage(
-            image: AssetImage(bgImage!),
-            fit: BoxFit.cover,
-            colorFilter: ColorFilter.mode(
-              Colors.black,
-              BlendMode.srcOver,
-            ),
-          ) : null,
+          image: bgImage != null
+              ? DecorationImage(
+                  image: AssetImage(bgImage!),
+                  fit: BoxFit.cover,
+                  colorFilter: ColorFilter.mode(
+                    Colors.black,
+                    BlendMode.srcOver,
+                  ),
+                )
+              : null,
         ),
         child: Row(
           children: [
@@ -110,31 +121,35 @@ class _HubActionCard extends StatelessWidget {
                   Text(
                     title,
                     style: TextStyle(
-                      fontWeight: FontWeight.bold, 
-                      fontSize: 16, 
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
                       color: textColor,
-                      shadows: bgImage != null ? [
-                        const Shadow(
-                          color: Colors.black87,
-                          offset: Offset(0, 1),
-                          blurRadius: 4,
-                        ),
-                      ] : null,
+                      shadows: bgImage != null
+                          ? [
+                              const Shadow(
+                                color: Colors.black87,
+                                offset: Offset(0, 1),
+                                blurRadius: 4,
+                              ),
+                            ]
+                          : null,
                     ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     subtitle,
                     style: TextStyle(
-                      color: bgImage != null ? Colors.white70 : textColor, 
+                      color: bgImage != null ? Colors.white70 : textColor,
                       fontSize: 13,
-                      shadows: bgImage != null ? [
-                        const Shadow(
-                          color: Colors.black54,
-                          offset: Offset(0, 1),
-                          blurRadius: 2,
-                        ),
-                      ] : null,
+                      shadows: bgImage != null
+                          ? [
+                              const Shadow(
+                                color: Colors.black54,
+                                offset: Offset(0, 1),
+                                blurRadius: 2,
+                              ),
+                            ]
+                          : null,
                     ),
                   ),
                 ],

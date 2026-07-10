@@ -6,6 +6,7 @@ import '../../main_screen.dart';
 import '../../provider_side/provider_theme.dart';
 import '../../provider_side/unified_provider_dashboard_screen.dart';
 import '../../../services/courier_portal_service.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 class CourierPendingScreen extends StatefulWidget {
   final String providerName;
@@ -29,7 +30,8 @@ class _CourierPendingScreenState extends State<CourierPendingScreen> {
     try {
       final data = await _portal.getMe();
       final active = data['is_active'] == true;
-      final meta = data['metadata'] as Map<String, dynamic>? ??
+      final meta =
+          data['metadata'] as Map<String, dynamic>? ??
           data['metadata_json'] as Map<String, dynamic>? ??
           {};
       final rejected = meta['verification_status'] == 'rejected';
@@ -38,7 +40,8 @@ class _CourierPendingScreenState extends State<CourierPendingScreen> {
       if (!mounted) return;
       if (rejected) {
         setState(() {
-          _statusMessage = 'Ariza rad etildi. Qo\'llab-quvvatlash xizmatiga murojaat qiling.';
+          _statusMessage =
+              'Ariza rad etildi. Qo\'llab-quvvatlash xizmatiga murojaat qiling.';
         });
         return;
       }
@@ -54,7 +57,7 @@ class _CourierPendingScreenState extends State<CourierPendingScreen> {
         return;
       }
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Hali tasdiqlanmagan. Biroz kuting.')),
+        SnackBar(content: Text('Hali tasdiqlanmagan. Biroz kuting.'.tr)),
       );
     } catch (_) {
       if (mounted) {
@@ -84,7 +87,11 @@ class _CourierPendingScreenState extends State<CourierPendingScreen> {
                     color: accent,
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(LucideIcons.package, size: 48, color: Colors.white),
+                  child: const Icon(
+                    LucideIcons.package,
+                    size: 48,
+                    color: Colors.white,
+                  ),
                 ),
                 const SizedBox(height: 28),
                 const Text(
@@ -103,7 +110,11 @@ class _CourierPendingScreenState extends State<CourierPendingScreen> {
                 const Text(
                   'Yuk va narsalar bilan ishlash mas\'uliyat talab qilgani uchun administrator tasdiqlashi kutilmoqda.',
                   textAlign: TextAlign.center,
-                  style: TextStyle(color: Colors.grey, fontSize: 13, height: 1.4),
+                  style: TextStyle(
+                    color: Colors.grey,
+                    fontSize: 13,
+                    height: 1.4,
+                  ),
                 ),
                 if (_statusMessage != null) ...[
                   const SizedBox(height: 16),
@@ -122,10 +133,13 @@ class _CourierPendingScreenState extends State<CourierPendingScreen> {
                         ? const SizedBox(
                             width: 18,
                             height: 18,
-                            child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.white,
+                            ),
                           )
-                        : const Icon(LucideIcons.refreshCw),
-                    label: const Text('Holatni tekshirish'),
+                        : Icon(LucideIcons.refreshCw),
+                    label: Text('Holatni tekshirish'.tr),
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -139,7 +153,7 @@ class _CourierPendingScreenState extends State<CourierPendingScreen> {
                         (_) => false,
                       );
                     },
-                    child: const Text('Bosh sahifaga'),
+                    child: Text('Bosh sahifaga'.tr),
                   ),
                 ),
               ],

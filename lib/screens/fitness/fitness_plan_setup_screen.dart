@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
+import '../../l10n/locale_controller.dart';
 import '../../services/api_service.dart';
 import '../../theme/glass_tokens.dart';
 import '../../widgets/glass/glass_scaffold.dart';
@@ -54,7 +55,9 @@ class _FitnessPlanSetupScreenState extends State<FitnessPlanSetupScreen> {
       debugPrint('Reja tuzishda xato: $e');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Reja tuzib bo\'lmadi. Qayta urinib ko\'ring.')),
+          SnackBar(
+            content: Text('Reja tuzib bo\'lmadi. Qayta urinib ko\'ring.'.tr),
+          ),
         );
       }
     } finally {
@@ -72,7 +75,9 @@ class _FitnessPlanSetupScreenState extends State<FitnessPlanSetupScreen> {
       try {
         final updated = await _api.updateWorkoutPlan(plan['id'] as int, {
           'reminder_time': timeStr,
-          'reminder_weekdays': defaultWeekdaysFor((plan['days'] as List<dynamic>).length),
+          'reminder_weekdays': defaultWeekdaysFor(
+            (plan['days'] as List<dynamic>).length,
+          ),
         });
         await syncWorkoutReminders(updated);
       } catch (e) {
@@ -89,7 +94,7 @@ class _FitnessPlanSetupScreenState extends State<FitnessPlanSetupScreen> {
   Widget build(BuildContext context) {
     return GlassScaffold(
       showBackButton: true,
-      title: 'Reja tuzish',
+      title: 'Reja tuzish'.tr,
       body: _generatedPlan == null ? _buildWizard() : _buildResult(),
     );
   }
@@ -98,7 +103,7 @@ class _FitnessPlanSetupScreenState extends State<FitnessPlanSetupScreen> {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
-        _buildSectionLabel('1. Maqsadingiz nima?'),
+        _buildSectionLabel('1. Maqsadingiz nima?'.tr),
         ..._goalOptions.entries.map((entry) {
           final selected = _goal == entry.key;
           return Container(
@@ -109,21 +114,31 @@ class _FitnessPlanSetupScreenState extends State<FitnessPlanSetupScreen> {
               child: Container(
                 padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
-                  color: selected ? Colors.teal : GlassTokens.glassFill(context),
+                  color: selected
+                      ? Colors.teal
+                      : GlassTokens.glassFill(context),
                   borderRadius: BorderRadius.circular(GlassTokens.radiusSm),
                   border: Border.all(
-                    color: selected ? Colors.teal : GlassTokens.glassBorder(context),
+                    color: selected
+                        ? Colors.teal
+                        : GlassTokens.glassBorder(context),
                   ),
                 ),
                 child: Row(
                   children: [
-                    Icon(entry.value.$2, color: selected ? Colors.white : Colors.teal, size: 20),
+                    Icon(
+                      entry.value.$2,
+                      color: selected ? Colors.white : Colors.teal,
+                      size: 20,
+                    ),
                     const SizedBox(width: 12),
                     Text(
-                      entry.value.$1,
+                      entry.value.$1.tr,
                       style: TextStyle(
                         fontWeight: FontWeight.w700,
-                        color: selected ? Colors.white : GlassTokens.primaryText(context),
+                        color: selected
+                            ? Colors.white
+                            : GlassTokens.primaryText(context),
                       ),
                     ),
                   ],
@@ -132,44 +147,60 @@ class _FitnessPlanSetupScreenState extends State<FitnessPlanSetupScreen> {
             ),
           );
         }),
-        const SizedBox(height: 16),
-        _buildSectionLabel('2. Darajangiz?'),
+        SizedBox(height: 16),
+        _buildSectionLabel('2. Darajangiz?'.tr),
         Row(
           children: _levelOptions.entries
               .map(
                 (entry) => Expanded(
                   child: Padding(
                     padding: const EdgeInsets.only(right: 8),
-                    child: _buildChip(entry.value, _level == entry.key, () => setState(() => _level = entry.key)),
+                    child: _buildChip(
+                      entry.value.tr,
+                      _level == entry.key,
+                      () => setState(() => _level = entry.key),
+                    ),
                   ),
                 ),
               )
               .toList(),
         ),
-        const SizedBox(height: 24),
-        _buildSectionLabel('3. Haftasiga necha kun shug\'ullanasiz?'),
+        SizedBox(height: 24),
+        _buildSectionLabel('3. Haftasiga necha kun shug\'ullanasiz?'.tr),
         Row(
           children: [2, 3, 4, 5, 6]
               .map(
                 (d) => Expanded(
                   child: Padding(
                     padding: const EdgeInsets.only(right: 8),
-                    child: _buildChip('$d', _daysPerWeek == d, () => setState(() => _daysPerWeek = d)),
+                    child: _buildChip(
+                      '$d',
+                      _daysPerWeek == d,
+                      () => setState(() => _daysPerWeek = d),
+                    ),
                   ),
                 ),
               )
               .toList(),
         ),
-        const SizedBox(height: 24),
-        _buildSectionLabel('4. Qayerda shug\'ullanasiz?'),
+        SizedBox(height: 24),
+        _buildSectionLabel('4. Qayerda shug\'ullanasiz?'.tr),
         Row(
           children: [
             Expanded(
-              child: _buildChip('🏠 Uyda', _equipmentMode == 'home', () => setState(() => _equipmentMode = 'home')),
+              child: _buildChip(
+                '🏠 Uyda'.tr,
+                _equipmentMode == 'home',
+                () => setState(() => _equipmentMode = 'home'),
+              ),
             ),
             const SizedBox(width: 8),
             Expanded(
-              child: _buildChip('🏋️ Zalda', _equipmentMode == 'gym', () => setState(() => _equipmentMode = 'gym')),
+              child: _buildChip(
+                '🏋️ Zalda'.tr,
+                _equipmentMode == 'gym',
+                () => setState(() => _equipmentMode = 'gym'),
+              ),
             ),
           ],
         ),
@@ -180,14 +211,31 @@ class _FitnessPlanSetupScreenState extends State<FitnessPlanSetupScreen> {
             onPressed: _isGenerating ? null : _generate,
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.teal,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(GlassTokens.radiusSm)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(GlassTokens.radiusSm),
+              ),
             ),
             icon: _isGenerating
-                ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                : const Icon(LucideIcons.sparkles, color: Colors.white, size: 18),
+                ? const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(
+                      color: Colors.white,
+                      strokeWidth: 2,
+                    ),
+                  )
+                : const Icon(
+                    LucideIcons.sparkles,
+                    color: Colors.white,
+                    size: 18,
+                  ),
             label: Text(
-              _isGenerating ? 'Tuzilmoqda…' : 'Reja tuzish',
-              style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w800),
+              _isGenerating ? 'Tuzilmoqda…'.tr : 'Reja tuzish'.tr,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.w800,
+              ),
             ),
           ),
         ),
@@ -197,7 +245,8 @@ class _FitnessPlanSetupScreenState extends State<FitnessPlanSetupScreen> {
 
   Widget _buildResult() {
     final plan = _generatedPlan!;
-    final days = (plan['days'] as List<dynamic>? ?? []).cast<Map<String, dynamic>>();
+    final days = (plan['days'] as List<dynamic>? ?? [])
+        .cast<Map<String, dynamic>>();
     final weekdays = defaultWeekdaysFor(days.length);
 
     return ListView(
@@ -206,24 +255,37 @@ class _FitnessPlanSetupScreenState extends State<FitnessPlanSetupScreen> {
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            gradient: LinearGradient(colors: [Colors.teal.shade500, Colors.teal.shade800]),
+            gradient: LinearGradient(
+              colors: [Colors.teal.shade500, Colors.teal.shade800],
+            ),
             borderRadius: BorderRadius.circular(GlassTokens.radiusMd),
           ),
           child: Row(
             children: [
-              const Icon(LucideIcons.circleCheck, color: Colors.white, size: 30),
+              const Icon(
+                LucideIcons.circleCheck,
+                color: Colors.white,
+                size: 30,
+              ),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      plan['name'] as String? ?? 'Rejangiz tayyor!',
-                      style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w800),
+                      plan['name'] as String? ?? 'Rejangiz tayyor!'.tr,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w800,
+                      ),
                     ),
                     Text(
-                      'Haftasiga ${days.length} kun · ${_levelOptions[_level]} daraja',
-                      style: const TextStyle(color: Colors.white70, fontSize: 12),
+                      '${'Haftasiga'.tr} ${days.length} ${'kun'.tr} · ${_levelOptions[_level]!.tr} ${'daraja'.tr}',
+                      style: const TextStyle(
+                        color: Colors.white70,
+                        fontSize: 12,
+                      ),
                     ),
                   ],
                 ),
@@ -234,7 +296,9 @@ class _FitnessPlanSetupScreenState extends State<FitnessPlanSetupScreen> {
         const SizedBox(height: 16),
         ...days.asMap().entries.map((entry) {
           final day = entry.value;
-          final weekday = entry.key < weekdays.length ? weekdays[entry.key] : null;
+          final weekday = entry.key < weekdays.length
+              ? weekdays[entry.key]
+              : null;
           final exercises = (day['exercises'] as List<dynamic>? ?? []);
           return Container(
             margin: const EdgeInsets.only(bottom: 8),
@@ -255,8 +319,13 @@ class _FitnessPlanSetupScreenState extends State<FitnessPlanSetupScreen> {
                     shape: BoxShape.circle,
                   ),
                   child: Text(
-                    weekday != null ? kWeekdayShortNames[weekday - 1] : '${entry.key + 1}',
-                    style: const TextStyle(fontWeight: FontWeight.w800, color: Colors.teal),
+                    weekday != null
+                        ? kWeekdayShortNames[weekday - 1].tr
+                        : '${entry.key + 1}',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w800,
+                      color: Colors.teal,
+                    ),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -266,11 +335,17 @@ class _FitnessPlanSetupScreenState extends State<FitnessPlanSetupScreen> {
                     children: [
                       Text(
                         day['title'] as String? ?? '',
-                        style: TextStyle(fontWeight: FontWeight.w700, color: GlassTokens.primaryText(context)),
+                        style: TextStyle(
+                          fontWeight: FontWeight.w700,
+                          color: GlassTokens.primaryText(context),
+                        ),
                       ),
                       Text(
-                        '${exercises.length} ta mashq',
-                        style: TextStyle(fontSize: 12, color: GlassTokens.secondaryText(context)),
+                        '${exercises.length} ${'ta mashq'.tr}',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: GlassTokens.secondaryText(context),
+                        ),
                       ),
                     ],
                   ),
@@ -284,17 +359,26 @@ class _FitnessPlanSetupScreenState extends State<FitnessPlanSetupScreen> {
           value: _reminderEnabled,
           activeThumbColor: Colors.teal,
           title: Text(
-            'Mashg\'ulot kunlari eslatma',
-            style: TextStyle(fontWeight: FontWeight.w700, color: GlassTokens.primaryText(context)),
+            'Mashg\'ulot kunlari eslatma'.tr,
+            style: TextStyle(
+              fontWeight: FontWeight.w700,
+              color: GlassTokens.primaryText(context),
+            ),
           ),
           subtitle: Text(
-            'Soat ${_reminderTime.hour.toString().padLeft(2, '0')}:${_reminderTime.minute.toString().padLeft(2, '0')} da',
-            style: TextStyle(fontSize: 12, color: GlassTokens.secondaryText(context)),
+            '${'Soat'.tr} ${_reminderTime.hour.toString().padLeft(2, '0')}:${_reminderTime.minute.toString().padLeft(2, '0')} ${'da'.tr}',
+            style: TextStyle(
+              fontSize: 12,
+              color: GlassTokens.secondaryText(context),
+            ),
           ),
           secondary: IconButton(
             icon: const Icon(LucideIcons.clock, color: Colors.teal),
             onPressed: () async {
-              final picked = await showTimePicker(context: context, initialTime: _reminderTime);
+              final picked = await showTimePicker(
+                context: context,
+                initialTime: _reminderTime,
+              );
               if (picked != null) setState(() => _reminderTime = picked);
             },
           ),
@@ -307,18 +391,24 @@ class _FitnessPlanSetupScreenState extends State<FitnessPlanSetupScreen> {
             onPressed: _start,
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.teal,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(GlassTokens.radiusSm)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(GlassTokens.radiusSm),
+              ),
             ),
-            child: const Text(
-              'Boshlash 💪',
-              style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w800),
+            child: Text(
+              'Boshlash 💪'.tr,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.w800,
+              ),
             ),
           ),
         ),
         const SizedBox(height: 8),
         TextButton(
           onPressed: _isGenerating ? null : _generate,
-          child: const Text('Boshqa variant tuzish'),
+          child: Text('Boshqa variant tuzish'.tr),
         ),
       ],
     );
@@ -348,7 +438,9 @@ class _FitnessPlanSetupScreenState extends State<FitnessPlanSetupScreen> {
         decoration: BoxDecoration(
           color: selected ? Colors.teal : GlassTokens.glassFill(context),
           borderRadius: BorderRadius.circular(GlassTokens.radiusSm),
-          border: Border.all(color: selected ? Colors.teal : GlassTokens.glassBorder(context)),
+          border: Border.all(
+            color: selected ? Colors.teal : GlassTokens.glassBorder(context),
+          ),
         ),
         child: Text(
           label,

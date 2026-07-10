@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import '../utils/geo_utils.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 class SalonStaff {
   final String id;
@@ -64,7 +65,9 @@ class BeautySalon {
     final services = (meta['services'] as List<dynamic>? ?? [])
         .map((e) => e.toString())
         .toList();
-    final defaultServices = services.isNotEmpty ? services : ['Fen', 'Manikyur', 'Makiyaj'];
+    final defaultServices = services.isNotEmpty
+        ? services
+        : ['Fen', 'Manikyur', 'Makiyaj'];
 
     final pricesRaw = meta['prices'] as Map<String, dynamic>?;
     final prices = <String, double>{};

@@ -13,13 +13,12 @@ class MasterPortalService {
     required String phone,
     required String serviceArea,
     String? address,
-  }) =>
-      _api.registerMasterSolo(
-        name: name,
-        phone: phone,
-        serviceArea: serviceArea,
-        address: address,
-      );
+  }) => _api.registerMasterSolo(
+    name: name,
+    phone: phone,
+    serviceArea: serviceArea,
+    address: address,
+  );
 
   Future<Map<String, dynamic>> registerBrigade({
     required String name,
@@ -29,16 +28,15 @@ class MasterPortalService {
     required int teamSize,
     double lat = 41.2995,
     double lng = 69.2401,
-  }) =>
-      _api.registerMasterBrigade(
-        name: name,
-        phone: phone,
-        address: address,
-        serviceArea: serviceArea,
-        teamSize: teamSize,
-        lat: lat,
-        lng: lng,
-      );
+  }) => _api.registerMasterBrigade(
+    name: name,
+    phone: phone,
+    address: address,
+    serviceArea: serviceArea,
+    teamSize: teamSize,
+    lat: lat,
+    lng: lng,
+  );
 }
 
 enum MasterRegistrationRole { solo, brigade }

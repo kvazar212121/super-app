@@ -12,11 +12,10 @@ class AcPortalService {
     required String phone,
     required String serviceArea,
     String? address,
-  }) =>
-      _api.registerAcSolo(
-        name: name,
-        phone: phone,
-        serviceArea: serviceArea,
-        address: address,
-      );
+  }) => _api.registerAcSolo(
+    name: name,
+    phone: phone,
+    serviceArea: serviceArea,
+    address: address,
+  );
 }

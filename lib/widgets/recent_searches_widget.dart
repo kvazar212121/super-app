@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../theme/glass_tokens.dart';
 import 'glass/glass_surface.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 class RecentSearchesWidget extends StatelessWidget {
   final List<String> searches;
@@ -30,7 +31,7 @@ class RecentSearchesWidget extends StatelessWidget {
                 color: GlassTokens.primaryText(context),
               ),
             ),
-            TextButton(onPressed: onClear, child: const Text("Tozalash")),
+            TextButton(onPressed: onClear, child: Text("Tozalash".tr)),
           ],
         ),
         const SizedBox(height: 10),

@@ -4,6 +4,7 @@ import '../../../services/master_portal_service.dart';
 import '../../provider_side/provider_theme.dart';
 import 'master_solo_screen.dart';
 import 'master_brigade_screen.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 /// Usta ro'yxatdan o'tish — yakka yoki brigada.
 class MasterRoleSelectionScreen extends StatelessWidget {
@@ -24,13 +25,15 @@ class MasterRoleSelectionScreen extends StatelessWidget {
         builder: (context) {
           final theme = Theme.of(context);
           return Scaffold(
-            appBar: AppBar(title: const Text('Usta sifatida')),
+            appBar: AppBar(title: Text('Usta sifatida'.tr)),
             body: ListView(
               padding: const EdgeInsets.all(24),
               children: [
                 Text(
                   'Qanday ishlayapsiz?',
-                  style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+                  style: theme.textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 const SizedBox(height: 8),
                 Text(
@@ -43,7 +46,8 @@ class MasterRoleSelectionScreen extends StatelessWidget {
                 _RoleCard(
                   icon: LucideIcons.user,
                   title: 'Yakka usta',
-                  subtitle: 'O\'zingiz mijoz manziliga borasiz — kichik ta\'mirlash ishlar',
+                  subtitle:
+                      'O\'zingiz mijoz manziliga borasiz — kichik ta\'mirlash ishlar',
                   color: const Color(0xFF78716C),
                   onTap: () => _open(context, MasterRegistrationRole.solo),
                 ),
@@ -51,7 +55,8 @@ class MasterRoleSelectionScreen extends StatelessWidget {
                 _RoleCard(
                   icon: LucideIcons.users,
                   title: 'Ustalar brigadasi',
-                  subtitle: 'Bir necha usta bilan katta ta\'mirlash va montaj ishlar',
+                  subtitle:
+                      'Bir necha usta bilan katta ta\'mirlash va montaj ishlar',
                   color: Colors.black,
                   onTap: () => _open(context, MasterRegistrationRole.brigade),
                 ),
@@ -106,9 +111,22 @@ class _RoleCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
                   const SizedBox(height: 4),
-                  Text(subtitle, style: TextStyle(color: Colors.grey, height: 1.35, fontSize: 13)),
+                  Text(
+                    subtitle,
+                    style: TextStyle(
+                      color: Colors.grey,
+                      height: 1.35,
+                      fontSize: 13,
+                    ),
+                  ),
                 ],
               ),
             ),

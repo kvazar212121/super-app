@@ -5,6 +5,7 @@ import '../../../services/provider_availability_service.dart';
 import '../../../services/provider_portal_service.dart';
 import '../../../services/hub_data_service.dart';
 import '../../../services/settings_save_controller.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 /// Sartarosh / salon — xizmatlar, narxlar, ustalar.
 class ProviderVenueSettingsWidget extends StatefulWidget {
@@ -120,8 +121,9 @@ class _ProviderVenueSettingsWidgetState
     _services.clear();
     _staff.clear();
 
-    final services =
-        (meta['services'] as List<dynamic>? ?? []).map((e) => e.toString()).toList();
+    final services = (meta['services'] as List<dynamic>? ?? [])
+        .map((e) => e.toString())
+        .toList();
     final prices = Map<String, dynamic>.from(
       meta['prices'] as Map<String, dynamic>? ?? {},
     );
@@ -139,12 +141,15 @@ class _ProviderVenueSettingsWidgetState
       _staff.add(TextEditingController());
     } else {
       for (final item in staffList) {
-        final name = item is Map ? item['name']?.toString() ?? '' : item.toString();
+        final name = item is Map
+            ? item['name']?.toString() ?? ''
+            : item.toString();
         _staff.add(TextEditingController(text: name));
       }
     }
 
-    _timeSlots = (meta['time_slots'] as List<dynamic>?)
+    _timeSlots =
+        (meta['time_slots'] as List<dynamic>?)
             ?.map((e) => e.toString())
             .toList() ??
         List.of(ProviderAvailability.defaultSlots);
@@ -174,7 +179,8 @@ class _ProviderVenueSettingsWidgetState
         final name = row.nameCtrl.text.trim();
         if (name.isEmpty) continue;
         services.add(name);
-        prices[name] = int.tryParse(row.priceCtrl.text.replaceAll(' ', '')) ?? 0;
+        prices[name] =
+            int.tryParse(row.priceCtrl.text.replaceAll(' ', '')) ?? 0;
       }
 
       final staff = _staff
@@ -186,8 +192,8 @@ class _ProviderVenueSettingsWidgetState
       final latestData = await _portal.getMe(widget.categoryKey);
       final latestMeta = Map<String, dynamic>.from(
         latestData['metadata'] as Map<String, dynamic>? ??
-        latestData['metadata_json'] as Map<String, dynamic>? ??
-        {},
+            latestData['metadata_json'] as Map<String, dynamic>? ??
+            {},
       );
       final meta = Map<String, dynamic>.from(latestMeta)
         ..['services'] = services
@@ -198,16 +204,16 @@ class _ProviderVenueSettingsWidgetState
       await _portal.updateMetadata(widget.categoryKey, meta);
       HubDataService().clearCache();
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Sozlamalar saqlandi')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Sozlamalar saqlandi'.tr)));
       }
       await _load();
     } catch (_) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Saqlashda xatolik')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Saqlashda xatolik'.tr)));
       }
     } finally {
       if (mounted) setState(() => _saving = false);
@@ -229,10 +235,15 @@ class _ProviderVenueSettingsWidgetState
           children: [
             Text(
               'Xizmatlar va narxlar',
-              style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+              style: theme.textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
             ),
             const Spacer(),
-            IconButton(icon: const Icon(LucideIcons.refreshCw), onPressed: _load),
+            IconButton(
+              icon: const Icon(LucideIcons.refreshCw),
+              onPressed: _load,
+            ),
           ],
         ),
         const SizedBox(height: 16),
@@ -245,7 +256,9 @@ class _ProviderVenueSettingsWidgetState
         const SizedBox(height: 24),
         Text(
           widget.staffLabel,
-          style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+          style: theme.textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.bold,
+          ),
         ),
         const SizedBox(height: 12),
         ..._staff.asMap().entries.map((e) => _staffRow(e.key, theme)),
@@ -258,7 +271,9 @@ class _ProviderVenueSettingsWidgetState
         const SizedBox(height: 24),
         Text(
           'Ish vaqtlari',
-          style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+          style: theme.textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.bold,
+          ),
         ),
         const SizedBox(height: 8),
         Text(
@@ -271,8 +286,8 @@ class _ProviderVenueSettingsWidgetState
             Expanded(
               child: DropdownButtonFormField<String>(
                 value: _startHour,
-                decoration: const InputDecoration(
-                  labelText: 'Ish boshlanishi',
+                decoration: InputDecoration(
+                  labelText: 'Ish boshlanishi'.tr,
                   border: OutlineInputBorder(),
                   isDense: true,
                 ),
@@ -295,8 +310,8 @@ class _ProviderVenueSettingsWidgetState
             Expanded(
               child: DropdownButtonFormField<String>(
                 value: _endHour,
-                decoration: const InputDecoration(
-                  labelText: 'Ish tugashi',
+                decoration: InputDecoration(
+                  labelText: 'Ish tugashi'.tr,
                   border: OutlineInputBorder(),
                   isDense: true,
                 ),
@@ -332,9 +347,12 @@ class _ProviderVenueSettingsWidgetState
                   ? const SizedBox(
                       width: 22,
                       height: 22,
-                      child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Colors.white,
+                      ),
                     )
-                  : const Text('Saqlash'),
+                  : Text('Saqlash'.tr),
             ),
           ),
         ],
@@ -351,8 +369,8 @@ class _ProviderVenueSettingsWidgetState
             flex: 3,
             child: TextField(
               controller: _services[index].nameCtrl,
-              decoration: const InputDecoration(
-                labelText: 'Xizmat nomi',
+              decoration: InputDecoration(
+                labelText: 'Xizmat nomi'.tr,
                 border: OutlineInputBorder(),
                 isDense: true,
               ),
@@ -365,7 +383,7 @@ class _ProviderVenueSettingsWidgetState
               controller: _services[index].priceCtrl,
               keyboardType: TextInputType.number,
               inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 labelText: 'Narx (so\'m)',
                 border: OutlineInputBorder(),
                 isDense: true,
@@ -377,9 +395,9 @@ class _ProviderVenueSettingsWidgetState
             onPressed: _services.length <= 1
                 ? null
                 : () => setState(() {
-                      _services[index].dispose();
-                      _services.removeAt(index);
-                    }),
+                    _services[index].dispose();
+                    _services.removeAt(index);
+                  }),
           ),
         ],
       ),
@@ -406,9 +424,9 @@ class _ProviderVenueSettingsWidgetState
             onPressed: _staff.length <= 1
                 ? null
                 : () => setState(() {
-                      _staff[index].dispose();
-                      _staff.removeAt(index);
-                    }),
+                    _staff[index].dispose();
+                    _staff.removeAt(index);
+                  }),
           ),
         ],
       ),

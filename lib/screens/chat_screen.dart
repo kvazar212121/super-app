@@ -6,6 +6,7 @@ import 'package:permission_handler/permission_handler.dart';
 import '../services/ai_service.dart';
 import '../widgets/glass/glass_scaffold.dart';
 import '../theme/glass_tokens.dart';
+import '../l10n/locale_controller.dart';
 
 enum _VoiceState { idle, recording, processing }
 
@@ -17,11 +18,12 @@ class ChatScreen extends StatefulWidget {
   State<ChatScreen> createState() => _ChatScreenState();
 }
 
-class _ChatScreenState extends State<ChatScreen> with SingleTickerProviderStateMixin {
+class _ChatScreenState extends State<ChatScreen>
+    with SingleTickerProviderStateMixin {
   final AiService _aiService = AiService();
   final TextEditingController _textController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
-  
+
   final List<Map<String, dynamic>> _chatHistory = [];
   bool _isTyping = false;
   bool _hasText = false;
@@ -31,7 +33,7 @@ class _ChatScreenState extends State<ChatScreen> with SingleTickerProviderStateM
   final stt.SpeechToText _speech = stt.SpeechToText();
   bool _isSpeechInitialized = false;
   String _speechLocale = 'uz_UZ';
-  
+
   late AnimationController _pulseController;
   late Animation<double> _pulseAnim;
 
@@ -54,7 +56,9 @@ class _ChatScreenState extends State<ChatScreen> with SingleTickerProviderStateM
 
     _chatHistory.add({
       'role': 'assistant',
-      'content': "Assalomu alaykum! Men HubServis SuperApp'ning sun'iy intellekt yordamchisiman. Ilova bo'yicha qanday savollaringiz bor? Sizga bajonidil yordam beraman. 🤖✨",
+      'content':
+          "Assalomu alaykum! Men HubServis SuperApp'ning sun'iy intellekt yordamchisiman. Ilova bo'yicha qanday savollaringiz bor? Sizga bajonidil yordam beraman. 🤖✨"
+              .tr,
     });
 
     _initSpeechEngine().then((_) {
@@ -79,7 +83,9 @@ class _ChatScreenState extends State<ChatScreen> with SingleTickerProviderStateM
     try {
       bool available = await _speech.initialize(
         onStatus: (status) {
-          if (status == 'notListening' && _voiceState == _VoiceState.recording && mounted) {
+          if (status == 'notListening' &&
+              _voiceState == _VoiceState.recording &&
+              mounted) {
             _stopRecordingAndSend();
           }
         },
@@ -88,7 +94,11 @@ class _ChatScreenState extends State<ChatScreen> with SingleTickerProviderStateM
           if (mounted) {
             _resetVoiceState();
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Ovoz yozishda xatolik yuz berdi: ${error.errorMsg}')),
+              SnackBar(
+                content: Text(
+                  'Ovoz yozishda xatolik yuz berdi'.tr + ': ${error.errorMsg}',
+                ),
+              ),
             );
           }
         },
@@ -125,18 +135,18 @@ class _ChatScreenState extends State<ChatScreen> with SingleTickerProviderStateM
 
     bool hasPermission = await _requestMicrophonePermission();
     if (!hasPermission) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Mikrofonga ruxsat berilmadi')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Mikrofonga ruxsat berilmadi'.tr)));
       return;
     }
 
     if (!_isSpeechInitialized) {
       await _initSpeechEngine();
       if (!_isSpeechInitialized) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Ovozli tizim faollashmadi')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Ovozli tizim faollashmadi'.tr)));
         return;
       }
     }
@@ -190,7 +200,7 @@ class _ChatScreenState extends State<ChatScreen> with SingleTickerProviderStateM
     });
 
     await _sendMessage(text: text, isVoice: true);
-    
+
     if (mounted) {
       _resetVoiceState();
     }
@@ -223,7 +233,10 @@ class _ChatScreenState extends State<ChatScreen> with SingleTickerProviderStateM
     if (messageText.isEmpty) return;
 
     setState(() {
-      _chatHistory.add({'role': 'user', 'content': isVoice ? '🎤 $messageText' : messageText});
+      _chatHistory.add({
+        'role': 'user',
+        'content': isVoice ? '🎤 $messageText' : messageText,
+      });
       _isTyping = true;
     });
     _textController.clear();
@@ -244,17 +257,23 @@ class _ChatScreenState extends State<ChatScreen> with SingleTickerProviderStateM
   Widget build(BuildContext context) {
     return GlassScaffold(
       showBackButton: true,
-      title: 'AI Yordamchi',
+      title: 'AI Yordamchi'.tr,
       actions: [
         IconButton(
-          icon: Icon(LucideIcons.refreshCcw, color: GlassTokens.primaryText(context), size: 20),
+          icon: Icon(
+            LucideIcons.refreshCcw,
+            color: GlassTokens.primaryText(context),
+            size: 20,
+          ),
           onPressed: () {
             _aiService.clearHistory();
             setState(() {
               _chatHistory.clear();
               _chatHistory.add({
                 'role': 'assistant',
-                'content': "Chat tozalab tashlandi. Sizga yana qanday yordam bera olaman?",
+                'content':
+                    "Chat tozalab tashlandi. Sizga yana qanday yordam bera olaman?"
+                        .tr,
               });
             });
           },
@@ -307,17 +326,15 @@ class _ChatScreenState extends State<ChatScreen> with SingleTickerProviderStateM
             bottomRight: Radius.circular(isUser ? 0 : 20),
           ),
           border: Border.all(
-            color: isUser
-                ? Colors.blue
-                : GlassTokens.glassBorder(context),
+            color: isUser ? Colors.blue : GlassTokens.glassBorder(context),
           ),
         ),
         child: Text(
           content,
           style: TextStyle(
-            color: isUser 
-                 ? Colors.white 
-                 : (isDark ? Colors.white : Colors.black87),
+            color: isUser
+                ? Colors.white
+                : (isDark ? Colors.white : Colors.black87),
             fontSize: 15,
             height: 1.4,
           ),
@@ -346,13 +363,22 @@ class _ChatScreenState extends State<ChatScreen> with SingleTickerProviderStateM
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text('Yozmoqda', style: TextStyle(color: GlassTokens.secondaryText(context), fontSize: 13)),
+            Text(
+              'Yozmoqda'.tr,
+              style: TextStyle(
+                color: GlassTokens.secondaryText(context),
+                fontSize: 13,
+              ),
+            ),
             const SizedBox(width: 8),
             const SizedBox(
               width: 14,
               height: 14,
-              child: CircularProgressIndicator(strokeWidth: 2, color: Colors.blueAccent),
-            )
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                color: Colors.blueAccent,
+              ),
+            ),
           ],
         ),
       ),
@@ -382,20 +408,24 @@ class _ChatScreenState extends State<ChatScreen> with SingleTickerProviderStateM
               Expanded(
                 child: Container(
                   decoration: BoxDecoration(
-                    color: isRecording 
-                        ? (isDark ? Colors.red.withOpacity(0.1) : Colors.red.shade50)
+                    color: isRecording
+                        ? (isDark
+                              ? Colors.red.withOpacity(0.1)
+                              : Colors.red.shade50)
                         : (isDark ? Colors.black : Colors.grey.shade100),
                     borderRadius: BorderRadius.circular(24),
                     border: Border.all(
-                      color: isRecording 
-                          ? Colors.redAccent 
+                      color: isRecording
+                          ? Colors.redAccent
                           : GlassTokens.glassBorder(context),
                     ),
                   ),
                   child: TextField(
                     controller: _textController,
                     style: TextStyle(
-                      color: isRecording ? Colors.redAccent : GlassTokens.primaryText(context)
+                      color: isRecording
+                          ? Colors.redAccent
+                          : GlassTokens.primaryText(context),
                     ),
                     maxLines: 3,
                     minLines: 1,
@@ -405,13 +435,18 @@ class _ChatScreenState extends State<ChatScreen> with SingleTickerProviderStateM
                     },
                     readOnly: isRecording,
                     decoration: InputDecoration(
-                      hintText: isRecording ? 'Eshitilmoqda...' : 'Xabar yozish...',
+                      hintText: isRecording
+                          ? 'Eshitilmoqda...'.tr
+                          : 'Xabar yozish...'.tr,
                       hintStyle: TextStyle(
-                        color: isRecording 
-                            ? Colors.redAccent.withOpacity(0.7) 
-                            : GlassTokens.secondaryText(context)
+                        color: isRecording
+                            ? Colors.redAccent.withOpacity(0.7)
+                            : GlassTokens.secondaryText(context),
                       ),
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
+                      ),
                       border: InputBorder.none,
                     ),
                   ),
@@ -439,32 +474,45 @@ class _ChatScreenState extends State<ChatScreen> with SingleTickerProviderStateM
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
                             colors: isRecording
-                                ? [const Color(0xFFEF4444), const Color(0xFFDC2626)]
+                                ? [
+                                    const Color(0xFFEF4444),
+                                    const Color(0xFFDC2626),
+                                  ]
                                 : _hasText
-                                    ? [const Color(0xFF8B5CF6), const Color(0xFF3B82F6)]
-                                    : [const Color(0xFF10B981), const Color(0xFF059669)],
+                                ? [
+                                    const Color(0xFF8B5CF6),
+                                    const Color(0xFF3B82F6),
+                                  ]
+                                : [
+                                    const Color(0xFF10B981),
+                                    const Color(0xFF059669),
+                                  ],
                           ),
                           shape: BoxShape.circle,
                           boxShadow: [
                             BoxShadow(
                               color: isRecording
                                   ? Colors.redAccent.withOpacity(0.5)
-                                  : (_hasText ? const Color(0xFF3B82F6) : const Color(0xFF10B981)).withOpacity(0.5),
+                                  : (_hasText
+                                            ? const Color(0xFF3B82F6)
+                                            : const Color(0xFF10B981))
+                                        .withOpacity(0.5),
                               blurRadius: isRecording ? 12 : 8,
                               offset: const Offset(0, 4),
                             ),
                           ],
                         ),
                         child: Icon(
-                          isRecording 
-                              ? LucideIcons.square // Stop icon 
+                          isRecording
+                              ? LucideIcons
+                                    .square // Stop icon
                               : (_hasText ? LucideIcons.send : LucideIcons.mic),
                           color: Colors.white,
                           size: 20,
                         ),
                       ),
                     );
-                  }
+                  },
                 ),
               ),
             ],

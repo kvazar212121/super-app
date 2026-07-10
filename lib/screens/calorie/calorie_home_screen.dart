@@ -9,6 +9,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../config/app_config.dart';
+import '../../l10n/locale_controller.dart';
 import '../../services/api_service.dart';
 import '../../theme/glass_tokens.dart';
 import '../../widgets/glass/glass_scaffold.dart';
@@ -67,7 +68,9 @@ class _CalorieHomeScreenState extends State<CalorieHomeScreen> {
       if (profile == null && mounted) {
         final saved = await Navigator.push<bool>(
           context,
-          MaterialPageRoute(builder: (_) => const CalorieProfileScreen(isFirstSetup: true)),
+          MaterialPageRoute(
+            builder: (_) => const CalorieProfileScreen(isFirstSetup: true),
+          ),
         );
         if (saved == true) _loadData();
       }
@@ -123,7 +126,8 @@ class _CalorieHomeScreenState extends State<CalorieHomeScreen> {
       final saved = await Navigator.push<bool>(
         context,
         MaterialPageRoute(
-          builder: (_) => CalorieAnalyzeScreen(imageFile: File(compressedFile.path)),
+          builder: (_) =>
+              CalorieAnalyzeScreen(imageFile: File(compressedFile.path)),
         ),
       );
       if (saved == true) _loadData();
@@ -137,7 +141,9 @@ class _CalorieHomeScreenState extends State<CalorieHomeScreen> {
       context: context,
       backgroundColor: GlassTokens.glassFill(context),
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(GlassTokens.radiusLg)),
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(GlassTokens.radiusLg),
+        ),
       ),
       builder: (ctx) => SafeArea(
         child: Column(
@@ -146,7 +152,10 @@ class _CalorieHomeScreenState extends State<CalorieHomeScreen> {
             const SizedBox(height: 12),
             ListTile(
               leading: const Icon(LucideIcons.camera, color: Colors.redAccent),
-              title: Text('Kamera', style: TextStyle(color: GlassTokens.primaryText(context))),
+              title: Text(
+                'Kamera'.tr,
+                style: TextStyle(color: GlassTokens.primaryText(context)),
+              ),
               onTap: () {
                 Navigator.pop(ctx);
                 _pickAndAnalyze(ImageSource.camera);
@@ -154,7 +163,10 @@ class _CalorieHomeScreenState extends State<CalorieHomeScreen> {
             ),
             ListTile(
               leading: const Icon(LucideIcons.image, color: Colors.redAccent),
-              title: Text('Galereya', style: TextStyle(color: GlassTokens.primaryText(context))),
+              title: Text(
+                'Galereya'.tr,
+                style: TextStyle(color: GlassTokens.primaryText(context)),
+              ),
               onTap: () {
                 Navigator.pop(ctx);
                 _pickAndAnalyze(ImageSource.gallery);
@@ -180,11 +192,11 @@ class _CalorieHomeScreenState extends State<CalorieHomeScreen> {
   Widget build(BuildContext context) {
     return GlassScaffold(
       showBackButton: true,
-      title: 'Kaloriya hisoblagich',
+      title: 'Kaloriya hisoblagich'.tr,
       actions: [
         IconButton(
-          icon: const Icon(LucideIcons.userCog),
-          tooltip: 'Profil',
+          icon: Icon(LucideIcons.userCog),
+          tooltip: 'Profil'.tr,
           onPressed: () async {
             final saved = await Navigator.push<bool>(
               context,
@@ -198,7 +210,13 @@ class _CalorieHomeScreenState extends State<CalorieHomeScreen> {
         onPressed: _showPhotoSourceSheet,
         backgroundColor: Colors.redAccent,
         icon: const Icon(LucideIcons.camera, color: Colors.white),
-        label: const Text('Suratga olish', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700)),
+        label: Text(
+          'Suratga olish'.tr,
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
       ),
       body: RefreshIndicator(
         onRefresh: _loadData,
@@ -230,10 +248,13 @@ class _CalorieHomeScreenState extends State<CalorieHomeScreen> {
       children: [
         IconButton(
           onPressed: () => _changeDate(-1),
-          icon: Icon(LucideIcons.chevronLeft, color: GlassTokens.primaryText(context)),
+          icon: Icon(
+            LucideIcons.chevronLeft,
+            color: GlassTokens.primaryText(context),
+          ),
         ),
         Text(
-          _isToday ? 'Bugun' : _formatDateForApi(_selectedDate),
+          _isToday ? 'Bugun'.tr : _formatDateForApi(_selectedDate),
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w700,
@@ -244,7 +265,9 @@ class _CalorieHomeScreenState extends State<CalorieHomeScreen> {
           onPressed: _isToday ? null : () => _changeDate(1),
           icon: Icon(
             LucideIcons.chevronRight,
-            color: _isToday ? GlassTokens.secondaryText(context).withValues(alpha: 0.3) : GlassTokens.primaryText(context),
+            color: _isToday
+                ? GlassTokens.secondaryText(context).withValues(alpha: 0.3)
+                : GlassTokens.primaryText(context),
           ),
         ),
       ],
@@ -257,7 +280,9 @@ class _CalorieHomeScreenState extends State<CalorieHomeScreen> {
     final protein = (_summary?['protein_g'] as num?)?.toDouble() ?? 0;
     final fat = (_summary?['fat_g'] as num?)?.toDouble() ?? 0;
     final carbs = (_summary?['carbs_g'] as num?)?.toDouble() ?? 0;
-    final progress = (goal != null && goal > 0) ? (total / goal).clamp(0.0, 1.0) : 0.0;
+    final progress = (goal != null && goal > 0)
+        ? (total / goal).clamp(0.0, 1.0)
+        : 0.0;
     final over = goal != null && total > goal;
 
     return Container(
@@ -283,7 +308,9 @@ class _CalorieHomeScreenState extends State<CalorieHomeScreen> {
                       value: goal != null ? progress : null,
                       strokeWidth: 9,
                       backgroundColor: GlassTokens.glassBorder(context),
-                      valueColor: AlwaysStoppedAnimation(over ? Colors.orangeAccent : Colors.redAccent),
+                      valueColor: AlwaysStoppedAnimation(
+                        over ? Colors.orangeAccent : Colors.redAccent,
+                      ),
                     ),
                     Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -296,7 +323,13 @@ class _CalorieHomeScreenState extends State<CalorieHomeScreen> {
                             color: GlassTokens.primaryText(context),
                           ),
                         ),
-                        Text('kkal', style: TextStyle(fontSize: 12, color: GlassTokens.secondaryText(context))),
+                        Text(
+                          'kkal'.tr,
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: GlassTokens.secondaryText(context),
+                          ),
+                        ),
                       ],
                     ),
                   ],
@@ -308,22 +341,30 @@ class _CalorieHomeScreenState extends State<CalorieHomeScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      goal != null ? 'Maqsad: ${goal.round()} kkal' : 'Maqsad belgilanmagan',
-                      style: TextStyle(fontWeight: FontWeight.w700, color: GlassTokens.primaryText(context)),
+                      goal != null
+                          ? '${'Maqsad'.tr}: ${goal.round()} ${'kkal'.tr}'
+                          : 'Maqsad belgilanmagan'.tr,
+                      style: TextStyle(
+                        fontWeight: FontWeight.w700,
+                        color: GlassTokens.primaryText(context),
+                      ),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       goal != null
                           ? (over
-                              ? '${(total - goal).round()} kkal oshib ketdi'
-                              : '${(goal - total).round()} kkal qoldi')
-                          : 'Profilni to\'ldiring',
-                      style: TextStyle(fontSize: 13, color: GlassTokens.secondaryText(context)),
+                                ? '${(total - goal).round()} ${'kkal oshib ketdi'.tr}'
+                                : '${(goal - total).round()} ${'kkal qoldi'.tr}')
+                          : 'Profilni to\'ldiring'.tr,
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: GlassTokens.secondaryText(context),
+                      ),
                     ),
-                    const SizedBox(height: 12),
-                    _buildMacroRow('Oqsil', protein, Colors.blueAccent),
-                    _buildMacroRow('Yog\'', fat, Colors.orangeAccent),
-                    _buildMacroRow('Uglevod', carbs, Colors.greenAccent),
+                    SizedBox(height: 12),
+                    _buildMacroRow('Oqsil'.tr, protein, Colors.blueAccent),
+                    _buildMacroRow('Yog\''.tr, fat, Colors.orangeAccent),
+                    _buildMacroRow('Uglevod'.tr, carbs, Colors.greenAccent),
                   ],
                 ),
               ),
@@ -339,12 +380,26 @@ class _CalorieHomeScreenState extends State<CalorieHomeScreen> {
       padding: const EdgeInsets.only(bottom: 4),
       child: Row(
         children: [
-          Container(width: 8, height: 8, decoration: BoxDecoration(color: color, shape: BoxShape.circle)),
+          Container(
+            width: 8,
+            height: 8,
+            decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+          ),
           const SizedBox(width: 8),
-          Text('$label: ', style: TextStyle(fontSize: 13, color: GlassTokens.secondaryText(context))),
+          Text(
+            '$label: ',
+            style: TextStyle(
+              fontSize: 13,
+              color: GlassTokens.secondaryText(context),
+            ),
+          ),
           Text(
             '${grams.round()} g',
-            style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: GlassTokens.primaryText(context)),
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w700,
+              color: GlassTokens.primaryText(context),
+            ),
           ),
         ],
       ),
@@ -356,17 +411,24 @@ class _CalorieHomeScreenState extends State<CalorieHomeScreen> {
       padding: const EdgeInsets.symmetric(vertical: 48),
       child: Column(
         children: [
-          Icon(LucideIcons.utensils, size: 48, color: GlassTokens.secondaryText(context)),
+          Icon(
+            LucideIcons.utensils,
+            size: 48,
+            color: GlassTokens.secondaryText(context),
+          ),
           const SizedBox(height: 12),
           Text(
-            'Bu kunda ovqat qayd etilmagan',
+            'Bu kunda ovqat qayd etilmagan'.tr,
             style: TextStyle(color: GlassTokens.secondaryText(context)),
           ),
           const SizedBox(height: 4),
           Text(
-            'Taomni suratga oling — AI kaloriyasini hisoblab beradi',
+            'Taomni suratga oling — AI kaloriyasini hisoblab beradi'.tr,
             textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 13, color: GlassTokens.secondaryText(context)),
+            style: TextStyle(
+              fontSize: 13,
+              color: GlassTokens.secondaryText(context),
+            ),
           ),
         ],
       ),
@@ -378,13 +440,19 @@ class _CalorieHomeScreenState extends State<CalorieHomeScreen> {
     for (final type in kMealTypeNames.keys) {
       final group = _meals.where((m) => m['meal_type'] == type).toList();
       if (group.isEmpty) continue;
-      widgets.add(Padding(
-        padding: const EdgeInsets.only(top: 8, bottom: 8),
-        child: Text(
-          kMealTypeNames[type]!,
-          style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: GlassTokens.primaryText(context)),
+      widgets.add(
+        Padding(
+          padding: const EdgeInsets.only(top: 8, bottom: 8),
+          child: Text(
+            kMealTypeNames[type]!.tr,
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w800,
+              color: GlassTokens.primaryText(context),
+            ),
+          ),
         ),
-      ));
+      );
       widgets.addAll(group.map((m) => _buildMealTile(m)));
     }
     return widgets;
@@ -403,7 +471,7 @@ class _CalorieHomeScreenState extends State<CalorieHomeScreen> {
           color: Colors.redAccent.withValues(alpha: 0.2),
           borderRadius: BorderRadius.circular(GlassTokens.radiusSm),
         ),
-        child: const Icon(LucideIcons.trash2, color: Colors.redAccent),
+        child: Icon(LucideIcons.trash2, color: Colors.redAccent),
       ),
       child: Container(
         margin: const EdgeInsets.only(bottom: 8),
@@ -436,17 +504,24 @@ class _CalorieHomeScreenState extends State<CalorieHomeScreen> {
                     meal['dish_name'] as String? ?? '',
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: TextStyle(fontWeight: FontWeight.w700, color: GlassTokens.primaryText(context)),
+                    style: TextStyle(
+                      fontWeight: FontWeight.w700,
+                      color: GlassTokens.primaryText(context),
+                    ),
                   ),
                   const SizedBox(height: 2),
                   Text(
                     [
-                      if (meal['portion_grams'] != null) '${(meal['portion_grams'] as num).round()} g',
+                      if (meal['portion_grams'] != null)
+                        '${(meal['portion_grams'] as num).round()} g',
                       'O: ${(meal['protein_g'] as num?)?.round() ?? 0}g',
                       'Y: ${(meal['fat_g'] as num?)?.round() ?? 0}g',
                       'U: ${(meal['carbs_g'] as num?)?.round() ?? 0}g',
                     ].join(' · '),
-                    style: TextStyle(fontSize: 12, color: GlassTokens.secondaryText(context)),
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: GlassTokens.secondaryText(context),
+                    ),
                   ),
                 ],
               ),
@@ -454,9 +529,19 @@ class _CalorieHomeScreenState extends State<CalorieHomeScreen> {
             const SizedBox(width: 8),
             Text(
               '${(meal['calories'] as num?)?.round() ?? 0}',
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Colors.redAccent),
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w800,
+                color: Colors.redAccent,
+              ),
             ),
-            Text(' kkal', style: TextStyle(fontSize: 12, color: GlassTokens.secondaryText(context))),
+            Text(
+              ' ${'kkal'.tr}',
+              style: TextStyle(
+                fontSize: 12,
+                color: GlassTokens.secondaryText(context),
+              ),
+            ),
           ],
         ),
       ),
@@ -468,7 +553,11 @@ class _CalorieHomeScreenState extends State<CalorieHomeScreen> {
       width: 52,
       height: 52,
       color: Colors.redAccent.withValues(alpha: 0.12),
-      child: const Icon(LucideIcons.utensils, color: Colors.redAccent, size: 22),
+      child: const Icon(
+        LucideIcons.utensils,
+        color: Colors.redAccent,
+        size: 22,
+      ),
     );
   }
 }

@@ -5,6 +5,7 @@ import '../../../services/electrician_portal_service.dart';
 import '../../../utils/phone_utils.dart';
 import '../../provider_side/provider_theme.dart';
 import '../provider_success_screen.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 /// Elektrik — faqat yakka usta, jamoa yo'q.
 class ElectricianSoloScreen extends StatefulWidget {
@@ -34,7 +35,7 @@ class _ElectricianSoloScreenState extends State<ElectricianSoloScreen> {
     final area = _areaCtrl.text.trim();
     if (name.isEmpty || area.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Ism va xizmat hududini kiriting')),
+        SnackBar(content: Text('Ism va xizmat hududini kiriting'.tr)),
       );
       return;
     }
@@ -66,9 +67,9 @@ class _ElectricianSoloScreenState extends State<ElectricianSoloScreen> {
       );
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Xatolik: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Xatolik: $e')));
       }
     } finally {
       if (mounted) setState(() => _submitting = false);
@@ -79,7 +80,7 @@ class _ElectricianSoloScreenState extends State<ElectricianSoloScreen> {
   Widget build(BuildContext context) {
     return ProviderTheme(
       child: Scaffold(
-        appBar: AppBar(title: const Text('Elektrik sifatida')),
+        appBar: AppBar(title: Text('Elektrik sifatida'.tr)),
         body: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
           child: Column(
@@ -92,20 +93,22 @@ class _ElectricianSoloScreenState extends State<ElectricianSoloScreen> {
               const SizedBox(height: 24),
               TextField(
                 controller: _nameCtrl,
-                decoration: const InputDecoration(labelText: 'Ismingiz yoki xizmat nomi'),
+                decoration: InputDecoration(
+                  labelText: 'Ismingiz yoki xizmat nomi'.tr,
+                ),
               ),
               const SizedBox(height: 16),
               TextField(
                 controller: _phoneCtrl,
-                decoration: const InputDecoration(labelText: 'Telefon'),
+                decoration: InputDecoration(labelText: 'Telefon'.tr),
               ),
               const SizedBox(height: 16),
               TextField(
                 controller: _areaCtrl,
                 maxLines: 2,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: 'Xizmat ko\'rsatadigan hudud',
-                  hintText: 'Masalan: Toshkent, Yunusobod, Sergeli',
+                  hintText: 'Masalan: Toshkent, Yunusobod, Sergeli'.tr,
                 ),
               ),
               const SizedBox(height: 32),
@@ -114,7 +117,11 @@ class _ElectricianSoloScreenState extends State<ElectricianSoloScreen> {
                 child: FilledButton(
                   onPressed: _submitting ? null : _submit,
                   child: _submitting
-                      ? const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2))
+                      ? const SizedBox(
+                          width: 22,
+                          height: 22,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
                       : const Text('Ro\'yxatdan o\'tish'),
                 ),
               ),

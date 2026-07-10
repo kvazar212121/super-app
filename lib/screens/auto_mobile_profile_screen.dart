@@ -12,6 +12,7 @@ import '../utils/call_helper.dart';
 import '../widgets/glass/glass_scaffold.dart';
 import '../widgets/glass/glass_surface.dart';
 import 'auto_mobile_dispatch_screen.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 class AutoMobileProfileScreen extends StatelessWidget {
   final AutoMobileService service;
@@ -21,7 +22,11 @@ class AutoMobileProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const accent = Color(0xFF8B5CF6); // Violet
-    final currency = NumberFormat.currency(locale: 'uz_UZ', symbol: 'so\'m', decimalDigits: 0);
+    final currency = NumberFormat.currency(
+      locale: 'uz_UZ',
+      symbol: 'so\'m',
+      decimalDigits: 0,
+    );
 
     return GlassScaffold(
       showBackButton: true,
@@ -49,7 +54,9 @@ class AutoMobileProfileScreen extends StatelessWidget {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(
-                      isSaved ? 'Sevimli ro\'yxatidan o\'chirildi' : 'Sevimli ro\'yxatiga qo\'shildi',
+                      isSaved
+                          ? 'Sevimli ro\'yxatidan o\'chirildi'
+                          : 'Sevimli ro\'yxatiga qo\'shildi',
                     ),
                     duration: const Duration(seconds: 1),
                   ),
@@ -70,7 +77,11 @@ class AutoMobileProfileScreen extends StatelessWidget {
                 CircleAvatar(
                   radius: 44,
                   backgroundColor: accent.withOpacity(0.1),
-                  child: Icon(service.vehicleType.icon, color: accent, size: 40),
+                  child: Icon(
+                    service.vehicleType.icon,
+                    color: accent,
+                    size: 40,
+                  ),
                 ),
                 const SizedBox(height: 16),
                 Text(
@@ -91,7 +102,10 @@ class AutoMobileProfileScreen extends StatelessWidget {
                       const SizedBox(width: 4),
                       Text(
                         service.serviceArea!,
-                        style: const TextStyle(color: accent, fontWeight: FontWeight.w500),
+                        style: const TextStyle(
+                          color: accent,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                     ],
                   ),
@@ -124,8 +138,19 @@ class AutoMobileProfileScreen extends StatelessWidget {
               borderRadius: GlassTokens.radiusMd,
               child: Row(
                 children: [
-                  Expanded(child: Text(e.key, style: const TextStyle(fontWeight: FontWeight.w600))),
-                  Text(currency.format(e.value), style: const TextStyle(fontWeight: FontWeight.bold, color: accent)),
+                  Expanded(
+                    child: Text(
+                      e.key,
+                      style: const TextStyle(fontWeight: FontWeight.w600),
+                    ),
+                  ),
+                  Text(
+                    currency.format(e.value),
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: accent,
+                    ),
+                  ),
                 ],
               ),
             );
@@ -136,7 +161,11 @@ class AutoMobileProfileScreen extends StatelessWidget {
               Expanded(
                 child: OutlinedButton.icon(
                   onPressed: () {
-                    CallHelper.startCallWithPurposeCheck(context, service.providerId, service.name);
+                    CallHelper.startCallWithPurposeCheck(
+                      context,
+                      service.providerId,
+                      service.name,
+                    );
                   },
                   icon: const Icon(LucideIcons.phoneCall),
                   label: const Text('Qo\'ng\'iroq'),
@@ -144,7 +173,9 @@ class AutoMobileProfileScreen extends StatelessWidget {
                     foregroundColor: accent,
                     side: const BorderSide(color: accent, width: 2),
                     padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
                   ),
                 ),
               ),
@@ -156,16 +187,19 @@ class AutoMobileProfileScreen extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (_) => AutoMobileDispatchScreen(service: service),
+                        builder: (_) =>
+                            AutoMobileDispatchScreen(service: service),
                       ),
                     );
                   },
-                  icon: const Icon(LucideIcons.siren),
-                  label: const Text('Joyiga chaqirish'),
+                  icon: Icon(LucideIcons.siren),
+                  label: Text('Joyiga chaqirish'.tr),
                   style: FilledButton.styleFrom(
                     backgroundColor: accent,
                     padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
                   ),
                 ),
               ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../services/barber_portal_service.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 /// Xona egasi — taklif kodi va usta so'rovlari.
 class ProviderBarberTeamWidget extends StatefulWidget {
@@ -15,7 +16,8 @@ class ProviderBarberTeamWidget extends StatefulWidget {
   });
 
   @override
-  State<ProviderBarberTeamWidget> createState() => _ProviderBarberTeamWidgetState();
+  State<ProviderBarberTeamWidget> createState() =>
+      _ProviderBarberTeamWidgetState();
 }
 
 class _ProviderBarberTeamWidgetState extends State<ProviderBarberTeamWidget> {
@@ -51,9 +53,9 @@ class _ProviderBarberTeamWidgetState extends State<ProviderBarberTeamWidget> {
     if (code == null || code.isEmpty) return;
     await Clipboard.setData(ClipboardData(text: code));
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Taklif kodi nusxalandi')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Taklif kodi nusxalandi'.tr)));
     }
   }
 
@@ -62,15 +64,15 @@ class _ProviderBarberTeamWidgetState extends State<ProviderBarberTeamWidget> {
       final code = await _portal.regenerateInvite();
       setState(() => _inviteCode = code);
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Yangi kod yaratildi')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Yangi kod yaratildi'.tr)));
       }
     } catch (_) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Kod yangilanmadi')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Kod yangilanmadi'.tr)));
       }
     }
   }
@@ -86,9 +88,9 @@ class _ProviderBarberTeamWidgetState extends State<ProviderBarberTeamWidget> {
       await _load();
     } catch (_) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Amal bajarilmadi')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Amal bajarilmadi'.tr)));
       }
     } finally {
       if (mounted) setState(() => _actingUserId = null);
@@ -111,7 +113,9 @@ class _ProviderBarberTeamWidgetState extends State<ProviderBarberTeamWidget> {
       children: [
         Text(
           'Ustalar va taklif',
-          style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+          style: theme.textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.bold,
+          ),
         ),
         const SizedBox(height: 12),
         if (_inviteCode != null && _inviteCode!.isNotEmpty)
@@ -129,7 +133,10 @@ class _ProviderBarberTeamWidgetState extends State<ProviderBarberTeamWidget> {
                   children: [
                     Icon(LucideIcons.link, color: Colors.black, size: 20),
                     const SizedBox(width: 8),
-                    const Text('Taklif kodi', style: TextStyle(fontWeight: FontWeight.bold)),
+                    const Text(
+                      'Taklif kodi',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 8),
@@ -154,12 +161,12 @@ class _ProviderBarberTeamWidgetState extends State<ProviderBarberTeamWidget> {
                     IconButton(
                       icon: const Icon(LucideIcons.copy),
                       onPressed: _copyCode,
-                      tooltip: 'Nusxalash',
+                      tooltip: 'Nusxalash'.tr,
                     ),
                     IconButton(
                       icon: const Icon(LucideIcons.refreshCw),
                       onPressed: _regenerate,
-                      tooltip: 'Yangi kod',
+                      tooltip: 'Yangi kod'.tr,
                     ),
                   ],
                 ),
@@ -170,7 +177,9 @@ class _ProviderBarberTeamWidgetState extends State<ProviderBarberTeamWidget> {
           const SizedBox(height: 20),
           Text(
             'Kutilayotgan ustalar (${_pending.length})',
-            style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
+            style: theme.textTheme.titleSmall?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
           ),
           const SizedBox(height: 10),
           ..._pending.map((m) {
@@ -186,29 +195,41 @@ class _ProviderBarberTeamWidgetState extends State<ProviderBarberTeamWidget> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(m['name']?.toString() ?? 'Usta', style: const TextStyle(fontWeight: FontWeight.bold)),
+                  Text(
+                    m['name']?.toString() ?? 'Usta',
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
                   if (m['phone'] != null)
-                    Text(m['phone'].toString(), style: theme.textTheme.bodySmall),
+                    Text(
+                      m['phone'].toString(),
+                      style: theme.textTheme.bodySmall,
+                    ),
                   const SizedBox(height: 10),
                   Row(
                     children: [
                       Expanded(
                         child: OutlinedButton(
                           onPressed: acting ? null : () => _respond(uid, false),
-                          child: const Text('Rad'),
+                          child: Text('Rad'.tr),
                         ),
                       ),
                       const SizedBox(width: 8),
                       Expanded(
                         child: FilledButton(
                           onPressed: acting ? null : () => _respond(uid, true),
-                          style: FilledButton.styleFrom(backgroundColor: Colors.black, foregroundColor: Colors.white),
+                          style: FilledButton.styleFrom(
+                            backgroundColor: Colors.black,
+                            foregroundColor: Colors.white,
+                          ),
                           child: acting
                               ? const SizedBox(
-                                  width: 18, height: 18,
-                                  child: CircularProgressIndicator(strokeWidth: 2),
+                                  width: 18,
+                                  height: 18,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                  ),
                                 )
-                              : const Text('Qabul qilish'),
+                              : Text('Qabul qilish'.tr),
                         ),
                       ),
                     ],

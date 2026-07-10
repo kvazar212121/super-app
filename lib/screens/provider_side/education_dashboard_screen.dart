@@ -7,6 +7,8 @@ class EducationDashboardScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return UnifiedProviderDashboardScreen(config: ProviderCategoryConfig.education);
+    return UnifiedProviderDashboardScreen(
+      config: ProviderCategoryConfig.education,
+    );
   }
 }

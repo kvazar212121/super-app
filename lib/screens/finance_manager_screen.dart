@@ -5,6 +5,7 @@ import '../models/finance_models.dart';
 import '../services/api_service.dart';
 import '../widgets/glass/glass_scaffold.dart';
 import '../theme/glass_tokens.dart';
+import '../l10n/locale_controller.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 const double pi = 3.1415926535897932;
@@ -20,8 +21,9 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
   final ApiService _api = ApiService();
   bool _isLoading = true;
   DateTime _currentMonth = DateTime.now();
-  int _activeTab = 0; // 0: Analytics & History, 1: Planned Payments & Debt Reminders
-  
+  int _activeTab =
+      0; // 0: Analytics & History, 1: Planned Payments & Debt Reminders
+
   FinanceStats? _stats;
   List<FinanceRecord> _records = [];
   List<PlannedPayment> _plannedPayments = [];
@@ -51,8 +53,10 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
     try {
       final prefs = await SharedPreferences.getInstance();
       setState(() {
-        _customExpenseCategories = prefs.getStringList('customExpenseCategories') ?? [];
-        _customIncomeCategories = prefs.getStringList('customIncomeCategories') ?? [];
+        _customExpenseCategories =
+            prefs.getStringList('customExpenseCategories') ?? [];
+        _customIncomeCategories =
+            prefs.getStringList('customIncomeCategories') ?? [];
       });
     } catch (e) {
       debugPrint("SharedPreferences error: $e");
@@ -64,7 +68,20 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
   }
 
   String _getMonthNameUz(int month) {
-    const months = ['Yanvar', 'Fevral', 'Mart', 'Aprel', 'May', 'Iyun', 'Iyul', 'Avgust', 'Sentabr', 'Oktabr', 'Noyabr', 'Dekabr'];
+    const months = [
+      'Yanvar',
+      'Fevral',
+      'Mart',
+      'Aprel',
+      'May',
+      'Iyun',
+      'Iyul',
+      'Avgust',
+      'Sentabr',
+      'Oktabr',
+      'Noyabr',
+      'Dekabr',
+    ];
     return months[month - 1];
   }
 
@@ -89,11 +106,15 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
       final statsData = await _api.getFinanceStats(month: monthStr);
       final recordsData = await _api.getFinanceRecords(month: monthStr);
       final plannedData = await _api.getPlannedPayments();
-      
+
       setState(() {
         _stats = FinanceStats.fromJson(statsData);
-        _records = (recordsData as List).map((e) => FinanceRecord.fromJson(e)).toList();
-        _plannedPayments = (plannedData as List).map((e) => PlannedPayment.fromJson(e)).toList();
+        _records = (recordsData as List)
+            .map((e) => FinanceRecord.fromJson(e))
+            .toList();
+        _plannedPayments = (plannedData as List)
+            .map((e) => PlannedPayment.fromJson(e))
+            .toList();
       });
     } catch (e) {
       debugPrint("Error loading finance data: $e");
@@ -104,12 +125,21 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
 
   void _changeMonth(int offset) {
     setState(() {
-      _currentMonth = DateTime(_currentMonth.year, _currentMonth.month + offset);
+      _currentMonth = DateTime(
+        _currentMonth.year,
+        _currentMonth.month + offset,
+      );
     });
     _loadData();
   }
 
-  Future<void> _addRecord(String type, double amount, String category, String? description, DateTime date) async {
+  Future<void> _addRecord(
+    String type,
+    double amount,
+    String category,
+    String? description,
+    DateTime date,
+  ) async {
     try {
       await _api.createFinanceRecord(
         type: type,
@@ -121,7 +151,7 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
       _loadData();
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Tranzaksiya kiritishda xatolik yuz berdi")),
+        SnackBar(content: Text("Tranzaksiya kiritishda xatolik yuz berdi".tr)),
       );
     }
   }
@@ -139,12 +169,18 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
         _records = prevRecords;
       });
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("O'chirishda xatolik yuz berdi")),
+        SnackBar(content: Text("O'chirishda xatolik yuz berdi".tr)),
       );
     }
   }
 
-  Future<void> _addPlannedPayment(String title, double amount, String category, DateTime dueDate, bool isRecurring) async {
+  Future<void> _addPlannedPayment(
+    String title,
+    double amount,
+    String category,
+    DateTime dueDate,
+    bool isRecurring,
+  ) async {
     try {
       await _api.createPlannedPayment(
         title: title,
@@ -156,7 +192,9 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
       _loadData();
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Rejalashtirilgan to'lov qo'shishda xatolik")),
+        SnackBar(
+          content: Text("Rejalashtirilgan to'lov qo'shishda xatolik".tr),
+        ),
       );
     }
   }
@@ -166,17 +204,19 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
       await _api.updatePlannedPayment(payment.id, isPaid: true);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(payment.isRecurring
-              ? "To'lov tasdiqlandi va keyingi oyga ko'chirildi"
-              : "To'lov bajarilgan deb belgilandi"),
+          content: Text(
+            payment.isRecurring
+                ? "To'lov tasdiqlandi va keyingi oyga ko'chirildi".tr
+                : "To'lov bajarilgan deb belgilandi".tr,
+          ),
           backgroundColor: Colors.green,
         ),
       );
       _loadData();
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Xatolik yuz berdi")),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Xatolik yuz berdi".tr)));
     }
   }
 
@@ -185,9 +225,9 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
       await _api.deletePlannedPayment(id);
       _loadData();
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Xatolik yuz berdi")),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Xatolik yuz berdi".tr)));
     }
   }
 
@@ -217,22 +257,33 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
       isScrollControlled: true,
       backgroundColor: Colors.grey[900],
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(GlassTokens.radiusLg)),
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(GlassTokens.radiusLg),
+        ),
       ),
       builder: (context) {
         return StatefulBuilder(
           builder: (context, setSheetState) {
             final activeCategories = List<Map<String, dynamic>>.from(
-                selectedType == "expense" ? expenseCategories : incomeCategories);
-            
-            final customCats = selectedType == "expense" ? _customExpenseCategories : _customIncomeCategories;
+              selectedType == "expense" ? expenseCategories : incomeCategories,
+            );
+
+            final customCats = selectedType == "expense"
+                ? _customExpenseCategories
+                : _customIncomeCategories;
             for (var c in customCats) {
               activeCategories.add({'name': c, 'icon': LucideIcons.tag});
             }
-            activeCategories.add({'name': 'Boshqa', 'icon': LucideIcons.moreHorizontal});
-            activeCategories.add({'name': 'Toifa qo\'shish', 'icon': LucideIcons.plus, 'isAdd': true});
-            
-            
+            activeCategories.add({
+              'name': 'Boshqa',
+              'icon': LucideIcons.moreHorizontal,
+            });
+            activeCategories.add({
+              'name': 'Toifa qo\'shish',
+              'icon': LucideIcons.plus,
+              'isAdd': true,
+            });
+
             return Padding(
               padding: EdgeInsets.only(
                 bottom: MediaQuery.of(context).viewInsets.bottom,
@@ -248,12 +299,19 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text(
-                          "Yangi tranzaksiya",
-                          style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+                        Text(
+                          "Yangi tranzaksiya".tr,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                         IconButton(
-                          icon: const Icon(LucideIcons.x, color: Colors.white70),
+                          icon: const Icon(
+                            LucideIcons.x,
+                            color: Colors.white70,
+                          ),
                           onPressed: () => Navigator.pop(context),
                         ),
                       ],
@@ -273,18 +331,22 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
                               alignment: Alignment.center,
                               padding: const EdgeInsets.symmetric(vertical: 12),
                               decoration: BoxDecoration(
-                                color: selectedType == "expense" 
+                                color: selectedType == "expense"
                                     ? Colors.redAccent
                                     : Colors.white.withOpacity(0.05),
                                 borderRadius: BorderRadius.circular(12),
                                 border: Border.all(
-                                  color: selectedType == "expense" ? Colors.redAccent : Colors.white10,
+                                  color: selectedType == "expense"
+                                      ? Colors.redAccent
+                                      : Colors.white10,
                                 ),
                               ),
                               child: Text(
-                                "Xarajat",
+                                "Xarajat".tr,
                                 style: TextStyle(
-                                  color: selectedType == "expense" ? Colors.white : Colors.white60,
+                                  color: selectedType == "expense"
+                                      ? Colors.white
+                                      : Colors.white60,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -304,18 +366,22 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
                               alignment: Alignment.center,
                               padding: const EdgeInsets.symmetric(vertical: 12),
                               decoration: BoxDecoration(
-                                color: selectedType == "income" 
+                                color: selectedType == "income"
                                     ? Colors.green.shade700
                                     : Colors.white.withOpacity(0.05),
                                 borderRadius: BorderRadius.circular(12),
                                 border: Border.all(
-                                  color: selectedType == "income" ? Colors.green.shade700 : Colors.white10,
+                                  color: selectedType == "income"
+                                      ? Colors.green.shade700
+                                      : Colors.white10,
                                 ),
                               ),
                               child: Text(
-                                "Daromad",
+                                "Daromad".tr,
                                 style: TextStyle(
-                                  color: selectedType == "income" ? Colors.white : Colors.white60,
+                                  color: selectedType == "income"
+                                      ? Colors.white
+                                      : Colors.white60,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -328,45 +394,65 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
                     TextField(
                       controller: amountController,
                       keyboardType: TextInputType.number,
-                      style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
                       decoration: InputDecoration(
-                        labelText: "Summa (UZS)",
-                        labelStyle: const TextStyle(color: Colors.white60, fontSize: 16),
-                        prefixIcon: const Icon(LucideIcons.banknote, color: Colors.blueAccent),
+                        labelText: "Summa (UZS)".tr,
+                        labelStyle: const TextStyle(
+                          color: Colors.white60,
+                          fontSize: 16,
+                        ),
+                        prefixIcon: const Icon(
+                          LucideIcons.banknote,
+                          color: Colors.blueAccent,
+                        ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: const BorderSide(color: Colors.white24),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-                          borderSide: const BorderSide(color: Colors.blueAccent),
+                          borderSide: const BorderSide(
+                            color: Colors.blueAccent,
+                          ),
                         ),
                       ),
                     ),
                     const SizedBox(height: 20),
-                    const Text(
-                      "Toifani tanlang",
-                      style: TextStyle(color: Colors.white70, fontSize: 14, fontWeight: FontWeight.bold),
+                    Text(
+                      "Toifani tanlang".tr,
+                      style: const TextStyle(
+                        color: Colors.white70,
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     const SizedBox(height: 10),
                     GridView.builder(
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
-                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 3,
-                        mainAxisSpacing: 10,
-                        crossAxisSpacing: 10,
-                        childAspectRatio: 1.25,
-                      ),
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 3,
+                            mainAxisSpacing: 10,
+                            crossAxisSpacing: 10,
+                            childAspectRatio: 1.25,
+                          ),
                       itemCount: activeCategories.length,
                       itemBuilder: (context, index) {
                         final cat = activeCategories[index];
                         final isSelected = selectedCategory == cat['name'];
-                        
+
                         return GestureDetector(
                           onTap: () {
                             if (cat['isAdd'] == true) {
-                              _showAddCategoryDialog(selectedType, setSheetState);
+                              _showAddCategoryDialog(
+                                selectedType,
+                                setSheetState,
+                              );
                             } else {
                               setSheetState(() {
                                 selectedCategory = cat['name'];
@@ -375,12 +461,14 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
                           },
                           child: Container(
                             decoration: BoxDecoration(
-                              color: isSelected 
+                              color: isSelected
                                   ? Colors.blueAccent
                                   : Colors.white.withOpacity(0.05),
                               borderRadius: BorderRadius.circular(12),
                               border: Border.all(
-                                color: isSelected ? Colors.blueAccent : Colors.white10,
+                                color: isSelected
+                                    ? Colors.blueAccent
+                                    : Colors.white10,
                                 width: isSelected ? 1.5 : 1.0,
                               ),
                             ),
@@ -388,17 +476,23 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Icon(
-                                  cat['icon'], 
-                                  color: isSelected ? Colors.white : Colors.white70,
+                                  cat['icon'],
+                                  color: isSelected
+                                      ? Colors.white
+                                      : Colors.white70,
                                   size: 20,
                                 ),
                                 const SizedBox(height: 6),
                                 Text(
-                                  cat['name'],
+                                  (cat['name'] as String).tr,
                                   style: TextStyle(
-                                    color: isSelected ? Colors.white : Colors.white54,
+                                    color: isSelected
+                                        ? Colors.white
+                                        : Colors.white54,
                                     fontSize: 12,
-                                    fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                                    fontWeight: isSelected
+                                        ? FontWeight.bold
+                                        : FontWeight.normal,
                                   ),
                                 ),
                               ],
@@ -412,16 +506,22 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
                       controller: descController,
                       style: const TextStyle(color: Colors.white),
                       decoration: InputDecoration(
-                        labelText: "Izoh (ixtiyoriy)",
+                        labelText: "Izoh (ixtiyoriy)".tr,
                         labelStyle: const TextStyle(color: Colors.white60),
-                        prefixIcon: const Icon(LucideIcons.pencil, color: Colors.white54, size: 18),
+                        prefixIcon: const Icon(
+                          LucideIcons.pencil,
+                          color: Colors.white54,
+                          size: 18,
+                        ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: const BorderSide(color: Colors.white24),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-                          borderSide: const BorderSide(color: Colors.blueAccent),
+                          borderSide: const BorderSide(
+                            color: Colors.blueAccent,
+                          ),
                         ),
                       ),
                     ),
@@ -431,8 +531,12 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
                         final picked = await showDatePicker(
                           context: context,
                           initialDate: chosenDate,
-                          firstDate: DateTime.now().subtract(const Duration(days: 365)),
-                          lastDate: DateTime.now().add(const Duration(days: 365)),
+                          firstDate: DateTime.now().subtract(
+                            const Duration(days: 365),
+                          ),
+                          lastDate: DateTime.now().add(
+                            const Duration(days: 365),
+                          ),
                         );
                         if (picked != null) {
                           setSheetState(() => chosenDate = picked);
@@ -442,15 +546,26 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
                         padding: const EdgeInsets.symmetric(vertical: 8.0),
                         child: Row(
                           children: [
-                            const Icon(LucideIcons.calendar, color: Colors.blueAccent, size: 20),
+                            const Icon(
+                              LucideIcons.calendar,
+                              color: Colors.blueAccent,
+                              size: 20,
+                            ),
                             const SizedBox(width: 12),
                             Expanded(
                               child: Text(
-                                "Sana: ${chosenDate.day}-${_getMonthNameUz(chosenDate.month)} ${chosenDate.year}-yil",
-                                style: const TextStyle(color: Colors.white, fontSize: 15),
+                                "${'Sana:'.tr} ${chosenDate.day}-${_getMonthNameUz(chosenDate.month).tr} ${chosenDate.year}-${'yil'.tr}",
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 15,
+                                ),
                               ),
                             ),
-                            const Icon(LucideIcons.chevronRight, color: Colors.white54, size: 16),
+                            const Icon(
+                              LucideIcons.chevronRight,
+                              color: Colors.white54,
+                              size: 16,
+                            ),
                           ],
                         ),
                       ),
@@ -467,32 +582,46 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
                           ),
                         ),
                         onPressed: () {
-                          final amount = double.tryParse(amountController.text.trim());
+                          final amount = double.tryParse(
+                            amountController.text.trim(),
+                          );
                           if (amount == null || amount <= 0) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text("Iltimos, to'g'ri summani kiriting")),
+                              SnackBar(
+                                content: Text(
+                                  "Iltimos, to'g'ri summani kiriting".tr,
+                                ),
+                              ),
                             );
                             return;
                           }
                           if (selectedCategory == null) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text("Iltimos, toifani tanlang")),
+                              SnackBar(
+                                content: Text("Iltimos, toifani tanlang".tr),
+                              ),
                             );
                             return;
                           }
-                          
+
                           Navigator.pop(context);
                           _addRecord(
                             selectedType,
                             amount,
                             selectedCategory!,
-                            descController.text.trim().isEmpty ? null : descController.text.trim(),
+                            descController.text.trim().isEmpty
+                                ? null
+                                : descController.text.trim(),
                             chosenDate,
                           );
                         },
-                        child: const Text(
-                          "Saqlash",
-                          style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                        child: Text(
+                          "Saqlash".tr,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     ),
@@ -514,13 +643,22 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
       builder: (ctx) {
         return AlertDialog(
           backgroundColor: Colors.grey[900],
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-          title: const Text('Yangi toifa qo\'shish', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          title: Text(
+            'Yangi toifa qo\'shish'.tr,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
           content: TextField(
             controller: catController,
             style: const TextStyle(color: Colors.white),
             decoration: InputDecoration(
-              hintText: 'Toifa nomi',
+              hintText: 'Toifa nomi'.tr,
               hintStyle: const TextStyle(color: Colors.white54),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
@@ -535,12 +673,17 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx),
-              child: const Text('Bekor qilish', style: TextStyle(color: Colors.white54)),
+              child: Text(
+                'Bekor qilish'.tr,
+                style: const TextStyle(color: Colors.white54),
+              ),
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.blueAccent,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
               ),
               onPressed: () async {
                 final name = catController.text.trim();
@@ -548,24 +691,35 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
                   final prefs = await SharedPreferences.getInstance();
                   if (type == 'expense') {
                     _customExpenseCategories.add(name);
-                    await prefs.setStringList('customExpenseCategories', _customExpenseCategories);
+                    await prefs.setStringList(
+                      'customExpenseCategories',
+                      _customExpenseCategories,
+                    );
                   } else {
                     _customIncomeCategories.add(name);
-                    await prefs.setStringList('customIncomeCategories', _customIncomeCategories);
+                    await prefs.setStringList(
+                      'customIncomeCategories',
+                      _customIncomeCategories,
+                    );
                   }
                   setSheetState(() {});
                   setState(() {});
                 }
                 Navigator.pop(ctx);
               },
-              child: const Text('Qo\'shish', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+              child: Text(
+                'Qo\'shish'.tr,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             ),
           ],
         );
-      }
+      },
     );
   }
-
 
   void _showAddPlannedPaymentBottomSheet() {
     String? selectedCategory;
@@ -586,7 +740,9 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
       isScrollControlled: true,
       backgroundColor: Colors.grey[900],
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(GlassTokens.radiusLg)),
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(GlassTokens.radiusLg),
+        ),
       ),
       builder: (context) {
         return StatefulBuilder(
@@ -606,12 +762,19 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text(
-                          "Rejalashtirilgan to'lov",
-                          style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+                        Text(
+                          "Rejalashtirilgan to'lov".tr,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                         IconButton(
-                          icon: const Icon(LucideIcons.x, color: Colors.white70),
+                          icon: const Icon(
+                            LucideIcons.x,
+                            color: Colors.white70,
+                          ),
                           onPressed: () => Navigator.pop(context),
                         ),
                       ],
@@ -622,16 +785,21 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
                       controller: titleController,
                       style: const TextStyle(color: Colors.white),
                       decoration: InputDecoration(
-                        labelText: "To'lov nomi (Masalan: Kredit to'lovi)",
+                        labelText: "To'lov nomi (Masalan: Kredit to'lovi)".tr,
                         labelStyle: const TextStyle(color: Colors.white60),
-                        prefixIcon: const Icon(LucideIcons.pencil, color: Colors.blueAccent),
+                        prefixIcon: const Icon(
+                          LucideIcons.pencil,
+                          color: Colors.blueAccent,
+                        ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: const BorderSide(color: Colors.white24),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-                          borderSide: const BorderSide(color: Colors.blueAccent),
+                          borderSide: const BorderSide(
+                            color: Colors.blueAccent,
+                          ),
                         ),
                       ),
                     ),
@@ -640,42 +808,59 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
                     TextField(
                       controller: amountController,
                       keyboardType: TextInputType.number,
-                      style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
                       decoration: InputDecoration(
-                        labelText: "Summa (UZS)",
-                        labelStyle: const TextStyle(color: Colors.white60, fontSize: 16),
-                        prefixIcon: const Icon(LucideIcons.banknote, color: Colors.blueAccent),
+                        labelText: "Summa (UZS)".tr,
+                        labelStyle: const TextStyle(
+                          color: Colors.white60,
+                          fontSize: 16,
+                        ),
+                        prefixIcon: const Icon(
+                          LucideIcons.banknote,
+                          color: Colors.blueAccent,
+                        ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: const BorderSide(color: Colors.white24),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-                          borderSide: const BorderSide(color: Colors.blueAccent),
+                          borderSide: const BorderSide(
+                            color: Colors.blueAccent,
+                          ),
                         ),
                       ),
                     ),
                     const SizedBox(height: 20),
                     // Category Grid
-                    const Text(
-                      "Toifani tanlang",
-                      style: TextStyle(color: Colors.white70, fontSize: 14, fontWeight: FontWeight.bold),
+                    Text(
+                      "Toifani tanlang".tr,
+                      style: const TextStyle(
+                        color: Colors.white70,
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     const SizedBox(height: 10),
                     GridView.builder(
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
-                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 4,
-                        mainAxisSpacing: 10,
-                        crossAxisSpacing: 10,
-                        childAspectRatio: 1.1,
-                      ),
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 4,
+                            mainAxisSpacing: 10,
+                            crossAxisSpacing: 10,
+                            childAspectRatio: 1.1,
+                          ),
                       itemCount: plannedCategories.length,
                       itemBuilder: (context, index) {
                         final cat = plannedCategories[index];
                         final isSelected = selectedCategory == cat['name'];
-                        
+
                         return GestureDetector(
                           onTap: () {
                             setSheetState(() {
@@ -684,12 +869,14 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
                           },
                           child: Container(
                             decoration: BoxDecoration(
-                              color: isSelected 
+                              color: isSelected
                                   ? Colors.blueAccent
                                   : Colors.white.withOpacity(0.05),
                               borderRadius: BorderRadius.circular(12),
                               border: Border.all(
-                                color: isSelected ? Colors.blueAccent : Colors.white10,
+                                color: isSelected
+                                    ? Colors.blueAccent
+                                    : Colors.white10,
                                 width: isSelected ? 1.5 : 1.0,
                               ),
                             ),
@@ -697,17 +884,23 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Icon(
-                                  cat['icon'], 
-                                  color: isSelected ? Colors.white : Colors.white70,
+                                  cat['icon'],
+                                  color: isSelected
+                                      ? Colors.white
+                                      : Colors.white70,
                                   size: 18,
                                 ),
                                 const SizedBox(height: 4),
                                 Text(
-                                  cat['name'],
+                                  (cat['name'] as String).tr,
                                   style: TextStyle(
-                                    color: isSelected ? Colors.white : Colors.white54,
+                                    color: isSelected
+                                        ? Colors.white
+                                        : Colors.white54,
                                     fontSize: 11,
-                                    fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                                    fontWeight: isSelected
+                                        ? FontWeight.bold
+                                        : FontWeight.normal,
                                   ),
                                 ),
                               ],
@@ -721,17 +914,24 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Column(
+                        Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              "Har oy takrorlash",
-                              style: TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold),
+                              "Har oy takrorlash".tr,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
-                            SizedBox(height: 2),
+                            const SizedBox(height: 2),
                             Text(
-                              "Har oy belgilangan sanada eslatiladi",
-                              style: TextStyle(color: Colors.white54, fontSize: 11),
+                              "Har oy belgilangan sanada eslatiladi".tr,
+                              style: const TextStyle(
+                                color: Colors.white54,
+                                fontSize: 11,
+                              ),
                             ),
                           ],
                         ),
@@ -751,8 +951,12 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
                         final picked = await showDatePicker(
                           context: context,
                           initialDate: chosenDate,
-                          firstDate: DateTime.now().subtract(const Duration(days: 30)),
-                          lastDate: DateTime.now().add(const Duration(days: 365)),
+                          firstDate: DateTime.now().subtract(
+                            const Duration(days: 30),
+                          ),
+                          lastDate: DateTime.now().add(
+                            const Duration(days: 365),
+                          ),
                         );
                         if (picked != null) {
                           setSheetState(() => chosenDate = picked);
@@ -762,15 +966,26 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
                         padding: const EdgeInsets.symmetric(vertical: 8.0),
                         child: Row(
                           children: [
-                            const Icon(LucideIcons.calendar, color: Colors.blueAccent, size: 20),
+                            const Icon(
+                              LucideIcons.calendar,
+                              color: Colors.blueAccent,
+                              size: 20,
+                            ),
                             const SizedBox(width: 12),
                             Expanded(
                               child: Text(
-                                "Muddati: ${chosenDate.day}-${_getMonthNameUz(chosenDate.month)} ${chosenDate.year}-yil",
-                                style: const TextStyle(color: Colors.white, fontSize: 15),
+                                "${'Muddati:'.tr} ${chosenDate.day}-${_getMonthNameUz(chosenDate.month).tr} ${chosenDate.year}-${'yil'.tr}",
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 15,
+                                ),
                               ),
                             ),
-                            const Icon(LucideIcons.chevronRight, color: Colors.white54, size: 16),
+                            const Icon(
+                              LucideIcons.chevronRight,
+                              color: Colors.white54,
+                              size: 16,
+                            ),
                           ],
                         ),
                       ),
@@ -789,26 +1004,38 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
                         ),
                         onPressed: () {
                           final title = titleController.text.trim();
-                          final amount = double.tryParse(amountController.text.trim());
+                          final amount = double.tryParse(
+                            amountController.text.trim(),
+                          );
                           if (title.isEmpty) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text("Iltimos, to'lov nomini kiriting")),
+                              SnackBar(
+                                content: Text(
+                                  "Iltimos, to'lov nomini kiriting".tr,
+                                ),
+                              ),
                             );
                             return;
                           }
                           if (amount == null || amount <= 0) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text("Iltimos, to'g'ri summani kiriting")),
+                              SnackBar(
+                                content: Text(
+                                  "Iltimos, to'g'ri summani kiriting".tr,
+                                ),
+                              ),
                             );
                             return;
                           }
                           if (selectedCategory == null) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text("Iltimos, toifani tanlang")),
+                              SnackBar(
+                                content: Text("Iltimos, toifani tanlang".tr),
+                              ),
                             );
                             return;
                           }
-                          
+
                           Navigator.pop(context);
                           _addPlannedPayment(
                             title,
@@ -818,9 +1045,13 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
                             isRecurring,
                           );
                         },
-                        child: const Text(
-                          "Saqlash",
-                          style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                        child: Text(
+                          "Saqlash".tr,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     ),
@@ -839,7 +1070,7 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
   Widget build(BuildContext context) {
     return GlassScaffold(
       showBackButton: true,
-      title: 'Mening moliyam',
+      title: 'Mening moliyam'.tr,
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : Column(
@@ -849,7 +1080,9 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
                 Expanded(
                   child: SingleChildScrollView(
                     physics: const BouncingScrollPhysics(),
-                    child: _activeTab == 0 ? _buildAnalyticsTab() : _buildPlannedTab(),
+                    child: _activeTab == 0
+                        ? _buildAnalyticsTab()
+                        : _buildPlannedTab(),
                   ),
                 ),
               ],
@@ -858,7 +1091,9 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
         backgroundColor: Colors.blueAccent,
         foregroundColor: Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        onPressed: _activeTab == 0 ? _showAddTransactionBottomSheet : _showAddPlannedPaymentBottomSheet,
+        onPressed: _activeTab == 0
+            ? _showAddTransactionBottomSheet
+            : _showAddPlannedPaymentBottomSheet,
         child: const Icon(LucideIcons.plus, size: 24),
       ),
     );
@@ -875,8 +1110,12 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
             onPressed: () => _changeMonth(-1),
           ),
           Text(
-            "${_getMonthNameUz(_currentMonth.month)}, ${_currentMonth.year}",
-            style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+            "${_getMonthNameUz(_currentMonth.month).tr}, ${_currentMonth.year}",
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
           ),
           IconButton(
             icon: const Icon(LucideIcons.chevronRight, color: Colors.white),
@@ -909,13 +1148,17 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
                     child: Container(
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
-                        color: _activeTab == 0 ? Colors.blueAccent : Colors.transparent,
+                        color: _activeTab == 0
+                            ? Colors.blueAccent
+                            : Colors.transparent,
                         borderRadius: BorderRadius.circular(14),
                       ),
                       child: Text(
-                        "Tahlil & Tarix",
+                        "Tahlil & Tarix".tr,
                         style: TextStyle(
-                          color: _activeTab == 0 ? Colors.white : Colors.white70,
+                          color: _activeTab == 0
+                              ? Colors.white
+                              : Colors.white70,
                           fontWeight: FontWeight.bold,
                           fontSize: 14,
                         ),
@@ -929,13 +1172,17 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
                     child: Container(
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
-                        color: _activeTab == 1 ? Colors.blueAccent : Colors.transparent,
+                        color: _activeTab == 1
+                            ? Colors.blueAccent
+                            : Colors.transparent,
                         borderRadius: BorderRadius.circular(14),
                       ),
                       child: Text(
-                        "Rejali to'lovlar",
+                        "Rejali to'lovlar".tr,
                         style: TextStyle(
-                          color: _activeTab == 1 ? Colors.white : Colors.white70,
+                          color: _activeTab == 1
+                              ? Colors.white
+                              : Colors.white70,
                           fontWeight: FontWeight.bold,
                           fontSize: 14,
                         ),
@@ -956,8 +1203,7 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _buildBalanceCard(),
-        if (_stats != null && _stats!.insight.isNotEmpty)
-          _buildInsightCard(),
+        if (_stats != null && _stats!.insight.isNotEmpty) _buildInsightCard(),
         if (_stats != null && _stats!.categoryStats.isNotEmpty) ...[
           _buildDonutChartWidget(),
           _buildCategoryBreakdown(),
@@ -970,7 +1216,7 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
   Widget _buildPlannedTab() {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
-    
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
       child: Column(
@@ -979,12 +1225,16 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
-                "Kutilayotgan to'lovlar",
-                style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+              Text(
+                "Kutilayotgan to'lovlar".tr,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               Text(
-                "Jami: ${_plannedPayments.length} ta",
+                "${'Jami:'.tr} ${_plannedPayments.length} ${'ta'.tr}",
                 style: const TextStyle(color: Colors.white54, fontSize: 13),
               ),
             ],
@@ -996,11 +1246,18 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
                   alignment: Alignment.center,
                   child: Column(
                     children: [
-                      Icon(LucideIcons.calendarCheck, size: 44, color: Colors.white),
+                      Icon(
+                        LucideIcons.calendarCheck,
+                        size: 44,
+                        color: Colors.white,
+                      ),
                       const SizedBox(height: 12),
-                      const Text(
-                        "Rejalashtirilgan to'lovlar yo'q",
-                        style: TextStyle(color: Colors.white38, fontSize: 14),
+                      Text(
+                        "Rejalashtirilgan to'lovlar yo'q".tr,
+                        style: const TextStyle(
+                          color: Colors.white38,
+                          fontSize: 14,
+                        ),
                       ),
                     ],
                   ),
@@ -1011,17 +1268,19 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
                   itemCount: _plannedPayments.length,
                   itemBuilder: (context, index) {
                     final item = _plannedPayments[index];
-                    final isOverdue = item.dueDate.isBefore(today) && !item.isPaid;
-                    final dueStr = "${item.dueDate.day}-${_getMonthNameUz(item.dueDate.month).substring(0, 3)} ${item.dueDate.year}";
+                    final isOverdue =
+                        item.dueDate.isBefore(today) && !item.isPaid;
+                    final dueStr =
+                        "${item.dueDate.day}-${_getMonthNameUz(item.dueDate.month).tr.substring(0, 3)} ${item.dueDate.year}";
 
                     Color statusColor = Colors.orangeAccent;
-                    String statusText = "Kutilmoqda";
+                    String statusText = "Kutilmoqda".tr;
                     if (item.isPaid) {
                       statusColor = Colors.greenAccent;
-                      statusText = "To'landi";
+                      statusText = "To'landi".tr;
                     } else if (isOverdue) {
                       statusColor = Colors.redAccent;
-                      statusText = "Muddati o'tdi";
+                      statusText = "Muddati o'tdi".tr;
                     }
 
                     return ClipRRect(
@@ -1035,123 +1294,181 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
                             color: Colors.white.withOpacity(0.2),
                             borderRadius: BorderRadius.circular(18),
                             border: Border.all(
-                              color: isOverdue 
+                              color: isOverdue
                                   ? Colors.redAccent
                                   : Colors.white30,
                             ),
                           ),
                           child: Column(
-                        children: [
-                          Row(
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.all(8),
-                                decoration: BoxDecoration(
-                                  color: Colors.blueAccent,
-                                  shape: BoxShape.circle,
-                                ),
-                                child: Icon(
-                                  item.category == 'Kredit' 
-                                      ? LucideIcons.landmark
-                                      : item.category == 'Obuna'
-                                          ? LucideIcons.refreshCw
-                                          : item.category == 'Qarz'
-                                              ? LucideIcons.hand
-                                              : LucideIcons.moreHorizontal,
-                                  color: Colors.blueAccent,
-                                  size: 16,
-                                ),
-                              ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      item.title,
-                                      style: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold),
-                                    ),
-                                    const SizedBox(height: 2),
-                                    Text(
-                                      item.category,
-                                      style: const TextStyle(color: Colors.white38, fontSize: 11),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              Text(
-                                _formatCurrency(item.amount),
-                                style: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 12),
-                          const Divider(color: Colors.white10, height: 1),
-                          const SizedBox(height: 12),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Row(
                                 children: [
-                                  const Icon(LucideIcons.calendar, size: 14, color: Colors.white54),
-                                  const SizedBox(width: 6),
-                                  Text(
-                                    dueStr,
-                                    style: const TextStyle(color: Colors.white60, fontSize: 12),
+                                  Container(
+                                    padding: const EdgeInsets.all(8),
+                                    decoration: BoxDecoration(
+                                      color: Colors.blueAccent,
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: Icon(
+                                      item.category == 'Kredit'
+                                          ? LucideIcons.landmark
+                                          : item.category == 'Obuna'
+                                          ? LucideIcons.refreshCw
+                                          : item.category == 'Qarz'
+                                          ? LucideIcons.hand
+                                          : LucideIcons.moreHorizontal,
+                                      color: Colors.blueAccent,
+                                      size: 16,
+                                    ),
                                   ),
-                                  if (item.isRecurring) ...[
-                                    const SizedBox(width: 12),
-                                    const Icon(LucideIcons.repeat, size: 12, color: Colors.blueAccent),
-                                    const SizedBox(width: 4),
-                                    const Text("Obuna", style: TextStyle(color: Colors.blueAccent, fontSize: 11)),
-                                  ],
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          item.title,
+                                          style: const TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 15,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 2),
+                                        Text(
+                                          item.category.tr,
+                                          style: const TextStyle(
+                                            color: Colors.white38,
+                                            fontSize: 11,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Text(
+                                    _formatCurrency(item.amount),
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
                                 ],
                               ),
-                              Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                                decoration: BoxDecoration(
-                                  color: statusColor,
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                child: Text(
-                                  statusText,
-                                  style: TextStyle(color: statusColor, fontSize: 11, fontWeight: FontWeight.bold),
-                                ),
-                              ),
-                            ],
-                          ),
-                          if (!item.isPaid) ...[
-                            const SizedBox(height: 14),
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: ElevatedButton.icon(
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.greenAccent,
-                                      foregroundColor: Colors.greenAccent,
-                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                                      padding: const EdgeInsets.symmetric(vertical: 10),
-                                      elevation: 0,
+                              const SizedBox(height: 12),
+                              const Divider(color: Colors.white10, height: 1),
+                              const SizedBox(height: 12),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Row(
+                                    children: [
+                                      const Icon(
+                                        LucideIcons.calendar,
+                                        size: 14,
+                                        color: Colors.white54,
+                                      ),
+                                      const SizedBox(width: 6),
+                                      Text(
+                                        dueStr,
+                                        style: const TextStyle(
+                                          color: Colors.white60,
+                                          fontSize: 12,
+                                        ),
+                                      ),
+                                      if (item.isRecurring) ...[
+                                        const SizedBox(width: 12),
+                                        const Icon(
+                                          LucideIcons.repeat,
+                                          size: 12,
+                                          color: Colors.blueAccent,
+                                        ),
+                                        const SizedBox(width: 4),
+                                        Text(
+                                          "Obuna".tr,
+                                          style: const TextStyle(
+                                            color: Colors.blueAccent,
+                                            fontSize: 11,
+                                          ),
+                                        ),
+                                      ],
+                                    ],
+                                  ),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 10,
+                                      vertical: 4,
                                     ),
-                                    onPressed: () => _markPlannedPaymentPaid(item),
-                                    icon: const Icon(LucideIcons.check, size: 16),
-                                    label: const Text("To'landi", style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
+                                    decoration: BoxDecoration(
+                                      color: statusColor,
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child: Text(
+                                      statusText,
+                                      style: TextStyle(
+                                        color: statusColor,
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
                                   ),
-                                ),
-                                const SizedBox(width: 10),
-                                Container(
-                                  decoration: BoxDecoration(
-                                    color: Colors.redAccent,
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  child: IconButton(
-                                    icon: const Icon(LucideIcons.trash2, color: Colors.redAccent, size: 18),
-                                    onPressed: () => _deletePlannedPayment(item.id),
-                                  ),
+                                ],
+                              ),
+                              if (!item.isPaid) ...[
+                                const SizedBox(height: 14),
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: ElevatedButton.icon(
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: Colors.greenAccent,
+                                          foregroundColor: Colors.greenAccent,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(
+                                              12,
+                                            ),
+                                          ),
+                                          padding: const EdgeInsets.symmetric(
+                                            vertical: 10,
+                                          ),
+                                          elevation: 0,
+                                        ),
+                                        onPressed: () =>
+                                            _markPlannedPaymentPaid(item),
+                                        icon: const Icon(
+                                          LucideIcons.check,
+                                          size: 16,
+                                        ),
+                                        label: Text(
+                                          "To'landi".tr,
+                                          style: const TextStyle(
+                                            fontSize: 13,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 10),
+                                    Container(
+                                      decoration: BoxDecoration(
+                                        color: Colors.redAccent,
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      child: IconButton(
+                                        icon: Icon(
+                                          LucideIcons.trash2,
+                                          color: Colors.redAccent,
+                                          size: 18,
+                                        ),
+                                        onPressed: () =>
+                                            _deletePlannedPayment(item.id),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ],
-                            ),
-                          ]
                             ],
                           ),
                         ),
@@ -1183,87 +1500,112 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
               border: Border.all(color: Colors.white30),
             ),
             child: Column(
-          children: [
-            const Text(
-              "Jami Balans",
-              style: TextStyle(
-                color: Colors.white70,
-                fontSize: 16,
-              ),
-            ),
-            const SizedBox(height: 6),
-            Text(
-              _formatCurrency(balance),
-              style: TextStyle(
-                color: balance >= 0 ? Colors.white : Colors.redAccent,
-                fontSize: 26,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 20),
-            Row(
               children: [
-                Expanded(
-                  child: Column(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(4),
-                            decoration: BoxDecoration(
-                              color: Colors.greenAccent.withOpacity(0.2),
-                              shape: BoxShape.circle,
-                            ),
-                            child: const Icon(LucideIcons.arrowDownLeft, color: Colors.greenAccent, size: 14),
-                          ),
-                          const SizedBox(width: 6),
-                          const Text("Daromad", style: TextStyle(color: Colors.white70, fontSize: 13)),
-                        ],
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        _formatCurrency(income),
-                        style: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold),
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
+                Text(
+                  "Jami Balans".tr,
+                  style: const TextStyle(color: Colors.white70, fontSize: 16),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  _formatCurrency(balance),
+                  style: TextStyle(
+                    color: balance >= 0 ? Colors.white : Colors.redAccent,
+                    fontSize: 26,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
-                Container(width: 1, height: 40, color: Colors.white10),
-                Expanded(
-                  child: Column(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                const SizedBox(height: 20),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Column(
                         children: [
-                          Container(
-                            padding: const EdgeInsets.all(4),
-                            decoration: BoxDecoration(
-                              color: Colors.redAccent.withOpacity(0.2),
-                              shape: BoxShape.circle,
-                            ),
-                            child: const Icon(LucideIcons.arrowUpRight, color: Colors.redAccent, size: 14),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(4),
+                                decoration: BoxDecoration(
+                                  color: Colors.greenAccent.withOpacity(0.2),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(
+                                  LucideIcons.arrowDownLeft,
+                                  color: Colors.greenAccent,
+                                  size: 14,
+                                ),
+                              ),
+                              const SizedBox(width: 6),
+                              Text(
+                                "Daromad".tr,
+                                style: const TextStyle(
+                                  color: Colors.white70,
+                                  fontSize: 13,
+                                ),
+                              ),
+                            ],
                           ),
-                          const SizedBox(width: 6),
-                          const Text("Xarajat", style: TextStyle(color: Colors.white70, fontSize: 13)),
+                          const SizedBox(height: 4),
+                          Text(
+                            _formatCurrency(income),
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
                         ],
                       ),
-                      const SizedBox(height: 4),
-                      Text(
-                        _formatCurrency(expense),
-                        style: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold),
-                        textAlign: TextAlign.center,
+                    ),
+                    Container(width: 1, height: 40, color: Colors.white10),
+                    Expanded(
+                      child: Column(
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(4),
+                                decoration: BoxDecoration(
+                                  color: Colors.redAccent.withOpacity(0.2),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(
+                                  LucideIcons.arrowUpRight,
+                                  color: Colors.redAccent,
+                                  size: 14,
+                                ),
+                              ),
+                              const SizedBox(width: 6),
+                              Text(
+                                "Xarajat".tr,
+                                style: const TextStyle(
+                                  color: Colors.white70,
+                                  fontSize: 13,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            _formatCurrency(expense),
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ],
             ),
-          ],
+          ),
         ),
-      ),
-      ),
       ),
     );
   }
@@ -1283,32 +1625,36 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
               border: Border.all(color: Colors.amberAccent.withOpacity(0.3)),
             ),
             child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Icon(LucideIcons.lightbulb, color: Colors.amberAccent, size: 20),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Text(
-                _stats!.insight,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 14,
-                  height: 1.4,
-                  fontWeight: FontWeight.w500,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Icon(
+                  LucideIcons.lightbulb,
+                  color: Colors.amberAccent,
+                  size: 20,
                 ),
-              ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    _stats!.insight,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 14,
+                      height: 1.4,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
-      ),
-      ),
       ),
     );
   }
 
   Widget _buildDonutChartWidget() {
     final expense = _stats?.totalExpense ?? 0.0;
-    
+
     return Padding(
       padding: const EdgeInsets.all(24.0),
       child: Center(
@@ -1321,13 +1667,20 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text("Jami Xarajat", style: TextStyle(color: Colors.white54, fontSize: 12)),
+                  Text(
+                    "Jami Xarajat".tr,
+                    style: const TextStyle(color: Colors.white54, fontSize: 12),
+                  ),
                   const SizedBox(height: 4),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
                     child: Text(
                       _formatCurrency(expense),
-                      style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
                       textAlign: TextAlign.center,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
@@ -1348,9 +1701,13 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            "Xarajatlar ulushi",
-            style: TextStyle(color: Colors.white70, fontSize: 15, fontWeight: FontWeight.bold),
+          Text(
+            "Xarajatlar ulushi".tr,
+            style: const TextStyle(
+              color: Colors.white70,
+              fontSize: 15,
+              fontWeight: FontWeight.bold,
+            ),
           ),
           const SizedBox(height: 12),
           ListView.builder(
@@ -1360,7 +1717,7 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
             itemBuilder: (context, index) {
               final cat = _stats!.categoryStats[index];
               final color = _chartColors[index % _chartColors.length];
-              
+
               return Padding(
                 padding: const EdgeInsets.only(bottom: 12.0),
                 child: Row(
@@ -1368,23 +1725,37 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
                     Container(
                       width: 12,
                       height: 12,
-                      decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+                      decoration: BoxDecoration(
+                        color: color,
+                        shape: BoxShape.circle,
+                      ),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(
-                        cat.category,
-                        style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w500),
+                        cat.category.tr,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                     ),
                     Text(
                       "${cat.percentage.toStringAsFixed(1)}%",
-                      style: const TextStyle(color: Colors.white60, fontSize: 13),
+                      style: const TextStyle(
+                        color: Colors.white60,
+                        fontSize: 13,
+                      ),
                     ),
                     const SizedBox(width: 20),
                     Text(
                       _formatCurrency(cat.amount),
-                      style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ],
                 ),
@@ -1402,18 +1773,22 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            "Oxirgi amallar",
-            style: TextStyle(color: Colors.white70, fontSize: 15, fontWeight: FontWeight.bold),
+          Text(
+            "Oxirgi amallar".tr,
+            style: const TextStyle(
+              color: Colors.white70,
+              fontSize: 15,
+              fontWeight: FontWeight.bold,
+            ),
           ),
           const SizedBox(height: 12),
           _records.isEmpty
               ? Container(
                   padding: const EdgeInsets.symmetric(vertical: 30),
                   alignment: Alignment.center,
-                  child: const Text(
-                    "Tranzaksiyalar mavjud emas",
-                    style: TextStyle(color: Colors.white38, fontSize: 14),
+                  child: Text(
+                    "Tranzaksiyalar mavjud emas".tr,
+                    style: const TextStyle(color: Colors.white38, fontSize: 14),
                   ),
                 )
               : ListView.builder(
@@ -1423,29 +1798,39 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
                   itemBuilder: (context, index) {
                     final item = _records[index];
                     final isExpense = item.type == "expense";
-                    final dateStr = "${item.date.day}-${_getMonthNameUz(item.date.month).substring(0, 3)}";
+                    final dateStr =
+                        "${item.date.day}-${_getMonthNameUz(item.date.month).tr.substring(0, 3)}";
 
                     return Container(
                       margin: const EdgeInsets.only(bottom: 10),
-                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 10,
+                      ),
                       decoration: BoxDecoration(
                         color: Colors.white.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: Colors.white.withOpacity(0.1)),
+                        border: Border.all(
+                          color: Colors.white.withOpacity(0.1),
+                        ),
                       ),
                       child: Row(
                         children: [
                           Container(
                             padding: const EdgeInsets.all(8),
                             decoration: BoxDecoration(
-                              color: isExpense 
+                              color: isExpense
                                   ? Colors.redAccent.withOpacity(0.2)
                                   : Colors.greenAccent.withOpacity(0.2),
                               shape: BoxShape.circle,
                             ),
                             child: Icon(
-                              isExpense ? LucideIcons.arrowUpRight : LucideIcons.arrowDownLeft,
-                              color: isExpense ? Colors.redAccent : Colors.greenAccent,
+                              isExpense
+                                  ? LucideIcons.arrowUpRight
+                                  : LucideIcons.arrowDownLeft,
+                              color: isExpense
+                                  ? Colors.redAccent
+                                  : Colors.greenAccent,
                               size: 16,
                             ),
                           ),
@@ -1455,13 +1840,20 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  item.category,
-                                  style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
+                                  item.category.tr,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
                                 const SizedBox(height: 2),
                                 Text(
                                   item.description ?? dateStr,
-                                  style: const TextStyle(color: Colors.white38, fontSize: 11),
+                                  style: const TextStyle(
+                                    color: Colors.white38,
+                                    fontSize: 11,
+                                  ),
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                 ),
@@ -1474,7 +1866,9 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
                               Text(
                                 "${isExpense ? '-' : '+'}${_formatCurrency(item.amount)}",
                                 style: TextStyle(
-                                  color: isExpense ? Colors.redAccent : Colors.greenAccent,
+                                  color: isExpense
+                                      ? Colors.redAccent
+                                      : Colors.greenAccent,
                                   fontSize: 14,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -1482,13 +1876,20 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
                               const SizedBox(height: 2),
                               Text(
                                 dateStr,
-                                style: const TextStyle(color: Colors.white24, fontSize: 10),
+                                style: const TextStyle(
+                                  color: Colors.white24,
+                                  fontSize: 10,
+                                ),
                               ),
                             ],
                           ),
                           const SizedBox(width: 8),
                           IconButton(
-                            icon: const Icon(LucideIcons.trash2, color: Colors.redAccent, size: 16),
+                            icon: Icon(
+                              LucideIcons.trash2,
+                              color: Colors.redAccent,
+                              size: 16,
+                            ),
                             onPressed: () => _deleteRecord(item.id),
                           ),
                         ],

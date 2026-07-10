@@ -8,7 +8,8 @@ class RecommendedSectionWidget extends StatefulWidget {
   const RecommendedSectionWidget({super.key});
 
   @override
-  State<RecommendedSectionWidget> createState() => _RecommendedSectionWidgetState();
+  State<RecommendedSectionWidget> createState() =>
+      _RecommendedSectionWidgetState();
 }
 
 class _RecommendedSectionWidgetState extends State<RecommendedSectionWidget> {
@@ -24,12 +25,18 @@ class _RecommendedSectionWidgetState extends State<RecommendedSectionWidget> {
 
   Future<void> _load() async {
     try {
-      final res = await _api.getProviders(categoryKey: 'sartarosh', perPage: 10);
+      final res = await _api.getProviders(
+        categoryKey: 'sartarosh',
+        perPage: 10,
+      );
       final items = (res['items'] as List<dynamic>? ?? [])
           .cast<Map<String, dynamic>>();
       if (items.isNotEmpty) {
-        items.sort((a, b) =>
-            ((b['rating'] as num?) ?? 0).compareTo((a['rating'] as num?) ?? 0));
+        items.sort(
+          (a, b) => ((b['rating'] as num?) ?? 0).compareTo(
+            (a['rating'] as num?) ?? 0,
+          ),
+        );
         _top = BarberShop.fromProviderJson(items.first);
       }
     } catch (_) {
@@ -79,7 +86,9 @@ class _RecommendedSectionWidgetState extends State<RecommendedSectionWidget> {
                       bottomLeft: Radius.circular(20),
                     ),
                   ),
-                  child: const Center(child: Icon(LucideIcons.scissors, color: Color(0xFF6366F1))),
+                  child: const Center(
+                    child: Icon(LucideIcons.scissors, color: Color(0xFF6366F1)),
+                  ),
                 ),
                 const SizedBox(width: 15),
                 Expanded(
@@ -89,21 +98,31 @@ class _RecommendedSectionWidgetState extends State<RecommendedSectionWidget> {
                     children: [
                       Text(
                         shop.name,
-                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
                       const SizedBox(height: 4),
                       Text(
                         shop.address,
-                        style: const TextStyle(color: Colors.grey, fontSize: 12),
+                        style: const TextStyle(
+                          color: Colors.grey,
+                          fontSize: 12,
+                        ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
                       const SizedBox(height: 8),
                       Row(
                         children: [
-                          const Icon(LucideIcons.star, color: Colors.amber, size: 16),
+                          const Icon(
+                            LucideIcons.star,
+                            color: Colors.amber,
+                            size: 16,
+                          ),
                           const SizedBox(width: 4),
                           Text(
                             '${shop.rating} (${shop.reviewCount} sharh)',

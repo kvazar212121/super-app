@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../services/api_service.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 /// HubServis huquqiy hujjati (foydalanish shartlari / maxfiylik / FAQ).
 /// Matn backenddan (admin panelдан tahrirlanadi) olinadi; xato bo'lsa zaxira matn ko'rsatiladi.
@@ -52,9 +53,7 @@ class _TermsScreenState extends State<TermsScreen> {
           ? const Center(child: CircularProgressIndicator())
           : ListView(
               padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
-              children: [
-                ..._buildParagraphs(context, _content ?? _fallback),
-              ],
+              children: [..._buildParagraphs(context, _content ?? _fallback)],
             ),
     );
   }
@@ -72,13 +71,31 @@ class _TermsScreenState extends State<TermsScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (isHeading) ...[
-              Text(first, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16)),
+              Text(
+                first,
+                style: const TextStyle(
+                  fontWeight: FontWeight.w800,
+                  fontSize: 16,
+                ),
+              ),
               const SizedBox(height: 6),
-              Text(lines.skip(1).join('\n'),
-                  style: TextStyle(height: 1.55, fontSize: 14, color: Theme.of(context).textTheme.bodyMedium?.color)),
+              Text(
+                lines.skip(1).join('\n'),
+                style: TextStyle(
+                  height: 1.55,
+                  fontSize: 14,
+                  color: Theme.of(context).textTheme.bodyMedium?.color,
+                ),
+              ),
             ] else
-              Text(b,
-                  style: TextStyle(height: 1.55, fontSize: 14, color: Theme.of(context).textTheme.bodyMedium?.color)),
+              Text(
+                b,
+                style: TextStyle(
+                  height: 1.55,
+                  fontSize: 14,
+                  color: Theme.of(context).textTheme.bodyMedium?.color,
+                ),
+              ),
           ],
         ),
       );

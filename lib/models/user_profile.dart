@@ -44,10 +44,12 @@ class UserProfile {
       balance: balance ?? this.balance,
       cashback: cashback ?? this.cashback,
       isPremium: isPremium ?? this.isPremium,
-      reminderOffsetMinutes: reminderOffsetMinutes ?? this.reminderOffsetMinutes,
+      reminderOffsetMinutes:
+          reminderOffsetMinutes ?? this.reminderOffsetMinutes,
       isProvider: isProvider ?? this.isProvider,
     );
   }
+
   factory UserProfile.fromJson(Map<String, dynamic> json) {
     return UserProfile(
       name: json['name'] ?? '',

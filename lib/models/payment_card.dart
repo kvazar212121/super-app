@@ -1,3 +1,5 @@
+import 'package:super_app/l10n/locale_controller.dart';
+
 class PaymentCard {
   final String id;
   final String cardNumber;
@@ -25,7 +27,9 @@ class PaymentCard {
   factory PaymentCard.fromJson(Map<String, dynamic> json) {
     final expMonth = json['exp_month']?.toString().padLeft(2, '0') ?? '12';
     final expYrStr = json['exp_year']?.toString() ?? '26';
-    final expYear = expYrStr.substring(expYrStr.length >= 2 ? expYrStr.length - 2 : 0);
+    final expYear = expYrStr.substring(
+      expYrStr.length >= 2 ? expYrStr.length - 2 : 0,
+    );
     return PaymentCard(
       id: json['id']?.toString() ?? '',
       cardNumber: json['masked_number'] ?? '',
@@ -50,5 +54,4 @@ class PaymentCard {
       'exp_year': fullYear,
     };
   }
-
 }

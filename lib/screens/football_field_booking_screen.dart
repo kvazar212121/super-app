@@ -12,6 +12,7 @@ import '../widgets/booking_common_widgets.dart' hide SectionTitle, TimeSlotGrid;
 import '../widgets/football_field_widgets.dart';
 import '../widgets/glass/mesh_background.dart';
 import '../utils/call_helper.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 /// Futbol maydoni bron qilish — API slotlari bilan.
 class FootballFieldBookingScreen extends StatefulWidget {
@@ -24,7 +25,8 @@ class FootballFieldBookingScreen extends StatefulWidget {
       _FootballFieldBookingScreenState();
 }
 
-class _FootballFieldBookingScreenState extends State<FootballFieldBookingScreen> {
+class _FootballFieldBookingScreenState
+    extends State<FootballFieldBookingScreen> {
   FootballField get field => widget.field;
 
   final _availability = ProviderAvailabilityService();
@@ -155,8 +157,8 @@ class _FootballFieldBookingScreenState extends State<FootballFieldBookingScreen>
             TextFormField(
               controller: _notesCtrl,
               maxLines: 2,
-              decoration: const InputDecoration(
-                hintText: 'Masalan: hakam kerak...',
+              decoration: InputDecoration(
+                hintText: 'Masalan: hakam kerak...'.tr,
                 border: OutlineInputBorder(),
               ),
             ),
@@ -175,7 +177,9 @@ class _FootballFieldBookingScreenState extends State<FootballFieldBookingScreen>
               child: FilledButton.icon(
                 style: FilledButton.styleFrom(
                   backgroundColor: _accent,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
                 ),
                 onPressed: _startCall,
                 icon: const Icon(Icons.phone_in_talk, size: 22),

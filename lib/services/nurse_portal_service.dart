@@ -16,17 +16,16 @@ class NursePortalService {
     String? qualifications,
     String? documentUrl,
     String? passportUrl,
-  }) =>
-      _api.registerNurse(
-        name: name,
-        phone: phone,
-        serviceArea: serviceArea,
-        address: address,
-        medicalTypes: medicalTypes,
-        qualifications: qualifications,
-        documentUrl: documentUrl,
-        passportUrl: passportUrl,
-      );
+  }) => _api.registerNurse(
+    name: name,
+    phone: phone,
+    serviceArea: serviceArea,
+    address: address,
+    medicalTypes: medicalTypes,
+    qualifications: qualifications,
+    documentUrl: documentUrl,
+    passportUrl: passportUrl,
+  );
 
   Future<Map<String, dynamic>> getMe(String categoryKey) =>
       _api.getProviderMe(categoryKey);

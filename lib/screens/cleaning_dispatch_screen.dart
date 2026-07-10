@@ -10,6 +10,7 @@ import '../providers/app_provider.dart';
 import '../utils/auth_guard.dart';
 import '../widgets/booking_common_widgets.dart';
 import '../widgets/glass/mesh_background.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 class CleaningDispatchScreen extends StatefulWidget {
   final Master master;
@@ -59,7 +60,11 @@ class _CleaningDispatchScreenState extends State<CleaningDispatchScreen> {
     if (!await ensureAuthenticated(context)) return;
     if (!_canSubmit || !mounted) return;
 
-    final currency = NumberFormat.currency(locale: 'uz_UZ', symbol: 'so\'m', decimalDigits: 0);
+    final currency = NumberFormat.currency(
+      locale: 'uz_UZ',
+      symbol: 'so\'m',
+      decimalDigits: 0,
+    );
     final address = _addressCtrl.text.trim();
     final areaSize = _areaSizeCtrl.text.trim();
     final rooms = _roomsCtrl.text.trim();
@@ -68,7 +73,10 @@ class _CleaningDispatchScreenState extends State<CleaningDispatchScreen> {
       MapEntry('Tozalash xizmati', widget.master.name),
       MapEntry('Xizmat turi', _selectedService!),
       MapEntry('Obyekt turi', _selectedAreaType!),
-      MapEntry('Maydon', '$areaSize m²' + (rooms.isNotEmpty ? ' ($rooms xona)' : '')),
+      MapEntry(
+        'Maydon',
+        '$areaSize m²' + (rooms.isNotEmpty ? ' ($rooms xona)' : ''),
+      ),
       MapEntry('Taxminiy sana', DateFormat('dd.MM.yyyy').format(_selectedDate)),
       MapEntry('Manzil', address),
     ];
@@ -91,11 +99,14 @@ class _CleaningDispatchScreenState extends State<CleaningDispatchScreen> {
       providerName: widget.master.name,
       variant: 'Obyektga chaqiruv',
       address: address,
-      notes: 'Obyekt: $_selectedAreaType, $areaSize m²\nXonalar: ${rooms.isEmpty ? "kiritilmagan" : rooms}',
+      notes:
+          'Obyekt: $_selectedAreaType, $areaSize m²\nXonalar: ${rooms.isEmpty ? "kiritilmagan" : rooms}',
       date: _selectedDate,
       price: _selectedPrice, // Can be base price or 0
       status: OrderStatus.pending,
-      providerId: widget.master.providerId > 0 ? widget.master.providerId : null,
+      providerId: widget.master.providerId > 0
+          ? widget.master.providerId
+          : null,
     );
 
     try {
@@ -104,7 +115,9 @@ class _CleaningDispatchScreenState extends State<CleaningDispatchScreen> {
       Navigator.pop(context);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Tozalash xizmati chaqirildi! ${widget.master.name} tez orada aloqaga chiqadi.'),
+          content: Text(
+            'Tozalash xizmati chaqirildi! ${widget.master.name} tez orada aloqaga chiqadi.',
+          ),
           backgroundColor: Colors.green,
         ),
       );
@@ -119,7 +132,11 @@ class _CleaningDispatchScreenState extends State<CleaningDispatchScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final currency = NumberFormat.currency(locale: 'uz_UZ', symbol: 'so\'m', decimalDigits: 0);
+    final currency = NumberFormat.currency(
+      locale: 'uz_UZ',
+      symbol: 'so\'m',
+      decimalDigits: 0,
+    );
 
     return GlassBackdrop(
       child: Scaffold(
@@ -127,7 +144,7 @@ class _CleaningDispatchScreenState extends State<CleaningDispatchScreen> {
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           elevation: 0,
-          title: const Text('Tozalashga chaqirish'),
+          title: Text('Tozalashga chaqirish'.tr),
         ),
         body: SingleChildScrollView(
           padding: const EdgeInsets.all(20),
@@ -145,15 +162,31 @@ class _CleaningDispatchScreenState extends State<CleaningDispatchScreen> {
                     CircleAvatar(
                       radius: 28,
                       backgroundColor: _accent.withOpacity(0.1),
-                      child: Icon(LucideIcons.sprayCan, color: _accent, size: 24),
+                      child: Icon(
+                        LucideIcons.sprayCan,
+                        color: _accent,
+                        size: 24,
+                      ),
                     ),
                     const SizedBox(width: 16),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(widget.master.name, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                          Text(widget.master.specialty, style: TextStyle(color: _accent, fontWeight: FontWeight.w600)),
+                          Text(
+                            widget.master.name,
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Text(
+                            widget.master.specialty,
+                            style: TextStyle(
+                              color: _accent,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -171,13 +204,19 @@ class _CleaningDispatchScreenState extends State<CleaningDispatchScreen> {
                   return ChoiceChip(
                     label: Text(type),
                     selected: isSelected,
-                    onSelected: (val) => setState(() => _selectedAreaType = val ? type : null),
+                    onSelected: (val) =>
+                        setState(() => _selectedAreaType = val ? type : null),
                     selectedColor: _accent.withOpacity(0.2),
                     backgroundColor: Colors.white,
-                    side: BorderSide(color: isSelected ? _accent : Colors.grey.shade300, width: 1.5),
+                    side: BorderSide(
+                      color: isSelected ? _accent : Colors.grey.shade300,
+                      width: 1.5,
+                    ),
                     labelStyle: TextStyle(
                       color: isSelected ? _accent : Colors.black87,
-                      fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                      fontWeight: isSelected
+                          ? FontWeight.bold
+                          : FontWeight.normal,
                     ),
                   );
                 }).toList(),
@@ -196,7 +235,9 @@ class _CleaningDispatchScreenState extends State<CleaningDispatchScreen> {
                           hint: 'Mas: 80',
                           icon: LucideIcons.ruler,
                           accent: _accent,
-                          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                          keyboardType: const TextInputType.numberWithOptions(
+                            decimal: true,
+                          ),
                           suffixText: 'm²',
                           onChanged: (_) => setState(() {}),
                         ),
@@ -236,14 +277,17 @@ class _CleaningDispatchScreenState extends State<CleaningDispatchScreen> {
                   prefixIcon: const Icon(LucideIcons.mapPin),
                   filled: true,
                   fillColor: Colors.white,
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: BorderSide.none,
+                  ),
                 ),
               ),
               const SizedBox(height: 24),
               const SectionTitle('Tozalash turi'),
               const SizedBox(height: 12),
               if (widget.master.services.isEmpty)
-                const Text('Maxsus xizmatlar topilmadi.')
+                Text('Maxsus xizmatlar topilmadi.'.tr)
               else
                 ...widget.master.services.map((service) {
                   final selected = _selectedService == service;
@@ -271,7 +315,8 @@ class _CleaningDispatchScreenState extends State<CleaningDispatchScreen> {
                               ),
                             ),
                           ),
-                          if (widget.master.prices[service] != null && widget.master.prices[service]! > 0)
+                          if (widget.master.prices[service] != null &&
+                              widget.master.prices[service]! > 0)
                             Text(
                               currency.format(widget.master.prices[service]),
                               style: TextStyle(
@@ -302,9 +347,14 @@ class _CleaningDispatchScreenState extends State<CleaningDispatchScreen> {
                   onPressed: _canSubmit ? _confirmDispatch : null,
                   style: FilledButton.styleFrom(
                     backgroundColor: _accent,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
                   ),
-                  child: const Text('Obyektga chaqirish', style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold)),
+                  child: const Text(
+                    'Obyektga chaqirish',
+                    style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
+                  ),
                 ),
               ),
               const SizedBox(height: 40),

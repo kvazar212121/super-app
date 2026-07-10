@@ -18,7 +18,8 @@ class ProviderPortalService {
 
   Future<List<Map<String, dynamic>>> getTodayOrders(String categoryKey) async {
     final data = await _api.getProviderCalendar(categoryKey, DateTime.now());
-    return (data['orders'] as List<dynamic>? ?? []).cast<Map<String, dynamic>>();
+    return (data['orders'] as List<dynamic>? ?? [])
+        .cast<Map<String, dynamic>>();
   }
 
   Future<Map<String, dynamic>> getCalendar(String categoryKey, DateTime day) =>
@@ -36,8 +37,10 @@ class ProviderPortalService {
   Future<List<Map<String, dynamic>>> getBlockedTimes(String categoryKey) =>
       _api.getProviderBlockedTimes(categoryKey);
 
-  Future<Map<String, dynamic>> addBlockedTime(String categoryKey, Map<String, dynamic> data) =>
-      _api.addProviderBlockedTime(categoryKey, data);
+  Future<Map<String, dynamic>> addBlockedTime(
+    String categoryKey,
+    Map<String, dynamic> data,
+  ) => _api.addProviderBlockedTime(categoryKey, data);
 
   Future<void> removeBlockedTime(String categoryKey, int blockedTimeId) =>
       _api.removeProviderBlockedTime(categoryKey, blockedTimeId);
@@ -47,7 +50,12 @@ class ProviderPortalService {
     int orderId,
     String status, {
     bool? notifiedClient,
-  }) => _api.updateProviderOrderStatus(categoryKey, orderId, status, notifiedClient: notifiedClient);
+  }) => _api.updateProviderOrderStatus(
+    categoryKey,
+    orderId,
+    status,
+    notifiedClient: notifiedClient,
+  );
 
   Future<List<Map<String, dynamic>>> getPendingOrders(String categoryKey) =>
       _api.getProviderOrders(categoryKey, status: 'pending');
@@ -76,10 +84,10 @@ class ProviderPortalService {
     required String phone,
     Map<String, dynamic>? metadata,
   }) => _api.registerAsProvider(
-        categoryId: categoryId,
-        name: name,
-        address: address,
-        phone: phone,
-        metadata: metadata,
-      );
+    categoryId: categoryId,
+    name: name,
+    address: address,
+    phone: phone,
+    metadata: metadata,
+  );
 }

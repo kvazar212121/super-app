@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import '../utils/geo_utils.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 class Barber {
   final String id;

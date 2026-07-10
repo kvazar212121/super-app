@@ -11,6 +11,7 @@ import '../services/provider_availability_service.dart';
 import '../utils/auth_guard.dart';
 import '../widgets/booking_common_widgets.dart';
 import '../widgets/glass/mesh_background.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 class NannyBookingScreen extends StatefulWidget {
   final NannyService nanny;
@@ -47,7 +48,9 @@ class _NannyBookingScreenState extends State<NannyBookingScreen> {
   double get _selectedPrice {
     if (_selectedService == null) return 0.0;
     final base = (widget.nanny.prices[_selectedService] ?? 100000).toDouble();
-    final travel = widget.nanny.isTravelFeeIncluded ? 0.0 : widget.nanny.travelFee;
+    final travel = widget.nanny.isTravelFeeIncluded
+        ? 0.0
+        : widget.nanny.travelFee;
     return base + travel;
   }
 
@@ -114,14 +117,15 @@ class _NannyBookingScreenState extends State<NannyBookingScreen> {
       _timeSlots = avail.slots.isNotEmpty
           ? avail.slots
           : (widget.nanny.timeSlots.isNotEmpty
-              ? widget.nanny.timeSlots
-              : ProviderAvailability.defaultSlots);
+                ? widget.nanny.timeSlots
+                : ProviderAvailability.defaultSlots);
       _bookedSlots = avail.booked;
     }
     if (mounted) {
       setState(() {
         _loadingSlots = false;
-        if (_selectedTimeSlot != null && _bookedSlots.contains(_selectedTimeSlot)) {
+        if (_selectedTimeSlot != null &&
+            _bookedSlots.contains(_selectedTimeSlot)) {
           _selectedTimeSlot = null;
         }
       });
@@ -132,7 +136,11 @@ class _NannyBookingScreenState extends State<NannyBookingScreen> {
     if (!await ensureAuthenticated(context)) return;
     if (!_canSubmit || !mounted) return;
 
-    final currency = NumberFormat.currency(locale: 'uz_UZ', symbol: 'so\'m', decimalDigits: 0);
+    final currency = NumberFormat.currency(
+      locale: 'uz_UZ',
+      symbol: 'so\'m',
+      decimalDigits: 0,
+    );
     final childName = _childNameCtrl.text.trim();
     final childAge = _childAgeCtrl.text.trim();
     final address = _addressCtrl.text.trim();
@@ -146,7 +154,12 @@ class _NannyBookingScreenState extends State<NannyBookingScreen> {
         MapEntry('Enaga', widget.nanny.name),
         MapEntry('Xizmat', _selectedService!),
         MapEntry('Bola', '$childName ($childAge yosh)'),
-        MapEntry("Yo'l kira", widget.nanny.isTravelFeeIncluded ? "Bepul (narx ichida)" : currency.format(widget.nanny.travelFee)),
+        MapEntry(
+          "Yo'l kira",
+          widget.nanny.isTravelFeeIncluded
+              ? "Bepul (narx ichida)"
+              : currency.format(widget.nanny.travelFee),
+        ),
         MapEntry('Manzil', address),
         if (allergy.isNotEmpty) MapEntry('Allergiya', allergy),
         if (_trialDay) const MapEntry('Sinov kuni', 'Ha'),
@@ -170,7 +183,8 @@ class _NannyBookingScreenState extends State<NannyBookingScreen> {
       minute,
     );
 
-    final childInfo = 'Bola: $childName, $childAge yosh'
+    final childInfo =
+        'Bola: $childName, $childAge yosh'
         '${allergy.isNotEmpty ? '. Allergiya: $allergy' : ''}'
         '${_trialDay ? '. Sinov kuni so\'ralgan' : ''}'
         '${notes.isNotEmpty ? '. $notes' : ''}';
@@ -212,7 +226,11 @@ class _NannyBookingScreenState extends State<NannyBookingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final currency = NumberFormat.currency(locale: 'uz_UZ', symbol: 'so\'m', decimalDigits: 0);
+    final currency = NumberFormat.currency(
+      locale: 'uz_UZ',
+      symbol: 'so\'m',
+      decimalDigits: 0,
+    );
 
     return GlassBackdrop(
       child: Scaffold(
@@ -274,8 +292,10 @@ class _NannyBookingScreenState extends State<NannyBookingScreen> {
                     ),
                     SwitchListTile(
                       contentPadding: EdgeInsets.zero,
-                      title: const Text('Sinov kuni'),
-                      subtitle: const Text('Birinchi uchrashuv — keyin doimiy shartnoma'),
+                      title: Text('Sinov kuni'.tr),
+                      subtitle: Text(
+                        'Birinchi uchrashuv — keyin doimiy shartnoma'.tr,
+                      ),
                       value: _trialDay,
                       onChanged: (v) => setState(() => _trialDay = v),
                     ),
@@ -314,7 +334,8 @@ class _NannyBookingScreenState extends State<NannyBookingScreen> {
                         selectedTimeSlot: _selectedTimeSlot,
                         timeSlots: _timeSlots,
                         disabledTimeSlots: _bookedSlots,
-                        onTimeSelected: (slot) => setState(() => _selectedTimeSlot = slot),
+                        onTimeSelected: (slot) =>
+                            setState(() => _selectedTimeSlot = slot),
                         accentColor: _accent,
                       ),
                     const SizedBox(height: 16),
@@ -336,7 +357,11 @@ class _NannyBookingScreenState extends State<NannyBookingScreen> {
                     Text(
                       'Buyurtma avtomatik tasdiqlanmaydi — enaga so\'rovni ko\'rib, qabul qiladi.',
                       textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 12, color: Colors.grey[600], height: 1.4),
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey[600],
+                        height: 1.4,
+                      ),
                     ),
                     const SizedBox(height: 40),
                   ],

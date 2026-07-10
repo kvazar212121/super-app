@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 class BannerSliderWidget extends StatelessWidget {
   const BannerSliderWidget({super.key});
@@ -33,21 +34,31 @@ class BannerSliderWidget extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text("Bugungi chegirmalar!",
-                      style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+                    const Text(
+                      "Bugungi chegirmalar!",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                     const SizedBox(height: 8),
-                    const Text("Sartaroshxonalarda 30% gacha",
-                      style: TextStyle(color: Colors.white70)),
+                    const Text(
+                      "Sartaroshxonalarda 30% gacha",
+                      style: TextStyle(color: Colors.white70),
+                    ),
                     const SizedBox(height: 15),
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.white,
                         foregroundColor: const Color(0xFF6366F1),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
                       ),
                       onPressed: () {},
-                      child: const Text("Batafsil"),
-                    )
+                      child: Text("Batafsil".tr),
+                    ),
                   ],
                 ),
               ),

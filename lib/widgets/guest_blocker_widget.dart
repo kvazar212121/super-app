@@ -44,7 +44,10 @@ class GuestBlockerWidget extends StatelessWidget {
               Text(
                 subtitle,
                 textAlign: TextAlign.center,
-                style: TextStyle(color: GlassTokens.secondaryText(context), height: 1.4),
+                style: TextStyle(
+                  color: GlassTokens.secondaryText(context),
+                  height: 1.4,
+                ),
               ),
               const SizedBox(height: 20),
               SizedBox(

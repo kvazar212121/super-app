@@ -6,6 +6,7 @@ import '../../main_screen.dart';
 import '../../provider_side/provider_theme.dart';
 import '../../provider_side/unified_provider_dashboard_screen.dart';
 import '../../../services/provider_portal_service.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 class EventPendingScreen extends StatefulWidget {
   final String providerName;
@@ -29,7 +30,8 @@ class _EventPendingScreenState extends State<EventPendingScreen> {
     try {
       final data = await _portal.getMe('tadbirlar');
       final active = data['is_active'] == true;
-      final meta = data['metadata'] as Map<String, dynamic>? ??
+      final meta =
+          data['metadata'] as Map<String, dynamic>? ??
           data['metadata_json'] as Map<String, dynamic>? ??
           {};
       final rejected = meta['verification_status'] == 'rejected';
@@ -55,7 +57,7 @@ class _EventPendingScreenState extends State<EventPendingScreen> {
         return;
       }
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Hali tasdiqlanmagan. Biroz kuting.')),
+        SnackBar(content: Text('Hali tasdiqlanmagan. Biroz kuting.'.tr)),
       );
     } catch (_) {
       if (mounted) {
@@ -85,7 +87,11 @@ class _EventPendingScreenState extends State<EventPendingScreen> {
                     color: accent,
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(LucideIcons.partyPopper, size: 48, color: accent),
+                  child: const Icon(
+                    LucideIcons.partyPopper,
+                    size: 48,
+                    color: accent,
+                  ),
                 ),
                 const SizedBox(height: 28),
                 const Text(
@@ -104,7 +110,11 @@ class _EventPendingScreenState extends State<EventPendingScreen> {
                 const Text(
                   'Tasdiqlangandan keyin mijozlar sahna, ovoz va to\'liq tadbir uchun buyurtma beradi.',
                   textAlign: TextAlign.center,
-                  style: TextStyle(color: Colors.grey, fontSize: 13, height: 1.4),
+                  style: TextStyle(
+                    color: Colors.grey,
+                    fontSize: 13,
+                    height: 1.4,
+                  ),
                 ),
                 if (_statusMessage != null) ...[
                   const SizedBox(height: 16),
@@ -128,8 +138,8 @@ class _EventPendingScreenState extends State<EventPendingScreen> {
                               color: Colors.white,
                             ),
                           )
-                        : const Icon(LucideIcons.refreshCw),
-                    label: const Text('Holatni tekshirish'),
+                        : Icon(LucideIcons.refreshCw),
+                    label: Text('Holatni tekshirish'.tr),
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -143,7 +153,7 @@ class _EventPendingScreenState extends State<EventPendingScreen> {
                         (_) => false,
                       );
                     },
-                    child: const Text('Bosh sahifaga'),
+                    child: Text('Bosh sahifaga'.tr),
                   ),
                 ),
               ],

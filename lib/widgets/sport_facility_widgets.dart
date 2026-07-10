@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../models/sport_facility.dart';
 import '../theme/glass_tokens.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 // ===================================================================
 //              SPORT FACILITY VISUAL WIDGET
@@ -23,7 +24,11 @@ class SportFacilityVisualWidget extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
         image: DecorationImage(
-          image: NetworkImage(facility.gallery.isNotEmpty ? facility.gallery.first : 'https://via.placeholder.com/600x400'),
+          image: NetworkImage(
+            facility.gallery.isNotEmpty
+                ? facility.gallery.first
+                : 'https://via.placeholder.com/600x400',
+          ),
           fit: BoxFit.cover,
         ),
         boxShadow: GlassTokens.glassShadow(context),
@@ -56,7 +61,10 @@ class SportFacilityVisualWidget extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 4,
+                        ),
                         decoration: BoxDecoration(
                           color: accent.withOpacity(0.8),
                           borderRadius: BorderRadius.circular(12),
@@ -105,7 +113,9 @@ class SportFacilityInfoCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: isDark ? Colors.white.withOpacity(0.05) : Colors.white.withOpacity(0.9),
+        color: isDark
+            ? Colors.white.withOpacity(0.05)
+            : Colors.white.withOpacity(0.9),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: GlassTokens.glassBorder(context)),
         boxShadow: GlassTokens.glassShadow(context),
@@ -116,7 +126,10 @@ class SportFacilityInfoCard extends StatelessWidget {
           Row(
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 6,
+                ),
                 decoration: BoxDecoration(
                   color: Colors.amber,
                   borderRadius: BorderRadius.circular(10),
@@ -141,7 +154,10 @@ class SportFacilityInfoCard extends StatelessWidget {
               Expanded(
                 child: Text(
                   facility.address,
-                  style: TextStyle(color: GlassTokens.secondaryText(context), fontSize: 13),
+                  style: TextStyle(
+                    color: GlassTokens.secondaryText(context),
+                    fontSize: 13,
+                  ),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -162,7 +178,11 @@ class SportFacilityInfoCard extends StatelessWidget {
           const SizedBox(height: 12),
           Row(
             children: [
-              Icon(Icons.payments_outlined, size: 20, color: GlassTokens.secondaryText(context)),
+              Icon(
+                Icons.payments_outlined,
+                size: 20,
+                color: GlassTokens.secondaryText(context),
+              ),
               const SizedBox(width: 6),
               Text(
                 '${NumberFormat('#,###').format(facility.basePricePerHour)} soʻm / soat',
@@ -246,14 +266,19 @@ class SportPriceSummaryCard extends StatelessWidget {
               const SizedBox(width: 8),
               const Text(
                 'Buyurtma xulosasi',
-                style: TextStyle(fontWeight: FontWeight.w700, fontSize: 15, color: Colors.white),
+                style: TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 15,
+                  color: Colors.white,
+                ),
               ),
             ],
           ),
           const SizedBox(height: 12),
           _PriceLine(
             label: 'Maydon narxi (${facility.sportType})',
-            value: '${NumberFormat('#,###').format(facility.basePricePerHour)} soʻm',
+            value:
+                '${NumberFormat('#,###').format(facility.basePricePerHour)} soʻm',
           ),
           if (selectedAmenities.isNotEmpty) ...[
             const SizedBox(height: 6),
@@ -278,7 +303,11 @@ class SportPriceSummaryCard extends StatelessWidget {
             children: [
               const Text(
                 'Jami (tahminiy):',
-                style: TextStyle(fontWeight: FontWeight.w800, fontSize: 16, color: Colors.white),
+                style: TextStyle(
+                  fontWeight: FontWeight.w800,
+                  fontSize: 16,
+                  color: Colors.white,
+                ),
               ),
               Text(
                 '${NumberFormat('#,###').format(totalPrice)} soʻm',

@@ -62,11 +62,17 @@ class ProfileScreen extends StatelessWidget {
               _sectionTitle(context, 'Sozlamalar'),
               GlassSurface(
                 onTap: () => _showReminderOffsetDialog(context, provider),
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 14,
+                ),
                 opacity: 0.55,
                 child: Row(
                   children: [
-                    Icon(Icons.notifications_active_outlined, color: GlassTokens.primaryText(context)),
+                    Icon(
+                      Icons.notifications_active_outlined,
+                      color: GlassTokens.primaryText(context),
+                    ),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Column(
@@ -89,23 +95,35 @@ class ProfileScreen extends StatelessWidget {
                         ],
                       ),
                     ),
-                    Icon(Icons.chevron_right_rounded, color: GlassTokens.secondaryText(context)),
+                    Icon(
+                      Icons.chevron_right_rounded,
+                      color: GlassTokens.secondaryText(context),
+                    ),
                   ],
                 ),
               ),
               const SizedBox(height: 12),
               // Til almashtirgich (UZ / RU)
               GlassSurface(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 14,
+                ),
                 opacity: 0.55,
                 child: Row(
                   children: [
-                    Icon(Icons.language, color: GlassTokens.primaryText(context)),
+                    Icon(
+                      Icons.language,
+                      color: GlassTokens.primaryText(context),
+                    ),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(
                         'Ilova tili'.tr,
-                        style: TextStyle(fontWeight: FontWeight.w600, color: GlassTokens.primaryText(context)),
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          color: GlassTokens.primaryText(context),
+                        ),
                       ),
                     ),
                     _langBtn(context, 'uz', "O'zbek"),
@@ -114,7 +132,7 @@ class ProfileScreen extends StatelessWidget {
                   ],
                 ),
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
               _sectionTitle(context, 'Soha egasi'.tr),
               const ProviderPortalEntry(compact: true),
               const SizedBox(height: 16),
@@ -128,11 +146,17 @@ class ProfileScreen extends StatelessWidget {
                 ),
                 GlassSurface(
                   onTap: () => _showAddCardDialog(context, provider),
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 14,
+                  ),
                   opacity: 0.5,
                   child: Row(
                     children: [
-                      Icon(Icons.add_circle_outline, color: GlassTokens.primaryText(context)),
+                      Icon(
+                        Icons.add_circle_outline,
+                        color: GlassTokens.primaryText(context),
+                      ),
                       const SizedBox(width: 12),
                       Text(
                         'Karta qo\'shish',
@@ -148,7 +172,10 @@ class ProfileScreen extends StatelessWidget {
               ],
               GlassSurface(
                 onTap: () => _showLogoutDialog(context),
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 14,
+                ),
                 opacity: 0.48,
                 child: Row(
                   children: const [
@@ -167,11 +194,17 @@ class ProfileScreen extends StatelessWidget {
               const SizedBox(height: 16),
               GlassSurface(
                 onTap: () => _showDeleteAccountDialog(context),
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 14,
+                ),
                 opacity: 0.48,
                 child: Row(
                   children: const [
-                    Icon(Icons.delete_forever_rounded, color: Color(0xFFEF4444)),
+                    Icon(
+                      Icons.delete_forever_rounded,
+                      color: Color(0xFFEF4444),
+                    ),
                     SizedBox(width: 12),
                     Text(
                       'Hisobni o\'chirish',
@@ -208,7 +241,10 @@ class ProfileScreen extends StatelessWidget {
           const SizedBox(height: 8),
           Text(
             'Ilovani ko\'rib chiqing. Buyurtma berish yoki balansdan foydalanish uchun kiring.',
-            style: TextStyle(color: GlassTokens.secondaryText(context), height: 1.4),
+            style: TextStyle(
+              color: GlassTokens.secondaryText(context),
+              height: 1.4,
+            ),
           ),
           const SizedBox(height: 16),
           SizedBox(
@@ -237,7 +273,11 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildProfileHeader(BuildContext context, UserProfile user, bool isLoggedIn) {
+  Widget _buildProfileHeader(
+    BuildContext context,
+    UserProfile user,
+    bool isLoggedIn,
+  ) {
     return GlassSurface(
       padding: const EdgeInsets.all(18),
       borderRadius: GlassTokens.radiusLg,
@@ -260,11 +300,18 @@ class ProfileScreen extends StatelessWidget {
               border: Border.all(color: Colors.white, width: 2),
             ),
             child: isLoggedIn && user.avatarUrl != null
-                ? ClipOval(child: Image.network(AppConfig.formatImageUrl(user.avatarUrl), fit: BoxFit.cover))
+                ? ClipOval(
+                    child: Image.network(
+                      AppConfig.formatImageUrl(user.avatarUrl),
+                      fit: BoxFit.cover,
+                    ),
+                  )
                 : Center(
                     child: Text(
                       isLoggedIn
-                          ? (user.name.isNotEmpty ? user.name[0].toUpperCase() : '?')
+                          ? (user.name.isNotEmpty
+                                ? user.name[0].toUpperCase()
+                                : '?')
                           : 'M',
                       style: TextStyle(
                         fontSize: 28,
@@ -294,7 +341,10 @@ class ProfileScreen extends StatelessWidget {
                 if (isLoggedIn && user.telegramUsername != null)
                   Text(
                     user.telegramUsername!,
-                    style: const TextStyle(color: Color(0xFF6366F1), fontWeight: FontWeight.w600),
+                    style: const TextStyle(
+                      color: Color(0xFF6366F1),
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
               ],
             ),
@@ -330,10 +380,12 @@ class ProfileScreen extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
         decoration: BoxDecoration(
-          color: active ? const Color(0xFF6366F1) : Colors.transparent,
+          color: active ? Color(0xFF6366F1) : Colors.transparent,
           borderRadius: BorderRadius.circular(10),
           border: Border.all(
-            color: active ? const Color(0xFF6366F1) : GlassTokens.secondaryText(context).withOpacity(0.4),
+            color: active
+                ? const Color(0xFF6366F1)
+                : GlassTokens.secondaryText(context).withOpacity(0.4),
           ),
         ),
         child: Text(
@@ -395,7 +447,7 @@ class ProfileScreen extends StatelessWidget {
               TextField(
                 controller: controller,
                 keyboardType: TextInputType.number,
-                decoration: const InputDecoration(hintText: 'Summa (so\'m)'),
+                decoration: InputDecoration(hintText: 'Summa (so\'m)'),
               ),
               const SizedBox(height: 16),
               FilledButton(
@@ -422,7 +474,10 @@ class ProfileScreen extends StatelessWidget {
         title: const Text('Karta qo\'shish'),
         content: const Text('Tez orada qo\'shiladi'),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('OK')),
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('OK'.tr),
+          ),
         ],
       ),
     );
@@ -432,16 +487,19 @@ class ProfileScreen extends StatelessWidget {
     showDialog<void>(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('Chiqish'),
-        content: const Text('Haqiqatan chiqasizmi?'),
+        title: Text('Chiqish'.tr),
+        content: Text('Haqiqatan chiqasizmi?'.tr),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Yo\'q')),
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Yo\'q'),
+          ),
           FilledButton(
             onPressed: () async {
               Navigator.pop(context);
               await context.read<AuthProvider>().logout();
             },
-            child: const Text('Ha'),
+            child: Text('Ha'.tr),
           ),
         ],
       ),
@@ -453,11 +511,18 @@ class ProfileScreen extends StatelessWidget {
       context: context,
       builder: (_) => AlertDialog(
         title: const Text('Hisobni o\'chirish'),
-        content: const Text('Haqiqatan ham hisobingizni butunlay o\'chirmoqchimisiz? Bu amalni ortga qaytarib bo\'lmaydi.'),
+        content: const Text(
+          'Haqiqatan ham hisobingizni butunlay o\'chirmoqchimisiz? Bu amalni ortga qaytarib bo\'lmaydi.',
+        ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Bekor qilish')),
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('Bekor qilish'.tr),
+          ),
           FilledButton(
-            style: FilledButton.styleFrom(backgroundColor: const Color(0xFFEF4444)),
+            style: FilledButton.styleFrom(
+              backgroundColor: const Color(0xFFEF4444),
+            ),
             onPressed: () async {
               Navigator.pop(context);
               await context.read<AuthProvider>().deleteAccount();
@@ -481,28 +546,43 @@ class ProfileScreen extends StatelessWidget {
         ),
         title: const Text(
           'Eslatma vaqtini tanlang',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+            fontSize: 18,
+          ),
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [5, 10, 15, 30, 60].map((mins) {
             final isSelected = mins == currentOffset;
             return ListTile(
-              title: Text('$mins daqiqa oldin', style: const TextStyle(color: Colors.white)),
-              trailing: isSelected ? const Icon(Icons.check_circle, color: Color(0xFF6366F1)) : null,
+              title: Text(
+                '$mins daqiqa oldin',
+                style: const TextStyle(color: Colors.white),
+              ),
+              trailing: isSelected
+                  ? const Icon(Icons.check_circle, color: Color(0xFF6366F1))
+                  : null,
               onTap: () async {
                 Navigator.pop(ctx);
                 try {
                   await provider.updateReminderOffset(mins);
                   if (context.mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Eslatma vaqti $mins daqiqaga o\'zgartirildi')),
+                      SnackBar(
+                        content: Text(
+                          'Eslatma vaqti $mins daqiqaga o\'zgartirildi',
+                        ),
+                      ),
                     );
                   }
                 } catch (e) {
                   if (context.mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Sozlamani saqlab bo\'lmadi')),
+                      const SnackBar(
+                        content: Text('Sozlamani saqlab bo\'lmadi'),
+                      ),
                     );
                   }
                 }
@@ -513,11 +593,13 @@ class ProfileScreen extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Bekor qilish', style: TextStyle(color: Colors.grey)),
+            child: const Text(
+              'Bekor qilish',
+              style: TextStyle(color: Colors.grey),
+            ),
           ),
         ],
       ),
     );
   }
 }
-

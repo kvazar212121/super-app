@@ -9,6 +9,7 @@ import '../../widgets/auth/otp_auth_panel.dart';
 import '../../widgets/glass/glass_surface.dart';
 import '../../widgets/glass/mesh_background.dart';
 import '../legal/terms_screen.dart';
+import '../../l10n/locale_controller.dart';
 
 /// Buyurtma berishdan oldin ochiladigan kirish / ro'yxatdan o'tish (SMS OTP).
 class AuthGateScreen extends StatefulWidget {
@@ -51,19 +52,19 @@ class _AuthGateScreenState extends State<AuthGateScreen> {
 
   Future<void> _completeRegister() async {
     if (_name.text.trim().length < 2 || _surname.text.trim().length < 2) {
-      _toast('Ism va familiyani kiriting');
+      _toast('Ism va familiyani kiriting'.tr);
       return;
     }
     if (_password.text.length < 4) {
-      _toast('Parol kamida 4 belgi');
+      _toast('Parol kamida 4 belgi'.tr);
       return;
     }
     if (_password.text != _passwordConfirm.text) {
-      _toast('Parollar mos emas');
+      _toast('Parollar mos emas'.tr);
       return;
     }
     if (!_agreedToTerms) {
-      _toast('Davom etish uchun foydalanish shartlariga rozilik bering');
+      _toast('Davom etish uchun foydalanish shartlariga rozilik bering'.tr);
       return;
     }
     if (_verifiedPhone == null || _verificationToken == null) return;
@@ -80,7 +81,7 @@ class _AuthGateScreenState extends State<AuthGateScreen> {
     if (ok) {
       await _finishAuth();
     } else {
-      _toast(auth.error ?? 'Xatolik');
+      _toast(auth.error ?? 'Xatolik'.tr);
     }
   }
 
@@ -103,13 +104,16 @@ class _AuthGateScreenState extends State<AuthGateScreen> {
             backgroundColor: Colors.transparent,
             elevation: 0,
             leading: IconButton(
-              icon: Icon(LucideIcons.x, color: GlassTokens.primaryText(context)),
+              icon: Icon(
+                LucideIcons.x,
+                color: GlassTokens.primaryText(context),
+              ),
               onPressed: () => Navigator.of(context).pop(false),
             ),
             title: Text(
               _registerDetails
-                  ? 'Ma\'lumotlaringiz'
-                  : (_showRegister ? 'Ro\'yxatdan o\'tish' : 'Kirish'),
+                  ? 'Ma\'lumotlaringiz'.tr
+                  : (_showRegister ? 'Ro\'yxatdan o\'tish'.tr : 'Kirish'.tr),
               style: TextStyle(
                 color: GlassTokens.primaryText(context),
                 fontWeight: FontWeight.w800,
@@ -130,11 +134,13 @@ class _AuthGateScreenState extends State<AuthGateScreen> {
                         children: [
                           OtpAuthPanel(
                             title: _showRegister
-                                ? 'Telefon raqamni tasdiqlang'
-                                : 'Telefon orqali kirish',
+                                ? 'Telefon raqamni tasdiqlang'.tr
+                                : 'Telefon orqali kirish'.tr,
                             subtitle: _showRegister
                                 ? 'Ro\'yxatdan o\'tish uchun SMS kod yuboramiz'
-                                : 'Raqamingizga SMS kod yuboramiz — shundoq kirish mumkin emas',
+                                      .tr
+                                : 'Raqamingizga SMS kod yuboramiz — shundoq kirish mumkin emas'
+                                      .tr,
                             registerMode: _showRegister,
                             onLoginSuccess: (_) => _finishAuth(),
                             onNeedRegister: (phone, token) {
@@ -148,7 +154,9 @@ class _AuthGateScreenState extends State<AuthGateScreen> {
                           const SizedBox(height: 16),
                           Center(
                             child: GestureDetector(
-                              onTap: () => setState(() => _showRegister = !_showRegister),
+                              onTap: () => setState(
+                                () => _showRegister = !_showRegister,
+                              ),
                               child: RichText(
                                 text: TextSpan(
                                   style: TextStyle(
@@ -158,11 +166,13 @@ class _AuthGateScreenState extends State<AuthGateScreen> {
                                   children: [
                                     TextSpan(
                                       text: _showRegister
-                                          ? 'Hisobingiz bormi? '
-                                          : 'Hisobingiz yo\'qmi? ',
+                                          ? 'Hisobingiz bormi? '.tr
+                                          : 'Hisobingiz yo\'qmi? '.tr,
                                     ),
                                     TextSpan(
-                                      text: _showRegister ? 'Kirish' : 'Ro\'yxatdan o\'ting',
+                                      text: _showRegister
+                                          ? 'Kirish'.tr
+                                          : 'Ro\'yxatdan o\'ting'.tr,
                                       style: const TextStyle(
                                         color: Color(0xFF6366F1),
                                         fontWeight: FontWeight.w700,
@@ -188,25 +198,25 @@ class _AuthGateScreenState extends State<AuthGateScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Telefon tasdiqlandi: $_verifiedPhone',
+          'Telefon tasdiqlandi'.tr + ': $_verifiedPhone',
           style: TextStyle(color: GlassTokens.secondaryText(context)),
         ),
         const SizedBox(height: 20),
         TextFormField(
           controller: _name,
           textCapitalization: TextCapitalization.words,
-          decoration: const InputDecoration(
-            labelText: 'Ism',
-            prefixIcon: Icon(LucideIcons.user, size: 20),
+          decoration: InputDecoration(
+            labelText: 'Ism'.tr,
+            prefixIcon: const Icon(LucideIcons.user, size: 20),
           ),
         ),
         const SizedBox(height: 14),
         TextFormField(
           controller: _surname,
           textCapitalization: TextCapitalization.words,
-          decoration: const InputDecoration(
-            labelText: 'Familiya',
-            prefixIcon: Icon(LucideIcons.users, size: 20),
+          decoration: InputDecoration(
+            labelText: 'Familiya'.tr,
+            prefixIcon: const Icon(LucideIcons.users, size: 20),
           ),
         ),
         const SizedBox(height: 14),
@@ -214,10 +224,13 @@ class _AuthGateScreenState extends State<AuthGateScreen> {
           controller: _password,
           obscureText: _obscure,
           decoration: InputDecoration(
-            labelText: 'Parol',
+            labelText: 'Parol'.tr,
             prefixIcon: const Icon(LucideIcons.lock, size: 20),
             suffixIcon: IconButton(
-              icon: Icon(_obscure ? LucideIcons.eyeOff : LucideIcons.eye, size: 20),
+              icon: Icon(
+                _obscure ? LucideIcons.eyeOff : LucideIcons.eye,
+                size: 20,
+              ),
               onPressed: () => setState(() => _obscure = !_obscure),
             ),
           ),
@@ -226,9 +239,9 @@ class _AuthGateScreenState extends State<AuthGateScreen> {
         TextFormField(
           controller: _passwordConfirm,
           obscureText: _obscure,
-          decoration: const InputDecoration(
-            labelText: 'Parolni tasdiqlang',
-            prefixIcon: Icon(LucideIcons.shieldCheck, size: 20),
+          decoration: InputDecoration(
+            labelText: 'Parolni tasdiqlang'.tr,
+            prefixIcon: const Icon(LucideIcons.shieldCheck, size: 20),
           ),
         ),
         const SizedBox(height: 16),
@@ -249,15 +262,21 @@ class _AuthGateScreenState extends State<AuthGateScreen> {
               child: Wrap(
                 crossAxisAlignment: WrapCrossAlignment.center,
                 children: [
-                  Text('Men ', style: TextStyle(color: GlassTokens.secondaryText(context), fontSize: 13)),
+                  Text(
+                    'Men '.tr,
+                    style: TextStyle(
+                      color: GlassTokens.secondaryText(context),
+                      fontSize: 13,
+                    ),
+                  ),
                   GestureDetector(
                     onTap: () => Navigator.push(
                       context,
                       MaterialPageRoute(builder: (_) => const TermsScreen()),
                     ),
-                    child: const Text(
-                      'foydalanish shartlariga',
-                      style: TextStyle(
+                    child: Text(
+                      'foydalanish shartlariga'.tr,
+                      style: const TextStyle(
                         color: Color(0xFF6366F1),
                         fontWeight: FontWeight.w700,
                         fontSize: 13,
@@ -265,7 +284,13 @@ class _AuthGateScreenState extends State<AuthGateScreen> {
                       ),
                     ),
                   ),
-                  Text(' roziman', style: TextStyle(color: GlassTokens.secondaryText(context), fontSize: 13)),
+                  Text(
+                    ' roziman'.tr,
+                    style: TextStyle(
+                      color: GlassTokens.secondaryText(context),
+                      fontSize: 13,
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -276,10 +301,16 @@ class _AuthGateScreenState extends State<AuthGateScreen> {
           width: double.infinity,
           height: 52,
           child: FilledButton(
-            onPressed: (auth.isLoading || !_agreedToTerms) ? null : _completeRegister,
+            onPressed: (auth.isLoading || !_agreedToTerms)
+                ? null
+                : _completeRegister,
             child: auth.isLoading
-                ? const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2.5))
-                : const Text('Ro\'yxatdan o\'tish'),
+                ? const SizedBox(
+                    width: 22,
+                    height: 22,
+                    child: CircularProgressIndicator(strokeWidth: 2.5),
+                  )
+                : Text('Ro\'yxatdan o\'tish'.tr),
           ),
         ),
         const SizedBox(height: 12),
@@ -290,7 +321,7 @@ class _AuthGateScreenState extends State<AuthGateScreen> {
               _registerDetails = false;
             }),
             child: Text(
-              'Allaqachon hisobingiz bormi? Kirish',
+              'Allaqachon hisobingiz bormi? Kirish'.tr,
               style: TextStyle(color: GlassTokens.secondaryText(context)),
             ),
           ),

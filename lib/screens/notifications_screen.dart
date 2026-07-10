@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import '../providers/app_provider.dart';
 import '../screens/order_detail_screen.dart';
 import '../widgets/glass/glass_scaffold.dart';
+import '../l10n/locale_controller.dart';
 
 class NotificationsScreen extends StatelessWidget {
   const NotificationsScreen({super.key});
@@ -16,7 +17,7 @@ class NotificationsScreen extends StatelessWidget {
 
     return GlassScaffold(
       showBackButton: true,
-      title: "Bildirishnomalar",
+      title: "Bildirishnomalar".tr,
       actions: [
         if (provider.unreadCount > 0)
           TextButton(
@@ -27,9 +28,9 @@ class NotificationsScreen extends StatelessWidget {
                 }
               }
             },
-            child: const Text(
-              "Hammasini o'qish",
-              style: TextStyle(
+            child: Text(
+              "Hammasini o'qish".tr,
+              style: const TextStyle(
                 color: Color(0xFF6366F1),
                 fontWeight: FontWeight.bold,
               ),
@@ -44,7 +45,8 @@ class NotificationsScreen extends StatelessWidget {
             : ListView.separated(
                 padding: const EdgeInsets.all(16),
                 itemCount: notifications.length,
-                separatorBuilder: (context, index) => const SizedBox(height: 12),
+                separatorBuilder: (context, index) =>
+                    const SizedBox(height: 12),
                 itemBuilder: (context, index) {
                   final notif = notifications[index];
                   final isRead = notif['is_read'] ?? false;
@@ -78,7 +80,7 @@ class NotificationsScreen extends StatelessWidget {
                             color: Colors.black,
                             blurRadius: 8,
                             offset: const Offset(0, 4),
-                          )
+                          ),
                         ],
                       ),
                       child: Row(
@@ -96,7 +98,7 @@ class NotificationsScreen extends StatelessWidget {
                                   children: [
                                     Expanded(
                                       child: Text(
-                                        notif['title'] ?? 'Xabar',
+                                        notif['title'] ?? 'Xabar'.tr,
                                         style: TextStyle(
                                           fontWeight: isRead
                                               ? FontWeight.bold
@@ -179,10 +181,7 @@ class NotificationsScreen extends StatelessWidget {
 
     return Container(
       padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: bgColor,
-        shape: BoxShape.circle,
-      ),
+      decoration: BoxDecoration(color: bgColor, shape: BoxShape.circle),
       child: Icon(iconData, color: iconColor, size: 22),
     );
   }
@@ -199,12 +198,7 @@ class NotificationsScreen extends StatelessWidget {
               decoration: BoxDecoration(
                 color: Colors.white,
                 shape: BoxShape.circle,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black,
-                    blurRadius: 20,
-                  )
-                ],
+                boxShadow: [BoxShadow(color: Colors.black, blurRadius: 20)],
               ),
               child: const Icon(
                 LucideIcons.bellOff,
@@ -213,9 +207,9 @@ class NotificationsScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 24),
-            const Text(
-              "Bildirishnomalar yo'q",
-              style: TextStyle(
+            Text(
+              "Bildirishnomalar yo'q".tr,
+              style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
                 color: Colors.black87,
@@ -223,7 +217,8 @@ class NotificationsScreen extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              "Sizda hozircha hech qanday bildirishnomalar mavjud emas. Yangi xabarlar shu yerda paydo bo'ladi.",
+              "Sizda hozircha hech qanday bildirishnomalar mavjud emas. Yangi xabarlar shu yerda paydo bo'ladi."
+                  .tr,
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 14,

@@ -138,10 +138,10 @@ class ApiService {
     required String phone,
     String purpose = 'auth',
   }) async {
-    final response = await _dio.post('/auth/otp/send', data: {
-      'phone': phone,
-      'purpose': purpose,
-    });
+    final response = await _dio.post(
+      '/auth/otp/send',
+      data: {'phone': phone, 'purpose': purpose},
+    );
     return Map<String, dynamic>.from(response.data as Map);
   }
 
@@ -150,10 +150,10 @@ class ApiService {
     required String phone,
     required String code,
   }) async {
-    final response = await _dio.post('/auth/otp/verify', data: {
-      'phone': phone,
-      'code': code,
-    });
+    final response = await _dio.post(
+      '/auth/otp/verify',
+      data: {'phone': phone, 'code': code},
+    );
     final data = Map<String, dynamic>.from(response.data as Map);
     if (data['access_token'] != null && data['refresh_token'] != null) {
       await saveTokens(data['access_token'], data['refresh_token']);
@@ -169,13 +169,16 @@ class ApiService {
     required String password,
     required String verificationToken,
   }) async {
-    final response = await _dio.post('/auth/register', data: {
-      'name': name,
-      'surname': surname,
-      'phone': phone,
-      'password': password,
-      'verification_token': verificationToken,
-    });
+    final response = await _dio.post(
+      '/auth/register',
+      data: {
+        'name': name,
+        'surname': surname,
+        'phone': phone,
+        'password': password,
+        'verification_token': verificationToken,
+      },
+    );
     final data = response.data;
     await saveTokens(data['access_token'], data['refresh_token']);
     return data;
@@ -186,10 +189,10 @@ class ApiService {
     required String phone,
     required String password,
   }) async {
-    final response = await _dio.post('/auth/login', data: {
-      'phone': phone,
-      'password': password,
-    });
+    final response = await _dio.post(
+      '/auth/login',
+      data: {'phone': phone, 'password': password},
+    );
     final data = response.data;
     await saveTokens(data['access_token'], data['refresh_token']);
     return data;
@@ -197,9 +200,10 @@ class ApiService {
 
   /// Debug login (development only)
   Future<Map<String, dynamic>> debugLogin({String phone = 'admin'}) async {
-    final response = await _dio.get('/auth/debug-login', queryParameters: {
-      'phone': phone,
-    });
+    final response = await _dio.get(
+      '/auth/debug-login',
+      queryParameters: {'phone': phone},
+    );
     final data = response.data;
     await saveTokens(data['access_token'], data['refresh_token']);
     return data;
@@ -226,9 +230,7 @@ class ApiService {
 
   /// Balansni to'ldirish
   Future<Map<String, dynamic>> topUpBalance(double amount) async {
-    final response = await _dio.post('/users/top-up', data: {
-      'amount': amount,
-    });
+    final response = await _dio.post('/users/top-up', data: {'amount': amount});
     return response.data;
   }
 
@@ -281,10 +283,7 @@ class ApiService {
     double? lat,
     double? lng,
   }) async {
-    final params = <String, dynamic>{
-      'page': page,
-      'per_page': perPage,
-    };
+    final params = <String, dynamic>{'page': page, 'per_page': perPage};
     if (categoryId != null) params['category_id'] = categoryId;
     if (categoryKey != null) params['category_key'] = categoryKey;
     if (search != null && search.isNotEmpty) params['search'] = search;
@@ -336,11 +335,14 @@ class ApiService {
     required int rating,
     String? comment,
   }) async {
-    final response = await _dio.post('/providers/reviews', data: {
-      'provider_id': providerId,
-      'rating': rating,
-      if (comment != null) 'comment': comment,
-    });
+    final response = await _dio.post(
+      '/providers/reviews',
+      data: {
+        'provider_id': providerId,
+        'rating': rating,
+        if (comment != null) 'comment': comment,
+      },
+    );
     return response.data;
   }
 
@@ -402,18 +404,17 @@ class ApiService {
     required String side,
     required String response,
   }) async {
-    await _dio.post('/orders/$orderId/checkin', data: {
-      'side': side,
-      'response': response,
-    });
+    await _dio.post(
+      '/orders/$orderId/checkin',
+      data: {'side': side, 'response': response},
+    );
   }
 
   Future<void> submitReview(int providerId, int rating, String comment) async {
-    await _dio.post('/providers/reviews', data: {
-      'provider_id': providerId,
-      'rating': rating,
-      'comment': comment,
-    });
+    await _dio.post(
+      '/providers/reviews',
+      data: {'provider_id': providerId, 'rating': rating, 'comment': comment},
+    );
   }
 
   /// Checkin holatini olish
@@ -511,7 +512,9 @@ class ApiService {
     );
   }
 
-  Future<List<Map<String, dynamic>>> getProviderBlockedTimes(String categoryKey) async {
+  Future<List<Map<String, dynamic>>> getProviderBlockedTimes(
+    String categoryKey,
+  ) async {
     final response = await _dio.get(
       '/provider/blocked-times',
       queryParameters: {'category_key': categoryKey},
@@ -519,7 +522,10 @@ class ApiService {
     return (response.data as List).cast<Map<String, dynamic>>();
   }
 
-  Future<Map<String, dynamic>> addProviderBlockedTime(String categoryKey, Map<String, dynamic> data) async {
+  Future<Map<String, dynamic>> addProviderBlockedTime(
+    String categoryKey,
+    Map<String, dynamic> data,
+  ) async {
     final response = await _dio.post(
       '/provider/blocked-times',
       queryParameters: {'category_key': categoryKey},
@@ -528,7 +534,10 @@ class ApiService {
     return response.data as Map<String, dynamic>;
   }
 
-  Future<void> removeProviderBlockedTime(String categoryKey, int blockedTimeId) async {
+  Future<void> removeProviderBlockedTime(
+    String categoryKey,
+    int blockedTimeId,
+  ) async {
     await _dio.delete(
       '/provider/blocked-times/$blockedTimeId',
       queryParameters: {'category_key': categoryKey},
@@ -654,16 +663,19 @@ class ApiService {
     String? hours,
     String? subCategory,
   }) async {
-    final response = await _dio.post('/provider/barber/register/shop-owner', data: {
-      'name': name,
-      'address': address,
-      'phone': phone,
-      'lat': lat,
-      'lng': lng,
-      'also_works_as_barber': alsoWorksAsBarber,
-      if (hours != null) 'hours': hours,
-      if (subCategory != null) 'sub_category': subCategory,
-    });
+    final response = await _dio.post(
+      '/provider/barber/register/shop-owner',
+      data: {
+        'name': name,
+        'address': address,
+        'phone': phone,
+        'lat': lat,
+        'lng': lng,
+        'also_works_as_barber': alsoWorksAsBarber,
+        if (hours != null) 'hours': hours,
+        if (subCategory != null) 'sub_category': subCategory,
+      },
+    );
     return response.data as Map<String, dynamic>;
   }
 
@@ -674,13 +686,16 @@ class ApiService {
     String? address,
     String? subCategory,
   }) async {
-    final response = await _dio.post('/provider/barber/register/mobile', data: {
-      'name': name,
-      'phone': phone,
-      'service_area': serviceArea,
-      if (address != null) 'address': address,
-      if (subCategory != null) 'sub_category': subCategory,
-    });
+    final response = await _dio.post(
+      '/provider/barber/register/mobile',
+      data: {
+        'name': name,
+        'phone': phone,
+        'service_area': serviceArea,
+        if (address != null) 'address': address,
+        if (subCategory != null) 'sub_category': subCategory,
+      },
+    );
     return response.data as Map<String, dynamic>;
   }
 
@@ -689,11 +704,15 @@ class ApiService {
     int? shopId,
     String? inviteCode,
   }) async {
-    final response = await _dio.post('/provider/barber/join-request', data: {
-      'display_name': displayName,
-      if (shopId != null) 'shop_id': shopId,
-      if (inviteCode != null && inviteCode.isNotEmpty) 'invite_code': inviteCode,
-    });
+    final response = await _dio.post(
+      '/provider/barber/join-request',
+      data: {
+        'display_name': displayName,
+        if (shopId != null) 'shop_id': shopId,
+        if (inviteCode != null && inviteCode.isNotEmpty)
+          'invite_code': inviteCode,
+      },
+    );
     return response.data as Map<String, dynamic>;
   }
 
@@ -723,12 +742,15 @@ class ApiService {
     required String serviceArea,
     String? address,
   }) async {
-    final response = await _dio.post('/provider/cleaning/register/solo', data: {
-      'name': name,
-      'phone': phone,
-      'service_area': serviceArea,
-      if (address != null) 'address': address,
-    });
+    final response = await _dio.post(
+      '/provider/cleaning/register/solo',
+      data: {
+        'name': name,
+        'phone': phone,
+        'service_area': serviceArea,
+        if (address != null) 'address': address,
+      },
+    );
     return response.data as Map<String, dynamic>;
   }
 
@@ -741,15 +763,18 @@ class ApiService {
     double lat = 41.2995,
     double lng = 69.2401,
   }) async {
-    final response = await _dio.post('/provider/cleaning/register/team', data: {
-      'name': name,
-      'phone': phone,
-      'address': address,
-      'service_area': serviceArea,
-      'team_size': teamSize,
-      'lat': lat,
-      'lng': lng,
-    });
+    final response = await _dio.post(
+      '/provider/cleaning/register/team',
+      data: {
+        'name': name,
+        'phone': phone,
+        'address': address,
+        'service_area': serviceArea,
+        'team_size': teamSize,
+        'lat': lat,
+        'lng': lng,
+      },
+    );
     return response.data as Map<String, dynamic>;
   }
 
@@ -761,12 +786,15 @@ class ApiService {
     required String serviceArea,
     String? address,
   }) async {
-    final response = await _dio.post('/provider/master/register/solo', data: {
-      'name': name,
-      'phone': phone,
-      'service_area': serviceArea,
-      if (address != null) 'address': address,
-    });
+    final response = await _dio.post(
+      '/provider/master/register/solo',
+      data: {
+        'name': name,
+        'phone': phone,
+        'service_area': serviceArea,
+        if (address != null) 'address': address,
+      },
+    );
     return response.data as Map<String, dynamic>;
   }
 
@@ -779,15 +807,18 @@ class ApiService {
     double lat = 41.2995,
     double lng = 69.2401,
   }) async {
-    final response = await _dio.post('/provider/master/register/brigade', data: {
-      'name': name,
-      'phone': phone,
-      'address': address,
-      'service_area': serviceArea,
-      'team_size': teamSize,
-      'lat': lat,
-      'lng': lng,
-    });
+    final response = await _dio.post(
+      '/provider/master/register/brigade',
+      data: {
+        'name': name,
+        'phone': phone,
+        'address': address,
+        'service_area': serviceArea,
+        'team_size': teamSize,
+        'lat': lat,
+        'lng': lng,
+      },
+    );
     return response.data as Map<String, dynamic>;
   }
 
@@ -812,15 +843,18 @@ class ApiService {
     required bool alsoWorksAsStylist,
     String? hours,
   }) async {
-    final response = await _dio.post('/provider/salon/register/owner', data: {
-      'name': name,
-      'address': address,
-      'phone': phone,
-      'lat': lat,
-      'lng': lng,
-      'also_works_as_stylist': alsoWorksAsStylist,
-      if (hours != null) 'hours': hours,
-    });
+    final response = await _dio.post(
+      '/provider/salon/register/owner',
+      data: {
+        'name': name,
+        'address': address,
+        'phone': phone,
+        'lat': lat,
+        'lng': lng,
+        'also_works_as_stylist': alsoWorksAsStylist,
+        if (hours != null) 'hours': hours,
+      },
+    );
     return response.data as Map<String, dynamic>;
   }
 
@@ -830,12 +864,15 @@ class ApiService {
     required String serviceArea,
     String? address,
   }) async {
-    final response = await _dio.post('/provider/salon/register/mobile', data: {
-      'name': name,
-      'phone': phone,
-      'service_area': serviceArea,
-      if (address != null) 'address': address,
-    });
+    final response = await _dio.post(
+      '/provider/salon/register/mobile',
+      data: {
+        'name': name,
+        'phone': phone,
+        'service_area': serviceArea,
+        if (address != null) 'address': address,
+      },
+    );
     return response.data as Map<String, dynamic>;
   }
 
@@ -844,11 +881,15 @@ class ApiService {
     int? salonId,
     String? inviteCode,
   }) async {
-    final response = await _dio.post('/provider/salon/join-request', data: {
-      'display_name': displayName,
-      if (salonId != null) 'salon_id': salonId,
-      if (inviteCode != null && inviteCode.isNotEmpty) 'invite_code': inviteCode,
-    });
+    final response = await _dio.post(
+      '/provider/salon/join-request',
+      data: {
+        'display_name': displayName,
+        if (salonId != null) 'salon_id': salonId,
+        if (inviteCode != null && inviteCode.isNotEmpty)
+          'invite_code': inviteCode,
+      },
+    );
     return response.data as Map<String, dynamic>;
   }
 
@@ -878,12 +919,15 @@ class ApiService {
     required String serviceArea,
     String? address,
   }) async {
-    final response = await _dio.post('/provider/electrician/register/solo', data: {
-      'name': name,
-      'phone': phone,
-      'service_area': serviceArea,
-      if (address != null) 'address': address,
-    });
+    final response = await _dio.post(
+      '/provider/electrician/register/solo',
+      data: {
+        'name': name,
+        'phone': phone,
+        'service_area': serviceArea,
+        if (address != null) 'address': address,
+      },
+    );
     return response.data as Map<String, dynamic>;
   }
 
@@ -895,12 +939,15 @@ class ApiService {
     required String serviceArea,
     String? address,
   }) async {
-    final response = await _dio.post('/provider/plumber/register/solo', data: {
-      'name': name,
-      'phone': phone,
-      'service_area': serviceArea,
-      if (address != null) 'address': address,
-    });
+    final response = await _dio.post(
+      '/provider/plumber/register/solo',
+      data: {
+        'name': name,
+        'phone': phone,
+        'service_area': serviceArea,
+        if (address != null) 'address': address,
+      },
+    );
     return response.data as Map<String, dynamic>;
   }
 
@@ -913,13 +960,16 @@ class ApiService {
     required String vehicleType,
     String? address,
   }) async {
-    final response = await _dio.post('/provider/courier/register/solo', data: {
-      'name': name,
-      'phone': phone,
-      'service_area': serviceArea,
-      'vehicle_type': vehicleType,
-      if (address != null) 'address': address,
-    });
+    final response = await _dio.post(
+      '/provider/courier/register/solo',
+      data: {
+        'name': name,
+        'phone': phone,
+        'service_area': serviceArea,
+        'vehicle_type': vehicleType,
+        if (address != null) 'address': address,
+      },
+    );
     return response.data as Map<String, dynamic>;
   }
 
@@ -929,12 +979,15 @@ class ApiService {
     required String serviceArea,
     required String vehicleType,
   }) async {
-    final response = await _dio.post('/providers/bozorchi/register', data: {
-      'name': name,
-      'phone': phone,
-      'service_area': serviceArea,
-      'vehicle_type': vehicleType,
-    });
+    final response = await _dio.post(
+      '/providers/bozorchi/register',
+      data: {
+        'name': name,
+        'phone': phone,
+        'service_area': serviceArea,
+        'vehicle_type': vehicleType,
+      },
+    );
     return response.data as Map<String, dynamic>;
   }
 
@@ -947,13 +1000,16 @@ class ApiService {
     required String vehicleType,
     String? address,
   }) async {
-    final response = await _dio.post('/provider/auto-help/register/mobile', data: {
-      'name': name,
-      'phone': phone,
-      'service_area': serviceArea,
-      'vehicle_type': vehicleType,
-      if (address != null) 'address': address,
-    });
+    final response = await _dio.post(
+      '/provider/auto-help/register/mobile',
+      data: {
+        'name': name,
+        'phone': phone,
+        'service_area': serviceArea,
+        'vehicle_type': vehicleType,
+        if (address != null) 'address': address,
+      },
+    );
     return response.data as Map<String, dynamic>;
   }
 
@@ -963,13 +1019,16 @@ class ApiService {
     required String address,
     List<String>? specializations,
   }) async {
-    final response = await _dio.post('/provider/auto-help/register/workshop', data: {
-      'name': name,
-      'phone': phone,
-      'address': address,
-      if (specializations != null && specializations.isNotEmpty)
-        'specializations': specializations,
-    });
+    final response = await _dio.post(
+      '/provider/auto-help/register/workshop',
+      data: {
+        'name': name,
+        'phone': phone,
+        'address': address,
+        if (specializations != null && specializations.isNotEmpty)
+          'specializations': specializations,
+      },
+    );
     return response.data as Map<String, dynamic>;
   }
 
@@ -981,12 +1040,15 @@ class ApiService {
     required String serviceArea,
     String? address,
   }) async {
-    final response = await _dio.post('/provider/ac/register/solo', data: {
-      'name': name,
-      'phone': phone,
-      'service_area': serviceArea,
-      if (address != null) 'address': address,
-    });
+    final response = await _dio.post(
+      '/provider/ac/register/solo',
+      data: {
+        'name': name,
+        'phone': phone,
+        'service_area': serviceArea,
+        if (address != null) 'address': address,
+      },
+    );
     return response.data as Map<String, dynamic>;
   }
 
@@ -1003,17 +1065,20 @@ class ApiService {
     List<String> serviceTypes = const [],
     Map<String, dynamic>? documents,
   }) async {
-    final response = await _dio.post('/provider/nanny/register', data: {
-      'name': name,
-      'phone': phone,
-      'service_area': serviceArea,
-      if (address != null) 'address': address,
-      'experience_years': experienceYears,
-      if (ageGroups.isNotEmpty) 'age_groups': ageGroups,
-      if (languages.isNotEmpty) 'languages': languages,
-      if (serviceTypes.isNotEmpty) 'service_types': serviceTypes,
-      if (documents != null) 'documents': documents,
-    });
+    final response = await _dio.post(
+      '/provider/nanny/register',
+      data: {
+        'name': name,
+        'phone': phone,
+        'service_area': serviceArea,
+        if (address != null) 'address': address,
+        'experience_years': experienceYears,
+        if (ageGroups.isNotEmpty) 'age_groups': ageGroups,
+        if (languages.isNotEmpty) 'languages': languages,
+        if (serviceTypes.isNotEmpty) 'service_types': serviceTypes,
+        if (documents != null) 'documents': documents,
+      },
+    );
     return response.data as Map<String, dynamic>;
   }
 
@@ -1028,15 +1093,18 @@ class ApiService {
     List<String> lessonModes = const [],
     int experienceYears = 0,
   }) async {
-    final response = await _dio.post('/provider/tutor/register/solo', data: {
-      'name': name,
-      'phone': phone,
-      'service_area': serviceArea,
-      if (address != null) 'address': address,
-      if (subjects.isNotEmpty) 'subjects': subjects,
-      if (lessonModes.isNotEmpty) 'lesson_modes': lessonModes,
-      'experience_years': experienceYears,
-    });
+    final response = await _dio.post(
+      '/provider/tutor/register/solo',
+      data: {
+        'name': name,
+        'phone': phone,
+        'service_area': serviceArea,
+        if (address != null) 'address': address,
+        if (subjects.isNotEmpty) 'subjects': subjects,
+        if (lessonModes.isNotEmpty) 'lesson_modes': lessonModes,
+        'experience_years': experienceYears,
+      },
+    );
     return response.data as Map<String, dynamic>;
   }
 
@@ -1046,12 +1114,15 @@ class ApiService {
     required String address,
     List<String> courses = const [],
   }) async {
-    final response = await _dio.post('/provider/tutor/register/center', data: {
-      'name': name,
-      'phone': phone,
-      'address': address,
-      if (courses.isNotEmpty) 'courses': courses,
-    });
+    final response = await _dio.post(
+      '/provider/tutor/register/center',
+      data: {
+        'name': name,
+        'phone': phone,
+        'address': address,
+        if (courses.isNotEmpty) 'courses': courses,
+      },
+    );
     return response.data as Map<String, dynamic>;
   }
 
@@ -1065,14 +1136,17 @@ class ApiService {
     List<String> areaTypes = const [],
     bool isCertified = false,
   }) async {
-    final response = await _dio.post('/provider/disinfection/register', data: {
-      'name': name,
-      'phone': phone,
-      'service_area': serviceArea,
-      if (address != null) 'address': address,
-      if (areaTypes.isNotEmpty) 'area_types': areaTypes,
-      'is_certified': isCertified,
-    });
+    final response = await _dio.post(
+      '/provider/disinfection/register',
+      data: {
+        'name': name,
+        'phone': phone,
+        'service_area': serviceArea,
+        if (address != null) 'address': address,
+        if (areaTypes.isNotEmpty) 'area_types': areaTypes,
+        'is_certified': isCertified,
+      },
+    );
     return response.data as Map<String, dynamic>;
   }
 
@@ -1092,20 +1166,23 @@ class ApiService {
     String? subCategory,
     int concurrentCapacity = 1,
   }) async {
-    final response = await _dio.post('/provider/massage/register', data: {
-      'name': name,
-      'phone': phone,
-      'service_area': serviceArea,
-      if (address != null) 'address': address,
-      if (lat != null) 'lat': lat,
-      if (lng != null) 'lng': lng,
-      'massage_role': massageRole,
-      if (visitModes.isNotEmpty) 'visit_modes': visitModes,
-      if (serviceTypes.isNotEmpty) 'service_types': serviceTypes,
-      'gender': gender,
-      if (subCategory != null) 'sub_category': subCategory,
-      'concurrent_capacity': concurrentCapacity,
-    });
+    final response = await _dio.post(
+      '/provider/massage/register',
+      data: {
+        'name': name,
+        'phone': phone,
+        'service_area': serviceArea,
+        if (address != null) 'address': address,
+        if (lat != null) 'lat': lat,
+        if (lng != null) 'lng': lng,
+        'massage_role': massageRole,
+        if (visitModes.isNotEmpty) 'visit_modes': visitModes,
+        if (serviceTypes.isNotEmpty) 'service_types': serviceTypes,
+        'gender': gender,
+        if (subCategory != null) 'sub_category': subCategory,
+        'concurrent_capacity': concurrentCapacity,
+      },
+    );
     return response.data as Map<String, dynamic>;
   }
 
@@ -1129,7 +1206,6 @@ class ApiService {
 
   // ─────────────── NURSE PORTAL ───────────────
 
-
   Future<Map<String, dynamic>> registerNurse({
     required String name,
     required String phone,
@@ -1140,16 +1216,19 @@ class ApiService {
     String? documentUrl,
     String? passportUrl,
   }) async {
-    final response = await _dio.post('/provider/nurse/register', data: {
-      'name': name,
-      'phone': phone,
-      'service_area': serviceArea,
-      if (address != null) 'address': address,
-      if (medicalTypes.isNotEmpty) 'medical_types': medicalTypes,
-      if (qualifications != null) 'qualifications': qualifications,
-      if (documentUrl != null) 'document_url': documentUrl,
-      if (passportUrl != null) 'passport_url': passportUrl,
-    });
+    final response = await _dio.post(
+      '/provider/nurse/register',
+      data: {
+        'name': name,
+        'phone': phone,
+        'service_area': serviceArea,
+        if (address != null) 'address': address,
+        if (medicalTypes.isNotEmpty) 'medical_types': medicalTypes,
+        if (qualifications != null) 'qualifications': qualifications,
+        if (documentUrl != null) 'document_url': documentUrl,
+        if (passportUrl != null) 'passport_url': passportUrl,
+      },
+    );
     return response.data as Map<String, dynamic>;
   }
 
@@ -1161,12 +1240,15 @@ class ApiService {
     required String address,
     List<String> services = const [],
   }) async {
-    final response = await _dio.post('/provider/dental/register', data: {
-      'name': name,
-      'phone': phone,
-      'address': address,
-      if (services.isNotEmpty) 'services': services,
-    });
+    final response = await _dio.post(
+      '/provider/dental/register',
+      data: {
+        'name': name,
+        'phone': phone,
+        'address': address,
+        if (services.isNotEmpty) 'services': services,
+      },
+    );
     return response.data as Map<String, dynamic>;
   }
 
@@ -1182,26 +1264,36 @@ class ApiService {
     List<String> eventTypes = const [],
     List<String> venueTypes = const [],
   }) async {
-    final response = await _dio.post('/provider/event/register', data: {
-      'name': name,
-      'phone': phone,
-      'service_area': serviceArea,
-      if (address != null) 'address': address,
-      'team_size': teamSize,
-      if (organizerTypes.isNotEmpty) 'organizer_types': organizerTypes,
-      if (eventTypes.isNotEmpty) 'event_types': eventTypes,
-      if (venueTypes.isNotEmpty) 'venue_types': venueTypes,
-    });
+    final response = await _dio.post(
+      '/provider/event/register',
+      data: {
+        'name': name,
+        'phone': phone,
+        'service_area': serviceArea,
+        if (address != null) 'address': address,
+        'team_size': teamSize,
+        if (organizerTypes.isNotEmpty) 'organizer_types': organizerTypes,
+        if (eventTypes.isNotEmpty) 'event_types': eventTypes,
+        if (venueTypes.isNotEmpty) 'venue_types': venueTypes,
+      },
+    );
     return response.data as Map<String, dynamic>;
   }
 
   // ─────────────── DAILIES & UTILITIES ───────────────
 
-  Future<Map<String, dynamic>> getWeather(String city, {double? lat, double? lng}) async {
+  Future<Map<String, dynamic>> getWeather(
+    String city, {
+    double? lat,
+    double? lng,
+  }) async {
     final Map<String, dynamic> params = {'city': city};
     if (lat != null) params['lat'] = lat.toString();
     if (lng != null) params['lng'] = lng.toString();
-    final response = await _dio.get('/utilities/weather', queryParameters: params);
+    final response = await _dio.get(
+      '/utilities/weather',
+      queryParameters: params,
+    );
     return response.data;
   }
 
@@ -1216,7 +1308,10 @@ class ApiService {
   }
 
   Future<Map<String, dynamic>> getPrayerTimes(String city) async {
-    final response = await _dio.get('/utilities/prayer-times', queryParameters: {'city': city});
+    final response = await _dio.get(
+      '/utilities/prayer-times',
+      queryParameters: {'city': city},
+    );
     return response.data;
   }
 
@@ -1225,18 +1320,25 @@ class ApiService {
     return response.data;
   }
 
-  Future<Map<String, dynamic>> createTodo(String title, [String? description]) async {
-    final response = await _dio.post('/todos/', data: {
-      'title': title,
-      if (description != null) 'description': description,
-    });
+  Future<Map<String, dynamic>> createTodo(
+    String title, [
+    String? description,
+  ]) async {
+    final response = await _dio.post(
+      '/todos/',
+      data: {
+        'title': title,
+        if (description != null) 'description': description,
+      },
+    );
     return response.data;
   }
 
   Future<Map<String, dynamic>> updateTodo(String id, bool isCompleted) async {
-    final response = await _dio.put('/todos/$id', data: {
-      'is_completed': isCompleted,
-    });
+    final response = await _dio.put(
+      '/todos/$id',
+      data: {'is_completed': isCompleted},
+    );
     return response.data;
   }
 
@@ -1245,22 +1347,35 @@ class ApiService {
   }
 
   Future<List<dynamic>> getPlans({String? date}) async {
-    final response = await _dio.get('/plans/', queryParameters: {
-      if (date != null) 'date': date,
-    });
+    final response = await _dio.get(
+      '/plans/',
+      queryParameters: {if (date != null) 'date': date},
+    );
     return response.data;
   }
 
-  Future<Map<String, dynamic>> createPlan(String title, DateTime dueDate, [String? description]) async {
-    final response = await _dio.post('/plans/', data: {
-      'title': title,
-      'due_date': dueDate.toUtc().toIso8601String(),
-      if (description != null) 'description': description,
-    });
+  Future<Map<String, dynamic>> createPlan(
+    String title,
+    DateTime dueDate, [
+    String? description,
+  ]) async {
+    final response = await _dio.post(
+      '/plans/',
+      data: {
+        'title': title,
+        'due_date': dueDate.toUtc().toIso8601String(),
+        if (description != null) 'description': description,
+      },
+    );
     return response.data;
   }
 
-  Future<Map<String, dynamic>> updatePlan(int id, {String? title, DateTime? dueDate, bool? isCompleted}) async {
+  Future<Map<String, dynamic>> updatePlan(
+    int id, {
+    String? title,
+    DateTime? dueDate,
+    bool? isCompleted,
+  }) async {
     final Map<String, dynamic> data = {};
     if (title != null) data['title'] = title;
     if (dueDate != null) data['due_date'] = dueDate.toUtc().toIso8601String();
@@ -1274,12 +1389,21 @@ class ApiService {
     await _dio.delete('/plans/$id');
   }
 
-  Future<Map<String, dynamic>> calculateShoppingPrice(List<Map<String, dynamic>> items) async {
-    final response = await _dio.post('/shopping/calculate-price', data: {
-      'items': items.map((e) {
-        return {'name': e['name'], 'qty': e['qty'] ?? e['quantity'] ?? 1.0, 'unit': e['unit'] ?? 'dona'};
-      }).toList(),
-    });
+  Future<Map<String, dynamic>> calculateShoppingPrice(
+    List<Map<String, dynamic>> items,
+  ) async {
+    final response = await _dio.post(
+      '/shopping/calculate-price',
+      data: {
+        'items': items.map((e) {
+          return {
+            'name': e['name'],
+            'qty': e['qty'] ?? e['quantity'] ?? 1.0,
+            'unit': e['unit'] ?? 'dona',
+          };
+        }).toList(),
+      },
+    );
     return response.data;
   }
 
@@ -1288,22 +1412,40 @@ class ApiService {
     return response.data;
   }
 
-  Future<Map<String, dynamic>> createShoppingList(String name, List<Map<String, dynamic>> items) async {
-    final response = await _dio.post('/shopping/', data: {
-      'name': name,
-      'items': items.map((e) {
-        return {'name': e['name'], 'qty': e['qty'] ?? e['quantity'] ?? 1.0, 'unit': e['unit'] ?? 'dona'};
-      }).toList(),
-    });
+  Future<Map<String, dynamic>> createShoppingList(
+    String name,
+    List<Map<String, dynamic>> items,
+  ) async {
+    final response = await _dio.post(
+      '/shopping/',
+      data: {
+        'name': name,
+        'items': items.map((e) {
+          return {
+            'name': e['name'],
+            'qty': e['qty'] ?? e['quantity'] ?? 1.0,
+            'unit': e['unit'] ?? 'dona',
+          };
+        }).toList(),
+      },
+    );
     return response.data;
   }
 
-  Future<Map<String, dynamic>> updateShoppingList(int id, Map<String, dynamic> data) async {
+  Future<Map<String, dynamic>> updateShoppingList(
+    int id,
+    Map<String, dynamic> data,
+  ) async {
     final response = await _dio.put('/shopping/$id', data: data);
     return response.data;
   }
 
-  Future<Map<String, dynamic>> updateShoppingItem(int listId, int itemIndex, {double? actualPrice, bool? isBought}) async {
+  Future<Map<String, dynamic>> updateShoppingItem(
+    int listId,
+    int itemIndex, {
+    double? actualPrice,
+    bool? isBought,
+  }) async {
     final data = <String, dynamic>{'item_index': itemIndex};
     if (actualPrice != null) data['actual_price'] = actualPrice;
     if (isBought != null) data['is_bought'] = isBought;
@@ -1316,16 +1458,18 @@ class ApiService {
   }
 
   Future<List<dynamic>> getFinanceRecords({String? month}) async {
-    final response = await _dio.get('/finance/', queryParameters: {
-      if (month != null) 'month': month,
-    });
+    final response = await _dio.get(
+      '/finance/',
+      queryParameters: {if (month != null) 'month': month},
+    );
     return response.data;
   }
 
   Future<Map<String, dynamic>> getFinanceStats({String? month}) async {
-    final response = await _dio.get('/finance/stats', queryParameters: {
-      if (month != null) 'month': month,
-    });
+    final response = await _dio.get(
+      '/finance/stats',
+      queryParameters: {if (month != null) 'month': month},
+    );
     return response.data;
   }
 
@@ -1336,13 +1480,16 @@ class ApiService {
     String? description,
     required DateTime date,
   }) async {
-    final response = await _dio.post('/finance/', data: {
-      'type': type,
-      'amount': amount,
-      'category': category,
-      if (description != null) 'description': description,
-      'date': date.toUtc().toIso8601String(),
-    });
+    final response = await _dio.post(
+      '/finance/',
+      data: {
+        'type': type,
+        'amount': amount,
+        'category': category,
+        if (description != null) 'description': description,
+        'date': date.toUtc().toIso8601String(),
+      },
+    );
     return response.data;
   }
 
@@ -1381,13 +1528,16 @@ class ApiService {
     required DateTime dueDate,
     required bool isRecurring,
   }) async {
-    final response = await _dio.post('/finance/planned', data: {
-      'title': title,
-      'amount': amount,
-      'category': category,
-      'due_date': dueDate.toUtc().toIso8601String(),
-      'is_recurring': isRecurring,
-    });
+    final response = await _dio.post(
+      '/finance/planned',
+      data: {
+        'title': title,
+        'amount': amount,
+        'category': category,
+        'due_date': dueDate.toUtc().toIso8601String(),
+        'is_recurring': isRecurring,
+      },
+    );
     return response.data;
   }
 
@@ -1426,14 +1576,17 @@ class ApiService {
     int? staffProviderId,
     String? address,
   }) async {
-    final response = await _dio.post('/provider/orders/manual_after_call', data: {
-      'user_id': userId,
-      'service_name': serviceName,
-      'date': date,
-      'price': price,
-      'notes': 'Telefon orqali kelishildi',
-      if (staffProviderId != null) 'staff_provider_id': staffProviderId,
-    });
+    final response = await _dio.post(
+      '/provider/orders/manual_after_call',
+      data: {
+        'user_id': userId,
+        'service_name': serviceName,
+        'date': date,
+        'price': price,
+        'notes': 'Telefon orqali kelishildi',
+        if (staffProviderId != null) 'staff_provider_id': staffProviderId,
+      },
+    );
     if (response.statusCode != 200) {
       throw Exception('Failed to create manual order');
     }
@@ -1485,9 +1638,10 @@ class ApiService {
   }
 
   Future<List<dynamic>> getMealLogs({String? date}) async {
-    final response = await _dio.get('/calories/log', queryParameters: {
-      if (date != null) 'date': date,
-    });
+    final response = await _dio.get(
+      '/calories/log',
+      queryParameters: {if (date != null) 'date': date},
+    );
     return response.data;
   }
 
@@ -1496,9 +1650,10 @@ class ApiService {
   }
 
   Future<Map<String, dynamic>> getCalorieSummary({String? date}) async {
-    final response = await _dio.get('/calories/summary', queryParameters: {
-      if (date != null) 'date': date,
-    });
+    final response = await _dio.get(
+      '/calories/summary',
+      queryParameters: {if (date != null) 'date': date},
+    );
     return response.data;
   }
 
@@ -1512,7 +1667,9 @@ class ApiService {
     }
   }
 
-  Future<Map<String, dynamic>> saveNutritionProfile(Map<String, dynamic> data) async {
+  Future<Map<String, dynamic>> saveNutritionProfile(
+    Map<String, dynamic> data,
+  ) async {
     final response = await _dio.put('/calories/profile', data: data);
     return response.data;
   }
@@ -1527,14 +1684,17 @@ class ApiService {
     int page = 1,
     int pageSize = 20,
   }) async {
-    final response = await _dio.get('/fitness/exercises', queryParameters: {
-      if (bodyPart != null) 'body_part': bodyPart,
-      if (equipment != null) 'equipment': equipment,
-      if (target != null) 'target': target,
-      if (search != null && search.isNotEmpty) 'search': search,
-      'page': page,
-      'page_size': pageSize,
-    });
+    final response = await _dio.get(
+      '/fitness/exercises',
+      queryParameters: {
+        if (bodyPart != null) 'body_part': bodyPart,
+        if (equipment != null) 'equipment': equipment,
+        if (target != null) 'target': target,
+        if (search != null && search.isNotEmpty) 'search': search,
+        'page': page,
+        'page_size': pageSize,
+      },
+    );
     return response.data;
   }
 
@@ -1548,7 +1708,9 @@ class ApiService {
     return response.data;
   }
 
-  Future<Map<String, dynamic>> generateWorkoutPlan(Map<String, dynamic> data) async {
+  Future<Map<String, dynamic>> generateWorkoutPlan(
+    Map<String, dynamic> data,
+  ) async {
     final response = await _dio.post('/fitness/plans/generate', data: data);
     return response.data;
   }
@@ -1563,7 +1725,10 @@ class ApiService {
     }
   }
 
-  Future<Map<String, dynamic>> updateWorkoutPlan(int id, Map<String, dynamic> data) async {
+  Future<Map<String, dynamic>> updateWorkoutPlan(
+    int id,
+    Map<String, dynamic> data,
+  ) async {
     final response = await _dio.patch('/fitness/plans/$id', data: data);
     return response.data;
   }
@@ -1574,10 +1739,13 @@ class ApiService {
   }
 
   Future<List<dynamic>> getWorkoutLogs({String? from, String? to}) async {
-    final response = await _dio.get('/fitness/logs', queryParameters: {
-      if (from != null) 'from': from,
-      if (to != null) 'to': to,
-    });
+    final response = await _dio.get(
+      '/fitness/logs',
+      queryParameters: {
+        if (from != null) 'from': from,
+        if (to != null) 'to': to,
+      },
+    );
     return response.data;
   }
 
@@ -1610,7 +1778,10 @@ class ApiService {
 
   /// method: "balance" (balansdan yechish) yoki "manual" (admin tasdiqlaydi)
   Future<Map<String, dynamic>> subscribePremium(String method) async {
-    final response = await _dio.post('/premium/subscribe', data: {'method': method});
+    final response = await _dio.post(
+      '/premium/subscribe',
+      data: {'method': method},
+    );
     return Map<String, dynamic>.from(response.data);
   }
 
@@ -1618,7 +1789,10 @@ class ApiService {
 
   /// Buyurtma bo'yicha nizo ochish (shikoyat).
   Future<Map<String, dynamic>> createDispute(int orderId, String reason) async {
-    final response = await _dio.post('/disputes', data: {'order_id': orderId, 'reason': reason});
+    final response = await _dio.post(
+      '/disputes',
+      data: {'order_id': orderId, 'reason': reason},
+    );
     return Map<String, dynamic>.from(response.data);
   }
 
@@ -1639,7 +1813,10 @@ class ApiService {
     return response.data;
   }
 
-  Future<Map<String, dynamic>> updateAlarm(int id, Map<String, dynamic> data) async {
+  Future<Map<String, dynamic>> updateAlarm(
+    int id,
+    Map<String, dynamic> data,
+  ) async {
     final response = await _dio.put('/alarms/$id', data: data);
     return response.data;
   }
@@ -1654,7 +1831,10 @@ class ApiService {
   }
 
   /// Budilnik rasm-vazifasi: rasmda `target` bor-yo'qligini AI tekshiradi.
-  Future<Map<String, dynamic>> verifyAlarmPhoto(String filePath, String target) async {
+  Future<Map<String, dynamic>> verifyAlarmPhoto(
+    String filePath,
+    String target,
+  ) async {
     final formData = FormData.fromMap({
       'file': await MultipartFile.fromFile(filePath),
       'target': target,

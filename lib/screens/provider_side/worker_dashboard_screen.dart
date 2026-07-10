@@ -7,6 +7,8 @@ class WorkerDashboardScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return UnifiedProviderDashboardScreen(config: ProviderCategoryConfig.worker);
+    return UnifiedProviderDashboardScreen(
+      config: ProviderCategoryConfig.worker,
+    );
   }
 }

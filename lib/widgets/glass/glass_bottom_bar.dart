@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import '../../theme/glass_tokens.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 class GlassBottomBar extends StatelessWidget {
   final int currentIndex;
@@ -22,70 +23,77 @@ class GlassBottomBar extends StatelessWidget {
     final highlight = GlassTokens.glassHighlight(context);
 
     return ClipRRect(
-      borderRadius: const BorderRadius.vertical(top: Radius.circular(GlassTokens.radiusXl)),
+      borderRadius: const BorderRadius.vertical(
+        top: Radius.circular(GlassTokens.radiusXl),
+      ),
       child: BackdropFilter(
-          filter: ImageFilter.blur(
-            sigmaX: GlassTokens.glassBlur,
-            sigmaY: GlassTokens.glassBlur,
-          ),
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(GlassTokens.radiusXl)),
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  fill,
-                  Color.lerp(fill, Colors.transparent, 0.12) ?? fill,
-                ],
-              ),
-              border: Border.all(color: border, width: 1.2),
-              boxShadow: GlassTokens.glassShadow(context),
+        filter: ImageFilter.blur(
+          sigmaX: GlassTokens.glassBlur,
+          sigmaY: GlassTokens.glassBlur,
+        ),
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            borderRadius: const BorderRadius.vertical(
+              top: Radius.circular(GlassTokens.radiusXl),
             ),
-            child: Stack(
-              children: [
-                Positioned(
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  height: GlassTokens.radiusXl,
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(
-                      borderRadius: const BorderRadius.vertical(
-                        top: Radius.circular(GlassTokens.radiusXl),
-                      ),
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [highlight, Colors.transparent],
-                      ),
-                    ),
-                  ),
-                ),
-                SafeArea(
-                  top: false,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 10),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: List.generate(items.length, (i) {
-                        final item = items[i];
-                        final selected = i == currentIndex;
-                        return Expanded(
-                          child: _NavButton(
-                            item: item,
-                            selected: selected,
-                            onTap: () => onTap(i),
-                          ),
-                        );
-                      }),
-                    ),
-                  ),
-                ),
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                fill,
+                Color.lerp(fill, Colors.transparent, 0.12) ?? fill,
               ],
             ),
+            border: Border.all(color: border, width: 1.2),
+            boxShadow: GlassTokens.glassShadow(context),
+          ),
+          child: Stack(
+            children: [
+              Positioned(
+                top: 0,
+                left: 0,
+                right: 0,
+                height: GlassTokens.radiusXl,
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    borderRadius: const BorderRadius.vertical(
+                      top: Radius.circular(GlassTokens.radiusXl),
+                    ),
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [highlight, Colors.transparent],
+                    ),
+                  ),
+                ),
+              ),
+              SafeArea(
+                top: false,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 4,
+                    vertical: 10,
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: List.generate(items.length, (i) {
+                      final item = items[i];
+                      final selected = i == currentIndex;
+                      return Expanded(
+                        child: _NavButton(
+                          item: item,
+                          selected: selected,
+                          onTap: () => onTap(i),
+                        ),
+                      );
+                    }),
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
+      ),
     );
   }
 }
@@ -123,9 +131,7 @@ class _NavButton extends StatelessWidget {
           curve: Curves.easeOutCubic,
           padding: const EdgeInsets.symmetric(vertical: 8),
           decoration: BoxDecoration(
-            color: selected
-                ? activeColor
-                : Colors.transparent,
+            color: selected ? activeColor : Colors.transparent,
             borderRadius: BorderRadius.circular(20),
           ),
           child: Column(

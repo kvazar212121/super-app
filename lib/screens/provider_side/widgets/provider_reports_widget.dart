@@ -52,7 +52,11 @@ class _ProviderReportsWidgetState extends State<ProviderReportsWidget> {
           children: [
             const Text(
               'Umumiy statistika',
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: Colors.black),
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.w900,
+                color: Colors.black,
+              ),
             ),
             const Spacer(),
             Container(
@@ -60,7 +64,10 @@ class _ProviderReportsWidgetState extends State<ProviderReportsWidget> {
                 border: Border.all(color: Colors.black, width: 1.5),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: IconButton(icon: const Icon(LucideIcons.refreshCw, color: Colors.black), onPressed: _loadAll),
+              child: IconButton(
+                icon: const Icon(LucideIcons.refreshCw, color: Colors.black),
+                onPressed: _loadAll,
+              ),
             ),
           ],
         ),
@@ -103,7 +110,11 @@ class _ProviderReportsWidgetState extends State<ProviderReportsWidget> {
               Expanded(
                 child: Text(
                   "Ma'lumot: Tizim orqali kelgan har bir mijoz uchun hisobingizdan admin paneldan belgilangan miqdorda xizmat haqi yechib olinadi.",
-                  style: TextStyle(color: Colors.black87, fontSize: 13, height: 1.4),
+                  style: TextStyle(
+                    color: Colors.black87,
+                    fontSize: 13,
+                    height: 1.4,
+                  ),
                 ),
               ),
             ],
@@ -117,7 +128,9 @@ class _ProviderReportsWidgetState extends State<ProviderReportsWidget> {
             onPressed: () => _showTopUpDialog(context),
             style: FilledButton.styleFrom(
               backgroundColor: Colors.black,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
             ),
             icon: const Icon(LucideIcons.creditCard),
             label: const Text(
@@ -134,7 +147,9 @@ class _ProviderReportsWidgetState extends State<ProviderReportsWidget> {
   void _showTopUpDialog(BuildContext context) {
     showModalBottomSheet(
       context: context,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
       builder: (ctx) => SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(24),
@@ -144,12 +159,20 @@ class _ProviderReportsWidgetState extends State<ProviderReportsWidget> {
             children: [
               const Text(
                 "Hisobni to'ldirish",
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: Colors.black),
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w900,
+                  color: Colors.black,
+                ),
               ),
               const SizedBox(height: 16),
               const Text(
                 "To'lovni amalga oshirish uchun quyidagi karta raqamiga kerakli summani o'tkazing va adminga chekni yuboring (Paynet, Click, Payme va h.k).",
-                style: TextStyle(color: Colors.black87, fontSize: 14, height: 1.4),
+                style: TextStyle(
+                  color: Colors.black87,
+                  fontSize: 14,
+                  height: 1.4,
+                ),
               ),
               const SizedBox(height: 24),
               Container(
@@ -167,10 +190,30 @@ class _ProviderReportsWidgetState extends State<ProviderReportsWidget> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text("Karta raqami:", style: TextStyle(color: Colors.black54, fontSize: 12)),
-                          Text("8600 1234 5678 9012", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Colors.black, letterSpacing: 1.2)),
+                          Text(
+                            "Karta raqami:",
+                            style: TextStyle(
+                              color: Colors.black54,
+                              fontSize: 12,
+                            ),
+                          ),
+                          Text(
+                            "8600 1234 5678 9012",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                              color: Colors.black,
+                              letterSpacing: 1.2,
+                            ),
+                          ),
                           SizedBox(height: 4),
-                          Text("Qabul qiluvchi: Adminstrator", style: TextStyle(color: Colors.black87, fontSize: 13)),
+                          Text(
+                            "Qabul qiluvchi: Adminstrator",
+                            style: TextStyle(
+                              color: Colors.black87,
+                              fontSize: 13,
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -185,9 +228,14 @@ class _ProviderReportsWidgetState extends State<ProviderReportsWidget> {
                   style: FilledButton.styleFrom(
                     backgroundColor: Colors.black,
                     padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
-                  child: const Text("Tushunarli", style: TextStyle(fontWeight: FontWeight.bold)),
+                  child: const Text(
+                    "Tushunarli",
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
                 ),
               ),
             ],
@@ -197,7 +245,13 @@ class _ProviderReportsWidgetState extends State<ProviderReportsWidget> {
     );
   }
 
-  Widget _statCard(String title, String value, IconData icon, Color color, {String? subtitle}) {
+  Widget _statCard(
+    String title,
+    String value,
+    IconData icon,
+    Color color, {
+    String? subtitle,
+  }) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -218,7 +272,11 @@ class _ProviderReportsWidgetState extends State<ProviderReportsWidget> {
               Expanded(
                 child: Text(
                   title,
-                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.black87),
+                  style: const TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
+                  ),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -228,13 +286,21 @@ class _ProviderReportsWidgetState extends State<ProviderReportsWidget> {
           const SizedBox(height: 10),
           Text(
             value,
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: Colors.black),
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w900,
+              color: Colors.black,
+            ),
           ),
           if (subtitle != null) ...[
             const SizedBox(height: 4),
             Text(
               subtitle,
-              style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: color),
+              style: TextStyle(
+                fontSize: 10,
+                fontWeight: FontWeight.bold,
+                color: color,
+              ),
             ),
           ],
         ],

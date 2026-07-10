@@ -6,6 +6,7 @@ import '../../main_screen.dart';
 import '../../provider_side/provider_theme.dart';
 import '../../provider_side/unified_provider_dashboard_screen.dart';
 import '../../../services/provider_portal_service.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 /// Repetitor / o'quv markazi — administrator tasdiqlaguncha.
 class TutorPendingScreen extends StatefulWidget {
@@ -30,7 +31,8 @@ class _TutorPendingScreenState extends State<TutorPendingScreen> {
     try {
       final data = await _portal.getMe('repetitor');
       final active = data['is_active'] == true;
-      final meta = data['metadata'] as Map<String, dynamic>? ??
+      final meta =
+          data['metadata'] as Map<String, dynamic>? ??
           data['metadata_json'] as Map<String, dynamic>? ??
           {};
       final rejected = meta['verification_status'] == 'rejected';
@@ -56,7 +58,7 @@ class _TutorPendingScreenState extends State<TutorPendingScreen> {
         return;
       }
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Hali tasdiqlanmagan. Biroz kuting.')),
+        SnackBar(content: Text('Hali tasdiqlanmagan. Biroz kuting.'.tr)),
       );
     } catch (_) {
       if (mounted) {
@@ -108,7 +110,11 @@ class _TutorPendingScreenState extends State<TutorPendingScreen> {
                 const Text(
                   'Tasdiqlangandan keyin mijozlar sizni topa oladi va panel to\'liq ochiladi. Onlayn video dars keyingi bosqichda qo\'shiladi.',
                   textAlign: TextAlign.center,
-                  style: TextStyle(color: Colors.grey, fontSize: 13, height: 1.4),
+                  style: TextStyle(
+                    color: Colors.grey,
+                    fontSize: 13,
+                    height: 1.4,
+                  ),
                 ),
                 if (_statusMessage != null) ...[
                   const SizedBox(height: 16),
@@ -132,8 +138,8 @@ class _TutorPendingScreenState extends State<TutorPendingScreen> {
                               color: Colors.white,
                             ),
                           )
-                        : const Icon(LucideIcons.refreshCw),
-                    label: const Text('Holatni tekshirish'),
+                        : Icon(LucideIcons.refreshCw),
+                    label: Text('Holatni tekshirish'.tr),
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -147,7 +153,7 @@ class _TutorPendingScreenState extends State<TutorPendingScreen> {
                         (_) => false,
                       );
                     },
-                    child: const Text('Bosh sahifaga'),
+                    child: Text('Bosh sahifaga'.tr),
                   ),
                 ),
               ],

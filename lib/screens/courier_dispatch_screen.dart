@@ -9,6 +9,7 @@ import '../providers/app_provider.dart';
 import '../utils/auth_guard.dart';
 import '../widgets/booking_common_widgets.dart';
 import '../widgets/glass/mesh_background.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 class CourierDispatchScreen extends StatefulWidget {
   final CourierService service;
@@ -78,7 +79,8 @@ class _CourierDispatchScreenState extends State<CourierDispatchScreen> {
       providerName: widget.service.name,
       variant: 'Kuryer chaqiruv',
       address: 'Kimdan: $from -> Kimga: $to',
-      notes: 'Vazn: ${weight.isEmpty ? "No'malum" : "$weight kg"}\nIzoh: $notes',
+      notes:
+          'Vazn: ${weight.isEmpty ? "No'malum" : "$weight kg"}\nIzoh: $notes',
       date: DateTime.now(), // ASAP
       price: 0, // Negotiable
       status: OrderStatus.pending,
@@ -91,7 +93,9 @@ class _CourierDispatchScreenState extends State<CourierDispatchScreen> {
       Navigator.pop(context);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Buyurtma yuborildi! Kuryer tez orada siz bilan bog\'lanadi.'),
+          content: Text(
+            'Buyurtma yuborildi! Kuryer tez orada siz bilan bog\'lanadi.',
+          ),
           backgroundColor: Colors.green,
         ),
       );
@@ -112,7 +116,7 @@ class _CourierDispatchScreenState extends State<CourierDispatchScreen> {
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           elevation: 0,
-          title: const Text('Kuryer chaqirish'),
+          title: Text('Kuryer chaqirish'.tr),
         ),
         body: SingleChildScrollView(
           padding: const EdgeInsets.all(20),
@@ -130,15 +134,31 @@ class _CourierDispatchScreenState extends State<CourierDispatchScreen> {
                     CircleAvatar(
                       radius: 28,
                       backgroundColor: _accent.withOpacity(0.1),
-                      child: Icon(LucideIcons.package, color: _accent, size: 24),
+                      child: Icon(
+                        LucideIcons.package,
+                        color: _accent,
+                        size: 24,
+                      ),
                     ),
                     const SizedBox(width: 16),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(widget.service.name, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                          Text(widget.service.vehicleType.label, style: TextStyle(color: _accent, fontWeight: FontWeight.w600)),
+                          Text(
+                            widget.service.name,
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Text(
+                            widget.service.vehicleType.label,
+                            style: TextStyle(
+                              color: _accent,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -190,7 +210,9 @@ class _CourierDispatchScreenState extends State<CourierDispatchScreen> {
                           hint: 'Mas: 5',
                           icon: LucideIcons.scale,
                           accent: _accent,
-                          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                          keyboardType: const TextInputType.numberWithOptions(
+                            decimal: true,
+                          ),
                           suffixText: 'kg',
                         ),
                       ],
@@ -222,7 +244,10 @@ class _CourierDispatchScreenState extends State<CourierDispatchScreen> {
                     Expanded(
                       child: Text(
                         'Xizmat narxi kuryer yetib kelgach, bosib o\'tiladigan masofaga qarab belgilanadi.',
-                        style: TextStyle(color: Colors.blue.shade900, fontSize: 13),
+                        style: TextStyle(
+                          color: Colors.blue.shade900,
+                          fontSize: 13,
+                        ),
                       ),
                     ),
                   ],
@@ -236,9 +261,14 @@ class _CourierDispatchScreenState extends State<CourierDispatchScreen> {
                   onPressed: _canSubmit ? _confirmDispatch : null,
                   style: FilledButton.styleFrom(
                     backgroundColor: _accent,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
                   ),
-                  child: const Text('Buyurtma berish', style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold)),
+                  child: const Text(
+                    'Buyurtma berish',
+                    style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
+                  ),
                 ),
               ),
               const SizedBox(height: 40),

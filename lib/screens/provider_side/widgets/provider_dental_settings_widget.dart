@@ -3,6 +3,7 @@ import '../../../services/hub_data_service.dart';
 import 'package:flutter/services.dart';
 import '../../../services/provider_availability_service.dart';
 import '../../../services/provider_portal_service.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 class _ServiceRow {
   final nameCtrl = TextEditingController();
@@ -36,7 +37,8 @@ class ProviderDentalSettingsWidget extends StatefulWidget {
       _ProviderDentalSettingsWidgetState();
 }
 
-class _ProviderDentalSettingsWidgetState extends State<ProviderDentalSettingsWidget> {
+class _ProviderDentalSettingsWidgetState
+    extends State<ProviderDentalSettingsWidget> {
   final _portal = ProviderPortalService();
   bool _loading = true;
   bool _saving = false;
@@ -47,8 +49,15 @@ class _ProviderDentalSettingsWidgetState extends State<ProviderDentalSettingsWid
   final _addressCtrl = TextEditingController();
 
   static const _slots = [
-    '09:00', '10:00', '11:00', '12:00',
-    '14:00', '15:00', '16:00', '17:00', '18:00',
+    '09:00',
+    '10:00',
+    '11:00',
+    '12:00',
+    '14:00',
+    '15:00',
+    '16:00',
+    '17:00',
+    '18:00',
   ];
 
   @override
@@ -99,7 +108,9 @@ class _ProviderDentalSettingsWidgetState extends State<ProviderDentalSettingsWid
     final names = (meta['services'] as List<dynamic>? ?? [])
         .map((e) => e.toString())
         .toList();
-    final prices = Map<String, dynamic>.from(meta['prices'] as Map<String, dynamic>? ?? {});
+    final prices = Map<String, dynamic>.from(
+      meta['prices'] as Map<String, dynamic>? ?? {},
+    );
 
     if (names.isEmpty) {
       _addService('', '');
@@ -122,7 +133,8 @@ class _ProviderDentalSettingsWidgetState extends State<ProviderDentalSettingsWid
       }
     }
 
-    _timeSlots = (meta['time_slots'] as List<dynamic>?)
+    _timeSlots =
+        (meta['time_slots'] as List<dynamic>?)
             ?.map((e) => e.toString())
             .toList() ??
         List.of(_slots);
@@ -130,9 +142,11 @@ class _ProviderDentalSettingsWidgetState extends State<ProviderDentalSettingsWid
   }
 
   void _addService(String name, String price) {
-    _services.add(_ServiceRow()
-      ..nameCtrl.text = name
-      ..priceCtrl.text = price);
+    _services.add(
+      _ServiceRow()
+        ..nameCtrl.text = name
+        ..priceCtrl.text = price,
+    );
   }
 
   void _addDentist(String name) {
@@ -148,7 +162,8 @@ class _ProviderDentalSettingsWidgetState extends State<ProviderDentalSettingsWid
         final name = row.nameCtrl.text.trim();
         if (name.isEmpty) continue;
         services.add(name);
-        prices[name] = int.tryParse(row.priceCtrl.text.replaceAll(' ', '')) ?? 0;
+        prices[name] =
+            int.tryParse(row.priceCtrl.text.replaceAll(' ', '')) ?? 0;
       }
 
       final dentists = <Map<String, String>>[];
@@ -161,8 +176,8 @@ class _ProviderDentalSettingsWidgetState extends State<ProviderDentalSettingsWid
       final latestData = await _portal.getMe(widget.categoryKey);
       final latestMeta = Map<String, dynamic>.from(
         latestData['metadata'] as Map<String, dynamic>? ??
-        latestData['metadata_json'] as Map<String, dynamic>? ??
-        {},
+            latestData['metadata_json'] as Map<String, dynamic>? ??
+            {},
       );
       final meta = Map<String, dynamic>.from(latestMeta)
         ..['type'] = 'dental_clinic'
@@ -176,16 +191,16 @@ class _ProviderDentalSettingsWidgetState extends State<ProviderDentalSettingsWid
       await _portal.updateMetadata(widget.categoryKey, meta);
       HubDataService().clearCache();
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Sozlamalar saqlandi')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Sozlamalar saqlandi'.tr)));
       }
       await _load();
     } catch (_) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Saqlashda xatolik')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Saqlashda xatolik'.tr)));
       }
     } finally {
       if (mounted) setState(() => _saving = false);
@@ -201,13 +216,15 @@ class _ProviderDentalSettingsWidgetState extends State<ProviderDentalSettingsWid
       children: [
         Text(
           'Stomatologiya klinikasi',
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+          style: Theme.of(
+            context,
+          ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 16),
         TextField(
           controller: _addressCtrl,
-          decoration: const InputDecoration(
-            labelText: 'Klinika manzili',
+          decoration: InputDecoration(
+            labelText: 'Klinika manzili'.tr,
             border: OutlineInputBorder(),
           ),
           maxLines: 2,
@@ -232,12 +249,15 @@ class _ProviderDentalSettingsWidgetState extends State<ProviderDentalSettingsWid
                   ),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.remove_circle_outline, color: Colors.red),
+                  icon: const Icon(
+                    Icons.remove_circle_outline,
+                    color: Colors.red,
+                  ),
                   onPressed: _dentists.length > 1
                       ? () => setState(() {
-                            _dentists[i].dispose();
-                            _dentists.removeAt(i);
-                          })
+                          _dentists[i].dispose();
+                          _dentists.removeAt(i);
+                        })
                       : null,
                 ),
               ],
@@ -250,7 +270,10 @@ class _ProviderDentalSettingsWidgetState extends State<ProviderDentalSettingsWid
           label: const Text('Shifokor qo\'shish'),
         ),
         const SizedBox(height: 24),
-        Text('Xizmatlar va narxlar', style: Theme.of(context).textTheme.titleMedium),
+        Text(
+          'Xizmatlar va narxlar',
+          style: Theme.of(context).textTheme.titleMedium,
+        ),
         const SizedBox(height: 12),
         ..._services.asMap().entries.map((entry) {
           final i = entry.key;
@@ -276,19 +299,22 @@ class _ProviderDentalSettingsWidgetState extends State<ProviderDentalSettingsWid
                     controller: row.priceCtrl,
                     keyboardType: TextInputType.number,
                     inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                    decoration: const InputDecoration(
-                      labelText: 'Narx',
+                    decoration: InputDecoration(
+                      labelText: 'Narx'.tr,
                       border: OutlineInputBorder(),
                     ),
                   ),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.remove_circle_outline, color: Colors.red),
+                  icon: const Icon(
+                    Icons.remove_circle_outline,
+                    color: Colors.red,
+                  ),
                   onPressed: _services.length > 1
                       ? () => setState(() {
-                            _services[i].dispose();
-                            _services.removeAt(i);
-                          })
+                          _services[i].dispose();
+                          _services.removeAt(i);
+                        })
                       : null,
                 ),
               ],
@@ -331,16 +357,20 @@ class _ProviderDentalSettingsWidgetState extends State<ProviderDentalSettingsWid
           child: FilledButton(
             onPressed: _saving ? null : _save,
             style: FilledButton.styleFrom(
-              backgroundColor: Colors.black, foregroundColor: Colors.white,
+              backgroundColor: Colors.black,
+              foregroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(vertical: 16),
             ),
             child: _saving
                 ? const SizedBox(
                     width: 22,
                     height: 22,
-                    child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: Colors.white,
+                    ),
                   )
-                : const Text('Saqlash'),
+                : Text('Saqlash'.tr),
           ),
         ),
       ],

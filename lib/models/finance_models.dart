@@ -79,7 +79,9 @@ class FinanceStats {
       totalIncome: (json['total_income'] as num).toDouble(),
       totalExpense: (json['total_expense'] as num).toDouble(),
       balance: (json['balance'] as num).toDouble(),
-      categoryStats: statsList.map((e) => FinanceCategoryStat.fromJson(e)).toList(),
+      categoryStats: statsList
+          .map((e) => FinanceCategoryStat.fromJson(e))
+          .toList(),
       insight: json['insight'] as String? ?? '',
     );
   }

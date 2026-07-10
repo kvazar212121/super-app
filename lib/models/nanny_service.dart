@@ -1,33 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
-enum NannyServiceType {
-  hourly,
-  halfDay,
-  fullDay,
-  overnight,
-  weekly,
-  monthly,
-}
+enum NannyServiceType { hourly, halfDay, fullDay, overnight, weekly, monthly }
 
 extension NannyServiceTypeX on NannyServiceType {
   String get key => switch (this) {
-        NannyServiceType.hourly => 'hourly',
-        NannyServiceType.halfDay => 'half_day',
-        NannyServiceType.fullDay => 'full_day',
-        NannyServiceType.overnight => 'overnight',
-        NannyServiceType.weekly => 'weekly',
-        NannyServiceType.monthly => 'monthly',
-      };
+    NannyServiceType.hourly => 'hourly',
+    NannyServiceType.halfDay => 'half_day',
+    NannyServiceType.fullDay => 'full_day',
+    NannyServiceType.overnight => 'overnight',
+    NannyServiceType.weekly => 'weekly',
+    NannyServiceType.monthly => 'monthly',
+  };
 
   String get label => switch (this) {
-        NannyServiceType.hourly => 'Soatbay',
-        NannyServiceType.halfDay => 'Yarim kun',
-        NannyServiceType.fullDay => 'Butun kun',
-        NannyServiceType.overnight => 'Tungi qarash',
-        NannyServiceType.weekly => 'Haftalik doimiy',
-        NannyServiceType.monthly => 'Oylik doimiy',
-      };
+    NannyServiceType.hourly => 'Soatbay',
+    NannyServiceType.halfDay => 'Yarim kun',
+    NannyServiceType.fullDay => 'Butun kun',
+    NannyServiceType.overnight => 'Tungi qarash',
+    NannyServiceType.weekly => 'Haftalik doimiy',
+    NannyServiceType.monthly => 'Oylik doimiy',
+  };
 
   static NannyServiceType? fromKey(String key) {
     for (final t in NannyServiceType.values) {
@@ -69,13 +63,13 @@ class NannyDocuments {
   }
 
   Map<String, dynamic> toJson() => {
-        'medical_cert': medicalCert,
-        'criminal_record': criminalRecord,
-        'id_verified': idVerified,
-        if (medicalCertUrl != null) 'medical_cert_url': medicalCertUrl,
-        if (idUrl != null) 'id_url': idUrl,
-        if (criminalRecordUrl != null) 'criminal_record_url': criminalRecordUrl,
-      };
+    'medical_cert': medicalCert,
+    'criminal_record': criminalRecord,
+    'id_verified': idVerified,
+    if (medicalCertUrl != null) 'medical_cert_url': medicalCertUrl,
+    if (idUrl != null) 'id_url': idUrl,
+    if (criminalRecordUrl != null) 'criminal_record_url': criminalRecordUrl,
+  };
 }
 
 /// Enaga xizmati modeli
@@ -142,15 +136,14 @@ class NannyService {
   String get ageGroupsLabel =>
       ageGroups.isEmpty ? 'Barcha yosh' : ageGroups.join(', ');
 
-  String get languagesLabel =>
-      languages.map(languageLabel).join(', ');
+  String get languagesLabel => languages.map(languageLabel).join(', ');
 
   static String languageLabel(String code) => switch (code) {
-        'uz' => 'O\'zbek',
-        'ru' => 'Rus',
-        'en' => 'Ingliz',
-        _ => code,
-      };
+    'uz' => 'O\'zbek',
+    'ru' => 'Rus',
+    'en' => 'Ingliz',
+    _ => code,
+  };
 
   factory NannyService.fromProviderJson(Map<String, dynamic> json) {
     final meta = json['metadata'] as Map<String, dynamic>? ?? {};
@@ -209,9 +202,9 @@ class NannyService {
   }
 
   IconData badgeIcon(String type) => switch (type) {
-        'medical' => LucideIcons.heartPulse,
-        'id' => LucideIcons.badgeCheck,
-        'criminal' => LucideIcons.shieldCheck,
-        _ => LucideIcons.check,
-      };
+    'medical' => LucideIcons.heartPulse,
+    'id' => LucideIcons.badgeCheck,
+    'criminal' => LucideIcons.shieldCheck,
+    _ => LucideIcons.check,
+  };
 }

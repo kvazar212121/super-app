@@ -5,6 +5,7 @@ import '../../provider_side/provider_theme.dart';
 import 'barber_employee_join_screen.dart';
 import 'barber_mobile_screen.dart';
 import 'barber_shop_owner_screen.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 /// Sartarosh ro'yxatdan o'tish — 3 tur tanlash.
 class BarberRoleSelectionScreen extends StatelessWidget {
@@ -14,7 +15,9 @@ class BarberRoleSelectionScreen extends StatelessWidget {
 
   void _open(BuildContext context, BarberRegistrationRole role) {
     final screen = switch (role) {
-      BarberRegistrationRole.shopOwner => BarberShopOwnerScreen(categoryDbId: categoryDbId),
+      BarberRegistrationRole.shopOwner => BarberShopOwnerScreen(
+        categoryDbId: categoryDbId,
+      ),
       BarberRegistrationRole.shopEmployee => const BarberEmployeeJoinScreen(),
       BarberRegistrationRole.mobile => const BarberMobileScreen(),
     };
@@ -28,13 +31,15 @@ class BarberRoleSelectionScreen extends StatelessWidget {
         builder: (context) {
           final theme = Theme.of(context);
           return Scaffold(
-            appBar: AppBar(title: const Text('Sartarosh sifatida')),
+            appBar: AppBar(title: Text('Sartarosh sifatida'.tr)),
             body: ListView(
               padding: const EdgeInsets.all(24),
               children: [
                 Text(
                   'Siz kimsiz?',
-                  style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+                  style: theme.textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 const SizedBox(height: 8),
                 Text(
@@ -55,9 +60,11 @@ class BarberRoleSelectionScreen extends StatelessWidget {
                 _RoleCard(
                   icon: LucideIcons.scissors,
                   title: 'Sartaroshxonada ishlayman',
-                  subtitle: 'Mavjud xonani tanlang yoki taklif kodi bilan qo\'shiling. Egasi tasdiqlaydi.',
+                  subtitle:
+                      'Mavjud xonani tanlang yoki taklif kodi bilan qo\'shiling. Egasi tasdiqlaydi.',
                   color: const Color(0xFF3B82F6),
-                  onTap: () => _open(context, BarberRegistrationRole.shopEmployee),
+                  onTap: () =>
+                      _open(context, BarberRegistrationRole.shopEmployee),
                 ),
                 const SizedBox(height: 16),
                 _RoleCard(
@@ -118,9 +125,22 @@ class _RoleCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
                   const SizedBox(height: 4),
-                  Text(subtitle, style: TextStyle(color: Colors.grey, height: 1.35, fontSize: 13)),
+                  Text(
+                    subtitle,
+                    style: TextStyle(
+                      color: Colors.grey,
+                      height: 1.35,
+                      fontSize: 13,
+                    ),
+                  ),
                 ],
               ),
             ),

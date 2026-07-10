@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../l10n/locale_controller.dart';
 import '../../models/alarm.dart';
 import '../../services/api_service.dart';
 import '../../services/notification_helper.dart';
@@ -31,7 +32,15 @@ class _AlarmEditScreenState extends State<AlarmEditScreen> {
   String _photoTargetEn = 'bathroom sink or faucet';
   final _speechPhraseCtrl = TextEditingController();
 
-  static const List<String> _weekdayLabels = ['Du', 'Se', 'Ch', 'Pa', 'Ju', 'Sh', 'Ya'];
+  static const List<String> _weekdayLabels = [
+    'Du',
+    'Se',
+    'Ch',
+    'Pa',
+    'Ju',
+    'Sh',
+    'Ya',
+  ];
 
   // Rasm vazifasi uchun tayyor nishonlar (uz -> AI uchun en)
   static const Map<String, String> _photoPresets = {
@@ -57,11 +66,14 @@ class _AlarmEditScreenState extends State<AlarmEditScreen> {
       _mathDifficulty = (e.missionConfig['difficulty'] as String?) ?? 'medium';
       _mathCount = (e.missionConfig['count'] as int?) ?? 1;
       if (e.missionType == 'photo') {
-        _photoTargetUz = (e.missionConfig['target_uz'] as String?) ?? _photoTargetUz;
-        _photoTargetEn = (e.missionConfig['target_en'] as String?) ?? _photoTargetEn;
+        _photoTargetUz =
+            (e.missionConfig['target_uz'] as String?) ?? _photoTargetUz;
+        _photoTargetEn =
+            (e.missionConfig['target_en'] as String?) ?? _photoTargetEn;
       }
       if (e.missionType == 'speech') {
-        _speechPhraseCtrl.text = (e.missionConfig['phrase_uz'] as String?) ?? '';
+        _speechPhraseCtrl.text =
+            (e.missionConfig['phrase_uz'] as String?) ?? '';
       }
     } else {
       _time = TimeOfDay.now();
@@ -92,7 +104,9 @@ class _AlarmEditScreenState extends State<AlarmEditScreen> {
   Future<void> _save() async {
     setState(() => _saving = true);
     final payload = {
-      'label': _labelCtrl.text.trim().isEmpty ? 'Budilnik' : _labelCtrl.text.trim(),
+      'label': _labelCtrl.text.trim().isEmpty
+          ? 'Budilnik'
+          : _labelCtrl.text.trim(),
       'hour': _time.hour,
       'minute': _time.minute,
       'repeat_days': (_days.toList()..sort()).join(','),
@@ -115,7 +129,7 @@ class _AlarmEditScreenState extends State<AlarmEditScreen> {
       setState(() => _saving = false);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Saqlashda xatolik: $e')),
+          SnackBar(content: Text('${'Saqlashda xatolik'.tr}: $e')),
         );
       }
     }
@@ -125,7 +139,11 @@ class _AlarmEditScreenState extends State<AlarmEditScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.existing == null ? 'Yangi budilnik' : 'Budilnikni tahrirlash'),
+        title: Text(
+          widget.existing == null
+              ? 'Yangi budilnik'.tr
+              : 'Budilnikni tahrirlash'.tr,
+        ),
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),
@@ -134,22 +152,34 @@ class _AlarmEditScreenState extends State<AlarmEditScreen> {
           Center(
             child: InkWell(
               onTap: () async {
-                final picked = await showTimePicker(context: context, initialTime: _time);
+                final picked = await showTimePicker(
+                  context: context,
+                  initialTime: _time,
+                );
                 if (picked != null) setState(() => _time = picked);
               },
               child: Text(
                 '${_time.hour.toString().padLeft(2, '0')}:${_time.minute.toString().padLeft(2, '0')}',
-                style: const TextStyle(fontSize: 64, fontWeight: FontWeight.bold),
+                style: const TextStyle(
+                  fontSize: 64,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           ),
           const SizedBox(height: 16),
           TextField(
             controller: _labelCtrl,
-            decoration: const InputDecoration(labelText: 'Nomi', border: OutlineInputBorder()),
+            decoration: InputDecoration(
+              labelText: 'Nomi'.tr,
+              border: const OutlineInputBorder(),
+            ),
           ),
           const SizedBox(height: 20),
-          const Text('Takror kunlari', style: TextStyle(fontWeight: FontWeight.bold)),
+          Text(
+            'Takror kunlari'.tr,
+            style: const TextStyle(fontWeight: FontWeight.bold),
+          ),
           const SizedBox(height: 8),
           Wrap(
             spacing: 8,
@@ -157,7 +187,7 @@ class _AlarmEditScreenState extends State<AlarmEditScreen> {
               final weekday = i + 1;
               final selected = _days.contains(weekday);
               return ChoiceChip(
-                label: Text(_weekdayLabels[i]),
+                label: Text(_weekdayLabels[i].tr),
                 selected: selected,
                 onSelected: (v) => setState(() {
                   if (v) {
@@ -170,17 +200,34 @@ class _AlarmEditScreenState extends State<AlarmEditScreen> {
             }),
           ),
           Text(
-            _days.isEmpty ? 'Bir martalik (keyingi mos vaqtda)' : 'Har hafta belgilangan kunlarda',
+            _days.isEmpty
+                ? 'Bir martalik (keyingi mos vaqtda)'.tr
+                : 'Har hafta belgilangan kunlarda'.tr,
             style: const TextStyle(color: Colors.grey, fontSize: 12),
           ),
           const SizedBox(height: 20),
-          const Text('O\'chirish vazifasi', style: TextStyle(fontWeight: FontWeight.bold)),
+          Text(
+            'O\'chirish vazifasi'.tr,
+            style: const TextStyle(fontWeight: FontWeight.bold),
+          ),
           const SizedBox(height: 8),
           SegmentedButton<String>(
-            segments: const [
-              ButtonSegment(value: 'math', label: Text('Misol'), icon: Icon(Icons.calculate)),
-              ButtonSegment(value: 'photo', label: Text('Rasm'), icon: Icon(Icons.camera_alt)),
-              ButtonSegment(value: 'speech', label: Text('Nutq'), icon: Icon(Icons.mic)),
+            segments: [
+              ButtonSegment(
+                value: 'math',
+                label: Text('Misol'.tr),
+                icon: const Icon(Icons.calculate),
+              ),
+              ButtonSegment(
+                value: 'photo',
+                label: Text('Rasm'.tr),
+                icon: const Icon(Icons.camera_alt),
+              ),
+              ButtonSegment(
+                value: 'speech',
+                label: Text('Nutq'.tr),
+                icon: const Icon(Icons.mic),
+              ),
             ],
             selected: {_missionType},
             onSelectionChanged: (s) => setState(() => _missionType = s.first),
@@ -189,7 +236,7 @@ class _AlarmEditScreenState extends State<AlarmEditScreen> {
           _buildMissionConfigUi(),
           const SizedBox(height: 20),
           SwitchListTile(
-            title: const Text('Snooze (kechiktirish)'),
+            title: Text('Snooze (kechiktirish)'.tr),
             value: _snoozeEnabled,
             contentPadding: EdgeInsets.zero,
             onChanged: (v) => setState(() => _snoozeEnabled = v),
@@ -197,11 +244,16 @@ class _AlarmEditScreenState extends State<AlarmEditScreen> {
           if (_snoozeEnabled)
             Row(
               children: [
-                const Text('Snooze davomiyligi: '),
+                Text('Snooze davomiyligi: '.tr),
                 DropdownButton<int>(
                   value: _snoozeMinutes,
                   items: const [3, 5, 10, 15]
-                      .map((m) => DropdownMenuItem(value: m, child: Text('$m daqiqa')))
+                      .map(
+                        (m) => DropdownMenuItem(
+                          value: m,
+                          child: Text('$m ${'daqiqa'.tr}'),
+                        ),
+                      )
                       .toList(),
                   onChanged: (v) => setState(() => _snoozeMinutes = v ?? 5),
                 ),
@@ -212,10 +264,16 @@ class _AlarmEditScreenState extends State<AlarmEditScreen> {
             width: double.infinity,
             child: ElevatedButton(
               onPressed: _saving ? null : _save,
-              style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 16)),
+              style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(vertical: 16),
+              ),
               child: _saving
-                  ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2))
-                  : const Text('Saqlash', style: TextStyle(fontSize: 18)),
+                  ? const SizedBox(
+                      height: 20,
+                      width: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : Text('Saqlash'.tr, style: TextStyle(fontSize: 18)),
             ),
           ),
         ],
@@ -229,13 +287,16 @@ class _AlarmEditScreenState extends State<AlarmEditScreen> {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Nimani rasmga olish kerak:', style: TextStyle(fontSize: 13, color: Colors.grey)),
+            Text(
+              'Nimani rasmga olish kerak:'.tr,
+              style: const TextStyle(fontSize: 13, color: Colors.grey),
+            ),
             const SizedBox(height: 8),
             Wrap(
               spacing: 8,
               children: _photoPresets.keys.map((uz) {
                 return ChoiceChip(
-                  label: Text(uz),
+                  label: Text(uz.tr),
                   selected: _photoTargetUz == uz,
                   onSelected: (_) => setState(() {
                     _photoTargetUz = uz;
@@ -245,8 +306,10 @@ class _AlarmEditScreenState extends State<AlarmEditScreen> {
               }).toList(),
             ),
             const SizedBox(height: 4),
-            const Text('AI rasmda shu narsa borligini tekshiradi.',
-                style: TextStyle(fontSize: 12, color: Colors.grey)),
+            Text(
+              'AI rasmda shu narsa borligini tekshiradi.'.tr,
+              style: const TextStyle(fontSize: 12, color: Colors.grey),
+            ),
           ],
         );
       case 'speech':
@@ -255,15 +318,18 @@ class _AlarmEditScreenState extends State<AlarmEditScreen> {
           children: [
             TextField(
               controller: _speechPhraseCtrl,
-              decoration: const InputDecoration(
-                labelText: 'O\'qiladigan matn (bo\'sh qoldirsangiz tasodifiy)',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText:
+                    'O\'qiladigan matn (bo\'sh qoldirsangiz tasodifiy)'.tr,
+                border: const OutlineInputBorder(),
               ),
               maxLines: 2,
             ),
             const SizedBox(height: 4),
-            const Text('Ovoz chiqarib o\'qigan matningizni ilova tekshiradi.',
-                style: TextStyle(fontSize: 12, color: Colors.grey)),
+            Text(
+              'Ovoz chiqarib o\'qigan matningizni ilova tekshiradi.'.tr,
+              style: const TextStyle(fontSize: 12, color: Colors.grey),
+            ),
           ],
         );
       case 'math':
@@ -273,25 +339,31 @@ class _AlarmEditScreenState extends State<AlarmEditScreen> {
           children: [
             Row(
               children: [
-                const Text('Qiyinlik: '),
+                Text('Qiyinlik: '.tr),
                 DropdownButton<String>(
                   value: _mathDifficulty,
-                  items: const [
-                    DropdownMenuItem(value: 'easy', child: Text('Oson')),
-                    DropdownMenuItem(value: 'medium', child: Text('O\'rta')),
-                    DropdownMenuItem(value: 'hard', child: Text('Qiyin')),
+                  items: [
+                    DropdownMenuItem(value: 'easy', child: Text('Oson'.tr)),
+                    DropdownMenuItem(value: 'medium', child: Text('O\'rta'.tr)),
+                    DropdownMenuItem(value: 'hard', child: Text('Qiyin'.tr)),
                   ],
-                  onChanged: (v) => setState(() => _mathDifficulty = v ?? 'medium'),
+                  onChanged: (v) =>
+                      setState(() => _mathDifficulty = v ?? 'medium'),
                 ),
               ],
             ),
             Row(
               children: [
-                const Text('Nechta misol: '),
+                Text('Nechta misol: '.tr),
                 DropdownButton<int>(
                   value: _mathCount,
                   items: const [1, 2, 3, 5]
-                      .map((c) => DropdownMenuItem(value: c, child: Text('$c ta')))
+                      .map(
+                        (c) => DropdownMenuItem(
+                          value: c,
+                          child: Text('$c ${'ta'.tr}'),
+                        ),
+                      )
                       .toList(),
                   onChanged: (v) => setState(() => _mathCount = v ?? 1),
                 ),

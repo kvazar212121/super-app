@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 /// Xaritadan manzil tanlash ekrani.
 /// Foydalanuvchi xaritani siljitib belgi qo'yadi,
@@ -61,32 +62,41 @@ class _MapAddressPickerScreenState extends State<MapAddressPickerScreen> {
         '?lat=${pos.latitude}&lon=${pos.longitude}'
         '&format=json&accept-language=uz,ru,en',
       );
-      final response = await http.get(uri, headers: {
-        'User-Agent': 'HubServis/1.0 (uz.hubservis.app)',
-      }).timeout(const Duration(seconds: 10));
+      final response = await http
+          .get(uri, headers: {'User-Agent': 'HubServis/1.0 (uz.hubservis.app)'})
+          .timeout(const Duration(seconds: 10));
 
       if (response.statusCode == 200 && mounted) {
         final data = jsonDecode(response.body) as Map<String, dynamic>;
         final addr = data['address'] as Map<String, dynamic>? ?? {};
         // Manzilni qurish: ko'cha, tuman, shahar
         final parts = <String>[];
-        final road = addr['road'] ?? addr['pedestrian'] ?? addr['footway'] ?? addr['path'];
-        final suburb = addr['suburb'] ?? addr['neighbourhood'] ?? addr['quarter'];
-        final city = addr['city'] ?? addr['town'] ?? addr['village'] ?? addr['county'];
+        final road =
+            addr['road'] ??
+            addr['pedestrian'] ??
+            addr['footway'] ??
+            addr['path'];
+        final suburb =
+            addr['suburb'] ?? addr['neighbourhood'] ?? addr['quarter'];
+        final city =
+            addr['city'] ?? addr['town'] ?? addr['village'] ?? addr['county'];
         if (road != null) parts.add(road.toString());
         if (suburb != null) parts.add(suburb.toString());
         if (city != null) parts.add(city.toString());
 
         final result = parts.isNotEmpty
             ? parts.join(', ')
-            : (data['display_name']?.toString().split(',').take(3).join(', ') ?? 'Noma\'lum manzil');
+            : (data['display_name']?.toString().split(',').take(3).join(', ') ??
+                  'Noma\'lum manzil');
         setState(() => _address = result);
       }
     } catch (_) {
       // Tarmoq muammosi bo'lsa koordinatlarni ko'rsatamiz
       if (mounted) {
-        setState(() => _address =
-            '${pos.latitude.toStringAsFixed(5)}, ${pos.longitude.toStringAsFixed(5)}');
+        setState(
+          () => _address =
+              '${pos.latitude.toStringAsFixed(5)}, ${pos.longitude.toStringAsFixed(5)}',
+        );
       }
     } finally {
       if (mounted) setState(() => _loadingAddress = false);
@@ -98,7 +108,10 @@ class _MapAddressPickerScreenState extends State<MapAddressPickerScreen> {
     try {
       bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) {
-        if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Joylashuv xizmati o\'chirilgan')));
+        if (mounted)
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Joylashuv xizmati o\'chirilgan')),
+          );
         return;
       }
       LocationPermission permission = await Geolocator.checkPermission();
@@ -107,10 +120,15 @@ class _MapAddressPickerScreenState extends State<MapAddressPickerScreen> {
         if (permission == LocationPermission.denied) return;
       }
       if (permission == LocationPermission.deniedForever) {
-        if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Joylashuv ruxsati rad etilgan')));
+        if (mounted)
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Joylashuv ruxsati rad etilgan'.tr)),
+          );
         return;
       }
-      final pos = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+      final pos = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+      );
       final myPos = LatLng(pos.latitude, pos.longitude);
       _mapController.move(myPos, 16);
       setState(() {
@@ -119,7 +137,10 @@ class _MapAddressPickerScreenState extends State<MapAddressPickerScreen> {
       });
       await _reverseGeocode(myPos);
     } catch (e) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Xato: $e')));
+      if (mounted)
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Xato: $e')));
     } finally {
       if (mounted) setState(() => _locating = false);
     }
@@ -240,7 +261,9 @@ class _MapAddressPickerScreenState extends State<MapAddressPickerScreen> {
             bottom: 0,
             child: Container(
               padding: EdgeInsets.fromLTRB(
-                20, 20, 20,
+                20,
+                20,
+                20,
                 MediaQuery.of(context).padding.bottom + 20,
               ),
               decoration: const BoxDecoration(
@@ -255,7 +278,8 @@ class _MapAddressPickerScreenState extends State<MapAddressPickerScreen> {
                   // Drag indicator
                   Center(
                     child: Container(
-                      width: 40, height: 4,
+                      width: 40,
+                      height: 4,
                       decoration: BoxDecoration(
                         color: Colors.grey.shade300,
                         borderRadius: BorderRadius.circular(2),
@@ -274,7 +298,11 @@ class _MapAddressPickerScreenState extends State<MapAddressPickerScreen> {
                   const SizedBox(height: 6),
                   Row(
                     children: [
-                      const Icon(LucideIcons.mapPin, color: Color(0xFFE11D48), size: 20),
+                      const Icon(
+                        LucideIcons.mapPin,
+                        color: Color(0xFFE11D48),
+                        size: 20,
+                      ),
                       const SizedBox(width: 8),
                       Expanded(
                         child: _loadingAddress
@@ -304,7 +332,10 @@ class _MapAddressPickerScreenState extends State<MapAddressPickerScreen> {
                       icon: const Icon(LucideIcons.check),
                       label: const Text(
                         'Shu manzilni tanlash',
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
                       ),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFFE11D48),

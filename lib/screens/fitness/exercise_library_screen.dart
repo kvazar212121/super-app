@@ -4,6 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
+import '../../l10n/locale_controller.dart';
 import '../../services/api_service.dart';
 import '../../theme/glass_tokens.dart';
 import '../../widgets/glass/glass_scaffold.dart';
@@ -117,7 +118,7 @@ class _ExerciseLibraryScreenState extends State<ExerciseLibraryScreen> {
   Widget build(BuildContext context) {
     return GlassScaffold(
       showBackButton: true,
-      title: 'Mashqlar kutubxonasi',
+      title: 'Mashqlar kutubxonasi'.tr,
       body: Column(
         children: [
           Padding(
@@ -127,7 +128,7 @@ class _ExerciseLibraryScreenState extends State<ExerciseLibraryScreen> {
               onChanged: _onSearchChanged,
               style: TextStyle(color: GlassTokens.primaryText(context)),
               decoration: InputDecoration(
-                hintText: 'Mashq qidirish…',
+                hintText: 'Mashq qidirish…'.tr,
                 prefixIcon: const Icon(LucideIcons.search, size: 18),
                 suffixIcon: _searchController.text.isNotEmpty
                     ? IconButton(
@@ -152,8 +153,10 @@ class _ExerciseLibraryScreenState extends State<ExerciseLibraryScreen> {
             child: _exercises.isEmpty && !_isLoading
                 ? Center(
                     child: Text(
-                      'Hech narsa topilmadi',
-                      style: TextStyle(color: GlassTokens.secondaryText(context)),
+                      'Hech narsa topilmadi'.tr,
+                      style: TextStyle(
+                        color: GlassTokens.secondaryText(context),
+                      ),
                     ),
                   )
                 : ListView.builder(
@@ -167,7 +170,9 @@ class _ExerciseLibraryScreenState extends State<ExerciseLibraryScreen> {
                           child: Center(child: CircularProgressIndicator()),
                         );
                       }
-                      return _buildExerciseTile(_exercises[index] as Map<String, dynamic>);
+                      return _buildExerciseTile(
+                        _exercises[index] as Map<String, dynamic>,
+                      );
                     },
                   ),
           ),
@@ -196,7 +201,9 @@ class _ExerciseLibraryScreenState extends State<ExerciseLibraryScreen> {
                 labelStyle: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
-                  color: selected ? Colors.white : GlassTokens.primaryText(context),
+                  color: selected
+                      ? Colors.white
+                      : GlassTokens.primaryText(context),
                 ),
                 onSelected: (_) {
                   setState(() => _selectedBodyPart = selected ? null : value);
@@ -213,21 +220,30 @@ class _ExerciseLibraryScreenState extends State<ExerciseLibraryScreen> {
                 avatar: Icon(
                   LucideIcons.slidersHorizontal,
                   size: 14,
-                  color: _selectedEquipment != null ? Colors.white : GlassTokens.primaryText(context),
+                  color: _selectedEquipment != null
+                      ? Colors.white
+                      : GlassTokens.primaryText(context),
                 ),
-                backgroundColor: _selectedEquipment != null ? Colors.teal : null,
+                backgroundColor: _selectedEquipment != null
+                    ? Colors.teal
+                    : null,
                 label: Text(
                   _selectedEquipment != null
                       ? (_equipmentOptions.firstWhere(
-                            (e) => e['value'] == _selectedEquipment,
-                            orElse: () => {'label_uz': _selectedEquipment},
-                          )['label_uz'] as String? ??
-                          _selectedEquipment!)
-                      : 'Uskuna',
+                                  (e) => e['value'] == _selectedEquipment,
+                                  orElse: () => {
+                                    'label_uz': _selectedEquipment,
+                                  },
+                                )['label_uz']
+                                as String? ??
+                            _selectedEquipment!)
+                      : 'Uskuna'.tr,
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
-                    color: _selectedEquipment != null ? Colors.white : GlassTokens.primaryText(context),
+                    color: _selectedEquipment != null
+                        ? Colors.white
+                        : GlassTokens.primaryText(context),
                   ),
                 ),
                 onPressed: _showEquipmentPicker,
@@ -243,7 +259,9 @@ class _ExerciseLibraryScreenState extends State<ExerciseLibraryScreen> {
       context: context,
       backgroundColor: GlassTokens.glassFill(context),
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(GlassTokens.radiusLg)),
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(GlassTokens.radiusLg),
+        ),
       ),
       builder: (ctx) => SafeArea(
         child: ListView(
@@ -251,9 +269,14 @@ class _ExerciseLibraryScreenState extends State<ExerciseLibraryScreen> {
           padding: const EdgeInsets.symmetric(vertical: 12),
           children: [
             ListTile(
-              title: Text('Barcha uskunalar', style: TextStyle(color: GlassTokens.primaryText(context))),
+              title: Text(
+                'Barcha uskunalar'.tr,
+                style: TextStyle(color: GlassTokens.primaryText(context)),
+              ),
               leading: Icon(
-                _selectedEquipment == null ? LucideIcons.circleCheck : LucideIcons.circle,
+                _selectedEquipment == null
+                    ? LucideIcons.circleCheck
+                    : LucideIcons.circle,
                 color: Colors.teal,
                 size: 18,
               ),
@@ -271,7 +294,9 @@ class _ExerciseLibraryScreenState extends State<ExerciseLibraryScreen> {
                   style: TextStyle(color: GlassTokens.primaryText(context)),
                 ),
                 leading: Icon(
-                  _selectedEquipment == value ? LucideIcons.circleCheck : LucideIcons.circle,
+                  _selectedEquipment == value
+                      ? LucideIcons.circleCheck
+                      : LucideIcons.circle,
                   color: Colors.teal,
                   size: 18,
                 ),
@@ -316,7 +341,11 @@ class _ExerciseLibraryScreenState extends State<ExerciseLibraryScreen> {
           exercise['name_uz'] as String? ?? '',
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
-          style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14, color: GlassTokens.primaryText(context)),
+          style: TextStyle(
+            fontWeight: FontWeight.w700,
+            fontSize: 14,
+            color: GlassTokens.primaryText(context),
+          ),
         ),
         subtitle: Text(
           [
@@ -325,9 +354,16 @@ class _ExerciseLibraryScreenState extends State<ExerciseLibraryScreen> {
           ].whereType<String>().join(' · '),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
-          style: TextStyle(fontSize: 12, color: GlassTokens.secondaryText(context)),
+          style: TextStyle(
+            fontSize: 12,
+            color: GlassTokens.secondaryText(context),
+          ),
         ),
-        trailing: Icon(LucideIcons.chevronRight, size: 16, color: GlassTokens.secondaryText(context)),
+        trailing: Icon(
+          LucideIcons.chevronRight,
+          size: 16,
+          color: GlassTokens.secondaryText(context),
+        ),
       ),
     );
   }

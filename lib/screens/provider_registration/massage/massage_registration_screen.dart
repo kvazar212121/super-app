@@ -9,6 +9,7 @@ import '../../provider_side/provider_theme.dart';
 import 'massage_pending_screen.dart';
 import '../../location_picker_screen.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 /// Massaj va hijoma — uyga chiqish va/yoki salonda.
 class MassageRegistrationScreen extends StatefulWidget {
@@ -52,24 +53,24 @@ class _MassageRegistrationScreenState extends State<MassageRegistrationScreen> {
     final name = _nameCtrl.text.trim();
     final area = _areaCtrl.text.trim();
     if (name.isEmpty || area.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Ism va hududni kiriting')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Ism va hududni kiriting'.tr)));
       return;
     }
     if (_visitModes.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Kamida bitta qabul usulini tanlang')),
+        SnackBar(content: Text('Kamida bitta qabul usulini tanlang'.tr)),
       );
       return;
     }
     if (_role == 'salon' && _addressCtrl.text.trim().length < 5) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Salon manzilini kiriting')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Salon manzilini kiriting'.tr)));
       return;
     }
-    
+
     int capacity = 1;
     if (_role == 'salon') {
       capacity = int.tryParse(_capacityCtrl.text.trim()) ?? 1;
@@ -87,7 +88,11 @@ class _MassageRegistrationScreenState extends State<MassageRegistrationScreen> {
 
     if (phone.isEmpty || phone.replaceAll(RegExp(r'\D'), '').length < 9) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Yaroqli telefon raqamini kiriting (kamida 9 ta raqam)')),
+        SnackBar(
+          content: Text(
+            'Yaroqli telefon raqamini kiriting (kamida 9 ta raqam)'.tr,
+          ),
+        ),
       );
       return;
     }
@@ -97,7 +102,9 @@ class _MassageRegistrationScreenState extends State<MassageRegistrationScreen> {
         name: name,
         phone: phone,
         serviceArea: area,
-        address: _addressCtrl.text.trim().isNotEmpty ? _addressCtrl.text.trim() : null,
+        address: _addressCtrl.text.trim().isNotEmpty
+            ? _addressCtrl.text.trim()
+            : null,
         lat: double.tryParse(_latCtrl.text.trim()) ?? 41.2995,
         lng: double.tryParse(_lngCtrl.text.trim()) ?? 69.2401,
         massageRole: _role,
@@ -117,9 +124,9 @@ class _MassageRegistrationScreenState extends State<MassageRegistrationScreen> {
       );
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Xatolik: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Xatolik: $e')));
       }
     } finally {
       if (mounted) setState(() => _submitting = false);
@@ -131,7 +138,7 @@ class _MassageRegistrationScreenState extends State<MassageRegistrationScreen> {
     const accent = Color(0xFFE11D48);
     return ProviderTheme(
       child: Scaffold(
-        appBar: AppBar(title: const Text('Massaj va Hijoma')),
+        appBar: AppBar(title: Text('Massaj va Hijoma'.tr)),
         body: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
           child: Column(
@@ -143,9 +150,15 @@ class _MassageRegistrationScreenState extends State<MassageRegistrationScreen> {
               ),
               const SizedBox(height: 20),
               SegmentedButton<String>(
-                segments: const [
-                  ButtonSegment(value: 'solo', label: Text('Yakka mutaxassis')),
-                  ButtonSegment(value: 'salon', label: Text('Salon / markaz')),
+                segments: [
+                  ButtonSegment(
+                    value: 'solo',
+                    label: Text('Yakka mutaxassis'.tr),
+                  ),
+                  ButtonSegment(
+                    value: 'salon',
+                    label: Text('Salon / markaz'.tr),
+                  ),
                 ],
                 selected: {_role},
                 onSelectionChanged: (s) => setState(() {
@@ -165,27 +178,30 @@ class _MassageRegistrationScreenState extends State<MassageRegistrationScreen> {
               const SizedBox(height: 16),
               TextField(
                 controller: _phoneCtrl,
-                decoration: const InputDecoration(labelText: 'Telefon'),
+                decoration: InputDecoration(labelText: 'Telefon'.tr),
                 keyboardType: TextInputType.phone,
               ),
               const SizedBox(height: 16),
               if (ProviderCategoryConfig.massage.subCategories != null &&
                   ProviderCategoryConfig.massage.subCategories!.isNotEmpty) ...[
                 DropdownButtonFormField<String>(
-                  decoration: const InputDecoration(labelText: 'Kategoriya tanlang'),
+                  decoration: InputDecoration(
+                    labelText: 'Kategoriya tanlang'.tr,
+                  ),
                   value: _selectedSubCategory,
                   items: ProviderCategoryConfig.massage.subCategories!
                       .map((sc) => DropdownMenuItem(value: sc, child: Text(sc)))
                       .toList(),
-                  onChanged: (val) => setState(() => _selectedSubCategory = val),
+                  onChanged: (val) =>
+                      setState(() => _selectedSubCategory = val),
                 ),
                 const SizedBox(height: 16),
               ],
               TextField(
                 controller: _areaCtrl,
-                decoration: const InputDecoration(
-                  labelText: 'Xizmat hududi',
-                  hintText: 'Masalan: Toshkent, Chilonzor',
+                decoration: InputDecoration(
+                  labelText: 'Xizmat hududi'.tr,
+                  hintText: 'Masalan: Toshkent, Chilonzor'.tr,
                 ),
               ),
               if (_role == 'salon') ...[
@@ -196,8 +212,8 @@ class _MassageRegistrationScreenState extends State<MassageRegistrationScreen> {
                     Expanded(
                       child: TextField(
                         controller: _addressCtrl,
-                        decoration: const InputDecoration(
-                          labelText: 'Salon manzili',
+                        decoration: InputDecoration(
+                          labelText: 'Salon manzili'.tr,
                           hintText: 'Ko\'cha, uy raqami',
                         ),
                         maxLines: 2,
@@ -213,16 +229,21 @@ class _MassageRegistrationScreenState extends State<MassageRegistrationScreen> {
                             context,
                             MaterialPageRoute(
                               builder: (_) => LocationPickerScreen(
-                                initialLat: double.tryParse(_latCtrl.text) ?? 41.2995,
-                                initialLng: double.tryParse(_lngCtrl.text) ?? 69.2401,
+                                initialLat:
+                                    double.tryParse(_latCtrl.text) ?? 41.2995,
+                                initialLng:
+                                    double.tryParse(_lngCtrl.text) ?? 69.2401,
                               ),
                             ),
                           );
-                          if (result != null && result is Map<String, dynamic>) {
+                          if (result != null &&
+                              result is Map<String, dynamic>) {
                             setState(() {
                               _latCtrl.text = result['lat'].toString();
                               _lngCtrl.text = result['lng'].toString();
-                              if (result['address'] != 'Noma\'lum manzil' && result['address'] != 'Manzilni aniqlab bo\'lmadi') {
+                              if (result['address'] != 'Noma\'lum manzil' &&
+                                  result['address'] !=
+                                      'Manzilni aniqlab bo\'lmadi') {
                                 _addressCtrl.text = result['address'];
                               }
                             });
@@ -235,51 +256,58 @@ class _MassageRegistrationScreenState extends State<MassageRegistrationScreen> {
                 const SizedBox(height: 16),
                 TextField(
                   controller: _capacityCtrl,
-                  decoration: const InputDecoration(
-                    labelText: 'Bir vaqtda nechta mijoz qabul qila olasiz?',
-                    hintText: 'Masalan: 3',
+                  decoration: InputDecoration(
+                    labelText: 'Bir vaqtda nechta mijoz qabul qila olasiz?'.tr,
+                    hintText: 'Masalan: 3'.tr,
                   ),
                   keyboardType: TextInputType.number,
                 ),
               ],
               const SizedBox(height: 20),
 
-              const Text('Xizmatlar', style: TextStyle(fontWeight: FontWeight.w600)),
+              const Text(
+                'Xizmatlar',
+                style: TextStyle(fontWeight: FontWeight.w600),
+              ),
               const SizedBox(height: 8),
               Wrap(
                 spacing: 8,
                 runSpacing: 8,
-                children: [
-                  ServiceType.classicMassage,
-                  ServiceType.hijoma,
-                  ServiceType.sportMassage,
-                  ServiceType.thaiMassage,
-                ].map((t) {
-                  final key = t.name;
-                  final selected = _serviceTypes.contains(key);
-                  return FilterChip(
-                    label: Text(t.label),
-                    selected: selected,
-                    onSelected: (v) => setState(() {
-                      if (v) {
-                        _serviceTypes.add(key);
-                      } else if (_serviceTypes.length > 1) {
-                        _serviceTypes.remove(key);
-                      }
-                    }),
-                    selectedColor: accent,
-                    checkmarkColor: accent,
-                  );
-                }).toList(),
+                children:
+                    [
+                      ServiceType.classicMassage,
+                      ServiceType.hijoma,
+                      ServiceType.sportMassage,
+                      ServiceType.thaiMassage,
+                    ].map((t) {
+                      final key = t.name;
+                      final selected = _serviceTypes.contains(key);
+                      return FilterChip(
+                        label: Text(t.label),
+                        selected: selected,
+                        onSelected: (v) => setState(() {
+                          if (v) {
+                            _serviceTypes.add(key);
+                          } else if (_serviceTypes.length > 1) {
+                            _serviceTypes.remove(key);
+                          }
+                        }),
+                        selectedColor: accent,
+                        checkmarkColor: accent,
+                      );
+                    }).toList(),
               ),
               const SizedBox(height: 20),
-              const Text('Mijozlar', style: TextStyle(fontWeight: FontWeight.w600)),
+              const Text(
+                'Mijozlar',
+                style: TextStyle(fontWeight: FontWeight.w600),
+              ),
               const SizedBox(height: 8),
               SegmentedButton<String>(
-                segments: const [
-                  ButtonSegment(value: 'both', label: Text('Ikkalasi')),
-                  ButtonSegment(value: 'male', label: Text('Erkak')),
-                  ButtonSegment(value: 'female', label: Text('Ayol')),
+                segments: [
+                  ButtonSegment(value: 'both', label: Text('Ikkalasi'.tr)),
+                  ButtonSegment(value: 'male', label: Text('Erkak'.tr)),
+                  ButtonSegment(value: 'female', label: Text('Ayol'.tr)),
                 ],
                 selected: {_gender},
                 onSelectionChanged: (s) => setState(() => _gender = s.first),
@@ -302,7 +330,7 @@ class _MassageRegistrationScreenState extends State<MassageRegistrationScreen> {
                             color: Colors.white,
                           ),
                         )
-                      : const Text('Yuborish'),
+                      : Text('Yuborish'.tr),
                 ),
               ),
             ],

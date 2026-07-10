@@ -5,6 +5,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../services/provider_portal_service.dart';
 import '../../../services/call_service.dart';
 import '../../calls/call_screen.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 class IncomingOrderDialog extends StatefulWidget {
   final Map<String, dynamic> order;
@@ -30,7 +31,12 @@ class _IncomingOrderDialogState extends State<IncomingOrderDialog> {
     setState(() => _acting = true);
     try {
       final id = widget.order['id'] as int;
-      await _portal.updateOrderStatus(widget.categoryKey, id, status, notifiedClient: notifiedClient);
+      await _portal.updateOrderStatus(
+        widget.categoryKey,
+        id,
+        status,
+        notifiedClient: notifiedClient,
+      );
       if (mounted) {
         Navigator.pop(context, true);
         ScaffoldMessenger.of(context).showSnackBar(
@@ -46,9 +52,9 @@ class _IncomingOrderDialogState extends State<IncomingOrderDialog> {
       }
     } catch (_) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Amal bajarilmadi')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Amal bajarilmadi'.tr)));
       }
     } finally {
       if (mounted) setState(() => _acting = false);
@@ -60,8 +66,11 @@ class _IncomingOrderDialogState extends State<IncomingOrderDialog> {
       context: context,
       builder: (ctx) {
         return AlertDialog(
-          title: const Text('Buyurtmani rad etish'),
-          content: const Text('Ushbu buyurtmani qanday rad etmoqchisiz?\n\nMijozga vaziyatni tushuntirsangiz reytingingiz tushmaydi.'),
+          title: Text('Buyurtmani rad etish'.tr),
+          content: Text(
+            'Ushbu buyurtmani qanday rad etmoqchisiz?\n\nMijozga vaziyatni tushuntirsangiz reytingingiz tushmaydi.'
+                .tr,
+          ),
           actionsAlignment: MainAxisAlignment.center,
           actions: [
             Column(
@@ -69,8 +78,8 @@ class _IncomingOrderDialogState extends State<IncomingOrderDialog> {
               children: [
                 OutlinedButton.icon(
                   onPressed: () => Navigator.of(ctx).pop(1),
-                  icon: const Icon(LucideIcons.phone, color: Colors.green),
-                  label: const Text('Tel qilib tushuntirish va rad etish'),
+                  icon: Icon(LucideIcons.phone, color: Colors.green),
+                  label: Text('Tel qilib tushuntirish va rad etish'.tr),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: Colors.green,
                     side: const BorderSide(color: Colors.green),
@@ -84,12 +93,15 @@ class _IncomingOrderDialogState extends State<IncomingOrderDialog> {
                     backgroundColor: Colors.red,
                     padding: const EdgeInsets.symmetric(vertical: 12),
                   ),
-                  child: const Text('Shunchaki rad etish'),
+                  child: Text('Shunchaki rad etish'.tr),
                 ),
                 const SizedBox(height: 8),
                 TextButton(
                   onPressed: () => Navigator.of(ctx).pop(0),
-                  child: const Text('Orqaga qaytish', style: TextStyle(color: Colors.black)),
+                  child: const Text(
+                    'Orqaga qaytish',
+                    style: TextStyle(color: Colors.black),
+                  ),
                 ),
               ],
             ),
@@ -115,10 +127,12 @@ class _IncomingOrderDialogState extends State<IncomingOrderDialog> {
   @override
   Widget build(BuildContext context) {
     final time = widget.order['date'] != null
-        ? DateFormat('dd.MM.yyyy HH:mm').format(DateTime.parse(widget.order['date'] as String))
+        ? DateFormat(
+            'dd.MM.yyyy HH:mm',
+          ).format(DateTime.parse(widget.order['date'] as String))
         : '—';
     final price = (widget.order['price'] as num?) ?? 0;
-    
+
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
       backgroundColor: Colors.white,
@@ -138,7 +152,11 @@ class _IncomingOrderDialogState extends State<IncomingOrderDialog> {
             const SizedBox(height: 16),
             const Text(
               'Yangi buyurtma!',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900, color: Colors.black),
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.w900,
+                color: Colors.black,
+              ),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 24),
@@ -151,16 +169,34 @@ class _IncomingOrderDialogState extends State<IncomingOrderDialog> {
               ),
               child: Column(
                 children: [
-                  _row(LucideIcons.user, 'Mijoz:', widget.order['user_name'] as String? ?? 'Noma\'lum'),
+                  _row(
+                    LucideIcons.user,
+                    'Mijoz:',
+                    widget.order['user_name'] as String? ?? 'Noma\'lum',
+                  ),
                   const Divider(height: 24),
-                  _row(LucideIcons.briefcase, 'Xizmat:', widget.order['service_name'] as String? ?? ''),
+                  _row(
+                    LucideIcons.briefcase,
+                    'Xizmat:',
+                    widget.order['service_name'] as String? ?? '',
+                  ),
                   const Divider(height: 24),
                   _row(LucideIcons.calendar, 'Vaqti:', time),
                   const Divider(height: 24),
-                  _row(LucideIcons.banknote, 'Narxi:', '${NumberFormat('#,###').format(price)} so\'m', isBold: true),
-                  if ((widget.order['notes'] as String?)?.isNotEmpty == true) ...[
+                  _row(
+                    LucideIcons.banknote,
+                    'Narxi:',
+                    '${NumberFormat('#,###').format(price)} so\'m',
+                    isBold: true,
+                  ),
+                  if ((widget.order['notes'] as String?)?.isNotEmpty ==
+                      true) ...[
                     const Divider(height: 24),
-                    _row(LucideIcons.messageSquare, 'Izoh:', widget.order['notes'] as String),
+                    _row(
+                      LucideIcons.messageSquare,
+                      'Izoh:',
+                      widget.order['notes'] as String,
+                    ),
                   ],
                 ],
               ),
@@ -175,9 +211,17 @@ class _IncomingOrderDialogState extends State<IncomingOrderDialog> {
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       foregroundColor: Colors.red,
                       side: const BorderSide(color: Colors.red, width: 2),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
                     ),
-                    child: const Text('Rad etish', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16)),
+                    child: const Text(
+                      'Rad etish',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w900,
+                        fontSize: 16,
+                      ),
+                    ),
                   ),
                 ),
                 const SizedBox(width: 16),
@@ -188,15 +232,26 @@ class _IncomingOrderDialogState extends State<IncomingOrderDialog> {
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       backgroundColor: Colors.green,
                       foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
                     ),
                     child: _acting
                         ? const SizedBox(
                             width: 24,
                             height: 24,
-                            child: CircularProgressIndicator(strokeWidth: 3, color: Colors.white),
+                            child: CircularProgressIndicator(
+                              strokeWidth: 3,
+                              color: Colors.white,
+                            ),
                           )
-                        : const Text('Qabul qilish', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16)),
+                        : const Text(
+                            'Qabul qilish',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w900,
+                              fontSize: 16,
+                            ),
+                          ),
                   ),
                 ),
               ],
@@ -207,7 +262,12 @@ class _IncomingOrderDialogState extends State<IncomingOrderDialog> {
     );
   }
 
-  Widget _row(IconData icon, String label, String value, {bool isBold = false}) {
+  Widget _row(
+    IconData icon,
+    String label,
+    String value, {
+    bool isBold = false,
+  }) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -215,7 +275,10 @@ class _IncomingOrderDialogState extends State<IncomingOrderDialog> {
         const SizedBox(width: 12),
         Text(
           label,
-          style: const TextStyle(color: Colors.black54, fontWeight: FontWeight.bold),
+          style: const TextStyle(
+            color: Colors.black54,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         const SizedBox(width: 8),
         Expanded(

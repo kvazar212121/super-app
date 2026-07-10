@@ -14,18 +14,30 @@ class OrdersListWidget extends StatelessWidget {
 
   Color _getStatusColor(OrderStatus status) {
     switch (status) {
-      case OrderStatus.pending: return Colors.orange;
-      case OrderStatus.accepted: return Colors.blue;
-      case OrderStatus.onTheWay: return Colors.lightBlue;
-      case OrderStatus.arrived: return Colors.deepPurple;
-      case OrderStatus.preparing: return Colors.orangeAccent;
-      case OrderStatus.inProgress: return Colors.purple;
-      case OrderStatus.delivered: return Colors.greenAccent;
-      case OrderStatus.completed: return Colors.green;
-      case OrderStatus.awaitingConfirmation: return Colors.blueGrey;
-      case OrderStatus.cancelled: return Colors.red;
-      case OrderStatus.noShow: return Colors.grey;
-      case OrderStatus.disputed: return Colors.redAccent;
+      case OrderStatus.pending:
+        return Colors.orange;
+      case OrderStatus.accepted:
+        return Colors.blue;
+      case OrderStatus.onTheWay:
+        return Colors.lightBlue;
+      case OrderStatus.arrived:
+        return Colors.deepPurple;
+      case OrderStatus.preparing:
+        return Colors.orangeAccent;
+      case OrderStatus.inProgress:
+        return Colors.purple;
+      case OrderStatus.delivered:
+        return Colors.greenAccent;
+      case OrderStatus.completed:
+        return Colors.green;
+      case OrderStatus.awaitingConfirmation:
+        return Colors.blueGrey;
+      case OrderStatus.cancelled:
+        return Colors.red;
+      case OrderStatus.noShow:
+        return Colors.grey;
+      case OrderStatus.disputed:
+        return Colors.redAccent;
     }
   }
 
@@ -46,7 +58,11 @@ class OrdersListWidget extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(LucideIcons.inbox, size: 48, color: GlassTokens.secondaryText(context)),
+              Icon(
+                LucideIcons.inbox,
+                size: 48,
+                color: GlassTokens.secondaryText(context),
+              ),
               const SizedBox(height: 12),
               Text(
                 'Buyurtmalar topilmadi',
@@ -94,95 +110,117 @@ class _OrderCard extends StatelessWidget {
         ),
         borderRadius: BorderRadius.circular(GlassTokens.radiusLg),
         child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(children: [
-            Container(
-              width: 44,
-              height: 44,
-              decoration: BoxDecoration(
-                color: accent.withOpacity(0.15),
-                borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: accent.withOpacity(0.3)),
-              ),
-              child: Icon(icon, color: accent),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    order.serviceName,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  width: 44,
+                  height: 44,
+                  decoration: BoxDecoration(
+                    color: accent.withOpacity(0.15),
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(color: accent.withOpacity(0.3)),
+                  ),
+                  child: Icon(icon, color: accent),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        order.serviceName,
+                        style: TextStyle(
+                          fontWeight: FontWeight.w800,
+                          fontSize: 16,
+                          color: GlassTokens.primaryText(context),
+                        ),
+                      ),
+                      Text(
+                        order.providerName,
+                        style: TextStyle(
+                          color: GlassTokens.secondaryText(context),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
+                  decoration: BoxDecoration(
+                    color: statusColor.withOpacity(0.15),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: statusColor.withOpacity(0.3)),
+                  ),
+                  child: Text(
+                    order.statusText,
                     style: TextStyle(
-                      fontWeight: FontWeight.w800,
-                      fontSize: 16,
-                      color: GlassTokens.primaryText(context),
+                      color: statusColor,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
-                  Text(
-                    order.providerName,
-                    style: TextStyle(color: GlassTokens.secondaryText(context)),
+                ),
+              ],
+            ),
+            if (order.address.isNotEmpty) ...[
+              const SizedBox(height: 10),
+              Row(
+                children: [
+                  Icon(
+                    LucideIcons.mapPin,
+                    size: 14,
+                    color: GlassTokens.secondaryText(context),
+                  ),
+                  const SizedBox(width: 4),
+                  Expanded(
+                    child: Text(
+                      order.address,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: GlassTokens.secondaryText(context),
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
                 ],
               ),
-            ),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              decoration: BoxDecoration(
-                color: statusColor.withOpacity(0.15),
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: statusColor.withOpacity(0.3)),
-              ),
-              child: Text(
-                order.statusText,
-                style: TextStyle(color: statusColor, fontWeight: FontWeight.w600),
-              ),
-            ),
-          ]),
-          if (order.address.isNotEmpty) ...[
-            const SizedBox(height: 10),
-            Row(children: [
-              Icon(LucideIcons.mapPin, size: 14, color: GlassTokens.secondaryText(context)),
-              const SizedBox(width: 4),
-              Expanded(
-                child: Text(
-                  order.address,
-                  style: TextStyle(fontSize: 12, color: GlassTokens.secondaryText(context)),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+            ],
+            Divider(height: 24, color: GlassTokens.glassBorder(context)),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    Icon(
+                      LucideIcons.calendar,
+                      size: 14,
+                      color: GlassTokens.secondaryText(context),
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      dateStr,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: GlassTokens.secondaryText(context),
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-            ]),
-          ],
-          Divider(
-            height: 24,
-            color: GlassTokens.glassBorder(context),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(children: [
-                Icon(LucideIcons.calendar, size: 14, color: GlassTokens.secondaryText(context)),
-                const SizedBox(width: 4),
                 Text(
-                  dateStr,
+                  "${order.price.toStringAsFixed(0)} so'm",
                   style: TextStyle(
-                    fontSize: 12,
-                    color: GlassTokens.secondaryText(context),
+                    fontWeight: FontWeight.w800,
+                    color: GlassTokens.primaryText(context),
                   ),
                 ),
-              ]),
-              Text(
-                "${order.price.toStringAsFixed(0)} so'm",
-                style: TextStyle(
-                  fontWeight: FontWeight.w800,
-                  color: GlassTokens.primaryText(context),
-                ),
-              ),
-            ],
-          ),
-        ],
+              ],
+            ),
+          ],
         ),
       ),
     );

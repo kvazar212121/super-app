@@ -11,12 +11,14 @@ import '../../../utils/phone_utils.dart';
 import '../../provider_side/provider_theme.dart';
 import '../../map_address_picker_screen.dart';
 import 'nurse_pending_screen.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 class NurseRegistrationScreen extends StatefulWidget {
   const NurseRegistrationScreen({super.key});
 
   @override
-  State<NurseRegistrationScreen> createState() => _NurseRegistrationScreenState();
+  State<NurseRegistrationScreen> createState() =>
+      _NurseRegistrationScreenState();
 }
 
 class _NurseRegistrationScreenState extends State<NurseRegistrationScreen> {
@@ -28,8 +30,8 @@ class _NurseRegistrationScreenState extends State<NurseRegistrationScreen> {
   final Set<String> _medicalTypes = {'injection', 'blood_test', 'drip'};
 
   // Hujjat fayllari
-  File? _documentFile;   // diplom yoki sertifikat
-  File? _passportFile;   // pasport
+  File? _documentFile; // diplom yoki sertifikat
+  File? _passportFile; // pasport
   String? _documentUrl;
   String? _passportUrl;
   bool _uploadingDoc = false;
@@ -69,13 +71,13 @@ class _NurseRegistrationScreenState extends State<NurseRegistrationScreen> {
             ),
             const SizedBox(height: 16),
             ListTile(
-              leading: const Icon(Icons.camera_alt),
-              title: const Text('Kamera'),
+              leading: Icon(Icons.camera_alt),
+              title: Text('Kamera'.tr),
               onTap: () => Navigator.pop(ctx, ImageSource.camera),
             ),
             ListTile(
-              leading: const Icon(Icons.photo_library),
-              title: const Text('Galereya'),
+              leading: Icon(Icons.photo_library),
+              title: Text('Galereya'.tr),
               onTap: () => Navigator.pop(ctx, ImageSource.gallery),
             ),
             const SizedBox(height: 8),
@@ -119,7 +121,10 @@ class _NurseRegistrationScreenState extends State<NurseRegistrationScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Yuklashda xatolik: $e'), backgroundColor: Colors.red),
+          SnackBar(
+            content: Text('Yuklashda xatolik: $e'),
+            backgroundColor: Colors.red,
+          ),
         );
         if (isPassport) {
           setState(() => _passportFile = null);
@@ -146,14 +151,14 @@ class _NurseRegistrationScreenState extends State<NurseRegistrationScreen> {
     final area = _areaCtrl.text.trim();
     if (name.isEmpty || area.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Ism va xizmat hududini kiriting')),
+        SnackBar(content: Text('Ism va xizmat hududini kiriting'.tr)),
       );
       return;
     }
     if (_documentUrl == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Iltimos, diplom yoki sertifikatingizni yuklang'),
+        SnackBar(
+          content: Text('Iltimos, diplom yoki sertifikatingizni yuklang'.tr),
           backgroundColor: Colors.orange,
         ),
       );
@@ -161,8 +166,8 @@ class _NurseRegistrationScreenState extends State<NurseRegistrationScreen> {
     }
     if (_passportUrl == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Iltimos, pasportingizni yuklang'),
+        SnackBar(
+          content: Text('Iltimos, pasportingizni yuklang'.tr),
           backgroundColor: Colors.orange,
         ),
       );
@@ -187,12 +192,16 @@ class _NurseRegistrationScreenState extends State<NurseRegistrationScreen> {
       if (!mounted) return;
       Navigator.pushAndRemoveUntil(
         context,
-        MaterialPageRoute(builder: (_) => NursePendingScreen(providerName: name)),
+        MaterialPageRoute(
+          builder: (_) => NursePendingScreen(providerName: name),
+        ),
         (_) => false,
       );
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Xatolik: $e')));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Xatolik: $e')));
       }
     } finally {
       if (mounted) setState(() => _submitting = false);
@@ -203,7 +212,7 @@ class _NurseRegistrationScreenState extends State<NurseRegistrationScreen> {
   Widget build(BuildContext context) {
     return ProviderTheme(
       child: Scaffold(
-        appBar: AppBar(title: const Text('Hamshira xizmati')),
+        appBar: AppBar(title: Text('Hamshira xizmati'.tr)),
         body: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
           child: Column(
@@ -236,14 +245,16 @@ class _NurseRegistrationScreenState extends State<NurseRegistrationScreen> {
               // Ism
               TextField(
                 controller: _nameCtrl,
-                decoration: const InputDecoration(labelText: 'Ism yoki xizmat nomi'),
+                decoration: InputDecoration(
+                  labelText: 'Ism yoki xizmat nomi'.tr,
+                ),
               ),
               const SizedBox(height: 12),
 
               // Telefon
               TextField(
                 controller: _phoneCtrl,
-                decoration: const InputDecoration(labelText: 'Telefon'),
+                decoration: InputDecoration(labelText: 'Telefon'.tr),
                 keyboardType: TextInputType.phone,
               ),
               const SizedBox(height: 12),
@@ -254,7 +265,9 @@ class _NurseRegistrationScreenState extends State<NurseRegistrationScreen> {
                   Expanded(
                     child: TextField(
                       controller: _areaCtrl,
-                      decoration: const InputDecoration(labelText: 'Xizmat hududi (manzil)'),
+                      decoration: InputDecoration(
+                        labelText: 'Xizmat hududi (manzil)'.tr,
+                      ),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -289,7 +302,9 @@ class _NurseRegistrationScreenState extends State<NurseRegistrationScreen> {
               // Malaka
               TextField(
                 controller: _qualCtrl,
-                decoration: const InputDecoration(labelText: 'Malaka darajasi (qisqacha)'),
+                decoration: InputDecoration(
+                  labelText: 'Malaka darajasi (qisqacha)'.tr,
+                ),
               ),
               const SizedBox(height: 20),
 
@@ -353,7 +368,9 @@ class _NurseRegistrationScreenState extends State<NurseRegistrationScreen> {
                     selectedColor: accent,
                     labelStyle: TextStyle(
                       color: selected ? Colors.white : Colors.black87,
-                      fontWeight: selected ? FontWeight.bold : FontWeight.normal,
+                      fontWeight: selected
+                          ? FontWeight.bold
+                          : FontWeight.normal,
                     ),
                     checkmarkColor: Colors.white,
                   );
@@ -365,7 +382,8 @@ class _NurseRegistrationScreenState extends State<NurseRegistrationScreen> {
               SizedBox(
                 width: double.infinity,
                 child: FilledButton(
-                  onPressed: (_submitting || _uploadingDoc || _uploadingPassport)
+                  onPressed:
+                      (_submitting || _uploadingDoc || _uploadingPassport)
                       ? null
                       : _submit,
                   style: FilledButton.styleFrom(
@@ -386,7 +404,10 @@ class _NurseRegistrationScreenState extends State<NurseRegistrationScreen> {
                         )
                       : const Text(
                           'Ariza yuborish',
-                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
                         ),
                 ),
               ),
@@ -425,8 +446,8 @@ class _DocumentUploadTile extends StatelessWidget {
     final Color borderColor = isUploaded
         ? Colors.green
         : isUploading
-            ? accent.withOpacity(0.5)
-            : Colors.grey.shade300;
+        ? accent.withOpacity(0.5)
+        : Colors.grey.shade300;
     final Color bgColor = isUploaded
         ? Colors.green.withOpacity(0.06)
         : Colors.grey.shade50;
@@ -472,14 +493,14 @@ class _DocumentUploadTile extends StatelessWidget {
                     label,
                     style: TextStyle(
                       fontWeight: FontWeight.w600,
-                      color: isUploaded ? Colors.green.shade700 : Colors.black87,
+                      color: isUploaded
+                          ? Colors.green.shade700
+                          : Colors.black87,
                     ),
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    isUploaded
-                        ? '✓ Muvaffaqiyatli yuklandi'
-                        : subtitle,
+                    isUploaded ? '✓ Muvaffaqiyatli yuklandi' : subtitle,
                     style: TextStyle(
                       fontSize: 12,
                       color: isUploaded ? Colors.green : Colors.grey,

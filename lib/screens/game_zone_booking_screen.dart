@@ -5,6 +5,7 @@ import '../widgets/booking_common_widgets.dart' hide SectionTitle;
 import '../widgets/game_zone_widgets.dart';
 import '../widgets/glass/mesh_background.dart';
 import '../utils/call_helper.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 class GameZoneBookingScreen extends StatefulWidget {
   final GameZone zone;
@@ -95,8 +96,8 @@ class _GameZoneBookingScreenState extends State<GameZoneBookingScreen> {
             TextFormField(
               controller: _notesCtrl,
               maxLines: 2,
-              decoration: const InputDecoration(
-                hintText: 'Masalan: FIFA yozilgan kompyuter...',
+              decoration: InputDecoration(
+                hintText: 'Masalan: FIFA yozilgan kompyuter...'.tr,
                 border: OutlineInputBorder(),
               ),
             ),
@@ -114,7 +115,9 @@ class _GameZoneBookingScreenState extends State<GameZoneBookingScreen> {
               child: FilledButton.icon(
                 style: FilledButton.styleFrom(
                   backgroundColor: _accent,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
                 ),
                 onPressed: _startCall,
                 icon: const Icon(Icons.phone_in_talk, size: 22),

@@ -5,6 +5,7 @@ import '../../../services/salon_portal_service.dart';
 import '../../../utils/phone_utils.dart';
 import '../../provider_side/provider_theme.dart';
 import '../provider_success_screen.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 class SalonMobileScreen extends StatefulWidget {
   const SalonMobileScreen({super.key});
@@ -33,7 +34,7 @@ class _SalonMobileScreenState extends State<SalonMobileScreen> {
     final area = _areaCtrl.text.trim();
     if (name.isEmpty || area.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Ism va xizmat hududini kiriting')),
+        SnackBar(content: Text('Ism va xizmat hududini kiriting'.tr)),
       );
       return;
     }
@@ -46,7 +47,11 @@ class _SalonMobileScreenState extends State<SalonMobileScreen> {
         : (user?['phone'] as String? ?? '');
 
     try {
-      await SalonPortalService().registerMobile(name: name, phone: phone, serviceArea: area);
+      await SalonPortalService().registerMobile(
+        name: name,
+        phone: phone,
+        serviceArea: area,
+      );
       if (!mounted) return;
       Navigator.pushAndRemoveUntil(
         context,
@@ -61,7 +66,9 @@ class _SalonMobileScreenState extends State<SalonMobileScreen> {
       );
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Xatolik: $e')));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Xatolik: $e')));
       }
     } finally {
       if (mounted) setState(() => _submitting = false);
@@ -72,7 +79,7 @@ class _SalonMobileScreenState extends State<SalonMobileScreen> {
   Widget build(BuildContext context) {
     return ProviderTheme(
       child: Scaffold(
-        appBar: AppBar(title: const Text('Mobil kosmetolog')),
+        appBar: AppBar(title: Text('Mobil kosmetolog'.tr)),
         body: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
           child: Column(
@@ -83,16 +90,22 @@ class _SalonMobileScreenState extends State<SalonMobileScreen> {
                 style: TextStyle(color: Colors.grey[700], height: 1.4),
               ),
               const SizedBox(height: 24),
-              TextField(controller: _nameCtrl, decoration: const InputDecoration(labelText: 'Ismingiz')),
+              TextField(
+                controller: _nameCtrl,
+                decoration: InputDecoration(labelText: 'Ismingiz'.tr),
+              ),
               const SizedBox(height: 16),
-              TextField(controller: _phoneCtrl, decoration: const InputDecoration(labelText: 'Telefon')),
+              TextField(
+                controller: _phoneCtrl,
+                decoration: InputDecoration(labelText: 'Telefon'.tr),
+              ),
               const SizedBox(height: 16),
               TextField(
                 controller: _areaCtrl,
                 maxLines: 2,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: 'Xizmat ko\'rsatadigan hudud',
-                  hintText: 'Masalan: Toshkent, Yunusobod',
+                  hintText: 'Masalan: Toshkent, Yunusobod'.tr,
                 ),
               ),
               const SizedBox(height: 32),
@@ -101,7 +114,11 @@ class _SalonMobileScreenState extends State<SalonMobileScreen> {
                 child: FilledButton(
                   onPressed: _submitting ? null : _submit,
                   child: _submitting
-                      ? const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2))
+                      ? const SizedBox(
+                          width: 22,
+                          height: 22,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
                       : const Text('Ro\'yxatdan o\'tish'),
                 ),
               ),

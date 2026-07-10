@@ -12,11 +12,10 @@ class DentalPortalService {
     required String phone,
     required String address,
     List<String> services = const [],
-  }) =>
-      _api.registerDentalClinic(
-        name: name,
-        phone: phone,
-        address: address,
-        services: services,
-      );
+  }) => _api.registerDentalClinic(
+    name: name,
+    phone: phone,
+    address: address,
+    services: services,
+  );
 }

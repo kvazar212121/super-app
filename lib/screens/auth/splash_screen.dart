@@ -6,6 +6,7 @@ import '../../widgets/glass/mesh_background.dart';
 import '../../widgets/hub_servis_brand.dart';
 import '../main_screen.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -84,14 +85,14 @@ class _SplashScreenState extends State<SplashScreen>
 
     // Wait for the splash screen presentation delay
     await Future.delayed(const Duration(milliseconds: 2200));
-    
+
     // Ensure auth check is completed before navigating
     await authFuture;
-    
+
     if (!mounted) return;
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (_) => const MainScreen()),
-    );
+    Navigator.of(
+      context,
+    ).pushReplacement(MaterialPageRoute(builder: (_) => const MainScreen()));
   }
 
   @override
@@ -116,7 +117,11 @@ class _SplashScreenState extends State<SplashScreen>
               child: FadeTransition(
                 opacity: _fadeAnim,
                 child: AnimatedBuilder(
-                  animation: Listenable.merge([_scaleAnim, _slideAnim, _pulseAnim]),
+                  animation: Listenable.merge([
+                    _scaleAnim,
+                    _slideAnim,
+                    _pulseAnim,
+                  ]),
                   builder: (context, child) {
                     return Transform.translate(
                       offset: Offset(0, _slideAnim.value),

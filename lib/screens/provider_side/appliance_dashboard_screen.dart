@@ -7,6 +7,8 @@ class ApplianceDashboardScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return UnifiedProviderDashboardScreen(config: ProviderCategoryConfig.appliance);
+    return UnifiedProviderDashboardScreen(
+      config: ProviderCategoryConfig.appliance,
+    );
   }
 }

@@ -7,6 +7,8 @@ class DisinfectionDashboardScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return UnifiedProviderDashboardScreen(config: ProviderCategoryConfig.disinfection);
+    return UnifiedProviderDashboardScreen(
+      config: ProviderCategoryConfig.disinfection,
+    );
   }
 }

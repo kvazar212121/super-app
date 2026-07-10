@@ -12,6 +12,7 @@ import '../providers/app_provider.dart';
 import '../utils/auth_guard.dart';
 import '../widgets/booking_common_widgets.dart';
 import '../widgets/glass/mesh_background.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 class EventBookingScreen extends StatefulWidget {
   final EventPlanning service;
@@ -57,8 +58,16 @@ class _EventBookingScreenState extends State<EventBookingScreen> {
     _timeSlots = widget.service.timeSlots.isNotEmpty
         ? widget.service.timeSlots
         : [
-            '10:00', '11:00', '12:00', '14:00', '15:00', '16:00',
-            '17:00', '18:00', '19:00', '20:00',
+            '10:00',
+            '11:00',
+            '12:00',
+            '14:00',
+            '15:00',
+            '16:00',
+            '17:00',
+            '18:00',
+            '19:00',
+            '20:00',
           ];
     _addressController.addListener(() => setState(() {}));
   }
@@ -74,8 +83,11 @@ class _EventBookingScreenState extends State<EventBookingScreen> {
   @override
   Widget build(BuildContext context) {
     final accentColor = const Color(0xFFEC4899);
-    final currencyFormat =
-        NumberFormat.currency(locale: 'uz_UZ', symbol: "so'm", decimalDigits: 0);
+    final currencyFormat = NumberFormat.currency(
+      locale: 'uz_UZ',
+      symbol: "so'm",
+      decimalDigits: 0,
+    );
 
     return GlassBackdrop(
       child: Scaffold(
@@ -99,7 +111,11 @@ class _EventBookingScreenState extends State<EventBookingScreen> {
                       phone: widget.service.phoneNumber,
                       accent: accentColor,
                       onCallPressed: () {
-                        CallHelper.makeDirectCall(context, widget.service.ownerUserId, widget.service.name);
+                        CallHelper.makeDirectCall(
+                          context,
+                          widget.service.ownerUserId,
+                          widget.service.name,
+                        );
                       },
                       contactLabel: "Guruh bilan bog'lanish",
                     ),
@@ -107,12 +123,19 @@ class _EventBookingScreenState extends State<EventBookingScreen> {
                       const SizedBox(height: 8),
                       Row(
                         children: [
-                          Icon(LucideIcons.mapPin, size: 16, color: accentColor),
+                          Icon(
+                            LucideIcons.mapPin,
+                            size: 16,
+                            color: accentColor,
+                          ),
                           const SizedBox(width: 6),
                           Expanded(
                             child: Text(
                               widget.service.serviceArea!,
-                              style: TextStyle(color: Colors.grey[700], fontSize: 13),
+                              style: TextStyle(
+                                color: Colors.grey[700],
+                                fontSize: 13,
+                              ),
                             ),
                           ),
                         ],
@@ -162,11 +185,14 @@ class _EventBookingScreenState extends State<EventBookingScreen> {
                     const SizedBox(height: 12),
                     _buildVenueSelector(accentColor),
                     const SizedBox(height: 24),
-                    const SectionTitle('Aniq manzil (qishloq / hovli / maydon)'),
+                    const SectionTitle(
+                      'Aniq manzil (qishloq / hovli / maydon)',
+                    ),
                     const SizedBox(height: 12),
                     BookingTextArea(
                       controller: _addressController,
-                      hint: 'Viloyat, tuman, qishloq, ko\'cha yoki maydon nomi...',
+                      hint:
+                          'Viloyat, tuman, qishloq, ko\'cha yoki maydon nomi...',
                       icon: LucideIcons.mapPin,
                       accent: accentColor,
                     ),
@@ -185,7 +211,8 @@ class _EventBookingScreenState extends State<EventBookingScreen> {
                     HorizontalDatePicker(
                       selectedDate: _selectedDate,
                       accentColor: accentColor,
-                      onDateSelected: (date) => setState(() => _selectedDate = date),
+                      onDateSelected: (date) =>
+                          setState(() => _selectedDate = date),
                       daysCount: 14,
                       startDaysOffset: 1,
                     ),
@@ -196,28 +223,35 @@ class _EventBookingScreenState extends State<EventBookingScreen> {
                       timeSlots: _timeSlots,
                       selectedTimeSlot: _selectedTimeSlot,
                       accentColor: accentColor,
-                      onTimeSelected: (slot) => setState(() => _selectedTimeSlot = slot),
+                      onTimeSelected: (slot) =>
+                          setState(() => _selectedTimeSlot = slot),
                       crossAxisCount: 5,
                     ),
                     const SizedBox(height: 32),
-                    Builder(builder: (context) {
-                      final addressOk = _addressController.text.trim().length >= 5;
-                      final canBook = _selectedEventType != null &&
-                          _selectedPriceOption != null &&
-                          _selectedTimeSlot != null &&
-                          _selectedVenue != null &&
-                          addressOk;
-                      final totalPrice = _selectedPriceOption != null
-                          ? widget.service.prices[_selectedPriceOption]
-                          : null;
-                      return BookingActionBar(
-                        accent: accentColor,
-                        primaryLabel: canBook
-                            ? "Buyurtma berish — ${currencyFormat.format(totalPrice)}"
-                            : 'Buyurtma berish',
-                        onPrimary: canBook ? () => _confirmBooking(currencyFormat) : null,
-                      );
-                    }),
+                    Builder(
+                      builder: (context) {
+                        final addressOk =
+                            _addressController.text.trim().length >= 5;
+                        final canBook =
+                            _selectedEventType != null &&
+                            _selectedPriceOption != null &&
+                            _selectedTimeSlot != null &&
+                            _selectedVenue != null &&
+                            addressOk;
+                        final totalPrice = _selectedPriceOption != null
+                            ? widget.service.prices[_selectedPriceOption]
+                            : null;
+                        return BookingActionBar(
+                          accent: accentColor,
+                          primaryLabel: canBook
+                              ? "Buyurtma berish — ${currencyFormat.format(totalPrice)}"
+                              : 'Buyurtma berish',
+                          onPrimary: canBook
+                              ? () => _confirmBooking(currencyFormat)
+                              : null,
+                        );
+                      },
+                    ),
                     const SizedBox(height: 40),
                   ],
                 ),
@@ -249,7 +283,8 @@ class _EventBookingScreenState extends State<EventBookingScreen> {
             child: Row(
               children: [
                 Icon(
-                  venue.toLowerCase().contains('qishloq') || venue.toLowerCase().contains('maydon')
+                  venue.toLowerCase().contains('qishloq') ||
+                          venue.toLowerCase().contains('maydon')
                       ? LucideIcons.trees
                       : LucideIcons.mapPin,
                   color: isSelected ? color : Colors.grey[400],
@@ -304,13 +339,15 @@ class _EventBookingScreenState extends State<EventBookingScreen> {
                 label: 'Mehmonlar',
                 value: '${_guestCountController.text} kishi',
               ),
-            if (_selectedVenue != null) DetailRow(label: 'Joy turi', value: _selectedVenue!),
+            if (_selectedVenue != null)
+              DetailRow(label: 'Joy turi', value: _selectedVenue!),
             DetailRow(label: 'Manzil', value: _addressController.text.trim()),
             if (_descriptionController.text.isNotEmpty)
               DetailRow(label: 'Izoh', value: _descriptionController.text),
             DetailRow(
               label: 'Vaqt',
-              value: '${DateFormat('dd.MM.yyyy').format(_selectedDate)} $_selectedTimeSlot',
+              value:
+                  '${DateFormat('dd.MM.yyyy').format(_selectedDate)} $_selectedTimeSlot',
             ),
             const Divider(height: 24),
             Row(
@@ -336,8 +373,10 @@ class _EventBookingScreenState extends State<EventBookingScreen> {
               height: 56,
               child: ElevatedButton(
                 onPressed: () {
-                  final hour = int.tryParse(_selectedTimeSlot!.split(':')[0]) ?? 10;
-                  final minute = int.tryParse(_selectedTimeSlot!.split(':')[1]) ?? 0;
+                  final hour =
+                      int.tryParse(_selectedTimeSlot!.split(':')[0]) ?? 10;
+                  final minute =
+                      int.tryParse(_selectedTimeSlot!.split(':')[1]) ?? 0;
                   final dateTime = DateTime(
                     _selectedDate.year,
                     _selectedDate.month,
@@ -370,8 +409,8 @@ class _EventBookingScreenState extends State<EventBookingScreen> {
                   Navigator.pop(context);
                   Navigator.pop(context);
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Muvaffaqiyatli band qilindi!'),
+                    SnackBar(
+                      content: Text('Muvaffaqiyatli band qilindi!'.tr),
                       backgroundColor: Colors.green,
                     ),
                   );

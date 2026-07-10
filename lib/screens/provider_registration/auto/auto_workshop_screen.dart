@@ -5,6 +5,7 @@ import '../../../services/auto_help_portal_service.dart';
 import '../../../utils/phone_utils.dart';
 import '../../provider_side/provider_theme.dart';
 import '../provider_success_screen.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 /// Ustaxona ro'yxatdan o'tish.
 class AutoWorkshopScreen extends StatefulWidget {
@@ -18,7 +19,14 @@ class _AutoWorkshopScreenState extends State<AutoWorkshopScreen> {
   final _nameCtrl = TextEditingController();
   final _phoneCtrl = TextEditingController();
   final _addressCtrl = TextEditingController();
-  final _specOptions = ['Motor', 'Xodovoy', 'Elektronika', 'Tuning', 'Shinopompa', 'Konditsioner'];
+  final _specOptions = [
+    'Motor',
+    'Xodovoy',
+    'Elektronika',
+    'Tuning',
+    'Shinopompa',
+    'Konditsioner',
+  ];
   final Set<String> _specs = {'Motor', 'Xodovoy'};
   bool _submitting = false;
 
@@ -35,9 +43,9 @@ class _AutoWorkshopScreenState extends State<AutoWorkshopScreen> {
     final name = _nameCtrl.text.trim();
     final address = _addressCtrl.text.trim();
     if (name.isEmpty || address.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Nom va manzilni kiriting')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Nom va manzilni kiriting'.tr)));
       return;
     }
 
@@ -69,9 +77,9 @@ class _AutoWorkshopScreenState extends State<AutoWorkshopScreen> {
       );
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Xatolik: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Xatolik: $e')));
       }
     } finally {
       if (mounted) setState(() => _submitting = false);
@@ -82,7 +90,7 @@ class _AutoWorkshopScreenState extends State<AutoWorkshopScreen> {
   Widget build(BuildContext context) {
     return ProviderTheme(
       child: Scaffold(
-        appBar: AppBar(title: const Text('Ustaxona sifatida')),
+        appBar: AppBar(title: Text('Ustaxona sifatida'.tr)),
         body: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
           child: Column(
@@ -95,24 +103,30 @@ class _AutoWorkshopScreenState extends State<AutoWorkshopScreen> {
               const SizedBox(height: 24),
               TextField(
                 controller: _nameCtrl,
-                decoration: const InputDecoration(labelText: 'Ustaxona nomi'),
+                decoration: InputDecoration(labelText: 'Ustaxona nomi'.tr),
               ),
               const SizedBox(height: 16),
               TextField(
                 controller: _phoneCtrl,
-                decoration: const InputDecoration(labelText: 'Telefon'),
+                decoration: InputDecoration(labelText: 'Telefon'.tr),
               ),
               const SizedBox(height: 16),
               TextField(
                 controller: _addressCtrl,
                 maxLines: 2,
-                decoration: const InputDecoration(
-                  labelText: 'Ustaxona manzili',
-                  hintText: 'Masalan: Yunusobod, 19-kvartal',
+                decoration: InputDecoration(
+                  labelText: 'Ustaxona manzili'.tr,
+                  hintText: 'Masalan: Yunusobod, 19-kvartal'.tr,
                 ),
               ),
               const SizedBox(height: 16),
-              Text('Mutaxassislik', style: TextStyle(color: Colors.grey[700], fontWeight: FontWeight.w600)),
+              Text(
+                'Mutaxassislik',
+                style: TextStyle(
+                  color: Colors.grey[700],
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
               const SizedBox(height: 8),
               Wrap(
                 spacing: 8,
@@ -140,7 +154,11 @@ class _AutoWorkshopScreenState extends State<AutoWorkshopScreen> {
                 child: FilledButton(
                   onPressed: _submitting ? null : _submit,
                   child: _submitting
-                      ? const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2))
+                      ? const SizedBox(
+                          width: 22,
+                          height: 22,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
                       : const Text('Ro\'yxatdan o\'tish'),
                 ),
               ),

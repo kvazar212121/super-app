@@ -8,12 +8,14 @@ import '../../../utils/phone_utils.dart';
 import '../../provider_side/provider_theme.dart';
 import '../../provider_side/unified_provider_dashboard_screen.dart';
 import '../../map_address_picker_screen.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 class DentalRegistrationScreen extends StatefulWidget {
   const DentalRegistrationScreen({super.key});
 
   @override
-  State<DentalRegistrationScreen> createState() => _DentalRegistrationScreenState();
+  State<DentalRegistrationScreen> createState() =>
+      _DentalRegistrationScreenState();
 }
 
 class _DentalRegistrationScreenState extends State<DentalRegistrationScreen> {
@@ -38,7 +40,7 @@ class _DentalRegistrationScreenState extends State<DentalRegistrationScreen> {
     final address = _addressCtrl.text.trim();
     if (name.isEmpty || address.length < 5) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Klinika nomi va manzilni kiriting')),
+        SnackBar(content: Text('Klinika nomi va manzilni kiriting'.tr)),
       );
       return;
     }
@@ -48,7 +50,11 @@ class _DentalRegistrationScreenState extends State<DentalRegistrationScreen> {
         ? normalizeUzPhone(_phoneCtrl.text.replaceAll(RegExp(r'\D'), ''))
         : (auth.user?['phone'] as String? ?? '');
     try {
-      await DentalPortalService().register(name: name, phone: phone, address: address);
+      await DentalPortalService().register(
+        name: name,
+        phone: phone,
+        address: address,
+      );
       if (!mounted) return;
       // Stomatologiya darhol faol — admin tasdiqlovchi ekransiz to'g'ridan-to'g'ri dashboardga
       Navigator.pushAndRemoveUntil(
@@ -62,7 +68,9 @@ class _DentalRegistrationScreenState extends State<DentalRegistrationScreen> {
       );
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Xatolik: $e')));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Xatolik: $e')));
       }
     } finally {
       if (mounted) setState(() => _submitting = false);
@@ -73,7 +81,7 @@ class _DentalRegistrationScreenState extends State<DentalRegistrationScreen> {
   Widget build(BuildContext context) {
     return ProviderTheme(
       child: Scaffold(
-        appBar: AppBar(title: const Text('Stomatologiya klinikasi')),
+        appBar: AppBar(title: Text('Stomatologiya klinikasi'.tr)),
         body: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
           child: Column(
@@ -86,12 +94,12 @@ class _DentalRegistrationScreenState extends State<DentalRegistrationScreen> {
               const SizedBox(height: 20),
               TextField(
                 controller: _nameCtrl,
-                decoration: const InputDecoration(labelText: 'Klinika nomi'),
+                decoration: InputDecoration(labelText: 'Klinika nomi'.tr),
               ),
               const SizedBox(height: 12),
               TextField(
                 controller: _phoneCtrl,
-                decoration: const InputDecoration(labelText: 'Telefon'),
+                decoration: InputDecoration(labelText: 'Telefon'.tr),
                 keyboardType: TextInputType.phone,
               ),
               const SizedBox(height: 12),
@@ -102,8 +110,8 @@ class _DentalRegistrationScreenState extends State<DentalRegistrationScreen> {
                   Expanded(
                     child: TextField(
                       controller: _addressCtrl,
-                      decoration: const InputDecoration(
-                        labelText: 'Klinika manzili',
+                      decoration: InputDecoration(
+                        labelText: 'Klinika manzili'.tr,
                         hintText: 'Ko\'cha, bino, mo\'ljal...',
                       ),
                       maxLines: 2,
@@ -119,8 +127,8 @@ class _DentalRegistrationScreenState extends State<DentalRegistrationScreen> {
                       border: Border.all(color: accent, width: 1.5),
                     ),
                     child: IconButton(
-                      icon: const Icon(LucideIcons.map, color: accent),
-                      tooltip: 'Xaritadan tanlash',
+                      icon: Icon(LucideIcons.map, color: accent),
+                      tooltip: 'Xaritadan tanlash'.tr,
                       onPressed: () async {
                         final picked = await Navigator.push<String>(
                           context,
@@ -152,11 +160,17 @@ class _DentalRegistrationScreenState extends State<DentalRegistrationScreen> {
                       ? const SizedBox(
                           width: 22,
                           height: 22,
-                          child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5),
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2.5,
+                          ),
                         )
                       : const Text(
                           'Yuborish',
-                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
                         ),
                 ),
               ),

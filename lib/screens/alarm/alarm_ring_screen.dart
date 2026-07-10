@@ -10,6 +10,7 @@ import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:uuid/uuid.dart';
 
+import '../../l10n/locale_controller.dart';
 import '../../models/alarm.dart';
 import '../../services/api_service.dart';
 import '../../services/notification_helper.dart';
@@ -63,7 +64,9 @@ class _AlarmRingScreenState extends State<AlarmRingScreen> {
 
     // Statistikani backendga yozamiz (offline bo'lsa jim o'tadi)
     final dismissedAt = DateTime.now();
-    final seconds = _firedAt != null ? dismissedAt.difference(_firedAt!).inSeconds : null;
+    final seconds = _firedAt != null
+        ? dismissedAt.difference(_firedAt!).inSeconds
+        : null;
     try {
       await _api.logAlarmEvent(widget.alarm.id, {
         'fired_at': _firedAt?.toUtc().toIso8601String(),
@@ -135,8 +138,11 @@ class _AlarmRingScreenState extends State<AlarmRingScreen> {
                   TextButton(
                     onPressed: _onSnooze,
                     child: Text(
-                      'Snooze (${widget.alarm.snoozeMinutes} daqiqa)',
-                      style: const TextStyle(color: Colors.white54, fontSize: 16),
+                      'Snooze (${widget.alarm.snoozeMinutes} ${'daqiqa'.tr})',
+                      style: const TextStyle(
+                        color: Colors.white54,
+                        fontSize: 16,
+                      ),
                     ),
                   ),
               ],
@@ -196,7 +202,8 @@ class _MathMissionState extends State<_MathMission> {
   }
 
   void _generate() {
-    final difficulty = (widget.alarm.missionConfig['difficulty'] as String?) ?? 'medium';
+    final difficulty =
+        (widget.alarm.missionConfig['difficulty'] as String?) ?? 'medium';
     switch (difficulty) {
       case 'easy':
         _a = _rand.nextInt(20) + 1;
@@ -241,7 +248,10 @@ class _MathMissionState extends State<_MathMission> {
     } else {
       _controller.clear();
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Noto\'g\'ri, qayta urinib ko\'ring'), duration: Duration(seconds: 1)),
+        SnackBar(
+          content: Text('Noto\'g\'ri, qayta urinib ko\'ring'.tr),
+          duration: const Duration(seconds: 1),
+        ),
       );
     }
   }
@@ -258,25 +268,38 @@ class _MathMissionState extends State<_MathMission> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         if (_needed > 1)
-          Text('$_solved / $_needed', style: const TextStyle(color: Colors.white38, fontSize: 14)),
+          Text(
+            '$_solved / $_needed',
+            style: const TextStyle(color: Colors.white38, fontSize: 14),
+          ),
         const SizedBox(height: 8),
         Text(
           _questionText,
-          style: const TextStyle(fontSize: 40, fontWeight: FontWeight.bold, color: Colors.white),
+          style: const TextStyle(
+            fontSize: 40,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
         ),
         const SizedBox(height: 24),
         TextField(
           controller: _controller,
           keyboardType: TextInputType.number,
-          inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9-]'))],
+          inputFormatters: [
+            FilteringTextInputFormatter.allow(RegExp(r'[0-9-]')),
+          ],
           autofocus: true,
           textAlign: TextAlign.center,
           style: const TextStyle(fontSize: 28, color: Colors.white),
-          decoration: const InputDecoration(
-            hintText: 'Javob',
-            hintStyle: TextStyle(color: Colors.white24),
-            enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white24)),
-            focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.tealAccent)),
+          decoration: InputDecoration(
+            hintText: 'Javob'.tr,
+            hintStyle: const TextStyle(color: Colors.white24),
+            enabledBorder: const UnderlineInputBorder(
+              borderSide: BorderSide(color: Colors.white24),
+            ),
+            focusedBorder: const UnderlineInputBorder(
+              borderSide: BorderSide(color: Colors.tealAccent),
+            ),
           ),
           onSubmitted: (_) => _check(),
         ),
@@ -290,7 +313,10 @@ class _MathMissionState extends State<_MathMission> {
               padding: const EdgeInsets.symmetric(vertical: 16),
             ),
             onPressed: _check,
-            child: const Text('Tasdiqlash', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            child: Text(
+              'Tasdiqlash'.tr,
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
           ),
         ),
       ],
@@ -315,7 +341,9 @@ class _PhotoMissionState extends State<_PhotoMission> {
   bool _busy = false;
   String? _status;
 
-  String get _targetUz => (widget.alarm.missionConfig['target_uz'] as String?) ?? 'belgilangan narsa';
+  String get _targetUz =>
+      (widget.alarm.missionConfig['target_uz'] as String?) ??
+      'belgilangan narsa';
   String get _targetForAi =>
       (widget.alarm.missionConfig['target_en'] as String?) ??
       (widget.alarm.missionConfig['target_uz'] as String?) ??
@@ -327,7 +355,10 @@ class _PhotoMissionState extends State<_PhotoMission> {
       _status = null;
     });
     try {
-      final picked = await _picker.pickImage(source: ImageSource.camera, imageQuality: 80);
+      final picked = await _picker.pickImage(
+        source: ImageSource.camera,
+        imageQuality: 80,
+      );
       if (picked == null) {
         setState(() => _busy = false);
         return;
@@ -353,13 +384,13 @@ class _PhotoMissionState extends State<_PhotoMission> {
           _busy = false;
           _status = (result['detail'] as String?)?.isNotEmpty == true
               ? result['detail'] as String
-              : 'Rasmda "$_targetUz" topilmadi. Qayta urinib ko\'ring.';
+              : '${'Rasmda'.tr} "${_targetUz.tr}" ${'topilmadi. Qayta urinib ko\'ring.'.tr}';
         });
       }
     } catch (e) {
       setState(() {
         _busy = false;
-        _status = 'Xatolik: internetni tekshiring va qayta urinib ko\'ring';
+        _status = 'Xatolik: internetni tekshiring va qayta urinib ko\'ring'.tr;
       });
     }
   }
@@ -372,20 +403,28 @@ class _PhotoMissionState extends State<_PhotoMission> {
         const Icon(Icons.camera_alt, color: Colors.tealAccent, size: 48),
         const SizedBox(height: 16),
         Text(
-          'Shuni rasmga oling:',
+          'Shuni rasmga oling:'.tr,
           style: const TextStyle(color: Colors.white70, fontSize: 16),
         ),
         const SizedBox(height: 8),
         Text(
-          _targetUz,
+          _targetUz.tr,
           textAlign: TextAlign.center,
-          style: const TextStyle(color: Colors.white, fontSize: 30, fontWeight: FontWeight.bold),
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 30,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         const SizedBox(height: 24),
         if (_status != null)
           Padding(
             padding: const EdgeInsets.only(bottom: 16),
-            child: Text(_status!, textAlign: TextAlign.center, style: const TextStyle(color: Colors.orangeAccent)),
+            child: Text(
+              _status!,
+              textAlign: TextAlign.center,
+              style: const TextStyle(color: Colors.orangeAccent),
+            ),
           ),
         SizedBox(
           width: double.infinity,
@@ -397,10 +436,19 @@ class _PhotoMissionState extends State<_PhotoMission> {
             ),
             onPressed: _busy ? null : _takeAndVerify,
             icon: _busy
-                ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.black))
+                ? const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: Colors.black,
+                    ),
+                  )
                 : const Icon(Icons.photo_camera),
-            label: Text(_busy ? 'Tekshirilmoqda...' : 'Kamerani ochish',
-                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            label: Text(
+              _busy ? 'Tekshirilmoqda...'.tr : 'Kamerani ochish'.tr,
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
           ),
         ),
       ],
@@ -482,8 +530,12 @@ class _SpeechMissionState extends State<_SpeechMission> {
   /// Tanilgan matn iboraga yetarlicha o'xshasa (so'zlarning 70% mos kelsa) — muvaffaqiyat.
   void _evaluate() {
     if (_recognized.isEmpty) return;
-    final target = _normalize(_phrase).split(' ').where((w) => w.isNotEmpty).toSet();
-    final said = _normalize(_recognized).split(' ').where((w) => w.isNotEmpty).toSet();
+    final target = _normalize(
+      _phrase,
+    ).split(' ').where((w) => w.isNotEmpty).toSet();
+    final said = _normalize(
+      _recognized,
+    ).split(' ').where((w) => w.isNotEmpty).toSet();
     if (target.isEmpty) return;
     final matched = target.where(said.contains).length;
     final ratio = matched / target.length;
@@ -491,7 +543,10 @@ class _SpeechMissionState extends State<_SpeechMission> {
       widget.onSolved();
     } else if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('To\'liq o\'qing, qayta urinib ko\'ring'), duration: Duration(seconds: 1)),
+        SnackBar(
+          content: Text('To\'liq o\'qing, qayta urinib ko\'ring'.tr),
+          duration: const Duration(seconds: 1),
+        ),
       );
     }
   }
@@ -525,8 +580,10 @@ class _SpeechMissionState extends State<_SpeechMission> {
       children: [
         const Icon(Icons.record_voice_over, color: Colors.tealAccent, size: 48),
         const SizedBox(height: 12),
-        const Text('Ushbu matnni ovoz chiqarib o\'qing:',
-            style: TextStyle(color: Colors.white70, fontSize: 16)),
+        Text(
+          'Ushbu matnni ovoz chiqarib o\'qing:'.tr,
+          style: const TextStyle(color: Colors.white70, fontSize: 16),
+        ),
         const SizedBox(height: 12),
         Container(
           padding: const EdgeInsets.all(16),
@@ -537,25 +594,39 @@ class _SpeechMissionState extends State<_SpeechMission> {
           child: Text(
             _phrase,
             textAlign: TextAlign.center,
-            style: const TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.w600),
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 22,
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ),
         const SizedBox(height: 16),
         if (_recognized.isNotEmpty)
-          Text('"$_recognized"', textAlign: TextAlign.center, style: const TextStyle(color: Colors.white54)),
+          Text(
+            '"$_recognized"',
+            textAlign: TextAlign.center,
+            style: const TextStyle(color: Colors.white54),
+          ),
         const SizedBox(height: 16),
         SizedBox(
           width: double.infinity,
           child: ElevatedButton.icon(
             style: ElevatedButton.styleFrom(
-              backgroundColor: _listening ? Colors.redAccent : Colors.tealAccent,
+              backgroundColor: _listening
+                  ? Colors.redAccent
+                  : Colors.tealAccent,
               foregroundColor: Colors.black,
               padding: const EdgeInsets.symmetric(vertical: 16),
             ),
             onPressed: _available && !_listening ? _listen : null,
             icon: Icon(_listening ? Icons.mic : Icons.mic_none),
             label: Text(
-              !_available ? 'Mikrofon mavjud emas' : (_listening ? 'Eshitilmoqda...' : 'O\'qishni boshlash'),
+              !_available
+                  ? 'Mikrofon mavjud emas'.tr
+                  : (_listening
+                        ? 'Eshitilmoqda...'.tr
+                        : 'O\'qishni boshlash'.tr),
               style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
           ),

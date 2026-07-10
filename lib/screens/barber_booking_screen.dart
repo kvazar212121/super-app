@@ -15,6 +15,7 @@ import '../theme/glass_tokens.dart';
 import '../utils/auth_guard.dart';
 import '../widgets/booking_common_widgets.dart';
 import '../widgets/glass/mesh_background.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 class BarberBookingScreen extends StatefulWidget {
   final BarberShop shop;
@@ -67,7 +68,7 @@ class _BarberBookingScreenState extends State<BarberBookingScreen> {
   double get _selectedPrice => _selectedService == null
       ? 0
       : (widget.shop.prices[_selectedService] ??
-          BarberShop.defaultPriceForService(_selectedService!));
+            BarberShop.defaultPriceForService(_selectedService!));
 
   String _serviceDuration(String service) {
     final lower = service.toLowerCase();
@@ -119,8 +120,11 @@ class _BarberBookingScreenState extends State<BarberBookingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final currencyFormat =
-        NumberFormat.currency(locale: 'uz_UZ', symbol: 'so\'m', decimalDigits: 0);
+    final currencyFormat = NumberFormat.currency(
+      locale: 'uz_UZ',
+      symbol: 'so\'m',
+      decimalDigits: 0,
+    );
 
     return GlassBackdrop(
       child: Scaffold(
@@ -130,158 +134,165 @@ class _BarberBookingScreenState extends State<BarberBookingScreen> {
           bottom: true,
           child: CustomScrollView(
             slivers: [
-            BookingSliverAppBar(
-              color: _accent, 
-              icon: LucideIcons.scissors,
-              rawJson: widget.shop.rawJson,
-            ),
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    ServiceProfileHeader(
-                      name: widget.shop.name,
-                      rating: widget.shop.rating,
-                      phone: widget.shop.phoneNumber,
-                      accent: _accent,
-                      extra: Text(
-                        widget.shop.address,
-                        style: TextStyle(
-                          color: GlassTokens.secondaryText(context),
-                          fontSize: 14,
-                        ),
-                      ),
-                      onCallPressed: () {
-                        CallHelper.makeDirectCall(context, widget.shop.ownerUserId, widget.shop.name);
-                      },
-                      contactLabel: "Sartaroshxona bilan bog'lanish",
-                    ),
-                    const SizedBox(height: 24),
-                    SectionTitle('Xizmatni tanlang', key: _serviceKey),
-                    const SizedBox(height: 12),
-                    PriceOptionList(
-                      prices: widget.shop.prices,
-                      selected: _selectedService,
-                      onSelect: (s) => setState(() => _selectedService = s),
-                      accent: _accent,
-                      format: currencyFormat,
-                      subtitleOf: _serviceDuration,
-                    ),
-                    const SizedBox(height: 24),
-                    SectionTitle('Mutaxassisni tanlang', key: _staffKey),
-                    const SizedBox(height: 12),
-                    SelectableStaffRow(
-                      staff: _staffOptions,
-                      selectedId: _selectedStaffId,
-                      onSelect: (id) {
-                        setState(() => _selectedStaffId = id);
-                        _loadAvailability();
-                      },
-                      accent: _accent,
-                      anyOptionLabel: 'Har qanday bo\'sh usta',
-                    ),
-                    const SizedBox(height: 24),
-                    const SectionTitle('Sana'),
-                    const SizedBox(height: 12),
-                    HorizontalDatePicker(
-                      selectedDate: _selectedDate,
-                      accentColor: _accent,
-                      onDateSelected: (date) {
-                        setState(() => _selectedDate = date);
-                        _loadAvailability();
-                      },
-                      daysCount: 14,
-                      startDaysOffset: 1,
-                    ),
-                    const SizedBox(height: 24),
-                    SectionTitle('Vaqt', key: _timeKey),
-                    const SizedBox(height: 12),
-                    if (_loadingSlots)
-                      const Padding(
-                        padding: EdgeInsets.symmetric(vertical: 24),
-                        child: Center(
-                          child: SizedBox(
-                            width: 28,
-                            height: 28,
-                            child: CircularProgressIndicator(strokeWidth: 2.5),
+              BookingSliverAppBar(
+                color: _accent,
+                icon: LucideIcons.scissors,
+                rawJson: widget.shop.rawJson,
+              ),
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ServiceProfileHeader(
+                        name: widget.shop.name,
+                        rating: widget.shop.rating,
+                        phone: widget.shop.phoneNumber,
+                        accent: _accent,
+                        extra: Text(
+                          widget.shop.address,
+                          style: TextStyle(
+                            color: GlassTokens.secondaryText(context),
+                            fontSize: 14,
                           ),
                         ),
-                      )
-                    else ...[
-                      if (_bookedSlots.isNotEmpty)
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 8),
-                          child: Text(
-                            '${_bookedSlots.length} ta vaqt band',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: GlassTokens.secondaryText(context),
+                        onCallPressed: () {
+                          CallHelper.makeDirectCall(
+                            context,
+                            widget.shop.ownerUserId,
+                            widget.shop.name,
+                          );
+                        },
+                        contactLabel: "Sartaroshxona bilan bog'lanish",
+                      ),
+                      const SizedBox(height: 24),
+                      SectionTitle('Xizmatni tanlang', key: _serviceKey),
+                      const SizedBox(height: 12),
+                      PriceOptionList(
+                        prices: widget.shop.prices,
+                        selected: _selectedService,
+                        onSelect: (s) => setState(() => _selectedService = s),
+                        accent: _accent,
+                        format: currencyFormat,
+                        subtitleOf: _serviceDuration,
+                      ),
+                      const SizedBox(height: 24),
+                      SectionTitle('Mutaxassisni tanlang', key: _staffKey),
+                      const SizedBox(height: 12),
+                      SelectableStaffRow(
+                        staff: _staffOptions,
+                        selectedId: _selectedStaffId,
+                        onSelect: (id) {
+                          setState(() => _selectedStaffId = id);
+                          _loadAvailability();
+                        },
+                        accent: _accent,
+                        anyOptionLabel: 'Har qanday bo\'sh usta',
+                      ),
+                      const SizedBox(height: 24),
+                      const SectionTitle('Sana'),
+                      const SizedBox(height: 12),
+                      HorizontalDatePicker(
+                        selectedDate: _selectedDate,
+                        accentColor: _accent,
+                        onDateSelected: (date) {
+                          setState(() => _selectedDate = date);
+                          _loadAvailability();
+                        },
+                        daysCount: 14,
+                        startDaysOffset: 1,
+                      ),
+                      const SizedBox(height: 24),
+                      SectionTitle('Vaqt', key: _timeKey),
+                      const SizedBox(height: 12),
+                      if (_loadingSlots)
+                        const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 24),
+                          child: Center(
+                            child: SizedBox(
+                              width: 28,
+                              height: 28,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2.5,
+                              ),
                             ),
                           ),
-                        ),
-                      TimeSlotGrid(
-                        timeSlots: _timeSlots,
-                        selectedTimeSlot: _selectedTimeSlot,
-                        accentColor: _accent,
-                        onTimeSelected: (slot) =>
-                            setState(() => _selectedTimeSlot = slot),
-                        crossAxisCount: 5,
-                        disabledTimeSlots: _bookedSlots,
-                      ),
-                    ],
-                    const SizedBox(height: 24),
-                    // ──── Navbat rejimi tanlash ────
-                    const SectionTitle('Navbat rejimi'),
-                    const SizedBox(height: 12),
-                    _buildQueueModeSelector(),
-                    const SizedBox(height: 32),
-                    BookingActionBar(
-                      accent: _accent,
-                      primaryLabel: _canBook
-                          ? 'Bron qilish — ${currencyFormat.format(_selectedPrice)}'
-                          : 'Bron qilish',
-                      onPrimary: _canBook ? _confirmBooking : null,
-                      onPrimaryDisabled: () {
-                        String msg = 'Iltimos, kerakli ma\'lumotlarni kiriting';
-                        GlobalKey? targetKey;
-                        if (_selectedService == null) {
-                          msg = 'Iltimos, xizmat turini tanlang';
-                          targetKey = _serviceKey;
-                        } else if (_selectedStaffId == null) {
-                          msg = 'Iltimos, mutaxassisni tanlang';
-                          targetKey = _staffKey;
-                        } else if (_selectedTimeSlot == null) {
-                          msg = 'Iltimos, bo\'sh vaqtni tanlang';
-                          targetKey = _timeKey;
-                        }
-
-                        if (targetKey != null && targetKey.currentContext != null) {
-                          Scrollable.ensureVisible(
-                            targetKey.currentContext!,
-                            alignment: 0.5,
-                            duration: const Duration(milliseconds: 300),
-                            curve: Curves.easeInOut,
-                          );
-                        }
-
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(msg),
-                            backgroundColor: Colors.redAccent,
+                        )
+                      else ...[
+                        if (_bookedSlots.isNotEmpty)
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 8),
+                            child: Text(
+                              '${_bookedSlots.length} ta vaqt band',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: GlassTokens.secondaryText(context),
+                              ),
+                            ),
                           ),
-                        );
-                      },
+                        TimeSlotGrid(
+                          timeSlots: _timeSlots,
+                          selectedTimeSlot: _selectedTimeSlot,
+                          accentColor: _accent,
+                          onTimeSelected: (slot) =>
+                              setState(() => _selectedTimeSlot = slot),
+                          crossAxisCount: 5,
+                          disabledTimeSlots: _bookedSlots,
+                        ),
+                      ],
+                      const SizedBox(height: 24),
+                      // ──── Navbat rejimi tanlash ────
+                      const SectionTitle('Navbat rejimi'),
+                      const SizedBox(height: 12),
+                      _buildQueueModeSelector(),
+                      const SizedBox(height: 32),
+                      BookingActionBar(
+                        accent: _accent,
+                        primaryLabel: _canBook
+                            ? 'Bron qilish — ${currencyFormat.format(_selectedPrice)}'
+                            : 'Bron qilish',
+                        onPrimary: _canBook ? _confirmBooking : null,
+                        onPrimaryDisabled: () {
+                          String msg =
+                              'Iltimos, kerakli ma\'lumotlarni kiriting';
+                          GlobalKey? targetKey;
+                          if (_selectedService == null) {
+                            msg = 'Iltimos, xizmat turini tanlang';
+                            targetKey = _serviceKey;
+                          } else if (_selectedStaffId == null) {
+                            msg = 'Iltimos, mutaxassisni tanlang';
+                            targetKey = _staffKey;
+                          } else if (_selectedTimeSlot == null) {
+                            msg = 'Iltimos, bo\'sh vaqtni tanlang';
+                            targetKey = _timeKey;
+                          }
 
-                    ),
-                    const SizedBox(height: 40),
-                  ],
+                          if (targetKey != null &&
+                              targetKey.currentContext != null) {
+                            Scrollable.ensureVisible(
+                              targetKey.currentContext!,
+                              alignment: 0.5,
+                              duration: const Duration(milliseconds: 300),
+                              curve: Curves.easeInOut,
+                            );
+                          }
+
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(msg),
+                              backgroundColor: Colors.redAccent,
+                            ),
+                          );
+                        },
+                      ),
+                      const SizedBox(height: 40),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ],
-        ),
+            ],
+          ),
         ),
       ),
     );
@@ -316,9 +327,7 @@ class _BarberBookingScreenState extends State<BarberBookingScreen> {
                 left: key == 'flexible' ? 6 : 0,
               ),
               decoration: BoxDecoration(
-                color: isSelected
-                    ? _accent
-                    : kBookingCard,
+                color: isSelected ? _accent : kBookingCard,
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(
                   color: isSelected ? _accent : kBookingBorder,
@@ -374,7 +383,11 @@ class _BarberBookingScreenState extends State<BarberBookingScreen> {
                             ),
                           ),
                           if (isSelected)
-                            const Icon(LucideIcons.circleCheck, size: 20, color: Colors.white),
+                            const Icon(
+                              LucideIcons.circleCheck,
+                              size: 20,
+                              color: Colors.white,
+                            ),
                         ],
                       ),
                       const SizedBox(height: 8),
@@ -403,8 +416,11 @@ class _BarberBookingScreenState extends State<BarberBookingScreen> {
     if (!await ensureAuthenticated(context)) return;
     if (!mounted || !_canBook) return;
 
-    final currencyFormat =
-        NumberFormat.currency(locale: 'uz_UZ', symbol: 'so\'m', decimalDigits: 0);
+    final currencyFormat = NumberFormat.currency(
+      locale: 'uz_UZ',
+      symbol: 'so\'m',
+      decimalDigits: 0,
+    );
     final confirmed = await showBookingConfirmSheet(
       context,
       title: 'Bronni tasdiqlang',
@@ -418,7 +434,9 @@ class _BarberBookingScreenState extends State<BarberBookingScreen> {
         ),
         MapEntry(
           'Navbat rejimi',
-          _selectedBookingMode == 'flexible' ? 'Tezkor navbat ⚡' : 'Aniq vaqt 🕐',
+          _selectedBookingMode == 'flexible'
+              ? 'Tezkor navbat ⚡'
+              : 'Aniq vaqt 🕐',
         ),
       ],
       totalLabel: 'Jami',
@@ -467,8 +485,8 @@ class _BarberBookingScreenState extends State<BarberBookingScreen> {
       if (!mounted) return;
       Navigator.pop(context);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Muvaffaqiyatli band qilindi!'),
+        SnackBar(
+          content: Text('Muvaffaqiyatli band qilindi!'.tr),
           backgroundColor: Colors.green,
         ),
       );

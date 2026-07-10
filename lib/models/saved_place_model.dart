@@ -4,7 +4,8 @@ class SavedPlace {
   final String name;
   final String address;
   final double rating;
-  final String type; // 'barber_shop', 'beauty_salon', 'football_field', 'massage_center', 'master'
+  final String
+  type; // 'barber_shop', 'beauty_salon', 'football_field', 'massage_center', 'master'
   final Map<String, dynamic> rawJson;
 
   SavedPlace({
@@ -18,22 +19,22 @@ class SavedPlace {
   });
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'categoryKey': categoryKey,
-        'name': name,
-        'address': address,
-        'rating': rating,
-        'type': type,
-        'rawJson': rawJson,
-      };
+    'id': id,
+    'categoryKey': categoryKey,
+    'name': name,
+    'address': address,
+    'rating': rating,
+    'type': type,
+    'rawJson': rawJson,
+  };
 
   factory SavedPlace.fromJson(Map<String, dynamic> json) => SavedPlace(
-        id: json['id'] ?? '',
-        categoryKey: json['categoryKey'] ?? '',
-        name: json['name'] ?? '',
-        address: json['address'] ?? '',
-        rating: (json['rating'] as num?)?.toDouble() ?? 0.0,
-        type: json['type'] ?? '',
-        rawJson: Map<String, dynamic>.from(json['rawJson'] ?? {}),
-      );
+    id: json['id'] ?? '',
+    categoryKey: json['categoryKey'] ?? '',
+    name: json['name'] ?? '',
+    address: json['address'] ?? '',
+    rating: (json['rating'] as num?)?.toDouble() ?? 0.0,
+    type: json['type'] ?? '',
+    rawJson: Map<String, dynamic>.from(json['rawJson'] ?? {}),
+  );
 }

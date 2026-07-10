@@ -10,6 +10,7 @@ import 'package:smart_auth/smart_auth.dart';
 import '../../providers/auth_provider.dart';
 import '../../theme/glass_tokens.dart';
 import 'uz_phone_field.dart';
+import '../../l10n/locale_controller.dart';
 
 /// 6 xonali SMS OTP kiritish maydoni.
 class OtpCodeField extends StatefulWidget {
@@ -41,7 +42,8 @@ class OtpCodeFieldState extends State<OtpCodeField> {
     _focusNodes = List.generate(widget.length, (index) {
       final node = FocusNode();
       node.onKeyEvent = (node, event) {
-        if (event is KeyDownEvent && event.logicalKey == LogicalKeyboardKey.backspace) {
+        if (event is KeyDownEvent &&
+            event.logicalKey == LogicalKeyboardKey.backspace) {
           if (_controllers[index].text.isEmpty && index > 0) {
             _controllers[index - 1].clear();
             _focusNodes[index - 1].requestFocus();
@@ -131,26 +133,29 @@ class OtpCodeFieldState extends State<OtpCodeField> {
                 counterText: '',
                 isDense: true,
                 filled: true,
-                fillColor: isDark ? Colors.white.withOpacity(0.08) : Colors.black.withOpacity(0.05),
+                fillColor: isDark
+                    ? Colors.white.withOpacity(0.08)
+                    : Colors.black.withOpacity(0.05),
                 contentPadding: const EdgeInsets.symmetric(vertical: 12),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                   borderSide: BorderSide(
-                    color: isDark ? Colors.white.withOpacity(0.15) : Colors.black.withOpacity(0.1),
+                    color: isDark
+                        ? Colors.white.withOpacity(0.15)
+                        : Colors.black.withOpacity(0.1),
                   ),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                   borderSide: BorderSide(
-                    color: isDark ? Colors.white.withOpacity(0.15) : Colors.black.withOpacity(0.1),
+                    color: isDark
+                        ? Colors.white.withOpacity(0.15)
+                        : Colors.black.withOpacity(0.1),
                   ),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(
-                    color: accent,
-                    width: 2,
-                  ),
+                  borderSide: BorderSide(color: accent, width: 2),
                 ),
               ),
               onChanged: (v) => _onDigit(i, v),
@@ -212,7 +217,8 @@ class _OtpAuthPanelState extends State<OtpAuthPanel> {
       if (!mounted || !result.hasData) return;
 
       final sms = result.requireData;
-      final code = sms.code ?? RegExp(r'\b\d{6}\b').firstMatch(sms.sms)?.group(0);
+      final code =
+          sms.code ?? RegExp(r'\b\d{6}\b').firstMatch(sms.sms)?.group(0);
       if (code != null && code.length == 6) {
         _otpFieldKey.currentState?.setCode(code);
       }
@@ -223,7 +229,7 @@ class _OtpAuthPanelState extends State<OtpAuthPanel> {
 
   Future<void> _sendOtp() async {
     if (UzPhoneField.validateNineDigits(_phoneCtrl.text) != null) {
-      _toast('Telefon raqamni to\'g\'ri kiriting');
+      _toast('Telefon raqamni to\'g\'ri kiriting'.tr);
       return;
     }
     setState(() => _loading = true);
@@ -235,7 +241,7 @@ class _OtpAuthPanelState extends State<OtpAuthPanel> {
     if (!mounted) return;
     setState(() => _loading = false);
     if (result == null) {
-      _toast(auth.error ?? 'SMS yuborib bo\'lmadi');
+      _toast(auth.error ?? 'SMS yuborib bo\'lmadi'.tr);
       return;
     }
     _phone = result['phone'] as String?;
@@ -265,17 +271,14 @@ class _OtpAuthPanelState extends State<OtpAuthPanel> {
     if (!mounted) return;
     setState(() => _loading = false);
     if (result == null) {
-      _toast(auth.error ?? 'Kod noto\'g\'ri');
+      _toast(auth.error ?? 'Kod noto\'g\'ri'.tr);
       _otpFieldKey.currentState?.clear();
       return;
     }
     if (result['user_exists'] == true) {
       widget.onLoginSuccess(auth.user!);
     } else {
-      widget.onNeedRegister(
-        _phone!,
-        result['verification_token'] as String,
-      );
+      widget.onNeedRegister(_phone!, result['verification_token'] as String);
     }
   }
 
@@ -306,8 +309,8 @@ class _OtpAuthPanelState extends State<OtpAuthPanel> {
                       height: 20,
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
-                  : const Icon(LucideIcons.messageSquare, size: 20),
-              label: const Text('SMS kod yuborish'),
+                  : Icon(LucideIcons.messageSquare, size: 20),
+              label: Text('SMS kod yuborish'.tr),
             ),
           ),
         ],
@@ -317,17 +320,20 @@ class _OtpAuthPanelState extends State<OtpAuthPanel> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Kodni kiriting', style: _titleStyle(context)),
+        Text('Kodni kiriting'.tr, style: _titleStyle(context)),
         const SizedBox(height: 8),
         Text(
-          '$_phone raqamiga yuborilgan 6 xonali kodni kiriting',
+          '$_phone ' + 'raqamiga yuborilgan 6 xonali kodni kiriting'.tr,
           style: _subStyle(context),
         ),
         if (_devCodeHint != null) ...[
           const SizedBox(height: 8),
           Text(
             'Dev kod: $_devCodeHint',
-            style: const TextStyle(color: Colors.orange, fontWeight: FontWeight.w600),
+            style: const TextStyle(
+              color: Colors.orange,
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ],
         const SizedBox(height: 24),
@@ -341,13 +347,15 @@ class _OtpAuthPanelState extends State<OtpAuthPanel> {
           children: [
             TextButton(
               onPressed: _loading ? null : () => setState(() => _step = 0),
-              child: const Text('Raqamni o\'zgartirish'),
+              child: Text('Raqamni o\'zgartirish'.tr),
             ),
             const Spacer(),
             TextButton(
               onPressed: (_loading || _resendSeconds > 0) ? null : _sendOtp,
               child: Text(
-                _resendSeconds > 0 ? 'Qayta ($_resendSeconds)' : 'Qayta yuborish',
+                _resendSeconds > 0
+                    ? 'Qayta'.tr + ' ($_resendSeconds)'
+                    : 'Qayta yuborish'.tr,
               ),
             ),
           ],
@@ -357,13 +365,11 @@ class _OtpAuthPanelState extends State<OtpAuthPanel> {
   }
 
   TextStyle _titleStyle(BuildContext context) => TextStyle(
-        fontSize: 20,
-        fontWeight: FontWeight.w800,
-        color: GlassTokens.primaryText(context),
-      );
+    fontSize: 20,
+    fontWeight: FontWeight.w800,
+    color: GlassTokens.primaryText(context),
+  );
 
-  TextStyle _subStyle(BuildContext context) => TextStyle(
-        color: GlassTokens.secondaryText(context),
-        height: 1.4,
-      );
+  TextStyle _subStyle(BuildContext context) =>
+      TextStyle(color: GlassTokens.secondaryText(context), height: 1.4);
 }

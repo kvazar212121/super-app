@@ -7,6 +7,8 @@ class BarberDashboardScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return UnifiedProviderDashboardScreen(config: ProviderCategoryConfig.barber);
+    return UnifiedProviderDashboardScreen(
+      config: ProviderCategoryConfig.barber,
+    );
   }
 }

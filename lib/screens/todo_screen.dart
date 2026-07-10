@@ -4,6 +4,7 @@ import '../models/daily_models.dart';
 import '../services/api_service.dart';
 import '../widgets/glass/glass_scaffold.dart';
 import '../theme/glass_tokens.dart';
+import '../l10n/locale_controller.dart';
 
 import 'plan_history_screen.dart';
 
@@ -19,7 +20,7 @@ class _TodoScreenState extends State<TodoScreen> {
   bool _isLoading = true;
   List<PlanItem> _plans = [];
   DateTime _selectedDate = DateTime.now();
-  
+
   late final ScrollController _calendarScrollController;
   late final List<DateTime> _calendarDays;
 
@@ -30,7 +31,11 @@ class _TodoScreenState extends State<TodoScreen> {
     // Generate 45 days: starting from today
     final today = DateTime.now();
     _calendarDays = List.generate(45, (index) {
-      return DateTime(today.year, today.month, today.day).add(Duration(days: index));
+      return DateTime(
+        today.year,
+        today.month,
+        today.day,
+      ).add(Duration(days: index));
     });
 
     _loadPlans();
@@ -58,17 +63,51 @@ class _TodoScreenState extends State<TodoScreen> {
   }
 
   String _getMonthName(int month) {
-    const months = ['Yanvar', 'Fevral', 'Mart', 'Aprel', 'May', 'Iyun', 'Iyul', 'Avgust', 'Sentabr', 'Oktabr', 'Noyabr', 'Dekabr'];
+    const months = [
+      'Yanvar',
+      'Fevral',
+      'Mart',
+      'Aprel',
+      'May',
+      'Iyun',
+      'Iyul',
+      'Avgust',
+      'Sentabr',
+      'Oktabr',
+      'Noyabr',
+      'Dekabr',
+    ];
     return months[month - 1];
   }
 
   String _getMonthNameShort(int month) {
-    const months = ['Yan', 'Fev', 'Mar', 'Apr', 'May', 'Iyun', 'Iyul', 'Avg', 'Sen', 'Okt', 'Noy', 'Dek'];
+    const months = [
+      'Yan',
+      'Fev',
+      'Mar',
+      'Apr',
+      'May',
+      'Iyun',
+      'Iyul',
+      'Avg',
+      'Sen',
+      'Okt',
+      'Noy',
+      'Dek',
+    ];
     return months[month - 1];
   }
 
   String _getWeekdayName(int weekday) {
-    const days = ['Dushanba', 'Seshanba', 'Chorshanba', 'Payshanba', 'Juma', 'Shanba', 'Yakshanba'];
+    const days = [
+      'Dushanba',
+      'Seshanba',
+      'Chorshanba',
+      'Payshanba',
+      'Juma',
+      'Shanba',
+      'Yakshanba',
+    ];
     return days[weekday - 1];
   }
 
@@ -119,7 +158,7 @@ class _TodoScreenState extends State<TodoScreen> {
         _plans[index] = item;
       });
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Xatolik yuz berdi. Iltimos qayta urining.')),
+        SnackBar(content: Text('Xatolik yuz berdi. Iltimos qayta urining.'.tr)),
       );
     }
   }
@@ -134,7 +173,7 @@ class _TodoScreenState extends State<TodoScreen> {
     } catch (e) {
       setState(() => _plans = prev);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("O'chirishda xatolik yuz berdi")),
+        SnackBar(content: Text("O'chirishda xatolik yuz berdi".tr)),
       );
     }
   }
@@ -156,9 +195,9 @@ class _TodoScreenState extends State<TodoScreen> {
                 borderRadius: BorderRadius.circular(GlassTokens.radiusMd),
                 side: BorderSide(color: Colors.white),
               ),
-              title: const Text(
-                "Yangi reja yaratish",
-                style: TextStyle(
+              title: Text(
+                "Yangi reja yaratish".tr,
+                style: const TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
                   fontSize: 20,
@@ -172,7 +211,7 @@ class _TodoScreenState extends State<TodoScreen> {
                       controller: titleController,
                       style: const TextStyle(color: Colors.white),
                       decoration: InputDecoration(
-                        labelText: "Reja nomi",
+                        labelText: "Reja nomi".tr,
                         labelStyle: TextStyle(color: Colors.white),
                         enabledBorder: UnderlineInputBorder(
                           borderSide: BorderSide(color: Colors.white),
@@ -187,7 +226,7 @@ class _TodoScreenState extends State<TodoScreen> {
                       controller: descController,
                       style: const TextStyle(color: Colors.white),
                       decoration: InputDecoration(
-                        labelText: "Tavsif (ixtiyoriy)",
+                        labelText: "Tavsif (ixtiyoriy)".tr,
                         labelStyle: TextStyle(color: Colors.white),
                         enabledBorder: UnderlineInputBorder(
                           borderSide: BorderSide(color: Colors.white),
@@ -206,7 +245,9 @@ class _TodoScreenState extends State<TodoScreen> {
                           context: context,
                           initialDate: chosenDate,
                           firstDate: DateTime(now.year, now.month, now.day),
-                          lastDate: DateTime.now().add(const Duration(days: 365 * 2)),
+                          lastDate: DateTime.now().add(
+                            const Duration(days: 365 * 2),
+                          ),
                         );
                         if (picked != null) {
                           setDialogState(() => chosenDate = picked);
@@ -216,24 +257,39 @@ class _TodoScreenState extends State<TodoScreen> {
                         padding: const EdgeInsets.symmetric(vertical: 8.0),
                         child: Row(
                           children: [
-                            const Icon(LucideIcons.calendar, color: Colors.blueAccent, size: 20),
+                            const Icon(
+                              LucideIcons.calendar,
+                              color: Colors.blueAccent,
+                              size: 20,
+                            ),
                             const SizedBox(width: 12),
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    "Sana",
-                                    style: TextStyle(color: Colors.white, fontSize: 12),
+                                    "Sana".tr,
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 12,
+                                    ),
                                   ),
                                   Text(
-                                    "${chosenDate.day}-${_getMonthName(chosenDate.month)} ${chosenDate.year}-yil",
-                                    style: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w500),
+                                    "${chosenDate.day}-${_getMonthName(chosenDate.month).tr} ${chosenDate.year}-${'yil'.tr}",
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w500,
+                                    ),
                                   ),
                                 ],
                               ),
                             ),
-                            const Icon(LucideIcons.chevronRight, color: Colors.white54, size: 16),
+                            const Icon(
+                              LucideIcons.chevronRight,
+                              color: Colors.white54,
+                              size: 16,
+                            ),
                           ],
                         ),
                       ),
@@ -254,24 +310,39 @@ class _TodoScreenState extends State<TodoScreen> {
                         padding: const EdgeInsets.symmetric(vertical: 8.0),
                         child: Row(
                           children: [
-                            const Icon(LucideIcons.clock, color: Colors.blueAccent, size: 20),
+                            const Icon(
+                              LucideIcons.clock,
+                              color: Colors.blueAccent,
+                              size: 20,
+                            ),
                             const SizedBox(width: 12),
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    "Vaqt",
-                                    style: TextStyle(color: Colors.white, fontSize: 12),
+                                    "Vaqt".tr,
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 12,
+                                    ),
                                   ),
                                   Text(
                                     "${chosenTime.hour.toString().padLeft(2, '0')}:${chosenTime.minute.toString().padLeft(2, '0')}",
-                                    style: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w500),
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w500,
+                                    ),
                                   ),
                                 ],
                               ),
                             ),
-                            const Icon(LucideIcons.chevronRight, color: Colors.white54, size: 16),
+                            const Icon(
+                              LucideIcons.chevronRight,
+                              color: Colors.white54,
+                              size: 16,
+                            ),
                           ],
                         ),
                       ),
@@ -282,7 +353,10 @@ class _TodoScreenState extends State<TodoScreen> {
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(context),
-                  child: const Text("Bekor qilish", style: TextStyle(color: Colors.grey)),
+                  child: Text(
+                    "Bekor qilish".tr,
+                    style: const TextStyle(color: Colors.grey),
+                  ),
                 ),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
@@ -305,8 +379,10 @@ class _TodoScreenState extends State<TodoScreen> {
 
                     if (due.isBefore(DateTime.now())) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text("O'tib ketgan vaqtga reja qo'shib bo'lmaydi!"),
+                        SnackBar(
+                          content: Text(
+                            "O'tib ketgan vaqtga reja qo'shib bo'lmaydi!".tr,
+                          ),
                           backgroundColor: Colors.redAccent,
                         ),
                       );
@@ -314,15 +390,17 @@ class _TodoScreenState extends State<TodoScreen> {
                     }
 
                     Navigator.pop(context);
-                    
+
                     try {
                       final res = await _api.createPlan(
-                        title, 
-                        due, 
-                        descController.text.trim().isEmpty ? null : descController.text.trim()
+                        title,
+                        due,
+                        descController.text.trim().isEmpty
+                            ? null
+                            : descController.text.trim(),
                       );
                       final newPlan = PlanItem.fromJson(res);
-                      
+
                       final selectedDateStr = formatDateForApi(_selectedDate);
                       final newPlanDateStr = formatDateForApi(newPlan.dueDate);
                       if (selectedDateStr == newPlanDateStr) {
@@ -333,9 +411,11 @@ class _TodoScreenState extends State<TodoScreen> {
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: Text("Reja ${newPlan.dueDate.day}-${_getMonthName(newPlan.dueDate.month)} kuniga qo'shildi!"),
+                            content: Text(
+                              "${'Reja'.tr} ${newPlan.dueDate.day}-${_getMonthName(newPlan.dueDate.month).tr} ${"kuniga qo'shildi!".tr}",
+                            ),
                             action: SnackBarAction(
-                              label: "O'tish",
+                              label: "O'tish".tr,
                               onPressed: () {
                                 setState(() {
                                   _selectedDate = newPlan.dueDate;
@@ -348,11 +428,16 @@ class _TodoScreenState extends State<TodoScreen> {
                       }
                     } catch (e) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text("Reja yaratishda xatolik yuz berdi")),
+                        SnackBar(
+                          content: Text("Reja yaratishda xatolik yuz berdi".tr),
+                        ),
                       );
                     }
                   },
-                  child: const Text("Saqlash", style: TextStyle(color: Colors.white)),
+                  child: Text(
+                    "Saqlash".tr,
+                    style: const TextStyle(color: Colors.white),
+                  ),
                 ),
               ],
             );
@@ -366,14 +451,14 @@ class _TodoScreenState extends State<TodoScreen> {
   Widget build(BuildContext context) {
     final today = DateTime.now();
     final isSelectedToday = _isSameDay(_selectedDate, today);
-    
+
     return GlassScaffold(
       showBackButton: true,
-      title: 'Rejalarim',
+      title: 'Rejalarim'.tr,
       actions: [
         IconButton(
-          icon: const Icon(LucideIcons.history),
-          tooltip: 'Tarix',
+          icon: Icon(LucideIcons.history),
+          tooltip: 'Tarix'.tr,
           onPressed: () {
             Navigator.push(
               context,
@@ -387,7 +472,7 @@ class _TodoScreenState extends State<TodoScreen> {
         children: [
           // Gorizontal Kalendar Lentasi
           _buildCalendarStrip(),
-          
+
           // Tanlangan kun sarlavhasi
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
@@ -398,9 +483,9 @@ class _TodoScreenState extends State<TodoScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      isSelectedToday 
-                          ? "Bugun" 
-                          : "${_selectedDate.day}-${_getMonthName(_selectedDate.month)}",
+                      isSelectedToday
+                          ? "Bugun".tr
+                          : "${_selectedDate.day}-${_getMonthName(_selectedDate.month).tr}",
                       style: TextStyle(
                         color: GlassTokens.primaryText(context),
                         fontSize: 20,
@@ -409,7 +494,7 @@ class _TodoScreenState extends State<TodoScreen> {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      _getWeekdayName(_selectedDate.weekday),
+                      _getWeekdayName(_selectedDate.weekday).tr,
                       style: TextStyle(
                         color: GlassTokens.secondaryText(context),
                         fontSize: 14,
@@ -425,52 +510,61 @@ class _TodoScreenState extends State<TodoScreen> {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 10,
+                    ),
                   ),
                   onPressed: _showAddPlanDialog,
                   icon: const Icon(LucideIcons.plus, size: 18),
-                  label: const Text(
-                    "Reja qo'shish",
-                    style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
+                  label: Text(
+                    "Reja qo'shish".tr,
+                    style: const TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ],
             ),
           ),
-          
+
           // Rejalar ro'yxati
           Expanded(
             child: _isLoading
                 ? const Center(child: CircularProgressIndicator())
                 : _plans.isEmpty
-                    ? Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              LucideIcons.calendarX2, 
-                              size: 48, 
-                              color: GlassTokens.secondaryText(context)
-                            ),
-                            const SizedBox(height: 12),
-                            Text(
-                              "Bu kunga rejalar yo'q",
-                              style: TextStyle(
-                                color: GlassTokens.secondaryText(context),
-                                fontSize: 16,
-                              ),
-                            ),
-                          ],
+                ? Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          LucideIcons.calendarX2,
+                          size: 48,
+                          color: GlassTokens.secondaryText(context),
                         ),
-                      )
-                    : ListView.builder(
-                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                        itemCount: _plans.length,
-                        itemBuilder: (context, index) {
-                          final item = _plans[index];
-                          return _buildPlanCard(item);
-                        },
-                      ),
+                        const SizedBox(height: 12),
+                        Text(
+                          "Bu kunga rejalar yo'q".tr,
+                          style: TextStyle(
+                            color: GlassTokens.secondaryText(context),
+                            fontSize: 16,
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
+                : ListView.builder(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 10,
+                    ),
+                    itemCount: _plans.length,
+                    itemBuilder: (context, index) {
+                      final item = _plans[index];
+                      return _buildPlanCard(item);
+                    },
+                  ),
           ),
         ],
       ),
@@ -489,7 +583,7 @@ class _TodoScreenState extends State<TodoScreen> {
           final date = _calendarDays[index];
           final isSelected = _isSameDay(date, _selectedDate);
           final isToday = _isSameDay(date, DateTime.now());
-          
+
           return GestureDetector(
             onTap: () {
               setState(() {
@@ -501,12 +595,12 @@ class _TodoScreenState extends State<TodoScreen> {
               width: 64,
               margin: const EdgeInsets.symmetric(horizontal: 6),
               decoration: BoxDecoration(
-                color: isSelected 
+                color: isSelected
                     ? Colors.blueAccent
                     : GlassTokens.glassFill(context),
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(
-                  color: isSelected 
+                  color: isSelected
                       ? Colors.blueAccent
                       : GlassTokens.glassBorder(context),
                   width: isSelected ? 1.5 : 1.0,
@@ -516,21 +610,23 @@ class _TodoScreenState extends State<TodoScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    _getWeekdayNameShort(date.weekday),
+                    _getWeekdayNameShort(date.weekday).tr,
                     style: TextStyle(
-                      color: isSelected 
-                          ? Colors.white 
+                      color: isSelected
+                          ? Colors.white
                           : GlassTokens.secondaryText(context),
                       fontSize: 12,
-                      fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                      fontWeight: isSelected
+                          ? FontWeight.bold
+                          : FontWeight.normal,
                     ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     date.day.toString(),
                     style: TextStyle(
-                      color: isSelected 
-                          ? Colors.white 
+                      color: isSelected
+                          ? Colors.white
                           : GlassTokens.primaryText(context),
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -538,9 +634,9 @@ class _TodoScreenState extends State<TodoScreen> {
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    _getMonthNameShort(date.month),
+                    _getMonthNameShort(date.month).tr,
                     style: TextStyle(
-                      color: isSelected 
+                      color: isSelected
                           ? Colors.white
                           : GlassTokens.secondaryText(context),
                       fontSize: 10,
@@ -556,9 +652,10 @@ class _TodoScreenState extends State<TodoScreen> {
   }
 
   Widget _buildPlanCard(PlanItem item) {
-    final timeStr = "${item.dueDate.hour.toString().padLeft(2, '0')}:${item.dueDate.minute.toString().padLeft(2, '0')}";
+    final timeStr =
+        "${item.dueDate.hour.toString().padLeft(2, '0')}:${item.dueDate.minute.toString().padLeft(2, '0')}";
     final hasDesc = item.description != null && item.description!.isNotEmpty;
-    
+
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
@@ -570,11 +667,16 @@ class _TodoScreenState extends State<TodoScreen> {
           ? ClipRRect(
               borderRadius: BorderRadius.circular(16),
               child: Theme(
-                data: Theme.of(context).copyWith(
-                  dividerColor: Colors.transparent,
-                ),
+                data: Theme.of(
+                  context,
+                ).copyWith(dividerColor: Colors.transparent),
                 child: ExpansionTile(
-                  tilePadding: const EdgeInsets.only(left: 8, right: 12, top: 4, bottom: 4),
+                  tilePadding: const EdgeInsets.only(
+                    left: 8,
+                    right: 12,
+                    top: 4,
+                    bottom: 4,
+                  ),
                   leading: Checkbox(
                     value: item.isCompleted,
                     onChanged: (val) {
@@ -591,14 +693,20 @@ class _TodoScreenState extends State<TodoScreen> {
                       color: GlassTokens.primaryText(context),
                       fontWeight: FontWeight.w600,
                       fontSize: 15,
-                      decoration: item.isCompleted ? TextDecoration.lineThrough : null,
+                      decoration: item.isCompleted
+                          ? TextDecoration.lineThrough
+                          : null,
                     ),
                   ),
                   subtitle: Padding(
                     padding: const EdgeInsets.only(top: 4.0),
                     child: Row(
                       children: [
-                        const Icon(LucideIcons.clock, size: 13, color: Colors.blueAccent),
+                        const Icon(
+                          LucideIcons.clock,
+                          size: 13,
+                          color: Colors.blueAccent,
+                        ),
                         const SizedBox(width: 4),
                         Text(
                           timeStr,
@@ -615,19 +723,27 @@ class _TodoScreenState extends State<TodoScreen> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Icon(
-                        LucideIcons.chevronDown, 
-                        size: 18, 
-                        color: GlassTokens.secondaryText(context)
+                        LucideIcons.chevronDown,
+                        size: 18,
+                        color: GlassTokens.secondaryText(context),
                       ),
                       IconButton(
-                        icon: const Icon(LucideIcons.trash2, color: Colors.redAccent, size: 18),
+                        icon: Icon(
+                          LucideIcons.trash2,
+                          color: Colors.redAccent,
+                          size: 18,
+                        ),
                         onPressed: () => _deletePlan(item.id),
                       ),
                     ],
                   ),
                   children: [
                     Padding(
-                      padding: const EdgeInsets.only(left: 56.0, right: 16.0, bottom: 16.0),
+                      padding: const EdgeInsets.only(
+                        left: 56.0,
+                        right: 16.0,
+                        bottom: 16.0,
+                      ),
                       child: Align(
                         alignment: Alignment.topLeft,
                         child: Text(
@@ -645,7 +761,12 @@ class _TodoScreenState extends State<TodoScreen> {
               ),
             )
           : ListTile(
-              contentPadding: const EdgeInsets.only(left: 8, right: 12, top: 4, bottom: 4),
+              contentPadding: const EdgeInsets.only(
+                left: 8,
+                right: 12,
+                top: 4,
+                bottom: 4,
+              ),
               leading: Checkbox(
                 value: item.isCompleted,
                 onChanged: (val) {
@@ -662,14 +783,20 @@ class _TodoScreenState extends State<TodoScreen> {
                   color: GlassTokens.primaryText(context),
                   fontWeight: FontWeight.w600,
                   fontSize: 15,
-                  decoration: item.isCompleted ? TextDecoration.lineThrough : null,
+                  decoration: item.isCompleted
+                      ? TextDecoration.lineThrough
+                      : null,
                 ),
               ),
               subtitle: Padding(
                 padding: const EdgeInsets.only(top: 4.0),
                 child: Row(
                   children: [
-                    const Icon(LucideIcons.clock, size: 13, color: Colors.blueAccent),
+                    const Icon(
+                      LucideIcons.clock,
+                      size: 13,
+                      color: Colors.blueAccent,
+                    ),
                     const SizedBox(width: 4),
                     Text(
                       timeStr,
@@ -683,7 +810,11 @@ class _TodoScreenState extends State<TodoScreen> {
                 ),
               ),
               trailing: IconButton(
-                icon: const Icon(LucideIcons.trash2, color: Colors.redAccent, size: 18),
+                icon: Icon(
+                  LucideIcons.trash2,
+                  color: Colors.redAccent,
+                  size: 18,
+                ),
                 onPressed: () => _deletePlan(item.id),
               ),
             ),

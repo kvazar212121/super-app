@@ -5,6 +5,7 @@ import '../screens/calls/call_screen.dart';
 import '../providers/auth_provider.dart';
 import '../providers/app_provider.dart';
 import '../screens/auth/auth_gate_screen.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 class CallHelper {
   static Future<void> startCallWithPurposeCheck(
@@ -28,8 +29,9 @@ class CallHelper {
           await context.read<AppProvider>().fetchInitialData();
         }
       }
-      
-    if (!context.mounted || !context.read<AuthProvider>().isAuthenticated) return;
+
+      if (!context.mounted || !context.read<AuthProvider>().isAuthenticated)
+        return;
     }
 
     final currentUserId = int.tryParse(auth.user?['id']?.toString() ?? '');
@@ -46,7 +48,9 @@ class CallHelper {
     if (targetId == 0) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text("Kechirasiz, ushbu foydalanuvchining hisobi hali to'liq faollashtirilmagan."),
+          content: Text(
+            "Kechirasiz, ushbu foydalanuvchining hisobi hali to'liq faollashtirilmagan.",
+          ),
           backgroundColor: Colors.orange,
         ),
       );
@@ -91,14 +95,18 @@ class CallHelper {
 
     if (!context.mounted) return;
 
-    bool started = await CallService().startCall(targetId, targetName, categoryKey: categoryKey);
+    bool started = await CallService().startCall(
+      targetId,
+      targetName,
+      categoryKey: categoryKey,
+    );
     if (!started) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Allaqachon qo'ng'iroqdamiz")),
       );
       return;
     }
-    
+
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) => CallScreen(isIncoming: false, isBookingCall: isBooking),
@@ -126,8 +134,9 @@ class CallHelper {
           await context.read<AppProvider>().fetchInitialData();
         }
       }
-      
-      if (!context.mounted || !context.read<AuthProvider>().isAuthenticated) return;
+
+      if (!context.mounted || !context.read<AuthProvider>().isAuthenticated)
+        return;
     }
 
     final currentUserId = int.tryParse(auth.user?['id']?.toString() ?? '');
@@ -144,7 +153,9 @@ class CallHelper {
     if (targetId == 0) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text("Kechirasiz, ushbu foydalanuvchining hisobi hali to'liq faollashtirilmagan."),
+          content: Text(
+            "Kechirasiz, ushbu foydalanuvchining hisobi hali to'liq faollashtirilmagan.",
+          ),
           backgroundColor: Colors.orange,
         ),
       );
@@ -158,11 +169,9 @@ class CallHelper {
       );
       return;
     }
-    
+
     Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => const CallScreen(isIncoming: false),
-      ),
+      MaterialPageRoute(builder: (_) => const CallScreen(isIncoming: false)),
     );
   }
 }

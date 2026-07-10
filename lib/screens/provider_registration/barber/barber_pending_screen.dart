@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../main_screen.dart';
 import '../../provider_side/provider_theme.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 /// Usta xona egasi tasdiqlaguncha.
 class BarberPendingScreen extends StatelessWidget {
@@ -25,7 +26,11 @@ class BarberPendingScreen extends StatelessWidget {
                     color: const Color(0xFFF59E0B),
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(LucideIcons.clock, size: 48, color: Color(0xFFF59E0B)),
+                  child: const Icon(
+                    LucideIcons.clock,
+                    size: 48,
+                    color: Color(0xFFF59E0B),
+                  ),
                 ),
                 const SizedBox(height: 28),
                 const Text(
@@ -55,7 +60,7 @@ class BarberPendingScreen extends StatelessWidget {
                         (_) => false,
                       );
                     },
-                    child: const Text('Bosh sahifaga'),
+                    child: Text('Bosh sahifaga'.tr),
                   ),
                 ),
               ],

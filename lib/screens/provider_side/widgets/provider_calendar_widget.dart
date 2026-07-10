@@ -7,6 +7,7 @@ import '../../../services/provider_availability_service.dart';
 import '../../../services/provider_portal_service.dart';
 import '../../../services/call_service.dart';
 import '../../calls/call_screen.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 class ProviderCalendarWidget extends StatefulWidget {
   final String categoryKey;
@@ -46,8 +47,10 @@ class _ProviderCalendarWidgetState extends State<ProviderCalendarWidget> {
         _portal.getCalendar(widget.categoryKey, _selectedDate),
       ]);
       _provider = results[0] as Map<String, dynamic>;
-      final meta = _provider?['metadata_json'] as Map<String, dynamic>? ?? 
-                   _provider?['metadata'] as Map<String, dynamic>? ?? {};
+      final meta =
+          _provider?['metadata_json'] as Map<String, dynamic>? ??
+          _provider?['metadata'] as Map<String, dynamic>? ??
+          {};
       final slots = (meta['time_slots'] as List<dynamic>?)
           ?.map((e) => e.toString())
           .toList();
@@ -59,7 +62,8 @@ class _ProviderCalendarWidgetState extends State<ProviderCalendarWidget> {
       _busySlots = (data['busy_slots'] as List<dynamic>? ?? [])
           .map((e) => _normalizeSlot(e.toString()))
           .toList();
-      _orders = (data['orders'] as List<dynamic>? ?? []).cast<Map<String, dynamic>>();
+      _orders = (data['orders'] as List<dynamic>? ?? [])
+          .cast<Map<String, dynamic>>();
     } catch (_) {
       _busySlots = [];
       _orders = [];
@@ -68,14 +72,18 @@ class _ProviderCalendarWidgetState extends State<ProviderCalendarWidget> {
   }
 
   bool get _isSuspended {
-    final meta = _provider?['metadata'] as Map<String, dynamic>? ??
-        _provider?['metadata_json'] as Map<String, dynamic>? ?? {};
+    final meta =
+        _provider?['metadata'] as Map<String, dynamic>? ??
+        _provider?['metadata_json'] as Map<String, dynamic>? ??
+        {};
     return meta['is_suspended'] == true;
   }
 
   List<String> get _blockedDates {
-    final meta = _provider?['metadata'] as Map<String, dynamic>? ??
-        _provider?['metadata_json'] as Map<String, dynamic>? ?? {};
+    final meta =
+        _provider?['metadata'] as Map<String, dynamic>? ??
+        _provider?['metadata_json'] as Map<String, dynamic>? ??
+        {};
     final list = meta['blocked_dates'] as List<dynamic>?;
     return list?.map((e) => e.toString()).toList() ?? [];
   }
@@ -91,10 +99,11 @@ class _ProviderCalendarWidgetState extends State<ProviderCalendarWidget> {
     try {
       final meta = Map<String, dynamic>.from(
         _provider?['metadata'] as Map<String, dynamic>? ??
-            _provider?['metadata_json'] as Map<String, dynamic>? ?? {}
+            _provider?['metadata_json'] as Map<String, dynamic>? ??
+            {},
       );
       meta['is_suspended'] = suspended;
-      
+
       await _portal.updateMetadata(widget.categoryKey, meta);
       await _load();
     } catch (_) {
@@ -113,11 +122,12 @@ class _ProviderCalendarWidgetState extends State<ProviderCalendarWidget> {
     try {
       final meta = Map<String, dynamic>.from(
         _provider?['metadata'] as Map<String, dynamic>? ??
-            _provider?['metadata_json'] as Map<String, dynamic>? ?? {}
+            _provider?['metadata_json'] as Map<String, dynamic>? ??
+            {},
       );
       final blocked = List<String>.from(_blockedDates);
       final dateStr = DateFormat('yyyy-MM-dd').format(_selectedDate);
-      
+
       if (block) {
         if (!blocked.contains(dateStr)) {
           blocked.add(dateStr);
@@ -126,7 +136,7 @@ class _ProviderCalendarWidgetState extends State<ProviderCalendarWidget> {
         blocked.remove(dateStr);
       }
       meta['blocked_dates'] = blocked;
-      
+
       await _portal.updateMetadata(widget.categoryKey, meta);
       await _load();
     } catch (_) {
@@ -144,18 +154,30 @@ class _ProviderCalendarWidgetState extends State<ProviderCalendarWidget> {
     return raw;
   }
 
-  bool _isBusy(String slot) => _isCurrentDateBlocked || _isSuspended || _busySlots.contains(_normalizeSlot(slot));
+  bool _isBusy(String slot) =>
+      _isCurrentDateBlocked ||
+      _isSuspended ||
+      _busySlots.contains(_normalizeSlot(slot));
 
-  Future<void> _updateStatus(int orderId, String status, {bool? notifiedClient}) async {
+  Future<void> _updateStatus(
+    int orderId,
+    String status, {
+    bool? notifiedClient,
+  }) async {
     setState(() => _actingId = orderId);
     try {
-      await _portal.updateOrderStatus(widget.categoryKey, orderId, status, notifiedClient: notifiedClient);
+      await _portal.updateOrderStatus(
+        widget.categoryKey,
+        orderId,
+        status,
+        notifiedClient: notifiedClient,
+      );
       await _load();
     } catch (_) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Status yangilanmadi')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Status yangilanmadi'.tr)));
       }
     } finally {
       if (mounted) setState(() => _actingId = null);
@@ -167,8 +189,11 @@ class _ProviderCalendarWidgetState extends State<ProviderCalendarWidget> {
       context: context,
       builder: (ctx) {
         return AlertDialog(
-          title: const Text('Buyurtmani bekor qilish'),
-          content: const Text('Ushbu buyurtmani qanday bekor qilmoqchisiz?\n\nMijozga vaziyatni tushuntirsangiz reytingingiz tushmaydi.'),
+          title: Text('Buyurtmani bekor qilish'.tr),
+          content: Text(
+            'Ushbu buyurtmani qanday bekor qilmoqchisiz?\n\nMijozga vaziyatni tushuntirsangiz reytingingiz tushmaydi.'
+                .tr,
+          ),
           actionsAlignment: MainAxisAlignment.center,
           actions: [
             Column(
@@ -177,7 +202,7 @@ class _ProviderCalendarWidgetState extends State<ProviderCalendarWidget> {
                 OutlinedButton.icon(
                   onPressed: () => Navigator.of(ctx).pop(1),
                   icon: const Icon(LucideIcons.phone, color: Colors.green),
-                  label: const Text('Tel qilib tushuntirish va bekor qilish'),
+                  label: Text('Tel qilib tushuntirish va bekor qilish'.tr),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: Colors.green,
                     side: const BorderSide(color: Colors.green),
@@ -191,12 +216,15 @@ class _ProviderCalendarWidgetState extends State<ProviderCalendarWidget> {
                     backgroundColor: Colors.red,
                     padding: const EdgeInsets.symmetric(vertical: 12),
                   ),
-                  child: const Text('Shunchaki bekor qilish'),
+                  child: Text('Shunchaki bekor qilish'.tr),
                 ),
                 const SizedBox(height: 8),
                 TextButton(
                   onPressed: () => Navigator.of(ctx).pop(0),
-                  child: const Text('Orqaga', style: TextStyle(color: Colors.black)),
+                  child: const Text(
+                    'Orqaga',
+                    style: TextStyle(color: Colors.black),
+                  ),
                 ),
               ],
             ),
@@ -206,7 +234,10 @@ class _ProviderCalendarWidgetState extends State<ProviderCalendarWidget> {
     );
 
     if (doCancel == 1) {
-      final order = _orders.firstWhere((o) => o['id'] == orderId, orElse: () => {});
+      final order = _orders.firstWhere(
+        (o) => o['id'] == orderId,
+        orElse: () => {},
+      );
       final userId = order['user_id'] as int?;
       final userName = order['user_name'] as String? ?? 'Mijoz';
       if (userId != null) {
@@ -266,7 +297,9 @@ class _ProviderCalendarWidgetState extends State<ProviderCalendarWidget> {
                           : 'Faoliyatingiz mijozlarga ochiq',
                       style: TextStyle(
                         fontSize: 11,
-                        color: isSuspended ? Colors.red.shade700 : Colors.grey.shade600,
+                        color: isSuspended
+                            ? Colors.red.shade700
+                            : Colors.grey.shade600,
                       ),
                     ),
                   ],
@@ -291,11 +324,15 @@ class _ProviderCalendarWidgetState extends State<ProviderCalendarWidget> {
               children: [
                 Text(
                   DateFormat('MMMM, yyyy', 'uz_UZ').format(_selectedDate),
-                  style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                  style: theme.textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 Text(
                   'Buyurtmalar: ${_orders.length}',
-                  style: theme.textTheme.bodySmall?.copyWith(color: Colors.grey),
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: Colors.grey,
+                  ),
                 ),
               ],
             ),
@@ -385,7 +422,9 @@ class _ProviderCalendarWidgetState extends State<ProviderCalendarWidget> {
           child: Row(
             children: [
               Icon(
-                isBlocked ? Icons.calendar_today : Icons.calendar_today_outlined,
+                isBlocked
+                    ? Icons.calendar_today
+                    : Icons.calendar_today_outlined,
                 color: isBlocked ? Colors.grey : Colors.black,
               ),
               const SizedBox(width: 12),
@@ -421,7 +460,11 @@ class _ProviderCalendarWidgetState extends State<ProviderCalendarWidget> {
         const SizedBox(height: 24),
         const Text(
           'Ish vaqtlari',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: Colors.black),
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w900,
+            color: Colors.black,
+          ),
         ),
         const SizedBox(height: 16),
         GridView.builder(
@@ -440,31 +483,40 @@ class _ProviderCalendarWidgetState extends State<ProviderCalendarWidget> {
             final hasOrder = _orders.any((o) {
               if (o['date'] == null) return false;
               final od = DateTime.parse(o['date']);
-              return '${od.hour.toString().padLeft(2, '0')}:${od.minute.toString().padLeft(2, '0')}' == slot;
+              return '${od.hour.toString().padLeft(2, '0')}:${od.minute.toString().padLeft(2, '0')}' ==
+                  slot;
             });
-            
+
             return GestureDetector(
               onTap: () async {
                 if (_isCurrentDateBlocked || _isSuspended) return;
                 if (hasOrder) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Bu vaqtda buyurtma bor')),
+                    SnackBar(content: Text('Bu vaqtda buyurtma bor'.tr)),
                   );
                   return;
                 }
-                
+
                 setState(() => _loading = true);
                 try {
                   if (isBusy) {
                     // Try to unblock. We'll fetch blocked times, find the one that covers this slot, and remove it.
-                    final blocks = await _portal.getBlockedTimes(widget.categoryKey);
-                    final dateStr = DateFormat('yyyy-MM-dd').format(_selectedDate);
+                    final blocks = await _portal.getBlockedTimes(
+                      widget.categoryKey,
+                    );
+                    final dateStr = DateFormat(
+                      'yyyy-MM-dd',
+                    ).format(_selectedDate);
                     for (final b in blocks) {
                       final st = DateTime.parse(b['start_time']).toLocal();
-                      final slotTimeStr = '${st.hour.toString().padLeft(2, '0')}:${st.minute.toString().padLeft(2, '0')}';
+                      final slotTimeStr =
+                          '${st.hour.toString().padLeft(2, '0')}:${st.minute.toString().padLeft(2, '0')}';
                       final blockDateStr = DateFormat('yyyy-MM-dd').format(st);
                       if (blockDateStr == dateStr && slotTimeStr == slot) {
-                        await _portal.removeBlockedTime(widget.categoryKey, b['id']);
+                        await _portal.removeBlockedTime(
+                          widget.categoryKey,
+                          b['id'],
+                        );
                         break;
                       }
                     }
@@ -473,8 +525,16 @@ class _ProviderCalendarWidgetState extends State<ProviderCalendarWidget> {
                     final parts = slot.split(':');
                     final h = int.parse(parts[0]);
                     final m = int.parse(parts[1]);
-                    final startDt = DateTime(_selectedDate.year, _selectedDate.month, _selectedDate.day, h, m);
-                    final endDt = startDt.add(const Duration(hours: 1)); // assuming 1 hr slots for UI
+                    final startDt = DateTime(
+                      _selectedDate.year,
+                      _selectedDate.month,
+                      _selectedDate.day,
+                      h,
+                      m,
+                    );
+                    final endDt = startDt.add(
+                      const Duration(hours: 1),
+                    ); // assuming 1 hr slots for UI
                     await _portal.addBlockedTime(widget.categoryKey, {
                       'start_time': startDt.toUtc().toIso8601String(),
                       'end_time': endDt.toUtc().toIso8601String(),
@@ -496,10 +556,7 @@ class _ProviderCalendarWidgetState extends State<ProviderCalendarWidget> {
                 decoration: BoxDecoration(
                   color: isBusy ? Colors.black : Colors.white,
                   borderRadius: BorderRadius.circular(10),
-                  border: Border.all(
-                    color: Colors.black,
-                    width: 1.5,
-                  ),
+                  border: Border.all(color: Colors.black, width: 1.5),
                 ),
                 child: Center(
                   child: Text(
@@ -517,9 +574,19 @@ class _ProviderCalendarWidgetState extends State<ProviderCalendarWidget> {
         if (_orders.isNotEmpty) ...[
           Builder(
             builder: (context) {
-              final activeOrders = _orders.where((o) => o['status'] != 'completed' && o['status'] != 'cancelled').toList();
-              final completedOrders = _orders.where((o) => o['status'] == 'completed').toList();
-              final cancelledOrders = _orders.where((o) => o['status'] == 'cancelled').toList();
+              final activeOrders = _orders
+                  .where(
+                    (o) =>
+                        o['status'] != 'completed' &&
+                        o['status'] != 'cancelled',
+                  )
+                  .toList();
+              final completedOrders = _orders
+                  .where((o) => o['status'] == 'completed')
+                  .toList();
+              final cancelledOrders = _orders
+                  .where((o) => o['status'] == 'cancelled')
+                  .toList();
 
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -528,7 +595,11 @@ class _ProviderCalendarWidgetState extends State<ProviderCalendarWidget> {
                     const SizedBox(height: 28),
                     const Text(
                       'Kun buyurtmalari',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: Colors.black),
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w900,
+                        color: Colors.black,
+                      ),
                     ),
                     const SizedBox(height: 12),
                     ...activeOrders.map((o) => _orderCard(o, theme)),
@@ -537,7 +608,11 @@ class _ProviderCalendarWidgetState extends State<ProviderCalendarWidget> {
                     const SizedBox(height: 28),
                     const Text(
                       'Bajarilganlar',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: Colors.black),
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w900,
+                        color: Colors.black,
+                      ),
                     ),
                     const SizedBox(height: 12),
                     ...completedOrders.map((o) => _orderCard(o, theme)),
@@ -546,7 +621,11 @@ class _ProviderCalendarWidgetState extends State<ProviderCalendarWidget> {
                     const SizedBox(height: 28),
                     const Text(
                       'Bekor qilinganlar',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: Colors.black),
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w900,
+                        color: Colors.black,
+                      ),
                     ),
                     const SizedBox(height: 12),
                     ...cancelledOrders.map((o) => _orderCard(o, theme)),
@@ -581,12 +660,22 @@ class _ProviderCalendarWidgetState extends State<ProviderCalendarWidget> {
         children: [
           Row(
             children: [
-              Text(time, style: const TextStyle(fontWeight: FontWeight.w900, color: Colors.black, fontSize: 16)),
+              Text(
+                time,
+                style: const TextStyle(
+                  fontWeight: FontWeight.w900,
+                  color: Colors.black,
+                  fontSize: 16,
+                ),
+              ),
               const SizedBox(width: 12),
               Expanded(
                 child: Text(
                   o['user_name'] as String? ?? 'Mijoz',
-                  style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
                 ),
               ),
               Container(
@@ -597,7 +686,11 @@ class _ProviderCalendarWidgetState extends State<ProviderCalendarWidget> {
                 ),
                 child: Text(
                   _statusLabel(status),
-                  style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ],
@@ -616,21 +709,33 @@ class _ProviderCalendarWidgetState extends State<ProviderCalendarWidget> {
                     style: OutlinedButton.styleFrom(
                       foregroundColor: Colors.black,
                       side: const BorderSide(color: Colors.black, width: 2),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
                     ),
-                    child: const Text('Rad', style: TextStyle(fontWeight: FontWeight.bold)),
+                    child: const Text(
+                      'Rad',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
                   ),
                 ),
                 const SizedBox(width: 8),
                 Expanded(
                   child: FilledButton(
-                    onPressed: acting ? null : () => _updateStatus(id, 'confirmed'),
+                    onPressed: acting
+                        ? null
+                        : () => _updateStatus(id, 'confirmed'),
                     style: FilledButton.styleFrom(
                       backgroundColor: Colors.black,
                       foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
                     ),
-                    child: const Text('Qabul', style: TextStyle(fontWeight: FontWeight.bold)),
+                    child: const Text(
+                      'Qabul',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
                   ),
                 ),
               ],
@@ -644,21 +749,34 @@ class _ProviderCalendarWidgetState extends State<ProviderCalendarWidget> {
                 style: OutlinedButton.styleFrom(
                   foregroundColor: Colors.black,
                   side: const BorderSide(color: Colors.black, width: 2),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                 ),
-                child: const Text('Bajarildi deb belgilash', style: TextStyle(fontWeight: FontWeight.bold)),
+                child: const Text(
+                  'Bajarildi deb belgilash',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
               ),
             ),
           ] else if (status == 'awaiting_confirmation') ...[
             const SizedBox(height: 10),
             Row(
               children: [
-                const Icon(Icons.access_time_filled, color: Colors.amber, size: 20),
+                const Icon(
+                  Icons.access_time_filled,
+                  color: Colors.amber,
+                  size: 20,
+                ),
                 const SizedBox(width: 8),
                 Expanded(
                   child: const Text(
                     'Mijoz tasdiqlashi kutilmoqda...',
-                    style: TextStyle(fontWeight: FontWeight.bold, color: Colors.amber, fontSize: 13),
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.amber,
+                      fontSize: 13,
+                    ),
                   ),
                 ),
               ],

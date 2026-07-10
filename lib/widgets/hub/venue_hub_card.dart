@@ -16,6 +16,7 @@ import '../../screens/football_field_booking_screen.dart';
 import '../../theme/glass_tokens.dart';
 import '../../utils/geo_utils.dart';
 import '../glass/glass_surface.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 /// Jismoniy joylar kartasi — sartarosh, salon, futbol maydoni va h.k.
 class VenueHubCard extends StatelessWidget {
@@ -129,11 +130,15 @@ class VenueHubCard extends StatelessWidget {
     double userLat = kDefaultUserLat,
     double userLng = kDefaultUserLng,
   }) {
-    final minPrice = center.prices.values.isEmpty ? 50000 : center.prices.values.reduce((a, b) => a < b ? a : b);
+    final minPrice = center.prices.values.isEmpty
+        ? 50000
+        : center.prices.values.reduce((a, b) => a < b ? a : b);
     return VenueHubCard(
       name: center.name,
       subtitle: center.address,
-      distanceLabel: formatDistanceKm(distanceKm(userLat, userLng, center.latitude, center.longitude)),
+      distanceLabel: formatDistanceKm(
+        distanceKm(userLat, userLng, center.latitude, center.longitude),
+      ),
       priceLabel: '${(minPrice / 1000).round()}k+',
       rating: center.rating,
       reviewCount: center.reviewCount,
@@ -169,14 +174,18 @@ class VenueHubCard extends StatelessWidget {
                     height: 88,
                     width: double.infinity,
                     decoration: BoxDecoration(
-                      gradient: (coverUrl != null && coverUrl!.isNotEmpty) ? null : LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: [accent, accent],
-                      ),
+                      gradient: (coverUrl != null && coverUrl!.isNotEmpty)
+                          ? null
+                          : LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                              colors: [accent, accent],
+                            ),
                       image: (coverUrl != null && coverUrl!.isNotEmpty)
                           ? DecorationImage(
-                              image: CachedNetworkImageProvider(AppConfig.formatImageUrl(coverUrl)),
+                              image: CachedNetworkImageProvider(
+                                AppConfig.formatImageUrl(coverUrl),
+                              ),
                               fit: BoxFit.cover,
                             )
                           : null,
@@ -189,14 +198,21 @@ class VenueHubCard extends StatelessWidget {
                     top: 8,
                     right: 8,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 6,
+                        vertical: 2,
+                      ),
                       decoration: BoxDecoration(
                         color: Colors.black45,
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Text(
                         distanceLabel,
-                        style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                   ),
@@ -209,14 +225,21 @@ class VenueHubCard extends StatelessWidget {
                   children: [
                     Text(
                       name,
-                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Colors.black),
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 13,
+                        color: Colors.black,
+                      ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
                     const SizedBox(height: 2),
                     Text(
                       subtitle,
-                      style: const TextStyle(fontSize: 10, color: Colors.black54),
+                      style: const TextStyle(
+                        fontSize: 10,
+                        color: Colors.black54,
+                      ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -229,39 +252,83 @@ class VenueHubCard extends StatelessWidget {
                         Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            const Icon(Icons.star, size: 12, color: Colors.amber),
+                            const Icon(
+                              Icons.star,
+                              size: 12,
+                              color: Colors.amber,
+                            ),
                             const SizedBox(width: 2),
-                            Text('$rating', style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.black)),
-                            Text(' ($reviewCount)', style: const TextStyle(fontSize: 9, color: Colors.black)),
+                            Text(
+                              '$rating',
+                              style: const TextStyle(
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black,
+                              ),
+                            ),
+                            Text(
+                              ' ($reviewCount)',
+                              style: const TextStyle(
+                                fontSize: 9,
+                                color: Colors.black,
+                              ),
+                            ),
                           ],
                         ),
                         if (completedCount > 0)
                           Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              const Icon(Icons.check_circle, size: 10, color: Colors.black),
+                              const Icon(
+                                Icons.check_circle,
+                                size: 10,
+                                color: Colors.black,
+                              ),
                               const SizedBox(width: 2),
-                              Text('$completedCount', style: const TextStyle(fontSize: 9, color: Colors.black)),
+                              Text(
+                                '$completedCount',
+                                style: const TextStyle(
+                                  fontSize: 9,
+                                  color: Colors.black,
+                                ),
+                              ),
                             ],
                           ),
                         if (cancelledCount > 0)
                           Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              const Icon(Icons.cancel, size: 10, color: Colors.black),
+                              const Icon(
+                                Icons.cancel,
+                                size: 10,
+                                color: Colors.black,
+                              ),
                               const SizedBox(width: 2),
-                              Text('$cancelledCount', style: const TextStyle(fontSize: 9, color: Colors.black)),
+                              Text(
+                                '$cancelledCount',
+                                style: const TextStyle(
+                                  fontSize: 9,
+                                  color: Colors.black,
+                                ),
+                              ),
                             ],
                           ),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 4,
+                            vertical: 2,
+                          ),
                           decoration: BoxDecoration(
                             color: Colors.black.withValues(alpha: 0.05),
                             borderRadius: BorderRadius.circular(6),
                           ),
                           child: Text(
                             priceLabel,
-                            style: const TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: Colors.black),
+                            style: const TextStyle(
+                              fontSize: 9,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -332,14 +399,19 @@ Future<void> showVenuePreviewSheet(
                 height: 56,
                 decoration: BoxDecoration(
                   color: coverUrl != null ? null : accent,
-                  image: coverUrl != null ? DecorationImage(image: CachedNetworkImageProvider(AppConfig.formatImageUrl(coverUrl)), fit: BoxFit.cover) : null,
+                  image: coverUrl != null
+                      ? DecorationImage(
+                          image: CachedNetworkImageProvider(
+                            AppConfig.formatImageUrl(coverUrl),
+                          ),
+                          fit: BoxFit.cover,
+                        )
+                      : null,
                   borderRadius: BorderRadius.circular(16),
                 ),
-                child: coverUrl != null ? null : Icon(
-                  LucideIcons.scissors,
-                  color: Colors.white,
-                  size: 28,
-                ),
+                child: coverUrl != null
+                    ? null
+                    : Icon(LucideIcons.scissors, color: Colors.white, size: 28),
               ),
               const SizedBox(width: 14),
               Expanded(
@@ -371,7 +443,9 @@ Future<void> showVenuePreviewSheet(
                   return IconButton(
                     icon: Icon(
                       isSaved ? Icons.favorite : Icons.favorite_border,
-                      color: isSaved ? Colors.red : GlassTokens.primaryText(context),
+                      color: isSaved
+                          ? Colors.red
+                          : GlassTokens.primaryText(context),
                     ),
                     onPressed: () {
                       final savedItem = SavedPlace(
@@ -381,29 +455,43 @@ Future<void> showVenuePreviewSheet(
                         address: shop.address,
                         rating: shop.rating,
                         type: 'barber_shop',
-                        rawJson: shop.rawJson ?? {
-                          'id': shop.id,
-                          'name': shop.name,
-                          'phone': shop.phoneNumber,
-                          'rating': shop.rating,
-                          'review_count': shop.reviewCount,
-                          'lat': shop.latitude,
-                          'lng': shop.longitude,
-                          'address': shop.address,
-                          'metadata': {
-                            'barber_role': (shop.rawJson?['metadata']?['barber_role']) ?? 'shop',
-                            'services': shop.services,
-                            'prices': shop.prices,
-                            'barbers': shop.barbers.map((b) => {'name': b.name, 'rating': b.rating}).toList(),
-                            'owner_user_id': shop.ownerUserId,
-                          }
-                        },
+                        rawJson:
+                            shop.rawJson ??
+                            {
+                              'id': shop.id,
+                              'name': shop.name,
+                              'phone': shop.phoneNumber,
+                              'rating': shop.rating,
+                              'review_count': shop.reviewCount,
+                              'lat': shop.latitude,
+                              'lng': shop.longitude,
+                              'address': shop.address,
+                              'metadata': {
+                                'barber_role':
+                                    (shop
+                                        .rawJson?['metadata']?['barber_role']) ??
+                                    'shop',
+                                'services': shop.services,
+                                'prices': shop.prices,
+                                'barbers': shop.barbers
+                                    .map(
+                                      (b) => {
+                                        'name': b.name,
+                                        'rating': b.rating,
+                                      },
+                                    )
+                                    .toList(),
+                                'owner_user_id': shop.ownerUserId,
+                              },
+                            },
                       );
                       savedPlaces.toggleSave(savedItem);
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Text(
-                            isSaved ? 'Sevimli ro\'yxatidan o\'chirildi' : 'Sevimli ro\'yxatiga qo\'shildi',
+                            isSaved
+                                ? 'Sevimli ro\'yxatidan o\'chirildi'
+                                : 'Sevimli ro\'yxatiga qo\'shildi',
                           ),
                           duration: const Duration(seconds: 1),
                         ),
@@ -542,7 +630,10 @@ Future<void> showFieldPreviewSheet(
                   height: 50,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(12),
-                    image: DecorationImage(image: CachedNetworkImageProvider(coverUrl), fit: BoxFit.cover),
+                    image: DecorationImage(
+                      image: CachedNetworkImageProvider(coverUrl),
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -573,7 +664,9 @@ Future<void> showFieldPreviewSheet(
                   return IconButton(
                     icon: Icon(
                       isSaved ? Icons.favorite : Icons.favorite_border,
-                      color: isSaved ? Colors.red : GlassTokens.primaryText(context),
+                      color: isSaved
+                          ? Colors.red
+                          : GlassTokens.primaryText(context),
                     ),
                     onPressed: () {
                       final savedItem = SavedPlace(
@@ -583,31 +676,35 @@ Future<void> showFieldPreviewSheet(
                         address: field.address,
                         rating: field.rating,
                         type: 'football_field',
-                        rawJson: field.rawJson ?? {
-                          'id': field.id,
-                          'name': field.name,
-                          'phone': field.phoneNumber,
-                          'rating': field.rating,
-                          'review_count': field.reviewCount,
-                          'lat': field.latitude,
-                          'lng': field.longitude,
-                          'address': field.address,
-                          'metadata': {
-                            'size': field.size.name,
-                            'surface': field.surface.name,
-                            'base_price_per_hour': field.basePricePerHour,
-                            'has_lighting': field.hasLighting,
-                            'has_parking': field.hasParking,
-                            'has_showers': field.hasShowers,
-                            'has_cafe': field.hasCafe,
-                          }
-                        },
+                        rawJson:
+                            field.rawJson ??
+                            {
+                              'id': field.id,
+                              'name': field.name,
+                              'phone': field.phoneNumber,
+                              'rating': field.rating,
+                              'review_count': field.reviewCount,
+                              'lat': field.latitude,
+                              'lng': field.longitude,
+                              'address': field.address,
+                              'metadata': {
+                                'size': field.size.name,
+                                'surface': field.surface.name,
+                                'base_price_per_hour': field.basePricePerHour,
+                                'has_lighting': field.hasLighting,
+                                'has_parking': field.hasParking,
+                                'has_showers': field.hasShowers,
+                                'has_cafe': field.hasCafe,
+                              },
+                            },
                       );
                       savedPlaces.toggleSave(savedItem);
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Text(
-                            isSaved ? 'Sevimli ro\'yxatidan o\'chirildi' : 'Sevimli ro\'yxatiga qo\'shildi',
+                            isSaved
+                                ? 'Sevimli ro\'yxatidan o\'chirildi'
+                                : 'Sevimli ro\'yxatiga qo\'shildi',
                           ),
                           duration: const Duration(seconds: 1),
                         ),

@@ -8,6 +8,7 @@ import '../services/hub_data_service.dart';
 import '../widgets/glass/glass_scaffold.dart';
 import '../theme/glass_tokens.dart';
 import '../services/api_service.dart';
+import '../l10n/locale_controller.dart';
 import 'bozorchi_profile_screen.dart';
 
 class ShoppingListScreen extends StatefulWidget {
@@ -17,7 +18,8 @@ class ShoppingListScreen extends StatefulWidget {
   State<ShoppingListScreen> createState() => _ShoppingListScreenState();
 }
 
-class _ShoppingListScreenState extends State<ShoppingListScreen> with SingleTickerProviderStateMixin {
+class _ShoppingListScreenState extends State<ShoppingListScreen>
+    with SingleTickerProviderStateMixin {
   final ApiService _api = ApiService();
   late TabController _tabController;
   bool _isLoading = true;
@@ -55,7 +57,9 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> with SingleTick
     try {
       final data = await _api.getShoppingLists();
       setState(() {
-        _lists = data.map((e) => ShoppingListModel.fromJson(e as Map<String, dynamic>)).toList();
+        _lists = data
+            .map((e) => ShoppingListModel.fromJson(e as Map<String, dynamic>))
+            .toList();
       });
     } catch (e) {
       debugPrint("Error loading shopping lists: $e");
@@ -72,7 +76,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> with SingleTick
     try {
       final qty = double.tryParse(_qtyController.text) ?? 1.0;
       final res = await _api.calculateShoppingPrice([
-        {'name': name, 'qty': qty, 'unit': _selectedUnit}
+        {'name': name, 'qty': qty, 'unit': _selectedUnit},
       ]);
       final calcItems = res['items'] as List;
       if (calcItems.isNotEmpty) {
@@ -88,7 +92,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> with SingleTick
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('Narx hisoblashda xatolik'),
+            content: Text('Narx hisoblashda xatolik'.tr),
             backgroundColor: Colors.red.shade700,
           ),
         );
@@ -123,7 +127,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> with SingleTick
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('Ro\'yxat saqlandi! ✅'),
+            content: Text('Ro\'yxat saqlandi! ✅'.tr),
             backgroundColor: Colors.green.shade700,
           ),
         );
@@ -132,7 +136,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> with SingleTick
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('Saqlashda xatolik'),
+            content: Text('Saqlashda xatolik'.tr),
             backgroundColor: Colors.red.shade700,
           ),
         );
@@ -162,7 +166,9 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> with SingleTick
     final item = list.items[itemIndex];
 
     final controller = TextEditingController(
-      text: item.actualPrice?.toStringAsFixed(0) ?? item.estimatedPrice.toStringAsFixed(0),
+      text:
+          item.actualPrice?.toStringAsFixed(0) ??
+          item.estimatedPrice.toStringAsFixed(0),
     );
 
     final result = await showDialog<double>(
@@ -170,12 +176,15 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> with SingleTick
       builder: (ctx) => AlertDialog(
         backgroundColor: GlassTokens.glassFill(ctx),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Text('Haqiqiy narx', style: TextStyle(color: GlassTokens.primaryText(ctx))),
+        title: Text(
+          'Haqiqiy narx'.tr,
+          style: TextStyle(color: GlassTokens.primaryText(ctx)),
+        ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              '${item.name} (${item.qty} ${item.unit})',
+              '${item.name} (${item.qty} ${item.unit.tr})',
               style: TextStyle(color: GlassTokens.secondaryText(ctx)),
             ),
             const SizedBox(height: 12),
@@ -187,36 +196,53 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> with SingleTick
                   keyboardType: TextInputType.number,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   decoration: InputDecoration(
-                    suffixText: 'so\'m',
-                    suffixStyle: TextStyle(color: GlassTokens.secondaryText(ctx)),
-                    hintText: 'Narxni kiriting',
+                    suffixText: 'so\'m'.tr,
+                    suffixStyle: TextStyle(
+                      color: GlassTokens.secondaryText(ctx),
+                    ),
+                    hintText: 'Narxni kiriting'.tr,
                     hintStyle: TextStyle(color: GlassTokens.secondaryText(ctx)),
                     filled: true,
-                    fillColor: isDark ? Colors.white.withOpacity(0.08) : Colors.black.withOpacity(0.05),
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    fillColor: isDark
+                        ? Colors.white.withOpacity(0.08)
+                        : Colors.black.withOpacity(0.05),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 12,
+                    ),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                       borderSide: BorderSide(
-                        color: isDark ? Colors.white.withOpacity(0.15) : Colors.black.withOpacity(0.1),
+                        color: isDark
+                            ? Colors.white.withOpacity(0.15)
+                            : Colors.black.withOpacity(0.1),
                       ),
                     ),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                       borderSide: BorderSide(
-                        color: isDark ? Colors.white.withOpacity(0.15) : Colors.black.withOpacity(0.1),
+                        color: isDark
+                            ? Colors.white.withOpacity(0.15)
+                            : Colors.black.withOpacity(0.1),
                       ),
                     ),
                   ),
-                  style: TextStyle(color: GlassTokens.primaryText(ctx), fontSize: 18),
+                  style: TextStyle(
+                    color: GlassTokens.primaryText(ctx),
+                    fontSize: 18,
+                  ),
                 );
-              }
+              },
             ),
           ],
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: Text('Bekor', style: TextStyle(color: GlassTokens.secondaryText(ctx))),
+            child: Text(
+              'Bekor'.tr,
+              style: TextStyle(color: GlassTokens.secondaryText(ctx)),
+            ),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: Colors.orange),
@@ -224,7 +250,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> with SingleTick
               final v = double.tryParse(controller.text) ?? 0.0;
               Navigator.pop(ctx, v);
             },
-            child: const Text('Saqlash'),
+            child: Text('Saqlash'.tr),
           ),
         ],
       ),
@@ -232,7 +258,12 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> with SingleTick
 
     if (result != null) {
       try {
-        final updated = await _api.updateShoppingItem(list.id, itemIndex, actualPrice: result, isBought: true);
+        final updated = await _api.updateShoppingItem(
+          list.id,
+          itemIndex,
+          actualPrice: result,
+          isBought: true,
+        );
         setState(() {
           _lists[listIndex] = ShoppingListModel.fromJson(updated);
         });
@@ -250,7 +281,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> with SingleTick
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('O\'chirildi'),
+            content: Text('O\'chirildi'.tr),
             backgroundColor: Colors.red.shade700,
           ),
         );
@@ -269,15 +300,16 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> with SingleTick
       if (i > 0 && (s.length - i) % 3 == 0) buf.write(' ');
       buf.write(s[i]);
     }
-    return '${buf.toString()} so\'m';
+    return '${buf.toString()} ${'so\'m'.tr}';
   }
 
   @override
   Widget build(BuildContext context) {
     return GlassScaffold(
       showBackButton: true,
-      title: '🛒 Aqlli Savdo',
-      resizeToAvoidBottomInset: false, // Prevent keyboard from causing bottom overflow
+      title: '🛒 Aqlli Savdo'.tr,
+      resizeToAvoidBottomInset:
+          false, // Prevent keyboard from causing bottom overflow
       bottom: PreferredSize(
         preferredSize: const Size.fromHeight(48),
         child: TabBar(
@@ -286,19 +318,19 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> with SingleTick
           indicatorWeight: 3,
           labelColor: Colors.orange,
           unselectedLabelColor: GlassTokens.secondaryText(context),
-          labelStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14),
-          tabs: const [
-            Tab(text: '+ Yangi ro\'yxat'),
-            Tab(text: '📋 Saqlanganlar'),
+          labelStyle: const TextStyle(
+            fontWeight: FontWeight.w700,
+            fontSize: 14,
+          ),
+          tabs: [
+            Tab(text: '+ Yangi ro\'yxat'.tr),
+            Tab(text: '📋 Saqlanganlar'.tr),
           ],
         ),
       ),
       body: TabBarView(
         controller: _tabController,
-        children: [
-          _buildNewListTab(),
-          _buildSavedListsTab(),
-        ],
+        children: [_buildNewListTab(), _buildSavedListsTab()],
       ),
     );
   }
@@ -329,22 +361,38 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> with SingleTick
       child: TextField(
         controller: _listNameController,
         decoration: InputDecoration(
-          hintText: 'Ro\'yxat nomi (masalan: "Haftalik bozorlik")',
-          hintStyle: TextStyle(color: GlassTokens.secondaryText(context), fontSize: 13),
+          hintText: 'Ro\'yxat nomi (masalan: "Haftalik bozorlik")'.tr,
+          hintStyle: TextStyle(
+            color: GlassTokens.secondaryText(context),
+            fontSize: 13,
+          ),
           filled: true,
-          fillColor: isDark ? Colors.white.withOpacity(0.08) : Colors.black.withOpacity(0.04),
-          prefixIcon: Icon(LucideIcons.tag, color: Colors.orange.shade300, size: 18),
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          fillColor: isDark
+              ? Colors.white.withOpacity(0.08)
+              : Colors.black.withOpacity(0.04),
+          prefixIcon: Icon(
+            LucideIcons.tag,
+            color: Colors.orange.shade300,
+            size: 18,
+          ),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 12,
+          ),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(14),
             borderSide: BorderSide(
-              color: isDark ? Colors.white.withOpacity(0.15) : Colors.black.withOpacity(0.1),
+              color: isDark
+                  ? Colors.white.withOpacity(0.15)
+                  : Colors.black.withOpacity(0.1),
             ),
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(14),
             borderSide: BorderSide(
-              color: isDark ? Colors.white.withOpacity(0.1) : Colors.black.withOpacity(0.05),
+              color: isDark
+                  ? Colors.white.withOpacity(0.1)
+                  : Colors.black.withOpacity(0.05),
             ),
           ),
         ),
@@ -359,16 +407,20 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> with SingleTick
       margin: const EdgeInsets.all(20),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: isDark ? Colors.white.withOpacity(0.05) : Colors.white.withOpacity(0.85),
+        color: isDark
+            ? Colors.white.withOpacity(0.05)
+            : Colors.white.withOpacity(0.85),
         borderRadius: BorderRadius.circular(GlassTokens.radiusMd),
         border: Border.all(color: Colors.orange.withOpacity(0.35)),
-        boxShadow: isDark ? [] : [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.03),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          )
-        ],
+        boxShadow: isDark
+            ? []
+            : [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.03),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
+              ],
       ),
       child: Column(
         children: [
@@ -380,22 +432,37 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> with SingleTick
                   controller: _itemController,
                   textInputAction: TextInputAction.next,
                   decoration: InputDecoration(
-                    hintText: 'Mahsulot nomi...',
-                    hintStyle: TextStyle(color: GlassTokens.secondaryText(context)),
+                    hintText: 'Mahsulot nomi...'.tr,
+                    hintStyle: TextStyle(
+                      color: GlassTokens.secondaryText(context),
+                    ),
                     filled: true,
-                    fillColor: isDark ? Colors.white.withOpacity(0.08) : Colors.black.withOpacity(0.03),
-                    prefixIcon: Icon(LucideIcons.search, color: GlassTokens.secondaryText(context), size: 18),
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                    fillColor: isDark
+                        ? Colors.white.withOpacity(0.08)
+                        : Colors.black.withOpacity(0.03),
+                    prefixIcon: Icon(
+                      LucideIcons.search,
+                      color: GlassTokens.secondaryText(context),
+                      size: 18,
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 12,
+                    ),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                       borderSide: BorderSide(
-                        color: isDark ? Colors.white.withOpacity(0.1) : Colors.black.withOpacity(0.05),
+                        color: isDark
+                            ? Colors.white.withOpacity(0.1)
+                            : Colors.black.withOpacity(0.05),
                       ),
                     ),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                       borderSide: BorderSide(
-                        color: isDark ? Colors.white.withOpacity(0.05) : Colors.black.withOpacity(0.05),
+                        color: isDark
+                            ? Colors.white.withOpacity(0.05)
+                            : Colors.black.withOpacity(0.05),
                       ),
                     ),
                   ),
@@ -411,23 +478,37 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> with SingleTick
                 flex: 2,
                 child: TextField(
                   controller: _qtyController,
-                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                  ),
                   decoration: InputDecoration(
-                    hintText: 'Soni',
-                    hintStyle: TextStyle(color: GlassTokens.secondaryText(context), fontSize: 13),
+                    hintText: 'Soni'.tr,
+                    hintStyle: TextStyle(
+                      color: GlassTokens.secondaryText(context),
+                      fontSize: 13,
+                    ),
                     filled: true,
-                    fillColor: isDark ? Colors.white.withOpacity(0.08) : Colors.black.withOpacity(0.03),
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                    fillColor: isDark
+                        ? Colors.white.withOpacity(0.08)
+                        : Colors.black.withOpacity(0.03),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 12,
+                    ),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                       borderSide: BorderSide(
-                        color: isDark ? Colors.white.withOpacity(0.1) : Colors.black.withOpacity(0.05),
+                        color: isDark
+                            ? Colors.white.withOpacity(0.1)
+                            : Colors.black.withOpacity(0.05),
                       ),
                     ),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                       borderSide: BorderSide(
-                        color: isDark ? Colors.white.withOpacity(0.05) : Colors.black.withOpacity(0.05),
+                        color: isDark
+                            ? Colors.white.withOpacity(0.05)
+                            : Colors.black.withOpacity(0.05),
                       ),
                     ),
                   ),
@@ -438,25 +519,44 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> with SingleTick
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12),
                 decoration: BoxDecoration(
-                  color: isDark ? Colors.white.withOpacity(0.08) : Colors.black.withOpacity(0.03),
+                  color: isDark
+                      ? Colors.white.withOpacity(0.08)
+                      : Colors.black.withOpacity(0.03),
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
-                    color: isDark ? Colors.white.withOpacity(0.1) : Colors.black.withOpacity(0.05),
+                    color: isDark
+                        ? Colors.white.withOpacity(0.1)
+                        : Colors.black.withOpacity(0.05),
                   ),
                 ),
                 child: DropdownButtonHideUnderline(
                   child: DropdownButton<String>(
                     value: _selectedUnit,
-                    dropdownColor: isDark ? const Color(0xFF1E293B) : Colors.white,
-                    style: TextStyle(color: GlassTokens.primaryText(context), fontSize: 14),
-                    icon: Icon(LucideIcons.chevronDown, color: GlassTokens.secondaryText(context), size: 16),
-                    items: _units.map((u) => DropdownMenuItem(
-                      value: u,
-                      child: Text(
-                        u,
-                        style: TextStyle(color: isDark ? Colors.white : Colors.black87),
-                      ),
-                    )).toList(),
+                    dropdownColor: isDark
+                        ? const Color(0xFF1E293B)
+                        : Colors.white,
+                    style: TextStyle(
+                      color: GlassTokens.primaryText(context),
+                      fontSize: 14,
+                    ),
+                    icon: Icon(
+                      LucideIcons.chevronDown,
+                      color: GlassTokens.secondaryText(context),
+                      size: 16,
+                    ),
+                    items: _units
+                        .map(
+                          (u) => DropdownMenuItem(
+                            value: u,
+                            child: Text(
+                              u.tr,
+                              style: TextStyle(
+                                color: isDark ? Colors.white : Colors.black87,
+                              ),
+                            ),
+                          ),
+                        )
+                        .toList(),
                     onChanged: (v) => setState(() => _selectedUnit = v ?? 'kg'),
                   ),
                 ),
@@ -488,9 +588,16 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> with SingleTick
                           ? const SizedBox(
                               width: 22,
                               height: 22,
-                              child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
+                                strokeWidth: 2,
+                              ),
                             )
-                          : const Icon(LucideIcons.plus, color: Colors.white, size: 22),
+                          : const Icon(
+                              LucideIcons.plus,
+                              color: Colors.white,
+                              size: 22,
+                            ),
                     ),
                   ),
                 ),
@@ -510,13 +617,19 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> with SingleTick
           Icon(LucideIcons.shoppingBasket, size: 64, color: Colors.orange),
           const SizedBox(height: 16),
           Text(
-            'Mahsulotlar qo\'shing',
-            style: TextStyle(color: GlassTokens.secondaryText(context), fontSize: 16),
+            'Mahsulotlar qo\'shing'.tr,
+            style: TextStyle(
+              color: GlassTokens.secondaryText(context),
+              fontSize: 16,
+            ),
           ),
           const SizedBox(height: 8),
           Text(
-            'AI narxlarni taxmin qiladi',
-            style: TextStyle(color: GlassTokens.secondaryText(context), fontSize: 13),
+            'AI narxlarni taxmin qiladi'.tr,
+            style: TextStyle(
+              color: GlassTokens.secondaryText(context),
+              fontSize: 13,
+            ),
           ),
         ],
       ),
@@ -540,15 +653,17 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> with SingleTick
               borderRadius: BorderRadius.circular(14),
             ),
             alignment: Alignment.centerRight,
-            padding: const EdgeInsets.only(right: 20),
-            child: const Icon(LucideIcons.trash2, color: Colors.white),
+            padding: EdgeInsets.only(right: 20),
+            child: Icon(LucideIcons.trash2, color: Colors.white),
           ),
           onDismissed: (_) => _removeItem(index),
           child: Container(
             margin: const EdgeInsets.only(bottom: 8),
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(
-              color: isDark ? Colors.white.withOpacity(0.05) : Colors.white.withOpacity(0.9),
+              color: isDark
+                  ? Colors.white.withOpacity(0.05)
+                  : Colors.white.withOpacity(0.9),
               borderRadius: BorderRadius.circular(14),
               border: Border.all(color: GlassTokens.glassBorder(context)),
             ),
@@ -584,8 +699,11 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> with SingleTick
                         ),
                       ),
                       Text(
-                        '${item.qty} ${item.unit}${item.unitPrice > 0 ? ' × ${_formatPrice(item.unitPrice)}' : ''}',
-                        style: TextStyle(color: GlassTokens.secondaryText(context), fontSize: 12),
+                        '${item.qty} ${item.unit.tr}${item.unitPrice > 0 ? ' × ${_formatPrice(item.unitPrice)}' : ''}',
+                        style: TextStyle(
+                          color: GlassTokens.secondaryText(context),
+                          fontSize: 12,
+                        ),
                       ),
                     ],
                   ),
@@ -624,8 +742,11 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> with SingleTick
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Taxminiy jami:',
-                  style: TextStyle(color: GlassTokens.secondaryText(context), fontSize: 12),
+                  'Taxminiy jami:'.tr,
+                  style: TextStyle(
+                    color: GlassTokens.secondaryText(context),
+                    fontSize: 12,
+                  ),
                 ),
                 const SizedBox(height: 2),
                 Text(
@@ -637,8 +758,11 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> with SingleTick
                   ),
                 ),
                 Text(
-                  '${_currentItems.length} mahsulot',
-                  style: TextStyle(color: GlassTokens.secondaryText(context), fontSize: 11),
+                  '${_currentItems.length} ${'mahsulot'.tr}',
+                  style: TextStyle(
+                    color: GlassTokens.secondaryText(context),
+                    fontSize: 11,
+                  ),
                 ),
               ],
             ),
@@ -662,16 +786,23 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> with SingleTick
               child: InkWell(
                 borderRadius: BorderRadius.circular(14),
                 onTap: _saveList,
-                child: const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 14,
+                  ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(LucideIcons.save, color: Colors.white, size: 18),
-                      SizedBox(width: 8),
+                      const Icon(
+                        LucideIcons.save,
+                        color: Colors.white,
+                        size: 18,
+                      ),
+                      const SizedBox(width: 8),
                       Text(
-                        'Saqlash',
-                        style: TextStyle(
+                        'Saqlash'.tr,
+                        style: const TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.w700,
                           fontSize: 15,
@@ -694,7 +825,9 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> with SingleTick
 
   Widget _buildSavedListsTab() {
     if (_isLoading) {
-      return const Center(child: CircularProgressIndicator(color: Colors.orange));
+      return const Center(
+        child: CircularProgressIndicator(color: Colors.orange),
+      );
     }
     if (_lists.isEmpty) {
       return Center(
@@ -704,8 +837,11 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> with SingleTick
             Icon(LucideIcons.clipboardList, size: 64, color: Colors.orange),
             const SizedBox(height: 16),
             Text(
-              'Saqlangan ro\'yxatlar yo\'q',
-              style: TextStyle(color: GlassTokens.secondaryText(context), fontSize: 16),
+              'Saqlangan ro\'yxatlar yo\'q'.tr,
+              style: TextStyle(
+                color: GlassTokens.secondaryText(context),
+                fontSize: 16,
+              ),
             ),
           ],
         ),
@@ -721,14 +857,18 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> with SingleTick
 
   Widget _buildSavedListCard(int listIndex) {
     final list = _lists[listIndex];
-    final progress = list.items.isEmpty ? 0.0 : list.boughtCount / list.items.length;
+    final progress = list.items.isEmpty
+        ? 0.0
+        : list.boughtCount / list.items.length;
     final isDone = list.isCompleted;
 
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        color: isDark ? Colors.white.withOpacity(0.05) : Colors.white.withOpacity(0.9),
+        color: isDark
+            ? Colors.white.withOpacity(0.05)
+            : Colors.white.withOpacity(0.9),
         borderRadius: BorderRadius.circular(GlassTokens.radiusMd),
         border: Border.all(
           color: isDone ? Colors.green : GlassTokens.glassBorder(context),
@@ -752,7 +892,10 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> with SingleTick
               borderRadius: BorderRadius.circular(12),
             ),
             child: Center(
-              child: Text(isDone ? '✅' : '🛒', style: const TextStyle(fontSize: 22)),
+              child: Text(
+                isDone ? '✅' : '🛒',
+                style: const TextStyle(fontSize: 22),
+              ),
             ),
           ),
           title: Text(
@@ -769,14 +912,21 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> with SingleTick
             children: [
               const SizedBox(height: 4),
               Text(
-                'Taxminiy: ${_formatPrice(list.totalEstimatedPrice)}',
-                style: TextStyle(color: GlassTokens.secondaryText(context), fontSize: 12),
+                '${'Taxminiy:'.tr} ${_formatPrice(list.totalEstimatedPrice)}',
+                style: TextStyle(
+                  color: GlassTokens.secondaryText(context),
+                  fontSize: 12,
+                ),
                 overflow: TextOverflow.ellipsis,
               ),
               if (list.totalActualPrice > 0)
                 Text(
-                  'Haqiqiy: ${_formatPrice(list.totalActualPrice)}',
-                  style: const TextStyle(color: Colors.greenAccent, fontSize: 12, fontWeight: FontWeight.w600),
+                  '${'Haqiqiy:'.tr} ${_formatPrice(list.totalActualPrice)}',
+                  style: const TextStyle(
+                    color: Colors.greenAccent,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                  ),
                   overflow: TextOverflow.ellipsis,
                 ),
               const SizedBox(height: 6),
@@ -788,7 +938,9 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> with SingleTick
                       child: LinearProgressIndicator(
                         value: progress,
                         backgroundColor: Colors.white,
-                        valueColor: AlwaysStoppedAnimation(isDone ? Colors.green : Colors.orange),
+                        valueColor: AlwaysStoppedAnimation(
+                          isDone ? Colors.green : Colors.orange,
+                        ),
                         minHeight: 4,
                       ),
                     ),
@@ -796,14 +948,22 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> with SingleTick
                   const SizedBox(width: 8),
                   Text(
                     '${list.boughtCount}/${list.items.length}',
-                    style: TextStyle(color: GlassTokens.secondaryText(context), fontSize: 11, fontWeight: FontWeight.w600),
+                    style: TextStyle(
+                      color: GlassTokens.secondaryText(context),
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ],
               ),
             ],
           ),
           trailing: IconButton(
-            icon: Icon(LucideIcons.trash2, color: Colors.red.shade400, size: 18),
+            icon: Icon(
+              LucideIcons.trash2,
+              color: Colors.red.shade400,
+              size: 18,
+            ),
             onPressed: () => _confirmDelete(listIndex),
           ),
           children: [
@@ -814,16 +974,21 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> with SingleTick
             }),
             if (!isDone)
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
+                ),
                 child: SizedBox(
                   width: double.infinity,
                   child: FilledButton.icon(
                     onPressed: () => _hireBozorchi(list),
-                    icon: const Icon(LucideIcons.shoppingBag),
-                    label: const Text('Bozorchi yollash'),
+                    icon: Icon(LucideIcons.shoppingBag),
+                    label: Text('Bozorchi yollash'.tr),
                     style: FilledButton.styleFrom(
                       backgroundColor: Colors.orange.shade700,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                     ),
                   ),
                 ),
@@ -834,7 +999,11 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> with SingleTick
     );
   }
 
-  Widget _buildSavedItemRow(int listIndex, int itemIndex, ShoppingListItem item) {
+  Widget _buildSavedItemRow(
+    int listIndex,
+    int itemIndex,
+    ShoppingListItem item,
+  ) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return GestureDetector(
       onLongPress: () => _setActualPrice(listIndex, itemIndex),
@@ -844,12 +1013,16 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> with SingleTick
         decoration: BoxDecoration(
           color: item.isBought
               ? Colors.green.withOpacity(0.15)
-              : (isDark ? Colors.white.withOpacity(0.04) : Colors.white.withOpacity(0.8)),
+              : (isDark
+                    ? Colors.white.withOpacity(0.04)
+                    : Colors.white.withOpacity(0.8)),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: item.isBought
                 ? Colors.green.withOpacity(0.3)
-                : (isDark ? Colors.white.withOpacity(0.05) : Colors.black.withOpacity(0.05)),
+                : (isDark
+                      ? Colors.white.withOpacity(0.05)
+                      : Colors.black.withOpacity(0.05)),
           ),
         ),
         child: Row(
@@ -865,7 +1038,9 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> with SingleTick
                   color: item.isBought ? Colors.green : Colors.transparent,
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(
-                    color: item.isBought ? Colors.green : GlassTokens.secondaryText(context),
+                    color: item.isBought
+                        ? Colors.green
+                        : GlassTokens.secondaryText(context),
                     width: 2,
                   ),
                 ),
@@ -876,7 +1051,10 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> with SingleTick
             ),
             const SizedBox(width: 12),
             // Emoji
-            Text(_getItemEmoji(item.name), style: const TextStyle(fontSize: 18)),
+            Text(
+              _getItemEmoji(item.name),
+              style: const TextStyle(fontSize: 18),
+            ),
             const SizedBox(width: 10),
             // Info
             Expanded(
@@ -889,12 +1067,17 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> with SingleTick
                       color: GlassTokens.primaryText(context),
                       fontWeight: FontWeight.w600,
                       fontSize: 14,
-                      decoration: item.isBought ? TextDecoration.lineThrough : null,
+                      decoration: item.isBought
+                          ? TextDecoration.lineThrough
+                          : null,
                     ),
                   ),
                   Text(
-                    '${item.qty} ${item.unit}',
-                    style: TextStyle(color: GlassTokens.secondaryText(context), fontSize: 11),
+                    '${item.qty} ${item.unit.tr}',
+                    style: TextStyle(
+                      color: GlassTokens.secondaryText(context),
+                      fontSize: 11,
+                    ),
                   ),
                 ],
               ),
@@ -924,7 +1107,9 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> with SingleTick
                   Text(
                     _formatPrice(item.estimatedPrice),
                     style: TextStyle(
-                      color: item.estimatedPrice > 0 ? Colors.orange : GlassTokens.secondaryText(context),
+                      color: item.estimatedPrice > 0
+                          ? Colors.orange
+                          : GlassTokens.secondaryText(context),
                       fontWeight: FontWeight.w600,
                       fontSize: 13,
                     ),
@@ -943,15 +1128,21 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> with SingleTick
       builder: (ctx) => AlertDialog(
         backgroundColor: GlassTokens.glassFill(ctx),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Text('O\'chirish', style: TextStyle(color: GlassTokens.primaryText(ctx))),
+        title: Text(
+          'O\'chirish'.tr,
+          style: TextStyle(color: GlassTokens.primaryText(ctx)),
+        ),
         content: Text(
-          'Bu ro\'yxatni o\'chirmoqchimisiz?',
+          'Bu ro\'yxatni o\'chirmoqchimisiz?'.tr,
           style: TextStyle(color: GlassTokens.secondaryText(ctx)),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: Text('Yo\'q', style: TextStyle(color: GlassTokens.secondaryText(ctx))),
+            child: Text(
+              'Yo\'q'.tr,
+              style: TextStyle(color: GlassTokens.secondaryText(ctx)),
+            ),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
@@ -959,7 +1150,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> with SingleTick
               Navigator.pop(ctx);
               _deleteList(index);
             },
-            child: const Text('Ha, o\'chirish'),
+            child: Text('Ha, o\'chirish'.tr),
           ),
         ],
       ),
@@ -1022,7 +1213,8 @@ class _BozorchiSelectionSheet extends StatefulWidget {
   const _BozorchiSelectionSheet({required this.list});
 
   @override
-  State<_BozorchiSelectionSheet> createState() => _BozorchiSelectionSheetState();
+  State<_BozorchiSelectionSheet> createState() =>
+      _BozorchiSelectionSheetState();
 }
 
 class _BozorchiSelectionSheetState extends State<_BozorchiSelectionSheet> {
@@ -1038,7 +1230,9 @@ class _BozorchiSelectionSheetState extends State<_BozorchiSelectionSheet> {
 
   Future<void> _loadBozorchilar() async {
     try {
-      final providers = await _hubDataService.fetchProviders(ServiceHubKind.bozorchi);
+      final providers = await _hubDataService.fetchProviders(
+        ServiceHubKind.bozorchi,
+      );
       if (mounted) {
         setState(() {
           _bozorchilar = providers;
@@ -1054,7 +1248,7 @@ class _BozorchiSelectionSheetState extends State<_BozorchiSelectionSheet> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
+
     return Container(
       height: MediaQuery.of(context).size.height * 0.7,
       decoration: BoxDecoration(
@@ -1083,20 +1277,29 @@ class _BozorchiSelectionSheetState extends State<_BozorchiSelectionSheet> {
                     color: Colors.orange.withOpacity(0.1),
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(LucideIcons.shoppingBag, color: Colors.orange),
+                  child: const Icon(
+                    LucideIcons.shoppingBag,
+                    color: Colors.orange,
+                  ),
                 ),
                 const SizedBox(width: 12),
-                const Expanded(
+                Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Bo\'sh bozorchilar',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        'Bo\'sh bozorchilar'.tr,
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                       Text(
-                        'Ro\'yxatni topshirish uchun tanlang',
-                        style: TextStyle(fontSize: 13, color: Colors.grey),
+                        'Ro\'yxatni topshirish uchun tanlang'.tr,
+                        style: const TextStyle(
+                          fontSize: 13,
+                          color: Colors.grey,
+                        ),
                       ),
                     ],
                   ),
@@ -1107,70 +1310,89 @@ class _BozorchiSelectionSheetState extends State<_BozorchiSelectionSheet> {
           const Divider(height: 32),
           Expanded(
             child: _isLoading
-                ? const Center(child: CircularProgressIndicator(color: Colors.orange))
+                ? const Center(
+                    child: CircularProgressIndicator(color: Colors.orange),
+                  )
                 : _bozorchilar.isEmpty
-                    ? const Center(child: Text('Hozircha bo\'sh bozorchilar yo\'q'))
-                    : ListView.builder(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        itemCount: _bozorchilar.length,
-                        itemBuilder: (context, index) {
-                          final b = _bozorchilar[index];
-                          return Card(
-                            elevation: 0,
-                            color: isDark ? Colors.white.withOpacity(0.05) : Colors.grey.shade50,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
-                              side: BorderSide(color: Colors.grey.withOpacity(0.2)),
-                            ),
-                            margin: const EdgeInsets.only(bottom: 12),
-                            child: ListTile(
-                              contentPadding: const EdgeInsets.all(12),
-                              leading: Stack(
-                                alignment: Alignment.bottomRight,
-                                children: [
-                                  CircleAvatar(
-                                    radius: 24,
-                                    backgroundColor: Colors.orange.withOpacity(0.1),
-                                    child: const Icon(LucideIcons.user, color: Colors.orange),
-                                  ),
-                                  const Icon(Icons.verified, color: Colors.blue, size: 16),
-                                ],
-                              ),
-                              title: Text(b.name, style: const TextStyle(fontWeight: FontWeight.bold)),
-                              subtitle: Row(
-                                children: [
-                                  const Icon(Icons.star, color: Colors.amber, size: 14),
-                                  const SizedBox(width: 4),
-                                  Text('${b.rating} • Shahar bo\'ylab'),
-                                ],
-                              ),
-                              trailing: FilledButton(
-                                onPressed: () {
-                                  Navigator.pop(context); // Close sheet
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (_) => BozorchiProfileScreen(
-                                        bozorchi: b,
-                                        initialList: widget.list,
-                                      ),
-                                    ),
-                                  );
-                                },
-                                style: FilledButton.styleFrom(
-                                  backgroundColor: Colors.orange,
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                ? Center(child: Text('Hozircha bo\'sh bozorchilar yo\'q'.tr))
+                : ListView.builder(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    itemCount: _bozorchilar.length,
+                    itemBuilder: (context, index) {
+                      final b = _bozorchilar[index];
+                      return Card(
+                        elevation: 0,
+                        color: isDark
+                            ? Colors.white.withOpacity(0.05)
+                            : Colors.grey.shade50,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                          side: BorderSide(color: Colors.grey.withOpacity(0.2)),
+                        ),
+                        margin: const EdgeInsets.only(bottom: 12),
+                        child: ListTile(
+                          contentPadding: const EdgeInsets.all(12),
+                          leading: Stack(
+                            alignment: Alignment.bottomRight,
+                            children: [
+                              CircleAvatar(
+                                radius: 24,
+                                backgroundColor: Colors.orange.withOpacity(0.1),
+                                child: const Icon(
+                                  LucideIcons.user,
+                                  color: Colors.orange,
                                 ),
-                                child: const Text('Tanlash'),
+                              ),
+                              const Icon(
+                                Icons.verified,
+                                color: Colors.blue,
+                                size: 16,
+                              ),
+                            ],
+                          ),
+                          title: Text(
+                            b.name,
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          subtitle: Row(
+                            children: [
+                              const Icon(
+                                Icons.star,
+                                color: Colors.amber,
+                                size: 14,
+                              ),
+                              SizedBox(width: 4),
+                              Text('${b.rating} • ${'Shahar bo\'ylab'.tr}'),
+                            ],
+                          ),
+                          trailing: FilledButton(
+                            onPressed: () {
+                              Navigator.pop(context); // Close sheet
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => BozorchiProfileScreen(
+                                    bozorchi: b,
+                                    initialList: widget.list,
+                                  ),
+                                ),
+                              );
+                            },
+                            style: FilledButton.styleFrom(
+                              backgroundColor: Colors.orange,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
                               ),
                             ),
-                          );
-                        },
-                      ),
+                            child: Text('Tanlash'.tr),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
           ),
         ],
       ),
     );
   }
 }
-

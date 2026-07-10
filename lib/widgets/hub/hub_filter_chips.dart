@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 /// Hub ekranlari uchun filtr turi — boshqa sohalarga ham qo'llash mumkin.
 enum HubListFilter { all, nearest, topRated, openNow }
@@ -47,9 +48,7 @@ class HubFilterChips extends StatelessWidget {
               color: isSelected ? Colors.white : const Color(0xFF0F172A),
               fontSize: 13,
             ),
-            side: BorderSide(
-              color: isSelected ? accent : Colors.transparent,
-            ),
+            side: BorderSide(color: isSelected ? accent : Colors.transparent),
             padding: const EdgeInsets.symmetric(horizontal: 4),
           );
         },

@@ -21,8 +21,8 @@ class EventVenue {
   final double longitude;
 
   /// e.g. "Restoran", "To'yxona", "Hovli", "Ochiq maydon", "Konferens zal"
-  final String venueType; 
-  
+  final String venueType;
+
   final int maxGuests;
   final double basePrice; // starting price or rental price
   final List<EventVenueAmenity> amenities;
@@ -56,9 +56,22 @@ final mockEventVenues = [
     maxGuests: 600,
     basePrice: 5000000,
     amenities: const [
-      EventVenueAmenity(id: 'a1', name: 'Katta avtoturargoh', iconStr: 'local_parking'),
-      EventVenueAmenity(id: 'a2', name: 'Markaziy konditsioner', iconStr: 'ac_unit'),
-      EventVenueAmenity(id: 'a3', name: 'VIP stol', iconStr: 'star', additionalPrice: 500000),
+      EventVenueAmenity(
+        id: 'a1',
+        name: 'Katta avtoturargoh',
+        iconStr: 'local_parking',
+      ),
+      EventVenueAmenity(
+        id: 'a2',
+        name: 'Markaziy konditsioner',
+        iconStr: 'ac_unit',
+      ),
+      EventVenueAmenity(
+        id: 'a3',
+        name: 'VIP stol',
+        iconStr: 'star',
+        additionalPrice: 500000,
+      ),
     ],
     gallery: [
       'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?q=80&w=600&auto=format&fit=crop',
@@ -75,8 +88,17 @@ final mockEventVenues = [
     maxGuests: 200,
     basePrice: 1500000,
     amenities: const [
-      EventVenueAmenity(id: 'a1', name: 'O\'t o\'chirish joyi (Gulxan)', iconStr: 'local_fire_department'),
-      EventVenueAmenity(id: 'a2', name: 'Elektr toki (Generator)', iconStr: 'electrical_services', additionalPrice: 300000),
+      EventVenueAmenity(
+        id: 'a1',
+        name: 'O\'t o\'chirish joyi (Gulxan)',
+        iconStr: 'local_fire_department',
+      ),
+      EventVenueAmenity(
+        id: 'a2',
+        name: 'Elektr toki (Generator)',
+        iconStr: 'electrical_services',
+        additionalPrice: 300000,
+      ),
     ],
     gallery: [
       'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?q=80&w=600&auto=format&fit=crop',
@@ -93,9 +115,23 @@ final mockEventVenues = [
     maxGuests: 150,
     basePrice: 10000000,
     amenities: const [
-      EventVenueAmenity(id: 'a1', name: 'Proyektor va LED ekran', iconStr: 'tv'),
-      EventVenueAmenity(id: 'a2', name: 'Sinxron tarjima uskunalari', iconStr: 'headphones', additionalPrice: 2000000),
-      EventVenueAmenity(id: 'a3', name: 'Kofe-breyk xizmati', iconStr: 'local_cafe', additionalPrice: 1500000),
+      EventVenueAmenity(
+        id: 'a1',
+        name: 'Proyektor va LED ekran',
+        iconStr: 'tv',
+      ),
+      EventVenueAmenity(
+        id: 'a2',
+        name: 'Sinxron tarjima uskunalari',
+        iconStr: 'headphones',
+        additionalPrice: 2000000,
+      ),
+      EventVenueAmenity(
+        id: 'a3',
+        name: 'Kofe-breyk xizmati',
+        iconStr: 'local_cafe',
+        additionalPrice: 1500000,
+      ),
     ],
     gallery: [
       'https://images.unsplash.com/photo-1505373877841-8d25f7d46678?q=80&w=600&auto=format&fit=crop',

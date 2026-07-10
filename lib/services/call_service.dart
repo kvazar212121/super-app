@@ -11,6 +11,7 @@ import 'api_service.dart';
 import 'call_history_service.dart';
 import 'ringtone_service.dart';
 import 'callkit_service.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 /// WhatsApp uslubidagi ovozli qo'ng'iroq xizmati.
 /// WebSocket signaling + WebRTC peer connection bilan ishlaydi.
@@ -87,14 +88,18 @@ class CallService extends ChangeNotifier {
       final token = await ApiService().getToken();
       if (token == null) return;
 
-      final dio = Dio(BaseOptions(
-        baseUrl: '${AppConfig.apiBaseUrl}/api/v1',
-        headers: {'Authorization': 'Bearer $token'},
-      ));
+      final dio = Dio(
+        BaseOptions(
+          baseUrl: '${AppConfig.apiBaseUrl}/api/v1',
+          headers: {'Authorization': 'Bearer $token'},
+        ),
+      );
       final response = await dio.get('/calls/ice-servers');
       if (response.data != null && response.data['iceServers'] != null) {
         final List<dynamic> serversList = response.data['iceServers'];
-        _iceServers = serversList.map((e) => Map<String, dynamic>.from(e as Map)).toList();
+        _iceServers = serversList
+            .map((e) => Map<String, dynamic>.from(e as Map))
+            .toList();
         debugPrint('ICE servers yuklandi: ${_iceServers.length} ta server');
       }
     } catch (e) {
@@ -183,10 +188,14 @@ class CallService extends ChangeNotifier {
     }
 
     _reconnectTimer?.cancel();
-    final delay = Duration(seconds: (2 * (_reconnectAttempts + 1)).clamp(2, 30));
+    final delay = Duration(
+      seconds: (2 * (_reconnectAttempts + 1)).clamp(2, 30),
+    );
     _reconnectAttempts++;
 
-    debugPrint('WebSocket: ${delay.inSeconds}s dan keyin qayta ulanish (#$_reconnectAttempts)');
+    debugPrint(
+      'WebSocket: ${delay.inSeconds}s dan keyin qayta ulanish (#$_reconnectAttempts)',
+    );
     _reconnectTimer = Timer(delay, () {
       connectWebSocket();
     });
@@ -205,14 +214,18 @@ class CallService extends ChangeNotifier {
     if (token != null) {
       final currentUserId = _parseUserIdFromToken(token);
       if (currentUserId != null && senderId == currentUserId) {
-        debugPrint('O\'z-o\'zidan kelgan (loopback) signaling xabar e\'tiborga olinmaydi');
+        debugPrint(
+          'O\'z-o\'zidan kelgan (loopback) signaling xabar e\'tiborga olinmaydi',
+        );
         return;
       }
     }
 
     if (type == 'call_init') {
       if (CallHistoryService().isUserBlocked(senderId)) {
-        debugPrint('Bloklangan foydalanuvchidan qo\'ng\'iroq keldi. Rad etiladi.');
+        debugPrint(
+          'Bloklangan foydalanuvchidan qo\'ng\'iroq keldi. Rad etiladi.',
+        );
         // Rad etish signalini yuboramiz
         final msg = jsonEncode({
           'type': 'reject_call',
@@ -224,15 +237,17 @@ class CallService extends ChangeNotifier {
       }
 
       _currentCallLogId = DateTime.now().millisecondsSinceEpoch.toString();
-      CallHistoryService().addCallLog(CallLog(
-        id: _currentCallLogId!,
-        userId: senderId,
-        userName: senderName,
-        isIncoming: true,
-        timestamp: DateTime.now(),
-        duration: '00:00',
-        status: 'missed',
-      ));
+      CallHistoryService().addCallLog(
+        CallLog(
+          id: _currentCallLogId!,
+          userId: senderId,
+          userName: senderName,
+          isIncoming: true,
+          timestamp: DateTime.now(),
+          duration: '00:00',
+          status: 'missed',
+        ),
+      );
 
       // Kiruvchi qo'ng'iroq
       _remoteUserId = senderId;
@@ -265,7 +280,10 @@ class CallService extends ChangeNotifier {
       _isConnecting = false;
       _startCallTimer();
       if (_currentCallLogId != null) {
-        CallHistoryService().updateCallLog(_currentCallLogId!, status: 'connected');
+        CallHistoryService().updateCallLog(
+          _currentCallLogId!,
+          status: 'connected',
+        );
       }
       notifyListeners();
       if (onCallAnswered != null) onCallAnswered!();
@@ -275,7 +293,9 @@ class CallService extends ChangeNotifier {
       if (_currentCallLogId != null) {
         CallHistoryService().updateCallLog(
           _currentCallLogId!,
-          status: type == 'reject_call' ? 'declined' : (_callStartTime != null ? 'connected' : 'missed'),
+          status: type == 'reject_call'
+              ? 'declined'
+              : (_callStartTime != null ? 'connected' : 'missed'),
           duration: _callDuration,
         );
       }
@@ -287,7 +307,10 @@ class CallService extends ChangeNotifier {
 
       notifyListeners();
       if (_currentCallLogId != null) {
-        CallHistoryService().updateCallLog(_currentCallLogId!, status: 'cancelled');
+        CallHistoryService().updateCallLog(
+          _currentCallLogId!,
+          status: 'cancelled',
+        );
       }
       endCall(sendSignal: false);
       if (onError != null) {
@@ -344,8 +367,11 @@ class CallService extends ChangeNotifier {
   }
 
   void _flushPendingOutgoingSignals() {
-    if (_pendingOutgoingSignals.isEmpty || _channel == null || !_wsConnected) return;
-    debugPrint('Navbatdagi ${_pendingOutgoingSignals.length} ta signal yuborilmoqda');
+    if (_pendingOutgoingSignals.isEmpty || _channel == null || !_wsConnected)
+      return;
+    debugPrint(
+      'Navbatdagi ${_pendingOutgoingSignals.length} ta signal yuborilmoqda',
+    );
     final signals = List<String>.from(_pendingOutgoingSignals);
     _pendingOutgoingSignals.clear();
     for (final msg in signals) {
@@ -375,7 +401,7 @@ class CallService extends ChangeNotifier {
       sendSignal('ice_candidate', {
         'candidate': candidate.candidate,
         'sdpMid': candidate.sdpMid,
-        'sdpMLineIndex': candidate.sdpMLineIndex
+        'sdpMLineIndex': candidate.sdpMLineIndex,
       });
     };
 
@@ -434,7 +460,9 @@ class CallService extends ChangeNotifier {
       if (status != PermissionStatus.granted) {
         throw Exception('Mikrofon ruxsati berilmadi');
       }
-      _localStream = await navigator.mediaDevices.getUserMedia(mediaConstraints);
+      _localStream = await navigator.mediaDevices.getUserMedia(
+        mediaConstraints,
+      );
     } catch (e) {
       debugPrint('Mikrofon ruxsati olinmadi yoki xatolik: $e');
       if (onError != null) {
@@ -445,7 +473,11 @@ class CallService extends ChangeNotifier {
   }
 
   /// Chiquvchi qo'ng'iroq boshlash
-  Future<bool> startCall(int targetId, String targetName, {String? categoryKey}) async {
+  Future<bool> startCall(
+    int targetId,
+    String targetName, {
+    String? categoryKey,
+  }) async {
     if (_inCall) {
       debugPrint('Allaqachon qo\'ng\'iroqda');
       return false;
@@ -459,15 +491,17 @@ class CallService extends ChangeNotifier {
     _isRinging = true;
 
     _currentCallLogId = DateTime.now().millisecondsSinceEpoch.toString();
-    CallHistoryService().addCallLog(CallLog(
-      id: _currentCallLogId!,
-      userId: targetId,
-      userName: targetName,
-      isIncoming: false,
-      timestamp: DateTime.now(),
-      duration: '00:00',
-      status: 'missed',
-    ));
+    CallHistoryService().addCallLog(
+      CallLog(
+        id: _currentCallLogId!,
+        userId: targetId,
+        userName: targetName,
+        isIncoming: false,
+        timestamp: DateTime.now(),
+        duration: '00:00',
+        status: 'missed',
+      ),
+    );
 
     // Chiquvchi qo'ng'iroq uchun dial tone va wakelock
     RingtoneService().playDialTone();
@@ -492,13 +526,12 @@ class CallService extends ChangeNotifier {
         },
         "optional": [],
       };
-      RTCSessionDescription offer = await _peerConnection!.createOffer(offerSdpConstraints);
+      RTCSessionDescription offer = await _peerConnection!.createOffer(
+        offerSdpConstraints,
+      );
       await _peerConnection!.setLocalDescription(offer);
 
-      sendSignal('offer', {
-        'sdp': offer.sdp,
-        'type': offer.type,
-      });
+      sendSignal('offer', {'sdp': offer.sdp, 'type': offer.type});
     } catch (e) {
       debugPrint('processOffer xatolik: $e');
       endCall(sendSignal: true);
@@ -518,7 +551,10 @@ class CallService extends ChangeNotifier {
     RingtoneService().stop();
 
     if (_currentCallLogId != null) {
-      CallHistoryService().updateCallLog(_currentCallLogId!, status: 'connected');
+      CallHistoryService().updateCallLog(
+        _currentCallLogId!,
+        status: 'connected',
+      );
     }
 
     notifyListeners();
@@ -529,7 +565,10 @@ class CallService extends ChangeNotifier {
 
   /// Offer ni qayta ishlash
   Future<void> _handleOffer(
-      Map<String, dynamic> offerData, int senderId, String senderName) async {
+    Map<String, dynamic> offerData,
+    int senderId,
+    String senderName,
+  ) async {
     _remoteUserId = senderId;
     _remoteUserName = senderName;
 
@@ -548,13 +587,12 @@ class CallService extends ChangeNotifier {
         },
         "optional": [],
       };
-      RTCSessionDescription answer = await _peerConnection!.createAnswer(answerSdpConstraints);
+      RTCSessionDescription answer = await _peerConnection!.createAnswer(
+        answerSdpConstraints,
+      );
       await _peerConnection?.setLocalDescription(answer);
 
-      sendSignal('answer', {
-        'sdp': answer.sdp,
-        'type': answer.type,
-      });
+      sendSignal('answer', {'sdp': answer.sdp, 'type': answer.type});
 
       _inCall = true;
       _isConnecting = false;
@@ -589,13 +627,17 @@ class CallService extends ChangeNotifier {
     // candidate'ni yo'qotmasdan buferlaymiz va keyinroq qo'shamiz.
     if (_peerConnection == null || !_remoteDescriptionSet) {
       _pendingCandidates.add(candidate);
-      debugPrint('ICE candidate buferlandi (jami: ${_pendingCandidates.length})');
+      debugPrint(
+        'ICE candidate buferlandi (jami: ${_pendingCandidates.length})',
+      );
       return;
     }
 
     try {
       await _peerConnection?.addCandidate(candidate);
-      debugPrint('ICE candidate muvaffaqiyatli qo\'shildi: ${candidate.candidate}');
+      debugPrint(
+        'ICE candidate muvaffaqiyatli qo\'shildi: ${candidate.candidate}',
+      );
     } catch (e) {
       debugPrint('addCandidate xatolik: $e');
     }
@@ -607,7 +649,9 @@ class CallService extends ChangeNotifier {
     _remoteDescriptionSet = true;
     if (_pendingCandidates.isEmpty) return;
 
-    debugPrint('Buferlangan ${_pendingCandidates.length} ta ICE candidate qo\'shilmoqda');
+    debugPrint(
+      'Buferlangan ${_pendingCandidates.length} ta ICE candidate qo\'shilmoqda',
+    );
     final buffered = List<RTCIceCandidate>.from(_pendingCandidates);
     _pendingCandidates.clear();
     for (final candidate in buffered) {
@@ -692,7 +736,10 @@ class CallService extends ChangeNotifier {
     WakelockPlus.disable();
 
     if (_currentCallLogId != null) {
-      CallHistoryService().updateCallLog(_currentCallLogId!, status: 'declined');
+      CallHistoryService().updateCallLog(
+        _currentCallLogId!,
+        status: 'declined',
+      );
     }
 
     _isRinging = false;

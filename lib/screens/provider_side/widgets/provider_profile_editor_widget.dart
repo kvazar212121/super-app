@@ -10,6 +10,7 @@ import '../../../services/provider_portal_service.dart';
 import '../../../services/hub_data_service.dart';
 import '../../../services/settings_save_controller.dart';
 import '../../../config/app_config.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 class ProviderProfileEditorWidget extends StatefulWidget {
   final String categoryKey;
@@ -26,13 +27,15 @@ class ProviderProfileEditorWidget extends StatefulWidget {
   });
 
   @override
-  State<ProviderProfileEditorWidget> createState() => _ProviderProfileEditorWidgetState();
+  State<ProviderProfileEditorWidget> createState() =>
+      _ProviderProfileEditorWidgetState();
 }
 
-class _ProviderProfileEditorWidgetState extends State<ProviderProfileEditorWidget> {
+class _ProviderProfileEditorWidgetState
+    extends State<ProviderProfileEditorWidget> {
   final _portal = ProviderPortalService();
   final _nameCtrl = TextEditingController();
-  
+
   bool _loading = true;
   bool _saving = false;
   Map<String, dynamic> _baseMeta = {};
@@ -66,7 +69,9 @@ class _ProviderProfileEditorWidgetState extends State<ProviderProfileEditorWidge
     setState(() => _loading = true);
     try {
       final data = await _portal.getMe(widget.categoryKey);
-      final meta = Map<String, dynamic>.from(data['metadata_json'] as Map<String, dynamic>? ?? {});
+      final meta = Map<String, dynamic>.from(
+        data['metadata_json'] as Map<String, dynamic>? ?? {},
+      );
       _baseMeta = meta;
       _nameCtrl.text = meta['display_name'] ?? data['name'] ?? '';
       _coverUrl = meta['cover_url'];
@@ -116,8 +121,8 @@ class _ProviderProfileEditorWidgetState extends State<ProviderProfileEditorWidge
       final latestData = await _portal.getMe(widget.categoryKey);
       final latestMeta = Map<String, dynamic>.from(
         latestData['metadata'] as Map<String, dynamic>? ??
-        latestData['metadata_json'] as Map<String, dynamic>? ??
-        {},
+            latestData['metadata_json'] as Map<String, dynamic>? ??
+            {},
       );
       final meta = Map<String, dynamic>.from(latestMeta);
       meta['display_name'] = _nameCtrl.text.trim();
@@ -129,13 +134,13 @@ class _ProviderProfileEditorWidgetState extends State<ProviderProfileEditorWidge
       if (finalCoverUrl != null) {
         await _portal.updateCover(widget.categoryKey, finalCoverUrl);
       }
-      
+
       // Clear cache so that the client immediately reflects the updated name/banner
       HubDataService().clearCache();
-      
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Profil ma'lumotlari saqlandi")),
+          SnackBar(content: Text("Profil ma'lumotlari saqlandi".tr)),
         );
         setState(() {
           _coverUrl = finalCoverUrl;
@@ -145,7 +150,7 @@ class _ProviderProfileEditorWidgetState extends State<ProviderProfileEditorWidge
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Saqlashda xatolik yuz berdi')),
+          SnackBar(content: Text('Saqlashda xatolik yuz berdi'.tr)),
         );
       }
     } finally {
@@ -164,14 +169,21 @@ class _ProviderProfileEditorWidgetState extends State<ProviderProfileEditorWidge
           children: [
             const Text(
               "Asosiy ma'lumotlar",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
             ),
             const Spacer(),
-            IconButton(icon: const Icon(LucideIcons.refreshCw), onPressed: _load),
+            IconButton(
+              icon: const Icon(LucideIcons.refreshCw),
+              onPressed: _load,
+            ),
           ],
         ),
         const SizedBox(height: 16),
-        
+
         // Banner Image Editor
         const Text(
           'Muqova rasmi (Banner)',
@@ -192,21 +204,34 @@ class _ProviderProfileEditorWidgetState extends State<ProviderProfileEditorWidge
             child: _selectedImage != null
                 ? Image.file(_selectedImage!, fit: BoxFit.cover)
                 : (_coverUrl != null && _coverUrl!.isNotEmpty)
-                    ? Image.network(
-                        AppConfig.formatImageUrl(_coverUrl),
-                        fit: BoxFit.cover,
-                        errorBuilder: (_, __, ___) => const Center(child: Icon(LucideIcons.image, size: 40, color: Colors.black26)),
-                      )
-                    : const Center(
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(LucideIcons.imagePlus, size: 32, color: Colors.black45),
-                            SizedBox(height: 8),
-                            Text('Rasm tanlash', style: TextStyle(color: Colors.black54)),
-                          ],
-                        ),
+                ? Image.network(
+                    AppConfig.formatImageUrl(_coverUrl),
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => const Center(
+                      child: Icon(
+                        LucideIcons.image,
+                        size: 40,
+                        color: Colors.black26,
                       ),
+                    ),
+                  )
+                : const Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          LucideIcons.imagePlus,
+                          size: 32,
+                          color: Colors.black45,
+                        ),
+                        SizedBox(height: 8),
+                        Text(
+                          'Rasm tanlash',
+                          style: TextStyle(color: Colors.black54),
+                        ),
+                      ],
+                    ),
+                  ),
           ),
         ),
         const SizedBox(height: 16),
@@ -214,8 +239,8 @@ class _ProviderProfileEditorWidgetState extends State<ProviderProfileEditorWidge
         // Display Name Editor
         TextField(
           controller: _nameCtrl,
-          decoration: const InputDecoration(
-            labelText: 'Ismingiz yoki tashkilot nomi',
+          decoration: InputDecoration(
+            labelText: 'Ismingiz yoki tashkilot nomi'.tr,
             border: OutlineInputBorder(),
             isDense: true,
           ),
@@ -238,9 +263,15 @@ class _ProviderProfileEditorWidgetState extends State<ProviderProfileEditorWidge
                   ? const SizedBox(
                       width: 20,
                       height: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Colors.white,
+                      ),
                     )
-                  : const Text("Asosiy ma'lumotlarni saqlash", style: TextStyle(fontWeight: FontWeight.bold)),
+                  : const Text(
+                      "Asosiy ma'lumotlarni saqlash",
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
             ),
           ),
         ],

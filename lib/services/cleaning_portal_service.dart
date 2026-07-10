@@ -13,13 +13,12 @@ class CleaningPortalService {
     required String phone,
     required String serviceArea,
     String? address,
-  }) =>
-      _api.registerCleaningSolo(
-        name: name,
-        phone: phone,
-        serviceArea: serviceArea,
-        address: address,
-      );
+  }) => _api.registerCleaningSolo(
+    name: name,
+    phone: phone,
+    serviceArea: serviceArea,
+    address: address,
+  );
 
   Future<Map<String, dynamic>> registerTeam({
     required String name,
@@ -29,16 +28,15 @@ class CleaningPortalService {
     required int teamSize,
     double lat = 41.2995,
     double lng = 69.2401,
-  }) =>
-      _api.registerCleaningTeam(
-        name: name,
-        phone: phone,
-        address: address,
-        serviceArea: serviceArea,
-        teamSize: teamSize,
-        lat: lat,
-        lng: lng,
-      );
+  }) => _api.registerCleaningTeam(
+    name: name,
+    phone: phone,
+    address: address,
+    serviceArea: serviceArea,
+    teamSize: teamSize,
+    lat: lat,
+    lng: lng,
+  );
 }
 
 enum CleaningRegistrationRole { solo, team }

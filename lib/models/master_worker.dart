@@ -1,4 +1,5 @@
 import '../utils/geo_utils.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 class Master {
   final String id;
@@ -68,7 +69,8 @@ class Master {
       electricianRole != null || specialty.toLowerCase().contains('elek');
   bool get isCleaningSolo => cleanerRole == 'solo';
   bool get isCleaningTeam => cleanerRole == 'team';
-  bool get isCleaner => cleanerRole != null || specialty.toLowerCase().contains('toza');
+  bool get isCleaner =>
+      cleanerRole != null || specialty.toLowerCase().contains('toza');
   bool get isMasterSolo => masterRole == 'solo';
   bool get isMasterBrigade => masterRole == 'brigade';
   bool get isDispatchMaster => masterRole != null;
@@ -94,17 +96,22 @@ class Master {
     final electricianRole = meta['electrician_role']?.toString();
     final plumberRole = meta['plumber_role']?.toString();
     final acRole = meta['ac_role']?.toString();
-    final isMobile = role == 'mobile' || salonRole == 'mobile' || meta['is_mobile'] == true;
-    final isCleaner = cleanerRole != null ||
+    final isMobile =
+        role == 'mobile' || salonRole == 'mobile' || meta['is_mobile'] == true;
+    final isCleaner =
+        cleanerRole != null ||
         (defaultSpecialty?.toLowerCase().contains('toza') ?? false) ||
         (meta['specialty'] as String? ?? '').toLowerCase().contains('toza');
-    final isElectrician = electricianRole != null ||
+    final isElectrician =
+        electricianRole != null ||
         (defaultSpecialty?.toLowerCase().contains('elek') ?? false) ||
         (meta['specialty'] as String? ?? '').toLowerCase().contains('elek');
-    final isPlumber = plumberRole != null ||
+    final isPlumber =
+        plumberRole != null ||
         (defaultSpecialty?.toLowerCase().contains('sant') ?? false) ||
         (meta['specialty'] as String? ?? '').toLowerCase().contains('sant');
-    final isAc = acRole != null ||
+    final isAc =
+        acRole != null ||
         (defaultSpecialty?.toLowerCase().contains('kond') ?? false) ||
         (meta['specialty'] as String? ?? '').toLowerCase().contains('kond');
 
@@ -114,22 +121,22 @@ class Master {
     final specialty = isMobile && salonRole == 'mobile'
         ? 'Mobil kosmetolog'
         : isMobile
-            ? 'Mobil sartarosh'
-            : cleanerRole == 'solo'
-            ? 'Yakka tozalovchi'
-            : cleanerRole == 'team'
-                ? 'Tozalash jamoasi'
-                : masterRole == 'solo'
-                    ? 'Yakka usta'
-                : masterRole == 'brigade'
-                    ? 'Ustalar brigadasi'
-                    : electricianRole == 'solo'
-                        ? 'Elektrik'
-                        : plumberRole == 'solo'
-                            ? 'Santexnik'
-                            : acRole == 'solo'
-                                ? 'Konditsioner'
-                                : (meta['specialty'] as String? ?? defaultSpecialty ?? 'Usta');
+        ? 'Mobil sartarosh'
+        : cleanerRole == 'solo'
+        ? 'Yakka tozalovchi'
+        : cleanerRole == 'team'
+        ? 'Tozalash jamoasi'
+        : masterRole == 'solo'
+        ? 'Yakka usta'
+        : masterRole == 'brigade'
+        ? 'Ustalar brigadasi'
+        : electricianRole == 'solo'
+        ? 'Elektrik'
+        : plumberRole == 'solo'
+        ? 'Santexnik'
+        : acRole == 'solo'
+        ? 'Konditsioner'
+        : (meta['specialty'] as String? ?? defaultSpecialty ?? 'Usta');
 
     final serviceList = services.isNotEmpty ? services : [specialty];
 
@@ -141,11 +148,23 @@ class Master {
       }
     }
     for (final s in serviceList) {
-      prices.putIfAbsent(s, () => _defaultPrice(s, isMobile, isCleaner, isElectrician, isPlumber, isAc));
+      prices.putIfAbsent(
+        s,
+        () => _defaultPrice(
+          s,
+          isMobile,
+          isCleaner,
+          isElectrician,
+          isPlumber,
+          isAc,
+        ),
+      );
     }
 
     final rawId = json['id'];
-    final pid = rawId is int ? rawId : int.tryParse(rawId?.toString() ?? '') ?? 0;
+    final pid = rawId is int
+        ? rawId
+        : int.tryParse(rawId?.toString() ?? '') ?? 0;
     final teamSizeRaw = meta['team_size'];
     final teamSize = teamSizeRaw is int
         ? teamSizeRaw
@@ -165,7 +184,13 @@ class Master {
       providerId: pid,
       serviceArea: meta['service_area']?.toString(),
       address: json['address']?.toString() ?? '',
-      isHomeVisit: isMobile || isCleaner || masterRole != null || electricianRole != null || plumberRole != null || acRole != null,
+      isHomeVisit:
+          isMobile ||
+          isCleaner ||
+          masterRole != null ||
+          electricianRole != null ||
+          plumberRole != null ||
+          acRole != null,
       cleanerRole: cleanerRole,
       masterRole: masterRole,
       electricianRole: electricianRole,
@@ -173,7 +198,10 @@ class Master {
       acRole: acRole,
       teamSize: teamSize,
       subCategory: meta['sub_category']?.toString(),
-      about: meta['about']?.toString() ?? meta['bio']?.toString() ?? meta['description']?.toString(),
+      about:
+          meta['about']?.toString() ??
+          meta['bio']?.toString() ??
+          meta['description']?.toString(),
       rawJson: json,
       isTravelFeeIncluded: meta['is_travel_fee_included'] as bool? ?? true,
       travelFee: (meta['travel_fee'] as num?)?.toDouble() ?? 0.0,
@@ -181,7 +209,14 @@ class Master {
     );
   }
 
-  static double _defaultPrice(String service, bool isMobile, bool isCleaner, bool isElectrician, bool isPlumber, bool isAc) {
+  static double _defaultPrice(
+    String service,
+    bool isMobile,
+    bool isCleaner,
+    bool isElectrician,
+    bool isPlumber,
+    bool isAc,
+  ) {
     final lower = service.toLowerCase();
     if (isElectrician) {
       if (lower.contains('shoshil')) return 200000;
@@ -201,7 +236,10 @@ class Master {
       if (lower.contains('montaj')) return 600000;
       if (lower.contains('demontaj')) return 250000;
       if (lower.contains('profil') || lower.contains('tozal')) return 180000;
-      if (lower.contains('gaz') || lower.contains('freon') || lower.contains('toldir')) return 350000;
+      if (lower.contains('gaz') ||
+          lower.contains('freon') ||
+          lower.contains('toldir'))
+        return 350000;
       return 200000;
     }
     if (isCleaner) {
@@ -258,11 +296,15 @@ class Worker {
   factory Worker.fromProviderJson(Map<String, dynamic> json) {
     final meta = json['metadata'] as Map<String, dynamic>? ?? {};
     final rawId = json['id'];
-    final pid = rawId is int ? rawId : int.tryParse(rawId?.toString() ?? '') ?? 0;
-    
+    final pid = rawId is int
+        ? rawId
+        : int.tryParse(rawId?.toString() ?? '') ?? 0;
+
     final skillsRaw = meta['skills'];
-    final skillsList = skillsRaw is List ? skillsRaw.map((e) => e.toString()).toList() : <String>[];
-    
+    final skillsList = skillsRaw is List
+        ? skillsRaw.map((e) => e.toString()).toList()
+        : <String>[];
+
     return Worker(
       id: rawId?.toString() ?? '',
       name: json['name'] ?? '',

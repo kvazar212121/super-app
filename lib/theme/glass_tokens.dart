@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 /// iOS-style frosted glass dizayn tokenlari.
 abstract final class GlassTokens {
@@ -42,7 +43,10 @@ abstract final class GlassTokens {
           const Color(0xFFEC4899),
         ];
 
-  static Color glassFill(BuildContext context, {double opacity = glassOpacity}) {
+  static Color glassFill(
+    BuildContext context, {
+    double opacity = glassOpacity,
+  }) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     // Solid fill for panels instead of glass
     return isDark ? const Color(0xFF1E293B) : const Color(0xFFFFFFFF);
@@ -64,18 +68,16 @@ abstract final class GlassTokens {
 
   static Color secondaryText(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    return isDark
-        ? const Color(0xFFCBD5E1)
-        : const Color(0xFF64748B);
+    return isDark ? const Color(0xFFCBD5E1) : const Color(0xFF64748B);
   }
 
   static List<BoxShadow> glassShadow(BuildContext context) => [
-        BoxShadow(
-          color: Colors.black.withValues(
-            alpha: Theme.of(context).brightness == Brightness.dark ? 0.4 : 0.06,
-          ),
-          blurRadius: 10,
-          offset: const Offset(0, 4),
-        ),
-      ];
+    BoxShadow(
+      color: Colors.black.withValues(
+        alpha: Theme.of(context).brightness == Brightness.dark ? 0.4 : 0.06,
+      ),
+      blurRadius: 10,
+      offset: const Offset(0, 4),
+    ),
+  ];
 }

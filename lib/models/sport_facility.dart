@@ -21,11 +21,11 @@ class SportFacility {
   final double longitude;
 
   /// e.g. "Tennis", "Basseyn", "Basketbol", "Voleybol", "Universal zal"
-  final String sportType; 
-  
+  final String sportType;
+
   /// e.g. "Hard", "Clay", "Yopiq", "Ochiq", "Isitiladigan"
-  final String surfaceType; 
-  
+  final String surfaceType;
+
   final double basePricePerHour;
   final List<SportFacilityAmenity> amenities;
   final List<String> gallery;
@@ -59,9 +59,23 @@ final mockSportFacilities = [
     basePricePerHour: 120000,
     amenities: const [
       SportFacilityAmenity(id: 'a1', name: 'Dush', iconStr: 'shower'),
-      SportFacilityAmenity(id: 'a2', name: 'Raketka ijarasi', iconStr: 'sports_tennis', additionalPrice: 20000),
-      SportFacilityAmenity(id: 'a3', name: 'Koptoklar', iconStr: 'circle', additionalPrice: 10000),
-      SportFacilityAmenity(id: 'a4', name: 'Avtoturargoh', iconStr: 'local_parking'),
+      SportFacilityAmenity(
+        id: 'a2',
+        name: 'Raketka ijarasi',
+        iconStr: 'sports_tennis',
+        additionalPrice: 20000,
+      ),
+      SportFacilityAmenity(
+        id: 'a3',
+        name: 'Koptoklar',
+        iconStr: 'circle',
+        additionalPrice: 10000,
+      ),
+      SportFacilityAmenity(
+        id: 'a4',
+        name: 'Avtoturargoh',
+        iconStr: 'local_parking',
+      ),
     ],
     gallery: [
       'https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?q=80&w=600&auto=format&fit=crop',
@@ -79,7 +93,11 @@ final mockSportFacilities = [
     basePricePerHour: 80000,
     amenities: const [
       SportFacilityAmenity(id: 'a1', name: 'Dush va Sauna', iconStr: 'hot_tub'),
-      SportFacilityAmenity(id: 'a2', name: 'Kiyinish xonasi', iconStr: 'checkroom'),
+      SportFacilityAmenity(
+        id: 'a2',
+        name: 'Kiyinish xonasi',
+        iconStr: 'checkroom',
+      ),
       SportFacilityAmenity(id: 'a3', name: 'Kafe', iconStr: 'local_cafe'),
     ],
     gallery: [
@@ -99,7 +117,11 @@ final mockSportFacilities = [
     amenities: const [
       SportFacilityAmenity(id: 'a1', name: 'Dush', iconStr: 'shower'),
       SportFacilityAmenity(id: 'a2', name: 'Tribuna', iconStr: 'groups'),
-      SportFacilityAmenity(id: 'a3', name: 'Koptok', iconStr: 'sports_basketball'),
+      SportFacilityAmenity(
+        id: 'a3',
+        name: 'Koptok',
+        iconStr: 'sports_basketball',
+      ),
     ],
     gallery: [
       'https://images.unsplash.com/photo-1546519638-68e109498ffc?q=80&w=600&auto=format&fit=crop',

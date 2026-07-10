@@ -7,6 +7,7 @@ import '../../../services/disinfection_portal_service.dart';
 import '../../../utils/phone_utils.dart';
 import '../../provider_side/provider_theme.dart';
 import '../../provider_side/unified_provider_dashboard_screen.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 /// Dezinfeksiya xizmati — ro'yxatdan o'tish.
 class DisinfectionRegistrationScreen extends StatefulWidget {
@@ -41,13 +42,13 @@ class _DisinfectionRegistrationScreenState
     final area = _areaCtrl.text.trim();
     if (name.isEmpty || area.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Xizmat nomi va hududni kiriting')),
+        SnackBar(content: Text('Xizmat nomi va hududni kiriting'.tr)),
       );
       return;
     }
     if (_areaTypes.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Kamida bitta obyekt turini tanlang')),
+        SnackBar(content: Text('Kamida bitta obyekt turini tanlang'.tr)),
       );
       return;
     }
@@ -79,9 +80,9 @@ class _DisinfectionRegistrationScreenState
       );
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Xatolik: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Xatolik: $e')));
       }
     } finally {
       if (mounted) setState(() => _submitting = false);
@@ -93,7 +94,7 @@ class _DisinfectionRegistrationScreenState
     const accent = Color(0xFF14B8A6);
     return ProviderTheme(
       child: Scaffold(
-        appBar: AppBar(title: const Text('Dezinfeksiya xizmati')),
+        appBar: AppBar(title: Text('Dezinfeksiya xizmati'.tr)),
         body: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
           child: Column(
@@ -106,22 +107,22 @@ class _DisinfectionRegistrationScreenState
               const SizedBox(height: 24),
               TextField(
                 controller: _nameCtrl,
-                decoration: const InputDecoration(
-                  labelText: 'Xizmat yoki kompaniya nomi',
+                decoration: InputDecoration(
+                  labelText: 'Xizmat yoki kompaniya nomi'.tr,
                 ),
               ),
               const SizedBox(height: 16),
               TextField(
                 controller: _phoneCtrl,
-                decoration: const InputDecoration(labelText: 'Telefon'),
+                decoration: InputDecoration(labelText: 'Telefon'.tr),
                 keyboardType: TextInputType.phone,
               ),
               const SizedBox(height: 16),
               TextField(
                 controller: _areaCtrl,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: 'Xizmat ko\'rsatish hududi',
-                  hintText: 'Masalan: Toshkent, Chilonzor',
+                  hintText: 'Masalan: Toshkent, Chilonzor'.tr,
                 ),
               ),
               const SizedBox(height: 20),
@@ -154,8 +155,10 @@ class _DisinfectionRegistrationScreenState
               SwitchListTile(
                 value: _isCertified,
                 onChanged: (v) => setState(() => _isCertified = v),
-                title: const Text('Sertifikatlangan xizmat'),
-                subtitle: const Text('Sanitariya yoki dezinfeksiya sertifikati bor'),
+                title: Text('Sertifikatlangan xizmat'.tr),
+                subtitle: Text(
+                  'Sanitariya yoki dezinfeksiya sertifikati bor'.tr,
+                ),
                 activeThumbColor: accent,
               ),
               const SizedBox(height: 32),
@@ -176,7 +179,7 @@ class _DisinfectionRegistrationScreenState
                             color: Colors.white,
                           ),
                         )
-                      : const Text('Yuborish'),
+                      : Text('Yuborish'.tr),
                 ),
               ),
             ],

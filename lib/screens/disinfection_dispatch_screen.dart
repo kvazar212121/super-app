@@ -10,6 +10,7 @@ import '../providers/app_provider.dart';
 import '../utils/auth_guard.dart';
 import '../widgets/booking_common_widgets.dart';
 import '../widgets/glass/mesh_background.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 class DisinfectionDispatchScreen extends StatefulWidget {
   final DisinfectionService service;
@@ -17,10 +18,12 @@ class DisinfectionDispatchScreen extends StatefulWidget {
   const DisinfectionDispatchScreen({super.key, required this.service});
 
   @override
-  State<DisinfectionDispatchScreen> createState() => _DisinfectionDispatchScreenState();
+  State<DisinfectionDispatchScreen> createState() =>
+      _DisinfectionDispatchScreenState();
 }
 
-class _DisinfectionDispatchScreenState extends State<DisinfectionDispatchScreen> {
+class _DisinfectionDispatchScreenState
+    extends State<DisinfectionDispatchScreen> {
   AreaType? _selectedAreaType;
   final _addressCtrl = TextEditingController();
   final _areaSizeCtrl = TextEditingController();
@@ -58,7 +61,10 @@ class _DisinfectionDispatchScreenState extends State<DisinfectionDispatchScreen>
         MapEntry('Xizmat ko\'rsatuvchi', widget.service.name),
         MapEntry('Obyekt turi', _selectedAreaType!.label),
         MapEntry('Maydon', '$areaSize m²'),
-        MapEntry('Taxminiy sana', DateFormat('dd.MM.yyyy').format(_selectedDate)),
+        MapEntry(
+          'Taxminiy sana',
+          DateFormat('dd.MM.yyyy').format(_selectedDate),
+        ),
         MapEntry('Manzil', address),
         if (problem.isNotEmpty) MapEntry('Muammo', problem),
       ],
@@ -89,7 +95,9 @@ class _DisinfectionDispatchScreenState extends State<DisinfectionDispatchScreen>
       Navigator.pop(context);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Dezinfeksiya xizmati chaqirildi! ${widget.service.name} tez orada aloqaga chiqadi.'),
+          content: Text(
+            'Dezinfeksiya xizmati chaqirildi! ${widget.service.name} tez orada aloqaga chiqadi.',
+          ),
           backgroundColor: Colors.green,
         ),
       );
@@ -110,7 +118,7 @@ class _DisinfectionDispatchScreenState extends State<DisinfectionDispatchScreen>
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           elevation: 0,
-          title: const Text('Obyektga chaqirish'),
+          title: Text('Obyektga chaqirish'.tr),
         ),
         body: SingleChildScrollView(
           padding: const EdgeInsets.all(20),
@@ -128,15 +136,31 @@ class _DisinfectionDispatchScreenState extends State<DisinfectionDispatchScreen>
                     CircleAvatar(
                       radius: 28,
                       backgroundColor: _accent.withOpacity(0.1),
-                      child: Icon(LucideIcons.shieldCheck, color: _accent, size: 24),
+                      child: Icon(
+                        LucideIcons.shieldCheck,
+                        color: _accent,
+                        size: 24,
+                      ),
                     ),
                     const SizedBox(width: 16),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(widget.service.name, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                          Text('Dezinfeksiya xizmati', style: TextStyle(color: _accent, fontWeight: FontWeight.w600)),
+                          Text(
+                            widget.service.name,
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Text(
+                            'Dezinfeksiya xizmati',
+                            style: TextStyle(
+                              color: _accent,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -162,7 +186,9 @@ class _DisinfectionDispatchScreenState extends State<DisinfectionDispatchScreen>
                 hint: 'Masalan: 120',
                 icon: LucideIcons.ruler,
                 accent: _accent,
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
                 suffixText: 'm²',
                 onChanged: (_) => setState(() {}),
               ),
@@ -178,7 +204,10 @@ class _DisinfectionDispatchScreenState extends State<DisinfectionDispatchScreen>
                   prefixIcon: const Icon(LucideIcons.mapPin),
                   filled: true,
                   fillColor: Colors.white,
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: BorderSide.none,
+                  ),
                 ),
               ),
               const SizedBox(height: 24),
@@ -208,9 +237,14 @@ class _DisinfectionDispatchScreenState extends State<DisinfectionDispatchScreen>
                   onPressed: _canSubmit ? _confirmDispatch : null,
                   style: FilledButton.styleFrom(
                     backgroundColor: _accent,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
                   ),
-                  child: const Text('Obyektga chaqirish', style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold)),
+                  child: const Text(
+                    'Obyektga chaqirish',
+                    style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
+                  ),
                 ),
               ),
               const SizedBox(height: 40),

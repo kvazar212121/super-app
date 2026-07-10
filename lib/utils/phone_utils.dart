@@ -14,8 +14,20 @@ String normalizeUzPhone(String digits) {
 
 /// O'zbekiston mobil operator kodlari (9 xonali raqamning dastlabki 2 tasi).
 const uzMobilePrefixes = <String>{
-  '20', '33', '50', '55', '77', '88',
-  '90', '91', '93', '94', '95', '97', '98', '99',
+  '20',
+  '33',
+  '50',
+  '55',
+  '77',
+  '88',
+  '90',
+  '91',
+  '93',
+  '94',
+  '95',
+  '97',
+  '98',
+  '99',
 };
 
 /// 9 xonali mahalliy raqamni tekshirish (+998 dan keyingi qism).

@@ -30,7 +30,8 @@ class WeatherService {
       LocationPermission permission = await Geolocator.checkPermission();
       // O'rnatilganda (startup) avtomat location permission so'ramaymiz.
       // Agar ruxsat berilmagan bo'lsa, Toshkent ma'lumotini yuklaymiz.
-      if (permission == LocationPermission.denied || permission == LocationPermission.deniedForever) {
+      if (permission == LocationPermission.denied ||
+          permission == LocationPermission.deniedForever) {
         await _loadWeatherFallback(api);
         return;
       }
@@ -44,20 +45,33 @@ class WeatherService {
           '?lat=${position.latitude}&lon=${position.longitude}'
           '&format=json&accept-language=uz,ru,en',
         );
-        final res = await http.get(uri, headers: {
-          'User-Agent': 'HubServis/1.0 (uz.hubservis.app)',
-        }).timeout(const Duration(seconds: 8));
+        final res = await http
+            .get(
+              uri,
+              headers: {'User-Agent': 'HubServis/1.0 (uz.hubservis.app)'},
+            )
+            .timeout(const Duration(seconds: 8));
         if (res.statusCode == 200) {
           final data = jsonDecode(res.body) as Map<String, dynamic>;
           final addr = data['address'] as Map<String, dynamic>? ?? {};
-          currentCity = (addr['city'] ?? addr['town'] ?? addr['village'] ?? addr['county'] ?? 'Tashkent').toString();
+          currentCity =
+              (addr['city'] ??
+                      addr['town'] ??
+                      addr['village'] ??
+                      addr['county'] ??
+                      'Tashkent')
+                  .toString();
         }
       } catch (_) {
         currentCity = 'Tashkent';
       }
 
-      final w = await api.getWeather(currentCity, lat: position.latitude, lng: position.longitude);
-      
+      final w = await api.getWeather(
+        currentCity,
+        lat: position.latitude,
+        lng: position.longitude,
+      );
+
       List<Map<String, dynamic>>? dForecast;
       try {
         final dio = Dio();
@@ -67,8 +81,8 @@ class WeatherService {
             'latitude': position.latitude,
             'longitude': position.longitude,
             'daily': 'weathercode,temperature_2m_max,temperature_2m_min',
-            'timezone': 'auto'
-          }
+            'timezone': 'auto',
+          },
         );
         dForecast = _parseDailyForecast(response.data);
       } catch (e) {
@@ -88,7 +102,7 @@ class WeatherService {
   Future<void> _loadWeatherFallback(ApiService api) async {
     try {
       final w = await api.getWeather('Tashkent');
-      
+
       List<Map<String, dynamic>>? dForecast;
       try {
         final dio = Dio();
@@ -98,8 +112,8 @@ class WeatherService {
             'latitude': 41.2995,
             'longitude': 69.2401,
             'daily': 'weathercode,temperature_2m_max,temperature_2m_min',
-            'timezone': 'auto'
-          }
+            'timezone': 'auto',
+          },
         );
         dForecast = _parseDailyForecast(response.data);
       } catch (e) {

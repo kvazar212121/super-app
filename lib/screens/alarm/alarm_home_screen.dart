@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../l10n/locale_controller.dart';
 import '../../models/alarm.dart';
 import '../../services/api_service.dart';
 import '../../services/notification_helper.dart';
@@ -20,7 +21,15 @@ class _AlarmHomeScreenState extends State<AlarmHomeScreen> {
   bool _loading = true;
   String? _error;
 
-  static const List<String> _weekdayLabels = ['Du', 'Se', 'Ch', 'Pa', 'Ju', 'Sh', 'Ya'];
+  static const List<String> _weekdayLabels = [
+    'Du',
+    'Se',
+    'Ch',
+    'Pa',
+    'Ju',
+    'Sh',
+    'Ya',
+  ];
   static const Map<String, String> _missionLabels = {
     'math': 'Misol yechish',
     'photo': 'Rasmga olish',
@@ -45,7 +54,9 @@ class _AlarmHomeScreenState extends State<AlarmHomeScreen> {
     });
     try {
       final data = await _api.getAlarms();
-      final alarms = data.map((e) => Alarm.fromJson(e as Map<String, dynamic>)).toList();
+      final alarms = data
+          .map((e) => Alarm.fromJson(e as Map<String, dynamic>))
+          .toList();
       // Serverdagi budilniklarni lokal ravishda qayta rejalashtiramiz
       for (final a in alarms) {
         await NotificationHelper().scheduleAlarm(a);
@@ -56,7 +67,7 @@ class _AlarmHomeScreenState extends State<AlarmHomeScreen> {
       });
     } catch (e) {
       setState(() {
-        _error = 'Yuklashda xatolik. Internetni tekshiring.';
+        _error = 'Yuklashda xatolik. Internetni tekshiring.'.tr;
         _loading = false;
       });
     }
@@ -82,9 +93,9 @@ class _AlarmHomeScreenState extends State<AlarmHomeScreen> {
       _load();
     } catch (_) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('O\'zgartirishda xatolik')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('O\'zgartirishda xatolik'.tr)));
       }
     }
   }
@@ -93,11 +104,17 @@ class _AlarmHomeScreenState extends State<AlarmHomeScreen> {
     final ok = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('O\'chirish'),
-        content: Text('"${alarm.label}" budilnigini o\'chirasizmi?'),
+        title: Text('O\'chirish'.tr),
+        content: Text('"${alarm.label}" ${'budilnigini o\'chirasizmi?'.tr}'),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Yo\'q')),
-          TextButton(onPressed: () => Navigator.pop(context, true), child: const Text('Ha')),
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text('Yo\'q'.tr),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: Text('Ha'.tr),
+          ),
         ],
       ),
     );
@@ -118,25 +135,24 @@ class _AlarmHomeScreenState extends State<AlarmHomeScreen> {
 
   String _subtitle(Alarm alarm) {
     final days = alarm.isOneTime
-        ? 'Bir martalik'
-        : (alarm.repeatDayList..sort()).map((d) => _weekdayLabels[d - 1]).join(', ');
-    final mission = _missionLabels[alarm.missionType] ?? alarm.missionType;
+        ? 'Bir martalik'.tr
+        : (alarm.repeatDayList..sort())
+              .map((d) => _weekdayLabels[d - 1].tr)
+              .join(', ');
+    final mission = (_missionLabels[alarm.missionType] ?? alarm.missionType).tr;
     return '$days • $mission';
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Majburlovchi budilnik')),
+      appBar: AppBar(title: Text('Majburlovchi budilnik'.tr)),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _addOrEdit(),
-        icon: const Icon(Icons.add_alarm),
-        label: const Text('Yangi'),
+        icon: Icon(Icons.add_alarm),
+        label: Text('Yangi'.tr),
       ),
-      body: RefreshIndicator(
-        onRefresh: _load,
-        child: _buildBody(),
-      ),
+      body: RefreshIndicator(onRefresh: _load, child: _buildBody()),
     );
   }
 
@@ -151,18 +167,26 @@ class _AlarmHomeScreenState extends State<AlarmHomeScreen> {
           Center(child: Text(_error!)),
           const SizedBox(height: 12),
           Center(
-            child: ElevatedButton(onPressed: _load, child: const Text('Qayta urinish')),
+            child: ElevatedButton(
+              onPressed: _load,
+              child: Text('Qayta urinish'.tr),
+            ),
           ),
         ],
       );
     }
     if (_alarms.isEmpty) {
       return ListView(
-        children: const [
-          SizedBox(height: 140),
-          Icon(Icons.alarm_off, size: 64, color: Colors.grey),
-          SizedBox(height: 12),
-          Center(child: Text('Hali budilnik yo\'q.\n"Yangi" tugmasi orqali qo\'shing.', textAlign: TextAlign.center)),
+        children: [
+          const SizedBox(height: 140),
+          const Icon(Icons.alarm_off, size: 64, color: Colors.grey),
+          const SizedBox(height: 12),
+          Center(
+            child: Text(
+              'Hali budilnik yo\'q.\n"Yangi" tugmasi orqali qo\'shing.'.tr,
+              textAlign: TextAlign.center,
+            ),
+          ),
         ],
       );
     }
@@ -175,7 +199,10 @@ class _AlarmHomeScreenState extends State<AlarmHomeScreen> {
         return Card(
           child: ListTile(
             onTap: () => _addOrEdit(a),
-            leading: Icon(_missionIcons[a.missionType] ?? Icons.alarm, color: Colors.tealAccent),
+            leading: Icon(
+              _missionIcons[a.missionType] ?? Icons.alarm,
+              color: Colors.tealAccent,
+            ),
             title: Row(
               children: [
                 Text(
@@ -195,8 +222,8 @@ class _AlarmHomeScreenState extends State<AlarmHomeScreen> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 IconButton(
-                  icon: const Icon(Icons.play_circle_outline),
-                  tooltip: 'Sinab ko\'rish',
+                  icon: Icon(Icons.play_circle_outline),
+                  tooltip: 'Sinab ko\'rish'.tr,
                   onPressed: () => _preview(a),
                 ),
                 Switch(value: a.isEnabled, onChanged: (_) => _toggle(a)),

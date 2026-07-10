@@ -18,7 +18,9 @@ class OrderTimelineStep {
 }
 
 List<OrderTimelineStep> buildOrderTimeline(OrderStatus current) {
-  if (current == OrderStatus.cancelled || current == OrderStatus.noShow || current == OrderStatus.disputed) {
+  if (current == OrderStatus.cancelled ||
+      current == OrderStatus.noShow ||
+      current == OrderStatus.disputed) {
     final label = switch (current) {
       OrderStatus.cancelled => 'Bekor qilindi',
       OrderStatus.noShow => 'Kelmadi',
@@ -44,7 +46,7 @@ List<OrderTimelineStep> buildOrderTimeline(OrderStatus current) {
     (OrderStatus.pending, 'Yuborildi'),
     (OrderStatus.accepted, 'Qabul qilindi'),
   ];
-  
+
   if (current == OrderStatus.onTheWay) {
     steps.add((OrderStatus.onTheWay, 'Yo\'lda'));
   } else if (current == OrderStatus.arrived) {
@@ -54,7 +56,7 @@ List<OrderTimelineStep> buildOrderTimeline(OrderStatus current) {
   }
 
   steps.add((OrderStatus.inProgress, 'Jarayonda'));
-  
+
   if (current == OrderStatus.delivered) {
     steps.add((OrderStatus.delivered, 'Yetkazildi'));
   } else {
@@ -62,11 +64,18 @@ List<OrderTimelineStep> buildOrderTimeline(OrderStatus current) {
   }
 
   int currentIndex = 0;
-  if (current == OrderStatus.pending) currentIndex = 0;
-  else if (current == OrderStatus.accepted) currentIndex = 1;
-  else if (current == OrderStatus.onTheWay || current == OrderStatus.arrived || current == OrderStatus.preparing) currentIndex = 2;
-  else if (current == OrderStatus.inProgress) currentIndex = steps.length - 2;
-  else currentIndex = steps.length - 1; // delivered or completed
+  if (current == OrderStatus.pending)
+    currentIndex = 0;
+  else if (current == OrderStatus.accepted)
+    currentIndex = 1;
+  else if (current == OrderStatus.onTheWay ||
+      current == OrderStatus.arrived ||
+      current == OrderStatus.preparing)
+    currentIndex = 2;
+  else if (current == OrderStatus.inProgress)
+    currentIndex = steps.length - 2;
+  else
+    currentIndex = steps.length - 1; // delivered or completed
 
   return steps.asMap().entries.map((e) {
     final i = e.key;
@@ -131,7 +140,11 @@ class OrderStatusTimeline extends StatelessWidget {
                             : null,
                       ),
                       child: step.isDone
-                          ? const Icon(Icons.check, size: 10, color: Colors.white)
+                          ? const Icon(
+                              Icons.check,
+                              size: 10,
+                              color: Colors.white,
+                            )
                           : null,
                     ),
                     if (!isLast)
@@ -153,7 +166,9 @@ class OrderStatusTimeline extends StatelessWidget {
                   child: Text(
                     step.label,
                     style: TextStyle(
-                      fontWeight: step.isActive ? FontWeight.bold : FontWeight.w500,
+                      fontWeight: step.isActive
+                          ? FontWeight.bold
+                          : FontWeight.w500,
                       color: step.isActive || step.isDone
                           ? theme.colorScheme.onSurface
                           : theme.colorScheme.onSurface,

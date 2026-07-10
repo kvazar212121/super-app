@@ -103,11 +103,7 @@ class SavedPlacesScreen extends StatelessWidget {
                               color: accent.withOpacity(0.15),
                               shape: BoxShape.circle,
                             ),
-                            child: Icon(
-                              category.icon,
-                              color: accent,
-                              size: 24,
-                            ),
+                            child: Icon(category.icon, color: accent, size: 24),
                           ),
                           const SizedBox(width: 14),
                           Expanded(
@@ -181,9 +177,7 @@ class SavedPlacesScreen extends StatelessWidget {
         final salon = BeautySalon.fromProviderJson(item.rawJson);
         Navigator.push(
           context,
-          MaterialPageRoute(
-            builder: (_) => SalonBookingScreen(salon: salon),
-          ),
+          MaterialPageRoute(builder: (_) => SalonBookingScreen(salon: salon)),
         );
         break;
       case 'football_field':
@@ -195,7 +189,8 @@ class SavedPlacesScreen extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (_) => ProviderProfileScreen(master: master, category: category),
+            builder: (_) =>
+                ProviderProfileScreen(master: master, category: category),
           ),
         );
         break;
@@ -203,27 +198,21 @@ class SavedPlacesScreen extends StatelessWidget {
         final nanny = NannyService.fromProviderJson(item.rawJson);
         Navigator.push(
           context,
-          MaterialPageRoute(
-            builder: (_) => NannyProfileScreen(nanny: nanny),
-          ),
+          MaterialPageRoute(builder: (_) => NannyProfileScreen(nanny: nanny)),
         );
         break;
       case 'tutor':
         final tutor = TutorService.fromProviderJson(item.rawJson);
         Navigator.push(
           context,
-          MaterialPageRoute(
-            builder: (_) => TutorProfileScreen(tutor: tutor),
-          ),
+          MaterialPageRoute(builder: (_) => TutorProfileScreen(tutor: tutor)),
         );
         break;
       case 'nurse':
         final nurse = NurseService.fromProviderJson(item.rawJson);
         Navigator.push(
           context,
-          MaterialPageRoute(
-            builder: (_) => NurseBookingScreen(service: nurse),
-          ),
+          MaterialPageRoute(builder: (_) => NurseBookingScreen(service: nurse)),
         );
         break;
       case 'dental_clinic':
@@ -240,9 +229,7 @@ class SavedPlacesScreen extends StatelessWidget {
         final event = EventPlanning.fromProviderJson(item.rawJson);
         Navigator.push(
           context,
-          MaterialPageRoute(
-            builder: (_) => EventBookingScreen(service: event),
-          ),
+          MaterialPageRoute(builder: (_) => EventBookingScreen(service: event)),
         );
         break;
       case 'disinfection':
@@ -323,7 +310,8 @@ class SavedPlacesScreen extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (_) => ProviderProfileScreen(master: master, category: category),
+            builder: (_) =>
+                ProviderProfileScreen(master: master, category: category),
           ),
         );
     }

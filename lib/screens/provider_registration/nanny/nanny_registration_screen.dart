@@ -7,13 +7,15 @@ import '../../../utils/phone_utils.dart';
 import '../../provider_side/provider_theme.dart';
 import 'nanny_pending_screen.dart';
 import '../../../widgets/document_upload_tile.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 /// Enaga — hujjatlar va admin tasdiqlash bilan ro'yxatdan o'tish.
 class NannyRegistrationScreen extends StatefulWidget {
   const NannyRegistrationScreen({super.key});
 
   @override
-  State<NannyRegistrationScreen> createState() => _NannyRegistrationScreenState();
+  State<NannyRegistrationScreen> createState() =>
+      _NannyRegistrationScreenState();
 }
 
 class _NannyRegistrationScreenState extends State<NannyRegistrationScreen> {
@@ -51,17 +53,17 @@ class _NannyRegistrationScreenState extends State<NannyRegistrationScreen> {
   void _next() {
     if (_step == 0) {
       if (_nameCtrl.text.trim().isEmpty || _areaCtrl.text.trim().isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Ism va hududni kiriting')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Ism va hududni kiriting'.tr)));
         return;
       }
     }
     if (_step == 1) {
       if (_medicalUrl == null || _idUrl == null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Tibbiy spravka va pasport rasmini yuklang'),
+          SnackBar(
+            content: Text('Tibbiy spravka va pasport rasmini yuklang'.tr),
           ),
         );
         return;
@@ -122,15 +124,16 @@ class _NannyRegistrationScreenState extends State<NannyRegistrationScreen> {
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(
-          builder: (_) => NannyPendingScreen(providerName: _nameCtrl.text.trim()),
+          builder: (_) =>
+              NannyPendingScreen(providerName: _nameCtrl.text.trim()),
         ),
         (_) => false,
       );
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Xatolik: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Xatolik: $e')));
       }
     } finally {
       if (mounted) setState(() => _submitting = false);
@@ -143,7 +146,10 @@ class _NannyRegistrationScreenState extends State<NannyRegistrationScreen> {
       child: Scaffold(
         appBar: AppBar(
           title: Text('Enaga — ${_step + 1}/3'),
-          leading: IconButton(icon: const Icon(Icons.arrow_back), onPressed: _back),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: _back,
+          ),
         ),
         body: Column(
           children: [
@@ -189,7 +195,9 @@ class _NannyRegistrationScreenState extends State<NannyRegistrationScreen> {
         children: [
           Text(
             'Asosiy ma\'lumotlar',
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+            style: Theme.of(
+              context,
+            ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8),
           Text(
@@ -199,30 +207,33 @@ class _NannyRegistrationScreenState extends State<NannyRegistrationScreen> {
           const SizedBox(height: 24),
           TextField(
             controller: _nameCtrl,
-            decoration: const InputDecoration(labelText: 'Ismingiz'),
+            decoration: InputDecoration(labelText: 'Ismingiz'.tr),
           ),
           const SizedBox(height: 16),
           TextField(
             controller: _phoneCtrl,
-            decoration: const InputDecoration(labelText: 'Telefon'),
+            decoration: InputDecoration(labelText: 'Telefon'.tr),
           ),
           const SizedBox(height: 16),
           TextField(
             controller: _areaCtrl,
             maxLines: 2,
-            decoration: const InputDecoration(
-              labelText: 'Xizmat hududi',
-              hintText: 'Masalan: Toshkent, Yunusobod',
+            decoration: InputDecoration(
+              labelText: 'Xizmat hududi'.tr,
+              hintText: 'Masalan: Toshkent, Yunusobod'.tr,
             ),
           ),
           const SizedBox(height: 16),
           TextField(
             controller: _experienceCtrl,
             keyboardType: TextInputType.number,
-            decoration: const InputDecoration(labelText: 'Tajriba (yil)'),
+            decoration: InputDecoration(labelText: 'Tajriba (yil)'.tr),
           ),
           const SizedBox(height: 20),
-          const Text('Qaysi yoshdagi bolalar bilan ishlaysiz?', style: TextStyle(fontWeight: FontWeight.w600)),
+          const Text(
+            'Qaysi yoshdagi bolalar bilan ishlaysiz?',
+            style: TextStyle(fontWeight: FontWeight.w600),
+          ),
           const SizedBox(height: 8),
           Wrap(
             spacing: 8,
@@ -244,7 +255,10 @@ class _NannyRegistrationScreenState extends State<NannyRegistrationScreen> {
             }).toList(),
           ),
           const SizedBox(height: 16),
-          const Text('Tillaringiz', style: TextStyle(fontWeight: FontWeight.w600)),
+          const Text(
+            'Tillaringiz',
+            style: TextStyle(fontWeight: FontWeight.w600),
+          ),
           const SizedBox(height: 8),
           Wrap(
             spacing: 8,
@@ -278,7 +292,9 @@ class _NannyRegistrationScreenState extends State<NannyRegistrationScreen> {
         children: [
           Text(
             'Ishonch va xavfsizlik',
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+            style: Theme.of(
+              context,
+            ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8),
           Text(
@@ -332,7 +348,9 @@ class _NannyRegistrationScreenState extends State<NannyRegistrationScreen> {
         children: [
           Text(
             'Xizmat turlari',
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+            style: Theme.of(
+              context,
+            ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8),
           Text(

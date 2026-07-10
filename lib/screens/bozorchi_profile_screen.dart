@@ -12,6 +12,7 @@ import '../utils/call_helper.dart';
 import '../widgets/glass/glass_scaffold.dart';
 import '../widgets/glass/glass_surface.dart';
 import 'bozorchi_dispatch_screen.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 class BozorchiProfileScreen extends StatelessWidget {
   final Master bozorchi;
@@ -54,7 +55,9 @@ class BozorchiProfileScreen extends StatelessWidget {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(
-                      isSaved ? 'Sevimli ro\'yxatidan o\'chirildi' : 'Sevimli ro\'yxatiga qo\'shildi',
+                      isSaved
+                          ? 'Sevimli ro\'yxatidan o\'chirildi'
+                          : 'Sevimli ro\'yxatiga qo\'shildi',
                     ),
                     duration: const Duration(seconds: 1),
                   ),
@@ -78,7 +81,11 @@ class BozorchiProfileScreen extends StatelessWidget {
                     CircleAvatar(
                       radius: 44,
                       backgroundColor: accent.withOpacity(0.1),
-                      child: Icon(LucideIcons.shoppingBag, color: accent, size: 40),
+                      child: Icon(
+                        LucideIcons.shoppingBag,
+                        color: accent,
+                        size: 40,
+                      ),
                     ),
                     Container(
                       padding: const EdgeInsets.all(4),
@@ -86,7 +93,11 @@ class BozorchiProfileScreen extends StatelessWidget {
                         color: Colors.white,
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(Icons.verified, color: Colors.blue, size: 24),
+                      child: const Icon(
+                        Icons.verified,
+                        color: Colors.blue,
+                        size: 24,
+                      ),
                     ),
                   ],
                 ),
@@ -108,7 +119,10 @@ class BozorchiProfileScreen extends StatelessWidget {
                     const SizedBox(width: 4),
                     Text(
                       bozorchi.serviceArea ?? 'Shahar ichida',
-                      style: const TextStyle(color: accent, fontWeight: FontWeight.w500),
+                      style: const TextStyle(
+                        color: accent,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                   ],
                 ),
@@ -130,8 +144,11 @@ class BozorchiProfileScreen extends StatelessWidget {
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: isDark 
-                    ? [Colors.green.shade900.withOpacity(0.5), Colors.teal.shade900.withOpacity(0.5)]
+                colors: isDark
+                    ? [
+                        Colors.green.shade900.withOpacity(0.5),
+                        Colors.teal.shade900.withOpacity(0.5),
+                      ]
                     : [Colors.green.shade50, Colors.teal.shade50],
               ),
               borderRadius: BorderRadius.circular(16),
@@ -148,7 +165,9 @@ class BozorchiProfileScreen extends StatelessWidget {
                       Text(
                         'Tasdiqlangan mutaxassis',
                         style: TextStyle(
-                          color: isDark ? Colors.green.shade300 : Colors.green.shade800,
+                          color: isDark
+                              ? Colors.green.shade300
+                              : Colors.green.shade800,
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
                         ),
@@ -157,7 +176,9 @@ class BozorchiProfileScreen extends StatelessWidget {
                       Text(
                         'Ushbu xaridor shaxsini tasdiqlovchi hujjatlar bilan to\'liq tekshiruvdan o\'tgan. Firibgarlikka qarshi tizim kafolati mavjud.',
                         style: TextStyle(
-                          color: isDark ? Colors.green.shade100 : Colors.green.shade900,
+                          color: isDark
+                              ? Colors.green.shade100
+                              : Colors.green.shade900,
                           fontSize: 12,
                         ),
                       ),
@@ -178,10 +199,7 @@ class BozorchiProfileScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 10),
-            Text(
-              bozorchi.about!,
-              style: const TextStyle(height: 1.5),
-            ),
+            Text(bozorchi.about!, style: const TextStyle(height: 1.5)),
             const SizedBox(height: 24),
           ],
           Row(
@@ -202,7 +220,9 @@ class BozorchiProfileScreen extends StatelessWidget {
                     foregroundColor: accent,
                     side: const BorderSide(color: accent, width: 2),
                     padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
                   ),
                 ),
               ),
@@ -222,11 +242,17 @@ class BozorchiProfileScreen extends StatelessWidget {
                     );
                   },
                   icon: const Icon(LucideIcons.shoppingCart),
-                  label: Text(initialList != null ? 'Ro\'yxatni jo\'natish' : 'Xizmatga yollash'),
+                  label: Text(
+                    initialList != null
+                        ? 'Ro\'yxatni jo\'natish'
+                        : 'Xizmatga yollash',
+                  ),
                   style: FilledButton.styleFrom(
                     backgroundColor: accent,
                     padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
                   ),
                 ),
               ),

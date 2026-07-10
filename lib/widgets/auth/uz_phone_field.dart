@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../utils/phone_utils.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 /// +998 prefiksi oldindan, foydalanuvchi faqat 9 raqam kiritadi.
 class UzPhoneField extends StatelessWidget {
@@ -18,13 +19,13 @@ class UzPhoneField extends StatelessWidget {
     this.enabled = true,
   });
 
-  static String digitsOnly(String text) =>
-      text.replaceAll(RegExp(r'\D'), '');
+  static String digitsOnly(String text) => text.replaceAll(RegExp(r'\D'), '');
 
   static String fullPhone(TextEditingController c) =>
       normalizeUzPhone(digitsOnly(c.text));
 
-  static String? validateNineDigits(String? value) => validateUzMobileDigits(value);
+  static String? validateNineDigits(String? value) =>
+      validateUzMobileDigits(value);
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +39,7 @@ class UzPhoneField extends StatelessWidget {
       ],
       decoration: InputDecoration(
         labelText: label,
-        hintText: '901234567 yoki 200163068',
+        hintText: '901234567 yoki 200163068'.tr,
         prefixIcon: const Icon(LucideIcons.phone, size: 20),
         prefixIconConstraints: const BoxConstraints(minWidth: 0, minHeight: 0),
         prefix: Padding(

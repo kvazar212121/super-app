@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 class LocationPickerScreen extends StatefulWidget {
   final double initialLat;
@@ -49,27 +50,31 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
         '?lat=${pos.latitude}&lon=${pos.longitude}'
         '&format=json&accept-language=uz,ru,en',
       );
-      final response = await http.get(uri, headers: {
-        'User-Agent': 'HubServis/1.0 (uz.hubservis.app)',
-      }).timeout(const Duration(seconds: 10));
+      final response = await http
+          .get(uri, headers: {'User-Agent': 'HubServis/1.0 (uz.hubservis.app)'})
+          .timeout(const Duration(seconds: 10));
 
       if (response.statusCode == 200 && mounted) {
         final data = jsonDecode(response.body) as Map<String, dynamic>;
         final addr = data['address'] as Map<String, dynamic>? ?? {};
         final parts = <String>[];
         final road = addr['road'] ?? addr['pedestrian'] ?? addr['footway'];
-        final suburb = addr['suburb'] ?? addr['neighbourhood'] ?? addr['quarter'];
-        final city = addr['city'] ?? addr['town'] ?? addr['village'] ?? addr['county'];
+        final suburb =
+            addr['suburb'] ?? addr['neighbourhood'] ?? addr['quarter'];
+        final city =
+            addr['city'] ?? addr['town'] ?? addr['village'] ?? addr['county'];
         if (road != null) parts.add(road.toString());
         if (suburb != null) parts.add(suburb.toString());
         if (city != null) parts.add(city.toString());
         final result = parts.isNotEmpty
             ? parts.join(', ')
-            : (data['display_name']?.toString().split(',').take(3).join(', ') ?? "Noma'lum manzil");
+            : (data['display_name']?.toString().split(',').take(3).join(', ') ??
+                  "Noma'lum manzil");
         if (mounted) setState(() => _currentAddress = result);
       }
     } catch (e) {
-      if (mounted) setState(() => _currentAddress = "Manzilni aniqlab bo'lmadi");
+      if (mounted)
+        setState(() => _currentAddress = "Manzilni aniqlab bo'lmadi");
     } finally {
       if (mounted) setState(() => _isLoadingAddress = false);
     }
@@ -82,9 +87,9 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("GPS xizmati o'chirilgan")),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("GPS xizmati o'chirilgan".tr)));
       return;
     }
 
@@ -94,7 +99,7 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
       if (permission == LocationPermission.denied) {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Joylashuvga ruxsat berilmadi')),
+          SnackBar(content: Text('Joylashuvga ruxsat berilmadi'.tr)),
         );
         return;
       }
@@ -103,14 +108,18 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
     if (permission == LocationPermission.deniedForever) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Joylashuv ruxsati butunlay rad etilgan. Sozlamalardan yoqing.')),
+        SnackBar(
+          content: Text(
+            'Joylashuv ruxsati butunlay rad etilgan. Sozlamalardan yoqing.'.tr,
+          ),
+        ),
       );
       return;
     }
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Joylashuv aniqlanmoqda...')),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text('Joylashuv aniqlanmoqda...'.tr)));
 
     final pos = await Geolocator.getCurrentPosition(
       desiredAccuracy: LocationAccuracy.high,
@@ -124,9 +133,7 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Xaritadan tanlash'),
-      ),
+      appBar: AppBar(title: Text('Xaritadan tanlash'.tr)),
       body: Stack(
         children: [
           FlutterMap(
@@ -155,7 +162,9 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
           // Center Marker
           const Center(
             child: Padding(
-              padding: EdgeInsets.only(bottom: 40.0), // Point precisely at center
+              padding: EdgeInsets.only(
+                bottom: 40.0,
+              ), // Point precisely at center
               child: Icon(LucideIcons.mapPin, color: Colors.red, size: 40),
             ),
           ),
@@ -181,7 +190,11 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
                 color: Colors.white,
                 borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
                 boxShadow: [
-                  BoxShadow(color: Colors.black12, blurRadius: 10, offset: Offset(0, -2))
+                  BoxShadow(
+                    color: Colors.black12,
+                    blurRadius: 10,
+                    offset: Offset(0, -2),
+                  ),
                 ],
               ),
               child: SafeArea(
@@ -190,16 +203,28 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Tanlangan manzil', style: TextStyle(color: Colors.grey, fontSize: 13)),
+                    const Text(
+                      'Tanlangan manzil',
+                      style: TextStyle(color: Colors.grey, fontSize: 13),
+                    ),
                     const SizedBox(height: 8),
                     Row(
                       children: [
-                        const Icon(LucideIcons.mapPin, color: Colors.blue, size: 20),
+                        const Icon(
+                          LucideIcons.mapPin,
+                          color: Colors.blue,
+                          size: 20,
+                        ),
                         const SizedBox(width: 8),
                         Expanded(
                           child: Text(
-                            _isLoadingAddress ? 'Kutib turing...' : _currentAddress,
-                            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                            _isLoadingAddress
+                                ? 'Kutib turing...'
+                                : _currentAddress,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -213,7 +238,9 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
                       child: FilledButton(
                         style: FilledButton.styleFrom(
                           backgroundColor: Colors.black,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
                         ),
                         onPressed: () {
                           Navigator.pop(context, {
@@ -222,7 +249,7 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
                             'address': _currentAddress,
                           });
                         },
-                        child: const Text('Shu yerni tasdiqlash'),
+                        child: Text('Shu yerni tasdiqlash'.tr),
                       ),
                     ),
                   ],

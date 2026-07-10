@@ -5,12 +5,14 @@ import '../../../providers/auth_provider.dart';
 import '../../../services/salon_portal_service.dart';
 import '../../provider_side/provider_theme.dart';
 import 'salon_pending_screen.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 class SalonEmployeeJoinScreen extends StatefulWidget {
   const SalonEmployeeJoinScreen({super.key});
 
   @override
-  State<SalonEmployeeJoinScreen> createState() => _SalonEmployeeJoinScreenState();
+  State<SalonEmployeeJoinScreen> createState() =>
+      _SalonEmployeeJoinScreenState();
 }
 
 class _SalonEmployeeJoinScreenState extends State<SalonEmployeeJoinScreen>
@@ -33,7 +35,8 @@ class _SalonEmployeeJoinScreenState extends State<SalonEmployeeJoinScreen>
       final auth = context.read<AuthProvider>();
       final user = auth.user;
       if (user != null && _nameCtrl.text.isEmpty) {
-        _nameCtrl.text = '${user['name'] ?? ''} ${user['surname'] ?? ''}'.trim();
+        _nameCtrl.text = '${user['name'] ?? ''} ${user['surname'] ?? ''}'
+            .trim();
       }
     });
   }
@@ -59,23 +62,23 @@ class _SalonEmployeeJoinScreenState extends State<SalonEmployeeJoinScreen>
     if (_submitting) return;
     final name = _nameCtrl.text.trim();
     if (name.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Ismingizni kiriting')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Ismingizni kiriting'.tr)));
       return;
     }
 
     final isCodeTab = _tabs.index == 1;
     if (!isCodeTab && _selectedSalonId == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Salonni tanlang')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Salonni tanlang'.tr)));
       return;
     }
     if (isCodeTab && _codeCtrl.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Taklif kodini kiriting')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Taklif kodini kiriting'.tr)));
       return;
     }
 
@@ -98,7 +101,9 @@ class _SalonEmployeeJoinScreenState extends State<SalonEmployeeJoinScreen>
       );
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Xatolik: $e')));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Xatolik: $e')));
       }
     } finally {
       if (mounted) setState(() => _submitting = false);
@@ -116,53 +121,72 @@ class _SalonEmployeeJoinScreenState extends State<SalonEmployeeJoinScreen>
               padding: const EdgeInsets.fromLTRB(24, 16, 24, 0),
               child: TextField(
                 controller: _nameCtrl,
-                decoration: const InputDecoration(labelText: 'Ismingiz (mijozlar ko\'radi)'),
+                decoration: InputDecoration(
+                  labelText: 'Ismingiz (mijozlar ko\'radi)',
+                ),
               ),
             ),
             TabBar(
               controller: _tabs,
-              tabs: const [Tab(text: 'Salonni tanlash'), Tab(text: 'Taklif kodi')],
+              tabs: const [
+                Tab(text: 'Salonni tanlash'),
+                Tab(text: 'Taklif kodi'),
+              ],
             ),
             Expanded(
               child: TabBarView(
                 controller: _tabs,
                 children: [
                   _loading
-                      ? const Center(child: CircularProgressIndicator())
+                      ? Center(child: CircularProgressIndicator())
                       : _salons.isEmpty
-                          ? const Center(child: Text('Salonlar topilmadi'))
-                          : ListView.builder(
-                              padding: const EdgeInsets.all(16),
-                              itemCount: _salons.length,
-                              itemBuilder: (_, i) {
-                                final s = _salons[i];
-                                final id = s['id'] as int;
-                                final selected = _selectedSalonId == id;
-                                return Card(
-                                  margin: const EdgeInsets.only(bottom: 10),
-                                  color: selected ? const Color(0xFFEC4899) : null,
-                                  child: ListTile(
-                                    leading: Icon(LucideIcons.sparkles, color: selected ? const Color(0xFFEC4899) : null),
-                                    title: Text(s['name']?.toString() ?? ''),
-                                    subtitle: Text(s['address']?.toString() ?? ''),
-                                    trailing: selected ? const Icon(Icons.check_circle, color: Color(0xFFEC4899)) : null,
-                                    onTap: () => setState(() => _selectedSalonId = id),
-                                  ),
-                                );
-                              },
-                            ),
+                      ? Center(child: Text('Salonlar topilmadi'.tr))
+                      : ListView.builder(
+                          padding: const EdgeInsets.all(16),
+                          itemCount: _salons.length,
+                          itemBuilder: (_, i) {
+                            final s = _salons[i];
+                            final id = s['id'] as int;
+                            final selected = _selectedSalonId == id;
+                            return Card(
+                              margin: const EdgeInsets.only(bottom: 10),
+                              color: selected ? const Color(0xFFEC4899) : null,
+                              child: ListTile(
+                                leading: Icon(
+                                  LucideIcons.sparkles,
+                                  color: selected
+                                      ? const Color(0xFFEC4899)
+                                      : null,
+                                ),
+                                title: Text(s['name']?.toString() ?? ''),
+                                subtitle: Text(s['address']?.toString() ?? ''),
+                                trailing: selected
+                                    ? const Icon(
+                                        Icons.check_circle,
+                                        color: Color(0xFFEC4899),
+                                      )
+                                    : null,
+                                onTap: () =>
+                                    setState(() => _selectedSalonId = id),
+                              ),
+                            );
+                          },
+                        ),
                   Padding(
                     padding: const EdgeInsets.all(24),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text('Salon egasi bergan taklif kodini kiriting', style: TextStyle(fontWeight: FontWeight.w600)),
+                        const Text(
+                          'Salon egasi bergan taklif kodini kiriting',
+                          style: TextStyle(fontWeight: FontWeight.w600),
+                        ),
                         const SizedBox(height: 16),
                         TextField(
                           controller: _codeCtrl,
                           textCapitalization: TextCapitalization.characters,
-                          decoration: const InputDecoration(
-                            labelText: 'Taklif kodi',
+                          decoration: InputDecoration(
+                            labelText: 'Taklif kodi'.tr,
                             prefixIcon: Icon(LucideIcons.link),
                           ),
                         ),
@@ -179,7 +203,11 @@ class _SalonEmployeeJoinScreenState extends State<SalonEmployeeJoinScreen>
                 child: FilledButton(
                   onPressed: _submitting ? null : _submit,
                   child: _submitting
-                      ? const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2))
+                      ? const SizedBox(
+                          width: 22,
+                          height: 22,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
                       : const Text('So\'rov yuborish'),
                 ),
               ),

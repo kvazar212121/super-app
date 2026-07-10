@@ -22,24 +22,26 @@ class CallLog {
   });
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'userId': userId,
-        'userName': userName,
-        'isIncoming': isIncoming,
-        'timestamp': timestamp.toIso8601String(),
-        'duration': duration,
-        'status': status,
-      };
+    'id': id,
+    'userId': userId,
+    'userName': userName,
+    'isIncoming': isIncoming,
+    'timestamp': timestamp.toIso8601String(),
+    'duration': duration,
+    'status': status,
+  };
 
   factory CallLog.fromJson(Map<String, dynamic> json) => CallLog(
-        id: json['id'] ?? '',
-        userId: json['userId'] ?? 0,
-        userName: json['userName'] ?? '',
-        isIncoming: json['isIncoming'] ?? false,
-        timestamp: DateTime.parse(json['timestamp'] ?? DateTime.now().toIso8601String()),
-        duration: json['duration'] ?? '',
-        status: json['status'] ?? 'missed',
-      );
+    id: json['id'] ?? '',
+    userId: json['userId'] ?? 0,
+    userName: json['userName'] ?? '',
+    isIncoming: json['isIncoming'] ?? false,
+    timestamp: DateTime.parse(
+      json['timestamp'] ?? DateTime.now().toIso8601String(),
+    ),
+    duration: json['duration'] ?? '',
+    status: json['status'] ?? 'missed',
+  );
 }
 
 class BlockedUser {
@@ -54,16 +56,18 @@ class BlockedUser {
   });
 
   Map<String, dynamic> toJson() => {
-        'userId': userId,
-        'userName': userName,
-        'blockedAt': blockedAt.toIso8601String(),
-      };
+    'userId': userId,
+    'userName': userName,
+    'blockedAt': blockedAt.toIso8601String(),
+  };
 
   factory BlockedUser.fromJson(Map<String, dynamic> json) => BlockedUser(
-        userId: json['userId'] ?? 0,
-        userName: json['userName'] ?? '',
-        blockedAt: DateTime.parse(json['blockedAt'] ?? DateTime.now().toIso8601String()),
-      );
+    userId: json['userId'] ?? 0,
+    userName: json['userName'] ?? '',
+    blockedAt: DateTime.parse(
+      json['blockedAt'] ?? DateTime.now().toIso8601String(),
+    ),
+  );
 }
 
 class CallHistoryService extends ChangeNotifier {
@@ -117,7 +121,11 @@ class CallHistoryService extends ChangeNotifier {
     await saveHistory();
   }
 
-  Future<void> updateCallLog(String logId, {String? duration, String? status}) async {
+  Future<void> updateCallLog(
+    String logId, {
+    String? duration,
+    String? status,
+  }) async {
     final idx = _history.indexWhere((e) => e.id == logId);
     if (idx != -1) {
       final oldLog = _history[idx];
@@ -170,11 +178,13 @@ class CallHistoryService extends ChangeNotifier {
 
   Future<void> blockUser(int userId, String userName) async {
     if (isUserBlocked(userId)) return;
-    _blocked.add(BlockedUser(
-      userId: userId,
-      userName: userName,
-      blockedAt: DateTime.now(),
-    ));
+    _blocked.add(
+      BlockedUser(
+        userId: userId,
+        userName: userName,
+        blockedAt: DateTime.now(),
+      ),
+    );
     notifyListeners();
     await saveBlockedUsers();
   }

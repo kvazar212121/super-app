@@ -13,14 +13,13 @@ class CourierPortalService {
     required String serviceArea,
     required String vehicleType,
     String? address,
-  }) =>
-      _api.registerCourierSolo(
-        name: name,
-        phone: phone,
-        serviceArea: serviceArea,
-        vehicleType: vehicleType,
-        address: address,
-      );
+  }) => _api.registerCourierSolo(
+    name: name,
+    phone: phone,
+    serviceArea: serviceArea,
+    vehicleType: vehicleType,
+    address: address,
+  );
 
   Future<Map<String, dynamic>> getMe() => _api.getProviderMe('kuryer');
 }

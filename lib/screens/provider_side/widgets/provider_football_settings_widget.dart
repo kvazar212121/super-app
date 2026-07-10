@@ -3,6 +3,7 @@ import '../../../services/hub_data_service.dart';
 import 'package:flutter/services.dart';
 import '../../../services/provider_availability_service.dart';
 import '../../../services/provider_portal_service.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 /// Futbol maydoni egasi — soatlik narx va vaqt slotlari.
 class ProviderFootballSettingsWidget extends StatefulWidget {
@@ -20,7 +21,8 @@ class ProviderFootballSettingsWidget extends StatefulWidget {
       _ProviderFootballSettingsWidgetState();
 }
 
-class _ProviderFootballSettingsWidgetState extends State<ProviderFootballSettingsWidget> {
+class _ProviderFootballSettingsWidgetState
+    extends State<ProviderFootballSettingsWidget> {
   final _portal = ProviderPortalService();
   final _priceCtrl = TextEditingController();
   bool _loading = true;
@@ -29,8 +31,19 @@ class _ProviderFootballSettingsWidgetState extends State<ProviderFootballSetting
   List<String> _timeSlots = List.of(ProviderAvailability.defaultSlots);
 
   static const _hourlySlots = [
-    '08:00', '09:00', '10:00', '11:00', '12:00',
-    '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00',
+    '08:00',
+    '09:00',
+    '10:00',
+    '11:00',
+    '12:00',
+    '14:00',
+    '15:00',
+    '16:00',
+    '17:00',
+    '18:00',
+    '19:00',
+    '20:00',
+    '21:00',
   ];
 
   @override
@@ -50,7 +63,8 @@ class _ProviderFootballSettingsWidgetState extends State<ProviderFootballSetting
       );
       _baseMeta = meta;
       _priceCtrl.text = '${meta['base_price_per_hour'] ?? ''}';
-      _timeSlots = (meta['time_slots'] as List<dynamic>?)
+      _timeSlots =
+          (meta['time_slots'] as List<dynamic>?)
               ?.map((e) => e.toString())
               .toList() ??
           List.of(_hourlySlots);
@@ -70,8 +84,8 @@ class _ProviderFootballSettingsWidgetState extends State<ProviderFootballSetting
       final latestData = await _portal.getMe(widget.categoryKey);
       final latestMeta = Map<String, dynamic>.from(
         latestData['metadata'] as Map<String, dynamic>? ??
-        latestData['metadata_json'] as Map<String, dynamic>? ??
-        {},
+            latestData['metadata_json'] as Map<String, dynamic>? ??
+            {},
       );
       final meta = Map<String, dynamic>.from(latestMeta)
         ..['type'] = 'football_field'
@@ -81,16 +95,16 @@ class _ProviderFootballSettingsWidgetState extends State<ProviderFootballSetting
       await _portal.updateMetadata(widget.categoryKey, meta);
       HubDataService().clearCache();
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Sozlamalar saqlandi')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Sozlamalar saqlandi'.tr)));
       }
       await _load();
     } catch (_) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Saqlashda xatolik')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Saqlashda xatolik'.tr)));
       }
     } finally {
       if (mounted) setState(() => _saving = false);
@@ -106,14 +120,16 @@ class _ProviderFootballSettingsWidgetState extends State<ProviderFootballSetting
       children: [
         Text(
           'Maydon narxlari',
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+          style: Theme.of(
+            context,
+          ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 16),
         TextField(
           controller: _priceCtrl,
           keyboardType: TextInputType.number,
           inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-          decoration: const InputDecoration(
+          decoration: InputDecoration(
             labelText: '1 soat narxi (so\'m)',
             border: OutlineInputBorder(),
           ),
@@ -121,7 +137,9 @@ class _ProviderFootballSettingsWidgetState extends State<ProviderFootballSetting
         const SizedBox(height: 24),
         Text(
           'Bron vaqtlari (soat)',
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+          style: Theme.of(
+            context,
+          ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 12),
         Wrap(
@@ -152,12 +170,20 @@ class _ProviderFootballSettingsWidgetState extends State<ProviderFootballSetting
           child: FilledButton(
             onPressed: _saving ? null : _save,
             style: FilledButton.styleFrom(
-              backgroundColor: Colors.black, foregroundColor: Colors.white,
+              backgroundColor: Colors.black,
+              foregroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(vertical: 16),
             ),
             child: _saving
-                ? const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                : const Text('Saqlash'),
+                ? const SizedBox(
+                    width: 22,
+                    height: 22,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: Colors.white,
+                    ),
+                  )
+                : Text('Saqlash'.tr),
           ),
         ),
       ],

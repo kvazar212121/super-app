@@ -35,7 +35,11 @@ class ServicesGridWidget extends StatelessWidget {
                 color: Colors.blueAccent,
                 shape: BoxShape.circle,
               ),
-              child: const Icon(LucideIcons.layoutGrid, color: Colors.blueAccent, size: 28),
+              child: const Icon(
+                LucideIcons.layoutGrid,
+                color: Colors.blueAccent,
+                size: 28,
+              ),
             ),
             const SizedBox(width: 16),
             Expanded(
@@ -44,7 +48,11 @@ class ServicesGridWidget extends StatelessWidget {
                 children: [
                   Text(
                     'Barcha xizmatlar',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: textColor),
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                      color: textColor,
+                    ),
                   ),
                   const SizedBox(height: 4),
                   Text(

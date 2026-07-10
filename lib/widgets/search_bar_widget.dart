@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../theme/glass_tokens.dart';
 import 'glass/glass_surface.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 class SearchBarWidget extends StatelessWidget {
   const SearchBarWidget({super.key});
@@ -14,12 +15,15 @@ class SearchBarWidget extends StatelessWidget {
       child: TextField(
         style: TextStyle(color: GlassTokens.primaryText(context)),
         decoration: InputDecoration(
-          hintText: 'Xizmatlarni qidirish...',
+          hintText: 'Xizmatlarni qidirish...'.tr,
           border: InputBorder.none,
           enabledBorder: InputBorder.none,
           focusedBorder: InputBorder.none,
           filled: false,
-          icon: Icon(LucideIcons.search, color: GlassTokens.secondaryText(context)),
+          icon: Icon(
+            LucideIcons.search,
+            color: GlassTokens.secondaryText(context),
+          ),
           hintStyle: TextStyle(color: GlassTokens.secondaryText(context)),
         ),
       ),

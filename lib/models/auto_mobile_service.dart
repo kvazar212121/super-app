@@ -1,29 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 enum AutoVehicleType { evakuator, serviceVan, fuelTruck, combo }
 
 extension AutoVehicleTypeX on AutoVehicleType {
   String get key => switch (this) {
-        AutoVehicleType.evakuator => 'evakuator',
-        AutoVehicleType.serviceVan => 'service_van',
-        AutoVehicleType.fuelTruck => 'fuel_truck',
-        AutoVehicleType.combo => 'combo',
-      };
+    AutoVehicleType.evakuator => 'evakuator',
+    AutoVehicleType.serviceVan => 'service_van',
+    AutoVehicleType.fuelTruck => 'fuel_truck',
+    AutoVehicleType.combo => 'combo',
+  };
 
   String get label => switch (this) {
-        AutoVehicleType.evakuator => 'Evakuator',
-        AutoVehicleType.serviceVan => 'Xizmat mashinasi',
-        AutoVehicleType.fuelTruck => 'Benzin yetkazuvchi',
-        AutoVehicleType.combo => 'Ko\'p funksiyali',
-      };
+    AutoVehicleType.evakuator => 'Evakuator',
+    AutoVehicleType.serviceVan => 'Xizmat mashinasi',
+    AutoVehicleType.fuelTruck => 'Benzin yetkazuvchi',
+    AutoVehicleType.combo => 'Ko\'p funksiyali',
+  };
 
   IconData get icon => switch (this) {
-        AutoVehicleType.evakuator => LucideIcons.truck,
-        AutoVehicleType.serviceVan => LucideIcons.wrench,
-        AutoVehicleType.fuelTruck => LucideIcons.fuel,
-        AutoVehicleType.combo => LucideIcons.car,
-      };
+    AutoVehicleType.evakuator => LucideIcons.truck,
+    AutoVehicleType.serviceVan => LucideIcons.wrench,
+    AutoVehicleType.fuelTruck => LucideIcons.fuel,
+    AutoVehicleType.combo => LucideIcons.car,
+  };
 }
 
 AutoVehicleType autoVehicleTypeFromKey(String? key) {
@@ -58,7 +59,7 @@ class AutoMobileService {
 
   final String? subCategory;
 
-    final bool isTravelFeeIncluded;
+  final bool isTravelFeeIncluded;
   final double travelFee;
 
   AutoMobileService({
@@ -76,8 +77,8 @@ class AutoMobileService {
     this.vehicleType = AutoVehicleType.combo,
     this.providerId = 0,
     this.rawJson,
-      this.subCategory,
-      this.isTravelFeeIncluded = true,
+    this.subCategory,
+    this.isTravelFeeIncluded = true,
     this.travelFee = 0.0,
   });
 
@@ -104,7 +105,9 @@ class AutoMobileService {
     }
 
     final rawId = json['id'];
-    final pid = rawId is int ? rawId : int.tryParse(rawId?.toString() ?? '') ?? 0;
+    final pid = rawId is int
+        ? rawId
+        : int.tryParse(rawId?.toString() ?? '') ?? 0;
 
     return AutoMobileService(
       id: rawId?.toString() ?? '',
@@ -116,15 +119,19 @@ class AutoMobileService {
       phoneNumber: json['phone'] ?? '',
       services: serviceList.isNotEmpty
           ? serviceList
-          : const ['Evakuator', 'Joyida ta\'mirlash', 'Benzin yetkazish (AI-92, 10L)'],
+          : const [
+              'Evakuator',
+              'Joyida ta\'mirlash',
+              'Benzin yetkazish (AI-92, 10L)',
+            ],
       prices: prices,
       serviceArea: meta['service_area']?.toString(),
       autoRole: meta['auto_role']?.toString(),
       vehicleType: autoVehicleTypeFromKey(meta['vehicle_type']?.toString()),
       providerId: pid,
       rawJson: json,
-          subCategory: meta['sub_category']?.toString(),
-          isTravelFeeIncluded: meta['is_travel_fee_included'] as bool? ?? true,
+      subCategory: meta['sub_category']?.toString(),
+      isTravelFeeIncluded: meta['is_travel_fee_included'] as bool? ?? true,
       travelFee: (meta['travel_fee'] as num?)?.toDouble() ?? 0.0,
     );
   }

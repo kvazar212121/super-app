@@ -11,6 +11,7 @@ import '../services/provider_availability_service.dart';
 import '../utils/auth_guard.dart';
 import '../widgets/booking_common_widgets.dart';
 import '../widgets/glass/mesh_background.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 class EducationCenterBookingScreen extends StatefulWidget {
   final EducationCenter center;
@@ -23,10 +24,12 @@ class EducationCenterBookingScreen extends StatefulWidget {
   });
 
   @override
-  State<EducationCenterBookingScreen> createState() => _EducationCenterBookingScreenState();
+  State<EducationCenterBookingScreen> createState() =>
+      _EducationCenterBookingScreenState();
 }
 
-class _EducationCenterBookingScreenState extends State<EducationCenterBookingScreen> {
+class _EducationCenterBookingScreenState
+    extends State<EducationCenterBookingScreen> {
   final _availability = ProviderAvailabilityService();
   final _studentCtrl = TextEditingController();
   final _notesCtrl = TextEditingController();
@@ -40,8 +43,9 @@ class _EducationCenterBookingScreenState extends State<EducationCenterBookingScr
 
   static const _accent = Color(0xFF6366F1);
 
-  List<String> get _services =>
-      widget.center.services.isNotEmpty ? widget.center.services : widget.center.courses;
+  List<String> get _services => widget.center.services.isNotEmpty
+      ? widget.center.services
+      : widget.center.courses;
 
   double get _selectedPrice {
     if (_selectedService == null) return 0;
@@ -57,7 +61,8 @@ class _EducationCenterBookingScreenState extends State<EducationCenterBookingScr
   @override
   void initState() {
     super.initState();
-    if (widget.preselectedService != null && _services.contains(widget.preselectedService)) {
+    if (widget.preselectedService != null &&
+        _services.contains(widget.preselectedService)) {
       _selectedService = widget.preselectedService;
     }
     _studentCtrl.addListener(() => setState(() {}));
@@ -83,13 +88,16 @@ class _EducationCenterBookingScreenState extends State<EducationCenterBookingScr
         providerId: widget.center.providerId,
         date: _selectedDate,
       );
-      _timeSlots = avail.slots.isNotEmpty ? avail.slots : ProviderAvailability.defaultSlots;
+      _timeSlots = avail.slots.isNotEmpty
+          ? avail.slots
+          : ProviderAvailability.defaultSlots;
       _bookedSlots = avail.booked;
     }
     if (mounted) {
       setState(() {
         _loadingSlots = false;
-        if (_selectedTimeSlot != null && _bookedSlots.contains(_selectedTimeSlot)) {
+        if (_selectedTimeSlot != null &&
+            _bookedSlots.contains(_selectedTimeSlot)) {
           _selectedTimeSlot = null;
         }
       });
@@ -100,7 +108,11 @@ class _EducationCenterBookingScreenState extends State<EducationCenterBookingScr
     if (!await ensureAuthenticated(context)) return;
     if (!_canSubmit || !mounted) return;
 
-    final currency = NumberFormat.currency(locale: 'uz_UZ', symbol: 'so\'m', decimalDigits: 0);
+    final currency = NumberFormat.currency(
+      locale: 'uz_UZ',
+      symbol: 'so\'m',
+      decimalDigits: 0,
+    );
     final student = _studentCtrl.text.trim();
     final notes = _notesCtrl.text.trim();
 
@@ -147,7 +159,9 @@ class _EducationCenterBookingScreenState extends State<EducationCenterBookingScr
       date: dateTime,
       price: _selectedPrice,
       status: OrderStatus.pending,
-      providerId: widget.center.providerId > 0 ? widget.center.providerId : null,
+      providerId: widget.center.providerId > 0
+          ? widget.center.providerId
+          : null,
     );
 
     try {
@@ -171,7 +185,11 @@ class _EducationCenterBookingScreenState extends State<EducationCenterBookingScr
 
   @override
   Widget build(BuildContext context) {
-    final currency = NumberFormat.currency(locale: 'uz_UZ', symbol: 'so\'m', decimalDigits: 0);
+    final currency = NumberFormat.currency(
+      locale: 'uz_UZ',
+      symbol: 'so\'m',
+      decimalDigits: 0,
+    );
     final prices = <String, double>{
       for (final s in _services) s: widget.center.prices[s] ?? 150000,
     };
@@ -206,7 +224,10 @@ class _EducationCenterBookingScreenState extends State<EducationCenterBookingScr
                         Expanded(
                           child: Text(
                             widget.center.address,
-                            style: TextStyle(color: Colors.grey[600], fontSize: 13),
+                            style: TextStyle(
+                              color: Colors.grey[600],
+                              fontSize: 13,
+                            ),
                           ),
                         ),
                       ],
@@ -245,16 +266,19 @@ class _EducationCenterBookingScreenState extends State<EducationCenterBookingScr
                     const SectionTitle('Vaqt'),
                     const SizedBox(height: 12),
                     if (_loadingSlots)
-                      const Center(child: Padding(
-                        padding: EdgeInsets.all(16),
-                        child: CircularProgressIndicator(),
-                      ))
+                      const Center(
+                        child: Padding(
+                          padding: EdgeInsets.all(16),
+                          child: CircularProgressIndicator(),
+                        ),
+                      )
                     else
                       TimeSlotGrid(
                         selectedTimeSlot: _selectedTimeSlot,
                         timeSlots: _timeSlots,
                         disabledTimeSlots: _bookedSlots,
-                        onTimeSelected: (slot) => setState(() => _selectedTimeSlot = slot),
+                        onTimeSelected: (slot) =>
+                            setState(() => _selectedTimeSlot = slot),
                         accentColor: _accent,
                       ),
                     const SizedBox(height: 16),

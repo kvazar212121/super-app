@@ -7,6 +7,8 @@ class DentalDashboardScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return UnifiedProviderDashboardScreen(config: ProviderCategoryConfig.dental);
+    return UnifiedProviderDashboardScreen(
+      config: ProviderCategoryConfig.dental,
+    );
   }
 }

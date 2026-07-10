@@ -4,6 +4,7 @@ import '../../../services/cleaning_portal_service.dart';
 import '../../provider_side/provider_theme.dart';
 import 'cleaning_solo_screen.dart';
 import 'cleaning_team_screen.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 /// Tozalash ro'yxatdan o'tish — yakka yoki jamoa.
 class CleaningRoleSelectionScreen extends StatelessWidget {
@@ -24,13 +25,15 @@ class CleaningRoleSelectionScreen extends StatelessWidget {
         builder: (context) {
           final theme = Theme.of(context);
           return Scaffold(
-            appBar: AppBar(title: const Text('Tozalash xizmati')),
+            appBar: AppBar(title: Text('Tozalash xizmati'.tr)),
             body: ListView(
               padding: const EdgeInsets.all(24),
               children: [
                 Text(
                   'Qanday ishlayapsiz?',
-                  style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+                  style: theme.textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 const SizedBox(height: 8),
                 Text(
@@ -43,7 +46,8 @@ class CleaningRoleSelectionScreen extends StatelessWidget {
                 _RoleCard(
                   icon: LucideIcons.user,
                   title: 'Yakka tozalovchi',
-                  subtitle: 'O\'zingiz uyga borib tozalaysiz — 1–2 xonali kvartiralar uchun qulay',
+                  subtitle:
+                      'O\'zingiz uyga borib tozalaysiz — 1–2 xonali kvartiralar uchun qulay',
                   color: const Color(0xFF10B981),
                   onTap: () => _open(context, CleaningRegistrationRole.solo),
                 ),
@@ -51,7 +55,8 @@ class CleaningRoleSelectionScreen extends StatelessWidget {
                 _RoleCard(
                   icon: LucideIcons.users,
                   title: 'Tozalash jamoasi / kompaniya',
-                  subtitle: 'Bir necha kishilik jamoa — katta kvartira, ofis va general tozalash',
+                  subtitle:
+                      'Bir necha kishilik jamoa — katta kvartira, ofis va general tozalash',
                   color: const Color(0xFF06B6D4),
                   onTap: () => _open(context, CleaningRegistrationRole.team),
                 ),
@@ -106,9 +111,22 @@ class _RoleCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
                   const SizedBox(height: 4),
-                  Text(subtitle, style: TextStyle(color: Colors.grey, height: 1.35, fontSize: 13)),
+                  Text(
+                    subtitle,
+                    style: TextStyle(
+                      color: Colors.grey,
+                      height: 1.35,
+                      fontSize: 13,
+                    ),
+                  ),
                 ],
               ),
             ),

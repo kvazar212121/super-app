@@ -5,6 +5,7 @@ import '../widgets/booking_common_widgets.dart' hide SectionTitle;
 import '../widgets/event_widgets.dart';
 import '../widgets/glass/mesh_background.dart';
 import '../utils/call_helper.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 class EventVenueBookingScreen extends StatefulWidget {
   final EventVenue venue;
@@ -12,7 +13,8 @@ class EventVenueBookingScreen extends StatefulWidget {
   const EventVenueBookingScreen({super.key, required this.venue});
 
   @override
-  State<EventVenueBookingScreen> createState() => _EventVenueBookingScreenState();
+  State<EventVenueBookingScreen> createState() =>
+      _EventVenueBookingScreenState();
 }
 
 class _EventVenueBookingScreenState extends State<EventVenueBookingScreen> {
@@ -63,7 +65,10 @@ class _EventVenueBookingScreenState extends State<EventVenueBookingScreen> {
             EventVenueInfoCard(venue: venue),
             const SizedBox(height: 20),
             if (venue.amenities.isNotEmpty) ...[
-              const _SectionTitle('Qo\'shimcha xizmatlar', Icons.add_circle_outline),
+              const _SectionTitle(
+                'Qo\'shimcha xizmatlar',
+                Icons.add_circle_outline,
+              ),
               const SizedBox(height: 8),
               Wrap(
                 spacing: 8,
@@ -89,17 +94,16 @@ class _EventVenueBookingScreenState extends State<EventVenueBookingScreen> {
               ),
               const SizedBox(height: 20),
             ],
-            EventPriceSummaryCard(
-              totalPrice: _totalPrice,
-              accent: _accent,
-            ),
+            EventPriceSummaryCard(totalPrice: _totalPrice, accent: _accent),
             const SizedBox(height: 20),
             SizedBox(
               height: 54,
               child: FilledButton.icon(
                 style: FilledButton.styleFrom(
                   backgroundColor: _accent,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
                 ),
                 onPressed: _startCall,
                 icon: const Icon(Icons.phone_in_talk, size: 22),

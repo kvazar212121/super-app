@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import '../../../models/disinfection_service.dart';
 import '../../../services/provider_availability_service.dart';
 import '../../../services/provider_portal_service.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 class _ServiceRow {
   final nameCtrl = TextEditingController();
@@ -46,8 +47,15 @@ class _ProviderDisinfectionSettingsWidgetState
   final _areaCtrl = TextEditingController();
 
   static const _slots = [
-    '09:00', '10:00', '11:00', '12:00',
-    '14:00', '15:00', '16:00', '17:00', '18:00',
+    '09:00',
+    '10:00',
+    '11:00',
+    '12:00',
+    '14:00',
+    '15:00',
+    '16:00',
+    '17:00',
+    '18:00',
   ];
 
   @override
@@ -95,7 +103,9 @@ class _ProviderDisinfectionSettingsWidgetState
     final names = (meta['services'] as List<dynamic>? ?? [])
         .map((e) => e.toString())
         .toList();
-    final prices = Map<String, dynamic>.from(meta['prices'] as Map<String, dynamic>? ?? {});
+    final prices = Map<String, dynamic>.from(
+      meta['prices'] as Map<String, dynamic>? ?? {},
+    );
 
     if (names.isEmpty) {
       _addService('', '');
@@ -105,7 +115,8 @@ class _ProviderDisinfectionSettingsWidgetState
       }
     }
 
-    _timeSlots = (meta['time_slots'] as List<dynamic>?)
+    _timeSlots =
+        (meta['time_slots'] as List<dynamic>?)
             ?.map((e) => e.toString())
             .toList() ??
         List.of(_slots);
@@ -120,9 +131,11 @@ class _ProviderDisinfectionSettingsWidgetState
   }
 
   void _addService(String name, String price) {
-    _services.add(_ServiceRow()
-      ..nameCtrl.text = name
-      ..priceCtrl.text = price);
+    _services.add(
+      _ServiceRow()
+        ..nameCtrl.text = name
+        ..priceCtrl.text = price,
+    );
   }
 
   Future<void> _save() async {
@@ -134,14 +147,15 @@ class _ProviderDisinfectionSettingsWidgetState
         final name = row.nameCtrl.text.trim();
         if (name.isEmpty) continue;
         services.add(name);
-        prices[name] = int.tryParse(row.priceCtrl.text.replaceAll(' ', '')) ?? 0;
+        prices[name] =
+            int.tryParse(row.priceCtrl.text.replaceAll(' ', '')) ?? 0;
       }
 
       final latestData = await _portal.getMe(widget.categoryKey);
       final latestMeta = Map<String, dynamic>.from(
         latestData['metadata'] as Map<String, dynamic>? ??
-        latestData['metadata_json'] as Map<String, dynamic>? ??
-        {},
+            latestData['metadata_json'] as Map<String, dynamic>? ??
+            {},
       );
       final meta = Map<String, dynamic>.from(latestMeta)
         ..['type'] = 'disinfection'
@@ -153,20 +167,22 @@ class _ProviderDisinfectionSettingsWidgetState
         ..['time_slots'] = _timeSlots;
 
       meta['is_travel_fee_included'] = _isTravelFeeIncluded;
-      meta['travel_fee'] = double.tryParse(_travelFeeCtrl.text.replaceAll(RegExp(r'\D'), '')) ?? 0.0;
+      meta['travel_fee'] =
+          double.tryParse(_travelFeeCtrl.text.replaceAll(RegExp(r'\D'), '')) ??
+          0.0;
       await _portal.updateMetadata(widget.categoryKey, meta);
       HubDataService().clearCache();
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Sozlamalar saqlandi')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Sozlamalar saqlandi'.tr)));
       }
       await _load();
     } catch (_) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Saqlashda xatolik')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Saqlashda xatolik'.tr)));
       }
     } finally {
       if (mounted) setState(() => _saving = false);
@@ -182,13 +198,15 @@ class _ProviderDisinfectionSettingsWidgetState
       children: [
         Text(
           'Dezinfeksiya xizmatlari',
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+          style: Theme.of(
+            context,
+          ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 16),
         TextField(
           controller: _areaCtrl,
-          decoration: const InputDecoration(
-            labelText: 'Xizmat hududi',
+          decoration: InputDecoration(
+            labelText: 'Xizmat hududi'.tr,
             border: OutlineInputBorder(),
           ),
         ),
@@ -196,7 +214,7 @@ class _ProviderDisinfectionSettingsWidgetState
         SwitchListTile(
           value: _isCertified,
           onChanged: (v) => setState(() => _isCertified = v),
-          title: const Text('Sertifikatlangan'),
+          title: Text('Sertifikatlangan'.tr),
           contentPadding: EdgeInsets.zero,
         ),
         const SizedBox(height: 16),
@@ -223,7 +241,10 @@ class _ProviderDisinfectionSettingsWidgetState
           }).toList(),
         ),
         const SizedBox(height: 24),
-        Text('Xizmatlar va narxlar', style: Theme.of(context).textTheme.titleMedium),
+        Text(
+          'Xizmatlar va narxlar',
+          style: Theme.of(context).textTheme.titleMedium,
+        ),
         const SizedBox(height: 12),
         ..._services.asMap().entries.map((entry) {
           final i = entry.key;
@@ -249,19 +270,22 @@ class _ProviderDisinfectionSettingsWidgetState
                     controller: row.priceCtrl,
                     keyboardType: TextInputType.number,
                     inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                    decoration: const InputDecoration(
-                      labelText: 'Narx',
+                    decoration: InputDecoration(
+                      labelText: 'Narx'.tr,
                       border: OutlineInputBorder(),
                     ),
                   ),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.remove_circle_outline, color: Colors.red),
+                  icon: const Icon(
+                    Icons.remove_circle_outline,
+                    color: Colors.red,
+                  ),
                   onPressed: _services.length > 1
                       ? () => setState(() {
-                            _services[i].dispose();
-                            _services.removeAt(i);
-                          })
+                          _services[i].dispose();
+                          _services.removeAt(i);
+                        })
                       : null,
                 ),
               ],
@@ -310,7 +334,7 @@ class _ProviderDisinfectionSettingsWidgetState
           const SizedBox(height: 12),
           TextField(
             controller: _travelFeeCtrl,
-            decoration: const InputDecoration(
+            decoration: InputDecoration(
               labelText: 'Yo\'l kira narxi (so\'m)',
               border: OutlineInputBorder(),
             ),
@@ -323,16 +347,20 @@ class _ProviderDisinfectionSettingsWidgetState
           child: FilledButton(
             onPressed: _saving ? null : _save,
             style: FilledButton.styleFrom(
-              backgroundColor: Colors.black, foregroundColor: Colors.white,
+              backgroundColor: Colors.black,
+              foregroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(vertical: 16),
             ),
             child: _saving
                 ? const SizedBox(
                     width: 22,
                     height: 22,
-                    child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: Colors.white,
+                    ),
                   )
-                : const Text('Saqlash'),
+                : Text('Saqlash'.tr),
           ),
         ),
       ],

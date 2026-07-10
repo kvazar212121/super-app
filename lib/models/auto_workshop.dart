@@ -1,3 +1,5 @@
+import 'package:super_app/l10n/locale_controller.dart';
+
 class AutoWorkshop {
   final String id;
   final String name;
@@ -14,7 +16,7 @@ class AutoWorkshop {
   final String? autoRole;
   final int providerId;
 
-    final String? subCategory;
+  final String? subCategory;
 
   AutoWorkshop({
     required this.id,
@@ -32,7 +34,7 @@ class AutoWorkshop {
     this.autoRole,
     this.providerId = 0,
     this.rawJson,
-      this.subCategory,
+    this.subCategory,
   });
 
   bool get isWorkshop => autoRole == 'workshop';
@@ -60,7 +62,9 @@ class AutoWorkshop {
     }
 
     final rawId = json['id'];
-    final pid = rawId is int ? rawId : int.tryParse(rawId?.toString() ?? '') ?? 0;
+    final pid = rawId is int
+        ? rawId
+        : int.tryParse(rawId?.toString() ?? '') ?? 0;
 
     return AutoWorkshop(
       id: rawId?.toString() ?? '',
@@ -79,7 +83,7 @@ class AutoWorkshop {
       autoRole: meta['auto_role']?.toString(),
       providerId: pid,
       rawJson: json,
-          subCategory: meta['sub_category']?.toString(),
+      subCategory: meta['sub_category']?.toString(),
     );
   }
 

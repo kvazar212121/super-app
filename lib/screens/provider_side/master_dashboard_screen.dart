@@ -7,6 +7,8 @@ class MasterDashboardScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return UnifiedProviderDashboardScreen(config: ProviderCategoryConfig.builder);
+    return UnifiedProviderDashboardScreen(
+      config: ProviderCategoryConfig.builder,
+    );
   }
 }

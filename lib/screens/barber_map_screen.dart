@@ -3,6 +3,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import '../models/barber_shop.dart';
 import 'barber_booking_screen.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 class BarberMapScreen extends StatelessWidget {
   final List<BarberShop> shops;
@@ -13,7 +14,7 @@ class BarberMapScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Yaqin atrofdagi sartaroshlar"),
+        title: Text("Yaqin atrofdagi sartaroshlar".tr),
         backgroundColor: Theme.of(context).colorScheme.primaryContainer,
       ),
       body: FlutterMap(
@@ -43,10 +44,7 @@ class BarberMapScreen extends StatelessWidget {
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(8),
                           boxShadow: [
-                            BoxShadow(
-                              color: Colors.black,
-                              blurRadius: 4,
-                            ),
+                            BoxShadow(color: Colors.black, blurRadius: 4),
                           ],
                         ),
                         child: Icon(
@@ -56,7 +54,10 @@ class BarberMapScreen extends StatelessWidget {
                         ),
                       ),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
                         margin: const EdgeInsets.only(top: 4),
                         decoration: BoxDecoration(
                           color: Colors.white,
@@ -64,7 +65,10 @@ class BarberMapScreen extends StatelessWidget {
                         ),
                         child: Text(
                           shop.name,
-                          style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
+                          style: const TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     ],
@@ -108,7 +112,9 @@ class BarberMapScreen extends StatelessWidget {
                 children: [
                   CircleAvatar(
                     radius: 30,
-                    backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+                    backgroundColor: Theme.of(
+                      context,
+                    ).colorScheme.primaryContainer,
                     child: Icon(Icons.cut, size: 30),
                   ),
                   const SizedBox(width: 16),
@@ -118,13 +124,22 @@ class BarberMapScreen extends StatelessWidget {
                       children: [
                         Text(
                           shop.name,
-                          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                         const SizedBox(height: 4),
                         Row(
                           children: [
-                            const Icon(Icons.star, size: 16, color: Colors.amber),
-                            Text(" ${shop.rating} (${shop.reviewCount} ta sharh)"),
+                            const Icon(
+                              Icons.star,
+                              size: 16,
+                              color: Colors.amber,
+                            ),
+                            Text(
+                              " ${shop.rating} (${shop.reviewCount} ta sharh)",
+                            ),
                           ],
                         ),
                       ],
@@ -135,21 +150,26 @@ class BarberMapScreen extends StatelessWidget {
               const SizedBox(height: 16),
               _buildInfoRow(Icons.location_on, shop.address),
               const Divider(height: 32),
-              const Text("Xizmatlar va narxlar", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              const Text(
+                "Xizmatlar va narxlar",
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
               const SizedBox(height: 12),
-              ...shop.services.map((service) => Padding(
-                padding: const EdgeInsets.only(bottom: 12),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(service),
-                    Text(
-                      "${shop.prices[service]!.toStringAsFixed(0)} so'm",
-                      style: const TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                  ],
+              ...shop.services.map(
+                (service) => Padding(
+                  padding: const EdgeInsets.only(bottom: 12),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(service),
+                      Text(
+                        "${shop.prices[service]!.toStringAsFixed(0)} so'm",
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ],
+                  ),
                 ),
-              )),
+              ),
               const SizedBox(height: 20),
               SizedBox(
                 width: double.infinity,
@@ -163,8 +183,8 @@ class BarberMapScreen extends StatelessWidget {
                       ),
                     );
                   },
-                  icon: const Icon(Icons.arrow_forward),
-                  label: const Text("Xizmatlarni ko'rish"),
+                  icon: Icon(Icons.arrow_forward),
+                  label: Text("Xizmatlarni ko'rish".tr),
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.all(16),
                   ),

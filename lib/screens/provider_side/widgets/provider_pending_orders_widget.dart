@@ -5,6 +5,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../services/provider_portal_service.dart';
 import '../../../services/call_service.dart';
 import '../../calls/call_screen.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 /// Yangi (pending) buyurtmalar — qabul / rad etish.
 class ProviderPendingOrdersWidget extends StatefulWidget {
@@ -47,10 +48,19 @@ class ProviderPendingOrdersWidgetState
     if (mounted) setState(() => _loading = false);
   }
 
-  Future<void> _respond(int orderId, String status, {bool? notifiedClient}) async {
+  Future<void> _respond(
+    int orderId,
+    String status, {
+    bool? notifiedClient,
+  }) async {
     setState(() => _actingId = orderId);
     try {
-      await _portal.updateOrderStatus(widget.categoryKey, orderId, status, notifiedClient: notifiedClient);
+      await _portal.updateOrderStatus(
+        widget.categoryKey,
+        orderId,
+        status,
+        notifiedClient: notifiedClient,
+      );
       await load();
       widget.onChanged?.call();
       if (mounted) {
@@ -66,9 +76,9 @@ class ProviderPendingOrdersWidgetState
       }
     } catch (_) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Amal bajarilmadi')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Amal bajarilmadi'.tr)));
       }
     } finally {
       if (mounted) setState(() => _actingId = null);
@@ -80,8 +90,11 @@ class ProviderPendingOrdersWidgetState
       context: context,
       builder: (ctx) {
         return AlertDialog(
-          title: const Text('Buyurtmani rad etish'),
-          content: const Text('Ushbu buyurtmani qanday rad etmoqchisiz?\n\nMijozga vaziyatni tushuntirsangiz reytingingiz tushmaydi.'),
+          title: Text('Buyurtmani rad etish'.tr),
+          content: Text(
+            'Ushbu buyurtmani qanday rad etmoqchisiz?\n\nMijozga vaziyatni tushuntirsangiz reytingingiz tushmaydi.'
+                .tr,
+          ),
           actionsAlignment: MainAxisAlignment.center,
           actions: [
             Column(
@@ -89,8 +102,8 @@ class ProviderPendingOrdersWidgetState
               children: [
                 OutlinedButton.icon(
                   onPressed: () => Navigator.of(ctx).pop(1),
-                  icon: const Icon(LucideIcons.phone, color: Colors.green),
-                  label: const Text('Tel qilib tushuntirish va rad etish'),
+                  icon: Icon(LucideIcons.phone, color: Colors.green),
+                  label: Text('Tel qilib tushuntirish va rad etish'.tr),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: Colors.green,
                     side: const BorderSide(color: Colors.green),
@@ -104,12 +117,15 @@ class ProviderPendingOrdersWidgetState
                     backgroundColor: Colors.red,
                     padding: const EdgeInsets.symmetric(vertical: 12),
                   ),
-                  child: const Text('Shunchaki rad etish'),
+                  child: Text('Shunchaki rad etish'.tr),
                 ),
                 const SizedBox(height: 8),
                 TextButton(
                   onPressed: () => Navigator.of(ctx).pop(0),
-                  child: const Text('Orqaga qaytish', style: TextStyle(color: Colors.black)),
+                  child: const Text(
+                    'Orqaga qaytish',
+                    style: TextStyle(color: Colors.black),
+                  ),
                 ),
               ],
             ),
@@ -119,7 +135,10 @@ class ProviderPendingOrdersWidgetState
     );
 
     if (doCancel == 1) {
-      final order = _orders.firstWhere((o) => o['id'] == orderId, orElse: () => {});
+      final order = _orders.firstWhere(
+        (o) => o['id'] == orderId,
+        orElse: () => {},
+      );
       final userId = order['user_id'] as int?;
       final userName = order['user_name'] as String? ?? 'Mijoz';
       if (userId != null) {
@@ -153,7 +172,11 @@ class ProviderPendingOrdersWidgetState
             const SizedBox(width: 8),
             const Text(
               'Yangi buyurtmalar',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: Colors.black),
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w900,
+                color: Colors.black,
+              ),
             ),
             const SizedBox(width: 8),
             Container(
@@ -164,7 +187,11 @@ class ProviderPendingOrdersWidgetState
               ),
               child: Text(
                 '${_orders.length}',
-                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 12,
+                ),
               ),
             ),
           ],
@@ -190,9 +217,7 @@ class ProviderPendingOrdersWidgetState
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: Colors.black, width: 2),
-        boxShadow: const [
-          BoxShadow(color: Colors.black, offset: Offset(2, 2)),
-        ],
+        boxShadow: const [BoxShadow(color: Colors.black, offset: Offset(2, 2))],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -205,16 +230,26 @@ class ProviderPendingOrdersWidgetState
                   children: [
                     Text(
                       o['user_name'] as String? ?? 'Mijoz',
-                      style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 18, color: Colors.black),
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w900,
+                        fontSize: 18,
+                        color: Colors.black,
+                      ),
                     ),
                     Text(
                       '${o['service_name'] ?? ''} · $time',
-                      style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black87),
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
                     ),
                     if ((o['notes'] as String?)?.isNotEmpty == true)
                       Text(
                         o['notes'] as String,
-                        style: const TextStyle(fontStyle: FontStyle.italic, color: Colors.black87),
+                        style: const TextStyle(
+                          fontStyle: FontStyle.italic,
+                          color: Colors.black87,
+                        ),
                       ),
                   ],
                 ),
@@ -238,9 +273,14 @@ class ProviderPendingOrdersWidgetState
                   style: OutlinedButton.styleFrom(
                     foregroundColor: Colors.black,
                     side: const BorderSide(color: Colors.black, width: 2),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
                   ),
-                  child: const Text('Rad etish', style: TextStyle(fontWeight: FontWeight.bold)),
+                  child: const Text(
+                    'Rad etish',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
                 ),
               ),
               const SizedBox(width: 12),
@@ -250,15 +290,23 @@ class ProviderPendingOrdersWidgetState
                   style: FilledButton.styleFrom(
                     backgroundColor: Colors.black,
                     foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
                   ),
                   child: acting
                       ? const SizedBox(
                           width: 18,
                           height: 18,
-                          child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
                         )
-                      : const Text('Qabul qilish', style: TextStyle(fontWeight: FontWeight.bold)),
+                      : const Text(
+                          'Qabul qilish',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
                 ),
               ),
             ],

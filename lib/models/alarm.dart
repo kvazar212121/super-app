@@ -1,10 +1,13 @@
+import 'package:super_app/l10n/locale_controller.dart';
+
 /// Majburlovchi budilnik modeli — backend `alarms` jadvaliga mos.
 class Alarm {
   final int id;
   final String label;
   final int hour;
   final int minute;
-  final String repeatDays; // ISO weekday CSV: "1,2,3,4,5" (1=Dushanba). Bo'sh = bir martalik.
+  final String
+  repeatDays; // ISO weekday CSV: "1,2,3,4,5" (1=Dushanba). Bo'sh = bir martalik.
   final String ringtone;
   final String missionType; // math | photo | speech
   final Map<String, dynamic> missionConfig;
@@ -35,7 +38,9 @@ class Alarm {
       repeatDays: (json['repeat_days'] ?? '') as String,
       ringtone: (json['ringtone'] ?? 'default') as String,
       missionType: (json['mission_type'] ?? 'math') as String,
-      missionConfig: Map<String, dynamic>.from(json['mission_config'] ?? const {}),
+      missionConfig: Map<String, dynamic>.from(
+        json['mission_config'] ?? const {},
+      ),
       snoozeEnabled: (json['snooze_enabled'] ?? true) as bool,
       snoozeMinutes: (json['snooze_minutes'] ?? 5) as int,
       isEnabled: (json['is_enabled'] ?? true) as bool,
@@ -44,17 +49,17 @@ class Alarm {
 
   /// Backendga yuboriladigan JSON (create/update uchun).
   Map<String, dynamic> toPayload() => {
-        'label': label,
-        'hour': hour,
-        'minute': minute,
-        'repeat_days': repeatDays,
-        'ringtone': ringtone,
-        'mission_type': missionType,
-        'mission_config': missionConfig,
-        'snooze_enabled': snoozeEnabled,
-        'snooze_minutes': snoozeMinutes,
-        'is_enabled': isEnabled,
-      };
+    'label': label,
+    'hour': hour,
+    'minute': minute,
+    'repeat_days': repeatDays,
+    'ringtone': ringtone,
+    'mission_type': missionType,
+    'mission_config': missionConfig,
+    'snooze_enabled': snoozeEnabled,
+    'snooze_minutes': snoozeMinutes,
+    'is_enabled': isEnabled,
+  };
 
   /// Takror kunlar ro'yxati (ISO weekday raqamlari).
   List<int> get repeatDayList => repeatDays

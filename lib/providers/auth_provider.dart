@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import '../services/api_service.dart';
 import '../utils/phone_utils.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 /// Auth holati — OTP orqali login/register.
 class AuthProvider extends ChangeNotifier {
@@ -77,7 +78,10 @@ class AuthProvider extends ChangeNotifier {
     _error = null;
     notifyListeners();
     try {
-      final data = await _api.sendOtp(phone: normalizeUzPhone(phone), purpose: purpose);
+      final data = await _api.sendOtp(
+        phone: normalizeUzPhone(phone),
+        purpose: purpose,
+      );
       _isLoading = false;
       notifyListeners();
       return data;
@@ -146,10 +150,7 @@ class AuthProvider extends ChangeNotifier {
   }
 
   /// Eski parol login — faqat maxsus holatlar uchun (admin).
-  Future<bool> login({
-    required String phone,
-    required String password,
-  }) async {
+  Future<bool> login({required String phone, required String password}) async {
     _isLoading = true;
     _error = null;
     notifyListeners();

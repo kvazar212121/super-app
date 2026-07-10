@@ -7,6 +7,8 @@ class MassageDashboardScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return UnifiedProviderDashboardScreen(config: ProviderCategoryConfig.massage);
+    return UnifiedProviderDashboardScreen(
+      config: ProviderCategoryConfig.massage,
+    );
   }
 }

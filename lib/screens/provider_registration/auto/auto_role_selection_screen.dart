@@ -3,6 +3,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../provider_side/provider_theme.dart';
 import 'auto_mobile_screen.dart';
 import 'auto_workshop_screen.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 /// Avto-yordam ro'yxatdan o'tish — mobil yoki ustaxona.
 class AutoRoleSelectionScreen extends StatelessWidget {
@@ -12,13 +13,15 @@ class AutoRoleSelectionScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return ProviderTheme(
       child: Scaffold(
-        appBar: AppBar(title: const Text('Avto-yordam')),
+        appBar: AppBar(title: Text('Avto-yordam'.tr)),
         body: ListView(
           padding: const EdgeInsets.all(24),
           children: [
             Text(
               'Qanday xizmat ko\'rsatasiz?',
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+              style: Theme.of(
+                context,
+              ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
             Text(
@@ -29,7 +32,8 @@ class AutoRoleSelectionScreen extends StatelessWidget {
             _RoleCard(
               icon: LucideIcons.truck,
               title: 'Mobil avto-yordam',
-              subtitle: 'Evakuator, benzin yetkazish, joyida ta\'mirlash — yo\'lda xizmat',
+              subtitle:
+                  'Evakuator, benzin yetkazish, joyida ta\'mirlash — yo\'lda xizmat',
               color: const Color(0xFF8B5CF6),
               onTap: () => Navigator.push(
                 context,
@@ -40,7 +44,8 @@ class AutoRoleSelectionScreen extends StatelessWidget {
             _RoleCard(
               icon: LucideIcons.home,
               title: 'Ustaxona',
-              subtitle: 'Doimiy servis markazi — diagnostika, remont, shinopompa',
+              subtitle:
+                  'Doimiy servis markazi — diagnostika, remont, shinopompa',
               color: const Color(0xFF334155),
               onTap: () => Navigator.push(
                 context,
@@ -96,9 +101,22 @@ class _RoleCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
                   const SizedBox(height: 4),
-                  Text(subtitle, style: TextStyle(color: Colors.grey, height: 1.35, fontSize: 13)),
+                  Text(
+                    subtitle,
+                    style: TextStyle(
+                      color: Colors.grey,
+                      height: 1.35,
+                      fontSize: 13,
+                    ),
+                  ),
                 ],
               ),
             ),

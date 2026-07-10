@@ -934,89 +934,89 @@ class NannyHubSection extends StatelessWidget {
                   ),
                   borderRadius: BorderRadius.circular(18),
                   child: Container(
-                  padding: const EdgeInsets.all(14),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(GlassTokens.radiusLg),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          CircleAvatar(
-                            radius: 22,
-                            backgroundColor: accentColor,
-                            child: Icon(
-                              LucideIcons.baby,
-                              color: Colors.white,
-                              size: 20,
+                    padding: const EdgeInsets.all(14),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(GlassTokens.radiusLg),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            CircleAvatar(
+                              radius: 22,
+                              backgroundColor: accentColor,
+                              child: Icon(
+                                LucideIcons.baby,
+                                color: Colors.white,
+                                size: 20,
+                              ),
                             ),
+                            if (n.isVerified) ...[
+                              const Spacer(),
+                              Icon(
+                                LucideIcons.badgeCheck,
+                                size: 16,
+                                color: accentColor,
+                              ),
+                            ],
+                          ],
+                        ),
+                        const SizedBox(height: 10),
+                        Text(
+                          n.name,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontWeight: FontWeight.w700,
+                            fontSize: 14,
+                            color: const Color(0xFF0F172A),
                           ),
-                          if (n.isVerified) ...[
+                        ),
+                        Text(
+                          '${n.experienceYears} yil • ${n.ageGroupsLabel}',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: accentColor,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        const Spacer(),
+                        Row(
+                          children: [
+                            const Icon(
+                              Icons.star,
+                              color: Colors.amber,
+                              size: 14,
+                            ),
+                            const SizedBox(width: 3),
+                            Text(
+                              '${n.rating}',
+                              style: const TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                                color: Color(0xFF0F172A),
+                              ),
+                            ),
                             const Spacer(),
-                            Icon(
-                              LucideIcons.badgeCheck,
-                              size: 16,
-                              color: accentColor,
+                            Text(
+                              '${(minPrice / 1000).round()}k+',
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                                color: accentColor,
+                              ),
                             ),
                           ],
-                        ],
-                      ),
-                      const SizedBox(height: 10),
-                      Text(
-                        n.name,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontWeight: FontWeight.w700,
-                          fontSize: 14,
-                          color: const Color(0xFF0F172A),
                         ),
-                      ),
-                      Text(
-                        '${n.experienceYears} yil • ${n.ageGroupsLabel}',
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: 11,
-                          color: accentColor,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      const Spacer(),
-                      Row(
-                        children: [
-                          const Icon(
-                            Icons.star,
-                            color: Colors.amber,
-                            size: 14,
-                          ),
-                          const SizedBox(width: 3),
-                          Text(
-                            '${n.rating}',
-                            style: const TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
-                              color: Color(0xFF0F172A),
-                            ),
-                          ),
-                          const Spacer(),
-                          Text(
-                            '${(minPrice / 1000).round()}k+',
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                              color: accentColor,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            );
+              );
             },
           ),
         ),

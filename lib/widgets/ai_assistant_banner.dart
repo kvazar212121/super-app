@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../theme/glass_tokens.dart';
 import '../screens/chat_screen.dart';
+import '../l10n/locale_controller.dart';
 
 class AIAssistantBanner extends StatelessWidget {
   const AIAssistantBanner({super.key});
@@ -48,22 +49,22 @@ class AIAssistantBanner extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 12),
-              const Expanded(
+              Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'AI Yordamchi',
-                      style: TextStyle(
+                      'AI Yordamchi'.tr,
+                      style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
                       ),
                     ),
-                    SizedBox(height: 2),
+                    const SizedBox(height: 2),
                     Text(
-                      'Ovoz yoki matn orqali buyruq bering',
-                      style: TextStyle(
+                      'Ovoz yoki matn orqali buyruq bering'.tr,
+                      style: const TextStyle(
                         fontSize: 12,
                         color: Colors.white70,
                       ),
@@ -86,7 +87,10 @@ class AIAssistantBanner extends StatelessWidget {
                   },
                   borderRadius: BorderRadius.circular(12),
                   child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 12,
+                      horizontal: 16,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.white, // Qattiq oq rang
                       borderRadius: BorderRadius.circular(12),
@@ -99,9 +103,9 @@ class AIAssistantBanner extends StatelessWidget {
                           color: Colors.black54,
                         ),
                         const SizedBox(width: 8),
-                        const Text(
-                          'Yozish...',
-                          style: TextStyle(
+                        Text(
+                          'Yozish...'.tr,
+                          style: const TextStyle(
                             color: Colors.black54,
                             fontSize: 14,
                           ),
@@ -116,7 +120,9 @@ class AIAssistantBanner extends StatelessWidget {
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (_) => const ChatScreen(startVoice: true)),
+                    MaterialPageRoute(
+                      builder: (_) => const ChatScreen(startVoice: true),
+                    ),
                   );
                 },
                 borderRadius: BorderRadius.circular(12),

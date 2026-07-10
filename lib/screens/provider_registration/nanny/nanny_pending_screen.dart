@@ -6,6 +6,7 @@ import '../../main_screen.dart';
 import '../../provider_side/provider_theme.dart';
 import '../../provider_side/unified_provider_dashboard_screen.dart';
 import '../../../services/provider_portal_service.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 /// Enaga — administrator tasdiqlaguncha.
 class NannyPendingScreen extends StatefulWidget {
@@ -26,10 +27,12 @@ class _NannyPendingScreenState extends State<NannyPendingScreen> {
     try {
       final data = await _portal.getMe('enaga');
       final active = data['is_active'] == true;
-      final meta = data['metadata'] as Map<String, dynamic>? ??
+      final meta =
+          data['metadata'] as Map<String, dynamic>? ??
           data['metadata_json'] as Map<String, dynamic>? ??
           {};
-      final verified = meta['verification_status'] == 'verified' ||
+      final verified =
+          meta['verification_status'] == 'verified' ||
           meta['nanny_role'] == 'verified';
 
       if (!mounted) return;
@@ -45,7 +48,7 @@ class _NannyPendingScreenState extends State<NannyPendingScreen> {
         return;
       }
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Hali tasdiqlanmagan. Biroz kuting.')),
+        SnackBar(content: Text('Hali tasdiqlanmagan. Biroz kuting.'.tr)),
       );
     } catch (_) {
       if (mounted) {
@@ -74,7 +77,11 @@ class _NannyPendingScreenState extends State<NannyPendingScreen> {
                     color: const Color(0xFFF472B6),
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(LucideIcons.baby, size: 48, color: Color(0xFFF472B6)),
+                  child: const Icon(
+                    LucideIcons.baby,
+                    size: 48,
+                    color: Color(0xFFF472B6),
+                  ),
                 ),
                 const SizedBox(height: 28),
                 const Text(
@@ -93,7 +100,11 @@ class _NannyPendingScreenState extends State<NannyPendingScreen> {
                 const Text(
                   'Tasdiqlangandan keyin profilingiz mijozlarga ko\'rinadi va panel to\'liq ochiladi.',
                   textAlign: TextAlign.center,
-                  style: TextStyle(color: Colors.grey, fontSize: 13, height: 1.4),
+                  style: TextStyle(
+                    color: Colors.grey,
+                    fontSize: 13,
+                    height: 1.4,
+                  ),
                 ),
                 const SizedBox(height: 40),
                 SizedBox(
@@ -104,10 +115,13 @@ class _NannyPendingScreenState extends State<NannyPendingScreen> {
                         ? const SizedBox(
                             width: 18,
                             height: 18,
-                            child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.white,
+                            ),
                           )
-                        : const Icon(LucideIcons.refreshCw),
-                    label: const Text('Holatni tekshirish'),
+                        : Icon(LucideIcons.refreshCw),
+                    label: Text('Holatni tekshirish'.tr),
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -121,7 +135,7 @@ class _NannyPendingScreenState extends State<NannyPendingScreen> {
                         (_) => false,
                       );
                     },
-                    child: const Text('Bosh sahifaga'),
+                    child: Text('Bosh sahifaga'.tr),
                   ),
                 ),
               ],

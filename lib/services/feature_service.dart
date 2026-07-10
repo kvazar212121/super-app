@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'api_service.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 /// Ilova bo'limlari holati (admin panelдан boshqariladi).
 /// Yopiq bo'lim ilovaда "tez orada ishga tushadi" xabari bilan ko'rinadi.

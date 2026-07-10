@@ -6,6 +6,7 @@ import '../../../services/cleaning_portal_service.dart';
 import '../../../utils/phone_utils.dart';
 import '../../provider_side/provider_theme.dart';
 import '../provider_success_screen.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 class CleaningTeamScreen extends StatefulWidget {
   const CleaningTeamScreen({super.key});
@@ -41,13 +42,17 @@ class _CleaningTeamScreenState extends State<CleaningTeamScreen> {
 
     if (name.isEmpty || address.isEmpty || area.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Kompaniya nomi, manzil va hududni kiriting')),
+        SnackBar(
+          content: Text('Kompaniya nomi, manzil va hududni kiriting'.tr),
+        ),
       );
       return;
     }
     if (teamSize < 2) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Jamoa kamida 2 kishidan iborat bo\'lishi kerak')),
+        const SnackBar(
+          content: Text('Jamoa kamida 2 kishidan iborat bo\'lishi kerak'),
+        ),
       );
       return;
     }
@@ -81,9 +86,9 @@ class _CleaningTeamScreenState extends State<CleaningTeamScreen> {
       );
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Xatolik: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Xatolik: $e')));
       }
     } finally {
       if (mounted) setState(() => _submitting = false);
@@ -94,7 +99,7 @@ class _CleaningTeamScreenState extends State<CleaningTeamScreen> {
   Widget build(BuildContext context) {
     return ProviderTheme(
       child: Scaffold(
-        appBar: AppBar(title: const Text('Tozalash jamoasi')),
+        appBar: AppBar(title: Text('Tozalash jamoasi'.tr)),
         body: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
           child: Column(
@@ -107,29 +112,31 @@ class _CleaningTeamScreenState extends State<CleaningTeamScreen> {
               const SizedBox(height: 24),
               TextField(
                 controller: _nameCtrl,
-                decoration: const InputDecoration(labelText: 'Kompaniya / jamoa nomi'),
+                decoration: InputDecoration(
+                  labelText: 'Kompaniya / jamoa nomi'.tr,
+                ),
               ),
               const SizedBox(height: 16),
               TextField(
                 controller: _phoneCtrl,
-                decoration: const InputDecoration(labelText: 'Telefon'),
+                decoration: InputDecoration(labelText: 'Telefon'.tr),
               ),
               const SizedBox(height: 16),
               TextField(
                 controller: _addressCtrl,
                 maxLines: 2,
-                decoration: const InputDecoration(
-                  labelText: 'Ofis manzili',
-                  hintText: 'Masalan: Chilonzor, 9-kvartal',
+                decoration: InputDecoration(
+                  labelText: 'Ofis manzili'.tr,
+                  hintText: 'Masalan: Chilonzor, 9-kvartal'.tr,
                 ),
               ),
               const SizedBox(height: 16),
               TextField(
                 controller: _areaCtrl,
                 maxLines: 2,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: 'Xizmat ko\'rsatadigan hudud',
-                  hintText: 'Masalan: Butun Toshkent',
+                  hintText: 'Masalan: Butun Toshkent'.tr,
                 ),
               ),
               const SizedBox(height: 16),
@@ -137,9 +144,9 @@ class _CleaningTeamScreenState extends State<CleaningTeamScreen> {
                 controller: _teamSizeCtrl,
                 keyboardType: TextInputType.number,
                 inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: 'Jamoa a\'zolari soni',
-                  hintText: 'Masalan: 4',
+                  hintText: 'Masalan: 4'.tr,
                 ),
               ),
               const SizedBox(height: 32),

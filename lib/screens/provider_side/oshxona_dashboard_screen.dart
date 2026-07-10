@@ -7,6 +7,8 @@ class OshxonaDashboardScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return UnifiedProviderDashboardScreen(config: ProviderCategoryConfig.oshxona);
+    return UnifiedProviderDashboardScreen(
+      config: ProviderCategoryConfig.oshxona,
+    );
   }
 }

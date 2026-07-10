@@ -21,11 +21,11 @@ class GameZone {
   final double longitude;
 
   /// e.g. "PS5 Klub", "PC Arena", "VR Zona"
-  final String zoneType; 
-  
+  final String zoneType;
+
   /// e.g. "VIP Xona", "Umumiy zal"
-  final String roomType; 
-  
+  final String roomType;
+
   final double basePricePerHour;
   final List<GameZoneAmenity> amenities;
   final List<String> gallery;
@@ -59,7 +59,12 @@ final mockGameZones = [
     basePricePerHour: 20000,
     amenities: const [
       GameZoneAmenity(id: 'a1', name: 'Bar / Kafe', iconStr: 'local_cafe'),
-      GameZoneAmenity(id: 'a2', name: 'VIP xona', iconStr: 'meeting_room', additionalPrice: 15000),
+      GameZoneAmenity(
+        id: 'a2',
+        name: 'VIP xona',
+        iconStr: 'meeting_room',
+        additionalPrice: 15000,
+      ),
       GameZoneAmenity(id: 'a3', name: 'Energy drinks', iconStr: 'sports_bar'),
     ],
     gallery: [
@@ -79,7 +84,12 @@ final mockGameZones = [
     amenities: const [
       GameZoneAmenity(id: 'a1', name: '4K TV (85 inch)', iconStr: 'tv'),
       GameZoneAmenity(id: 'a2', name: 'Ovqat buyurtma', iconStr: 'fastfood'),
-      GameZoneAmenity(id: 'a3', name: '4 ta Djoystik', iconStr: 'gamepad', additionalPrice: 10000),
+      GameZoneAmenity(
+        id: 'a3',
+        name: '4 ta Djoystik',
+        iconStr: 'gamepad',
+        additionalPrice: 10000,
+      ),
     ],
     gallery: [
       'https://images.unsplash.com/photo-1605901309584-818e25960b8f?q=80&w=600&auto=format&fit=crop',
@@ -97,7 +107,12 @@ final mockGameZones = [
     basePricePerHour: 50000,
     amenities: const [
       GameZoneAmenity(id: 'a1', name: 'Oculus Quest 3', iconStr: 'visibility'),
-      GameZoneAmenity(id: 'a2', name: 'Qo\'shimcha vaqt (30 min)', iconStr: 'timer', additionalPrice: 20000),
+      GameZoneAmenity(
+        id: 'a2',
+        name: 'Qo\'shimcha vaqt (30 min)',
+        iconStr: 'timer',
+        additionalPrice: 20000,
+      ),
     ],
     gallery: [
       'https://images.unsplash.com/photo-1622979135225-d2ba269cf1ac?q=80&w=600&auto=format&fit=crop',

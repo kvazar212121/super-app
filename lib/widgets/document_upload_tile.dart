@@ -43,15 +43,15 @@ class _DocumentUploadTileState extends State<DocumentUploadTile> {
       final url = await ApiService().uploadCover(file.path);
       widget.onUrlChanged(url);
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${widget.label} yuklandi')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('${widget.label} yuklandi')));
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Yuklashda xatolik: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Yuklashda xatolik: $e')));
       }
     } finally {
       if (mounted) setState(() => _uploading = false);
@@ -67,9 +67,7 @@ class _DocumentUploadTileState extends State<DocumentUploadTile> {
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(
-          color: hasUrl ? widget.accent : Colors.grey,
-        ),
+        border: Border.all(color: hasUrl ? widget.accent : Colors.grey),
         color: hasUrl ? widget.accent : null,
       ),
       child: Row(
@@ -91,7 +89,10 @@ class _DocumentUploadTileState extends State<DocumentUploadTile> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(widget.label, style: const TextStyle(fontWeight: FontWeight.w600)),
+                Text(
+                  widget.label,
+                  style: const TextStyle(fontWeight: FontWeight.w600),
+                ),
                 if (widget.subtitle != null)
                   Text(
                     widget.subtitle!,
@@ -100,7 +101,11 @@ class _DocumentUploadTileState extends State<DocumentUploadTile> {
                 if (hasUrl)
                   Text(
                     'Yuklangan ✓',
-                    style: TextStyle(fontSize: 12, color: widget.accent, fontWeight: FontWeight.w600),
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: widget.accent,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
               ],
             ),

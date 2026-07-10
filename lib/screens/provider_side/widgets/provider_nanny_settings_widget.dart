@@ -3,6 +3,7 @@ import '../../../services/hub_data_service.dart';
 import 'package:flutter/services.dart';
 import '../../../services/provider_availability_service.dart';
 import '../../../services/provider_portal_service.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 class _ServiceRow {
   final nameCtrl = TextEditingController();
@@ -26,10 +27,12 @@ class ProviderNannySettingsWidget extends StatefulWidget {
   });
 
   @override
-  State<ProviderNannySettingsWidget> createState() => _ProviderNannySettingsWidgetState();
+  State<ProviderNannySettingsWidget> createState() =>
+      _ProviderNannySettingsWidgetState();
 }
 
-class _ProviderNannySettingsWidgetState extends State<ProviderNannySettingsWidget> {
+class _ProviderNannySettingsWidgetState
+    extends State<ProviderNannySettingsWidget> {
   final _portal = ProviderPortalService();
   bool _loading = true;
   bool _saving = false;
@@ -43,8 +46,17 @@ class _ProviderNannySettingsWidgetState extends State<ProviderNannySettingsWidge
   final _experienceCtrl = TextEditingController();
 
   static const _slots = [
-    '08:00', '09:00', '10:00', '11:00', '12:00',
-    '14:00', '15:00', '16:00', '17:00', '18:00', '19:00',
+    '08:00',
+    '09:00',
+    '10:00',
+    '11:00',
+    '12:00',
+    '14:00',
+    '15:00',
+    '16:00',
+    '17:00',
+    '18:00',
+    '19:00',
   ];
   static const _ageOptions = ['0-1', '1-3', '3-7', '7-12'];
 
@@ -90,8 +102,12 @@ class _ProviderNannySettingsWidgetState extends State<ProviderNannySettingsWidge
     _isTravelFeeIncluded = meta['is_travel_fee_included'] as bool? ?? true;
     _travelFeeCtrl.text = '${meta['travel_fee'] ?? 0}';
 
-    final names = (meta['services'] as List<dynamic>? ?? []).map((e) => e.toString()).toList();
-    final prices = Map<String, dynamic>.from(meta['prices'] as Map<String, dynamic>? ?? {});
+    final names = (meta['services'] as List<dynamic>? ?? [])
+        .map((e) => e.toString())
+        .toList();
+    final prices = Map<String, dynamic>.from(
+      meta['prices'] as Map<String, dynamic>? ?? {},
+    );
 
     if (names.isEmpty) {
       _addService('', '');
@@ -101,7 +117,8 @@ class _ProviderNannySettingsWidgetState extends State<ProviderNannySettingsWidge
       }
     }
 
-    _timeSlots = (meta['time_slots'] as List<dynamic>?)
+    _timeSlots =
+        (meta['time_slots'] as List<dynamic>?)
             ?.map((e) => e.toString())
             .toList() ??
         List.of(_slots);
@@ -109,20 +126,26 @@ class _ProviderNannySettingsWidgetState extends State<ProviderNannySettingsWidge
     _ageGroups
       ..clear()
       ..addAll(
-        (meta['age_groups'] as List<dynamic>? ?? ['1-3', '3-7']).map((e) => e.toString()),
+        (meta['age_groups'] as List<dynamic>? ?? ['1-3', '3-7']).map(
+          (e) => e.toString(),
+        ),
       );
     _languages
       ..clear()
       ..addAll(
-        (meta['languages'] as List<dynamic>? ?? ['uz']).map((e) => e.toString()),
+        (meta['languages'] as List<dynamic>? ?? ['uz']).map(
+          (e) => e.toString(),
+        ),
       );
     _experienceCtrl.text = '${meta['experience_years'] ?? ''}';
   }
 
   void _addService(String name, String price) {
-    _services.add(_ServiceRow()
-      ..nameCtrl.text = name
-      ..priceCtrl.text = price);
+    _services.add(
+      _ServiceRow()
+        ..nameCtrl.text = name
+        ..priceCtrl.text = price,
+    );
   }
 
   Future<void> _save() async {
@@ -134,14 +157,15 @@ class _ProviderNannySettingsWidgetState extends State<ProviderNannySettingsWidge
         final name = row.nameCtrl.text.trim();
         if (name.isEmpty) continue;
         services.add(name);
-        prices[name] = int.tryParse(row.priceCtrl.text.replaceAll(' ', '')) ?? 0;
+        prices[name] =
+            int.tryParse(row.priceCtrl.text.replaceAll(' ', '')) ?? 0;
       }
 
       final latestData = await _portal.getMe(widget.categoryKey);
       final latestMeta = Map<String, dynamic>.from(
         latestData['metadata'] as Map<String, dynamic>? ??
-        latestData['metadata_json'] as Map<String, dynamic>? ??
-        {},
+            latestData['metadata_json'] as Map<String, dynamic>? ??
+            {},
       );
       final meta = Map<String, dynamic>.from(latestMeta)
         ..['type'] = 'nanny'
@@ -154,20 +178,22 @@ class _ProviderNannySettingsWidgetState extends State<ProviderNannySettingsWidge
         ..['experience_years'] = int.tryParse(_experienceCtrl.text.trim()) ?? 0;
 
       meta['is_travel_fee_included'] = _isTravelFeeIncluded;
-      meta['travel_fee'] = double.tryParse(_travelFeeCtrl.text.replaceAll(RegExp(r'\D'), '')) ?? 0.0;
+      meta['travel_fee'] =
+          double.tryParse(_travelFeeCtrl.text.replaceAll(RegExp(r'\D'), '')) ??
+          0.0;
       await _portal.updateMetadata(widget.categoryKey, meta);
       HubDataService().clearCache();
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Sozlamalar saqlandi')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Sozlamalar saqlandi'.tr)));
       }
       await _load();
     } catch (_) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Saqlashda xatolik')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Saqlashda xatolik'.tr)));
       }
     } finally {
       if (mounted) setState(() => _saving = false);
@@ -178,7 +204,8 @@ class _ProviderNannySettingsWidgetState extends State<ProviderNannySettingsWidge
   Widget build(BuildContext context) {
     if (_loading) return const Center(child: CircularProgressIndicator());
 
-    final verification = _baseMeta['verification_status']?.toString() ?? 'pending';
+    final verification =
+        _baseMeta['verification_status']?.toString() ?? 'pending';
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -199,17 +226,22 @@ class _ProviderNannySettingsWidgetState extends State<ProviderNannySettingsWidge
           ),
         Text(
           'Enaga xizmatlari',
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+          style: Theme.of(
+            context,
+          ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 12),
         TextField(
           controller: _experienceCtrl,
           keyboardType: TextInputType.number,
           inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-          decoration: const InputDecoration(labelText: 'Tajriba (yil)'),
+          decoration: InputDecoration(labelText: 'Tajriba (yil)'.tr),
         ),
         const SizedBox(height: 16),
-        const Text('Yosh guruhlari', style: TextStyle(fontWeight: FontWeight.w600)),
+        const Text(
+          'Yosh guruhlari',
+          style: TextStyle(fontWeight: FontWeight.w600),
+        ),
         Wrap(
           spacing: 8,
           children: _ageOptions.map((a) {
@@ -249,7 +281,7 @@ class _ProviderNannySettingsWidgetState extends State<ProviderNannySettingsWidge
                   child: TextField(
                     controller: row.priceCtrl,
                     keyboardType: TextInputType.number,
-                    decoration: const InputDecoration(labelText: 'Narx'),
+                    decoration: InputDecoration(labelText: 'Narx'.tr),
                   ),
                 ),
               ],
@@ -262,7 +294,10 @@ class _ProviderNannySettingsWidgetState extends State<ProviderNannySettingsWidge
           label: const Text('Xizmat qo\'shish'),
         ),
         const SizedBox(height: 16),
-        const Text('Ish vaqtlari', style: TextStyle(fontWeight: FontWeight.w600)),
+        const Text(
+          'Ish vaqtlari',
+          style: TextStyle(fontWeight: FontWeight.w600),
+        ),
         const SizedBox(height: 8),
         Wrap(
           spacing: 8,
@@ -297,7 +332,7 @@ class _ProviderNannySettingsWidgetState extends State<ProviderNannySettingsWidge
           const SizedBox(height: 12),
           TextField(
             controller: _travelFeeCtrl,
-            decoration: const InputDecoration(
+            decoration: InputDecoration(
               labelText: 'Yo\'l kira narxi (so\'m)',
               border: OutlineInputBorder(),
             ),
@@ -309,10 +344,17 @@ class _ProviderNannySettingsWidgetState extends State<ProviderNannySettingsWidge
           width: double.infinity,
           child: FilledButton(
             onPressed: _saving ? null : _save,
-            style: FilledButton.styleFrom(backgroundColor: Colors.black, foregroundColor: Colors.white),
+            style: FilledButton.styleFrom(
+              backgroundColor: Colors.black,
+              foregroundColor: Colors.white,
+            ),
             child: _saving
-                ? const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2))
-                : const Text('Saqlash'),
+                ? const SizedBox(
+                    width: 22,
+                    height: 22,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : Text('Saqlash'.tr),
           ),
         ),
       ],

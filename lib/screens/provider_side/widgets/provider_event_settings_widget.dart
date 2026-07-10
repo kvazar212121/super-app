@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import '../../../models/event_planning.dart';
 import '../../../services/provider_availability_service.dart';
 import '../../../services/provider_portal_service.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 class _ServiceRow {
   final nameCtrl = TextEditingController();
@@ -31,7 +32,8 @@ class ProviderEventSettingsWidget extends StatefulWidget {
       _ProviderEventSettingsWidgetState();
 }
 
-class _ProviderEventSettingsWidgetState extends State<ProviderEventSettingsWidget> {
+class _ProviderEventSettingsWidgetState
+    extends State<ProviderEventSettingsWidget> {
   final _portal = ProviderPortalService();
   bool _loading = true;
   bool _saving = false;
@@ -45,8 +47,17 @@ class _ProviderEventSettingsWidgetState extends State<ProviderEventSettingsWidge
   final _teamCtrl = TextEditingController();
 
   static const _slots = [
-    '09:00', '10:00', '11:00', '12:00',
-    '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00',
+    '09:00',
+    '10:00',
+    '11:00',
+    '12:00',
+    '14:00',
+    '15:00',
+    '16:00',
+    '17:00',
+    '18:00',
+    '19:00',
+    '20:00',
   ];
 
   @override
@@ -91,7 +102,9 @@ class _ProviderEventSettingsWidgetState extends State<ProviderEventSettingsWidge
     final names = (meta['services'] as List<dynamic>? ?? [])
         .map((e) => e.toString())
         .toList();
-    final prices = Map<String, dynamic>.from(meta['prices'] as Map<String, dynamic>? ?? {});
+    final prices = Map<String, dynamic>.from(
+      meta['prices'] as Map<String, dynamic>? ?? {},
+    );
 
     if (names.isEmpty) {
       _addService('', '');
@@ -101,7 +114,8 @@ class _ProviderEventSettingsWidgetState extends State<ProviderEventSettingsWidge
       }
     }
 
-    _timeSlots = (meta['time_slots'] as List<dynamic>?)
+    _timeSlots =
+        (meta['time_slots'] as List<dynamic>?)
             ?.map((e) => e.toString())
             .toList() ??
         List.of(_slots);
@@ -109,19 +123,22 @@ class _ProviderEventSettingsWidgetState extends State<ProviderEventSettingsWidge
     _organizerTypes
       ..clear()
       ..addAll(
-        (meta['organizer_types'] as List<dynamic>? ?? ['stage_setup', 'full_organization'])
+        (meta['organizer_types'] as List<dynamic>? ??
+                ['stage_setup', 'full_organization'])
             .map((e) => e.toString()),
       );
     _eventTypes
       ..clear()
       ..addAll(
-        (meta['event_types'] as List<dynamic>? ?? ['wedding', 'birthday'])
-            .map((e) => e.toString()),
+        (meta['event_types'] as List<dynamic>? ?? ['wedding', 'birthday']).map(
+          (e) => e.toString(),
+        ),
       );
     _venueTypes
       ..clear()
       ..addAll(
-        (meta['venue_types'] as List<dynamic>? ?? ['village_yard', 'open_field'])
+        (meta['venue_types'] as List<dynamic>? ??
+                ['village_yard', 'open_field'])
             .map((e) => e.toString()),
       );
     _areaCtrl.text = meta['service_area']?.toString() ?? '';
@@ -129,9 +146,11 @@ class _ProviderEventSettingsWidgetState extends State<ProviderEventSettingsWidge
   }
 
   void _addService(String name, String price) {
-    _services.add(_ServiceRow()
-      ..nameCtrl.text = name
-      ..priceCtrl.text = price);
+    _services.add(
+      _ServiceRow()
+        ..nameCtrl.text = name
+        ..priceCtrl.text = price,
+    );
   }
 
   Future<void> _save() async {
@@ -143,14 +162,15 @@ class _ProviderEventSettingsWidgetState extends State<ProviderEventSettingsWidge
         final name = row.nameCtrl.text.trim();
         if (name.isEmpty) continue;
         services.add(name);
-        prices[name] = int.tryParse(row.priceCtrl.text.replaceAll(' ', '')) ?? 0;
+        prices[name] =
+            int.tryParse(row.priceCtrl.text.replaceAll(' ', '')) ?? 0;
       }
 
       final latestData = await _portal.getMe(widget.categoryKey);
       final latestMeta = Map<String, dynamic>.from(
         latestData['metadata'] as Map<String, dynamic>? ??
-        latestData['metadata_json'] as Map<String, dynamic>? ??
-        {},
+            latestData['metadata_json'] as Map<String, dynamic>? ??
+            {},
       );
       final meta = Map<String, dynamic>.from(latestMeta)
         ..['type'] = 'event_organizer'
@@ -166,16 +186,16 @@ class _ProviderEventSettingsWidgetState extends State<ProviderEventSettingsWidge
       await _portal.updateMetadata(widget.categoryKey, meta);
       HubDataService().clearCache();
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Sozlamalar saqlandi')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Sozlamalar saqlandi'.tr)));
       }
       await _load();
     } catch (_) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Saqlashda xatolik')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Saqlashda xatolik'.tr)));
       }
     } finally {
       if (mounted) setState(() => _saving = false);
@@ -191,13 +211,15 @@ class _ProviderEventSettingsWidgetState extends State<ProviderEventSettingsWidge
       children: [
         Text(
           'Tadbir guruhi',
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+          style: Theme.of(
+            context,
+          ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 16),
         TextField(
           controller: _areaCtrl,
-          decoration: const InputDecoration(
-            labelText: 'Xizmat hududi',
+          decoration: InputDecoration(
+            labelText: 'Xizmat hududi'.tr,
             border: OutlineInputBorder(),
           ),
           maxLines: 2,
@@ -206,8 +228,8 @@ class _ProviderEventSettingsWidgetState extends State<ProviderEventSettingsWidge
         TextField(
           controller: _teamCtrl,
           keyboardType: TextInputType.number,
-          decoration: const InputDecoration(
-            labelText: 'Jamoa hajmi (kishi)',
+          decoration: InputDecoration(
+            labelText: 'Jamoa hajmi (kishi)'.tr,
             border: OutlineInputBorder(),
           ),
         ),
@@ -240,31 +262,35 @@ class _ProviderEventSettingsWidgetState extends State<ProviderEventSettingsWidge
         Wrap(
           spacing: 8,
           runSpacing: 8,
-          children: [
-            EventVenueType.villageYard,
-            EventVenueType.openField,
-            EventVenueType.garden,
-            EventVenueType.hall,
-            EventVenueType.restaurant,
-          ].map((t) {
-            final selected = _venueTypes.contains(t.key);
-            return FilterChip(
-              label: Text(t.label),
-              selected: selected,
-              onSelected: (v) => setState(() {
-                if (v) {
-                  _venueTypes.add(t.key);
-                } else if (_venueTypes.length > 1) {
-                  _venueTypes.remove(t.key);
-                }
-              }),
-              selectedColor: Colors.black12,
-              checkmarkColor: Colors.black,
-            );
-          }).toList(),
+          children:
+              [
+                EventVenueType.villageYard,
+                EventVenueType.openField,
+                EventVenueType.garden,
+                EventVenueType.hall,
+                EventVenueType.restaurant,
+              ].map((t) {
+                final selected = _venueTypes.contains(t.key);
+                return FilterChip(
+                  label: Text(t.label),
+                  selected: selected,
+                  onSelected: (v) => setState(() {
+                    if (v) {
+                      _venueTypes.add(t.key);
+                    } else if (_venueTypes.length > 1) {
+                      _venueTypes.remove(t.key);
+                    }
+                  }),
+                  selectedColor: Colors.black12,
+                  checkmarkColor: Colors.black,
+                );
+              }).toList(),
         ),
         const SizedBox(height: 24),
-        Text('Xizmatlar va narxlar', style: Theme.of(context).textTheme.titleMedium),
+        Text(
+          'Xizmatlar va narxlar',
+          style: Theme.of(context).textTheme.titleMedium,
+        ),
         const SizedBox(height: 12),
         ..._services.asMap().entries.map((entry) {
           final i = entry.key;
@@ -290,19 +316,22 @@ class _ProviderEventSettingsWidgetState extends State<ProviderEventSettingsWidge
                     controller: row.priceCtrl,
                     keyboardType: TextInputType.number,
                     inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                    decoration: const InputDecoration(
-                      labelText: 'Narx',
+                    decoration: InputDecoration(
+                      labelText: 'Narx'.tr,
                       border: OutlineInputBorder(),
                     ),
                   ),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.remove_circle_outline, color: Colors.red),
+                  icon: const Icon(
+                    Icons.remove_circle_outline,
+                    color: Colors.red,
+                  ),
                   onPressed: _services.length > 1
                       ? () => setState(() {
-                            _services[i].dispose();
-                            _services.removeAt(i);
-                          })
+                          _services[i].dispose();
+                          _services.removeAt(i);
+                        })
                       : null,
                 ),
               ],
@@ -345,16 +374,20 @@ class _ProviderEventSettingsWidgetState extends State<ProviderEventSettingsWidge
           child: FilledButton(
             onPressed: _saving ? null : _save,
             style: FilledButton.styleFrom(
-              backgroundColor: Colors.black, foregroundColor: Colors.white,
+              backgroundColor: Colors.black,
+              foregroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(vertical: 16),
             ),
             child: _saving
                 ? const SizedBox(
                     width: 22,
                     height: 22,
-                    child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: Colors.white,
+                    ),
                   )
-                : const Text('Saqlash'),
+                : Text('Saqlash'.tr),
           ),
         ),
       ],

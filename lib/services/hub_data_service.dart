@@ -147,8 +147,13 @@ class HubDataService {
   Future<List<NannyService>> getNannies() async {
     final items = await fetchProviders(ServiceHubKind.enaga);
     return items
-        .where((j) => (j['metadata']?['type'] ?? '') == 'nanny' ||
-            (j['metadata']?['specialty'] as String? ?? '').toLowerCase().contains('enaga'))
+        .where(
+          (j) =>
+              (j['metadata']?['type'] ?? '') == 'nanny' ||
+              (j['metadata']?['specialty'] as String? ?? '')
+                  .toLowerCase()
+                  .contains('enaga'),
+        )
         .map(NannyService.fromProviderJson)
         .toList();
   }

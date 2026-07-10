@@ -4,6 +4,7 @@ import '../models/service_hub_kind.dart';
 import '../widgets/event_widgets.dart';
 import '../widgets/glass/mesh_background.dart';
 import '../utils/call_helper.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 class EventTeamProfileScreen extends StatefulWidget {
   final EventPlanning team;
@@ -44,7 +45,10 @@ class _EventTeamProfileScreenState extends State<EventTeamProfileScreen> {
             const SizedBox(height: 20),
             EventTeamInfoCard(team: team),
             const SizedBox(height: 20),
-            const _SectionTitle('Xizmatlar va narxlar', Icons.monetization_on_outlined),
+            const _SectionTitle(
+              'Xizmatlar va narxlar',
+              Icons.monetization_on_outlined,
+            ),
             const SizedBox(height: 8),
             Container(
               padding: const EdgeInsets.all(16),
@@ -59,10 +63,18 @@ class _EventTeamProfileScreenState extends State<EventTeamProfileScreen> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Expanded(child: Text(e.key, style: const TextStyle(fontSize: 13))),
+                        Expanded(
+                          child: Text(
+                            e.key,
+                            style: const TextStyle(fontSize: 13),
+                          ),
+                        ),
                         Text(
                           '${(e.value / 1000).toStringAsFixed(0)} ming soʻm',
-                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 13,
+                          ),
                         ),
                       ],
                     ),
@@ -76,7 +88,9 @@ class _EventTeamProfileScreenState extends State<EventTeamProfileScreen> {
               child: FilledButton.icon(
                 style: FilledButton.styleFrom(
                   backgroundColor: _accent,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
                 ),
                 onPressed: _startCall,
                 icon: const Icon(Icons.phone_in_talk, size: 22),

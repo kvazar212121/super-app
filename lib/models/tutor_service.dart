@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 enum LessonMode {
   online,
@@ -16,22 +17,22 @@ enum LessonMode {
 
 extension LessonModeX on LessonMode {
   String get key => switch (this) {
-        LessonMode.online => 'online',
-        LessonMode.homeVisit => 'home_visit',
-        LessonMode.atCenter => 'at_center',
-      };
+    LessonMode.online => 'online',
+    LessonMode.homeVisit => 'home_visit',
+    LessonMode.atCenter => 'at_center',
+  };
 
   String get label => switch (this) {
-        LessonMode.online => 'Onlayn (masofadan)',
-        LessonMode.homeVisit => 'Uyga kelib',
-        LessonMode.atCenter => 'Markazda',
-      };
+    LessonMode.online => 'Onlayn (masofadan)',
+    LessonMode.homeVisit => 'Uyga kelib',
+    LessonMode.atCenter => 'Markazda',
+  };
 
   IconData get icon => switch (this) {
-        LessonMode.online => LucideIcons.video,
-        LessonMode.homeVisit => LucideIcons.home,
-        LessonMode.atCenter => LucideIcons.school,
-      };
+    LessonMode.online => LucideIcons.video,
+    LessonMode.homeVisit => LucideIcons.home,
+    LessonMode.atCenter => LucideIcons.school,
+  };
 }
 
 /// Yakka repetitor modeli
@@ -87,15 +88,19 @@ class TutorService {
 
   String get subjectsLabel => subjects.isEmpty ? 'Fanlar' : subjects.join(', ');
 
-  String get lessonModesLabel =>
-      lessonModes.isEmpty ? 'Onlayn, uyga' : lessonModes.map((m) => m.label).join(', ');
+  String get lessonModesLabel => lessonModes.isEmpty
+      ? 'Onlayn, uyga'
+      : lessonModes.map((m) => m.label).join(', ');
 
   factory TutorService.fromProviderJson(Map<String, dynamic> json) {
     final meta = json['metadata'] as Map<String, dynamic>? ?? {};
     final modeKeys = (meta['lesson_modes'] as List<dynamic>? ?? [])
         .map((e) => e.toString())
         .toList();
-    final modes = modeKeys.map(LessonMode.fromKey).whereType<LessonMode>().toList();
+    final modes = modeKeys
+        .map(LessonMode.fromKey)
+        .whereType<LessonMode>()
+        .toList();
 
     final services = (meta['services'] as List<dynamic>? ?? [])
         .map((e) => e.toString())

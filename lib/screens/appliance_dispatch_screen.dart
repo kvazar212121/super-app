@@ -10,6 +10,7 @@ import '../providers/app_provider.dart';
 import '../utils/auth_guard.dart';
 import '../widgets/booking_common_widgets.dart';
 import '../widgets/glass/mesh_background.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 class ApplianceDispatchScreen extends StatefulWidget {
   final ApplianceRepair service;
@@ -17,7 +18,8 @@ class ApplianceDispatchScreen extends StatefulWidget {
   const ApplianceDispatchScreen({super.key, required this.service});
 
   @override
-  State<ApplianceDispatchScreen> createState() => _ApplianceDispatchScreenState();
+  State<ApplianceDispatchScreen> createState() =>
+      _ApplianceDispatchScreenState();
 }
 
 class _ApplianceDispatchScreenState extends State<ApplianceDispatchScreen> {
@@ -82,7 +84,9 @@ class _ApplianceDispatchScreenState extends State<ApplianceDispatchScreen> {
       Navigator.pop(context);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Texnika ustasi chaqirildi! ${widget.service.name} tez orada aloqaga chiqadi.'),
+          content: Text(
+            'Texnika ustasi chaqirildi! ${widget.service.name} tez orada aloqaga chiqadi.',
+          ),
           backgroundColor: Colors.green,
         ),
       );
@@ -103,7 +107,7 @@ class _ApplianceDispatchScreenState extends State<ApplianceDispatchScreen> {
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           elevation: 0,
-          title: const Text('Ustani uyga chaqirish'),
+          title: Text('Ustani uyga chaqirish'.tr),
         ),
         body: SingleChildScrollView(
           padding: const EdgeInsets.all(20),
@@ -128,8 +132,20 @@ class _ApplianceDispatchScreenState extends State<ApplianceDispatchScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(widget.service.name, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                          Text('Texnika ustasi', style: TextStyle(color: _accent, fontWeight: FontWeight.w600)),
+                          Text(
+                            widget.service.name,
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Text(
+                            'Texnika ustasi',
+                            style: TextStyle(
+                              color: _accent,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -159,7 +175,10 @@ class _ApplianceDispatchScreenState extends State<ApplianceDispatchScreen> {
                   prefixIcon: const Icon(LucideIcons.mapPin),
                   filled: true,
                   fillColor: Colors.white,
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: BorderSide.none,
+                  ),
                 ),
               ),
               const SizedBox(height: 24),
@@ -180,9 +199,14 @@ class _ApplianceDispatchScreenState extends State<ApplianceDispatchScreen> {
                   onPressed: _canSubmit ? _confirmDispatch : null,
                   style: FilledButton.styleFrom(
                     backgroundColor: _accent,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
                   ),
-                  child: const Text('Ustani chaqirish', style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold)),
+                  child: const Text(
+                    'Ustani chaqirish',
+                    style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
+                  ),
                 ),
               ),
               const SizedBox(height: 40),

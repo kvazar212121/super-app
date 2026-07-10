@@ -3,6 +3,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:provider/provider.dart';
 import '../providers/app_provider.dart';
 import '../services/call_service.dart';
+import '../l10n/locale_controller.dart';
 import '../widgets/glass/glass_bottom_bar.dart';
 import '../widgets/glass/mesh_background.dart';
 import 'home_screen.dart';
@@ -23,12 +24,12 @@ class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
   AppProvider? _appProvider;
 
-  static const List<GlassNavItem> _navItems = [
-    GlassNavItem(icon: LucideIcons.home, label: 'Asosiy'),
-    GlassNavItem(icon: LucideIcons.layoutGrid, label: 'Xizmatlar'),
-    GlassNavItem(icon: LucideIcons.briefcase, label: 'Buyurtmalar'),
-    GlassNavItem(icon: LucideIcons.phone, label: 'Aloqa'),
-    GlassNavItem(icon: LucideIcons.user, label: 'Profil'),
+  List<GlassNavItem> get _navItems => [
+    GlassNavItem(icon: LucideIcons.home, label: 'Asosiy'.tr),
+    GlassNavItem(icon: LucideIcons.layoutGrid, label: 'Xizmatlar'.tr),
+    GlassNavItem(icon: LucideIcons.briefcase, label: 'Buyurtmalar'.tr),
+    GlassNavItem(icon: LucideIcons.phone, label: 'Aloqa'.tr),
+    GlassNavItem(icon: LucideIcons.user, label: 'Profil'.tr),
   ];
 
   @override
@@ -38,7 +39,7 @@ class _MainScreenState extends State<MainScreen> {
       _appProvider = context.read<AppProvider>();
       _appProvider!.addListener(_onAppChanged);
       _appProvider!.fetchInitialData();
-      
+
       CallService().connectWebSocket();
     });
   }
@@ -57,7 +58,7 @@ class _MainScreenState extends State<MainScreen> {
       SnackBar(
         content: Text(msg),
         action: SnackBarAction(
-          label: 'Ko\'rish',
+          label: 'Ko\'rish'.tr,
           onPressed: () => setState(() => _selectedIndex = 2),
         ),
       ),

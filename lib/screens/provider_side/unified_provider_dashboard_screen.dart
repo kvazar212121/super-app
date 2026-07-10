@@ -42,15 +42,13 @@ import '../calls/call_screen.dart';
 import 'widgets/incoming_order_dialog.dart';
 import 'widgets/provider_profile_editor_widget.dart';
 import '../../services/hub_data_service.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 /// Barcha soha egasi panellari — DB/API dan ma'lumot oladi.
 class UnifiedProviderDashboardScreen extends StatefulWidget {
   final ProviderCategoryConfig config;
 
-  const UnifiedProviderDashboardScreen({
-    super.key,
-    required this.config,
-  });
+  const UnifiedProviderDashboardScreen({super.key, required this.config});
 
   @override
   State<UnifiedProviderDashboardScreen> createState() =>
@@ -74,16 +72,16 @@ class _UnifiedProviderDashboardScreenState
       if (mounted) {
         if (success) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text("Sozlamalar saqlandi"),
+            SnackBar(
+              content: Text("Sozlamalar saqlandi".tr),
               backgroundColor: Colors.green,
             ),
           );
           _load();
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text("Xatolik yuz berdi"),
+            SnackBar(
+              content: Text("Xatolik yuz berdi".tr),
               backgroundColor: Colors.redAccent,
             ),
           );
@@ -104,6 +102,7 @@ class _UnifiedProviderDashboardScreenState
       }
     }
   }
+
   String? _error;
   int _pendingCount = 0;
   Timer? _pollTimer;
@@ -116,12 +115,29 @@ class _UnifiedProviderDashboardScreenState
 
   bool get _hasVenueSettings {
     final k = widget.config.categoryKey;
-    return k == 'sartarosh' || k == 'salon' || k == 'futbol' || k == 'tozalash' || k == 'usta' || k == 'elektrik' || k == 'santexnik' || k == 'kuryerlik' || k == 'avtoYordam' || k == 'konditsioner' || k == 'enaga' || k == 'repetitor' || k == 'dezinfeksiya' || k == 'massajHijoma' || k == 'hamshira' || k == 'stomatologiya' || k == 'tadbirlar';
+    return k == 'sartarosh' ||
+        k == 'salon' ||
+        k == 'futbol' ||
+        k == 'tozalash' ||
+        k == 'usta' ||
+        k == 'elektrik' ||
+        k == 'santexnik' ||
+        k == 'kuryerlik' ||
+        k == 'avtoYordam' ||
+        k == 'konditsioner' ||
+        k == 'enaga' ||
+        k == 'repetitor' ||
+        k == 'dezinfeksiya' ||
+        k == 'massajHijoma' ||
+        k == 'hamshira' ||
+        k == 'stomatologiya' ||
+        k == 'tadbirlar';
   }
 
   bool get _isBarberShopOwner {
     if (widget.config.categoryKey != 'sartarosh') return false;
-    final meta = _provider?['metadata'] as Map<String, dynamic>? ??
+    final meta =
+        _provider?['metadata'] as Map<String, dynamic>? ??
         _provider?['metadata_json'] as Map<String, dynamic>?;
     final role = meta?['barber_role'];
     return role == 'shop_owner' ||
@@ -129,14 +145,16 @@ class _UnifiedProviderDashboardScreenState
   }
 
   String? get _barberInviteCode {
-    final meta = _provider?['metadata'] as Map<String, dynamic>? ??
+    final meta =
+        _provider?['metadata'] as Map<String, dynamic>? ??
         _provider?['metadata_json'] as Map<String, dynamic>?;
     return meta?['invite_code']?.toString();
   }
 
   bool get _isSalonOwner {
     if (widget.config.categoryKey != 'salon') return false;
-    final meta = _provider?['metadata'] as Map<String, dynamic>? ??
+    final meta =
+        _provider?['metadata'] as Map<String, dynamic>? ??
         _provider?['metadata_json'] as Map<String, dynamic>?;
     final role = meta?['salon_role'];
     return role == 'salon_owner' ||
@@ -144,23 +162,27 @@ class _UnifiedProviderDashboardScreenState
   }
 
   String? get _salonInviteCode {
-    final meta = _provider?['metadata'] as Map<String, dynamic>? ??
+    final meta =
+        _provider?['metadata'] as Map<String, dynamic>? ??
         _provider?['metadata_json'] as Map<String, dynamic>?;
     return meta?['invite_code']?.toString();
   }
 
   bool get _isAutoWorkshop {
     if (widget.config.categoryKey != 'avtoYordam') return false;
-    final meta = _provider?['metadata'] as Map<String, dynamic>? ??
+    final meta =
+        _provider?['metadata'] as Map<String, dynamic>? ??
         _provider?['metadata_json'] as Map<String, dynamic>?;
     return meta?['type'] == 'auto_workshop' || meta?['auto_role'] == 'workshop';
   }
 
   bool get _isEducationCenter {
     if (widget.config.categoryKey != 'repetitor') return false;
-    final meta = _provider?['metadata'] as Map<String, dynamic>? ??
+    final meta =
+        _provider?['metadata'] as Map<String, dynamic>? ??
         _provider?['metadata_json'] as Map<String, dynamic>?;
-    return meta?['type'] == 'education_center' || meta?['tutor_role'] == 'center';
+    return meta?['type'] == 'education_center' ||
+        meta?['tutor_role'] == 'center';
   }
 
   int get _calendarIndex => 1;
@@ -172,7 +194,10 @@ class _UnifiedProviderDashboardScreenState
   void initState() {
     super.initState();
     _load();
-    _pollTimer = Timer.periodic(const Duration(seconds: 15), (_) => _pollPending());
+    _pollTimer = Timer.periodic(
+      const Duration(seconds: 15),
+      (_) => _pollPending(),
+    );
   }
 
   @override
@@ -201,7 +226,8 @@ class _UnifiedProviderDashboardScreenState
       _isActive = _provider?['is_active'] == true;
       _isPaused = _provider?['is_paused'] == true;
     } catch (e) {
-      _error = 'Ma\'lumotlarni yuklab bo\'lmadi.\nRo\'yxatdan o\'tganingizni tekshiring.';
+      _error =
+          'Ma\'lumotlarni yuklab bo\'lmadi.\nRo\'yxatdan o\'tganingizni tekshiring.';
     }
     if (mounted) setState(() => _loading = false);
   }
@@ -272,7 +298,9 @@ class _UnifiedProviderDashboardScreenState
     if (_loading) {
       return Scaffold(
         backgroundColor: Colors.white,
-        body: const Center(child: CircularProgressIndicator(color: Colors.black)),
+        body: const Center(
+          child: CircularProgressIndicator(color: Colors.black),
+        ),
       );
     }
 
@@ -291,9 +319,17 @@ class _UnifiedProviderDashboardScreenState
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Icon(LucideIcons.circleAlert, size: 48, color: Colors.black),
+                const Icon(
+                  LucideIcons.circleAlert,
+                  size: 48,
+                  color: Colors.black,
+                ),
                 const SizedBox(height: 16),
-                Text(_error!, textAlign: TextAlign.center, style: const TextStyle(color: Colors.black)),
+                Text(
+                  _error!,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(color: Colors.black),
+                ),
                 const SizedBox(height: 16),
                 FilledButton(
                   onPressed: _load,
@@ -301,7 +337,7 @@ class _UnifiedProviderDashboardScreenState
                     backgroundColor: Colors.black,
                     foregroundColor: Colors.white,
                   ),
-                  child: const Text('Qayta urinish'),
+                  child: Text('Qayta urinish'.tr),
                 ),
               ],
             ),
@@ -482,14 +518,19 @@ class _UnifiedProviderDashboardScreenState
         specificSettingsWidget = ProviderVenueSettingsWidget(
           categoryKey: widget.config.categoryKey,
           accent: accent,
-          staffLabel: widget.config.categoryKey == 'salon' ? 'Mutaxassis' : 'Usta',
-          staffMetadataKey: widget.config.categoryKey == 'salon' ? 'staff' : 'barbers',
+          staffLabel: widget.config.categoryKey == 'salon'
+              ? 'Mutaxassis'
+              : 'Usta',
+          staffMetadataKey: widget.config.categoryKey == 'salon'
+              ? 'staff'
+              : 'barbers',
           showSaveButton: false,
           saveController: _saveController,
         );
       }
 
-      final isVenue = widget.config.categoryKey == 'salon' ||
+      final isVenue =
+          widget.config.categoryKey == 'salon' ||
           widget.config.categoryKey == 'sartarosh' ||
           widget.config.categoryKey == 'massajHijoma' ||
           (widget.config.categoryKey == 'repetitor' && _isEducationCenter);
@@ -517,17 +558,25 @@ class _UnifiedProviderDashboardScreenState
                   backgroundColor: Colors.black,
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
                 child: _savingSettings
                     ? const SizedBox(
                         width: 22,
                         height: 22,
-                        child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Colors.white,
+                        ),
                       )
                     : const Text(
                         'Saqlash',
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
                       ),
               ),
             ),
@@ -546,7 +595,10 @@ class _UnifiedProviderDashboardScreenState
 
   Widget _buildDashboard(ThemeData theme, Color accent) {
     final meta = _provider?['metadata_json'] as Map<String, dynamic>? ?? {};
-    final name = meta['display_name'] as String? ?? _provider?['name'] as String? ?? widget.config.title;
+    final name =
+        meta['display_name'] as String? ??
+        _provider?['name'] as String? ??
+        widget.config.title;
     final coverUrl = meta['cover_url'] as String?;
     final rating = (_provider?['rating'] as num?)?.toDouble() ?? 0;
     final reviews = _provider?['review_count'] as int? ?? 0;
@@ -566,7 +618,10 @@ class _UnifiedProviderDashboardScreenState
                 shape: BoxShape.circle,
                 border: Border.all(color: Colors.black, width: 2),
                 image: coverUrl != null && coverUrl.isNotEmpty
-                    ? DecorationImage(image: NetworkImage(coverUrl), fit: BoxFit.cover)
+                    ? DecorationImage(
+                        image: NetworkImage(coverUrl),
+                        fit: BoxFit.cover,
+                      )
                     : null,
               ),
               child: coverUrl != null && coverUrl.isNotEmpty
@@ -580,23 +635,53 @@ class _UnifiedProviderDashboardScreenState
                 children: [
                   Text(
                     name,
-                    style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: Colors.black),
+                    style: const TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w900,
+                      color: Colors.black,
+                    ),
                   ),
                   Row(
                     children: [
-                      Text('$rating ($reviews sharh)', style: const TextStyle(color: Colors.black87, fontWeight: FontWeight.w500)),
+                      Text(
+                        '$rating ($reviews sharh)',
+                        style: const TextStyle(
+                          color: Colors.black87,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
                     ],
                   ),
                   const SizedBox(height: 4),
                   Row(
                     children: [
-                      const Icon(LucideIcons.checkCircle2, color: Colors.green, size: 14),
+                      const Icon(
+                        LucideIcons.checkCircle2,
+                        color: Colors.green,
+                        size: 14,
+                      ),
                       const SizedBox(width: 4),
-                      Text('${_provider?['completed_orders_count'] ?? 0} yakunlagan', style: const TextStyle(fontSize: 12, color: Colors.black54)),
+                      Text(
+                        '${_provider?['completed_orders_count'] ?? 0} yakunlagan',
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: Colors.black54,
+                        ),
+                      ),
                       const SizedBox(width: 12),
-                      const Icon(LucideIcons.xCircle, color: Colors.red, size: 14),
+                      const Icon(
+                        LucideIcons.xCircle,
+                        color: Colors.red,
+                        size: 14,
+                      ),
                       const SizedBox(width: 4),
-                      Text('${_provider?['cancelled_orders_count'] ?? 0} bekor qilgan', style: const TextStyle(fontSize: 12, color: Colors.black54)),
+                      Text(
+                        '${_provider?['cancelled_orders_count'] ?? 0} bekor qilgan',
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: Colors.black54,
+                        ),
+                      ),
                     ],
                   ),
                 ],
@@ -687,7 +772,10 @@ class _UnifiedProviderDashboardScreenState
         ),
         if (_pendingCount > 0) const SizedBox(height: 16),
         if (_isBarberShopOwner) ...[
-          ProviderBarberTeamWidget(accent: accent, inviteCode: _barberInviteCode),
+          ProviderBarberTeamWidget(
+            accent: accent,
+            inviteCode: _barberInviteCode,
+          ),
           const SizedBox(height: 24),
         ],
         if (_isSalonOwner) ...[
@@ -704,19 +792,34 @@ class _UnifiedProviderDashboardScreenState
         const SizedBox(height: 32),
         Builder(
           builder: (context) {
-            final activeOrders = _todayOrders.where((o) => o['status'] != 'completed' && o['status'] != 'cancelled').toList();
-            final completedOrders = _todayOrders.where((o) => o['status'] == 'completed').toList();
-            final cancelledOrders = _todayOrders.where((o) => o['status'] == 'cancelled').toList();
+            final activeOrders = _todayOrders
+                .where(
+                  (o) =>
+                      o['status'] != 'completed' && o['status'] != 'cancelled',
+                )
+                .toList();
+            final completedOrders = _todayOrders
+                .where((o) => o['status'] == 'completed')
+                .toList();
+            final cancelledOrders = _todayOrders
+                .where((o) => o['status'] == 'cancelled')
+                .toList();
 
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Text(
                   'Bugungi buyurtmalar',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Colors.black),
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w800,
+                    color: Colors.black,
+                  ),
                 ),
                 const SizedBox(height: 16),
-                if (activeOrders.isEmpty && completedOrders.isEmpty && cancelledOrders.isEmpty)
+                if (activeOrders.isEmpty &&
+                    completedOrders.isEmpty &&
+                    cancelledOrders.isEmpty)
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 24),
                     child: Center(
@@ -733,14 +836,19 @@ class _UnifiedProviderDashboardScreenState
                       physics: const NeverScrollableScrollPhysics(),
                       itemCount: activeOrders.length,
                       separatorBuilder: (_, __) => const SizedBox(height: 12),
-                      itemBuilder: (context, i) => _orderTile(activeOrders[i], theme, accent),
+                      itemBuilder: (context, i) =>
+                          _orderTile(activeOrders[i], theme, accent),
                     ),
                   ],
                   if (completedOrders.isNotEmpty) ...[
                     const SizedBox(height: 24),
                     const Text(
                       'Bajarilganlar',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Colors.black),
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w800,
+                        color: Colors.black,
+                      ),
                     ),
                     const SizedBox(height: 12),
                     ListView.separated(
@@ -748,14 +856,19 @@ class _UnifiedProviderDashboardScreenState
                       physics: const NeverScrollableScrollPhysics(),
                       itemCount: completedOrders.length,
                       separatorBuilder: (_, __) => const SizedBox(height: 12),
-                      itemBuilder: (context, i) => _orderTile(completedOrders[i], theme, accent),
+                      itemBuilder: (context, i) =>
+                          _orderTile(completedOrders[i], theme, accent),
                     ),
                   ],
                   if (cancelledOrders.isNotEmpty) ...[
                     const SizedBox(height: 24),
                     const Text(
                       'Bekor qilinganlar',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Colors.black),
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w800,
+                        color: Colors.black,
+                      ),
                     ),
                     const SizedBox(height: 12),
                     ListView.separated(
@@ -763,7 +876,8 @@ class _UnifiedProviderDashboardScreenState
                       physics: const NeverScrollableScrollPhysics(),
                       itemCount: cancelledOrders.length,
                       separatorBuilder: (_, __) => const SizedBox(height: 12),
-                      itemBuilder: (context, i) => _orderTile(cancelledOrders[i], theme, accent),
+                      itemBuilder: (context, i) =>
+                          _orderTile(cancelledOrders[i], theme, accent),
                     ),
                   ],
                 ],
@@ -788,17 +902,29 @@ class _UnifiedProviderDashboardScreenState
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: Colors.black, width: 2),
-        boxShadow: const [
-          BoxShadow(color: Colors.black, offset: Offset(2, 2)),
-        ],
+        boxShadow: const [BoxShadow(color: Colors.black, offset: Offset(2, 2))],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Icon(icon, color: Colors.black, size: 24),
           const SizedBox(height: 12),
-          Text(value, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w900, color: Colors.black)),
-          Text(title, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.black87)),
+          Text(
+            value,
+            style: const TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.w900,
+              color: Colors.black,
+            ),
+          ),
+          Text(
+            title,
+            style: const TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+              color: Colors.black87,
+            ),
+          ),
         ],
       ),
     );
@@ -825,7 +951,13 @@ class _UnifiedProviderDashboardScreenState
               border: Border.all(color: Colors.black, width: 1.5),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: Text(time, style: const TextStyle(fontWeight: FontWeight.w900, color: Colors.black)),
+            child: Text(
+              time,
+              style: const TextStyle(
+                fontWeight: FontWeight.w900,
+                color: Colors.black,
+              ),
+            ),
           ),
           const SizedBox(width: 16),
           Expanded(
@@ -834,11 +966,18 @@ class _UnifiedProviderDashboardScreenState
               children: [
                 Text(
                   o['user_name'] as String? ?? 'Mijoz',
-                  style: const TextStyle(fontWeight: FontWeight.w800, color: Colors.black, fontSize: 16),
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w800,
+                    color: Colors.black,
+                    fontSize: 16,
+                  ),
                 ),
                 Text(
                   o['service_name'] as String? ?? '',
-                  style: const TextStyle(color: Colors.black87, fontWeight: FontWeight.w600),
+                  style: const TextStyle(
+                    color: Colors.black87,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ],
             ),
@@ -848,7 +987,11 @@ class _UnifiedProviderDashboardScreenState
             children: [
               Text(
                 '${NumberFormat('#,###').format((o['price'] as num?) ?? 0)} so\'m',
-                style: const TextStyle(fontWeight: FontWeight.w900, color: Colors.black, fontSize: 15),
+                style: const TextStyle(
+                  fontWeight: FontWeight.w900,
+                  color: Colors.black,
+                  fontSize: 15,
+                ),
               ),
               Container(
                 margin: const EdgeInsets.only(top: 4),
@@ -859,7 +1002,11 @@ class _UnifiedProviderDashboardScreenState
                 ),
                 child: Text(
                   _statusLabel(status),
-                  style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ],
@@ -974,14 +1121,18 @@ class _UnifiedProviderDashboardScreenState
           separatorBuilder: (_, __) => const Divider(height: 1),
           itemBuilder: (context, index) {
             final log = logs[index];
-            final dateStr = DateFormat('dd.MM.yyyy HH:mm').format(log.timestamp);
+            final dateStr = DateFormat(
+              'dd.MM.yyyy HH:mm',
+            ).format(log.timestamp);
 
             IconData iconData;
             Color iconColor;
             String statusText = '';
 
             if (log.status == 'connected') {
-              iconData = log.isIncoming ? LucideIcons.phoneIncoming : LucideIcons.phoneOutgoing;
+              iconData = log.isIncoming
+                  ? LucideIcons.phoneIncoming
+                  : LucideIcons.phoneOutgoing;
               iconColor = Colors.green;
               statusText = log.isIncoming ? 'Kiruvchi' : 'Chiquvchi';
             } else if (log.status == 'declined') {
@@ -993,7 +1144,9 @@ class _UnifiedProviderDashboardScreenState
               iconColor = Colors.grey;
               statusText = 'Bekor qilingan';
             } else {
-              iconData = log.isIncoming ? LucideIcons.phoneMissed : LucideIcons.phoneOff;
+              iconData = log.isIncoming
+                  ? LucideIcons.phoneMissed
+                  : LucideIcons.phoneOff;
               iconColor = Colors.red;
               statusText = log.isIncoming ? 'Javobsiz' : 'Ulanmagan';
             }
@@ -1006,7 +1159,10 @@ class _UnifiedProviderDashboardScreenState
               ),
               title: Text(
                 log.userName,
-                style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
               ),
               subtitle: Text(
                 '$statusText • $dateStr\nDavomiyligi: ${log.duration}',
@@ -1019,7 +1175,11 @@ class _UnifiedProviderDashboardScreenState
                   IconButton(
                     icon: const Icon(LucideIcons.phone, color: Colors.green),
                     onPressed: () {
-                      CallHelper.makeDirectCall(context, log.userId, log.userName);
+                      CallHelper.makeDirectCall(
+                        context,
+                        log.userId,
+                        log.userName,
+                      );
                     },
                   ),
                   IconButton(
@@ -1042,19 +1202,24 @@ class _UnifiedProviderDashboardScreenState
       context: context,
       builder: (ctx) => AlertDialog(
         title: Text('$userName bloklansinmi?'),
-        content: const Text('Ushbu foydalanuvchidan keladigan qo\'ng\'iroqlar avtomatik rad etiladi.'),
+        content: const Text(
+          'Ushbu foydalanuvchidan keladigan qo\'ng\'iroqlar avtomatik rad etiladi.',
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text('Bekor qilish', style: TextStyle(color: Colors.black)),
+            child: const Text(
+              'Bekor qilish',
+              style: TextStyle(color: Colors.black),
+            ),
           ),
           TextButton(
             onPressed: () {
               CallHistoryService().blockUser(userId, userName);
               Navigator.of(ctx).pop();
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('$userName bloklandi')),
-              );
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(SnackBar(content: Text('$userName bloklandi')));
             },
             child: const Text('Bloklash', style: TextStyle(color: Colors.red)),
           ),
@@ -1092,7 +1257,10 @@ class _UnifiedProviderDashboardScreenState
               ),
               title: Text(
                 user.userName,
-                style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
               ),
               subtitle: Text(
                 'Bloklangan sana: $dateStr',
@@ -1102,16 +1270,24 @@ class _UnifiedProviderDashboardScreenState
                 onPressed: () {
                   CallHistoryService().unblockUser(user.userId);
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('${user.userName} blokdan chiqarildi')),
+                    SnackBar(
+                      content: Text('${user.userName} blokdan chiqarildi'),
+                    ),
                   );
                 },
                 style: FilledButton.styleFrom(
                   backgroundColor: Colors.green,
                   foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
-                  textStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 0,
+                  ),
+                  textStyle: const TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-                child: const Text('Ochish'),
+                child: Text('Ochish'.tr),
               ),
             );
           },

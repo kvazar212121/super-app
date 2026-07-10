@@ -14,7 +14,7 @@ class EducationCenter {
   final List<String> timeSlots;
   final Map<String, dynamic>? rawJson;
 
-    final String? subCategory;
+  final String? subCategory;
 
   EducationCenter({
     required this.id,
@@ -31,7 +31,7 @@ class EducationCenter {
     this.prices = const {},
     this.timeSlots = const [],
     this.rawJson,
-      this.subCategory,
+    this.subCategory,
   });
 
   factory EducationCenter.fromProviderJson(Map<String, dynamic> json) {
@@ -64,7 +64,7 @@ class EducationCenter {
           .map((e) => e.toString())
           .toList(),
       rawJson: json,
-          subCategory: meta['sub_category']?.toString(),
+      subCategory: meta['sub_category']?.toString(),
     );
   }
 }

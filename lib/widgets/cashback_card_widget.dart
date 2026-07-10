@@ -25,14 +25,8 @@ class CashbackCardWidget extends StatelessWidget {
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: isPremium
-                  ? [
-                      const Color(0xFF6366F1),
-                      const Color(0xFF8B5CF6),
-                    ]
-                  : [
-                      const Color(0xFF6366F1),
-                      const Color(0xFF06B6D4),
-                    ],
+                  ? [const Color(0xFF6366F1), const Color(0xFF8B5CF6)]
+                  : [const Color(0xFF6366F1), const Color(0xFF06B6D4)],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
@@ -54,11 +48,17 @@ class CashbackCardWidget extends StatelessWidget {
                 children: [
                   const Text(
                     'Hisob',
-                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                   if (isPremium)
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 4,
+                      ),
                       decoration: BoxDecoration(
                         color: Colors.amber,
                         borderRadius: BorderRadius.circular(12),
@@ -91,10 +91,7 @@ class CashbackCardWidget extends StatelessWidget {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        'Keshbek',
-                        style: TextStyle(color: Colors.white),
-                      ),
+                      Text('Keshbek', style: TextStyle(color: Colors.white)),
                       Text(
                         '+${cashback.toStringAsFixed(0)} so\'m',
                         style: const TextStyle(

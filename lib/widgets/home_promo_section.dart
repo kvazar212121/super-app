@@ -6,6 +6,7 @@ import '../config/app_config.dart';
 import '../services/api_service.dart';
 import '../theme/glass_tokens.dart';
 import '../screens/promotion_map_screen.dart';
+import '../l10n/locale_controller.dart';
 
 class HomePromoSection extends StatefulWidget {
   const HomePromoSection({super.key});
@@ -55,7 +56,7 @@ class _HomePromoSectionState extends State<HomePromoSection> {
         final subtitle = item['subtitle'] ?? '';
         final badge = item['badge'] ?? '';
         final colorsStr = item['colors'] ?? '#6366F1,#A855F7';
-        
+
         final List<Color> parsedColors = [];
         for (final c in colorsStr.split(',')) {
           final cleanHex = c.trim().replaceAll('#', '');
@@ -64,19 +65,24 @@ class _HomePromoSectionState extends State<HomePromoSection> {
           }
         }
         if (parsedColors.length < 2) {
-          parsedColors.addAll([const Color(0xFF6366F1), const Color(0xFFA855F7)]);
+          parsedColors.addAll([
+            const Color(0xFF6366F1),
+            const Color(0xFFA855F7),
+          ]);
         }
 
         final rawImageUrl = (item['image_url'] as String?)?.trim();
-        loaded.add(_PromoItem(
-          title: title,
-          subtitle: subtitle,
-          badge: badge,
-          colors: parsedColors,
-          imageUrl: (rawImageUrl != null && rawImageUrl.isNotEmpty)
-              ? AppConfig.formatImageUrl(rawImageUrl)
-              : null,
-        ));
+        loaded.add(
+          _PromoItem(
+            title: title,
+            subtitle: subtitle,
+            badge: badge,
+            colors: parsedColors,
+            imageUrl: (rawImageUrl != null && rawImageUrl.isNotEmpty)
+                ? AppConfig.formatImageUrl(rawImageUrl)
+                : null,
+          ),
+        );
       }
       if (mounted) {
         setState(() {
@@ -99,9 +105,7 @@ class _HomePromoSectionState extends State<HomePromoSection> {
     if (_isLoading) {
       return const SizedBox(
         height: 130,
-        child: Center(
-          child: CircularProgressIndicator(),
-        ),
+        child: Center(child: CircularProgressIndicator()),
       );
     }
 
@@ -129,9 +133,9 @@ class _HomePromoSectionState extends State<HomePromoSection> {
                     context,
                     MaterialPageRoute(
                       builder: (_) => PromotionMapScreen(
-                        title: p.title,
-                        subtitle: p.subtitle,
-                        badge: p.badge,
+                        title: p.title.tr,
+                        subtitle: p.subtitle.tr,
+                        badge: p.badge.tr,
                         colors: p.colors,
                       ),
                     ),
@@ -148,10 +152,7 @@ class _HomePromoSectionState extends State<HomePromoSection> {
                       width: double.infinity,
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
-                          colors: [
-                            p.colors[0],
-                            p.colors[1],
-                          ],
+                          colors: [p.colors[0], p.colors[1]],
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
                         ),
@@ -172,7 +173,8 @@ class _HomePromoSectionState extends State<HomePromoSection> {
                             CachedNetworkImage(
                               imageUrl: p.imageUrl!,
                               fit: BoxFit.cover,
-                              errorWidget: (_, __, ___) => const SizedBox.shrink(),
+                              errorWidget: (_, __, ___) =>
+                                  const SizedBox.shrink(),
                             ),
                           // Matn o'qilishi uchun qoraytiruvchi qatlam
                           if (p.imageUrl != null)
@@ -191,54 +193,55 @@ class _HomePromoSectionState extends State<HomePromoSection> {
                           Padding(
                             padding: const EdgeInsets.fromLTRB(18, 14, 14, 14),
                             child: Row(
-                        children: [
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Text(
-                                  p.title,
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w800,
-                                    fontSize: 15,
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        p.title.tr,
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.w800,
+                                          fontSize: 15,
+                                        ),
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      const SizedBox(height: 6),
+                                      Text(
+                                        p.subtitle.tr,
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 12,
+                                        ),
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ],
                                   ),
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
                                 ),
-                                const SizedBox(height: 6),
-                                Text(
-                                  p.subtitle,
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 12,
+                                const SizedBox(width: 8),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 10,
+                                    vertical: 6,
                                   ),
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: Text(
+                                    p.badge.tr,
+                                    style: TextStyle(
+                                      color: p.colors[0],
+                                      fontWeight: FontWeight.w800,
+                                      fontSize: 12,
+                                    ),
+                                  ),
                                 ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 10,
-                              vertical: 6,
-                            ),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Text(
-                              p.badge,
-                              style: TextStyle(
-                                color: p.colors[0],
-                                fontWeight: FontWeight.w800,
-                                fontSize: 12,
-                              ),
-                            ),
-                          ),
                               ],
                             ),
                           ),

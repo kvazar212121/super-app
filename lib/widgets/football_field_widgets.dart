@@ -10,7 +10,11 @@ class FieldVisualWidget extends StatelessWidget {
   final FootballField field;
   final Color accent;
 
-  const FieldVisualWidget({super.key, required this.field, required this.accent});
+  const FieldVisualWidget({
+    super.key,
+    required this.field,
+    required this.accent,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -22,18 +26,12 @@ class FieldVisualWidget extends StatelessWidget {
         Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: [
-                field.surface.color,
-                field.surface.color,
-              ],
+              colors: [field.surface.color, field.surface.color],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(
-              color: field.surface.color,
-              width: 1.5,
-            ),
+            border: Border.all(color: field.surface.color, width: 1.5),
           ),
           child: Column(
             children: [
@@ -49,7 +47,10 @@ class FieldVisualWidget extends StatelessWidget {
               ),
               Container(
                 width: double.infinity,
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 10,
+                ),
                 decoration: BoxDecoration(
                   color: field.surface.color,
                   borderRadius: const BorderRadius.vertical(
@@ -59,7 +60,11 @@ class FieldVisualWidget extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(field.surface.icon, color: field.surface.color, size: 20),
+                    Icon(
+                      field.surface.icon,
+                      color: field.surface.color,
+                      size: 20,
+                    ),
                     const SizedBox(width: 8),
                     Text(
                       '$surfaceLabel · $sizeLabel',
@@ -110,8 +115,8 @@ class FootballFieldPainter extends CustomPainter {
     final grassColor = surface == FieldSurface.natural
         ? const Color(0xFF66BB6A)
         : surface == FieldSurface.artificial
-            ? const Color(0xFF43A047)
-            : const Color(0xFF8D6E63);
+        ? const Color(0xFF43A047)
+        : const Color(0xFF8D6E63);
 
     fillPaint.color = grassColor;
     canvas.drawRRect(fieldRect, fillPaint);
@@ -123,19 +128,11 @@ class FootballFieldPainter extends CustomPainter {
     final midX = w / 2;
     paint.color = Colors.white;
     paint.strokeWidth = 1.5;
-    canvas.drawLine(
-      Offset(midX, margin),
-      Offset(midX, h - margin),
-      paint,
-    );
+    canvas.drawLine(Offset(midX, margin), Offset(midX, h - margin), paint);
 
     final centerY = h / 2;
     paint.strokeWidth = 1.5;
-    canvas.drawCircle(
-      Offset(midX, centerY),
-      28,
-      paint,
-    );
+    canvas.drawCircle(Offset(midX, centerY), 28, paint);
     fillPaint.color = Colors.white;
     canvas.drawCircle(Offset(midX, centerY), 3, fillPaint);
 
@@ -222,7 +219,9 @@ class FieldInfoCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: isDark ? Colors.white.withOpacity(0.05) : Colors.white.withOpacity(0.9),
+        color: isDark
+            ? Colors.white.withOpacity(0.05)
+            : Colors.white.withOpacity(0.9),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: GlassTokens.glassBorder(context)),
         boxShadow: GlassTokens.glassShadow(context),
@@ -233,7 +232,10 @@ class FieldInfoCard extends StatelessWidget {
           Row(
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 6,
+                ),
                 decoration: BoxDecoration(
                   color: Colors.amber,
                   borderRadius: BorderRadius.circular(10),
@@ -261,7 +263,10 @@ class FieldInfoCard extends StatelessWidget {
               Expanded(
                 child: Text(
                   field.address,
-                  style: TextStyle(color: GlassTokens.secondaryText(context), fontSize: 13),
+                  style: TextStyle(
+                    color: GlassTokens.secondaryText(context),
+                    fontSize: 13,
+                  ),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -276,7 +281,10 @@ class FieldInfoCard extends StatelessWidget {
               if (field.hasLighting)
                 const InfoChip(icon: Icons.light_mode, label: 'Yoritish'),
               if (field.hasParking)
-                const InfoChip(icon: Icons.local_parking, label: 'Avtoturargoh'),
+                const InfoChip(
+                  icon: Icons.local_parking,
+                  label: 'Avtoturargoh',
+                ),
               if (field.hasShowers)
                 const InfoChip(icon: Icons.shower, label: 'Dush'),
               if (field.hasCafe)
@@ -286,7 +294,11 @@ class FieldInfoCard extends StatelessWidget {
           const SizedBox(height: 12),
           Row(
             children: [
-              Icon(Icons.payments_outlined, size: 20, color: GlassTokens.secondaryText(context)),
+              Icon(
+                Icons.payments_outlined,
+                size: 20,
+                color: GlassTokens.secondaryText(context),
+              ),
               const SizedBox(width: 6),
               Text(
                 '${NumberFormat('#,###').format(field.basePricePerHour)} soʻm / soat',
@@ -355,7 +367,8 @@ class DateChips extends StatelessWidget {
       scrollDirection: Axis.horizontal,
       child: Row(
         children: dates.map((d) {
-          final isSelected = d.day == selectedDate.day &&
+          final isSelected =
+              d.day == selectedDate.day &&
               d.month == selectedDate.month &&
               d.year == selectedDate.year;
           final weekday = DateFormat('E', 'uz_UZ').format(d);
@@ -371,7 +384,9 @@ class DateChips extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 12,
                       color: isSelected ? Colors.white : Colors.black54,
-                      fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+                      fontWeight: isSelected
+                          ? FontWeight.w600
+                          : FontWeight.w400,
                     ),
                   ),
                   Text(
@@ -424,7 +439,10 @@ class TimeSlotGrid extends StatelessWidget {
           borderRadius: BorderRadius.circular(12),
         ),
         child: Center(
-          child: Text('Bu kun uchun boʻsh vaqt yoʻq', style: TextStyle(color: GlassTokens.primaryText(context))),
+          child: Text(
+            'Bu kun uchun boʻsh vaqt yoʻq',
+            style: TextStyle(color: GlassTokens.primaryText(context)),
+          ),
         ),
       );
     }
@@ -433,8 +451,7 @@ class TimeSlotGrid extends StatelessWidget {
       spacing: 8,
       runSpacing: 8,
       children: slots.map((slot) {
-        final isSelected =
-            selectedSlot != null && selectedSlot!.id == slot.id;
+        final isSelected = selectedSlot != null && selectedSlot!.id == slot.id;
 
         return GestureDetector(
           onTap: slot.isAvailable ? () => onSlotSelected(slot) : null,
@@ -444,17 +461,21 @@ class TimeSlotGrid extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 8),
             decoration: BoxDecoration(
               color: !slot.isAvailable
-                  ? (isDark ? Colors.white.withOpacity(0.05) : Colors.grey.shade100)
+                  ? (isDark
+                        ? Colors.white.withOpacity(0.05)
+                        : Colors.grey.shade100)
                   : isSelected
-                      ? accent
-                      : accent.withOpacity(0.15),
+                  ? accent
+                  : accent.withOpacity(0.15),
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
                 color: !slot.isAvailable
-                    ? (isDark ? Colors.white.withOpacity(0.1) : Colors.grey.shade300)
+                    ? (isDark
+                          ? Colors.white.withOpacity(0.1)
+                          : Colors.grey.shade300)
                     : isSelected
-                        ? accent
-                        : accent.withOpacity(0.3),
+                    ? accent
+                    : accent.withOpacity(0.3),
                 width: isSelected ? 2 : 1,
               ),
             ),
@@ -469,8 +490,8 @@ class TimeSlotGrid extends StatelessWidget {
                     color: !slot.isAvailable
                         ? GlassTokens.secondaryText(context)
                         : isSelected
-                            ? Colors.white
-                            : GlassTokens.primaryText(context),
+                        ? Colors.white
+                        : GlassTokens.primaryText(context),
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -480,9 +501,7 @@ class TimeSlotGrid extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.w600,
-                      color: isSelected
-                          ? Colors.white
-                          : accent,
+                      color: isSelected ? Colors.white : accent,
                     ),
                   )
                 else
@@ -514,19 +533,19 @@ class SectionTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Row(
-        children: [
-          Icon(icon, size: 18, color: GlassTokens.secondaryText(context)),
-          const SizedBox(width: 6),
-          Text(
-            text,
-            style: TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.w700,
-              color: GlassTokens.primaryText(context),
-            ),
-          ),
-        ],
-      );
+    children: [
+      Icon(icon, size: 18, color: GlassTokens.secondaryText(context)),
+      const SizedBox(width: 6),
+      Text(
+        text,
+        style: TextStyle(
+          fontSize: 15,
+          fontWeight: FontWeight.w700,
+          color: GlassTokens.primaryText(context),
+        ),
+      ),
+    ],
+  );
 }
 
 // ===================================================================
@@ -568,7 +587,11 @@ class PriceSummaryCard extends StatelessWidget {
               const SizedBox(width: 8),
               const Text(
                 'Buyurtma xulosasi',
-                style: TextStyle(fontWeight: FontWeight.w700, fontSize: 15, color: Colors.white),
+                style: TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 15,
+                  color: Colors.white,
+                ),
               ),
             ],
           ),
@@ -580,9 +603,8 @@ class PriceSummaryCard extends StatelessWidget {
                 : '—',
           ),
           PriceLine(
-            label: 'Sana: ${DateFormat('dd.MM.yyyy', 'uz_UZ').format(
-                  DateTime.now().add(const Duration(days: 1)),
-                )}',
+            label:
+                'Sana: ${DateFormat('dd.MM.yyyy', 'uz_UZ').format(DateTime.now().add(const Duration(days: 1)))}',
             value: selectedSlot?.formatted ?? 'tanlanmagan',
           ),
           if (selectedAmenities.isNotEmpty) ...[
@@ -608,7 +630,11 @@ class PriceSummaryCard extends StatelessWidget {
             children: [
               const Text(
                 'Jami:',
-                style: TextStyle(fontWeight: FontWeight.w800, fontSize: 16, color: Colors.white),
+                style: TextStyle(
+                  fontWeight: FontWeight.w800,
+                  fontSize: 16,
+                  color: Colors.white,
+                ),
               ),
               Text(
                 selectedSlot != null

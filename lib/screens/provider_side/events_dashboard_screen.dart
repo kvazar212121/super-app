@@ -7,6 +7,8 @@ class EventsDashboardScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return UnifiedProviderDashboardScreen(config: ProviderCategoryConfig.events);
+    return UnifiedProviderDashboardScreen(
+      config: ProviderCategoryConfig.events,
+    );
   }
 }

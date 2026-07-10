@@ -7,12 +7,14 @@ import '../../../services/event_portal_service.dart';
 import '../../../utils/phone_utils.dart';
 import '../../provider_side/provider_theme.dart';
 import '../../provider_side/unified_provider_dashboard_screen.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 class EventRegistrationScreen extends StatefulWidget {
   const EventRegistrationScreen({super.key});
 
   @override
-  State<EventRegistrationScreen> createState() => _EventRegistrationScreenState();
+  State<EventRegistrationScreen> createState() =>
+      _EventRegistrationScreenState();
 }
 
 class _EventRegistrationScreenState extends State<EventRegistrationScreen> {
@@ -29,7 +31,12 @@ class _EventRegistrationScreenState extends State<EventRegistrationScreen> {
     'full_organization',
   };
   final Set<String> _eventTypes = {'wedding', 'birthday', 'corporate'};
-  final Set<String> _venueTypes = {'village_yard', 'open_field', 'garden', 'hall'};
+  final Set<String> _venueTypes = {
+    'village_yard',
+    'open_field',
+    'garden',
+    'hall',
+  };
 
   @override
   void dispose() {
@@ -46,13 +53,13 @@ class _EventRegistrationScreenState extends State<EventRegistrationScreen> {
     final area = _areaCtrl.text.trim();
     if (name.isEmpty || area.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Guruh nomi va xizmat hududini kiriting')),
+        SnackBar(content: Text('Guruh nomi va xizmat hududini kiriting'.tr)),
       );
       return;
     }
     if (_organizerTypes.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Kamida bitta xizmat turini tanlang')),
+        SnackBar(content: Text('Kamida bitta xizmat turini tanlang'.tr)),
       );
       return;
     }
@@ -86,7 +93,9 @@ class _EventRegistrationScreenState extends State<EventRegistrationScreen> {
       );
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Xatolik: $e')));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Xatolik: $e')));
       }
     } finally {
       if (mounted) setState(() => _submitting = false);
@@ -98,7 +107,7 @@ class _EventRegistrationScreenState extends State<EventRegistrationScreen> {
     const accent = Color(0xFFE91E63);
     return ProviderTheme(
       child: Scaffold(
-        appBar: AppBar(title: const Text('Tadbir guruhi')),
+        appBar: AppBar(title: Text('Tadbir guruhi'.tr)),
         body: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
           child: Column(
@@ -111,30 +120,37 @@ class _EventRegistrationScreenState extends State<EventRegistrationScreen> {
               const SizedBox(height: 20),
               TextField(
                 controller: _nameCtrl,
-                decoration: const InputDecoration(labelText: 'Guruh / kompaniya nomi'),
+                decoration: InputDecoration(
+                  labelText: 'Guruh / kompaniya nomi'.tr,
+                ),
               ),
               const SizedBox(height: 12),
               TextField(
                 controller: _phoneCtrl,
-                decoration: const InputDecoration(labelText: 'Telefon'),
+                decoration: InputDecoration(labelText: 'Telefon'.tr),
                 keyboardType: TextInputType.phone,
               ),
               const SizedBox(height: 12),
               TextField(
                 controller: _areaCtrl,
-                decoration: const InputDecoration(
-                  labelText: 'Xizmat hududi (viloyatlar, tumanlar)',
+                decoration: InputDecoration(
+                  labelText: 'Xizmat hududi (viloyatlar, tumanlar)'.tr,
                 ),
                 maxLines: 2,
               ),
               const SizedBox(height: 12),
               TextField(
                 controller: _teamCtrl,
-                decoration: const InputDecoration(labelText: 'Jamoadagi odamlar soni'),
+                decoration: InputDecoration(
+                  labelText: 'Jamoadagi odamlar soni'.tr,
+                ),
                 keyboardType: TextInputType.number,
               ),
               const SizedBox(height: 16),
-              const Text('Ko\'rsatadigan xizmatlar', style: TextStyle(fontWeight: FontWeight.w600)),
+              const Text(
+                'Ko\'rsatadigan xizmatlar',
+                style: TextStyle(fontWeight: FontWeight.w600),
+              ),
               Wrap(
                 spacing: 8,
                 runSpacing: 8,
@@ -155,56 +171,64 @@ class _EventRegistrationScreenState extends State<EventRegistrationScreen> {
                 }).toList(),
               ),
               const SizedBox(height: 16),
-              const Text('Tadbir turlari', style: TextStyle(fontWeight: FontWeight.w600)),
+              const Text(
+                'Tadbir turlari',
+                style: TextStyle(fontWeight: FontWeight.w600),
+              ),
               Wrap(
                 spacing: 8,
-                children: [
-                  EventType.wedding,
-                  EventType.birthday,
-                  EventType.corporate,
-                  EventType.engagement,
-                  EventType.memorial,
-                ].map((t) {
-                  final selected = _eventTypes.contains(t.key);
-                  return FilterChip(
-                    label: Text(t.label),
-                    selected: selected,
-                    onSelected: (v) => setState(() {
-                      if (v) {
-                        _eventTypes.add(t.key);
-                      } else if (_eventTypes.length > 1) {
-                        _eventTypes.remove(t.key);
-                      }
-                    }),
-                    selectedColor: accent,
-                  );
-                }).toList(),
+                children:
+                    [
+                      EventType.wedding,
+                      EventType.birthday,
+                      EventType.corporate,
+                      EventType.engagement,
+                      EventType.memorial,
+                    ].map((t) {
+                      final selected = _eventTypes.contains(t.key);
+                      return FilterChip(
+                        label: Text(t.label),
+                        selected: selected,
+                        onSelected: (v) => setState(() {
+                          if (v) {
+                            _eventTypes.add(t.key);
+                          } else if (_eventTypes.length > 1) {
+                            _eventTypes.remove(t.key);
+                          }
+                        }),
+                        selectedColor: accent,
+                      );
+                    }).toList(),
               ),
               const SizedBox(height: 16),
-              const Text('Ishlaydigan joylar', style: TextStyle(fontWeight: FontWeight.w600)),
+              const Text(
+                'Ishlaydigan joylar',
+                style: TextStyle(fontWeight: FontWeight.w600),
+              ),
               Wrap(
                 spacing: 8,
-                children: [
-                  EventVenueType.villageYard,
-                  EventVenueType.openField,
-                  EventVenueType.garden,
-                  EventVenueType.hall,
-                  EventVenueType.restaurant,
-                ].map((t) {
-                  final selected = _venueTypes.contains(t.key);
-                  return FilterChip(
-                    label: Text(t.label),
-                    selected: selected,
-                    onSelected: (v) => setState(() {
-                      if (v) {
-                        _venueTypes.add(t.key);
-                      } else if (_venueTypes.length > 1) {
-                        _venueTypes.remove(t.key);
-                      }
-                    }),
-                    selectedColor: accent,
-                  );
-                }).toList(),
+                children:
+                    [
+                      EventVenueType.villageYard,
+                      EventVenueType.openField,
+                      EventVenueType.garden,
+                      EventVenueType.hall,
+                      EventVenueType.restaurant,
+                    ].map((t) {
+                      final selected = _venueTypes.contains(t.key);
+                      return FilterChip(
+                        label: Text(t.label),
+                        selected: selected,
+                        onSelected: (v) => setState(() {
+                          if (v) {
+                            _venueTypes.add(t.key);
+                          } else if (_venueTypes.length > 1) {
+                            _venueTypes.remove(t.key);
+                          }
+                        }),
+                        selectedColor: accent,
+                      );
+                    }).toList(),
               ),
               const SizedBox(height: 24),
               SizedBox(
@@ -216,8 +240,8 @@ class _EventRegistrationScreenState extends State<EventRegistrationScreen> {
                     padding: const EdgeInsets.symmetric(vertical: 16),
                   ),
                   child: _submitting
-                      ? const CircularProgressIndicator(color: Colors.white)
-                      : const Text('Yuborish'),
+                      ? CircularProgressIndicator(color: Colors.white)
+                      : Text('Yuborish'.tr),
                 ),
               ),
             ],

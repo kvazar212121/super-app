@@ -16,7 +16,9 @@ class HomeHeaderWidget extends StatelessWidget {
     final provider = Provider.of<AppProvider>(context);
     final auth = Provider.of<AuthProvider>(context);
     final unreadCount = provider.unreadCount;
-    final greetingName = auth.isAuthenticated ? provider.user.name : auth.displayName;
+    final greetingName = auth.isAuthenticated
+        ? provider.user.name
+        : auth.displayName;
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -55,7 +57,10 @@ class HomeHeaderWidget extends StatelessWidget {
                     shape: BoxShape.circle,
                     border: Border.all(color: Colors.white, width: 1.5),
                   ),
-                  constraints: const BoxConstraints(minWidth: 18, minHeight: 18),
+                  constraints: const BoxConstraints(
+                    minWidth: 18,
+                    minHeight: 18,
+                  ),
                   child: Text(
                     unreadCount.toString(),
                     style: const TextStyle(

@@ -83,10 +83,7 @@ class DentalClinic {
           : ['Ko\'rik va maslahat', 'Professional tozalash', 'Plomba'],
       prices: prices.isNotEmpty
           ? prices
-          : {
-              'Ko\'rik va maslahat': 80000,
-              'Professional tozalash': 150000,
-            },
+          : {'Ko\'rik va maslahat': 80000, 'Professional tozalash': 150000},
       dentists: dentists,
       timeSlots: (meta['time_slots'] as List<dynamic>? ?? [])
           .map((e) => e.toString())

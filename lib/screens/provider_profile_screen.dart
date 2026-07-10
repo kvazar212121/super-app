@@ -28,7 +28,11 @@ class ProviderProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final accent = category.accent;
-    final currency = NumberFormat.currency(locale: 'uz_UZ', symbol: 'so\'m', decimalDigits: 0);
+    final currency = NumberFormat.currency(
+      locale: 'uz_UZ',
+      symbol: 'so\'m',
+      decimalDigits: 0,
+    );
 
     return GlassScaffold(
       showBackButton: true,
@@ -50,35 +54,39 @@ class ProviderProfileScreen extends StatelessWidget {
                   address: master.locationLabel,
                   rating: master.rating,
                   type: 'master',
-                  rawJson: master.rawJson ?? {
-                    'id': master.id,
-                    'name': master.name,
-                    'phone': master.phoneNumber,
-                    'rating': master.rating,
-                    'review_count': master.reviewCount,
-                    'lat': master.latitude,
-                    'lng': master.longitude,
-                    'address': master.address,
-                    'metadata': {
-                      'specialty': master.specialty,
-                      'services': master.services,
-                      'prices': master.prices,
-                      'service_area': master.serviceArea,
-                      'is_mobile': master.isHomeVisit,
-                      'cleaner_role': master.cleanerRole,
-                      'master_role': master.masterRole,
-                      'electrician_role': master.electricianRole,
-                      'plumber_role': master.plumberRole,
-                      'ac_role': master.acRole,
-                      'team_size': master.teamSize,
-                    }
-                  },
+                  rawJson:
+                      master.rawJson ??
+                      {
+                        'id': master.id,
+                        'name': master.name,
+                        'phone': master.phoneNumber,
+                        'rating': master.rating,
+                        'review_count': master.reviewCount,
+                        'lat': master.latitude,
+                        'lng': master.longitude,
+                        'address': master.address,
+                        'metadata': {
+                          'specialty': master.specialty,
+                          'services': master.services,
+                          'prices': master.prices,
+                          'service_area': master.serviceArea,
+                          'is_mobile': master.isHomeVisit,
+                          'cleaner_role': master.cleanerRole,
+                          'master_role': master.masterRole,
+                          'electrician_role': master.electricianRole,
+                          'plumber_role': master.plumberRole,
+                          'ac_role': master.acRole,
+                          'team_size': master.teamSize,
+                        },
+                      },
                 );
                 savedPlaces.toggleSave(savedItem);
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(
-                      isSaved ? 'Sevimli ro\'yxatidan o\'chirildi' : 'Sevimli ro\'yxatiga qo\'shildi',
+                      isSaved
+                          ? 'Sevimli ro\'yxatidan o\'chirildi'
+                          : 'Sevimli ro\'yxatiga qo\'shildi',
                     ),
                     duration: const Duration(seconds: 1),
                   ),
@@ -135,21 +143,26 @@ class ProviderProfileScreen extends StatelessWidget {
               master.isCleaningTeam
                   ? 'Jamoa uyga boradi${master.teamSize != null ? ' (${master.teamSize} kishi)' : ''}'
                   : master.isMasterBrigade
-                      ? 'Brigada uyga boradi${master.teamSize != null ? ' (${master.teamSize} kishi)' : ''}'
-                      : master.isCleaner
-                          ? 'Uyga borib tozalash'
-                          : master.isMasterSolo
-                              ? 'Uyga borib ta\'mirlash'
-                              : master.isElectrician
-                                  ? 'Uyga borib elektr xizmati'
-                                  : master.isPlumber
-                                      ? 'Uyga borib santexnik xizmati'
-                                      : master.isAcTechnician
-                                          ? 'Uyga borib konditsioner xizmati'
-                                          : 'Uyga borib xizmat ko\'rsatadi',
+                  ? 'Brigada uyga boradi${master.teamSize != null ? ' (${master.teamSize} kishi)' : ''}'
+                  : master.isCleaner
+                  ? 'Uyga borib tozalash'
+                  : master.isMasterSolo
+                  ? 'Uyga borib ta\'mirlash'
+                  : master.isElectrician
+                  ? 'Uyga borib elektr xizmati'
+                  : master.isPlumber
+                  ? 'Uyga borib santexnik xizmati'
+                  : master.isAcTechnician
+                  ? 'Uyga borib konditsioner xizmati'
+                  : 'Uyga borib xizmat ko\'rsatadi',
             ),
             if (master.serviceArea != null && master.serviceArea!.isNotEmpty)
-              _infoTile(context, LucideIcons.mapPin, 'Xizmat hududi', master.serviceArea!),
+              _infoTile(
+                context,
+                LucideIcons.mapPin,
+                'Xizmat hududi',
+                master.serviceArea!,
+              ),
           ] else ...[
             _infoTile(
               context,
@@ -177,8 +190,19 @@ class ProviderProfileScreen extends StatelessWidget {
               borderRadius: GlassTokens.radiusMd,
               child: Row(
                 children: [
-                  Expanded(child: Text(s, style: const TextStyle(fontWeight: FontWeight.w600))),
-                  Text(currency.format(price), style: TextStyle(fontWeight: FontWeight.bold, color: accent)),
+                  Expanded(
+                    child: Text(
+                      s,
+                      style: const TextStyle(fontWeight: FontWeight.w600),
+                    ),
+                  ),
+                  Text(
+                    currency.format(price),
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: accent,
+                    ),
+                  ),
                 ],
               ),
             );
@@ -189,7 +213,11 @@ class ProviderProfileScreen extends StatelessWidget {
               Expanded(
                 child: OutlinedButton.icon(
                   onPressed: () {
-                    CallHelper.startCallWithPurposeCheck(context, master.providerId, master.name);
+                    CallHelper.startCallWithPurposeCheck(
+                      context,
+                      master.providerId,
+                      master.name,
+                    );
                   },
                   icon: const Icon(LucideIcons.phoneCall),
                   label: const Text('Qo\'ng\'iroq'),
@@ -197,7 +225,9 @@ class ProviderProfileScreen extends StatelessWidget {
                     foregroundColor: accent,
                     side: BorderSide(color: accent, width: 2),
                     padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
                   ),
                 ),
               ),
@@ -222,21 +252,35 @@ class ProviderProfileScreen extends StatelessWidget {
                     );
                   },
                   icon: Icon(
-                    category.name == 'massajHijoma' || category.name == 'salon' || category.name == 'sartarosh' 
-                        ? LucideIcons.calendarCheck 
-                        : (master.isHomeVisit ? LucideIcons.calendarCheck : LucideIcons.wrench)
+                    category.name == 'massajHijoma' ||
+                            category.name == 'salon' ||
+                            category.name == 'sartarosh'
+                        ? LucideIcons.calendarCheck
+                        : (master.isHomeVisit
+                              ? LucideIcons.calendarCheck
+                              : LucideIcons.wrench),
                   ),
                   label: Text(
-                    category.name == 'massajHijoma' || category.name == 'salon' || category.name == 'sartarosh' 
+                    category.name == 'massajHijoma' ||
+                            category.name == 'salon' ||
+                            category.name == 'sartarosh'
                         ? 'Qabulga yozilish'
-                        : master.isCleaner || master.isDispatchMaster || master.isElectrician || master.isPlumber || master.isAcTechnician
-                            ? 'Chaqirish'
-                            : (master.isHomeVisit ? 'Bron qilish' : 'Ustani chaqirish'),
+                        : master.isCleaner ||
+                              master.isDispatchMaster ||
+                              master.isElectrician ||
+                              master.isPlumber ||
+                              master.isAcTechnician
+                        ? 'Chaqirish'
+                        : (master.isHomeVisit
+                              ? 'Bron qilish'
+                              : 'Ustani chaqirish'),
                   ),
                   style: FilledButton.styleFrom(
                     backgroundColor: accent,
                     padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
                   ),
                 ),
               ),
@@ -247,7 +291,12 @@ class ProviderProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _infoTile(BuildContext context, IconData icon, String label, String value) {
+  Widget _infoTile(
+    BuildContext context,
+    IconData icon,
+    String label,
+    String value,
+  ) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Row(
@@ -259,8 +308,20 @@ class ProviderProfileScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(label, style: TextStyle(fontSize: 12, color: GlassTokens.secondaryText(context))),
-                Text(value, style: TextStyle(fontWeight: FontWeight.w600, color: GlassTokens.primaryText(context))),
+                Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: GlassTokens.secondaryText(context),
+                  ),
+                ),
+                Text(
+                  value,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    color: GlassTokens.primaryText(context),
+                  ),
+                ),
               ],
             ),
           ),

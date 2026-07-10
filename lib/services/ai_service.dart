@@ -18,10 +18,10 @@ class AiService {
       BaseOptions(
         baseUrl: '${AppConfig.apiBaseUrl}/api/v1',
         connectTimeout: const Duration(seconds: 15),
-        receiveTimeout: const Duration(seconds: 45), // AI javob berishi uchun ko'proq vaqt
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        receiveTimeout: const Duration(
+          seconds: 45,
+        ), // AI javob berishi uchun ko'proq vaqt
+        headers: {'Content-Type': 'application/json'},
       ),
     );
   }
@@ -40,21 +40,19 @@ class AiService {
       }
 
       final payloadMessages = List<Map<String, String>>.from(_messages);
-      if (payloadMessages.isNotEmpty && payloadMessages.last['role'] == 'user') {
+      if (payloadMessages.isNotEmpty &&
+          payloadMessages.last['role'] == 'user') {
         payloadMessages.last = {
           'role': 'user',
-          'content': "${payloadMessages.last['content']}\n\n[TIZIM MA'LUMOTI: Foydalanuvchining joriy vaqti: ${DateTime.now().toString()} (Timezone: UTC+5). Har qanday reja yoki vazifa yaratishda ushbu vaqtni hisobga oling va vaqtni to'g'ri UTC+5 ga moslab belgilang.]"
+          'content':
+              "${payloadMessages.last['content']}\n\n[TIZIM MA'LUMOTI: Foydalanuvchining joriy vaqti: ${DateTime.now().toString()} (Timezone: UTC+5). Har qanday reja yoki vazifa yaratishda ushbu vaqtni hisobga oling va vaqtni to'g'ri UTC+5 ga moslab belgilang.]",
         };
       }
 
       final response = await _dio.post(
         '/ai/chat',
-        data: {
-          'messages': payloadMessages,
-        },
-        options: Options(
-          headers: {'Authorization': 'Bearer $token'},
-        ),
+        data: {'messages': payloadMessages},
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
 
       final responseData = response.data;
@@ -73,7 +71,8 @@ class AiService {
       return "Kechirasiz, javob olishda xatolik yuz berdi.";
     } on DioException catch (e) {
       // Javob tanasini (maxfiy bo'lishi mumkin) log'ga chiqarmaymiz — faqat status.
-      if (kDebugMode) debugPrint("AI API Error: ${e.response?.statusCode ?? e.message}");
+      if (kDebugMode)
+        debugPrint("AI API Error: ${e.response?.statusCode ?? e.message}");
 
       // Tarix dan oxirgi user xabarini olib tashlash (muvaffaqiyatsiz bo'ldi)
       if (_messages.isNotEmpty && _messages.last['role'] == 'user') {
@@ -107,7 +106,9 @@ class AiService {
   Future<void> _handleAction(Map<String, dynamic> act) async {
     try {
       if (act['type'] == 'schedule_alarm' && act['alarm'] != null) {
-        final alarm = Alarm.fromJson(Map<String, dynamic>.from(act['alarm'] as Map));
+        final alarm = Alarm.fromJson(
+          Map<String, dynamic>.from(act['alarm'] as Map),
+        );
         await NotificationHelper().scheduleAlarm(alarm);
         debugPrint('AI budilnik rejalashtirildi: ${alarm.timeLabel}');
       }

@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
+import '../../l10n/locale_controller.dart';
 import '../../services/api_service.dart';
 import '../../services/notification_helper.dart';
 import '../../theme/glass_tokens.dart';
@@ -13,10 +14,15 @@ class FitnessWorkoutDayScreen extends StatefulWidget {
   final Map<String, dynamic> plan;
   final Map<String, dynamic> day;
 
-  const FitnessWorkoutDayScreen({super.key, required this.plan, required this.day});
+  const FitnessWorkoutDayScreen({
+    super.key,
+    required this.plan,
+    required this.day,
+  });
 
   @override
-  State<FitnessWorkoutDayScreen> createState() => _FitnessWorkoutDayScreenState();
+  State<FitnessWorkoutDayScreen> createState() =>
+      _FitnessWorkoutDayScreenState();
 }
 
 class _FitnessWorkoutDayScreenState extends State<FitnessWorkoutDayScreen> {
@@ -25,7 +31,8 @@ class _FitnessWorkoutDayScreenState extends State<FitnessWorkoutDayScreen> {
   bool _isSaving = false;
 
   List<Map<String, dynamic>> get _exercises =>
-      (widget.day['exercises'] as List<dynamic>? ?? []).cast<Map<String, dynamic>>();
+      (widget.day['exercises'] as List<dynamic>? ?? [])
+          .cast<Map<String, dynamic>>();
 
   Future<void> _finishWorkout() async {
     setState(() => _isSaving = true);
@@ -38,15 +45,17 @@ class _FitnessWorkoutDayScreenState extends State<FitnessWorkoutDayScreen> {
       });
       await NotificationHelper().showNotification(
         9001,
-        'Barakalla! 🎉',
-        '${widget.day['title']} mashg\'uloti yakunlandi. Shu zaylda davom eting!',
+        'Barakalla! 🎉'.tr,
+        '${widget.day['title']} ${'mashg\'uloti yakunlandi. Shu zaylda davom eting!'.tr}',
       );
       if (mounted) Navigator.pop(context, true);
     } catch (e) {
       debugPrint('Mashg\'ulotni saqlashda xato: $e');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Saqlab bo\'lmadi. Qayta urinib ko\'ring.')),
+          SnackBar(
+            content: Text('Saqlab bo\'lmadi. Qayta urinib ko\'ring.'.tr),
+          ),
         );
       }
     } finally {
@@ -57,18 +66,20 @@ class _FitnessWorkoutDayScreenState extends State<FitnessWorkoutDayScreen> {
   @override
   Widget build(BuildContext context) {
     final exercises = _exercises;
-    final allDone = _completedIds.length == exercises.length && exercises.isNotEmpty;
+    final allDone =
+        _completedIds.length == exercises.length && exercises.isNotEmpty;
 
     return GlassScaffold(
       showBackButton: true,
-      title: widget.day['title'] as String? ?? 'Mashg\'ulot',
+      title: widget.day['title'] as String? ?? 'Mashg\'ulot'.tr,
       body: Column(
         children: [
           Expanded(
             child: ListView.builder(
               padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
               itemCount: exercises.length,
-              itemBuilder: (ctx, index) => _buildExerciseCard(exercises[index], index),
+              itemBuilder: (ctx, index) =>
+                  _buildExerciseCard(exercises[index], index),
             ),
           ),
           SafeArea(
@@ -90,12 +101,23 @@ class _FitnessWorkoutDayScreenState extends State<FitnessWorkoutDayScreen> {
                       ? const SizedBox(
                           width: 20,
                           height: 20,
-                          child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2,
+                          ),
                         )
-                      : const Icon(LucideIcons.circleCheck, color: Colors.white, size: 20),
+                      : const Icon(
+                          LucideIcons.circleCheck,
+                          color: Colors.white,
+                          size: 20,
+                        ),
                   label: Text(
-                    'Mashg\'ulotni yakunlash (${_completedIds.length}/${exercises.length})',
-                    style: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w800),
+                    '${'Mashg\'ulotni yakunlash'.tr} (${_completedIds.length}/${exercises.length})',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w800,
+                    ),
                   ),
                 ),
               ),
@@ -158,8 +180,11 @@ class _FitnessWorkoutDayScreenState extends State<FitnessWorkoutDayScreen> {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      '${exercise['sets']} yondashuv × ${exercise['reps']} takror · dam ${exercise['rest_sec']}s',
-                      style: TextStyle(fontSize: 12, color: GlassTokens.secondaryText(context)),
+                      '${exercise['sets']} ${'yondashuv'.tr} × ${exercise['reps']} ${'takror'.tr} · ${'dam'.tr} ${exercise['rest_sec']}s',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: GlassTokens.secondaryText(context),
+                      ),
                     ),
                   ],
                 ),

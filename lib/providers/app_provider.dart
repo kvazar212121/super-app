@@ -8,6 +8,7 @@ import '../models/service_order.dart';
 import '../services/api_service.dart';
 import '../services/call_service.dart';
 import '../services/notification_helper.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 class AppProvider extends ChangeNotifier {
   final ApiService _api = ApiService();
@@ -42,8 +43,11 @@ class AppProvider extends ChangeNotifier {
   List<ServiceOrder> get orders => List.unmodifiable(_orders);
 
   List<ServiceOrder> get activeOrders => _orders
-      .where((o) =>
-          o.status != OrderStatus.completed && o.status != OrderStatus.cancelled)
+      .where(
+        (o) =>
+            o.status != OrderStatus.completed &&
+            o.status != OrderStatus.cancelled,
+      )
       .toList();
 
   List<ServiceOrder> get completedOrders =>
@@ -98,10 +102,10 @@ class AppProvider extends ChangeNotifier {
       await fetchNotifications();
       startNotificationPolling();
       startOrderPolling();
-      
+
       // Init WebRTC Signaling
       CallService().connectWebSocket();
-      
+
       notifyListeners();
     } catch (e) {
       debugPrint('Error fetching initial data: $e');
@@ -150,14 +154,15 @@ class AppProvider extends ChangeNotifier {
     try {
       await _loadCategoryMap();
       final categoryKey = order.category.name;
-      final categoryId =
-          _categoryIds[categoryKey] ?? order.category.index + 1;
+      final categoryId = _categoryIds[categoryKey] ?? order.category.index + 1;
 
       int providerId = order.providerId ?? 0;
       if (providerId <= 0) {
         try {
-          final providersRes =
-              await _api.getProviders(categoryKey: categoryKey, perPage: 1);
+          final providersRes = await _api.getProviders(
+            categoryKey: categoryKey,
+            perPage: 1,
+          );
           final List<dynamic> providers = providersRes['items'] ?? [];
           if (providers.isNotEmpty) {
             providerId = providers.first['id'] as int;
@@ -284,17 +289,21 @@ class AppProvider extends ChangeNotifier {
       for (var notif in _notifications) {
         final notifId = notif['id'].toString();
         final isRead = notif['is_read'] ?? false;
-        
+
         if (!isRead && !alertedIds.contains(notifId)) {
           final title = notif['title'] ?? 'Eslatma';
           final message = notif['message'] ?? '';
           final int notificationId = int.tryParse(notifId) ?? notifId.hashCode;
-          
-          await NotificationHelper().showNotification(notificationId, title, message);
+
+          await NotificationHelper().showNotification(
+            notificationId,
+            title,
+            message,
+          );
           newAlertedIds.add(notifId);
         }
       }
-      
+
       if (newAlertedIds.length > alertedIds.length) {
         await prefs.setStringList('alerted_notification_ids', newAlertedIds);
       }

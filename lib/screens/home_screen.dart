@@ -49,7 +49,12 @@ class HomeScreen extends StatelessWidget {
   }
 
   /// Bo'lim yopiq bo'lsa "tez orada" ko'rsatadi, aks holda (kerak bo'lsa auth tekshirib) ochadi.
-  Future<void> _openFeature(BuildContext context, String key, Widget Function() builder, {bool needAuth = true}) async {
+  Future<void> _openFeature(
+    BuildContext context,
+    String key,
+    Widget Function() builder, {
+    bool needAuth = true,
+  }) async {
     if (!FeatureService().isEnabled(key)) {
       showDialog(
         context: context,
@@ -57,7 +62,10 @@ class HomeScreen extends StatelessWidget {
           title: Text('Tez orada 🚧'.tr),
           content: Text(FeatureService().message(key)),
           actions: [
-            TextButton(onPressed: () => Navigator.pop(context), child: Text('Tushunarli'.tr)),
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text('Tushunarli'.tr),
+            ),
           ],
         ),
       );
@@ -68,7 +76,10 @@ class HomeScreen extends StatelessWidget {
     if (isPremiumFeature || needAuth) {
       final auth = Provider.of<AuthProvider>(context, listen: false);
       if (!auth.isAuthenticated) {
-        Navigator.push(context, MaterialPageRoute(builder: (_) => const AuthGateScreen()));
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const AuthGateScreen()),
+        );
         return;
       }
     }
@@ -77,7 +88,10 @@ class HomeScreen extends StatelessWidget {
       await FeatureService().refreshPremium();
       if (!FeatureService().isUserPremium) {
         if (!context.mounted) return;
-        Navigator.push(context, MaterialPageRoute(builder: (_) => const PremiumScreen()));
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const PremiumScreen()),
+        );
         return;
       }
     }
@@ -93,20 +107,25 @@ class HomeScreen extends StatelessWidget {
             Expanded(
               child: _DailyBtn(
                 icon: LucideIcons.calendarCheck,
-                label: 'Rejalarim',
+                label: 'Rejalarim'.tr,
                 color: Colors.blueAccent,
                 bgImage: 'assets/images/my_plans.jpg',
-                onTap: () => _openFeature(context, 'plans', () => const TodoScreen()),
+                onTap: () =>
+                    _openFeature(context, 'plans', () => const TodoScreen()),
               ),
             ),
             const SizedBox(width: 12),
             Expanded(
               child: _DailyBtn(
                 icon: LucideIcons.wallet,
-                label: 'Mening moliyam',
+                label: 'Mening moliyam'.tr,
                 color: Colors.greenAccent,
                 bgImage: 'assets/images/my_finance.jpg',
-                onTap: () => _openFeature(context, 'finance', () => const FinanceManagerScreen()),
+                onTap: () => _openFeature(
+                  context,
+                  'finance',
+                  () => const FinanceManagerScreen(),
+                ),
               ),
             ),
           ],
@@ -117,20 +136,29 @@ class HomeScreen extends StatelessWidget {
             Expanded(
               child: _DailyBtn(
                 icon: LucideIcons.shoppingBag,
-                label: 'Aqlli savdo',
+                label: 'Aqlli savdo'.tr,
                 color: Colors.orangeAccent,
                 bgImage: 'assets/images/smart_shopping.jpg',
-                onTap: () => _openFeature(context, 'shopping', () => const ShoppingListScreen()),
+                onTap: () => _openFeature(
+                  context,
+                  'shopping',
+                  () => const ShoppingListScreen(),
+                ),
               ),
             ),
             const SizedBox(width: 12),
             Expanded(
               child: _DailyBtn(
                 icon: LucideIcons.layoutGrid,
-                label: 'Barcha xizmatlar',
+                label: 'Barcha xizmatlar'.tr,
                 color: Colors.purpleAccent,
                 bgImage: 'assets/images/all_services.jpg',
-                onTap: () => _openFeature(context, 'services', () => const AllCategoriesScreen(), needAuth: false),
+                onTap: () => _openFeature(
+                  context,
+                  'services',
+                  () => const AllCategoriesScreen(),
+                  needAuth: false,
+                ),
               ),
             ),
           ],
@@ -141,20 +169,28 @@ class HomeScreen extends StatelessWidget {
             Expanded(
               child: _DailyBtn(
                 icon: LucideIcons.flame,
-                label: 'Kaloriya hisoblagich',
+                label: 'Kaloriya hisoblagich'.tr,
                 color: Colors.redAccent,
                 bgImage: 'assets/images/calorie_counter.jpg',
-                onTap: () => _openFeature(context, 'calorie', () => const CalorieHomeScreen()),
+                onTap: () => _openFeature(
+                  context,
+                  'calorie',
+                  () => const CalorieHomeScreen(),
+                ),
               ),
             ),
             const SizedBox(width: 12),
             Expanded(
               child: _DailyBtn(
                 icon: LucideIcons.dumbbell,
-                label: 'Fitnes trener',
+                label: 'Fitnes trener'.tr,
                 color: Colors.tealAccent,
                 bgImage: 'assets/images/fitness_trainer.jpg',
-                onTap: () => _openFeature(context, 'fitness', () => const FitnessHomeScreen()),
+                onTap: () => _openFeature(
+                  context,
+                  'fitness',
+                  () => const FitnessHomeScreen(),
+                ),
               ),
             ),
           ],
@@ -165,20 +201,29 @@ class HomeScreen extends StatelessWidget {
             Expanded(
               child: _DailyBtn(
                 icon: LucideIcons.alarmClock,
-                label: 'Majburlovchi budilnik',
+                label: 'Majburlovchi budilnik'.tr,
                 color: Colors.indigoAccent,
                 bgImage: 'assets/images/majburolovchi.jpg',
-                onTap: () => _openFeature(context, 'alarm', () => const AlarmHomeScreen()),
+                onTap: () => _openFeature(
+                  context,
+                  'alarm',
+                  () => const AlarmHomeScreen(),
+                ),
               ),
             ),
             const SizedBox(width: 12),
             Expanded(
               child: _DailyBtn(
                 icon: LucideIcons.bot,
-                label: 'AI Yordamchi',
+                label: 'AI Yordamchi'.tr,
                 color: const Color(0xFF06B6D4),
                 bgImage: 'assets/images/ai.jpg',
-                onTap: () => _openFeature(context, 'ai_chat', () => const ChatScreen(), needAuth: false),
+                onTap: () => _openFeature(
+                  context,
+                  'ai_chat',
+                  () => const ChatScreen(),
+                  needAuth: false,
+                ),
               ),
             ),
           ],
@@ -206,7 +251,7 @@ class _DailyBtn extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
+
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(16),
@@ -223,19 +268,19 @@ class _DailyBtn extends StatelessWidget {
             ),
           ],
         ),
-        clipBehavior: Clip.antiAlias, // Rasmni burchaklardan chiqib ketmasligi uchun qirqamiz
+        clipBehavior: Clip
+            .antiAlias, // Rasmni burchaklardan chiqib ketmasligi uchun qirqamiz
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             // Rasm joylashgan yuqori qism (Ramka)
             Expanded(
               child: bgImage != null
-                  ? Image.asset(
-                      bgImage!,
-                      fit: BoxFit.cover,
-                    )
+                  ? Image.asset(bgImage!, fit: BoxFit.cover)
                   : Container(
-                      color: isDark ? Color.lerp(const Color(0xFF1E293B), color, 0.15) : Color.lerp(Colors.white, color, 0.1),
+                      color: isDark
+                          ? Color.lerp(const Color(0xFF1E293B), color, 0.15)
+                          : Color.lerp(Colors.white, color, 0.1),
                       child: Icon(icon, color: color, size: 30),
                     ),
             ),

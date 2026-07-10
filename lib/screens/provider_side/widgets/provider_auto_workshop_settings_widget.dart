@@ -3,6 +3,7 @@ import '../../../services/hub_data_service.dart';
 import 'package:flutter/services.dart';
 import '../../../services/provider_availability_service.dart';
 import '../../../services/provider_portal_service.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 class _ServiceRow {
   final nameCtrl = TextEditingController();
@@ -30,7 +31,8 @@ class ProviderAutoWorkshopSettingsWidget extends StatefulWidget {
       _ProviderAutoWorkshopSettingsWidgetState();
 }
 
-class _ProviderAutoWorkshopSettingsWidgetState extends State<ProviderAutoWorkshopSettingsWidget> {
+class _ProviderAutoWorkshopSettingsWidgetState
+    extends State<ProviderAutoWorkshopSettingsWidget> {
   final _portal = ProviderPortalService();
   bool _loading = true;
   bool _saving = false;
@@ -39,10 +41,24 @@ class _ProviderAutoWorkshopSettingsWidgetState extends State<ProviderAutoWorksho
   final Set<String> _specs = {};
   List<String> _timeSlots = List.of(ProviderAvailability.defaultSlots);
 
-  static const _specOptions = ['Motor', 'Xodovoy', 'Elektronika', 'Tuning', 'Shinopompa', 'Konditsioner'];
+  static const _specOptions = [
+    'Motor',
+    'Xodovoy',
+    'Elektronika',
+    'Tuning',
+    'Shinopompa',
+    'Konditsioner',
+  ];
   static const _slots = [
-    '09:00', '10:00', '11:00', '12:00',
-    '14:00', '15:00', '16:00', '17:00', '18:00',
+    '09:00',
+    '10:00',
+    '11:00',
+    '12:00',
+    '14:00',
+    '15:00',
+    '16:00',
+    '17:00',
+    '18:00',
   ];
 
   @override
@@ -88,8 +104,12 @@ class _ProviderAutoWorkshopSettingsWidgetState extends State<ProviderAutoWorksho
         .toList();
     _specs.addAll(specList.isNotEmpty ? specList : ['Motor', 'Xodovoy']);
 
-    final names = (meta['services'] as List<dynamic>? ?? []).map((e) => e.toString()).toList();
-    final prices = Map<String, dynamic>.from(meta['prices'] as Map<String, dynamic>? ?? {});
+    final names = (meta['services'] as List<dynamic>? ?? [])
+        .map((e) => e.toString())
+        .toList();
+    final prices = Map<String, dynamic>.from(
+      meta['prices'] as Map<String, dynamic>? ?? {},
+    );
 
     if (names.isEmpty) {
       for (final entry in prices.entries) {
@@ -105,16 +125,19 @@ class _ProviderAutoWorkshopSettingsWidgetState extends State<ProviderAutoWorksho
       }
     }
 
-    _timeSlots = (meta['time_slots'] as List<dynamic>?)
+    _timeSlots =
+        (meta['time_slots'] as List<dynamic>?)
             ?.map((e) => e.toString())
             .toList() ??
         List.of(_slots);
   }
 
   void _addService(String name, String price) {
-    _services.add(_ServiceRow()
-      ..nameCtrl.text = name
-      ..priceCtrl.text = price);
+    _services.add(
+      _ServiceRow()
+        ..nameCtrl.text = name
+        ..priceCtrl.text = price,
+    );
   }
 
   Future<void> _save() async {
@@ -126,14 +149,15 @@ class _ProviderAutoWorkshopSettingsWidgetState extends State<ProviderAutoWorksho
         final name = row.nameCtrl.text.trim();
         if (name.isEmpty) continue;
         services.add(name);
-        prices[name] = int.tryParse(row.priceCtrl.text.replaceAll(' ', '')) ?? 0;
+        prices[name] =
+            int.tryParse(row.priceCtrl.text.replaceAll(' ', '')) ?? 0;
       }
 
       final latestData = await _portal.getMe(widget.categoryKey);
       final latestMeta = Map<String, dynamic>.from(
         latestData['metadata'] as Map<String, dynamic>? ??
-        latestData['metadata_json'] as Map<String, dynamic>? ??
-        {},
+            latestData['metadata_json'] as Map<String, dynamic>? ??
+            {},
       );
       final meta = Map<String, dynamic>.from(latestMeta)
         ..['type'] = 'auto_workshop'
@@ -146,16 +170,16 @@ class _ProviderAutoWorkshopSettingsWidgetState extends State<ProviderAutoWorksho
       await _portal.updateMetadata(widget.categoryKey, meta);
       HubDataService().clearCache();
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Sozlamalar saqlandi')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Sozlamalar saqlandi'.tr)));
       }
       await _load();
     } catch (_) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Saqlashda xatolik')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Saqlashda xatolik'.tr)));
       }
     } finally {
       if (mounted) setState(() => _saving = false);
@@ -171,12 +195,23 @@ class _ProviderAutoWorkshopSettingsWidgetState extends State<ProviderAutoWorksho
       children: [
         Text(
           'Ustaxona sozlamalari',
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+          style: Theme.of(
+            context,
+          ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 8),
-        Text('Xizmatlar, narxlar va ish vaqtlari', style: TextStyle(color: Colors.grey[600])),
+        Text(
+          'Xizmatlar, narxlar va ish vaqtlari',
+          style: TextStyle(color: Colors.grey[600]),
+        ),
         const SizedBox(height: 20),
-        Text('Mutaxassislik', style: TextStyle(fontWeight: FontWeight.w600, color: Colors.grey[800])),
+        Text(
+          'Mutaxassislik',
+          style: TextStyle(
+            fontWeight: FontWeight.w600,
+            color: Colors.grey[800],
+          ),
+        ),
         const SizedBox(height: 8),
         Wrap(
           spacing: 8,
@@ -225,16 +260,22 @@ class _ProviderAutoWorkshopSettingsWidgetState extends State<ProviderAutoWorksho
                     controller: row.priceCtrl,
                     keyboardType: TextInputType.number,
                     inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                    decoration: const InputDecoration(labelText: 'Narx', border: OutlineInputBorder()),
+                    decoration: InputDecoration(
+                      labelText: 'Narx'.tr,
+                      border: OutlineInputBorder(),
+                    ),
                   ),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.remove_circle_outline, color: Colors.red),
+                  icon: const Icon(
+                    Icons.remove_circle_outline,
+                    color: Colors.red,
+                  ),
                   onPressed: _services.length > 1
                       ? () => setState(() {
-                            _services[i].dispose();
-                            _services.removeAt(i);
-                          })
+                          _services[i].dispose();
+                          _services.removeAt(i);
+                        })
                       : null,
                 ),
               ],
@@ -275,12 +316,20 @@ class _ProviderAutoWorkshopSettingsWidgetState extends State<ProviderAutoWorksho
           child: FilledButton(
             onPressed: _saving ? null : _save,
             style: FilledButton.styleFrom(
-              backgroundColor: Colors.black, foregroundColor: Colors.white,
+              backgroundColor: Colors.black,
+              foregroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(vertical: 16),
             ),
             child: _saving
-                ? const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                : const Text('Saqlash'),
+                ? const SizedBox(
+                    width: 22,
+                    height: 22,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: Colors.white,
+                    ),
+                  )
+                : Text('Saqlash'.tr),
           ),
         ),
       ],

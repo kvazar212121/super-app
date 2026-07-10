@@ -12,6 +12,7 @@ import '../utils/call_helper.dart';
 import '../widgets/glass/glass_scaffold.dart';
 import '../widgets/glass/glass_surface.dart';
 import 'disinfection_dispatch_screen.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 
 class DisinfectionProfileScreen extends StatelessWidget {
   final DisinfectionService service;
@@ -21,7 +22,11 @@ class DisinfectionProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const accent = Color(0xFF10B981); // Emerald
-    final currency = NumberFormat.currency(locale: 'uz_UZ', symbol: 'so\'m', decimalDigits: 0);
+    final currency = NumberFormat.currency(
+      locale: 'uz_UZ',
+      symbol: 'so\'m',
+      decimalDigits: 0,
+    );
 
     return GlassScaffold(
       showBackButton: true,
@@ -49,7 +54,9 @@ class DisinfectionProfileScreen extends StatelessWidget {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(
-                      isSaved ? 'Sevimli ro\'yxatidan o\'chirildi' : 'Sevimli ro\'yxatiga qo\'shildi',
+                      isSaved
+                          ? 'Sevimli ro\'yxatidan o\'chirildi'
+                          : 'Sevimli ro\'yxatiga qo\'shildi',
                     ),
                     duration: const Duration(seconds: 1),
                   ),
@@ -70,7 +77,11 @@ class DisinfectionProfileScreen extends StatelessWidget {
                 CircleAvatar(
                   radius: 44,
                   backgroundColor: accent.withOpacity(0.1),
-                  child: const Icon(LucideIcons.shieldCheck, color: accent, size: 40),
+                  child: const Icon(
+                    LucideIcons.shieldCheck,
+                    color: accent,
+                    size: 40,
+                  ),
                 ),
                 const SizedBox(height: 16),
                 Text(
@@ -84,7 +95,10 @@ class DisinfectionProfileScreen extends StatelessWidget {
                 ),
                 Text(
                   service.subCategory ?? 'Dezinfeksiya va deratizatsiya',
-                  style: const TextStyle(color: accent, fontWeight: FontWeight.w600),
+                  style: const TextStyle(
+                    color: accent,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
                 const SizedBox(height: 8),
                 Row(
@@ -112,12 +126,16 @@ class DisinfectionProfileScreen extends StatelessWidget {
             Wrap(
               spacing: 8,
               runSpacing: 8,
-              children: service.areaTypes.map((t) => Chip(
-                avatar: Icon(t.icon, size: 16, color: accent),
-                label: Text(t.label),
-                backgroundColor: accent.withOpacity(0.1),
-                side: BorderSide(color: accent.withOpacity(0.3)),
-              )).toList(),
+              children: service.areaTypes
+                  .map(
+                    (t) => Chip(
+                      avatar: Icon(t.icon, size: 16, color: accent),
+                      label: Text(t.label),
+                      backgroundColor: accent.withOpacity(0.1),
+                      side: BorderSide(color: accent.withOpacity(0.3)),
+                    ),
+                  )
+                  .toList(),
             ),
             const SizedBox(height: 20),
           ],
@@ -134,12 +152,16 @@ class DisinfectionProfileScreen extends StatelessWidget {
             Wrap(
               spacing: 8,
               runSpacing: 8,
-              children: service.chemicals.map((c) => Chip(
-                avatar: Icon(c.icon, size: 16, color: accent),
-                label: Text(c.name + (c.isEcoFriendly ? ' (Eko)' : '')),
-                backgroundColor: Colors.white,
-                side: BorderSide(color: Colors.grey.shade300),
-              )).toList(),
+              children: service.chemicals
+                  .map(
+                    (c) => Chip(
+                      avatar: Icon(c.icon, size: 16, color: accent),
+                      label: Text(c.name + (c.isEcoFriendly ? ' (Eko)' : '')),
+                      backgroundColor: Colors.white,
+                      side: BorderSide(color: Colors.grey.shade300),
+                    ),
+                  )
+                  .toList(),
             ),
             const SizedBox(height: 20),
           ],
@@ -159,8 +181,19 @@ class DisinfectionProfileScreen extends StatelessWidget {
               borderRadius: GlassTokens.radiusMd,
               child: Row(
                 children: [
-                  Expanded(child: Text(e.key, style: const TextStyle(fontWeight: FontWeight.w600))),
-                  Text(currency.format(e.value), style: const TextStyle(fontWeight: FontWeight.bold, color: accent)),
+                  Expanded(
+                    child: Text(
+                      e.key,
+                      style: const TextStyle(fontWeight: FontWeight.w600),
+                    ),
+                  ),
+                  Text(
+                    currency.format(e.value),
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: accent,
+                    ),
+                  ),
                 ],
               ),
             );
@@ -171,7 +204,11 @@ class DisinfectionProfileScreen extends StatelessWidget {
               Expanded(
                 child: OutlinedButton.icon(
                   onPressed: () {
-                    CallHelper.startCallWithPurposeCheck(context, int.tryParse(service.id) ?? 0, service.name);
+                    CallHelper.startCallWithPurposeCheck(
+                      context,
+                      int.tryParse(service.id) ?? 0,
+                      service.name,
+                    );
                   },
                   icon: const Icon(LucideIcons.phoneCall),
                   label: const Text('Qo\'ng\'iroq'),
@@ -179,7 +216,9 @@ class DisinfectionProfileScreen extends StatelessWidget {
                     foregroundColor: accent,
                     side: const BorderSide(color: accent, width: 2),
                     padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
                   ),
                 ),
               ),
@@ -191,16 +230,19 @@ class DisinfectionProfileScreen extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (_) => DisinfectionDispatchScreen(service: service),
+                        builder: (_) =>
+                            DisinfectionDispatchScreen(service: service),
                       ),
                     );
                   },
-                  icon: const Icon(LucideIcons.shieldAlert),
-                  label: const Text('Obyektga chaqirish'),
+                  icon: Icon(LucideIcons.shieldAlert),
+                  label: Text('Obyektga chaqirish'.tr),
                   style: FilledButton.styleFrom(
                     backgroundColor: accent,
                     padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
                   ),
                 ),
               ),

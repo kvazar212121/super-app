@@ -22,10 +22,7 @@ class HubMapPreview extends StatelessWidget {
     return Stack(
       children: [
         FlutterMap(
-          options: MapOptions(
-            initialCenter: center,
-            initialZoom: zoom,
-          ),
+          options: MapOptions(initialCenter: center, initialZoom: zoom),
           children: [
             TileLayer(
               urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',

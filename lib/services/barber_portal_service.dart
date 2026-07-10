@@ -21,17 +21,16 @@ class BarberPortalService {
     required bool alsoWorksAsBarber,
     String? hours,
     String? subCategory,
-  }) =>
-      _api.registerBarberShopOwner(
-        name: name,
-        address: address,
-        phone: phone,
-        lat: lat,
-        lng: lng,
-        alsoWorksAsBarber: alsoWorksAsBarber,
-        hours: hours,
-        subCategory: subCategory,
-      );
+  }) => _api.registerBarberShopOwner(
+    name: name,
+    address: address,
+    phone: phone,
+    lat: lat,
+    lng: lng,
+    alsoWorksAsBarber: alsoWorksAsBarber,
+    hours: hours,
+    subCategory: subCategory,
+  );
 
   Future<Map<String, dynamic>> registerMobile({
     required String name,
@@ -39,25 +38,23 @@ class BarberPortalService {
     required String serviceArea,
     String? address,
     String? subCategory,
-  }) =>
-      _api.registerBarberMobile(
-        name: name,
-        phone: phone,
-        serviceArea: serviceArea,
-        address: address,
-        subCategory: subCategory,
-      );
+  }) => _api.registerBarberMobile(
+    name: name,
+    phone: phone,
+    serviceArea: serviceArea,
+    address: address,
+    subCategory: subCategory,
+  );
 
   Future<Map<String, dynamic>> requestJoin({
     required String displayName,
     int? shopId,
     String? inviteCode,
-  }) =>
-      _api.requestBarberJoin(
-        displayName: displayName,
-        shopId: shopId,
-        inviteCode: inviteCode,
-      );
+  }) => _api.requestBarberJoin(
+    displayName: displayName,
+    shopId: shopId,
+    inviteCode: inviteCode,
+  );
 
   Future<List<Map<String, dynamic>>> getPendingMembers() async {
     final data = await _api.getBarberPendingMembers();
@@ -74,8 +71,4 @@ class BarberPortalService {
   }
 }
 
-enum BarberRegistrationRole {
-  shopOwner,
-  shopEmployee,
-  mobile,
-}
+enum BarberRegistrationRole { shopOwner, shopEmployee, mobile }

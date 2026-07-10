@@ -1,7 +1,8 @@
 import 'api_service.dart';
 
 class ElectricianPortalService {
-  static final ElectricianPortalService _instance = ElectricianPortalService._();
+  static final ElectricianPortalService _instance =
+      ElectricianPortalService._();
   factory ElectricianPortalService() => _instance;
   ElectricianPortalService._();
 
@@ -12,11 +13,10 @@ class ElectricianPortalService {
     required String phone,
     required String serviceArea,
     String? address,
-  }) =>
-      _api.registerElectricianSolo(
-        name: name,
-        phone: phone,
-        serviceArea: serviceArea,
-        address: address,
-      );
+  }) => _api.registerElectricianSolo(
+    name: name,
+    phone: phone,
+    serviceArea: serviceArea,
+    address: address,
+  );
 }

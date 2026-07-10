@@ -20,40 +20,37 @@ class SalonPortalService {
     required double lng,
     required bool alsoWorksAsStylist,
     String? hours,
-  }) =>
-      _api.registerSalonOwner(
-        name: name,
-        address: address,
-        phone: phone,
-        lat: lat,
-        lng: lng,
-        alsoWorksAsStylist: alsoWorksAsStylist,
-        hours: hours,
-      );
+  }) => _api.registerSalonOwner(
+    name: name,
+    address: address,
+    phone: phone,
+    lat: lat,
+    lng: lng,
+    alsoWorksAsStylist: alsoWorksAsStylist,
+    hours: hours,
+  );
 
   Future<Map<String, dynamic>> registerMobile({
     required String name,
     required String phone,
     required String serviceArea,
     String? address,
-  }) =>
-      _api.registerSalonMobile(
-        name: name,
-        phone: phone,
-        serviceArea: serviceArea,
-        address: address,
-      );
+  }) => _api.registerSalonMobile(
+    name: name,
+    phone: phone,
+    serviceArea: serviceArea,
+    address: address,
+  );
 
   Future<Map<String, dynamic>> requestJoin({
     required String displayName,
     int? salonId,
     String? inviteCode,
-  }) =>
-      _api.requestSalonJoin(
-        displayName: displayName,
-        salonId: salonId,
-        inviteCode: inviteCode,
-      );
+  }) => _api.requestSalonJoin(
+    displayName: displayName,
+    salonId: salonId,
+    inviteCode: inviteCode,
+  );
 
   Future<List<Map<String, dynamic>>> getPendingMembers() async {
     final data = await _api.getSalonPendingMembers();
