@@ -1,7 +1,7 @@
 from typing import Optional
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Query, HTTPException
 from pydantic import BaseModel, Field
-from sqlalchemy import select, distinct, desc
+from sqlalchemy import select, distinct, desc, func, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.session import get_db
@@ -76,5 +76,35 @@ async def list_notifications(
         }
         for n in rows.scalars().all()
     ]
-    total = (await db.execute(select(Notification))).scalars().all()
-    return {"items": items, "total": len(total), "page": page, "per_page": per_page}
+    total = int(await db.scalar(select(func.count()).select_from(Notification)) or 0)
+    return {"items": items, "total": total, "page": page, "per_page": per_page}
+
+
+@router.delete("/notifications/{notif_id}")
+async def delete_notification(
+    notif_id: int,
+    _admin: User = Depends(require_admin),
+    db: AsyncSession = Depends(get_db),
+):
+    """Bitta bildirishnomani o'chirish."""
+    n = (await db.execute(select(Notification).where(Notification.id == notif_id))).scalar_one_or_none()
+    if n is None:
+        raise HTTPException(status_code=404, detail="Bildirishnoma topilmadi")
+    await db.delete(n)
+    await db.commit()
+    return {"deleted": notif_id}
+
+
+@router.delete("/notifications")
+async def clear_notifications(
+    only_read: bool = Query(False, description="true — faqat o'qilganlarни o'chirish"),
+    _admin: User = Depends(require_admin),
+    db: AsyncSession = Depends(get_db),
+):
+    """Bildirishnomalar tarixini tozalash (hammasi yoki faqat o'qilganlar)."""
+    stmt = delete(Notification)
+    if only_read:
+        stmt = stmt.where(Notification.is_read == True)
+    result = await db.execute(stmt)
+    await db.commit()
+    return {"cleared": int(result.rowcount or 0), "only_read": only_read}

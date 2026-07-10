@@ -65,11 +65,17 @@ import { navigateTo, renderPage } from '../router.js';
                         '</div>' +
                     '</div>' +
                     '<div class="card">' +
-                        '<div class="card-header"><h3 class="card-title">Yuborilgan bildirishnomalar</h3></div>' +
+                        '<div class="card-header" style="display:flex;justify-content:space-between;align-items:center;">' +
+                            '<h3 class="card-title">Yuborilgan bildirishnomalar</h3>' +
+                            '<div style="display:flex;gap:8px;">' +
+                                '<button class="btn btn-sm" onclick="clearNotifications(true)" title="O\'qilganlarni tozalash">🧹 O\'qilganlar</button>' +
+                                '<button class="btn btn-sm" onclick="clearNotifications(false)" style="color:#dc2626;" title="Hammasini tozalash">🗑 Hammasini tozalash</button>' +
+                            '</div>' +
+                        '</div>' +
                         '<div class="card-body no-padding">' +
                             '<div class="table-container">' +
                                 '<table class="data-table">' +
-                                    '<thead><tr><th>ID</th><th>Tur</th><th>Sarlavha</th><th>Kimlarga</th><th>Soni</th><th>Sana</th></tr></thead>' +
+                                    '<thead><tr><th>ID</th><th>Tur</th><th>Sarlavha</th><th>Kimlarga</th><th>Soni</th><th>Sana</th><th></th></tr></thead>' +
                                     '<tbody>';
 
             notifItems.forEach(function(n) {
@@ -82,8 +88,13 @@ import { navigateTo, renderPage } from '../router.js';
                     '<td>' + targetLabel + '</td>' +
                     '<td>' + (n.count || 0).toLocaleString() + '</td>' +
                     '<td>' + window.escapeHtml(n.sent_at || n.created_at || '-') + '</td>' +
+                    '<td><button class="btn btn-sm" onclick="deleteNotification(' + (n.id || 0) + ')" style="color:#dc2626;" title="O\'chirish">🗑</button></td>' +
                 '</tr>';
             });
+
+            if (!notifItems.length) {
+                html += '<tr><td colspan="7" style="text-align:center;color:#94a3b8;padding:20px;">Bildirishnoma yo\'q</td></tr>';
+            }
 
             html += '</tbody></table></div></div></div></div></div>';
             mainContent.innerHTML = html;
@@ -118,6 +129,29 @@ import { navigateTo, renderPage } from '../router.js';
 
         
 
+// Bitta bildirishnomani o'chirish
+function deleteNotification(id) {
+    if (!id) return;
+    if (!confirm('Bu bildirishnomani o\'chirasizmi?')) return;
+    window.api(window.API_BASE + '/notifications/' + id, { method: 'DELETE' })
+        .then(function (r) {
+            window.showToast(r && r.ok ? 'O\'chirildi' : 'Xatolik', r && r.ok ? 'success' : 'error');
+            if (r && r.ok) renderNotifications();
+        });
+}
+
+// Bildirishnomalar tarixini tozalash (hammasi yoki faqat o'qilganlar)
+function clearNotifications(onlyRead) {
+    var msg = onlyRead ? 'O\'qilgan bildirishnomalarni tozalaysizmi?' : 'BARCHA bildirishnomalarni tozalaysizmi? Bu amalni ortga qaytarib bo\'lmaydi.';
+    if (!confirm(msg)) return;
+    window.api(window.API_BASE + '/notifications?only_read=' + (onlyRead ? 'true' : 'false'), { method: 'DELETE' })
+        .then(function (r) {
+            if (r && r.ok) {
+                r.json().then(function (d) { window.showToast((d.cleared || 0) + ' ta tozalandi ✅', 'success'); renderNotifications(); });
+            } else window.showToast('Xatolik', 'error');
+        });
+}
+
 // Tanlangan shablonni sarlavha/xabar maydonlariga to'ldiradi
 function applyNotifTpl(idx) {
     var tpls = window._notifTplCache || [];
@@ -136,3 +170,5 @@ window.selectNotifType = selectNotifType;
 window.renderNotifications = renderNotifications;
 window.sendNotification = sendNotification;
 window.applyNotifTpl = applyNotifTpl;
+window.deleteNotification = deleteNotification;
+window.clearNotifications = clearNotifications;
