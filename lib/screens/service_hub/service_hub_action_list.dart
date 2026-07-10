@@ -69,7 +69,7 @@ class _ActionList extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),
             child: Text(
-              "Yaqin o'quv markazlari",
+              "Yaqin o'quv markazlari".tr,
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w800,
@@ -95,7 +95,7 @@ class _ActionList extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),
             child: Text(
-              "Yaqin ustaxonalar",
+              "Yaqin ustaxonalar".tr,
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w800,
@@ -257,7 +257,7 @@ class _ActionList extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),
           child: Text(
-            title,
+            title.tr,
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w800,
@@ -286,7 +286,7 @@ class _ActionList extends StatelessWidget {
 
     void openEvent({OrganizerServiceType? organizer, EventType? eventType}) {
       if (data.events.isEmpty) {
-        toast('Tadbir guruhlari tez orada qo\'shiladi.');
+        toast('Tadbir guruhlari tez orada qo\'shiladi.'.tr);
         return;
       }
       EventPlanning target = data.events.first;
@@ -310,7 +310,7 @@ class _ActionList extends StatelessWidget {
 
     void openNurse(MedicalService? medical) {
       if (data.nurses.isEmpty) {
-        toast('Hamshira xizmatlari tez orada qo\'shiladi.');
+        toast('Hamshira xizmatlari tez orada qo\'shiladi.'.tr);
         return;
       }
       final target = medical == null
@@ -332,7 +332,7 @@ class _ActionList extends StatelessWidget {
 
     void openMobileBarbers() {
       if (data.mobileBarbers.isEmpty) {
-        toast('Hozircha mobil sartaroshlar yo\'q. Tez orada qo\'shiladi.');
+        toast('Hozircha mobil sartaroshlar yo\'q. Tez orada qo\'shiladi.'.tr);
         return;
       }
       if (data.mobileBarbers.length == 1) {
@@ -353,18 +353,21 @@ class _ActionList extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Padding(
-                padding: EdgeInsets.all(16),
+              Padding(
+                padding: const EdgeInsets.all(16),
                 child: Text(
-                  'Mobil sartarosh tanlang',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  'Mobil sartarosh tanlang'.tr,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
                 ),
               ),
               ...data.mobileBarbers.map(
                 (b) => ListTile(
                   leading: const Icon(LucideIcons.scissors),
                   title: Text(b.name),
-                  subtitle: Text(b.serviceArea ?? 'Uyga xizmat'),
+                  subtitle: Text(b.serviceArea ?? 'Uyga xizmat'.tr),
                   onTap: () {
                     Navigator.pop(ctx);
                     Navigator.push(
@@ -389,7 +392,7 @@ class _ActionList extends StatelessWidget {
       final teams = data.masters.where((m) => m.isCleaningTeam).toList();
       if (teams.isEmpty) {
         if (data.masters.isEmpty) {
-          toast('Hozircha tozalash xizmatlari yo\'q.');
+          toast('Hozircha tozalash xizmatlari yo\'q.'.tr);
           return;
         }
         Navigator.push(
@@ -421,11 +424,14 @@ class _ActionList extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Padding(
-                padding: EdgeInsets.all(16),
+              Padding(
+                padding: const EdgeInsets.all(16),
                 child: Text(
-                  'General tozalash jamoasi',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  'General tozalash jamoasi'.tr,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
                 ),
               ),
               ...teams.map(
@@ -434,8 +440,8 @@ class _ActionList extends StatelessWidget {
                   title: Text(m.name),
                   subtitle: Text(
                     m.teamSize != null
-                        ? '${m.teamSize} kishilik jamoa'
-                        : 'Tozalash jamoasi',
+                        ? '${m.teamSize} ${'kishilik jamoa'.tr}'
+                        : 'Tozalash jamoasi'.tr,
                   ),
                   onTap: () {
                     Navigator.pop(ctx);
@@ -461,7 +467,7 @@ class _ActionList extends StatelessWidget {
       final brigades = data.masters.where((m) => m.isMasterBrigade).toList();
       if (brigades.isEmpty) {
         if (data.masters.isEmpty) {
-          toast('Hozircha ustalar yo\'q.');
+          toast('Hozircha ustalar yo\'q.'.tr);
           return;
         }
         Navigator.push(
@@ -493,11 +499,14 @@ class _ActionList extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Padding(
-                padding: EdgeInsets.all(16),
+              Padding(
+                padding: const EdgeInsets.all(16),
                 child: Text(
-                  'Ustalar brigadasi',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  'Ustalar brigadasi'.tr,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
                 ),
               ),
               ...brigades.map(
@@ -506,8 +515,8 @@ class _ActionList extends StatelessWidget {
                   title: Text(m.name),
                   subtitle: Text(
                     m.teamSize != null
-                        ? '${m.teamSize} kishilik brigada'
-                        : 'Ustalar brigadasi',
+                        ? '${m.teamSize} ${'kishilik brigada'.tr}'
+                        : 'Ustalar brigadasi'.tr,
                   ),
                   onTap: () {
                     Navigator.pop(ctx);
@@ -531,7 +540,7 @@ class _ActionList extends StatelessWidget {
 
     void openMobileStylists() {
       if (data.mobileStylists.isEmpty) {
-        toast('Hozircha mobil kosmetologlar yo\'q. Tez orada qo\'shiladi.');
+        toast('Hozircha mobil kosmetologlar yo\'q. Tez orada qo\'shiladi.'.tr);
         return;
       }
       if (data.mobileStylists.length == 1) {
@@ -552,18 +561,21 @@ class _ActionList extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Padding(
-                padding: EdgeInsets.all(16),
+              Padding(
+                padding: const EdgeInsets.all(16),
                 child: Text(
-                  'Mobil kosmetolog',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  'Mobil kosmetolog'.tr,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
                 ),
               ),
               ...data.mobileStylists.map(
                 (s) => ListTile(
                   leading: const Icon(LucideIcons.sparkles),
                   title: Text(s.name),
-                  subtitle: Text(s.serviceArea ?? 'Uyga xizmat'),
+                  subtitle: Text(s.serviceArea ?? 'Uyga xizmat'.tr),
                   onTap: () {
                     Navigator.pop(ctx);
                     Navigator.push(
@@ -618,8 +630,8 @@ class _ActionList extends StatelessWidget {
         [
           _HubActionSpec(
             LucideIcons.bookmark,
-            'Saqlangan joylar',
-            'Saqlab qo‘yilgan joylar va ustalar',
+            'Saqlangan joylar'.tr,
+            'Saqlab qo‘yilgan joylar va ustalar'.tr,
             () => Navigator.push(
               context,
               MaterialPageRoute(
@@ -629,8 +641,8 @@ class _ActionList extends StatelessWidget {
           ),
           _HubActionSpec(
             LucideIcons.layoutGrid,
-            'Barcha xizmatlar',
-            'To‘liq katalog',
+            'Barcha xizmatlar'.tr,
+            'To‘liq katalog'.tr,
             () => Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => AllCategoriesScreen()),
@@ -638,9 +650,9 @@ class _ActionList extends StatelessWidget {
           ),
           _HubActionSpec(
             LucideIcons.headphones,
-            'Qo‘llab-quvvatlash',
-            'Chat yoki qo‘ng‘iroq',
-            () => toast('Support — tez orada'),
+            'Qo‘llab-quvvatlash'.tr,
+            'Chat yoki qo‘ng‘iroq'.tr,
+            () => toast('Support — tez orada'.tr),
           ),
         ];
   }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/service_order.dart';
+import '../l10n/locale_controller.dart';
 
 class OrderTimelineStep {
   final String label;
@@ -22,14 +23,14 @@ List<OrderTimelineStep> buildOrderTimeline(OrderStatus current) {
       current == OrderStatus.noShow ||
       current == OrderStatus.disputed) {
     final label = switch (current) {
-      OrderStatus.cancelled => 'Bekor qilindi',
-      OrderStatus.noShow => 'Kelmadi',
-      OrderStatus.disputed => 'Nizoli',
-      _ => 'Xatolik',
+      OrderStatus.cancelled => 'Bekor qilindi'.tr,
+      OrderStatus.noShow => 'Kelmadi'.tr,
+      OrderStatus.disputed => 'Nizoli'.tr,
+      _ => 'Xatolik'.tr,
     };
     return [
-      const OrderTimelineStep(
-        label: 'Yuborildi',
+      OrderTimelineStep(
+        label: 'Yuborildi'.tr,
         status: OrderStatus.pending,
         isDone: true,
       ),
@@ -43,24 +44,24 @@ List<OrderTimelineStep> buildOrderTimeline(OrderStatus current) {
   }
 
   final steps = <(OrderStatus, String)>[
-    (OrderStatus.pending, 'Yuborildi'),
-    (OrderStatus.accepted, 'Qabul qilindi'),
+    (OrderStatus.pending, 'Yuborildi'.tr),
+    (OrderStatus.accepted, 'Qabul qilindi'.tr),
   ];
 
   if (current == OrderStatus.onTheWay) {
-    steps.add((OrderStatus.onTheWay, 'Yo\'lda'));
+    steps.add((OrderStatus.onTheWay, 'Yo\'lda'.tr));
   } else if (current == OrderStatus.arrived) {
-    steps.add((OrderStatus.arrived, 'Yetib keldi'));
+    steps.add((OrderStatus.arrived, 'Yetib keldi'.tr));
   } else if (current == OrderStatus.preparing) {
-    steps.add((OrderStatus.preparing, 'Tayyorlanmoqda'));
+    steps.add((OrderStatus.preparing, 'Tayyorlanmoqda'.tr));
   }
 
-  steps.add((OrderStatus.inProgress, 'Jarayonda'));
+  steps.add((OrderStatus.inProgress, 'Jarayonda'.tr));
 
   if (current == OrderStatus.delivered) {
-    steps.add((OrderStatus.delivered, 'Yetkazildi'));
+    steps.add((OrderStatus.delivered, 'Yetkazildi'.tr));
   } else {
-    steps.add((OrderStatus.completed, 'Yakunlandi'));
+    steps.add((OrderStatus.completed, 'Yakunlandi'.tr));
   }
 
   int currentIndex = 0;

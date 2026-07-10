@@ -97,7 +97,7 @@ class _ServiceHubScreenState extends State<ServiceHubScreen> {
   Widget build(BuildContext context) {
     return GlassScaffold(
       showBackButton: true,
-      title: widget.kind.title,
+      title: widget.kind.title.tr,
       body: Container(
         decoration: BoxDecoration(color: Colors.transparent),
         child: BackdropFilter(

@@ -295,7 +295,7 @@ class SportFacilitySmallCard extends StatelessWidget {
                 maxLines: 1,
               ),
               Text(
-                facility.sportType,
+                '${facility.sportType}'.tr,
                 style: TextStyle(fontSize: 11, color: accentColor),
                 maxLines: 1,
               ),
@@ -361,7 +361,7 @@ class GameZoneSmallCard extends StatelessWidget {
                 maxLines: 1,
               ),
               Text(
-                zone.zoneType,
+                '${zone.zoneType}'.tr,
                 style: TextStyle(fontSize: 11, color: accentColor),
                 maxLines: 1,
               ),
@@ -429,7 +429,7 @@ class EventVenueSmallCard extends StatelessWidget {
                 maxLines: 1,
               ),
               Text(
-                venue.venueType,
+                '${venue.venueType}'.tr,
                 style: TextStyle(fontSize: 11, color: accentColor),
                 maxLines: 1,
               ),
@@ -565,7 +565,7 @@ class MasterSmallCard extends StatelessWidget {
                 maxLines: 1,
               ),
               Text(
-                master.specialty,
+                master.specialty.tr,
                 style: TextStyle(fontSize: 11, color: Colors.blue[700]),
               ),
             ],
@@ -617,7 +617,7 @@ class WorkerSmallCard extends StatelessWidget {
                 ),
               ),
               Text(
-                worker.type,
+                worker.type.tr,
                 style: TextStyle(fontSize: 10, color: Colors.grey[600]),
               ),
             ],
@@ -1235,7 +1235,7 @@ class DentalSmallCard extends StatelessWidget {
                 maxLines: 1,
               ),
               Text(
-                'Klinikada vaqt bron',
+                'Klinikada vaqt bron'.tr,
                 style: const TextStyle(fontSize: 10, color: _cardSubColor),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
@@ -1307,7 +1307,7 @@ class EventSmallCard extends StatelessWidget {
               ),
               Text(
                 service.teamSize > 1
-                    ? '${service.teamSize} kishi · ${service.capabilitiesLabel}'
+                    ? '${service.teamSize} ${'kishi'.tr} · ${service.capabilitiesLabel}'
                     : service.capabilitiesLabel,
                 style: const TextStyle(fontSize: 10, color: _cardSubColor),
                 maxLines: 2,

@@ -6,6 +6,7 @@ import '../models/service_order.dart';
 import '../providers/app_provider.dart';
 import '../screens/order_detail_screen.dart';
 import '../theme/glass_tokens.dart';
+import '../l10n/locale_controller.dart';
 import 'glass/glass_surface.dart';
 
 class OrdersListWidget extends StatelessWidget {
@@ -65,7 +66,7 @@ class OrdersListWidget extends StatelessWidget {
               ),
               const SizedBox(height: 12),
               Text(
-                'Buyurtmalar topilmadi',
+                'Buyurtmalar topilmadi'.tr,
                 style: TextStyle(color: GlassTokens.secondaryText(context)),
               ),
             ],
@@ -212,7 +213,7 @@ class _OrderCard extends StatelessWidget {
                   ],
                 ),
                 Text(
-                  "${order.price.toStringAsFixed(0)} so'm",
+                  "${order.price.toStringAsFixed(0)} " + "so'm".tr,
                   style: TextStyle(
                     fontWeight: FontWeight.w800,
                     color: GlassTokens.primaryText(context),

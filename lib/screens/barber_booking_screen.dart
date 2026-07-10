@@ -60,9 +60,9 @@ class _BarberBookingScreenState extends State<BarberBookingScreen> {
 
   String get _staffLabel {
     if (_selectedStaffId == null) return '';
-    if (_selectedStaffId == _anyStaffId) return 'Har qanday bo\'sh usta';
+    if (_selectedStaffId == _anyStaffId) return 'Har qanday bo\'sh usta'.tr;
     final match = widget.shop.barbers.where((b) => b.id == _selectedStaffId);
-    return match.isEmpty ? 'Har qanday bo\'sh usta' : match.first.name;
+    return match.isEmpty ? 'Har qanday bo\'sh usta'.tr : match.first.name;
   }
 
   double get _selectedPrice => _selectedService == null
@@ -72,9 +72,9 @@ class _BarberBookingScreenState extends State<BarberBookingScreen> {
 
   String _serviceDuration(String service) {
     final lower = service.toLowerCase();
-    if (lower.contains('soqol')) return '15-20 daqiqa';
-    if (lower.contains('bola')) return '20-30 daqiqa';
-    return '30-45 daqiqa';
+    if (lower.contains('soqol')) return '15-20 daqiqa'.tr;
+    if (lower.contains('bola')) return '20-30 daqiqa'.tr;
+    return '30-45 daqiqa'.tr;
   }
 
   bool get _canBook =>
@@ -122,7 +122,7 @@ class _BarberBookingScreenState extends State<BarberBookingScreen> {
   Widget build(BuildContext context) {
     final currencyFormat = NumberFormat.currency(
       locale: 'uz_UZ',
-      symbol: 'so\'m',
+      symbol: 'so\'m'.tr,
       decimalDigits: 0,
     );
 
@@ -164,10 +164,10 @@ class _BarberBookingScreenState extends State<BarberBookingScreen> {
                             widget.shop.name,
                           );
                         },
-                        contactLabel: "Sartaroshxona bilan bog'lanish",
+                        contactLabel: "Sartaroshxona bilan bog'lanish".tr,
                       ),
                       const SizedBox(height: 24),
-                      SectionTitle('Xizmatni tanlang', key: _serviceKey),
+                      SectionTitle('Xizmatni tanlang'.tr, key: _serviceKey),
                       const SizedBox(height: 12),
                       PriceOptionList(
                         prices: widget.shop.prices,
@@ -178,7 +178,7 @@ class _BarberBookingScreenState extends State<BarberBookingScreen> {
                         subtitleOf: _serviceDuration,
                       ),
                       const SizedBox(height: 24),
-                      SectionTitle('Mutaxassisni tanlang', key: _staffKey),
+                      SectionTitle('Mutaxassisni tanlang'.tr, key: _staffKey),
                       const SizedBox(height: 12),
                       SelectableStaffRow(
                         staff: _staffOptions,
@@ -188,10 +188,10 @@ class _BarberBookingScreenState extends State<BarberBookingScreen> {
                           _loadAvailability();
                         },
                         accent: _accent,
-                        anyOptionLabel: 'Har qanday bo\'sh usta',
+                        anyOptionLabel: 'Har qanday bo\'sh usta'.tr,
                       ),
                       const SizedBox(height: 24),
-                      const SectionTitle('Sana'),
+                      SectionTitle('Sana'.tr),
                       const SizedBox(height: 12),
                       HorizontalDatePicker(
                         selectedDate: _selectedDate,
@@ -204,7 +204,7 @@ class _BarberBookingScreenState extends State<BarberBookingScreen> {
                         startDaysOffset: 1,
                       ),
                       const SizedBox(height: 24),
-                      SectionTitle('Vaqt', key: _timeKey),
+                      SectionTitle('Vaqt'.tr, key: _timeKey),
                       const SizedBox(height: 12),
                       if (_loadingSlots)
                         const Padding(
@@ -224,7 +224,7 @@ class _BarberBookingScreenState extends State<BarberBookingScreen> {
                           Padding(
                             padding: const EdgeInsets.only(bottom: 8),
                             child: Text(
-                              '${_bookedSlots.length} ta vaqt band',
+                              '${_bookedSlots.length} ${'ta vaqt band'.tr}',
                               style: TextStyle(
                                 fontSize: 12,
                                 color: GlassTokens.secondaryText(context),
@@ -243,28 +243,28 @@ class _BarberBookingScreenState extends State<BarberBookingScreen> {
                       ],
                       const SizedBox(height: 24),
                       // ──── Navbat rejimi tanlash ────
-                      const SectionTitle('Navbat rejimi'),
+                      SectionTitle('Navbat rejimi'.tr),
                       const SizedBox(height: 12),
                       _buildQueueModeSelector(),
                       const SizedBox(height: 32),
                       BookingActionBar(
                         accent: _accent,
                         primaryLabel: _canBook
-                            ? 'Bron qilish — ${currencyFormat.format(_selectedPrice)}'
-                            : 'Bron qilish',
+                            ? '${'Bron qilish'.tr} — ${currencyFormat.format(_selectedPrice)}'
+                            : 'Bron qilish'.tr,
                         onPrimary: _canBook ? _confirmBooking : null,
                         onPrimaryDisabled: () {
                           String msg =
-                              'Iltimos, kerakli ma\'lumotlarni kiriting';
+                              'Iltimos, kerakli ma\'lumotlarni kiriting'.tr;
                           GlobalKey? targetKey;
                           if (_selectedService == null) {
-                            msg = 'Iltimos, xizmat turini tanlang';
+                            msg = 'Iltimos, xizmat turini tanlang'.tr;
                             targetKey = _serviceKey;
                           } else if (_selectedStaffId == null) {
-                            msg = 'Iltimos, mutaxassisni tanlang';
+                            msg = 'Iltimos, mutaxassisni tanlang'.tr;
                             targetKey = _staffKey;
                           } else if (_selectedTimeSlot == null) {
-                            msg = 'Iltimos, bo\'sh vaqtni tanlang';
+                            msg = 'Iltimos, bo\'sh vaqtni tanlang'.tr;
                             targetKey = _timeKey;
                           }
 
@@ -299,18 +299,19 @@ class _BarberBookingScreenState extends State<BarberBookingScreen> {
   }
 
   Widget _buildQueueModeSelector() {
-    const modes = [
+    final modes = [
       {
         'key': 'fixed',
         'icon': LucideIcons.clock,
-        'title': 'Aniq vaqt',
-        'desc': 'Belgilangan vaqtda qabul qilinadi',
+        'title': 'Aniq vaqt'.tr,
+        'desc': 'Belgilangan vaqtda qabul qilinadi'.tr,
       },
       {
         'key': 'flexible',
         'icon': LucideIcons.zap,
-        'title': 'Tezkor navbat',
-        'desc': 'Usta bo\'shashiga qarab vaqtingiz oldinga surilishi mumkin',
+        'title': 'Tezkor navbat'.tr,
+        'desc':
+            'Usta bo\'shashiga qarab vaqtingiz oldinga surilishi mumkin'.tr,
       },
     ];
 
@@ -418,28 +419,28 @@ class _BarberBookingScreenState extends State<BarberBookingScreen> {
 
     final currencyFormat = NumberFormat.currency(
       locale: 'uz_UZ',
-      symbol: 'so\'m',
+      symbol: 'so\'m'.tr,
       decimalDigits: 0,
     );
     final confirmed = await showBookingConfirmSheet(
       context,
-      title: 'Bronni tasdiqlang',
+      title: 'Bronni tasdiqlang'.tr,
       details: [
-        MapEntry('Sartaroshxona', widget.shop.name),
-        MapEntry('Mutaxassis', _staffLabel),
-        MapEntry('Xizmat', _selectedService!),
+        MapEntry('Sartaroshxona'.tr, widget.shop.name),
+        MapEntry('Mutaxassis'.tr, _staffLabel),
+        MapEntry('Xizmat'.tr, _selectedService!),
         MapEntry(
-          'Vaqt',
+          'Vaqt'.tr,
           '${DateFormat('dd.MM.yyyy').format(_selectedDate)} $_selectedTimeSlot',
         ),
         MapEntry(
-          'Navbat rejimi',
+          'Navbat rejimi'.tr,
           _selectedBookingMode == 'flexible'
-              ? 'Tezkor navbat ⚡'
-              : 'Aniq vaqt 🕐',
+              ? 'Tezkor navbat ⚡'.tr
+              : 'Aniq vaqt 🕐'.tr,
         ),
       ],
-      totalLabel: 'Jami',
+      totalLabel: 'Jami'.tr,
       totalValue: currencyFormat.format(_selectedPrice),
       accent: _accent,
     );
@@ -494,7 +495,7 @@ class _BarberBookingScreenState extends State<BarberBookingScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Buyurtma yuborib bo\'lmadi. Xato: $e'),
+          content: Text('${'Buyurtma yuborib bo\'lmadi. Xato:'.tr} $e'),
           duration: const Duration(seconds: 6),
           backgroundColor: Colors.red,
         ),

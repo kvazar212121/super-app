@@ -21,6 +21,7 @@ import '../../models/auto_mobile_service.dart';
 import '../../models/auto_workshop.dart';
 import '../../models/education_center.dart';
 
+import '../../l10n/locale_controller.dart';
 import '../../providers/saved_places_provider.dart';
 import '../../theme/glass_tokens.dart';
 import '../../widgets/glass/glass_scaffold.dart';
@@ -59,7 +60,7 @@ class SavedPlacesScreen extends StatelessWidget {
 
     return GlassScaffold(
       showBackButton: true,
-      title: 'Saqlanganlar',
+      title: 'Saqlanganlar'.tr,
       body: items.isEmpty
           ? Center(
               child: Column(
@@ -72,7 +73,7 @@ class SavedPlacesScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    'Hozircha saqlangan joylar yo\'q',
+                    'Hozircha saqlangan joylar yo\'q'.tr,
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,

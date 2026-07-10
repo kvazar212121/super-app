@@ -281,7 +281,7 @@ class _MapSectionState extends State<_MapSection> {
                   color: const Color(0xFF334155),
                   label: ws.name,
                   onTap: () => ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('${ws.name} ustaxonasi')),
+                    SnackBar(content: Text('${ws.name} ${'ustaxonasi'.tr}')),
                   ),
                 ),
               ),
@@ -365,7 +365,9 @@ class _MapSectionState extends State<_MapSection> {
                 color: Colors.orange[800]!,
                 label: worker.name,
                 onTap: () => ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('${worker.name} chaqirilmoqda...')),
+                  SnackBar(
+                    content: Text('${worker.name} ${'chaqirilmoqda...'.tr}'),
+                  ),
                 ),
               ),
             ),
@@ -583,11 +585,11 @@ class _MapSectionState extends State<_MapSection> {
           data.genericProviders.map((p) {
             double lat = 41.31;
             double lng = 69.24;
-            String name = 'Xizmat';
+            String name = 'Xizmat'.tr;
             if (p is Map) {
               lat = p['lat'] as double? ?? 41.31;
               lng = p['lng'] as double? ?? 69.24;
-              name = p['name'] as String? ?? 'Xizmat';
+              name = p['name'] as String? ?? 'Xizmat'.tr;
             } else {
               try {
                 lat = p.latitude as double;

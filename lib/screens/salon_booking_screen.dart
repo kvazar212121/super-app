@@ -77,7 +77,7 @@ class _SalonBookingScreenState extends State<SalonBookingScreen> {
     final accentColor = const Color(0xFFE91E63); // Pink for Salon
     final currencyFormat = NumberFormat.currency(
       locale: 'uz_UZ',
-      symbol: 'so\'m',
+      symbol: 'so\'m'.tr,
       decimalDigits: 0,
     );
 
@@ -116,10 +116,10 @@ class _SalonBookingScreenState extends State<SalonBookingScreen> {
                           widget.salon.name,
                         );
                       },
-                      contactLabel: "Salon bilan bog'lanish",
+                      contactLabel: "Salon bilan bog'lanish".tr,
                     ),
                     const SizedBox(height: 24),
-                    SectionTitle("Xizmatni tanlang", key: _serviceKey),
+                    SectionTitle("Xizmatni tanlang".tr, key: _serviceKey),
                     const SizedBox(height: 12),
                     PriceOptionList(
                       prices: widget.salon.prices,
@@ -129,11 +129,11 @@ class _SalonBookingScreenState extends State<SalonBookingScreen> {
                       format: currencyFormat,
                     ),
                     const SizedBox(height: 24),
-                    SectionTitle("Mutaxassisni tanlang", key: _staffKey),
+                    SectionTitle("Mutaxassisni tanlang".tr, key: _staffKey),
                     const SizedBox(height: 12),
                     _buildStaffList(accentColor),
                     const SizedBox(height: 24),
-                    const SectionTitle("Sana"),
+                    SectionTitle("Sana".tr),
                     const SizedBox(height: 12),
                     HorizontalDatePicker(
                       selectedDate: _selectedDate,
@@ -146,7 +146,7 @@ class _SalonBookingScreenState extends State<SalonBookingScreen> {
                       startDaysOffset: 1,
                     ),
                     const SizedBox(height: 24),
-                    SectionTitle("Vaqt", key: _timeKey),
+                    SectionTitle("Vaqt".tr, key: _timeKey),
                     const SizedBox(height: 12),
                     _loadingSlots
                         ? const Center(child: CircularProgressIndicator())
@@ -168,20 +168,20 @@ class _SalonBookingScreenState extends State<SalonBookingScreen> {
                             _selectedTimeSlot != null;
                         return BookingActionBar(
                           accent: accentColor,
-                          primaryLabel: "Band qilish",
+                          primaryLabel: "Band qilish".tr,
                           onPrimary: canBook ? _confirmBooking : null,
                           onPrimaryDisabled: () {
                             String msg =
-                                'Iltimos, kerakli ma\'lumotlarni kiriting';
+                                'Iltimos, kerakli ma\'lumotlarni kiriting'.tr;
                             GlobalKey? targetKey;
                             if (_selectedService == null) {
-                              msg = 'Iltimos, xizmat turini tanlang';
+                              msg = 'Iltimos, xizmat turini tanlang'.tr;
                               targetKey = _serviceKey;
                             } else if (_selectedStaff == null) {
-                              msg = 'Iltimos, mutaxassisni tanlang';
+                              msg = 'Iltimos, mutaxassisni tanlang'.tr;
                               targetKey = _staffKey;
                             } else if (_selectedTimeSlot == null) {
-                              msg = 'Iltimos, bo\'sh vaqtni tanlang';
+                              msg = 'Iltimos, bo\'sh vaqtni tanlang'.tr;
                               targetKey = _timeKey;
                             }
 
@@ -277,16 +277,16 @@ class _SalonBookingScreenState extends State<SalonBookingScreen> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              "Band qilishni tasdiqlang",
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            Text(
+              "Band qilishni tasdiqlang".tr,
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 20),
-            DetailRow(label: "Salon", value: widget.salon.name),
-            DetailRow(label: "Mutaxassis", value: _selectedStaff!.name),
-            DetailRow(label: "Xizmat", value: _selectedService!),
+            DetailRow(label: "Salon".tr, value: widget.salon.name),
+            DetailRow(label: "Mutaxassis".tr, value: _selectedStaff!.name),
+            DetailRow(label: "Xizmat".tr, value: _selectedService!),
             DetailRow(
-              label: "Vaqt",
+              label: "Vaqt".tr,
               value:
                   "${DateFormat('dd.MM.yyyy').format(_selectedDate)} $_selectedTimeSlot",
             ),
@@ -346,9 +346,9 @@ class _SalonBookingScreenState extends State<SalonBookingScreen> {
                     borderRadius: BorderRadius.circular(16),
                   ),
                 ),
-                child: const Text(
-                  "Tasdiqlash",
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                child: Text(
+                  "Tasdiqlash".tr,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
               ),
             ),

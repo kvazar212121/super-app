@@ -86,7 +86,7 @@ class _UniversalBookingScreenState extends State<UniversalBookingScreen> {
     Navigator.pop(context, true);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('${kind.title} bo‘yicha buyurtma qabul qilindi'),
+        content: Text('${kind.title} ${'bo‘yicha buyurtma qabul qilindi'.tr}'),
         behavior: SnackBarBehavior.floating,
       ),
     );
@@ -99,7 +99,7 @@ class _UniversalBookingScreenState extends State<UniversalBookingScreen> {
       child: Scaffold(
         backgroundColor: Colors.transparent,
         appBar: AppBar(
-          title: Text('${kind.title} — bron'),
+          title: Text('${kind.title} — ${'bron'.tr}'),
           backgroundColor: Colors.transparent,
           foregroundColor: accent,
         ),
@@ -108,7 +108,7 @@ class _UniversalBookingScreenState extends State<UniversalBookingScreen> {
           child: ListView(
             padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
             children: [
-              _SectionTitle('Xizmat turi'),
+              _SectionTitle('Xizmat turi'.tr),
               const SizedBox(height: 8),
               Wrap(
                 spacing: 8,
@@ -129,7 +129,7 @@ class _UniversalBookingScreenState extends State<UniversalBookingScreen> {
                 }),
               ),
               const SizedBox(height: 22),
-              _SectionTitle('Manzil'),
+              _SectionTitle('Manzil'.tr),
               const SizedBox(height: 8),
               TextFormField(
                 controller: _addressCtrl,
@@ -140,7 +140,7 @@ class _UniversalBookingScreenState extends State<UniversalBookingScreen> {
                   border: OutlineInputBorder(),
                 ),
                 validator: (v) => (v == null || v.trim().length < 4)
-                    ? 'Manzilni kiriting'
+                    ? 'Manzilni kiriting'.tr
                     : null,
               ),
               const SizedBox(height: 22),

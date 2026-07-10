@@ -89,7 +89,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Yo\'q'),
+            child: Text('Yo\'q'.tr),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(ctx, true),
@@ -113,7 +113,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
       if (mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(const SnackBar(content: Text('Bekor qilib bo\'lmadi')));
+        ).showSnackBar(SnackBar(content: Text('Bekor qilib bo\'lmadi'.tr)));
       }
     } finally {
       if (mounted) setState(() => _cancelling = false);
@@ -131,7 +131,9 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(confirm ? 'Tasdiqlandi!' : 'Shikoyat yuborildi'),
+            content: Text(
+              confirm ? 'Tasdiqlandi!'.tr : 'Shikoyat yuborildi'.tr,
+            ),
           ),
         );
       }
@@ -140,7 +142,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
       if (mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('Xatolik: $e')));
+        ).showSnackBar(SnackBar(content: Text('Xatolik'.tr + ': $e')));
       }
     } finally {
       if (mounted) setState(() => _cancelling = false);
@@ -160,7 +162,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text('Xizmat sifati qanday bo\'ldi?'),
+              Text('Xizmat sifati qanday bo\'ldi?'.tr),
               const SizedBox(height: 16),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -189,9 +191,9 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx),
-              child: const Text(
-                'Yopish',
-                style: TextStyle(color: Colors.black),
+              child: Text(
+                'Yopish'.tr,
+                style: const TextStyle(color: Colors.black),
               ),
             ),
             FilledButton(
@@ -261,7 +263,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
     if (order == null) {
       return GlassScaffold(
         showBackButton: true,
-        title: 'Buyurtma',
+        title: 'Buyurtma'.tr,
         body: Center(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -288,7 +290,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
 
     return GlassScaffold(
       showBackButton: true,
-      title: 'Buyurtma #${order.id}',
+      title: 'Buyurtma'.tr + ' #${order.id}',
       body: RefreshIndicator(
         onRefresh: () async {
           await app.fetchOrders();
@@ -376,7 +378,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Holat',
+                    'Holat'.tr,
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       color: GlassTokens.primaryText(context),
@@ -397,7 +399,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Tasdiqlash',
+                        'Tasdiqlash'.tr,
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           color: GlassTokens.primaryText(context),
@@ -405,7 +407,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'Buyurtma vaqti yaqin. Yetib keldingizmi?',
+                        'Buyurtma vaqti yaqin. Yetib keldingizmi?'.tr,
                         style: TextStyle(
                           color: GlassTokens.secondaryText(context),
                         ),
@@ -419,9 +421,9 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                                 backgroundColor: Colors.green,
                               ),
                               onPressed: () => _submitCheckin('arrived'),
-                              child: const Text(
-                                'Keldim',
-                                style: TextStyle(fontSize: 13),
+                              child: Text(
+                                'Keldim'.tr,
+                                style: const TextStyle(fontSize: 13),
                               ),
                             ),
                           ),
@@ -429,9 +431,9 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                           Expanded(
                             child: FilledButton.tonal(
                               onPressed: () => _submitCheckin('delayed'),
-                              child: const Text(
-                                'Kechikaman',
-                                style: TextStyle(fontSize: 13),
+                              child: Text(
+                                'Kechikaman'.tr,
+                                style: const TextStyle(fontSize: 13),
                               ),
                             ),
                           ),
@@ -445,9 +447,9 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                             foregroundColor: Colors.red,
                           ),
                           onPressed: () => _submitCheckin('cant_come'),
-                          child: const Text(
-                            'Bora olmayman',
-                            style: TextStyle(fontSize: 13),
+                          child: Text(
+                            'Bora olmayman'.tr,
+                            style: const TextStyle(fontSize: 13),
                           ),
                         ),
                       ),
@@ -465,7 +467,8 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                       const SizedBox(width: 12),
                       Expanded(
                         child: Text(
-                          'Siz javob bergansiz. Usta tasdiqlashi kutilmoqda...',
+                          'Siz javob bergansiz. Usta tasdiqlashi kutilmoqda...'
+                              .tr,
                           style: TextStyle(
                             color: GlassTokens.primaryText(context),
                           ),
@@ -485,7 +488,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Ishni yakunlash tasdig\'i',
+                      'Ishni yakunlash tasdig\'i'.tr,
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         color: GlassTokens.primaryText(context),
@@ -493,7 +496,8 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Usta o\'z ishini yakunlaganini xabar qildi. Buni tasdiqlaysizmi?',
+                      'Usta o\'z ishini yakunlaganini xabar qildi. Buni tasdiqlaysizmi?'
+                          .tr,
                       style: TextStyle(
                         color: GlassTokens.secondaryText(context),
                       ),
@@ -510,9 +514,9 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                                 ? null
                                 : () => _confirmCompletion(app, order, true),
                             icon: const Icon(Icons.check, size: 18),
-                            label: const Text(
-                              'Ha, bajardi',
-                              style: TextStyle(fontSize: 13),
+                            label: Text(
+                              'Ha, bajardi'.tr,
+                              style: const TextStyle(fontSize: 13),
                             ),
                           ),
                         ),
@@ -529,9 +533,9 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                             ? null
                             : () => _confirmCompletion(app, order, false),
                         icon: const Icon(Icons.close, size: 18),
-                        label: const Text(
-                          'Yo\'q, usta kelmadi',
-                          style: TextStyle(fontSize: 13),
+                        label: Text(
+                          'Yo\'q, usta kelmadi'.tr,
+                          style: const TextStyle(fontSize: 13),
                         ),
                       ),
                     ),
@@ -545,13 +549,13 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
               borderRadius: GlassTokens.radiusLg,
               child: Column(
                 children: [
-                  _infoRow(context, LucideIcons.calendar, 'Vaqt', dateStr),
+                  _infoRow(context, LucideIcons.calendar, 'Vaqt'.tr, dateStr),
                   if (order.address.isNotEmpty) ...[
                     const SizedBox(height: 12),
                     _infoRow(
                       context,
                       LucideIcons.mapPin,
-                      'Manzil',
+                      'Manzil'.tr,
                       order.address,
                     ),
                   ],
@@ -560,7 +564,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                     _infoRow(
                       context,
                       LucideIcons.messageSquare,
-                      'Izoh',
+                      'Izoh'.tr,
                       order.notes,
                     ),
                   ],

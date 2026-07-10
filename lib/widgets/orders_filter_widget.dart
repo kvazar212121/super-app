@@ -21,9 +21,9 @@ class OrdersFilterWidget extends StatelessWidget {
       showShadow: false,
       child: Row(
         children: [
-          _chip(context, 'Barchasi', 'all'),
-          _chip(context, 'Faol', 'active'),
-          _chip(context, 'Yakunlangan', 'completed'),
+          _chip(context, 'Barchasi'.tr, 'all'),
+          _chip(context, 'Faol'.tr, 'active'),
+          _chip(context, 'Yakunlangan'.tr, 'completed'),
         ],
       ),
     );
