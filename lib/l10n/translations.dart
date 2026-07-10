@@ -1084,4 +1084,20 @@ const Map<String, String> kTranslationsRu = {
   'Karnay': 'Динамик',
   'Quloq': 'Динамик телефона',
   'Tugatish': 'Завершить',
+
+  // ── Premium (banner + to'lov usullari) ──
+  'Premium faol': 'Premium активен',
+  'Barcha imkoniyatlar ochiq ✅': 'Все возможности открыты ✅',
+  'Barcha imkoniyatlarni oching': 'Откройте все возможности',
+  'Sotib olish': 'Купить',
+  'Barcha mini-ilovalar cheksiz': 'Все мини-приложения без ограничений',
+  'Reklamasiz tajriba': 'Без рекламы',
+  'Ustuvor qo\'llab-quvvatlash': 'Приоритетная поддержка',
+  'Maxsus premium belgisi': 'Особый премиум-значок',
+  'Payme orqali to\'lash': 'Оплатить через Payme',
+  'Click orqali to\'lash': 'Оплатить через Click',
+  'Onlayn to\'lov (Payme/Click) tez orada ulanadi.': 'Онлайн-оплата (Payme/Click) скоро подключится.',
+  'To\'lov havolasi olinmadi. Qayta urinib ko\'ring.': 'Не удалось получить ссылку на оплату. Попробуйте ещё раз.',
+  'To\'lov sahifasini ochib bo\'lmadi.': 'Не удалось открыть страницу оплаты.',
+  'Bu to\'lov usuli hozircha ulanmagan.': 'Этот способ оплаты пока не подключён.',
 };

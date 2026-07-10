@@ -16,6 +16,7 @@ import '../services/call_history_service.dart';
 import '../services/call_service.dart';
 import 'calls/call_screen.dart';
 import 'calls/call_history_screen.dart';
+import 'premium/premium_screen.dart';
 import '../config/app_config.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -42,6 +43,8 @@ class ProfileScreen extends StatelessWidget {
             _buildProfileHeader(context, user, auth.isAuthenticated),
             const SizedBox(height: 20),
             if (auth.isAuthenticated) ...[
+              _buildPremiumBanner(context, user),
+              const SizedBox(height: 20),
               if (user.isProvider) ...[
                 CashbackCardWidget(
                   balance: user.balance,
@@ -217,6 +220,96 @@ class ProfileScreen extends StatelessWidget {
                 ),
               ),
             ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// Premium banner — obuna faol bo'lsa "faol" holatini, aks holda sotib olishga
+  /// undovchi karta ko'rsatadi. Bosilganда PremiumScreen ochiladi.
+  Widget _buildPremiumBanner(BuildContext context, UserProfile user) {
+    final isPremium = user.isPremium;
+    return GestureDetector(
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const PremiumScreen()),
+      ),
+      child: Container(
+        padding: const EdgeInsets.all(18),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: isPremium
+                ? const [Color(0xFF059669), Color(0xFF10B981)]
+                : const [Color(0xFF7C3AED), Color(0xFF6366F1)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(GlassTokens.radiusLg),
+          boxShadow: [
+            BoxShadow(
+              color: (isPremium ? const Color(0xFF10B981) : const Color(0xFF7C3AED))
+                  .withValues(alpha: 0.35),
+              blurRadius: 18,
+              offset: const Offset(0, 8),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.2),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Icon(
+                Icons.workspace_premium,
+                color: Colors.white,
+                size: 26,
+              ),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    isPremium ? 'Premium faol'.tr : 'HubServis Premium'.tr,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    isPremium
+                        ? 'Barcha imkoniyatlar ochiq ✅'.tr
+                        : 'Barcha imkoniyatlarni oching'.tr,
+                    style: const TextStyle(color: Colors.white70, fontSize: 13),
+                  ),
+                ],
+              ),
+            ),
+            if (!isPremium)
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(
+                  'Sotib olish'.tr,
+                  style: const TextStyle(
+                    color: Color(0xFF7C3AED),
+                    fontWeight: FontWeight.w800,
+                    fontSize: 13,
+                  ),
+                ),
+              )
+            else
+              const Icon(Icons.chevron_right, color: Colors.white),
           ],
         ),
       ),

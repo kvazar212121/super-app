@@ -1776,7 +1776,8 @@ class ApiService {
     return Map<String, dynamic>.from(response.data);
   }
 
-  /// method: "balance" (balansdan yechish) yoki "manual" (admin tasdiqlaydi)
+  /// method: "balance" (balansdan yechish), "payme" yoki "click" (onlayn to'lov).
+  /// Onlayn usullarda javobda `checkout_url` bo'ladi — brauzerda ochiladi.
   Future<Map<String, dynamic>> subscribePremium(String method) async {
     final response = await _dio.post(
       '/premium/subscribe',

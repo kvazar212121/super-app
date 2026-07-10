@@ -190,6 +190,27 @@ def premium_config() -> dict:
     return {"price": price, "duration_days": days}
 
 
+def payment_config() -> dict:
+    """Payme / Click merchant sozlamalari.
+
+    Merchant ID'lar hozircha bo'sh — kelgach admin panel yoki .env orqali
+    to'ldiriladi, shunda to'lov usuli avtomatik faollashadi. Kalit (key/secret)
+    faqat webhook imzosini tekshirishda ishlatiladi — mijozga hech qachon yuborilmaydi.
+    """
+    return {
+        # Payme (Paycom) — https://checkout.paycom.uz
+        "payme_merchant_id": (get("payme_merchant_id", "") or "").strip(),
+        "payme_key": (get("payme_key", "") or "").strip(),  # Merchant API kaliti (webhook)
+        "payme_account_field": (get("payme_account_field", "order_id") or "order_id").strip(),
+        # Click — https://my.click.uz
+        "click_service_id": (get("click_service_id", "") or "").strip(),
+        "click_merchant_id": (get("click_merchant_id", "") or "").strip(),
+        "click_secret_key": (get("click_secret_key", "") or "").strip(),  # webhook imzosi
+        # To'lovdan keyin foydalanuvchi qaytadigan sahifa (ixtiyoriy)
+        "return_url": (get("payment_return_url", "") or "").strip(),
+    }
+
+
 # ── Xizmat kategoriyalari flaglari (26 ta xizmat) ────────────────────────────
 
 def category_enabled(cat_key: str) -> bool:

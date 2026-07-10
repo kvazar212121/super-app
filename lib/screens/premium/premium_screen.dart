@@ -1,9 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../l10n/locale_controller.dart';
 import '../../services/api_service.dart';
 import '../../services/feature_service.dart';
 
-/// Premium obuna ekrani — narx, imkoniyatlar va obuna bo'lish.
+/// Premium obuna ekrani — narx, imkoniyatlar va obuna bo'lish (Balans / Payme / Click).
 class PremiumScreen extends StatefulWidget {
   const PremiumScreen({super.key});
 
@@ -11,65 +14,131 @@ class PremiumScreen extends StatefulWidget {
   State<PremiumScreen> createState() => _PremiumScreenState();
 }
 
-class _PremiumScreenState extends State<PremiumScreen> {
+class _PremiumScreenState extends State<PremiumScreen> with WidgetsBindingObserver {
   bool _loading = true;
   bool _busy = false;
   double _price = 0;
   int _days = 30;
   double _balance = 0;
   bool _isPremium = false;
+  bool _paymeEnabled = false;
+  bool _clickEnabled = false;
   String? _until;
+
+  // Onlayn to'lov ochilganda holatni tekshirib turish uchun
+  Timer? _pollTimer;
+  bool _awaitingPayment = false;
+
+  static const _features = [
+    ('Barcha mini-ilovalar cheksiz', Icons.apps_rounded),
+    ('Reklamasiz tajriba', Icons.block_rounded),
+    ('Ustuvor qo\'llab-quvvatlash', Icons.support_agent_rounded),
+    ('Maxsus premium belgisi', Icons.verified_rounded),
+  ];
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _load();
   }
 
-  Future<void> _load() async {
+  @override
+  void dispose() {
+    _pollTimer?.cancel();
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    // Foydalanuvchi to'lovdan qaytganda holatni yangilaymiz
+    if (state == AppLifecycleState.resumed && _awaitingPayment) {
+      _load(silent: true);
+    }
+  }
+
+  Future<void> _load({bool silent = false}) async {
+    if (!silent && mounted) setState(() => _loading = true);
     try {
       final s = await ApiService().getPremiumStatus();
       _price = (s['price'] is num) ? (s['price'] as num).toDouble() : 0;
-      _days = (s['duration_days'] is num)
-          ? (s['duration_days'] as num).toInt()
-          : 30;
+      _days = (s['duration_days'] is num) ? (s['duration_days'] as num).toInt() : 30;
       _balance = (s['balance'] is num) ? (s['balance'] as num).toDouble() : 0;
       _isPremium = s['is_premium'] == true;
+      _paymeEnabled = s['payme_enabled'] == true;
+      _clickEnabled = s['click_enabled'] == true;
       _until = s['premium_until'] as String?;
+      if (_isPremium && _awaitingPayment) {
+        _awaitingPayment = false;
+        _pollTimer?.cancel();
+        await FeatureService().refreshPremium();
+        if (mounted) _showMsg('Premium ochildi! 🎉'.tr, success: true);
+      }
     } catch (_) {}
     if (mounted) setState(() => _loading = false);
   }
 
-  Future<void> _subscribe(String method) async {
+  /// Balansdan darhol to'lash.
+  Future<void> _payWithBalance() async {
     setState(() => _busy = true);
     try {
-      final res = await ApiService().subscribePremium(method);
-      final status = res['status'];
+      final res = await ApiService().subscribePremium('balance');
       await FeatureService().refreshPremium();
       if (!mounted) return;
-      if (status == 'confirmed') {
+      if (res['status'] == 'confirmed') {
         _showMsg('Premium ochildi! 🎉'.tr, success: true);
-        await _load();
-      } else {
-        _showMsg(
-          res['message'] ?? 'So\'rov yuborildi. Tasdiqlanishini kuting.'.tr,
-          success: true,
-        );
         await _load();
       }
     } catch (e) {
-      String msg = 'Xatolik'.tr;
-      // Dio error detail
       final d = e.toString();
-      if (d.contains('yetarli emas'))
-        msg = 'Balansда mablag\' yetarli emas. Balansni to\'ldiring.'.tr;
-      _showMsg(msg);
+      _showMsg(d.contains('yetarli emas')
+          ? 'Balansда mablag\' yetarli emas. Balansni to\'ldiring.'.tr
+          : 'Xatolik'.tr);
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  /// Onlayn to'lov (payme/click) — checkout sahifasini ochadi va holatni kuzatadi.
+  Future<void> _payOnline(String method) async {
+    setState(() => _busy = true);
+    try {
+      final res = await ApiService().subscribePremium(method);
+      final url = res['checkout_url'] as String?;
+      if (url == null || url.isEmpty) {
+        _showMsg('To\'lov havolasi olinmadi. Qayta urinib ko\'ring.'.tr);
+        return;
+      }
+      final ok = await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+      if (!ok) {
+        _showMsg('To\'lov sahifasini ochib bo\'lmadi.'.tr);
+        return;
+      }
+      // To'lov kutilmoqda — holatni har 4 soniyada tekshiramiz
+      _awaitingPayment = true;
+      _pollTimer?.cancel();
+      _pollTimer = Timer.periodic(const Duration(seconds: 4), (_) {
+        if (!_awaitingPayment) return;
+        _load(silent: true);
+      });
+      // 3 daqiqadan keyin pollingni to'xtatamiz
+      Future.delayed(const Duration(minutes: 3), () {
+        _awaitingPayment = false;
+        _pollTimer?.cancel();
+      });
+    } catch (e) {
+      final d = e.toString();
+      _showMsg(d.contains('ulanmagan')
+          ? 'Bu to\'lov usuli hozircha ulanmagan.'.tr
+          : 'Xatolik'.tr);
     } finally {
       if (mounted) setState(() => _busy = false);
     }
   }
 
   void _showMsg(String m, {bool success = false}) {
+    if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(m),
@@ -87,127 +156,189 @@ class _PremiumScreenState extends State<PremiumScreen> {
           : ListView(
               padding: const EdgeInsets.all(20),
               children: [
-                Container(
-                  padding: const EdgeInsets.all(24),
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [Color(0xFF7C3AED), Color(0xFF6366F1)],
-                    ),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Icon(
-                        Icons.workspace_premium,
-                        color: Colors.white,
-                        size: 44,
-                      ),
-                      const SizedBox(height: 12),
-                      Text(
-                        'HubServis Premium'.tr,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 24,
-                          fontWeight: FontWeight.w800,
-                        ),
-                      ),
-                      const SizedBox(height: 6),
-                      Text(
-                        _isPremium
-                            ? 'Siz premium obunachisiz ✅'.tr
-                            : 'Barcha premium funksiyalarni oching'.tr,
-                        style: const TextStyle(
-                          color: Colors.white70,
-                          fontSize: 15,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 24),
-                if (_isPremium) ...[
-                  Card(
-                    child: ListTile(
-                      leading: const Icon(
-                        Icons.check_circle,
-                        color: Colors.green,
-                      ),
-                      title: Text('Obuna faol'.tr),
-                      subtitle: Text(
-                        _until != null
-                            ? '${'Amal qiladi:'.tr} ${_until!.substring(0, 10)} ${'gacha'.tr}'
-                            : '',
-                      ),
-                    ),
-                  ),
-                ] else ...[
-                  Center(
-                    child: Column(
-                      children: [
-                        Text(
-                          '${_price.toStringAsFixed(0)} ${'so\'m'.tr}',
-                          style: const TextStyle(
-                            fontSize: 34,
-                            fontWeight: FontWeight.w900,
-                          ),
-                        ),
-                        Text(
-                          '$_days ${'kunlik obuna'.tr}',
-                          style: TextStyle(color: Theme.of(context).hintColor),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  Text(
-                    '${'Balansingiz:'.tr} ${_balance.toStringAsFixed(0)} ${'so\'m'.tr}',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(color: Theme.of(context).hintColor),
-                  ),
-                  const SizedBox(height: 20),
-                  SizedBox(
-                    width: double.infinity,
-                    child: FilledButton.icon(
-                      onPressed: _busy || _price <= 0
-                          ? null
-                          : () => _subscribe('balance'),
-                      icon: const Icon(Icons.account_balance_wallet),
-                      label: Text(
-                        _busy ? 'Kuting...'.tr : 'Balansdan to\'lash'.tr,
-                      ),
-                      style: FilledButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  SizedBox(
-                    width: double.infinity,
-                    child: OutlinedButton.icon(
-                      onPressed: _busy || _price <= 0
-                          ? null
-                          : () => _subscribe('manual'),
-                      icon: const Icon(Icons.receipt_long),
-                      label: Text(
-                        'To\'lov so\'rovi yuborish (admin tasdiqlaydi)'.tr,
-                      ),
-                      style: OutlinedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                      ),
-                    ),
-                  ),
-                  if (_price <= 0)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 16),
-                      child: Text(
-                        'Premium hozircha sozlanmagan.'.tr,
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                ],
+                _headerCard(),
+                const SizedBox(height: 20),
+                _featuresCard(),
+                const SizedBox(height: 20),
+                if (_isPremium)
+                  _activeCard()
+                else
+                  _purchaseSection(),
               ],
             ),
+    );
+  }
+
+  Widget _headerCard() {
+    return Container(
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [Color(0xFF7C3AED), Color(0xFF6366F1)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Icon(Icons.workspace_premium, color: Colors.white, size: 44),
+          const SizedBox(height: 12),
+          Text(
+            'HubServis Premium'.tr,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 24,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            _isPremium
+                ? 'Siz premium obunachisiz ✅'.tr
+                : 'Barcha premium funksiyalarni oching'.tr,
+            style: const TextStyle(color: Colors.white70, fontSize: 15),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _featuresCard() {
+    return Column(
+      children: _features.map((f) {
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 12),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF7C3AED).withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(f.$2, color: const Color(0xFF7C3AED), size: 20),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Text(
+                  f.$1.tr,
+                  style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+                ),
+              ),
+            ],
+          ),
+        );
+      }).toList(),
+    );
+  }
+
+  Widget _activeCard() {
+    return Card(
+      child: ListTile(
+        leading: const Icon(Icons.check_circle, color: Colors.green),
+        title: Text('Obuna faol'.tr),
+        subtitle: Text(
+          _until != null
+              ? '${'Amal qiladi:'.tr} ${_until!.substring(0, 10)} ${'gacha'.tr}'
+              : '',
+        ),
+      ),
+    );
+  }
+
+  Widget _purchaseSection() {
+    if (_price <= 0) {
+      return Padding(
+        padding: const EdgeInsets.only(top: 8),
+        child: Text('Premium hozircha sozlanmagan.'.tr, textAlign: TextAlign.center),
+      );
+    }
+    return Column(
+      children: [
+        Center(
+          child: Column(
+            children: [
+              Text(
+                '${_price.toStringAsFixed(0)} ${'so\'m'.tr}',
+                style: const TextStyle(fontSize: 34, fontWeight: FontWeight.w900),
+              ),
+              Text(
+                '$_days ${'kunlik obuna'.tr}',
+                style: TextStyle(color: Theme.of(context).hintColor),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 20),
+        // Payme
+        if (_paymeEnabled)
+          _payButton(
+            label: 'Payme orqali to\'lash'.tr,
+            icon: Icons.credit_card,
+            color: const Color(0xFF00CFCB),
+            onTap: () => _payOnline('payme'),
+          ),
+        // Click
+        if (_clickEnabled)
+          _payButton(
+            label: 'Click orqali to\'lash'.tr,
+            icon: Icons.credit_card,
+            color: const Color(0xFF0098EB),
+            onTap: () => _payOnline('click'),
+          ),
+        // Balans
+        _payButton(
+          label: '${'Balansdan to\'lash'.tr} (${_balance.toStringAsFixed(0)} ${'so\'m'.tr})',
+          icon: Icons.account_balance_wallet,
+          color: const Color(0xFF7C3AED),
+          outlined: _paymeEnabled || _clickEnabled,
+          onTap: _payWithBalance,
+        ),
+        if (!_paymeEnabled && !_clickEnabled)
+          Padding(
+            padding: const EdgeInsets.only(top: 14),
+            child: Text(
+              'Onlayn to\'lov (Payme/Click) tez orada ulanadi.'.tr,
+              textAlign: TextAlign.center,
+              style: TextStyle(color: Theme.of(context).hintColor, fontSize: 13),
+            ),
+          ),
+      ],
+    );
+  }
+
+  Widget _payButton({
+    required String label,
+    required IconData icon,
+    required Color color,
+    required VoidCallback onTap,
+    bool outlined = false,
+  }) {
+    final child = outlined
+        ? OutlinedButton.icon(
+            onPressed: _busy ? null : onTap,
+            icon: Icon(icon, color: color),
+            label: Text(_busy ? 'Kuting...'.tr : label),
+            style: OutlinedButton.styleFrom(
+              foregroundColor: color,
+              side: BorderSide(color: color),
+              padding: const EdgeInsets.symmetric(vertical: 16),
+            ),
+          )
+        : FilledButton.icon(
+            onPressed: _busy ? null : onTap,
+            icon: Icon(icon),
+            label: Text(_busy ? 'Kuting...'.tr : label),
+            style: FilledButton.styleFrom(
+              backgroundColor: color,
+              padding: const EdgeInsets.symmetric(vertical: 16),
+            ),
+          );
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: SizedBox(width: double.infinity, child: child),
     );
   }
 }
