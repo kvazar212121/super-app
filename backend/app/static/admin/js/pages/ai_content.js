@@ -7,14 +7,14 @@ async function renderAiContent() {
     // AI prompt
     var promptData = { prompt: '', is_custom: false, default: '' };
     try {
-        var r = await window.api(window.API_BASE + '/admin/ai-prompt');
+        var r = await window.api(window.API_BASE + '/ai-prompt');
         if (r && r.ok) promptData = await r.json();
     } catch (e) {}
     _aiDefaultPrompt = promptData.default || '';
 
     // Bildirishnoma shablonlari
     try {
-        var rt = await window.api(window.API_BASE + '/admin/notif-templates');
+        var rt = await window.api(window.API_BASE + '/notif-templates');
         if (rt && rt.ok) { var d = await rt.json(); _notifTpls = d.templates || []; }
     } catch (e) {}
 
@@ -98,7 +98,7 @@ function removeNotifTpl(i) {
 function saveNotifTpls() {
     _syncTplsFromDom();
     var payload = _notifTpls.filter(function (t) { return (t.title || '').trim() || (t.message || '').trim(); });
-    window.api(window.API_BASE + '/admin/notif-templates', {
+    window.api(window.API_BASE + '/notif-templates', {
         method: 'PUT', body: JSON.stringify({ templates: payload }),
     }).then(function (r) {
         if (r && r.ok) { r.json().then(function (d) { _notifTpls = d.templates || []; renderTplList(); }); window.showToast('Shablonlar saqlandi ✅', 'success'); }
@@ -109,7 +109,7 @@ function saveNotifTpls() {
 function saveAiPrompt() {
     var ta = document.getElementById('aiPrompt');
     var prompt = ta ? ta.value : '';
-    window.api(window.API_BASE + '/admin/ai-prompt', {
+    window.api(window.API_BASE + '/ai-prompt', {
         method: 'PUT', body: JSON.stringify({ prompt: prompt }),
     }).then(function (r) {
         window.showToast(r && r.ok ? 'Prompt saqlandi ✅' : 'Xatolik', r && r.ok ? 'success' : 'error');
@@ -119,7 +119,7 @@ function saveAiPrompt() {
 
 function resetAiPrompt() {
     if (!confirm('Promptni standart holatga qaytarasizmi?')) return;
-    window.api(window.API_BASE + '/admin/ai-prompt', {
+    window.api(window.API_BASE + '/ai-prompt', {
         method: 'PUT', body: JSON.stringify({ prompt: '' }),
     }).then(function (r) {
         window.showToast(r && r.ok ? 'Standart promptga qaytarildi' : 'Xatolik', r && r.ok ? 'success' : 'error');
