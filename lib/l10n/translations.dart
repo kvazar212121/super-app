@@ -1157,4 +1157,5 @@ const Map<String, String> kTranslationsRu = {
   'Hali yozishma yo\'q': 'Пока нет переписок',
   'Qo\'ng\'iroqlar ro\'yxatidan abonentga xabar yozing': 'Напишите абоненту из списка звонков',
   'Hali xabar yo\'q. Birinchi bo\'lib yozing.': 'Пока нет сообщений. Напишите первым.',
+  'SMS': 'SMS',
 };
