@@ -629,14 +629,8 @@ const Map<String, String> kTranslationsRu = {
   'Hali budilnik yo\'q.\n"Yangi" tugmasi orqali qo\'shing.': 'Будильников пока нет.\nДобавьте через кнопку «Новый».',
 
   // ── Marketplace va bookings ──
-  'Band qilish': 'Забронировать',
-  'Barchasi': 'Все',
-  'Bekor qilish': 'Отменить',
-  'Bron qilish': 'Забронировать',
   'Bugungi buyurtmalar': 'Заказы сегодня',
   'Buyurtmalar topilmadi': 'Заказы не найдены',
-  'Chiqish': 'Выход',
-  'Davom etish': 'Продолжить',
   'Eng arzonroq': 'Самые дешёвые',
   'Eng qimmat': 'Самые дорогие',
   'Eng yaqin': 'Ближайшие',
@@ -648,10 +642,7 @@ const Map<String, String> kTranslationsRu = {
   'O\'z xizmatingizni taqdim eting': 'Представьте свою услугу',
   'Ochiq': 'Открыто',
   'Rejadan 10 daqiqa oldin xabar berish': 'Напомнить за 10 минут до',
-  'Reyting': 'По рейтингу',
   'Sana tanlash': 'Выбрать дату',
-  'Sozlamalar': 'Настройки',
-  'Tasdiqlash': 'Подтвердить',
   'Uyga': 'На дом',
   'Uyga boradigan sartaroshlar': 'Выездные парикмахеры',
   'Vaqt tanlash': 'Выбрать время',
@@ -660,6 +651,4 @@ const Map<String, String> kTranslationsRu = {
   'Yaqin sartaroshxonalar': 'Близкие барбершопы',
   'Yopiq': 'Закрыто',
   'km': 'км',
-  'so\'m': 'сум',
-  'ta': 'шт.',
 };
