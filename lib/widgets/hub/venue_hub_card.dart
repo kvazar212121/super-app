@@ -794,7 +794,7 @@ class _PreviewChip extends StatelessWidget {
           Icon(icon, size: 14, color: Colors.white),
           const SizedBox(width: 4),
           Text(
-            label,
+            label.tr,
             style: const TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w600,

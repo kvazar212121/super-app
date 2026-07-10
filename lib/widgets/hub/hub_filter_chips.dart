@@ -37,7 +37,7 @@ class HubFilterChips extends StatelessWidget {
           final f = HubListFilter.values[i];
           final isSelected = f == selected;
           return FilterChip(
-            label: Text(_labels[f]!),
+            label: Text(_labels[f]!.tr),
             selected: isSelected,
             onSelected: (_) => onChanged(f),
             selectedColor: accent,

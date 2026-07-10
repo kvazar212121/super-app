@@ -6,6 +6,7 @@ import '../../models/massage_hijoma.dart';
 import '../../models/master_worker.dart';
 import '../../models/service_hub_kind.dart';
 import '../../screens/provider_profile_screen.dart';
+import '../../l10n/locale_controller.dart';
 import '../../theme/glass_tokens.dart';
 import '../../utils/geo_utils.dart';
 import '../glass/glass_surface.dart';
@@ -166,7 +167,7 @@ class MobileMassageHubSection extends StatelessWidget {
             children: [
               Expanded(
                 child: Text(
-                  'Uyga boradigan mutaxassislar',
+                  'Uyga boradigan mutaxassislar'.tr,
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w800,
