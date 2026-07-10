@@ -1150,4 +1150,11 @@ const Map<String, String> kTranslationsRu = {
   'Blokdan chiqarish': 'Разблокировать',
   'Bloklangan kontaktlar yo\'q': 'Нет заблокированных контактов',
   'Barcha qo\'ng\'iroqlar tarixi o\'chiriladi. Davom etasizmi?': 'Вся история звонков будет удалена. Продолжить?',
+
+  // ── SMS (foydalanuvchilararo xabar) ──
+  'SMSlar': 'Сообщения',
+  'Xabar yozish': 'Написать сообщение',
+  'Hali yozishma yo\'q': 'Пока нет переписок',
+  'Qo\'ng\'iroqlar ro\'yxatidan abonentga xabar yozing': 'Напишите абоненту из списка звонков',
+  'Hali xabar yo\'q. Birinchi bo\'lib yozing.': 'Пока нет сообщений. Напишите первым.',
 };

@@ -27,6 +27,7 @@ from app.models.admin_role import AdminRole, AuditLog
 from app.models.premium import PremiumPayment
 from app.models.dispute import Dispute
 from app.models.support import SupportTicket, SupportMessage
+from app.models.direct_message import DirectMessage
 
 __all__ = [
     "User",
@@ -64,4 +65,5 @@ __all__ = [
     "Dispute",
     "SupportTicket",
     "SupportMessage",
+    "DirectMessage",
 ]

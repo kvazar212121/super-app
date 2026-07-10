@@ -269,9 +269,15 @@ async def retention_scheduler():
                 res = await db.execute(text(
                     "DELETE FROM notifications WHERE created_at < NOW() - INTERVAL '30 days'"
                 ))
+                # Foydalanuvchilararo xabarlar ham serverда 30 kun saqlanadi
+                res2 = await db.execute(text(
+                    "DELETE FROM direct_messages WHERE created_at < NOW() - INTERVAL '30 days'"
+                ))
                 await db.commit()
                 if res.rowcount:
                     logger.info(f"Retention: {res.rowcount} ta eski bildirishnoma tozalandi (>30 kun)")
+                if res2.rowcount:
+                    logger.info(f"Retention: {res2.rowcount} ta eski xabar tozalandi (>30 kun)")
             await asyncio.sleep(60 * 60 * 24)  # kuniga bir marta
         except asyncio.CancelledError:
             logger.info("Retention scheduler cancelled.")

@@ -1814,6 +1814,44 @@ class ApiService {
     }
   }
 
+  // ============ Foydalanuvchilararo xabarlar (SMS-uslub) ============
+
+  /// Abonentga xabar yuborish
+  Future<Map<String, dynamic>> sendDirectMessage(int recipientId, String text) async {
+    final response = await _dio.post('/messages/send', data: {
+      'recipient_id': recipientId,
+      'text': text,
+    });
+    return Map<String, dynamic>.from(response.data);
+  }
+
+  /// Abonent bilan yozishma: {peer_id, peer_name, messages: [...]}
+  Future<Map<String, dynamic>> getDmThread(int peerId) async {
+    final response = await _dio.get('/messages/thread/$peerId');
+    return Map<String, dynamic>.from(response.data);
+  }
+
+  /// Barcha yozishmalar ro'yxati
+  Future<List<dynamic>> getDmConversations() async {
+    final response = await _dio.get('/messages/conversations');
+    return response.data['conversations'] as List<dynamic>? ?? [];
+  }
+
+  /// O'qilmagan xabarlar soni (badge)
+  Future<int> getDmUnread() async {
+    try {
+      final response = await _dio.get('/messages/unread-count');
+      return (response.data['unread'] as num?)?.toInt() ?? 0;
+    } catch (_) {
+      return 0;
+    }
+  }
+
+  /// Abonent bilan yozishmani o'chirish
+  Future<void> deleteDmThread(int peerId) async {
+    await _dio.delete('/messages/thread/$peerId');
+  }
+
   // ==================== Premium obuna ====================
 
   Future<Map<String, dynamic>> getPremiumStatus() async {

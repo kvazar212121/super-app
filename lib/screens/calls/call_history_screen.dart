@@ -10,8 +10,10 @@ import '../../theme/glass_tokens.dart';
 import '../../widgets/glass/glass_scaffold.dart';
 import '../../widgets/glass/glass_surface.dart';
 import '../../providers/auth_provider.dart';
+import '../../services/api_service.dart';
 import '../../widgets/guest_blocker_widget.dart';
 import '../support/support_chat_screen.dart';
+import 'dm_chat_screen.dart';
 
 class CallHistoryScreen extends StatefulWidget {
   const CallHistoryScreen({super.key});
@@ -27,7 +29,7 @@ class _CallHistoryScreenState extends State<CallHistoryScreen>
   @override
   void initState() {
     super.initState();
-    _tab = TabController(length: 2, vsync: this);
+    _tab = TabController(length: 3, vsync: this);
   }
 
   @override
@@ -58,8 +60,10 @@ class _CallHistoryScreenState extends State<CallHistoryScreen>
         labelColor: const Color(0xFF6366F1),
         indicatorColor: const Color(0xFF6366F1),
         unselectedLabelColor: GlassTokens.secondaryText(context),
+        isScrollable: false,
         tabs: [
           Tab(text: "Qo'ng'iroqlar".tr),
+          Tab(text: "SMSlar".tr),
           Tab(text: "Bloklangan".tr),
         ],
       ),
@@ -68,6 +72,7 @@ class _CallHistoryScreenState extends State<CallHistoryScreen>
               controller: _tab,
               children: [
                 _CallsTab(),
+                _MessagesTab(),
                 _BlockedTab(),
               ],
             )
@@ -189,6 +194,17 @@ class _CallsTab extends StatelessWidget {
           case 'call':
             CallHelper.makeDirectCall(context, log.userId, log.userName);
             break;
+          case 'message':
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => DmChatScreen(
+                  peerId: log.userId,
+                  peerName: log.userName,
+                ),
+              ),
+            );
+            break;
           case 'block':
             await svc.blockUser(log.userId, log.userName);
             _toast(context, '${log.userName} ${'bloklandi'.tr}');
@@ -209,6 +225,14 @@ class _CallsTab extends StatelessWidget {
             const Icon(Icons.phone, color: Colors.green, size: 18),
             const SizedBox(width: 10),
             Text('Qo\'ng\'iroq qilish'.tr),
+          ]),
+        ),
+        PopupMenuItem(
+          value: 'message',
+          child: Row(children: [
+            const Icon(LucideIcons.messageSquare, color: Color(0xFF6366F1), size: 18),
+            const SizedBox(width: 10),
+            Text('Xabar yozish'.tr),
           ]),
         ),
         PopupMenuItem(
@@ -265,6 +289,130 @@ class _CallsTab extends StatelessWidget {
           const SizedBox(height: 12),
           Text(text, style: TextStyle(color: GlassTokens.secondaryText(context))),
         ],
+      ),
+    );
+  }
+}
+
+/// Yozishmalar (SMS-uslub) ro'yxati.
+class _MessagesTab extends StatefulWidget {
+  @override
+  State<_MessagesTab> createState() => _MessagesTabState();
+}
+
+class _MessagesTabState extends State<_MessagesTab> {
+  final ApiService _api = ApiService();
+  List<dynamic> _convos = [];
+  bool _loading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  Future<void> _load() async {
+    try {
+      final list = await _api.getDmConversations();
+      if (mounted) setState(() {
+        _convos = list;
+        _loading = false;
+      });
+    } catch (_) {
+      if (mounted) setState(() => _loading = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_loading) return const Center(child: CircularProgressIndicator());
+    if (_convos.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(LucideIcons.messageSquare, size: 48, color: GlassTokens.secondaryText(context)),
+            const SizedBox(height: 12),
+            Text('Hali yozishma yo\'q'.tr,
+                style: TextStyle(color: GlassTokens.secondaryText(context))),
+            const SizedBox(height: 6),
+            Text('Qo\'ng\'iroqlar ro\'yxatidan abonentga xabar yozing'.tr,
+                textAlign: TextAlign.center,
+                style: TextStyle(color: GlassTokens.secondaryText(context), fontSize: 12)),
+          ],
+        ),
+      );
+    }
+    return RefreshIndicator(
+      onRefresh: _load,
+      child: ListView.separated(
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
+        itemCount: _convos.length,
+        separatorBuilder: (_, __) => const SizedBox(height: 8),
+        itemBuilder: (context, idx) {
+          final c = Map<String, dynamic>.from(_convos[idx] as Map);
+          final unread = (c['unread'] as num?)?.toInt() ?? 0;
+          String time = '';
+          try {
+            time = DateFormat('dd.MM HH:mm').format(DateTime.parse(c['last_at']).toLocal());
+          } catch (_) {}
+          return GlassSurface(
+            onTap: () async {
+              await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => DmChatScreen(
+                    peerId: (c['peer_id'] as num).toInt(),
+                    peerName: c['peer_name'] as String? ?? '',
+                  ),
+                ),
+              );
+              _load();
+            },
+            padding: const EdgeInsets.all(8),
+            opacity: 0.55,
+            child: ListTile(
+              contentPadding: const EdgeInsets.symmetric(horizontal: 8),
+              leading: CircleAvatar(
+                backgroundColor: const Color(0xFF6366F1).withValues(alpha: 0.15),
+                child: const Icon(LucideIcons.user, color: Color(0xFF6366F1)),
+              ),
+              title: Text(
+                c['peer_name'] as String? ?? '',
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  color: GlassTokens.primaryText(context),
+                ),
+              ),
+              subtitle: Text(
+                c['last_message'] as String? ?? '',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(color: GlassTokens.secondaryText(context)),
+              ),
+              trailing: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(time,
+                      style: TextStyle(fontSize: 11, color: GlassTokens.secondaryText(context))),
+                  if (unread > 0)
+                    Container(
+                      margin: const EdgeInsets.only(top: 4),
+                      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+                      decoration: const BoxDecoration(
+                        color: Color(0xFFEF4444),
+                        borderRadius: BorderRadius.all(Radius.circular(10)),
+                      ),
+                      child: Text('$unread',
+                          style: const TextStyle(
+                              color: Colors.white, fontSize: 11, fontWeight: FontWeight.w700)),
+                    ),
+                ],
+              ),
+            ),
+          );
+        },
       ),
     );
   }
