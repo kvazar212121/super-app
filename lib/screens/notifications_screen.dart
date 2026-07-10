@@ -21,13 +21,7 @@ class NotificationsScreen extends StatelessWidget {
       actions: [
         if (provider.unreadCount > 0)
           TextButton(
-            onPressed: () async {
-              for (var n in notifications) {
-                if (n['is_read'] == false) {
-                  await provider.markNotificationRead(n['id']);
-                }
-              }
-            },
+            onPressed: () => provider.markAllNotificationsRead(),
             child: Text(
               "Hammasini o'qish".tr,
               style: const TextStyle(
@@ -35,6 +29,12 @@ class NotificationsScreen extends StatelessWidget {
                 fontWeight: FontWeight.bold,
               ),
             ),
+          ),
+        if (notifications.isNotEmpty)
+          IconButton(
+            tooltip: "Hammasini tozalash".tr,
+            icon: const Icon(LucideIcons.trash2, color: Color(0xFFEF4444)),
+            onPressed: () => _confirmClearAll(context, provider),
           ),
       ],
       body: RefreshIndicator(
@@ -57,7 +57,21 @@ class NotificationsScreen extends StatelessWidget {
                     timeFormatted = DateFormat('dd.MM.yyyy HH:mm').format(date);
                   } catch (_) {}
 
-                  return GestureDetector(
+                  return Dismissible(
+                    key: ValueKey(notif['id']),
+                    direction: DismissDirection.endToStart,
+                    onDismissed: (_) =>
+                        provider.deleteNotification(notif['id'].toString()),
+                    background: Container(
+                      alignment: Alignment.centerRight,
+                      padding: const EdgeInsets.only(right: 24),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFEF4444),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: const Icon(LucideIcons.trash2, color: Colors.white),
+                    ),
+                    child: GestureDetector(
                     onTap: () {
                       if (!isRead) {
                         provider.markNotificationRead(notif['id']);
@@ -144,11 +158,40 @@ class NotificationsScreen extends StatelessWidget {
                         ],
                       ),
                     ),
+                    ),
                   );
                 },
               ),
       ),
     );
+  }
+
+  Future<void> _confirmClearAll(BuildContext context, AppProvider provider) async {
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text("Hammasini tozalash".tr),
+        content: Text(
+          "Barcha bildirishnomalar o'chiriladi. Davom etasizmi?".tr,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text("Bekor qilish".tr),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(
+              "Tozalash".tr,
+              style: const TextStyle(color: Color(0xFFEF4444)),
+            ),
+          ),
+        ],
+      ),
+    );
+    if (ok == true) {
+      await provider.clearAllNotifications();
+    }
   }
 
   void _openNotification(BuildContext context, Map<dynamic, dynamic> notif) {

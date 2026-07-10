@@ -28,6 +28,29 @@ async def mark_notification_read(
     NotificationService.mark_read(notification_id, current_user.id)
 
 
+@router.post("/read-all")
+async def mark_all_read(current_user: User = Depends(get_current_user)):
+    """Barcha bildirishnomalarni o'qilgan deb belgilash."""
+    n = NotificationService.mark_all_read(current_user.id)
+    return {"marked": n}
+
+
+@router.delete("/{notification_id}", status_code=204)
+async def delete_notification(
+    notification_id: str,
+    current_user: User = Depends(get_current_user),
+):
+    """Bitta bildirishnomani o'chirish."""
+    NotificationService.delete_one(notification_id, current_user.id)
+
+
+@router.delete("")
+async def clear_notifications(current_user: User = Depends(get_current_user)):
+    """Barcha bildirishnomalarni tozalash."""
+    n = NotificationService.clear_all(current_user.id)
+    return {"cleared": n}
+
+
 @router.get("/unread-count")
 async def unread_count(
     current_user: User = Depends(get_current_user),

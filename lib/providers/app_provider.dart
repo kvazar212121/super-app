@@ -334,6 +334,48 @@ class AppProvider extends ChangeNotifier {
     }
   }
 
+  /// Barcha bildirishnomalarni o'qilgan deb belgilash.
+  Future<void> markAllNotificationsRead() async {
+    try {
+      await _api.markAllNotificationsRead();
+      for (final n in _notifications) {
+        n['is_read'] = true;
+      }
+      _unreadCount = 0;
+      notifyListeners();
+    } catch (e) {
+      debugPrint('Error marking all read: $e');
+    }
+  }
+
+  /// Bitta bildirishnomani o'chirish.
+  Future<void> deleteNotification(String id) async {
+    try {
+      await _api.deleteNotification(id);
+      final index = _notifications.indexWhere((n) => n['id'].toString() == id);
+      if (index != -1) {
+        final wasUnread = _notifications[index]['is_read'] == false;
+        _notifications.removeAt(index);
+        if (wasUnread && _unreadCount > 0) _unreadCount--;
+      }
+      notifyListeners();
+    } catch (e) {
+      debugPrint('Error deleting notification: $e');
+    }
+  }
+
+  /// Barcha bildirishnomalarni tozalash.
+  Future<void> clearAllNotifications() async {
+    try {
+      await _api.clearAllNotifications();
+      _notifications = [];
+      _unreadCount = 0;
+      notifyListeners();
+    } catch (e) {
+      debugPrint('Error clearing notifications: $e');
+    }
+  }
+
   void startOrderPolling() {
     _orderPollTimer?.cancel();
     _orderPollTimer = Timer.periodic(const Duration(seconds: 15), (_) async {

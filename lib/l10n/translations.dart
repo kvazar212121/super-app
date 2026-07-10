@@ -1124,4 +1124,7 @@ const Map<String, String> kTranslationsRu = {
   'Savolingizni yozing — operator tez orada javob beradi.': 'Напишите вопрос — оператор скоро ответит.',
   'yuborilmoqda…': 'отправляется…',
   'Xabar yozing...': 'Напишите сообщение...',
+
+  'Hammasini tozalash': 'Очистить все',
+  'Barcha bildirishnomalar o\'chiriladi. Davom etasizmi?': 'Все уведомления будут удалены. Продолжить?',
 };

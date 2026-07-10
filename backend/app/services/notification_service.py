@@ -110,6 +110,50 @@ class NotificationService:
             row.is_read = True
             db.commit()
 
+    @staticmethod
+    def mark_all_read(user_id: int) -> int:
+        """Foydalanuvchining barcha bildirishnomalarini o'qilgan deb belgilaydi."""
+        with sync_session() as db:
+            n = (
+                db.query(NotificationModel)
+                .filter(NotificationModel.user_id == user_id, NotificationModel.is_read == False)
+                .update({NotificationModel.is_read: True}, synchronize_session=False)
+            )
+            db.commit()
+            return int(n or 0)
+
+    @staticmethod
+    def delete_one(notification_id, user_id: int) -> None:
+        """Foydalanuvchining bitta bildirishnomasini o'chiradi."""
+        from fastapi import HTTPException, status
+
+        try:
+            nid = int(notification_id)
+        except (TypeError, ValueError):
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Bildirishnoma topilmadi")
+        with sync_session() as db:
+            row = (
+                db.query(NotificationModel)
+                .filter(NotificationModel.id == nid, NotificationModel.user_id == user_id)
+                .first()
+            )
+            if not row:
+                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Bildirishnoma topilmadi")
+            db.delete(row)
+            db.commit()
+
+    @staticmethod
+    def clear_all(user_id: int) -> int:
+        """Foydalanuvchining BARCHA bildirishnomalarini o'chiradi."""
+        with sync_session() as db:
+            n = (
+                db.query(NotificationModel)
+                .filter(NotificationModel.user_id == user_id)
+                .delete(synchronize_session=False)
+            )
+            db.commit()
+            return int(n or 0)
+
     # ── Yordamchi (semantik) bildirishnomalar ─────────────────────────────
 
     @staticmethod

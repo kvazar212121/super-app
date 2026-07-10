@@ -462,6 +462,21 @@ class ApiService {
     await _dio.post('/notifications/$id/read');
   }
 
+  /// Barchasini o'qilgan deb belgilash
+  Future<void> markAllNotificationsRead() async {
+    await _dio.post('/notifications/read-all');
+  }
+
+  /// Bitta bildirishnomani o'chirish
+  Future<void> deleteNotification(String id) async {
+    await _dio.delete('/notifications/$id');
+  }
+
+  /// Barcha bildirishnomalarni tozalash
+  Future<void> clearAllNotifications() async {
+    await _dio.delete('/notifications');
+  }
+
   // ─────────────── PROVIDER REGISTRATION ───────────────
 
   /// Soha egasi sifatida ro'yxatdan o'tish
