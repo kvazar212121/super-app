@@ -255,6 +255,32 @@ async def market_scraper_scheduler():
             await asyncio.sleep(3600)  # xato bo'lsa 1 soat kutish
 
 
+async def retention_scheduler():
+    """Saqlash limiti: eski bildirishnomalarni serverdan tozalash (1 oy).
+
+    Bildirishnomalar mijoz qurilmasida ko'rinadi; serverда 30 kundan ortiq
+    saqlanmaydi. Har 24 soatda bir marta ishlaydi.
+    """
+    from sqlalchemy import text
+    logger.info("Retention scheduler starting...")
+    while True:
+        try:
+            async with async_session() as db:
+                res = await db.execute(text(
+                    "DELETE FROM notifications WHERE created_at < NOW() - INTERVAL '30 days'"
+                ))
+                await db.commit()
+                if res.rowcount:
+                    logger.info(f"Retention: {res.rowcount} ta eski bildirishnoma tozalandi (>30 kun)")
+            await asyncio.sleep(60 * 60 * 24)  # kuniga bir marta
+        except asyncio.CancelledError:
+            logger.info("Retention scheduler cancelled.")
+            break
+        except Exception as e:
+            logger.error(f"Error in retention scheduler: {e}")
+            await asyncio.sleep(60 * 60)  # xato bo'lsa 1 soat kutib qayta urinadi
+
+
 def _start_scheduler_children():
     """Barcha fon schedulerlarини ishga tushiradi va tasklar ro'yxatini qaytaradi."""
     return [
@@ -263,6 +289,7 @@ def _start_scheduler_children():
         asyncio.create_task(checkin_scheduler()),
         asyncio.create_task(order_completion_scheduler()),
         asyncio.create_task(market_scraper_scheduler()),
+        asyncio.create_task(retention_scheduler()),
     ]
 
 

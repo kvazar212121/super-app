@@ -1137,4 +1137,17 @@ const Map<String, String> kTranslationsRu = {
   'Bu joyni ochib bo\'lmadi': 'Не удалось открыть это место',
 
   'Marshrut qurilmoqda…': 'Строится маршрут…',
+
+  // ── Aloqa tarixi (bloklash/o'chirish) ──
+  'Aloqa tarixi': 'История связи',
+  'Aloqa tarixini ko\'rish uchun': 'Чтобы посмотреть историю связи',
+  'Qo\'ng\'iroqlar': 'Звонки',
+  'Bloklangan': 'Заблокированные',
+  'Faqat oxirgi 1 oy saqlanadi': 'Хранится только за последний месяц',
+  'bloklandi': 'заблокирован',
+  'blokdan chiqarildi': 'разблокирован',
+  'Bloklash': 'Заблокировать',
+  'Blokdan chiqarish': 'Разблокировать',
+  'Bloklangan kontaktlar yo\'q': 'Нет заблокированных контактов',
+  'Barcha qo\'ng\'iroqlar tarixi o\'chiriladi. Davom etasizmi?': 'Вся история звонков будет удалена. Продолжить?',
 };

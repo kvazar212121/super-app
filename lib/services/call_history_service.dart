@@ -89,6 +89,9 @@ class CallHistoryService extends ChangeNotifier {
     await loadBlockedUsers();
   }
 
+  /// Qo'ng'iroqlar tarixi shu kundan eski bo'lsa saqlanmaydi (1 oy — faqat lokal).
+  static const int _retentionDays = 30;
+
   Future<void> loadHistory() async {
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -96,13 +99,24 @@ class CallHistoryService extends ChangeNotifier {
       if (historyStr != null) {
         final List<dynamic> decoded = jsonDecode(historyStr);
         _history = decoded.map((e) => CallLog.fromJson(e)).toList();
+        // 1 oydan eski yozuvlarni tozalaymiz (limitli lokal saqlash)
+        final purged = _purgeOld();
         // Saralash (eng yangilari birinchi)
         _history.sort((a, b) => b.timestamp.compareTo(a.timestamp));
+        if (purged) await saveHistory();
         notifyListeners();
       }
     } catch (e) {
       debugPrint('Call history yuklashda xatolik: $e');
     }
+  }
+
+  /// 30 kundan eski yozuvlarni o'chiradi. O'chirilgan bo'lsa true qaytaradi.
+  bool _purgeOld() {
+    final cutoff = DateTime.now().subtract(const Duration(days: _retentionDays));
+    final before = _history.length;
+    _history.removeWhere((e) => e.timestamp.isBefore(cutoff));
+    return _history.length != before;
   }
 
   Future<void> saveHistory() async {
@@ -117,6 +131,20 @@ class CallHistoryService extends ChangeNotifier {
 
   Future<void> addCallLog(CallLog log) async {
     _history.insert(0, log);
+    notifyListeners();
+    await saveHistory();
+  }
+
+  /// Bitta qo'ng'iroq yozuvini o'chirish.
+  Future<void> deleteCallLog(String logId) async {
+    _history.removeWhere((e) => e.id == logId);
+    notifyListeners();
+    await saveHistory();
+  }
+
+  /// Bitta kontaktning barcha qo'ng'iroq yozuvlarini o'chirish.
+  Future<void> deleteByUser(int userId) async {
+    _history.removeWhere((e) => e.userId == userId);
     notifyListeners();
     await saveHistory();
   }

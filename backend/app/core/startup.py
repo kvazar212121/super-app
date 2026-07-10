@@ -105,6 +105,18 @@ async def run_startup_init():
         await conn.execute(text(
             "CREATE INDEX IF NOT EXISTS ix_providers_rating ON providers (rating)"
         ))
+        # ── Saqlash limiti: eski bildirishnomalarni serverdan tozalash (1 oy) ──
+        # Bildirishnomalar mijoz qurilmasida ko'rinadi; serverда 30 kundan ortiq
+        # saqlanmaydi (ma'lumotlar bazasi shishmasligi uchun). Eski xabarlar lokal
+        # qurilmada qoladi.
+        try:
+            deleted = await conn.execute(text(
+                "DELETE FROM notifications WHERE created_at < NOW() - INTERVAL '30 days'"
+            ))
+            if deleted.rowcount:
+                logger.info("Retention: %s ta eski bildirishnoma tozalandi (>30 kun)", deleted.rowcount)
+        except Exception as e:
+            logger.warning("Bildirishnoma retention xatosi: %s", e)
 
     # Seed admin user & default promos
     async with async_session() as db:
