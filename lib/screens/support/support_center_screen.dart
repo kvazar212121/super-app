@@ -7,6 +7,7 @@ import '../../theme/glass_tokens.dart';
 import '../../widgets/glass/glass_scaffold.dart';
 import '../../widgets/glass/glass_surface.dart';
 import '../chat_screen.dart';
+import 'support_chat_screen.dart';
 
 /// Qo'llab-quvvatlash markazi — AI yordamchi yoki real inson (telefon/email/telegram).
 class SupportCenterScreen extends StatefulWidget {
@@ -96,6 +97,19 @@ class _SupportCenterScreenState extends State<SupportCenterScreen> {
                   ),
                   const SizedBox(height: 20),
                 ],
+                // Jonli operator chati (admin panelга tushadi)
+                _sectionLabel('Operator bilan yozishma'.tr),
+                _channelCard(
+                  icon: Icons.forum_rounded,
+                  color: const Color(0xFF6366F1),
+                  title: 'Operator bilan chat'.tr,
+                  subtitle: 'Xabaringizga operator javob beradi'.tr,
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const SupportChatScreen()),
+                  ),
+                ),
+                const SizedBox(height: 20),
                 // Real inson bilan bog'lanish
                 if (_phone.isNotEmpty || _email.isNotEmpty || _telegram.isNotEmpty ||
                     _telegramBot.isNotEmpty) ...[

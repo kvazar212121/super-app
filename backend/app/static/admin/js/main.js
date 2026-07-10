@@ -17,5 +17,6 @@ import './analytics.js';
 import './userdata.js';
 import './pages/products.js';
 import './pages/premium.js';
+import './pages/support.js';
 import './pages/admins.js';
 import './init.js';

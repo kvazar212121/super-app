@@ -1775,6 +1775,30 @@ class ApiService {
     return Map<String, dynamic>.from(response.data['support'] ?? {});
   }
 
+  // ============ Qo'llab-quvvatlash chati (operator bilan) ============
+
+  /// Mening yozishmam: {ticket_id, status, messages: [...]}
+  Future<Map<String, dynamic>> getSupportThread() async {
+    final response = await _dio.get('/support/thread');
+    return Map<String, dynamic>.from(response.data);
+  }
+
+  /// Operatorga xabar yuborish → yuborilgan xabar obyekti
+  Future<Map<String, dynamic>> sendSupportMessage(String text) async {
+    final response = await _dio.post('/support/messages', data: {'text': text});
+    return Map<String, dynamic>.from(response.data);
+  }
+
+  /// Operatordan kelgan o'qilmagan xabarlar soni (badge)
+  Future<int> getSupportUnread() async {
+    try {
+      final response = await _dio.get('/support/unread');
+      return (response.data['unread'] as num?)?.toInt() ?? 0;
+    } catch (_) {
+      return 0;
+    }
+  }
+
   // ==================== Premium obuna ====================
 
   Future<Map<String, dynamic>> getPremiumStatus() async {

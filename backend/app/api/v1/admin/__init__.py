@@ -16,6 +16,7 @@ from app.api.v1.admin import (
     ai_settings,
     rbac,
     premium,
+    support,
 )
 from app.api.v1.admin.permissions import section_guard
 
@@ -45,4 +46,5 @@ router.include_router(products.router, dependencies=_g("products"))
 router.include_router(analytics.router, dependencies=_g("reports"))
 router.include_router(ai_settings.router, dependencies=_g("settings"))
 router.include_router(premium.router, dependencies=_g("premium"))
+router.include_router(support.router, dependencies=_g("support"))
 router.include_router(rbac.router, dependencies=_g("admins"))

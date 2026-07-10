@@ -1115,4 +1115,13 @@ const Map<String, String> kTranslationsRu = {
   'AI yordamchi yoki operatorni tanlang': 'Выберите ИИ-помощника или оператора',
   'Qo\'llab-quvvatlash tez orada ulanadi.': 'Поддержка скоро подключится.',
   'Ochib bo\'lmadi': 'Не удалось открыть',
+
+  // ── Operator chat (support) ──
+  'Operator bilan yozishma': 'Переписка с оператором',
+  'Operator bilan chat': 'Чат с оператором',
+  'Xabaringizga operator javob beradi': 'Оператор ответит на ваше сообщение',
+  'Yuborilmadi. Qayta urinib ko\'ring.': 'Не отправлено. Попробуйте ещё раз.',
+  'Savolingizni yozing — operator tez orada javob beradi.': 'Напишите вопрос — оператор скоро ответит.',
+  'yuborilmoqda…': 'отправляется…',
+  'Xabar yozing...': 'Напишите сообщение...',
 };

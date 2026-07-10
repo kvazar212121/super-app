@@ -45,6 +45,7 @@ import { statusBadge, openModal, formatMoney, formatDate, closeModal, getInitial
                 reports: renderReports,
                 user_analytics: renderUserAnalytics,
                 premium: renderPremium,
+                support: renderSupport,
                 admins: renderAdmins,
             };
             if (renderers[page]) {

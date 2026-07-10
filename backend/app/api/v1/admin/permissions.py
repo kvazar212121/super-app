@@ -24,6 +24,7 @@ SECTIONS = [
     ("promos", "Aksiyalar"),
     ("products", "Mahsulotlar"),
     ("notifications", "Bildirishnomalar"),
+    ("support", "Qo'llab-quvvatlash"),
     ("reports", "Hisobotlar"),
     ("settings", "Sozlamalar (AI, bo'limlar, shartlar)"),
     ("premium", "Premium obuna"),

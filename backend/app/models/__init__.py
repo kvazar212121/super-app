@@ -26,6 +26,7 @@ from app.models.alarm import Alarm, AlarmLog
 from app.models.admin_role import AdminRole, AuditLog
 from app.models.premium import PremiumPayment
 from app.models.dispute import Dispute
+from app.models.support import SupportTicket, SupportMessage
 
 __all__ = [
     "User",
@@ -61,4 +62,6 @@ __all__ = [
     "AuditLog",
     "PremiumPayment",
     "Dispute",
+    "SupportTicket",
+    "SupportMessage",
 ]
