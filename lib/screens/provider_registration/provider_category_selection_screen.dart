@@ -114,14 +114,14 @@ class _ProviderCategorySelectionScreenState
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Qaysi sohada xizmat ko\'rsatasiz?',
+                    'Qaysi sohada xizmat ko\'rsatasiz?'.tr,
                     style: theme.textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Sizning sohangizga qarab mijozlar sizni topishadi.',
+                    'Sizning sohangizga qarab mijozlar sizni topishadi.'.tr,
                     style: theme.textTheme.bodyMedium?.copyWith(
                       color: theme.colorScheme.onSurface,
                     ),
@@ -184,7 +184,7 @@ class _ProviderCategorySelectionScreenState
                                           horizontal: 8,
                                         ),
                                         child: Text(
-                                          cat['name'] as String,
+                                          (cat['name'] as String).tr,
                                           textAlign: TextAlign.center,
                                           style: theme.textTheme.titleMedium
                                               ?.copyWith(

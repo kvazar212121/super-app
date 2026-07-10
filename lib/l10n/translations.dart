@@ -943,4 +943,7 @@ const Map<String, String> kTranslationsRu = {
   'O\'zingizga qulay vaqtda va joyda ishlang.': 'Работайте в удобное время и в удобном месте.',
   'Ishonchli to\'lov': 'Надёжная оплата',
   'Xizmatlaringiz uchun kafolatlangan to\'lovlar.': 'Гарантированная оплата за ваши услуги.',
+
+  'Qaysi sohada xizmat ko\'rsatasiz?': 'В какой сфере вы оказываете услуги?',
+  'Sizning sohangizga qarab mijozlar sizni topishadi.': 'Клиенты найдут вас по вашей сфере.',
 };
