@@ -62,21 +62,478 @@ class _MapSectionState extends State<_MapSection> {
         onExpand: () => Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => Scaffold(
-              appBar: AppBar(
-                title: Text("Xarita".tr),
-                backgroundColor: widget.accentColor,
-              ),
-              body: HubMapPreview(
-                center: _userLocation,
-                zoom: 13,
-                markers: _buildMarkers(context),
-              ),
+            builder: (context) => EnhancedServiceMap(
+              title: 'Xarita'.tr,
+              accent: widget.accentColor,
+              markerIcon: widget.kind.icon,
+              places: _buildPlaces(context),
             ),
           ),
         ),
       ),
     );
+  }
+
+  List<MapPlace> _buildPlaces(BuildContext context) {
+    final data = widget.data;
+    final kind = widget.kind;
+    final accentColor = widget.accentColor;
+    final places = <MapPlace>[];
+
+    switch (widget.kind) {
+      case ServiceHubKind.sartarosh:
+        places.addAll(
+          data.barberShops.map(
+            (shop) => MapPlace(
+              id: shop.id,
+              name: shop.name,
+              lat: shop.latitude,
+              lng: shop.longitude,
+              rating: shop.rating,
+              subtitle: shop.address,
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => BarberBookingScreen(shop: shop),
+                ),
+              ),
+            ),
+          ),
+        );
+        break;
+      case ServiceHubKind.salon:
+        places.addAll(
+          data.salons.map(
+            (salon) => MapPlace(
+              id: salon.id,
+              name: salon.name,
+              lat: salon.latitude,
+              lng: salon.longitude,
+              rating: salon.rating,
+              subtitle: salon.address,
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => SalonBookingScreen(salon: salon),
+                ),
+              ),
+            ),
+          ),
+        );
+        break;
+      case ServiceHubKind.futbol:
+        places.addAll(
+          data.footballFields.map(
+            (field) => MapPlace(
+              id: field.id,
+              name: field.name,
+              lat: field.latitude,
+              lng: field.longitude,
+              rating: field.rating,
+              subtitle: field.address,
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => FootballFieldBookingScreen(field: field),
+                ),
+              ),
+            ),
+          ),
+        );
+        break;
+      case ServiceHubKind.avtoYordam:
+        places.addAll(
+          data.autoMobile.map(
+            (unit) => MapPlace(
+              id: unit.id,
+              name: unit.name,
+              lat: unit.latitude,
+              lng: unit.longitude,
+              rating: unit.rating,
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => AutoMobileProfileScreen(service: unit),
+                ),
+              ),
+            ),
+          ),
+        );
+        places.addAll(
+          data.workshops.map(
+            (ws) => MapPlace(
+              id: ws.id,
+              name: ws.name,
+              lat: ws.latitude,
+              lng: ws.longitude,
+              rating: ws.rating,
+              subtitle: ws.address,
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => AutoWorkshopProfileScreen(workshop: ws),
+                ),
+              ),
+            ),
+          ),
+        );
+        break;
+      case ServiceHubKind.usta:
+      case ServiceHubKind.elektrik:
+      case ServiceHubKind.santexnik:
+      case ServiceHubKind.tozalash:
+      case ServiceHubKind.konditsioner:
+        final specialty = kind == ServiceHubKind.elektrik
+            ? 'Elektrik'
+            : (kind == ServiceHubKind.santexnik
+                  ? 'Santexnik'
+                  : (kind == ServiceHubKind.tozalash
+                        ? 'Tozalash'
+                        : (kind == ServiceHubKind.konditsioner
+                              ? 'Konditsioner'
+                              : null)));
+        final filteredMasters = specialty != null
+            ? data.masters.where((m) => m.specialty == specialty).toList()
+            : data.masters;
+
+        places.addAll(
+          filteredMasters.map(
+            (master) => MapPlace(
+              id: master.id,
+              name: master.name,
+              lat: master.latitude,
+              lng: master.longitude,
+              rating: master.rating,
+              subtitle: master.address,
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) =>
+                      ProviderProfileScreen(master: master, category: kind),
+                ),
+              ),
+            ),
+          ),
+        );
+
+        if (kind == ServiceHubKind.usta) {
+          places.addAll(
+            data.workshops.map(
+              (ws) => MapPlace(
+                id: ws.id,
+                name: ws.name,
+                lat: ws.latitude,
+                lng: ws.longitude,
+                rating: ws.rating,
+                subtitle: ws.address,
+                onTap: () => ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('${ws.name} ${'ustaxonasi'.tr}')),
+                ),
+              ),
+            ),
+          );
+        }
+        break;
+      case ServiceHubKind.repetitor:
+        places.addAll(
+          data.tutors.map(
+            (t) => MapPlace(
+              id: t.id,
+              name: t.name,
+              lat: t.latitude,
+              lng: t.longitude,
+              rating: t.rating,
+              subtitle: t.address,
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => TutorProfileScreen(tutor: t),
+                ),
+              ),
+            ),
+          ),
+        );
+        places.addAll(
+          data.educationCenters.map(
+            (ec) => MapPlace(
+              id: ec.id,
+              name: ec.name,
+              lat: ec.latitude,
+              lng: ec.longitude,
+              rating: ec.rating,
+              subtitle: ec.address,
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => EducationCenterBookingScreen(center: ec),
+                ),
+              ),
+            ),
+          ),
+        );
+        break;
+      case ServiceHubKind.enaga:
+        places.addAll(
+          data.nannies.map(
+            (n) => MapPlace(
+              id: n.id,
+              name: n.name,
+              lat: n.latitude,
+              lng: n.longitude,
+              rating: n.rating,
+              subtitle: n.address,
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => NannyProfileScreen(nanny: n),
+                ),
+              ),
+            ),
+          ),
+        );
+        break;
+      case ServiceHubKind.ishchi:
+        places.addAll(
+          data.workers.map(
+            (worker) => MapPlace(
+              id: worker.id,
+              name: worker.name,
+              lat: worker.latitude,
+              lng: worker.longitude,
+              rating: worker.rating,
+              onTap: () => ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('${worker.name} ${'chaqirilmoqda...'.tr}'),
+                ),
+              ),
+            ),
+          ),
+        );
+        break;
+      case ServiceHubKind.dezinfeksiya:
+        places.addAll(
+          data.disinfection.map(
+            (s) => MapPlace(
+              id: s.id,
+              name: s.name,
+              lat: s.latitude,
+              lng: s.longitude,
+              rating: s.rating,
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => DisinfectionProfileScreen(service: s),
+                ),
+              ),
+            ),
+          ),
+        );
+        break;
+      case ServiceHubKind.texnikaUstasi:
+        places.addAll(
+          data.appliance.map(
+            (s) => MapPlace(
+              id: s.id,
+              name: s.name,
+              lat: s.latitude,
+              lng: s.longitude,
+              rating: s.rating,
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => ApplianceDispatchScreen(service: s),
+                ),
+              ),
+            ),
+          ),
+        );
+        break;
+      case ServiceHubKind.kuryerlik:
+        places.addAll(
+          data.couriers.map(
+            (s) => MapPlace(
+              id: s.id,
+              name: s.name,
+              lat: s.latitude,
+              lng: s.longitude,
+              rating: s.rating,
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => CourierDispatchScreen(service: s),
+                ),
+              ),
+            ),
+          ),
+        );
+        break;
+      case ServiceHubKind.massajHijoma:
+        places.addAll(
+          data.massage.map(
+            (s) => MapPlace(
+              id: s.id,
+              name: s.name,
+              lat: s.latitude,
+              lng: s.longitude,
+              rating: s.rating,
+              subtitle: s.address,
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => MassageBookingScreen(service: s),
+                ),
+              ),
+            ),
+          ),
+        );
+        break;
+      case ServiceHubKind.hamshira:
+        places.addAll(
+          data.nurses.map(
+            (s) => MapPlace(
+              id: s.id,
+              name: s.name,
+              lat: s.latitude,
+              lng: s.longitude,
+              rating: s.rating,
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => NurseBookingScreen(service: s),
+                ),
+              ),
+            ),
+          ),
+        );
+        break;
+      case ServiceHubKind.stomatologiya:
+        places.addAll(
+          data.dentalClinics.map(
+            (c) => MapPlace(
+              id: c.id,
+              name: c.name,
+              lat: c.latitude,
+              lng: c.longitude,
+              rating: c.rating,
+              subtitle: c.address,
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => DentalBookingScreen(clinic: c),
+                ),
+              ),
+            ),
+          ),
+        );
+        break;
+      case ServiceHubKind.tadbirlar:
+        places.addAll(
+          data.events.map(
+            (s) => MapPlace(
+              id: s.id,
+              name: s.name,
+              lat: s.latitude,
+              lng: s.longitude,
+              rating: s.rating,
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => EventBookingScreen(service: s),
+                ),
+              ),
+            ),
+          ),
+        );
+        break;
+      case ServiceHubKind.bozorchi:
+        places.addAll(
+          data.masters.map(
+            (s) => MapPlace(
+              id: s.id,
+              name: s.name,
+              lat: s.latitude,
+              lng: s.longitude,
+              rating: s.rating,
+              subtitle: s.address,
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) =>
+                      UniversalBookingScreen(kind: ServiceHubKind.bozorchi),
+                ),
+              ),
+            ),
+          ),
+        );
+        break;
+      case ServiceHubKind.oshxona:
+        places.addAll(
+          data.masters.map(
+            (s) => MapPlace(
+              id: s.id,
+              name: s.name,
+              lat: s.latitude,
+              lng: s.longitude,
+              rating: s.rating,
+              subtitle: s.address,
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) =>
+                      UniversalBookingScreen(kind: ServiceHubKind.oshxona),
+                ),
+              ),
+            ),
+          ),
+        );
+        break;
+      case ServiceHubKind.gameZona:
+      case ServiceHubKind.sportMaydon:
+      case ServiceHubKind.kompUsta:
+      case ServiceHubKind.boshqa:
+        places.addAll(
+          data.genericProviders.map((p) {
+            double lat = 41.31;
+            double lng = 69.24;
+            String name = 'Xizmat'.tr;
+            if (p is Map) {
+              lat = p['lat'] as double? ?? 41.31;
+              lng = p['lng'] as double? ?? 69.24;
+              name = p['name'] as String? ?? 'Xizmat'.tr;
+            } else {
+              try {
+                lat = p.latitude as double;
+              } catch (_) {}
+              try {
+                lng = p.longitude as double;
+              } catch (_) {}
+              try {
+                name = p.name as String;
+              } catch (_) {}
+            }
+            return MapPlace(
+              id: p.hashCode.toString(),
+              name: name,
+              lat: lat,
+              lng: lng,
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => SimpleCallBookingScreen(
+                    kind: kind,
+                    provider: p,
+                    accentColor: accentColor,
+                  ),
+                ),
+              ),
+            );
+          }),
+        );
+        break;
+      default:
+        break;
+    }
+    return places;
   }
 
   List<Marker> _buildMarkers(BuildContext context) {

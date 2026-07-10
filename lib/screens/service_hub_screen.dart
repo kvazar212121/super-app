@@ -55,6 +55,7 @@ import 'tutor_profile_screen.dart';
 import 'education_center_booking_screen.dart';
 import 'simple_call_booking_screen.dart';
 import 'service_hub/saved_places_screen.dart';
+import '../widgets/enhanced_service_map.dart';
 import 'package:super_app/l10n/locale_controller.dart';
 
 part 'service_hub/service_hub_map_section.dart';

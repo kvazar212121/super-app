@@ -1135,4 +1135,6 @@ const Map<String, String> kTranslationsRu = {
   'Saqlanganlardan olib tashlandi': 'Удалено из сохранённых',
 
   'Bu joyni ochib bo\'lmadi': 'Не удалось открыть это место',
+
+  'Marshrut qurilmoqda…': 'Строится маршрут…',
 };
