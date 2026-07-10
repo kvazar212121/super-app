@@ -1100,4 +1100,19 @@ const Map<String, String> kTranslationsRu = {
   'To\'lov havolasi olinmadi. Qayta urinib ko\'ring.': 'Не удалось получить ссылку на оплату. Попробуйте ещё раз.',
   'To\'lov sahifasini ochib bo\'lmadi.': 'Не удалось открыть страницу оплаты.',
   'Bu to\'lov usuli hozircha ulanmagan.': 'Этот способ оплаты пока не подключён.',
+
+  // ── Yordam markazi (support) ──
+  'Yordam markazi': 'Центр поддержки',
+  'AI yordamchi yoki operator': 'ИИ-помощник или оператор',
+  'Tezkor yordam': 'Быстрая помощь',
+  'AI yordamchi': 'ИИ-помощник',
+  'Savolingizga darhol javob oling': 'Получите ответ на вопрос сразу',
+  'Operator bilan bog\'lanish': 'Связаться с оператором',
+  'Telegram': 'Telegram',
+  'Telegram bot': 'Telegram-бот',
+  'Email': 'Email',
+  'Sizga qanday yordam bera olamiz?': 'Чем можем помочь?',
+  'AI yordamchi yoki operatorni tanlang': 'Выберите ИИ-помощника или оператора',
+  'Qo\'llab-quvvatlash tez orada ulanadi.': 'Поддержка скоро подключится.',
+  'Ochib bo\'lmadi': 'Не удалось открыть',
 };

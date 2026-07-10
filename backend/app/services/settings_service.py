@@ -190,6 +190,22 @@ def premium_config() -> dict:
     return {"price": price, "duration_days": days}
 
 
+def support_config() -> dict:
+    """Qo'llab-quvvatlash aloqa kanallari (profil > Yordam markazi).
+
+    Bo'sh maydonlar ilovada ko'rsatilmaydi. AI yordamchi doim mavjud (agar
+    admin `support_ai_enabled=false` qilmasa).
+    """
+    return {
+        "phone": (get("support_phone", "") or "").strip(),
+        "email": (get("support_email", "") or "").strip(),
+        "telegram": (get("support_telegram", "") or "").strip(),  # @username yoki https://t.me/...
+        "telegram_bot": (get("support_telegram_bot", "") or "").strip(),
+        "ai_enabled": get_bool("support_ai_enabled", True),
+        "work_hours": (get("support_work_hours", "") or "").strip(),
+    }
+
+
 def payment_config() -> dict:
     """Payme / Click merchant sozlamalari.
 

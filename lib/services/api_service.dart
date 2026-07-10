@@ -1769,6 +1769,12 @@ class ApiService {
     return Map<String, dynamic>.from(response.data['legal'] ?? {});
   }
 
+  /// Qo'llab-quvvatlash kanallari: {phone, email, telegram, telegram_bot, ai_enabled, work_hours}
+  Future<Map<String, dynamic>> getSupportConfig() async {
+    final response = await _dio.get('/config/support');
+    return Map<String, dynamic>.from(response.data['support'] ?? {});
+  }
+
   // ==================== Premium obuna ====================
 
   Future<Map<String, dynamic>> getPremiumStatus() async {

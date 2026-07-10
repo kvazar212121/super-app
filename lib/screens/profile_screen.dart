@@ -17,6 +17,7 @@ import '../services/call_service.dart';
 import 'calls/call_screen.dart';
 import 'calls/call_history_screen.dart';
 import 'premium/premium_screen.dart';
+import 'support/support_center_screen.dart';
 import '../config/app_config.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -132,6 +133,53 @@ class ProfileScreen extends StatelessWidget {
                     _langBtn(context, 'uz', "O'zbek"),
                     const SizedBox(width: 8),
                     _langBtn(context, 'ru', 'Русский'),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 12),
+              // Yordam markazi (AI yordamchi / operator)
+              GlassSurface(
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const SupportCenterScreen()),
+                ),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 14,
+                ),
+                opacity: 0.55,
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.headset_mic_outlined,
+                      color: GlassTokens.primaryText(context),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Yordam markazi'.tr,
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              color: GlassTokens.primaryText(context),
+                            ),
+                          ),
+                          Text(
+                            'AI yordamchi yoki operator'.tr,
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: GlassTokens.secondaryText(context),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Icon(
+                      Icons.chevron_right,
+                      color: GlassTokens.secondaryText(context),
+                    ),
                   ],
                 ),
               ),

@@ -26,6 +26,12 @@ async def get_legal():
     return {"legal": settings_service.all_legal()}
 
 
+@router.get("/support")
+async def get_support():
+    """Qo'llab-quvvatlash aloqa kanallari (telefon/email/telegram + AI) — auth talab qilinmaydi."""
+    return {"support": settings_service.support_config()}
+
+
 @router.get("/categories")
 async def get_category_flags_public(db: AsyncSession = Depends(get_db)):
     """{cat_key: {enabled, message}} — 26 xizmat holati (auth talab qilinmaydi)."""
