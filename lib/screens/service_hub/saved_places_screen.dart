@@ -32,6 +32,7 @@ import '../barber_booking_screen.dart';
 import '../salon_booking_screen.dart';
 import '../football_field_booking_screen.dart';
 import '../massage_booking_screen.dart';
+import '../event_team_profile_screen.dart';
 import '../provider_profile_screen.dart';
 import '../nanny_profile_screen.dart';
 import '../tutor_profile_screen.dart';
@@ -169,7 +170,22 @@ class SavedPlacesScreen extends StatelessWidget {
 
   void _handleItemTap(BuildContext context, SavedPlace item) {
     final accent = category.accent;
+    try {
     switch (item.type) {
+      case 'massage':
+        final center = MassageHijoma.fromProviderJson(item.rawJson);
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => MassageBookingScreen(service: center)),
+        );
+        break;
+      case 'event_team':
+        final team = EventPlanning.fromProviderJson(item.rawJson);
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => EventTeamProfileScreen(team: team)),
+        );
+        break;
       case 'barber_shop':
         final shop = BarberShop.fromProviderJson(item.rawJson);
         showVenuePreviewSheet(context, shop: shop, accent: accent);
@@ -315,6 +331,13 @@ class SavedPlacesScreen extends StatelessWidget {
                 ProviderProfileScreen(master: master, category: category),
           ),
         );
+    }
+    } catch (e) {
+      // Ba'zi turlar (game_zone/sport/venue) rawJson'dан qayta tiklanmasligi mumkin —
+      // shunda ilova yiqilmasligi uchun xatoni yutamiz.
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Bu joyni ochib bo\'lmadi'.tr)),
+      );
     }
   }
 }

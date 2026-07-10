@@ -12,6 +12,7 @@ import '../providers/app_provider.dart';
 import '../utils/auth_guard.dart';
 import '../widgets/booking_common_widgets.dart';
 import '../widgets/glass/mesh_background.dart';
+import '../widgets/save_provider_button.dart';
 import 'package:super_app/l10n/locale_controller.dart';
 
 class EventBookingScreen extends StatefulWidget {
@@ -251,6 +252,17 @@ class _EventBookingScreenState extends State<EventBookingScreen> {
                               : null,
                         );
                       },
+                    ),
+                    const SizedBox(height: 10),
+                    SaveProviderButton(
+                      id: widget.service.id,
+                      categoryKey: ServiceHubKind.tadbirlar.name,
+                      name: widget.service.name,
+                      address: widget.service.serviceArea ?? '',
+                      rating: widget.service.rating,
+                      type: 'event',
+                      rawJson:
+                          widget.service.rawJson ?? const <String, dynamic>{},
                     ),
                     const SizedBox(height: 40),
                   ],

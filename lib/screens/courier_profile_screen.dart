@@ -11,6 +11,7 @@ import '../theme/glass_tokens.dart';
 import '../utils/call_helper.dart';
 import '../widgets/glass/glass_scaffold.dart';
 import '../widgets/glass/glass_surface.dart';
+import '../widgets/save_provider_button.dart';
 import 'courier_dispatch_screen.dart';
 import 'package:super_app/l10n/locale_controller.dart';
 
@@ -239,6 +240,16 @@ class CourierProfileScreen extends StatelessWidget {
                 ),
               ),
             ],
+          ),
+          const SizedBox(height: 10),
+          SaveProviderButton(
+            id: service.id,
+            categoryKey: ServiceHubKind.kuryerlik.name,
+            name: service.name,
+            address: service.serviceArea ?? 'Hudud ko\'rsatilmagan',
+            rating: service.rating,
+            type: 'courier',
+            rawJson: service.rawJson ?? {},
           ),
         ],
       ),

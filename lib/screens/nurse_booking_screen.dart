@@ -13,6 +13,7 @@ import '../providers/app_provider.dart';
 import '../utils/auth_guard.dart';
 import '../widgets/booking_common_widgets.dart';
 import '../widgets/glass/mesh_background.dart';
+import '../widgets/save_provider_button.dart';
 import '../services/provider_availability_service.dart';
 import 'package:super_app/l10n/locale_controller.dart';
 
@@ -310,6 +311,17 @@ class _NurseBookingScreenState extends State<NurseBookingScreen> {
                               _addressController.text.trim().length >= 5)
                           ? () => _confirmBooking(currencyFormat)
                           : null,
+                    ),
+                    const SizedBox(height: 10),
+                    SaveProviderButton(
+                      id: widget.service.id,
+                      categoryKey: ServiceHubKind.hamshira.name,
+                      name: widget.service.name,
+                      address: widget.service.serviceArea ?? '',
+                      rating: widget.service.rating,
+                      type: 'nurse',
+                      rawJson:
+                          widget.service.rawJson ?? const <String, dynamic>{},
                     ),
                     const SizedBox(height: 40),
                   ],

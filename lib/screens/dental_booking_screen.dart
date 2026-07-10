@@ -14,6 +14,7 @@ import '../services/provider_availability_service.dart';
 import '../utils/auth_guard.dart';
 import '../widgets/booking_common_widgets.dart';
 import '../widgets/glass/mesh_background.dart';
+import '../widgets/save_provider_button.dart';
 import '../services/call_service.dart';
 import 'calls/call_screen.dart';
 import 'package:super_app/l10n/locale_controller.dart';
@@ -279,6 +280,17 @@ class _DentalBookingScreenState extends State<DentalBookingScreen> {
                             ? 'Band qilish — ${currency.format(_price)}'
                             : 'Band qilish',
                         onPrimary: _canBook ? _confirm : null,
+                      ),
+                      const SizedBox(height: 10),
+                      SaveProviderButton(
+                        id: widget.clinic.id,
+                        categoryKey: ServiceHubKind.stomatologiya.name,
+                        name: widget.clinic.name,
+                        address: widget.clinic.address,
+                        rating: widget.clinic.rating,
+                        type: 'dental_clinic',
+                        rawJson:
+                            widget.clinic.rawJson ?? const <String, dynamic>{},
                       ),
                       const SizedBox(height: 40),
                     ],

@@ -12,6 +12,7 @@ import '../providers/app_provider.dart';
 import '../utils/auth_guard.dart';
 import '../widgets/booking_common_widgets.dart';
 import '../widgets/glass/mesh_background.dart';
+import '../widgets/save_provider_button.dart';
 import '../theme/glass_tokens.dart';
 import '../services/provider_availability_service.dart';
 import 'package:super_app/l10n/locale_controller.dart';
@@ -204,6 +205,16 @@ class _SalonBookingScreenState extends State<SalonBookingScreen> {
                           },
                         );
                       },
+                    ),
+                    const SizedBox(height: 10),
+                    SaveProviderButton(
+                      id: widget.salon.id,
+                      categoryKey: ServiceHubKind.salon.name,
+                      name: widget.salon.name,
+                      address: widget.salon.address,
+                      rating: widget.salon.rating,
+                      type: 'beauty_salon',
+                      rawJson: widget.salon.rawJson ?? const <String, dynamic>{},
                     ),
                     const SizedBox(height: 40),
                   ],

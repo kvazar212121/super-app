@@ -3,11 +3,13 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:intl/intl.dart';
 
 import '../models/master_worker.dart';
+import '../models/service_hub_kind.dart';
 import '../services/call_service.dart';
 import '../utils/call_helper.dart';
 import '../theme/glass_tokens.dart';
 import '../widgets/glass/glass_scaffold.dart';
 import '../widgets/glass/glass_surface.dart';
+import '../widgets/save_provider_button.dart';
 
 /// Ishchi profili ekrani.
 class WorkerProfileScreen extends StatelessWidget {
@@ -153,6 +155,16 @@ class WorkerProfileScreen extends StatelessWidget {
                 ),
               ),
             ),
+          ),
+          const SizedBox(height: 10),
+          SaveProviderButton(
+            id: worker.id,
+            categoryKey: ServiceHubKind.ishchi.name,
+            name: worker.name,
+            address: '',
+            rating: worker.rating,
+            type: 'master',
+            rawJson: const <String, dynamic>{},
           ),
         ],
       ),

@@ -11,6 +11,7 @@ import '../theme/glass_tokens.dart';
 import '../utils/call_helper.dart';
 import '../widgets/glass/glass_scaffold.dart';
 import '../widgets/glass/glass_surface.dart';
+import '../widgets/save_provider_button.dart';
 import 'auto_workshop_dispatch_screen.dart';
 import 'package:super_app/l10n/locale_controller.dart';
 
@@ -227,6 +228,16 @@ class AutoWorkshopProfileScreen extends StatelessWidget {
                 ),
               ),
             ],
+          ),
+          const SizedBox(height: 10),
+          SaveProviderButton(
+            id: workshop.id,
+            categoryKey: ServiceHubKind.avtoYordam.name,
+            name: workshop.name,
+            address: workshop.address,
+            rating: workshop.rating,
+            type: 'autoWorkshop',
+            rawJson: workshop.rawJson ?? {},
           ),
         ],
       ),

@@ -15,6 +15,7 @@ import '../theme/glass_tokens.dart';
 import '../utils/auth_guard.dart';
 import '../widgets/booking_common_widgets.dart';
 import '../widgets/glass/mesh_background.dart';
+import '../widgets/save_provider_button.dart';
 import 'package:super_app/l10n/locale_controller.dart';
 
 class BarberBookingScreen extends StatefulWidget {
@@ -285,6 +286,17 @@ class _BarberBookingScreenState extends State<BarberBookingScreen> {
                             ),
                           );
                         },
+                      ),
+                      const SizedBox(height: 10),
+                      SaveProviderButton(
+                        id: widget.shop.id,
+                        categoryKey: ServiceHubKind.sartarosh.name,
+                        name: widget.shop.name,
+                        address: widget.shop.address,
+                        rating: widget.shop.rating,
+                        type: 'barber_shop',
+                        rawJson:
+                            widget.shop.rawJson ?? const <String, dynamic>{},
                       ),
                       const SizedBox(height: 40),
                     ],

@@ -11,6 +11,7 @@ import '../theme/glass_tokens.dart';
 import '../utils/call_helper.dart';
 import '../widgets/glass/glass_scaffold.dart';
 import '../widgets/glass/glass_surface.dart';
+import '../widgets/save_provider_button.dart';
 import 'auto_mobile_dispatch_screen.dart';
 import 'package:super_app/l10n/locale_controller.dart';
 
@@ -204,6 +205,16 @@ class AutoMobileProfileScreen extends StatelessWidget {
                 ),
               ),
             ],
+          ),
+          const SizedBox(height: 10),
+          SaveProviderButton(
+            id: service.id,
+            categoryKey: ServiceHubKind.avtoYordam.name,
+            name: service.name,
+            address: service.serviceArea ?? 'Toshkent',
+            rating: service.rating,
+            type: 'autoMobile',
+            rawJson: service.rawJson ?? {},
           ),
         ],
       ),

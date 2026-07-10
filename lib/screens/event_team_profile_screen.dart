@@ -3,6 +3,7 @@ import '../models/event_planning.dart';
 import '../models/service_hub_kind.dart';
 import '../widgets/event_widgets.dart';
 import '../widgets/glass/mesh_background.dart';
+import '../widgets/save_provider_button.dart';
 import '../utils/call_helper.dart';
 import 'package:super_app/l10n/locale_controller.dart';
 
@@ -99,6 +100,16 @@ class _EventTeamProfileScreenState extends State<EventTeamProfileScreen> {
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
                 ),
               ),
+            ),
+            const SizedBox(height: 10),
+            SaveProviderButton(
+              id: team.id,
+              categoryKey: ServiceHubKind.tadbirlar.name,
+              name: team.name,
+              address: team.serviceArea ?? '',
+              rating: team.rating,
+              type: 'event_team',
+              rawJson: team.rawJson ?? const <String, dynamic>{},
             ),
           ],
         ),

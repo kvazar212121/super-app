@@ -11,6 +11,7 @@ import '../utils/auth_guard.dart';
 import '../widgets/booking_common_widgets.dart' hide SectionTitle, TimeSlotGrid;
 import '../widgets/football_field_widgets.dart';
 import '../widgets/glass/mesh_background.dart';
+import '../widgets/save_provider_button.dart';
 import '../utils/call_helper.dart';
 import 'package:super_app/l10n/locale_controller.dart';
 
@@ -188,6 +189,16 @@ class _FootballFieldBookingScreenState
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
                 ),
               ),
+            ),
+            const SizedBox(height: 10),
+            SaveProviderButton(
+              id: field.id,
+              categoryKey: ServiceHubKind.futbol.name,
+              name: field.name,
+              address: field.address,
+              rating: field.rating,
+              type: 'football_field',
+              rawJson: field.rawJson ?? const <String, dynamic>{},
             ),
           ],
         ),

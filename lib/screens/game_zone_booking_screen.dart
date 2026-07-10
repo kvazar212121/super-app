@@ -4,6 +4,7 @@ import '../models/service_hub_kind.dart';
 import '../widgets/booking_common_widgets.dart' hide SectionTitle;
 import '../widgets/game_zone_widgets.dart';
 import '../widgets/glass/mesh_background.dart';
+import '../widgets/save_provider_button.dart';
 import '../utils/call_helper.dart';
 import 'package:super_app/l10n/locale_controller.dart';
 
@@ -126,6 +127,16 @@ class _GameZoneBookingScreenState extends State<GameZoneBookingScreen> {
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
                 ),
               ),
+            ),
+            const SizedBox(height: 10),
+            SaveProviderButton(
+              id: zone.id,
+              categoryKey: ServiceHubKind.gameZona.name,
+              name: zone.name,
+              address: zone.address,
+              rating: 0.0,
+              type: 'game_zone',
+              rawJson: const <String, dynamic>{},
             ),
           ],
         ),

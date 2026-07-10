@@ -14,6 +14,7 @@ import '../models/nanny_service.dart';
 import '../theme/glass_tokens.dart';
 import '../widgets/glass/glass_scaffold.dart';
 import '../widgets/glass/glass_surface.dart';
+import '../widgets/save_provider_button.dart';
 import 'nanny_booking_screen.dart';
 import 'package:super_app/l10n/locale_controller.dart';
 
@@ -305,6 +306,42 @@ class _NannyProfileScreenState extends State<NannyProfileScreen> {
                 style: TextStyle(fontSize: 12, color: Colors.grey[600]),
               ),
             ),
+          const SizedBox(height: 10),
+          SaveProviderButton(
+            id: nanny.id,
+            categoryKey: 'enaga',
+            name: nanny.name,
+            address: nanny.serviceArea ?? nanny.address,
+            rating: nanny.rating,
+            type: 'nanny',
+            rawJson:
+                nanny.rawJson ??
+                {
+                  'id': nanny.id,
+                  'name': nanny.name,
+                  'phone': nanny.phoneNumber,
+                  'rating': nanny.rating,
+                  'review_count': nanny.reviewCount,
+                  'lat': nanny.latitude,
+                  'lng': nanny.longitude,
+                  'address': nanny.address,
+                  'metadata': {
+                    'type': 'nanny',
+                    'experience_years': nanny.experienceYears,
+                    'age_groups': nanny.ageGroups,
+                    'languages': nanny.languages,
+                    'service_types': nanny.serviceTypes
+                        .map((t) => t.key)
+                        .toList(),
+                    'services': nanny.services,
+                    'prices': nanny.prices,
+                    'time_slots': nanny.timeSlots,
+                    'verification_status': nanny.verificationStatus,
+                    'nanny_role': nanny.nannyRole,
+                    'repeat_families': nanny.repeatFamilies,
+                  },
+                },
+          ),
         ],
       ),
     );

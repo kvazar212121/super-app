@@ -1127,4 +1127,12 @@ const Map<String, String> kTranslationsRu = {
 
   'Hammasini tozalash': 'Очистить все',
   'Barcha bildirishnomalar o\'chiriladi. Davom etasizmi?': 'Все уведомления будут удалены. Продолжить?',
+
+  // ── Saqlash tugmasi ──
+  'Saqlab qo\'yish': 'Сохранить',
+  'Saqlangan': 'Сохранено',
+  'Saqlanganlarga qo\'shildi': 'Добавлено в сохранённые',
+  'Saqlanganlardan olib tashlandi': 'Удалено из сохранённых',
+
+  'Bu joyni ochib bo\'lmadi': 'Не удалось открыть это место',
 };

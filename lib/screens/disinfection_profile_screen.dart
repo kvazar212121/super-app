@@ -11,6 +11,7 @@ import '../theme/glass_tokens.dart';
 import '../utils/call_helper.dart';
 import '../widgets/glass/glass_scaffold.dart';
 import '../widgets/glass/glass_surface.dart';
+import '../widgets/save_provider_button.dart';
 import 'disinfection_dispatch_screen.dart';
 import 'package:super_app/l10n/locale_controller.dart';
 
@@ -247,6 +248,16 @@ class DisinfectionProfileScreen extends StatelessWidget {
                 ),
               ),
             ],
+          ),
+          const SizedBox(height: 10),
+          SaveProviderButton(
+            id: service.id,
+            categoryKey: ServiceHubKind.dezinfeksiya.name,
+            name: service.name,
+            address: 'Toshkent',
+            rating: service.rating,
+            type: 'disinfection',
+            rawJson: service.rawJson ?? {},
           ),
         ],
       ),

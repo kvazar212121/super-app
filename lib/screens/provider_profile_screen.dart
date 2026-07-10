@@ -12,6 +12,7 @@ import '../screens/cleaning_dispatch_screen.dart';
 import '../theme/glass_tokens.dart';
 import '../widgets/glass/glass_scaffold.dart';
 import '../widgets/glass/glass_surface.dart';
+import '../widgets/save_provider_button.dart';
 import '../utils/call_helper.dart';
 
 /// Usta / mobil mutaxassis profili.
@@ -285,6 +286,40 @@ class ProviderProfileScreen extends StatelessWidget {
                 ),
               ),
             ],
+          ),
+          const SizedBox(height: 10),
+          SaveProviderButton(
+            id: master.id,
+            categoryKey: category.name,
+            name: master.name,
+            address: master.locationLabel,
+            rating: master.rating,
+            type: 'master',
+            rawJson:
+                master.rawJson ??
+                {
+                  'id': master.id,
+                  'name': master.name,
+                  'phone': master.phoneNumber,
+                  'rating': master.rating,
+                  'review_count': master.reviewCount,
+                  'lat': master.latitude,
+                  'lng': master.longitude,
+                  'address': master.address,
+                  'metadata': {
+                    'specialty': master.specialty,
+                    'services': master.services,
+                    'prices': master.prices,
+                    'service_area': master.serviceArea,
+                    'is_mobile': master.isHomeVisit,
+                    'cleaner_role': master.cleanerRole,
+                    'master_role': master.masterRole,
+                    'electrician_role': master.electricianRole,
+                    'plumber_role': master.plumberRole,
+                    'ac_role': master.acRole,
+                    'team_size': master.teamSize,
+                  },
+                },
           ),
         ],
       ),

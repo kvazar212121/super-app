@@ -4,6 +4,7 @@ import '../models/service_hub_kind.dart';
 import '../widgets/booking_common_widgets.dart' hide SectionTitle;
 import '../widgets/sport_facility_widgets.dart';
 import '../widgets/glass/mesh_background.dart';
+import '../widgets/save_provider_button.dart';
 import '../utils/call_helper.dart';
 import 'package:super_app/l10n/locale_controller.dart';
 
@@ -129,6 +130,16 @@ class _SportFacilityBookingScreenState
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
                 ),
               ),
+            ),
+            const SizedBox(height: 10),
+            SaveProviderButton(
+              id: field.id,
+              categoryKey: ServiceHubKind.sportMaydon.name,
+              name: field.name,
+              address: field.address,
+              rating: 0.0,
+              type: 'sport_facility',
+              rawJson: const <String, dynamic>{},
             ),
           ],
         ),

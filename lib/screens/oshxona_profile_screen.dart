@@ -10,6 +10,7 @@ import '../theme/glass_tokens.dart';
 import '../utils/call_helper.dart';
 import '../widgets/glass/glass_scaffold.dart';
 import '../widgets/glass/glass_surface.dart';
+import '../widgets/save_provider_button.dart';
 import 'package:super_app/l10n/locale_controller.dart';
 
 class OshxonaProfileScreen extends StatelessWidget {
@@ -169,6 +170,16 @@ class OshxonaProfileScreen extends StatelessWidget {
                       ),
                     ),
                   ),
+                ),
+                const SizedBox(height: 10),
+                SaveProviderButton(
+                  id: oshxona.id,
+                  categoryKey: ServiceHubKind.oshxona.name,
+                  name: oshxona.name,
+                  address: oshxona.serviceArea ?? 'Manzil ko\'rsatilmagan',
+                  rating: oshxona.rating,
+                  type: 'oshxona',
+                  rawJson: oshxona.rawJson ?? {},
                 ),
               ],
             ),
