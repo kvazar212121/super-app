@@ -89,8 +89,7 @@ class _AutoMobileScreenState extends State<AutoMobileScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'Evakuator, joyida ta\'mirlash yoki benzin yetkazish xizmatini ko\'rsatasiz. Mijoz qayerda qolsa, shu yerga borasiz.',
+              Text('Evakuator, joyida ta\'mirlash yoki benzin yetkazish xizmatini ko\'rsatasiz. Mijoz qayerda qolsa, shu yerga borasiz.'.tr,
                 style: TextStyle(color: Colors.grey[700], height: 1.4),
               ),
               const SizedBox(height: 24),
@@ -110,13 +109,12 @@ class _AutoMobileScreenState extends State<AutoMobileScreen> {
                 controller: _areaCtrl,
                 maxLines: 2,
                 decoration: InputDecoration(
-                  labelText: 'Xizmat ko\'rsatadigan hudud',
+                  labelText: 'Xizmat ko\'rsatadigan hudud'.tr,
                   hintText: 'Masalan: Toshkent, butun shahar'.tr,
                 ),
               ),
               const SizedBox(height: 16),
-              Text(
-                'Mashina turi',
+              Text('Mashina turi'.tr,
                 style: TextStyle(
                   color: Colors.grey[700],
                   fontWeight: FontWeight.w600,
@@ -146,7 +144,7 @@ class _AutoMobileScreenState extends State<AutoMobileScreen> {
                           height: 22,
                           child: CircularProgressIndicator(strokeWidth: 2),
                         )
-                      : const Text('Ro\'yxatdan o\'tish'),
+                      : Text('Ro\'yxatdan o\'tish'.tr),
                 ),
               ),
             ],

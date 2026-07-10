@@ -33,8 +33,7 @@ class BarberPendingScreen extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 28),
-                const Text(
-                  'So\'rov yuborildi',
+                Text('So\'rov yuborildi'.tr,
                   style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 12),
@@ -44,8 +43,7 @@ class BarberPendingScreen extends StatelessWidget {
                   style: TextStyle(color: Colors.grey[700], height: 1.45),
                 ),
                 const SizedBox(height: 8),
-                Text(
-                  'Tasdiqlangandan keyin panelingiz ochiladi.',
+                Text('Tasdiqlangandan keyin panelingiz ochiladi.'.tr,
                   textAlign: TextAlign.center,
                   style: TextStyle(color: Colors.grey[600], fontSize: 13),
                 ),

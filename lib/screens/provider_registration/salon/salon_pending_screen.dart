@@ -32,8 +32,7 @@ class SalonPendingScreen extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 28),
-                const Text(
-                  'So\'rov yuborildi',
+                Text('So\'rov yuborildi'.tr,
                   style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 12),

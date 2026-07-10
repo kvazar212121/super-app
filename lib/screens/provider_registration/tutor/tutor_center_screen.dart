@@ -91,14 +91,13 @@ class _TutorCenterScreenState extends State<TutorCenterScreen> {
   Widget build(BuildContext context) {
     return ProviderTheme(
       child: Scaffold(
-        appBar: AppBar(title: const Text('O\'quv markazi')),
+        appBar: AppBar(title: Text('O\'quv markazi'.tr)),
         body: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'Markaz manzili va kurslar — ro\'yxatdan o\'tishi bilan mijozlar vaqt bron qilishni boshlaydi.',
+              Text('Markaz manzili va kurslar — ro\'yxatdan o\'tishi bilan mijozlar vaqt bron qilishni boshlaydi.'.tr,
                 style: TextStyle(color: Colors.grey[700], height: 1.4),
               ),
               const SizedBox(height: 24),
@@ -116,13 +115,12 @@ class _TutorCenterScreenState extends State<TutorCenterScreen> {
                 controller: _addressCtrl,
                 maxLines: 2,
                 decoration: InputDecoration(
-                  labelText: 'To\'liq manzil',
-                  hintText: 'Ko\'cha, kvartal, orientir',
+                  labelText: 'To\'liq manzil'.tr,
+                  hintText: 'Ko\'cha, kvartal, orientir'.tr,
                 ),
               ),
               const SizedBox(height: 20),
-              const Text(
-                'Kurslar / yo\'nalishlar',
+              Text('Kurslar / yo\'nalishlar'.tr,
                 style: TextStyle(fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: 8),
@@ -156,7 +154,7 @@ class _TutorCenterScreenState extends State<TutorCenterScreen> {
                           height: 22,
                           child: CircularProgressIndicator(strokeWidth: 2),
                         )
-                      : const Text('Ro\'yxatdan o\'tish'),
+                      : Text('Ro\'yxatdan o\'tish'.tr),
                 ),
               ),
             ],

@@ -29,15 +29,13 @@ class MasterRoleSelectionScreen extends StatelessWidget {
             body: ListView(
               padding: const EdgeInsets.all(24),
               children: [
-                Text(
-                  'Qanday ishlayapsiz?',
+                Text('Qanday ishlayapsiz?'.tr,
                   style: theme.textTheme.headlineSmall?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 const SizedBox(height: 8),
-                Text(
-                  'Usta chaqirish xizmati yakka kishi yoki brigada sifatida ko\'rsatilishi mumkin.',
+                Text('Usta chaqirish xizmati yakka kishi yoki brigada sifatida ko\'rsatilishi mumkin.'.tr,
                   style: theme.textTheme.bodyMedium?.copyWith(
                     color: theme.colorScheme.onSurface,
                   ),
@@ -45,18 +43,18 @@ class MasterRoleSelectionScreen extends StatelessWidget {
                 const SizedBox(height: 28),
                 _RoleCard(
                   icon: LucideIcons.user,
-                  title: 'Yakka usta',
+                  title: 'Yakka usta'.tr,
                   subtitle:
-                      'O\'zingiz mijoz manziliga borasiz — kichik ta\'mirlash ishlar',
+                      'O\'zingiz mijoz manziliga borasiz — kichik ta\'mirlash ishlar'.tr,
                   color: const Color(0xFF78716C),
                   onTap: () => _open(context, MasterRegistrationRole.solo),
                 ),
                 const SizedBox(height: 16),
                 _RoleCard(
                   icon: LucideIcons.users,
-                  title: 'Ustalar brigadasi',
+                  title: 'Ustalar brigadasi'.tr,
                   subtitle:
-                      'Bir necha usta bilan katta ta\'mirlash va montaj ishlar',
+                      'Bir necha usta bilan katta ta\'mirlash va montaj ishlar'.tr,
                   color: Colors.black,
                   onTap: () => _open(context, MasterRegistrationRole.brigade),
                 ),

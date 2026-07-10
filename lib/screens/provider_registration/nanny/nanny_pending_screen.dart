@@ -53,7 +53,7 @@ class _NannyPendingScreenState extends State<NannyPendingScreen> {
     } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Holatni tekshirib bo\'lmadi')),
+          SnackBar(content: Text('Holatni tekshirib bo\'lmadi'.tr)),
         );
       }
     } finally {
@@ -84,8 +84,7 @@ class _NannyPendingScreenState extends State<NannyPendingScreen> {
                   ),
                 ),
                 const SizedBox(height: 28),
-                const Text(
-                  'So\'rov yuborildi',
+                Text('So\'rov yuborildi'.tr,
                   style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 12),
@@ -97,8 +96,7 @@ class _NannyPendingScreenState extends State<NannyPendingScreen> {
                   style: TextStyle(color: Colors.grey[700], height: 1.45),
                 ),
                 const SizedBox(height: 8),
-                const Text(
-                  'Tasdiqlangandan keyin profilingiz mijozlarga ko\'rinadi va panel to\'liq ochiladi.',
+                Text('Tasdiqlangandan keyin profilingiz mijozlarga ko\'rinadi va panel to\'liq ochiladi.'.tr,
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: Colors.grey,

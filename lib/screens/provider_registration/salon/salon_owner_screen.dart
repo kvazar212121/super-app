@@ -130,7 +130,7 @@ class _SalonOwnerScreenState extends State<SalonOwnerScreen> {
                       controller: _addressCtrl,
                       maxLines: 2,
                       decoration: InputDecoration(
-                        labelText: 'Manzil (to\'liq)',
+                        labelText: 'Manzil (to\'liq)'.tr,
                       ),
                     ),
                   ),
@@ -184,8 +184,7 @@ class _SalonOwnerScreenState extends State<SalonOwnerScreen> {
               SwitchListTile(
                 contentPadding: EdgeInsets.zero,
                 title: Text('Men ham mutaxassisman'.tr),
-                subtitle: const Text(
-                  'O\'zingiz ham xizmat ko\'rsatasizmi yoki faqat egasi?',
+                subtitle: Text('O\'zingiz ham xizmat ko\'rsatasizmi yoki faqat egasi?'.tr,
                 ),
                 value: _alsoStylist,
                 onChanged: (v) => setState(() => _alsoStylist = v),
@@ -201,7 +200,7 @@ class _SalonOwnerScreenState extends State<SalonOwnerScreen> {
                           height: 22,
                           child: CircularProgressIndicator(strokeWidth: 2),
                         )
-                      : const Text('Ro\'yxatdan o\'tish'),
+                      : Text('Ro\'yxatdan o\'tish'.tr),
                 ),
               ),
             ],

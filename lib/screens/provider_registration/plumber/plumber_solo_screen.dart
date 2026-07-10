@@ -86,8 +86,7 @@ class _PlumberSoloScreenState extends State<PlumberSoloScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'Santexnik xizmati odatda yakka usta sifatida ko\'rsatiladi — mijoz manziliga borasiz.',
+              Text('Santexnik xizmati odatda yakka usta sifatida ko\'rsatiladi — mijoz manziliga borasiz.'.tr,
                 style: TextStyle(color: Colors.grey[700], height: 1.4),
               ),
               const SizedBox(height: 24),
@@ -107,7 +106,7 @@ class _PlumberSoloScreenState extends State<PlumberSoloScreen> {
                 controller: _areaCtrl,
                 maxLines: 2,
                 decoration: InputDecoration(
-                  labelText: 'Xizmat ko\'rsatadigan hudud',
+                  labelText: 'Xizmat ko\'rsatadigan hudud'.tr,
                   hintText: 'Masalan: Toshkent, Yunusobod, Sergeli'.tr,
                 ),
               ),
@@ -122,7 +121,7 @@ class _PlumberSoloScreenState extends State<PlumberSoloScreen> {
                           height: 22,
                           child: CircularProgressIndicator(strokeWidth: 2),
                         )
-                      : const Text('Ro\'yxatdan o\'tish'),
+                      : Text('Ro\'yxatdan o\'tish'.tr),
                 ),
               ),
             ],

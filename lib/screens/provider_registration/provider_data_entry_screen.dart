@@ -140,15 +140,13 @@ class _ProviderDataEntryScreenState extends State<ProviderDataEntryScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    'Malumotlaringizni to\'ldiring',
+                  Text('Malumotlaringizni to\'ldiring'.tr,
                     style: theme.textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   const SizedBox(height: 6),
-                  Text(
-                    'Ma\'lumotlar serverga yuboriladi. Admin tasdiqlagach ko\'rinadi.',
+                  Text('Ma\'lumotlar serverga yuboriladi. Admin tasdiqlagach ko\'rinadi.'.tr,
                     style: theme.textTheme.bodyMedium?.copyWith(
                       color: theme.colorScheme.onSurface,
                     ),
@@ -214,7 +212,7 @@ class _ProviderDataEntryScreenState extends State<ProviderDataEntryScreen> {
                   TextField(
                     controller: _extraCtrl,
                     decoration: InputDecoration(
-                      labelText: 'Qo\'shimcha ma\'lumot',
+                      labelText: 'Qo\'shimcha ma\'lumot'.tr,
                     ),
                   ),
                   const SizedBox(height: 32),

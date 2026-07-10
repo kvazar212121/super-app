@@ -106,8 +106,7 @@ class _BarberShopOwnerScreenState extends State<BarberShopOwnerScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'Xona ma\'lumotlari',
+              Text('Xona ma\'lumotlari'.tr,
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
               ),
               const SizedBox(height: 16),
@@ -127,8 +126,8 @@ class _BarberShopOwnerScreenState extends State<BarberShopOwnerScreen> {
                       controller: _addressCtrl,
                       maxLines: 2,
                       decoration: InputDecoration(
-                        labelText: 'Manzil (to\'liq)',
-                        hintText: 'Tuman, ko\'cha, uy raqami',
+                        labelText: 'Manzil (to\'liq)'.tr,
+                        hintText: 'Tuman, ko\'cha, uy raqami'.tr,
                       ),
                     ),
                   ),
@@ -198,8 +197,7 @@ class _BarberShopOwnerScreenState extends State<BarberShopOwnerScreen> {
               SwitchListTile(
                 contentPadding: EdgeInsets.zero,
                 title: Text('Men ham sartaroshman'.tr),
-                subtitle: const Text(
-                  'O\'zingiz ham kesim qilasizmi yoki faqat egasi?',
+                subtitle: Text('O\'zingiz ham kesim qilasizmi yoki faqat egasi?'.tr,
                 ),
                 value: _alsoBarber,
                 onChanged: (v) => setState(() => _alsoBarber = v),
@@ -215,7 +213,7 @@ class _BarberShopOwnerScreenState extends State<BarberShopOwnerScreen> {
                           height: 22,
                           child: CircularProgressIndicator(strokeWidth: 2),
                         )
-                      : const Text('Ro\'yxatdan o\'tish'),
+                      : Text('Ro\'yxatdan o\'tish'.tr),
                 ),
               ),
             ],

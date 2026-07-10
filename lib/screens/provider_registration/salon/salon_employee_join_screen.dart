@@ -114,7 +114,7 @@ class _SalonEmployeeJoinScreenState extends State<SalonEmployeeJoinScreen>
   Widget build(BuildContext context) {
     return ProviderTheme(
       child: Scaffold(
-        appBar: AppBar(title: const Text('Salonga qo\'shilish')),
+        appBar: AppBar(title: Text('Salonga qo\'shilish'.tr)),
         body: Column(
           children: [
             Padding(
@@ -122,7 +122,7 @@ class _SalonEmployeeJoinScreenState extends State<SalonEmployeeJoinScreen>
               child: TextField(
                 controller: _nameCtrl,
                 decoration: InputDecoration(
-                  labelText: 'Ismingiz (mijozlar ko\'radi)',
+                  labelText: 'Ismingiz (mijozlar ko\'radi)'.tr,
                 ),
               ),
             ),
@@ -177,8 +177,7 @@ class _SalonEmployeeJoinScreenState extends State<SalonEmployeeJoinScreen>
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
-                          'Salon egasi bergan taklif kodini kiriting',
+                        Text('Salon egasi bergan taklif kodini kiriting'.tr,
                           style: TextStyle(fontWeight: FontWeight.w600),
                         ),
                         const SizedBox(height: 16),
@@ -208,7 +207,7 @@ class _SalonEmployeeJoinScreenState extends State<SalonEmployeeJoinScreen>
                           height: 22,
                           child: CircularProgressIndicator(strokeWidth: 2),
                         )
-                      : const Text('So\'rov yuborish'),
+                      : Text('So\'rov yuborish'.tr),
                 ),
               ),
             ),

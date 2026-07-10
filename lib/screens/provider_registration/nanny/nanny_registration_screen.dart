@@ -193,15 +193,13 @@ class _NannyRegistrationScreenState extends State<NannyRegistrationScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'Asosiy ma\'lumotlar',
+          Text('Asosiy ma\'lumotlar'.tr,
             style: Theme.of(
               context,
             ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8),
-          Text(
-            'Bolalar bilan ishlash tajribangiz va xizmat hududingiz.',
+          Text('Bolalar bilan ishlash tajribangiz va xizmat hududingiz.'.tr,
             style: TextStyle(color: Colors.grey[700], height: 1.4),
           ),
           const SizedBox(height: 24),
@@ -230,8 +228,7 @@ class _NannyRegistrationScreenState extends State<NannyRegistrationScreen> {
             decoration: InputDecoration(labelText: 'Tajriba (yil)'.tr),
           ),
           const SizedBox(height: 20),
-          const Text(
-            'Qaysi yoshdagi bolalar bilan ishlaysiz?',
+          Text('Qaysi yoshdagi bolalar bilan ishlaysiz?'.tr,
             style: TextStyle(fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 8),
@@ -255,8 +252,7 @@ class _NannyRegistrationScreenState extends State<NannyRegistrationScreen> {
             }).toList(),
           ),
           const SizedBox(height: 16),
-          const Text(
-            'Tillaringiz',
+          Text('Tillaringiz'.tr,
             style: TextStyle(fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 8),
@@ -290,35 +286,33 @@ class _NannyRegistrationScreenState extends State<NannyRegistrationScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'Ishonch va xavfsizlik',
+          Text('Ishonch va xavfsizlik'.tr,
             style: Theme.of(
               context,
             ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8),
-          Text(
-            'Hujjatlaringiz administrator tomonidan tekshiriladi. Tasdiqlanguncha profilingiz mijozlarga ko\'rinmaydi.',
+          Text('Hujjatlaringiz administrator tomonidan tekshiriladi. Tasdiqlanguncha profilingiz mijozlarga ko\'rinmaydi.'.tr,
             style: TextStyle(color: Colors.grey[700], height: 1.4),
           ),
           const SizedBox(height: 24),
           DocumentUploadTile(
-            label: 'Tibbiy ma\'lumotnoma (spravka)',
-            subtitle: 'Majburiy — bolalar bilan ishlash uchun',
+            label: 'Tibbiy ma\'lumotnoma (spravka)'.tr,
+            subtitle: 'Majburiy — bolalar bilan ishlash uchun'.tr,
             url: _medicalUrl,
             accent: _accent,
             onUrlChanged: (url) => setState(() => _medicalUrl = url),
           ),
           DocumentUploadTile(
-            label: 'Pasport / ID',
-            subtitle: 'Majburiy',
+            label: 'Pasport / ID'.tr,
+            subtitle: 'Majburiy'.tr,
             url: _idUrl,
             accent: _accent,
             onUrlChanged: (url) => setState(() => _idUrl = url),
           ),
           DocumentUploadTile(
-            label: 'Sudlanganlik haqida ma\'lumotnoma',
-            subtitle: 'Ixtiyoriy, lekin tavsiya etiladi',
+            label: 'Sudlanganlik haqida ma\'lumotnoma'.tr,
+            subtitle: 'Ixtiyoriy, lekin tavsiya etiladi'.tr,
             url: _criminalUrl,
             accent: _accent,
             onUrlChanged: (url) => setState(() => _criminalUrl = url),
@@ -330,8 +324,7 @@ class _NannyRegistrationScreenState extends State<NannyRegistrationScreen> {
               color: _accent,
               borderRadius: BorderRadius.circular(12),
             ),
-            child: const Text(
-              'Hujjatlar administrator tomonidan tekshiriladi. Tasdiqlanguncha profilingiz mijozlarga ko\'rinmaydi.',
+            child: Text('Hujjatlar administrator tomonidan tekshiriladi. Tasdiqlanguncha profilingiz mijozlarga ko\'rinmaydi.'.tr,
               style: TextStyle(fontSize: 13, height: 1.4),
             ),
           ),
@@ -346,15 +339,13 @@ class _NannyRegistrationScreenState extends State<NannyRegistrationScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'Xizmat turlari',
+          Text('Xizmat turlari'.tr,
             style: Theme.of(
               context,
             ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8),
-          Text(
-            'Qaysi formatda ishlayotganingizni tanlang. Narxlarni panelda keyinroq sozlaysiz.',
+          Text('Qaysi formatda ishlayotganingizni tanlang. Narxlarni panelda keyinroq sozlaysiz.'.tr,
             style: TextStyle(color: Colors.grey[700], height: 1.4),
           ),
           const SizedBox(height: 16),

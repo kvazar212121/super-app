@@ -86,8 +86,7 @@ class _AcSoloScreenState extends State<AcSoloScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'Konditsioner o\'rnatish, profilaktika va gaz quyish xizmatini uyga borib ko\'rsatasiz.',
+              Text('Konditsioner o\'rnatish, profilaktika va gaz quyish xizmatini uyga borib ko\'rsatasiz.'.tr,
                 style: TextStyle(color: Colors.grey[700], height: 1.4),
               ),
               const SizedBox(height: 24),
@@ -107,7 +106,7 @@ class _AcSoloScreenState extends State<AcSoloScreen> {
                 controller: _areaCtrl,
                 maxLines: 2,
                 decoration: InputDecoration(
-                  labelText: 'Xizmat ko\'rsatadigan hudud',
+                  labelText: 'Xizmat ko\'rsatadigan hudud'.tr,
                   hintText: 'Masalan: Toshkent, Yunusobod, Sergeli'.tr,
                 ),
               ),
@@ -122,7 +121,7 @@ class _AcSoloScreenState extends State<AcSoloScreen> {
                           height: 22,
                           child: CircularProgressIndicator(strokeWidth: 2),
                         )
-                      : const Text('Ro\'yxatdan o\'tish'),
+                      : Text('Ro\'yxatdan o\'tish'.tr),
                 ),
               ),
             ],

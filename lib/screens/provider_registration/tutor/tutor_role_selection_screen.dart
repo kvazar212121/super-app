@@ -16,23 +16,21 @@ class TutorRoleSelectionScreen extends StatelessWidget {
         body: ListView(
           padding: const EdgeInsets.all(24),
           children: [
-            Text(
-              'Qanday xizmat ko\'rsatasiz?',
+            Text('Qanday xizmat ko\'rsatasiz?'.tr,
               style: Theme.of(
                 context,
               ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
-            Text(
-              'Yakka repetitor (onlayn yoki uyga) yoki o\'quv markazi — band odamlar va o\'quvchilar uchun.',
+            Text('Yakka repetitor (onlayn yoki uyga) yoki o\'quv markazi — band odamlar va o\'quvchilar uchun.'.tr,
               style: TextStyle(color: Colors.grey[600], height: 1.4),
             ),
             const SizedBox(height: 28),
             _RoleCard(
               icon: LucideIcons.user,
-              title: 'Yakka repetitor',
+              title: 'Yakka repetitor'.tr,
               subtitle:
-                  'Onlayn (Zoom/Telegram) yoki uyga kelib individual dars',
+                  'Onlayn (Zoom/Telegram) yoki uyga kelib individual dars'.tr,
               color: const Color(0xFF7C3AED),
               onTap: () => Navigator.push(
                 context,
@@ -42,8 +40,8 @@ class TutorRoleSelectionScreen extends StatelessWidget {
             const SizedBox(height: 16),
             _RoleCard(
               icon: LucideIcons.school,
-              title: 'O\'quv markazi',
-              subtitle: 'Markazda guruh yoki individual kurslar',
+              title: 'O\'quv markazi'.tr,
+              subtitle: 'Markazda guruh yoki individual kurslar'.tr,
               color: Colors.black,
               onTap: () => Navigator.push(
                 context,

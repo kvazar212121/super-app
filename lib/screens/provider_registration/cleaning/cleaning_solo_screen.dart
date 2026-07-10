@@ -85,8 +85,7 @@ class _CleaningSoloScreenState extends State<CleaningSoloScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'Mijoz uyiga borib tozalash xizmati ko\'rsatasiz. Kichik va o\'rta hajmli ishlar uchun mos.',
+              Text('Mijoz uyiga borib tozalash xizmati ko\'rsatasiz. Kichik va o\'rta hajmli ishlar uchun mos.'.tr,
                 style: TextStyle(color: Colors.grey[700], height: 1.4),
               ),
               const SizedBox(height: 24),
@@ -106,7 +105,7 @@ class _CleaningSoloScreenState extends State<CleaningSoloScreen> {
                 controller: _areaCtrl,
                 maxLines: 2,
                 decoration: InputDecoration(
-                  labelText: 'Xizmat ko\'rsatadigan hudud',
+                  labelText: 'Xizmat ko\'rsatadigan hudud'.tr,
                   hintText: 'Masalan: Toshkent, Chilonzor, Sergeli'.tr,
                 ),
               ),
@@ -121,7 +120,7 @@ class _CleaningSoloScreenState extends State<CleaningSoloScreen> {
                           height: 22,
                           child: CircularProgressIndicator(strokeWidth: 2),
                         )
-                      : const Text('Ro\'yxatdan o\'tish'),
+                      : Text('Ro\'yxatdan o\'tish'.tr),
                 ),
               ),
             ],

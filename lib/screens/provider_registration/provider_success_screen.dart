@@ -51,8 +51,7 @@ class ProviderSuccessScreen extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 32),
-                    Text(
-                      'Tabriklaymiz!',
+                    Text('Tabriklaymiz!'.tr,
                       style: theme.textTheme.headlineMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
@@ -68,8 +67,7 @@ class ProviderSuccessScreen extends StatelessWidget {
                         ),
                       ),
                     const SizedBox(height: 12),
-                    const Text(
-                      'Administrator tasdiqlaganidan keyin profilingiz mijozlarga ko\'rinadi.',
+                    Text('Administrator tasdiqlaganidan keyin profilingiz mijozlarga ko\'rinadi.'.tr,
                       textAlign: TextAlign.center,
                       style: TextStyle(fontSize: 14, color: Colors.grey),
                     ),
@@ -92,7 +90,7 @@ class ProviderSuccessScreen extends StatelessWidget {
                             borderRadius: BorderRadius.circular(16),
                           ),
                         ),
-                        child: const Text('Panelga o\'tish'),
+                        child: Text('Panelga o\'tish'.tr),
                       ),
                     ),
                     const SizedBox(height: 12),

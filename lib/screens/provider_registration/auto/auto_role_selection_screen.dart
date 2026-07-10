@@ -17,23 +17,21 @@ class AutoRoleSelectionScreen extends StatelessWidget {
         body: ListView(
           padding: const EdgeInsets.all(24),
           children: [
-            Text(
-              'Qanday xizmat ko\'rsatasiz?',
+            Text('Qanday xizmat ko\'rsatasiz?'.tr,
               style: Theme.of(
                 context,
               ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
-            Text(
-              'Mobil yordam (yo\'lda) yoki doimiy ustaxona — o\'zingizga mos turini tanlang.',
+            Text('Mobil yordam (yo\'lda) yoki doimiy ustaxona — o\'zingizga mos turini tanlang.'.tr,
               style: TextStyle(color: Colors.grey[600], height: 1.4),
             ),
             const SizedBox(height: 28),
             _RoleCard(
               icon: LucideIcons.truck,
-              title: 'Mobil avto-yordam',
+              title: 'Mobil avto-yordam'.tr,
               subtitle:
-                  'Evakuator, benzin yetkazish, joyida ta\'mirlash — yo\'lda xizmat',
+                  'Evakuator, benzin yetkazish, joyida ta\'mirlash — yo\'lda xizmat'.tr,
               color: const Color(0xFF8B5CF6),
               onTap: () => Navigator.push(
                 context,
@@ -43,9 +41,9 @@ class AutoRoleSelectionScreen extends StatelessWidget {
             const SizedBox(height: 16),
             _RoleCard(
               icon: LucideIcons.home,
-              title: 'Ustaxona',
+              title: 'Ustaxona'.tr,
               subtitle:
-                  'Doimiy servis markazi — diagnostika, remont, shinopompa',
+                  'Doimiy servis markazi — diagnostika, remont, shinopompa'.tr,
               color: const Color(0xFF334155),
               onTap: () => Navigator.push(
                 context,

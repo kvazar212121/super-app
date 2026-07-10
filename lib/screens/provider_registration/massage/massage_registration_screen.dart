@@ -144,8 +144,7 @@ class _MassageRegistrationScreenState extends State<MassageRegistrationScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'Mijozlarni o\'z markazingizda yoki salonda qabul qilasiz.',
+              Text('Mijozlarni o\'z markazingizda yoki salonda qabul qilasiz.'.tr,
                 style: TextStyle(color: Colors.grey[700], height: 1.4),
               ),
               const SizedBox(height: 20),
@@ -214,7 +213,7 @@ class _MassageRegistrationScreenState extends State<MassageRegistrationScreen> {
                         controller: _addressCtrl,
                         decoration: InputDecoration(
                           labelText: 'Salon manzili'.tr,
-                          hintText: 'Ko\'cha, uy raqami',
+                          hintText: 'Ko\'cha, uy raqami'.tr,
                         ),
                         maxLines: 2,
                       ),
@@ -265,8 +264,7 @@ class _MassageRegistrationScreenState extends State<MassageRegistrationScreen> {
               ],
               const SizedBox(height: 20),
 
-              const Text(
-                'Xizmatlar',
+              Text('Xizmatlar'.tr,
                 style: TextStyle(fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: 8),
@@ -298,8 +296,7 @@ class _MassageRegistrationScreenState extends State<MassageRegistrationScreen> {
                     }).toList(),
               ),
               const SizedBox(height: 20),
-              const Text(
-                'Mijozlar',
+              Text('Mijozlar'.tr,
                 style: TextStyle(fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: 8),

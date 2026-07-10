@@ -50,8 +50,8 @@ class _CleaningTeamScreenState extends State<CleaningTeamScreen> {
     }
     if (teamSize < 2) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Jamoa kamida 2 kishidan iborat bo\'lishi kerak'),
+        SnackBar(
+          content: Text('Jamoa kamida 2 kishidan iborat bo\'lishi kerak'.tr),
         ),
       );
       return;
@@ -105,8 +105,7 @@ class _CleaningTeamScreenState extends State<CleaningTeamScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'Jamoa sifatida katta kvartira, ofis va general tozalash buyurtmalarini qabul qilasiz.',
+              Text('Jamoa sifatida katta kvartira, ofis va general tozalash buyurtmalarini qabul qilasiz.'.tr,
                 style: TextStyle(color: Colors.grey[700], height: 1.4),
               ),
               const SizedBox(height: 24),
@@ -135,7 +134,7 @@ class _CleaningTeamScreenState extends State<CleaningTeamScreen> {
                 controller: _areaCtrl,
                 maxLines: 2,
                 decoration: InputDecoration(
-                  labelText: 'Xizmat ko\'rsatadigan hudud',
+                  labelText: 'Xizmat ko\'rsatadigan hudud'.tr,
                   hintText: 'Masalan: Butun Toshkent'.tr,
                 ),
               ),
@@ -145,7 +144,7 @@ class _CleaningTeamScreenState extends State<CleaningTeamScreen> {
                 keyboardType: TextInputType.number,
                 inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                 decoration: InputDecoration(
-                  labelText: 'Jamoa a\'zolari soni',
+                  labelText: 'Jamoa a\'zolari soni'.tr,
                   hintText: 'Masalan: 4'.tr,
                 ),
               ),
@@ -160,7 +159,7 @@ class _CleaningTeamScreenState extends State<CleaningTeamScreen> {
                           height: 22,
                           child: CircularProgressIndicator(strokeWidth: 2),
                         )
-                      : const Text('Ro\'yxatdan o\'tish'),
+                      : Text('Ro\'yxatdan o\'tish'.tr),
                 ),
               ),
             ],

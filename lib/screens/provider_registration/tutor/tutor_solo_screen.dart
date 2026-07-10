@@ -111,8 +111,7 @@ class _TutorSoloScreenState extends State<TutorSoloScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'Onlayn yoki uyga kelib dars berasiz — band kattalar va o\'quvchilar sizni topadi.',
+              Text('Onlayn yoki uyga kelib dars berasiz — band kattalar va o\'quvchilar sizni topadi.'.tr,
                 style: TextStyle(color: Colors.grey[700], height: 1.4),
               ),
               const SizedBox(height: 24),
@@ -141,8 +140,7 @@ class _TutorSoloScreenState extends State<TutorSoloScreen> {
                 decoration: InputDecoration(labelText: 'Tajriba (yil)'.tr),
               ),
               const SizedBox(height: 20),
-              const Text(
-                'Fanlar',
+              Text('Fanlar'.tr,
                 style: TextStyle(fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: 8),
@@ -166,8 +164,7 @@ class _TutorSoloScreenState extends State<TutorSoloScreen> {
                 }).toList(),
               ),
               const SizedBox(height: 20),
-              const Text(
-                'Dars formati',
+              Text('Dars formati'.tr,
                 style: TextStyle(fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: 8),
@@ -200,7 +197,7 @@ class _TutorSoloScreenState extends State<TutorSoloScreen> {
                           height: 22,
                           child: CircularProgressIndicator(strokeWidth: 2),
                         )
-                      : const Text('Ro\'yxatdan o\'tish'),
+                      : Text('Ro\'yxatdan o\'tish'.tr),
                 ),
               ),
             ],

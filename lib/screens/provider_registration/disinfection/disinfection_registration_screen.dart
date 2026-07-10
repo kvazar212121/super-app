@@ -100,8 +100,7 @@ class _DisinfectionRegistrationScreenState
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'Uy, ofis, mashina va maktablarni professional dezinfeksiya qilasiz. Ro\'yxatdan o\'tishi bilan darhol ishlashni boshlashingiz mumkin.',
+              Text('Uy, ofis, mashina va maktablarni professional dezinfeksiya qilasiz. Ro\'yxatdan o\'tishi bilan darhol ishlashni boshlashingiz mumkin.'.tr,
                 style: TextStyle(color: Colors.grey[700], height: 1.4),
               ),
               const SizedBox(height: 24),
@@ -121,13 +120,12 @@ class _DisinfectionRegistrationScreenState
               TextField(
                 controller: _areaCtrl,
                 decoration: InputDecoration(
-                  labelText: 'Xizmat ko\'rsatish hududi',
+                  labelText: 'Xizmat ko\'rsatish hududi'.tr,
                   hintText: 'Masalan: Toshkent, Chilonzor'.tr,
                 ),
               ),
               const SizedBox(height: 20),
-              const Text(
-                'Qaysi obyektlarga xizmat?',
+              Text('Qaysi obyektlarga xizmat?'.tr,
                 style: TextStyle(fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: 8),

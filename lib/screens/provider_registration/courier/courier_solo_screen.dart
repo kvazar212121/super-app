@@ -85,8 +85,7 @@ class _CourierSoloScreenState extends State<CourierSoloScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'Yakka kuryer sifatida hujjat, paket va boshqa yuklarni A nuqtadan B nuqtaga yetkazasiz.',
+              Text('Yakka kuryer sifatida hujjat, paket va boshqa yuklarni A nuqtadan B nuqtaga yetkazasiz.'.tr,
                 style: TextStyle(color: Colors.grey[700], height: 1.4),
               ),
               const SizedBox(height: 24),
@@ -106,13 +105,12 @@ class _CourierSoloScreenState extends State<CourierSoloScreen> {
                 controller: _areaCtrl,
                 maxLines: 2,
                 decoration: InputDecoration(
-                  labelText: 'Xizmat ko\'rsatadigan hudud',
+                  labelText: 'Xizmat ko\'rsatadigan hudud'.tr,
                   hintText: 'Masalan: Toshkent, Yunusobod, Sergeli'.tr,
                 ),
               ),
               const SizedBox(height: 16),
-              Text(
-                'Transport turi',
+              Text('Transport turi'.tr,
                 style: TextStyle(
                   color: Colors.grey[700],
                   fontWeight: FontWeight.w600,
@@ -138,7 +136,7 @@ class _CourierSoloScreenState extends State<CourierSoloScreen> {
                           height: 22,
                           child: CircularProgressIndicator(strokeWidth: 2),
                         )
-                      : const Text('Ro\'yxatdan o\'tish'),
+                      : Text('Ro\'yxatdan o\'tish'.tr),
                 ),
               ),
             ],

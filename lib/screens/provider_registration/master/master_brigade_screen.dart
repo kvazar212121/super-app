@@ -48,8 +48,8 @@ class _MasterBrigadeScreenState extends State<MasterBrigadeScreen> {
     }
     if (teamSize < 2) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Brigada kamida 2 kishidan iborat bo\'lishi kerak'),
+        SnackBar(
+          content: Text('Brigada kamida 2 kishidan iborat bo\'lishi kerak'.tr),
         ),
       );
       return;
@@ -103,8 +103,7 @@ class _MasterBrigadeScreenState extends State<MasterBrigadeScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'Brigada sifatida katta ta\'mirlash, mebel yigish va montaj buyurtmalarini qabul qilasiz.',
+              Text('Brigada sifatida katta ta\'mirlash, mebel yigish va montaj buyurtmalarini qabul qilasiz.'.tr,
                 style: TextStyle(color: Colors.grey[700], height: 1.4),
               ),
               const SizedBox(height: 24),
@@ -133,7 +132,7 @@ class _MasterBrigadeScreenState extends State<MasterBrigadeScreen> {
                 controller: _areaCtrl,
                 maxLines: 2,
                 decoration: InputDecoration(
-                  labelText: 'Xizmat ko\'rsatadigan hudud',
+                  labelText: 'Xizmat ko\'rsatadigan hudud'.tr,
                   hintText: 'Masalan: Butun Toshkent'.tr,
                 ),
               ),
@@ -143,7 +142,7 @@ class _MasterBrigadeScreenState extends State<MasterBrigadeScreen> {
                 keyboardType: TextInputType.number,
                 inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                 decoration: InputDecoration(
-                  labelText: 'Brigada a\'zolari soni',
+                  labelText: 'Brigada a\'zolari soni'.tr,
                   hintText: 'Masalan: 3'.tr,
                 ),
               ),
@@ -158,7 +157,7 @@ class _MasterBrigadeScreenState extends State<MasterBrigadeScreen> {
                           height: 22,
                           child: CircularProgressIndicator(strokeWidth: 2),
                         )
-                      : const Text('Ro\'yxatdan o\'tish'),
+                      : Text('Ro\'yxatdan o\'tish'.tr),
                 ),
               ),
             ],

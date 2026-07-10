@@ -231,9 +231,8 @@ class _NurseRegistrationScreenState extends State<NurseRegistrationScreen> {
                   children: [
                     const Icon(Icons.info_outline, color: accent, size: 20),
                     const SizedBox(width: 10),
-                    const Expanded(
-                      child: Text(
-                        'Faqat uyga chiqish — mijoz manziliga borasiz.\nAdministrator hujjatlaringizni tekshirib, tasdiqlagach ishlay boshlaysiz.',
+                    Expanded(
+                      child: Text('Faqat uyga chiqish — mijoz manziliga borasiz.\nAdministrator hujjatlaringizni tekshirib, tasdiqlagach ishlay boshlaysiz.'.tr,
                         style: TextStyle(height: 1.4, fontSize: 13),
                       ),
                     ),
@@ -309,21 +308,19 @@ class _NurseRegistrationScreenState extends State<NurseRegistrationScreen> {
               const SizedBox(height: 20),
 
               // ── HUJJATLAR ─────────────────────────────────
-              const Text(
-                'Tasdiqlovchi hujjatlar',
+              Text('Tasdiqlovchi hujjatlar'.tr,
                 style: TextStyle(fontWeight: FontWeight.w700, fontSize: 15),
               ),
               const SizedBox(height: 4),
-              const Text(
-                'Admin ko\'rib chiqishi uchun hujjatlaringizni yuklang',
+              Text('Admin ko\'rib chiqishi uchun hujjatlaringizni yuklang'.tr,
                 style: TextStyle(color: Colors.grey, fontSize: 12),
               ),
               const SizedBox(height: 12),
 
               // Diplom / Sertifikat
               _DocumentUploadTile(
-                label: 'Diplom yoki Sertifikat',
-                subtitle: 'Hamshiralik malakasini tasdiqlovchi hujjat',
+                label: 'Diplom yoki Sertifikat'.tr,
+                subtitle: 'Hamshiralik malakasini tasdiqlovchi hujjat'.tr,
                 icon: Icons.school_outlined,
                 file: _documentFile,
                 isUploading: _uploadingDoc,
@@ -334,8 +331,8 @@ class _NurseRegistrationScreenState extends State<NurseRegistrationScreen> {
 
               // Pasport
               _DocumentUploadTile(
-                label: 'Pasport',
-                subtitle: 'Shaxsni tasdiqlovchi hujjat (1-2 bet)',
+                label: 'Pasport'.tr,
+                subtitle: 'Shaxsni tasdiqlovchi hujjat (1-2 bet)'.tr,
                 icon: Icons.badge_outlined,
                 file: _passportFile,
                 isUploading: _uploadingPassport,
@@ -345,8 +342,7 @@ class _NurseRegistrationScreenState extends State<NurseRegistrationScreen> {
               const SizedBox(height: 20),
 
               // Tibbiy xizmatlar
-              const Text(
-                'Tibbiy xizmatlar',
+              Text('Tibbiy xizmatlar'.tr,
                 style: TextStyle(fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: 8),
@@ -402,8 +398,7 @@ class _NurseRegistrationScreenState extends State<NurseRegistrationScreen> {
                             strokeWidth: 2.5,
                           ),
                         )
-                      : const Text(
-                          'Ariza yuborish',
+                      : Text('Ariza yuborish'.tr,
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 16,

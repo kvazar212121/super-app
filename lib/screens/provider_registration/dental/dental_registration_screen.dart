@@ -87,8 +87,7 @@ class _DentalRegistrationScreenState extends State<DentalRegistrationScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'Mijozlar klinikangizga kelib vaqt bron qiladi. Qabul vaqtlarini panelda sozlaysiz.',
+              Text('Mijozlar klinikangizga kelib vaqt bron qiladi. Qabul vaqtlarini panelda sozlaysiz.'.tr,
                 style: TextStyle(height: 1.4),
               ),
               const SizedBox(height: 20),
@@ -112,7 +111,7 @@ class _DentalRegistrationScreenState extends State<DentalRegistrationScreen> {
                       controller: _addressCtrl,
                       decoration: InputDecoration(
                         labelText: 'Klinika manzili'.tr,
-                        hintText: 'Ko\'cha, bino, mo\'ljal...',
+                        hintText: 'Ko\'cha, bino, mo\'ljal...'.tr,
                       ),
                       maxLines: 2,
                     ),
@@ -165,8 +164,7 @@ class _DentalRegistrationScreenState extends State<DentalRegistrationScreen> {
                             strokeWidth: 2.5,
                           ),
                         )
-                      : const Text(
-                          'Yuborish',
+                      : Text('Yuborish'.tr,
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 16,

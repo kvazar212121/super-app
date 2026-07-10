@@ -96,8 +96,7 @@ class _AutoWorkshopScreenState extends State<AutoWorkshopScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'Doimiy servis markazi — mijozlar ustaxonangizga vaqt bron qiladi.',
+              Text('Doimiy servis markazi — mijozlar ustaxonangizga vaqt bron qiladi.'.tr,
                 style: TextStyle(color: Colors.grey[700], height: 1.4),
               ),
               const SizedBox(height: 24),
@@ -120,8 +119,7 @@ class _AutoWorkshopScreenState extends State<AutoWorkshopScreen> {
                 ),
               ),
               const SizedBox(height: 16),
-              Text(
-                'Mutaxassislik',
+              Text('Mutaxassislik'.tr,
                 style: TextStyle(
                   color: Colors.grey[700],
                   fontWeight: FontWeight.w600,
@@ -159,7 +157,7 @@ class _AutoWorkshopScreenState extends State<AutoWorkshopScreen> {
                           height: 22,
                           child: CircularProgressIndicator(strokeWidth: 2),
                         )
-                      : const Text('Ro\'yxatdan o\'tish'),
+                      : Text('Ro\'yxatdan o\'tish'.tr),
                 ),
               ),
             ],

@@ -85,8 +85,7 @@ class _MasterSoloScreenState extends State<MasterSoloScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'Mijoz manziliga borib ta\'mirlash va montaj xizmati ko\'rsatasiz.',
+              Text('Mijoz manziliga borib ta\'mirlash va montaj xizmati ko\'rsatasiz.'.tr,
                 style: TextStyle(color: Colors.grey[700], height: 1.4),
               ),
               const SizedBox(height: 24),
@@ -104,7 +103,7 @@ class _MasterSoloScreenState extends State<MasterSoloScreen> {
                 controller: _areaCtrl,
                 maxLines: 2,
                 decoration: InputDecoration(
-                  labelText: 'Xizmat ko\'rsatadigan hudud',
+                  labelText: 'Xizmat ko\'rsatadigan hudud'.tr,
                   hintText: 'Masalan: Toshkent, Chilonzor'.tr,
                 ),
               ),
@@ -119,7 +118,7 @@ class _MasterSoloScreenState extends State<MasterSoloScreen> {
                           height: 22,
                           child: CircularProgressIndicator(strokeWidth: 2),
                         )
-                      : const Text('Ro\'yxatdan o\'tish'),
+                      : Text('Ro\'yxatdan o\'tish'.tr),
                 ),
               ),
             ],

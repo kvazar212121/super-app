@@ -114,7 +114,7 @@ class _BarberEmployeeJoinScreenState extends State<BarberEmployeeJoinScreen>
   Widget build(BuildContext context) {
     return ProviderTheme(
       child: Scaffold(
-        appBar: AppBar(title: const Text('Xonaga qo\'shilish')),
+        appBar: AppBar(title: Text('Xonaga qo\'shilish'.tr)),
         body: Column(
           children: [
             Padding(
@@ -122,7 +122,7 @@ class _BarberEmployeeJoinScreenState extends State<BarberEmployeeJoinScreen>
               child: TextField(
                 controller: _nameCtrl,
                 decoration: InputDecoration(
-                  labelText: 'Ismingiz (mijozlar ko\'radi)',
+                  labelText: 'Ismingiz (mijozlar ko\'radi)'.tr,
                 ),
               ),
             ),
@@ -175,8 +175,7 @@ class _BarberEmployeeJoinScreenState extends State<BarberEmployeeJoinScreen>
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
-                          'Xona egasi bergan taklif kodini kiriting',
+                        Text('Xona egasi bergan taklif kodini kiriting'.tr,
                           style: TextStyle(fontWeight: FontWeight.w600),
                         ),
                         const SizedBox(height: 16),
@@ -207,7 +206,7 @@ class _BarberEmployeeJoinScreenState extends State<BarberEmployeeJoinScreen>
                           height: 22,
                           child: CircularProgressIndicator(strokeWidth: 2),
                         )
-                      : const Text('So\'rov yuborish'),
+                      : Text('So\'rov yuborish'.tr),
                 ),
               ),
             ),

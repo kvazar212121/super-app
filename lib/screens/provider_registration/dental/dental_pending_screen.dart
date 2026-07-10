@@ -62,7 +62,7 @@ class _DentalPendingScreenState extends State<DentalPendingScreen> {
     } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Holatni tekshirib bo\'lmadi')),
+          SnackBar(content: Text('Holatni tekshirib bo\'lmadi'.tr)),
         );
       }
     } finally {
@@ -90,8 +90,7 @@ class _DentalPendingScreenState extends State<DentalPendingScreen> {
                   child: const Icon(LucideIcons.smile, size: 48, color: accent),
                 ),
                 const SizedBox(height: 28),
-                const Text(
-                  'So\'rov yuborildi',
+                Text('So\'rov yuborildi'.tr,
                   style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 12),
@@ -103,8 +102,7 @@ class _DentalPendingScreenState extends State<DentalPendingScreen> {
                   style: TextStyle(color: Colors.grey[700], height: 1.45),
                 ),
                 const SizedBox(height: 8),
-                const Text(
-                  'Tasdiqlangandan keyin mijozlar klinikada vaqt bron qiladi.',
+                Text('Tasdiqlangandan keyin mijozlar klinikada vaqt bron qiladi.'.tr,
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: Colors.grey,

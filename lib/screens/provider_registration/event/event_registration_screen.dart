@@ -113,8 +113,7 @@ class _EventRegistrationScreenState extends State<EventRegistrationScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'Qishloq va shaharda sahna, ovoz, dekoratsiya va to\'liq tadbir tashkiloti. Ro\'yxatdan o\'tishi bilan darhol buyurtmalar qabul qila boshlaysiz.',
+              Text('Qishloq va shaharda sahna, ovoz, dekoratsiya va to\'liq tadbir tashkiloti. Ro\'yxatdan o\'tishi bilan darhol buyurtmalar qabul qila boshlaysiz.'.tr,
                 style: TextStyle(height: 1.4),
               ),
               const SizedBox(height: 20),
@@ -147,8 +146,7 @@ class _EventRegistrationScreenState extends State<EventRegistrationScreen> {
                 keyboardType: TextInputType.number,
               ),
               const SizedBox(height: 16),
-              const Text(
-                'Ko\'rsatadigan xizmatlar',
+              Text('Ko\'rsatadigan xizmatlar'.tr,
                 style: TextStyle(fontWeight: FontWeight.w600),
               ),
               Wrap(
@@ -171,8 +169,7 @@ class _EventRegistrationScreenState extends State<EventRegistrationScreen> {
                 }).toList(),
               ),
               const SizedBox(height: 16),
-              const Text(
-                'Tadbir turlari',
+              Text('Tadbir turlari'.tr,
                 style: TextStyle(fontWeight: FontWeight.w600),
               ),
               Wrap(
@@ -201,8 +198,7 @@ class _EventRegistrationScreenState extends State<EventRegistrationScreen> {
                     }).toList(),
               ),
               const SizedBox(height: 16),
-              const Text(
-                'Ishlaydigan joylar',
+              Text('Ishlaydigan joylar'.tr,
                 style: TextStyle(fontWeight: FontWeight.w600),
               ),
               Wrap(

@@ -63,7 +63,7 @@ class _TutorPendingScreenState extends State<TutorPendingScreen> {
     } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Holatni tekshirib bo\'lmadi')),
+          SnackBar(content: Text('Holatni tekshirib bo\'lmadi'.tr)),
         );
       }
     } finally {
@@ -94,8 +94,7 @@ class _TutorPendingScreenState extends State<TutorPendingScreen> {
                   ),
                 ),
                 const SizedBox(height: 28),
-                const Text(
-                  'So\'rov yuborildi',
+                Text('So\'rov yuborildi'.tr,
                   style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 12),
@@ -107,8 +106,7 @@ class _TutorPendingScreenState extends State<TutorPendingScreen> {
                   style: TextStyle(color: Colors.grey[700], height: 1.45),
                 ),
                 const SizedBox(height: 8),
-                const Text(
-                  'Tasdiqlangandan keyin mijozlar sizni topa oladi va panel to\'liq ochiladi. Onlayn video dars keyingi bosqichda qo\'shiladi.',
+                Text('Tasdiqlangandan keyin mijozlar sizni topa oladi va panel to\'liq ochiladi. Onlayn video dars keyingi bosqichda qo\'shiladi.'.tr,
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: Colors.grey,

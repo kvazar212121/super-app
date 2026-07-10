@@ -88,8 +88,7 @@ class _BarberMobileScreenState extends State<BarberMobileScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'Mijoz manziliga borib xizmat ko\'rsatasiz',
+              Text('Mijoz manziliga borib xizmat ko\'rsatasiz'.tr,
                 style: TextStyle(color: Colors.grey[700], height: 1.4),
               ),
               const SizedBox(height: 24),
@@ -107,7 +106,7 @@ class _BarberMobileScreenState extends State<BarberMobileScreen> {
                 controller: _areaCtrl,
                 maxLines: 2,
                 decoration: InputDecoration(
-                  labelText: 'Xizmat ko\'rsatadigan hudud',
+                  labelText: 'Xizmat ko\'rsatadigan hudud'.tr,
                   hintText: 'Masalan: Toshkent, Chilonzor, Yunusobod'.tr,
                 ),
               ),
@@ -138,7 +137,7 @@ class _BarberMobileScreenState extends State<BarberMobileScreen> {
                           height: 22,
                           child: CircularProgressIndicator(strokeWidth: 2),
                         )
-                      : const Text('Ro\'yxatdan o\'tish'),
+                      : Text('Ro\'yxatdan o\'tish'.tr),
                 ),
               ),
             ],

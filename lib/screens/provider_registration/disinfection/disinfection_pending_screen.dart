@@ -64,7 +64,7 @@ class _DisinfectionPendingScreenState extends State<DisinfectionPendingScreen> {
     } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Holatni tekshirib bo\'lmadi')),
+          SnackBar(content: Text('Holatni tekshirib bo\'lmadi'.tr)),
         );
       }
     } finally {
@@ -96,8 +96,7 @@ class _DisinfectionPendingScreenState extends State<DisinfectionPendingScreen> {
                   ),
                 ),
                 const SizedBox(height: 28),
-                const Text(
-                  'So\'rov yuborildi',
+                Text('So\'rov yuborildi'.tr,
                   style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 12),
@@ -109,8 +108,7 @@ class _DisinfectionPendingScreenState extends State<DisinfectionPendingScreen> {
                   style: TextStyle(color: Colors.grey[700], height: 1.45),
                 ),
                 const SizedBox(height: 8),
-                const Text(
-                  'Tasdiqlangandan keyin mijozlar sizni topa oladi va buyurtma bera oladi.',
+                Text('Tasdiqlangandan keyin mijozlar sizni topa oladi va buyurtma bera oladi.'.tr,
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: Colors.grey,

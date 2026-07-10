@@ -30,15 +30,13 @@ class SalonRoleSelectionScreen extends StatelessWidget {
             body: ListView(
               padding: const EdgeInsets.all(24),
               children: [
-                Text(
-                  'Siz kimsiz?',
+                Text('Siz kimsiz?'.tr,
                   style: theme.textTheme.headlineSmall?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 const SizedBox(height: 8),
-                Text(
-                  'Salonda bir nechta mutaxassis ishlashi mumkin. O\'zingizga mos turini tanlang.',
+                Text('Salonda bir nechta mutaxassis ishlashi mumkin. O\'zingizga mos turini tanlang.'.tr,
                   style: theme.textTheme.bodyMedium?.copyWith(
                     color: theme.colorScheme.onSurface,
                   ),
@@ -46,26 +44,26 @@ class SalonRoleSelectionScreen extends StatelessWidget {
                 const SizedBox(height: 28),
                 _RoleCard(
                   icon: LucideIcons.store,
-                  title: 'Salon egasi',
+                  title: 'Salon egasi'.tr,
                   subtitle:
-                      'O\'z saloningiz, joylashuv, xodimlar va taklif kodi',
+                      'O\'z saloningiz, joylashuv, xodimlar va taklif kodi'.tr,
                   color: const Color(0xFFEC4899),
                   onTap: () => _open(context, SalonRegistrationRole.owner),
                 ),
                 const SizedBox(height: 16),
                 _RoleCard(
                   icon: LucideIcons.sparkles,
-                  title: 'Salonda ishlayman',
+                  title: 'Salonda ishlayman'.tr,
                   subtitle:
-                      'Mavjud salonni tanlang yoki taklif kodi bilan qo\'shiling',
+                      'Mavjud salonni tanlang yoki taklif kodi bilan qo\'shiling'.tr,
                   color: Colors.black,
                   onTap: () => _open(context, SalonRegistrationRole.employee),
                 ),
                 const SizedBox(height: 16),
                 _RoleCard(
                   icon: LucideIcons.home,
-                  title: 'Uyga borib xizmat qilaman',
-                  subtitle: 'Mobil kosmetolog — mijoz manziliga borasiz',
+                  title: 'Uyga borib xizmat qilaman'.tr,
+                  subtitle: 'Mobil kosmetolog — mijoz manziliga borasiz'.tr,
                   color: const Color(0xFF10B981),
                   onTap: () => _open(context, SalonRegistrationRole.mobile),
                 ),

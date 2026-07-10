@@ -29,15 +29,13 @@ class CleaningRoleSelectionScreen extends StatelessWidget {
             body: ListView(
               padding: const EdgeInsets.all(24),
               children: [
-                Text(
-                  'Qanday ishlayapsiz?',
+                Text('Qanday ishlayapsiz?'.tr,
                   style: theme.textTheme.headlineSmall?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 const SizedBox(height: 8),
-                Text(
-                  'Tozalash xizmati yakka kishi yoki jamoa sifatida ko\'rsatilishi mumkin. O\'zingizga mos turini tanlang.',
+                Text('Tozalash xizmati yakka kishi yoki jamoa sifatida ko\'rsatilishi mumkin. O\'zingizga mos turini tanlang.'.tr,
                   style: theme.textTheme.bodyMedium?.copyWith(
                     color: theme.colorScheme.onSurface,
                   ),
@@ -45,18 +43,18 @@ class CleaningRoleSelectionScreen extends StatelessWidget {
                 const SizedBox(height: 28),
                 _RoleCard(
                   icon: LucideIcons.user,
-                  title: 'Yakka tozalovchi',
+                  title: 'Yakka tozalovchi'.tr,
                   subtitle:
-                      'O\'zingiz uyga borib tozalaysiz — 1–2 xonali kvartiralar uchun qulay',
+                      'O\'zingiz uyga borib tozalaysiz — 1–2 xonali kvartiralar uchun qulay'.tr,
                   color: const Color(0xFF10B981),
                   onTap: () => _open(context, CleaningRegistrationRole.solo),
                 ),
                 const SizedBox(height: 16),
                 _RoleCard(
                   icon: LucideIcons.users,
-                  title: 'Tozalash jamoasi / kompaniya',
+                  title: 'Tozalash jamoasi / kompaniya'.tr,
                   subtitle:
-                      'Bir necha kishilik jamoa — katta kvartira, ofis va general tozalash',
+                      'Bir necha kishilik jamoa — katta kvartira, ofis va general tozalash'.tr,
                   color: const Color(0xFF06B6D4),
                   onTap: () => _open(context, CleaningRegistrationRole.team),
                 ),

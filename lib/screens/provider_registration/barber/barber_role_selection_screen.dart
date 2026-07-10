@@ -35,15 +35,13 @@ class BarberRoleSelectionScreen extends StatelessWidget {
             body: ListView(
               padding: const EdgeInsets.all(24),
               children: [
-                Text(
-                  'Siz kimsiz?',
+                Text('Siz kimsiz?'.tr,
                   style: theme.textTheme.headlineSmall?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 const SizedBox(height: 8),
-                Text(
-                  'Sartaroshxonada bir nechta usta ishlashi mumkin. O\'zingizga mos turini tanlang.',
+                Text('Sartaroshxonada bir nechta usta ishlashi mumkin. O\'zingizga mos turini tanlang.'.tr,
                   style: theme.textTheme.bodyMedium?.copyWith(
                     color: theme.colorScheme.onSurface,
                   ),
@@ -51,17 +49,17 @@ class BarberRoleSelectionScreen extends StatelessWidget {
                 const SizedBox(height: 28),
                 _RoleCard(
                   icon: LucideIcons.store,
-                  title: 'Sartarosh xona egasi',
-                  subtitle: 'O\'z xonangiz, joylashuv, ustalar va taklif kodi',
+                  title: 'Sartarosh xona egasi'.tr,
+                  subtitle: 'O\'z xonangiz, joylashuv, ustalar va taklif kodi'.tr,
                   color: Colors.black,
                   onTap: () => _open(context, BarberRegistrationRole.shopOwner),
                 ),
                 const SizedBox(height: 16),
                 _RoleCard(
                   icon: LucideIcons.scissors,
-                  title: 'Sartaroshxonada ishlayman',
+                  title: 'Sartaroshxonada ishlayman'.tr,
                   subtitle:
-                      'Mavjud xonani tanlang yoki taklif kodi bilan qo\'shiling. Egasi tasdiqlaydi.',
+                      'Mavjud xonani tanlang yoki taklif kodi bilan qo\'shiling. Egasi tasdiqlaydi.'.tr,
                   color: const Color(0xFF3B82F6),
                   onTap: () =>
                       _open(context, BarberRegistrationRole.shopEmployee),
@@ -69,8 +67,8 @@ class BarberRoleSelectionScreen extends StatelessWidget {
                 const SizedBox(height: 16),
                 _RoleCard(
                   icon: LucideIcons.car,
-                  title: 'Uyga borib xizmat qilaman',
-                  subtitle: 'Mobil sartarosh — mijoz manziliga borasiz',
+                  title: 'Uyga borib xizmat qilaman'.tr,
+                  subtitle: 'Mobil sartarosh — mijoz manziliga borasiz'.tr,
                   color: const Color(0xFF10B981),
                   onTap: () => _open(context, BarberRegistrationRole.mobile),
                 ),
