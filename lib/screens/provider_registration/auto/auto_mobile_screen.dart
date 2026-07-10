@@ -129,7 +129,7 @@ class _AutoMobileScreenState extends State<AutoMobileScreen> {
                 children: AutoVehicleType.values.map((v) {
                   final selected = _vehicleType == v;
                   return ChoiceChip(
-                    label: Text(v.label),
+                    label: Text(v.label.tr),
                     selected: selected,
                     onSelected: (_) => setState(() => _vehicleType = v),
                   );

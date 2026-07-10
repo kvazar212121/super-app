@@ -76,7 +76,7 @@ class _SportFacilityBookingScreenState
                   final a = field.amenities[i];
                   final isSel = _selectedAmenities.contains(i);
                   return FilterChip(
-                    label: Text(a.name),
+                    label: Text(a.name.tr),
                     selected: isSel,
                     selectedColor: _accent.withOpacity(0.2),
                     checkmarkColor: _accent,

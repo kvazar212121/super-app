@@ -137,7 +137,7 @@ class _DisinfectionRegistrationScreenState
                 children: AreaType.values.map((t) {
                   final selected = _areaTypes.contains(t.key);
                   return FilterChip(
-                    label: Text(t.label),
+                    label: Text(t.label.tr),
                     selected: selected,
                     onSelected: (v) => setState(() {
                       if (v) {

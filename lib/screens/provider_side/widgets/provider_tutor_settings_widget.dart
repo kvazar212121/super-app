@@ -274,7 +274,7 @@ class _ProviderTutorSettingsWidgetState
           children: LessonMode.values.map((m) {
             final selected = _lessonModeKeys.contains(m.key);
             return FilterChip(
-              label: Text(m.label),
+              label: Text(m.label.tr),
               selected: selected,
               onSelected: (v) => setState(() {
                 if (v) {

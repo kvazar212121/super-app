@@ -264,7 +264,7 @@ class _TutorBookingScreenState extends State<TutorBookingScreen> {
                             children: [
                               Icon(m.icon, size: 16),
                               const SizedBox(width: 6),
-                              Text(m.label),
+                              Text(m.label.tr),
                             ],
                           ),
                           selected: _lessonMode == m,

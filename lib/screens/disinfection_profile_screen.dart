@@ -130,7 +130,7 @@ class DisinfectionProfileScreen extends StatelessWidget {
                   .map(
                     (t) => Chip(
                       avatar: Icon(t.icon, size: 16, color: accent),
-                      label: Text(t.label),
+                      label: Text(t.label.tr),
                       backgroundColor: accent.withOpacity(0.1),
                       side: BorderSide(color: accent.withOpacity(0.3)),
                     ),
@@ -156,7 +156,7 @@ class DisinfectionProfileScreen extends StatelessWidget {
                   .map(
                     (c) => Chip(
                       avatar: Icon(c.icon, size: 16, color: accent),
-                      label: Text(c.name + (c.isEcoFriendly ? ' (Eko)' : '')),
+                      label: Text(c.name.tr + (c.isEcoFriendly ? ' (Eko)' : '')),
                       backgroundColor: Colors.white,
                       side: BorderSide(color: Colors.grey.shade300),
                     ),

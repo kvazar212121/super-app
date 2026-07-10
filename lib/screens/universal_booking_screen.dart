@@ -117,7 +117,7 @@ class _UniversalBookingScreenState extends State<UniversalBookingScreen> {
                   final v = kind.variants[i];
                   final selected = i == _variantIndex;
                   return ChoiceChip(
-                    label: Text(v.label),
+                    label: Text(v.label.tr),
                     selected: selected,
                     selectedColor: accent,
                     labelStyle: TextStyle(

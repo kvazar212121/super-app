@@ -58,7 +58,7 @@ class HubCategoryChips extends StatelessWidget {
           final cat = categories[index - 1];
           final isSelected = selectedCategory == cat;
           return ChoiceChip(
-            label: Text(cat),
+            label: Text(cat.tr),
             selected: isSelected,
             onSelected: (selected) {
               if (selected) {

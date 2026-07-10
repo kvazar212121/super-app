@@ -214,7 +214,7 @@ class _AlarmHomeScreenState extends State<AlarmHomeScreen> {
                   ),
                 ),
                 const SizedBox(width: 8),
-                Expanded(child: Text(a.label, overflow: TextOverflow.ellipsis)),
+                Expanded(child: Text(a.label.tr, overflow: TextOverflow.ellipsis)),
               ],
             ),
             subtitle: Text(_subtitle(a)),

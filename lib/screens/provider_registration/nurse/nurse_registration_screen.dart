@@ -356,7 +356,7 @@ class _NurseRegistrationScreenState extends State<NurseRegistrationScreen> {
                 children: MedicalService.values.take(6).map((m) {
                   final selected = _medicalTypes.contains(m.key);
                   return FilterChip(
-                    label: Text(m.label),
+                    label: Text(m.label.tr),
                     selected: selected,
                     onSelected: (v) => setState(() {
                       if (v) {

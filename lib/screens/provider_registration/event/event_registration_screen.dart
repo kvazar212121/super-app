@@ -157,7 +157,7 @@ class _EventRegistrationScreenState extends State<EventRegistrationScreen> {
                 children: OrganizerServiceType.values.map((t) {
                   final selected = _organizerTypes.contains(t.key);
                   return FilterChip(
-                    label: Text(t.label),
+                    label: Text(t.label.tr),
                     selected: selected,
                     onSelected: (v) => setState(() {
                       if (v) {
@@ -187,7 +187,7 @@ class _EventRegistrationScreenState extends State<EventRegistrationScreen> {
                     ].map((t) {
                       final selected = _eventTypes.contains(t.key);
                       return FilterChip(
-                        label: Text(t.label),
+                        label: Text(t.label.tr),
                         selected: selected,
                         onSelected: (v) => setState(() {
                           if (v) {
@@ -217,7 +217,7 @@ class _EventRegistrationScreenState extends State<EventRegistrationScreen> {
                     ].map((t) {
                       final selected = _venueTypes.contains(t.key);
                       return FilterChip(
-                        label: Text(t.label),
+                        label: Text(t.label.tr),
                         selected: selected,
                         onSelected: (v) => setState(() {
                           if (v) {

@@ -141,7 +141,7 @@ class TutorProfileScreen extends StatelessWidget {
             children: tutor.lessonModes.map((m) {
               return Chip(
                 avatar: Icon(m.icon, size: 16, color: _accent),
-                label: Text(m.label, style: const TextStyle(fontSize: 12)),
+                label: Text(m.label.tr, style: const TextStyle(fontSize: 12)),
                 backgroundColor: _accent,
               );
             }).toList(),

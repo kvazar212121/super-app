@@ -187,7 +187,7 @@ class _BarberShopOwnerScreenState extends State<BarberShopOwnerScreen> {
                   ),
                   value: _selectedSubCategory,
                   items: ProviderCategoryConfig.barber.subCategories!
-                      .map((sc) => DropdownMenuItem(value: sc, child: Text(sc)))
+                      .map((sc) => DropdownMenuItem(value: sc, child: Text(sc.tr)))
                       .toList(),
                   onChanged: (val) =>
                       setState(() => _selectedSubCategory = val),

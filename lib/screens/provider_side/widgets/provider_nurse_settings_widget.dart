@@ -223,7 +223,7 @@ class _ProviderNurseSettingsWidgetState
           children: MedicalService.values.map((m) {
             final selected = _medicalTypes.contains(m.key);
             return FilterChip(
-              label: Text(m.label),
+              label: Text(m.label.tr),
               selected: selected,
               onSelected: (v) => setState(() {
                 if (v) {

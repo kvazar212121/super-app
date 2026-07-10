@@ -240,7 +240,7 @@ class _ProviderCourierSettingsWidgetState
           children: DeliveryType.values.map((type) {
             final selected = _deliveryTypes.contains(type);
             return FilterChip(
-              label: Text(type.label),
+              label: Text(type.label.tr),
               selected: selected,
               onSelected: (v) {
                 setState(() {

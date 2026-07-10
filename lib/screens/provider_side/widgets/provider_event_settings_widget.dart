@@ -242,7 +242,7 @@ class _ProviderEventSettingsWidgetState
           children: OrganizerServiceType.values.map((t) {
             final selected = _organizerTypes.contains(t.key);
             return FilterChip(
-              label: Text(t.label),
+              label: Text(t.label.tr),
               selected: selected,
               onSelected: (v) => setState(() {
                 if (v) {
@@ -272,7 +272,7 @@ class _ProviderEventSettingsWidgetState
               ].map((t) {
                 final selected = _venueTypes.contains(t.key);
                 return FilterChip(
-                  label: Text(t.label),
+                  label: Text(t.label.tr),
                   selected: selected,
                   onSelected: (v) => setState(() {
                     if (v) {

@@ -190,7 +190,7 @@ class _MassageRegistrationScreenState extends State<MassageRegistrationScreen> {
                   ),
                   value: _selectedSubCategory,
                   items: ProviderCategoryConfig.massage.subCategories!
-                      .map((sc) => DropdownMenuItem(value: sc, child: Text(sc)))
+                      .map((sc) => DropdownMenuItem(value: sc, child: Text(sc.tr)))
                       .toList(),
                   onChanged: (val) =>
                       setState(() => _selectedSubCategory = val),
@@ -283,7 +283,7 @@ class _MassageRegistrationScreenState extends State<MassageRegistrationScreen> {
                       final key = t.name;
                       final selected = _serviceTypes.contains(key);
                       return FilterChip(
-                        label: Text(t.label),
+                        label: Text(t.label.tr),
                         selected: selected,
                         onSelected: (v) => setState(() {
                           if (v) {

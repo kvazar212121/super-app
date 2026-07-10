@@ -361,7 +361,7 @@ class _NannyRegistrationScreenState extends State<NannyRegistrationScreen> {
           ...NannyServiceType.values.map((t) {
             final selected = _serviceTypes.contains(t.key);
             return CheckboxListTile(
-              title: Text(t.label),
+              title: Text(t.label.tr),
               value: selected,
               onChanged: (v) {
                 setState(() {

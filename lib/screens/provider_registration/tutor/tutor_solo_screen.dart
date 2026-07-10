@@ -176,7 +176,7 @@ class _TutorSoloScreenState extends State<TutorSoloScreen> {
               ) {
                 return CheckboxListTile(
                   contentPadding: EdgeInsets.zero,
-                  title: Text(m.label),
+                  title: Text(m.label.tr),
                   value: _lessonModes.contains(m.key),
                   onChanged: (v) {
                     setState(() {

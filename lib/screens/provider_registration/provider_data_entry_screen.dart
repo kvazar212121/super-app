@@ -173,7 +173,7 @@ class _ProviderDataEntryScreenState extends State<ProviderDataEntryScreen> {
                               .map(
                                 (sc) => DropdownMenuItem(
                                   value: sc,
-                                  child: Text(sc),
+                                  child: Text(sc.tr),
                                 ),
                               )
                               .toList(),

@@ -295,7 +295,7 @@ class _FilterPanel extends StatelessWidget {
                     return Padding(
                       padding: const EdgeInsets.only(right: 6),
                       child: FilterChip(
-                        label: Text(s.shortLabel),
+                        label: Text(s.shortLabel.tr),
                         selected: sizeFilter == s,
                         selectedColor: const Color(0xFF4CAF50),
                         onSelected: (_) =>
@@ -317,7 +317,7 @@ class _FilterPanel extends StatelessWidget {
                       padding: const EdgeInsets.only(right: 6),
                       child: FilterChip(
                         avatar: Icon(s.icon, size: 16),
-                        label: Text(s.label),
+                        label: Text(s.label.tr),
                         selected: surfaceFilter == s,
                         selectedColor: s.color,
                         onSelected: (_) =>

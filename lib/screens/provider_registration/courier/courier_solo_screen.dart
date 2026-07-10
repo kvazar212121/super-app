@@ -121,7 +121,7 @@ class _CourierSoloScreenState extends State<CourierSoloScreen> {
               const SizedBox(height: 8),
               SegmentedButton<VehicleType>(
                 segments: VehicleType.values
-                    .map((v) => ButtonSegment(value: v, label: Text(v.label)))
+                    .map((v) => ButtonSegment(value: v, label: Text(v.label.tr)))
                     .toList(),
                 selected: {_vehicleType},
                 onSelectionChanged: (s) =>
