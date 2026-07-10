@@ -221,51 +221,66 @@ class ProfileScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 16),
               ],
-              GlassSurface(
-                onTap: () => _showLogoutDialog(context),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 14,
-                ),
-                opacity: 0.48,
-                child: Row(
-                  children: const [
-                    Icon(Icons.logout_rounded, color: Color(0xFFEF4444)),
-                    SizedBox(width: 12),
-                    Text(
-                      'Chiqish',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        color: Color(0xFFEF4444),
+              Row(
+                children: [
+                  Expanded(
+                    child: GlassSurface(
+                      onTap: () => _showLogoutDialog(context),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 16,
+                      ),
+                      opacity: 0.48,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(Icons.logout_rounded,
+                              color: Color(0xFFEF4444), size: 20),
+                          const SizedBox(width: 8),
+                          Flexible(
+                            child: Text(
+                              'Chiqish'.tr,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w600,
+                                color: Color(0xFFEF4444),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 16),
-              GlassSurface(
-                onTap: () => _showDeleteAccountDialog(context),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 14,
-                ),
-                opacity: 0.48,
-                child: Row(
-                  children: const [
-                    Icon(
-                      Icons.delete_forever_rounded,
-                      color: Color(0xFFEF4444),
-                    ),
-                    SizedBox(width: 12),
-                    Text(
-                      'Hisobni o\'chirish',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        color: Color(0xFFEF4444),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: GlassSurface(
+                      onTap: () => _showDeleteAccountDialog(context),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 16,
+                      ),
+                      opacity: 0.48,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(Icons.delete_forever_rounded,
+                              color: Color(0xFFEF4444), size: 20),
+                          const SizedBox(width: 8),
+                          Flexible(
+                            child: Text(
+                              'Hisobni o\'chirish'.tr,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w600,
+                                color: Color(0xFFEF4444),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ],
           ],
