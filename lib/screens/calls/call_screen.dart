@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'dart:math';
 import 'dart:async';
 import 'package:provider/provider.dart';
+import '../../l10n/locale_controller.dart';
 import '../../providers/app_provider.dart';
 import '../../services/call_service.dart';
 import '../../services/ringtone_service.dart';
@@ -176,9 +177,9 @@ class _CallScreenState extends State<CallScreen> with TickerProviderStateMixin {
 
         String statusText;
         if (showRinging) {
-          statusText = 'Kiruvchi qo\'ng\'iroq...';
+          statusText = 'Kiruvchi qo\'ng\'iroq...'.tr;
         } else if (showCalling || showConnecting) {
-          statusText = 'Ulanmoqda...';
+          statusText = 'Ulanmoqda...'.tr;
         } else if (showInCall) {
           statusText = _callService.callDuration;
         } else {
@@ -206,7 +207,7 @@ class _CallScreenState extends State<CallScreen> with TickerProviderStateMixin {
 
                   // Status text
                   Text(
-                    showInCall ? 'Ovozli qo\'ng\'iroq' : '',
+                    showInCall ? 'Ovozli qo\'ng\'iroq'.tr : '',
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 14,
@@ -339,13 +340,13 @@ class _CallScreenState extends State<CallScreen> with TickerProviderStateMixin {
       children: [
         _buildCallButton(
           icon: Icons.call_end,
-          label: 'Rad etish',
+          label: 'Rad etish'.tr,
           color: const Color(0xFFE53935),
           onTap: _declineCall,
         ),
         _buildCallButton(
           icon: Icons.call,
-          label: 'Qabul qilish',
+          label: 'Qabul qilish'.tr,
           color: const Color(0xFF00D26A),
           onTap: _acceptCall,
         ),
@@ -361,7 +362,7 @@ class _CallScreenState extends State<CallScreen> with TickerProviderStateMixin {
           children: [
             _buildSmallButton(
               icon: _callService.isMuted ? Icons.mic_off : Icons.mic,
-              label: _callService.isMuted ? 'Ovoz yoq' : 'Mikrofon',
+              label: _callService.isMuted ? 'Ovoz yoq'.tr : 'Mikrofon'.tr,
               isActive: _callService.isMuted,
               onTap: _callService.toggleMute,
             ),
@@ -369,7 +370,7 @@ class _CallScreenState extends State<CallScreen> with TickerProviderStateMixin {
               icon: _callService.isSpeaker
                   ? Icons.volume_up
                   : Icons.volume_down,
-              label: _callService.isSpeaker ? 'Karnay' : 'Quloq',
+              label: _callService.isSpeaker ? 'Karnay'.tr : 'Quloq'.tr,
               isActive: _callService.isSpeaker,
               onTap: _callService.toggleSpeaker,
             ),
@@ -378,7 +379,7 @@ class _CallScreenState extends State<CallScreen> with TickerProviderStateMixin {
         const SizedBox(height: 30),
         _buildCallButton(
           icon: Icons.call_end,
-          label: 'Tugatish',
+          label: 'Tugatish'.tr,
           color: const Color(0xFFE53935),
           onTap: _endCall,
           size: 70,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import '../../l10n/locale_controller.dart';
 import '../../services/call_history_service.dart';
 import '../../services/call_service.dart';
 import '../../utils/call_helper.dart';
@@ -20,7 +21,7 @@ class CallHistoryScreen extends StatelessWidget {
 
     return GlassScaffold(
       showBackButton: true,
-      title: "Qo'ng'iroqlar tarixi",
+      title: "Qo'ng'iroqlar tarixi".tr,
       body: auth.isAuthenticated
           ? ListenableBuilder(
               listenable: CallHistoryService(),
@@ -35,7 +36,7 @@ class CallHistoryScreen extends StatelessWidget {
                       ),
                       opacity: 0.5,
                       child: Text(
-                        'Qo\'ng\'iroqlar tarixi bo\'sh',
+                        'Qo\'ng\'iroqlar tarixi bo\'sh'.tr,
                         style: TextStyle(
                           color: GlassTokens.secondaryText(context),
                         ),
@@ -81,7 +82,7 @@ class CallHistoryScreen extends StatelessWidget {
                           ),
                         ),
                         subtitle: Text(
-                          '${log.isIncoming ? "Kiruvchi" : "Chiquvchi"} • $timeStr\nDavomiyligi: ${log.duration}',
+                          '${log.isIncoming ? "Kiruvchi".tr : "Chiquvchi".tr} • $timeStr\n${'Davomiyligi'.tr}: ${log.duration}',
                           style: TextStyle(
                             color: GlassTokens.secondaryText(context),
                           ),
@@ -102,9 +103,9 @@ class CallHistoryScreen extends StatelessWidget {
                 );
               },
             )
-          : const GuestBlockerWidget(
-              title: 'Qo\'ng\'iroqlar tarixini ko\'rish uchun',
-              subtitle: 'Ro\'yxatdan o\'ting yoki tizimga kiring',
+          : GuestBlockerWidget(
+              title: 'Qo\'ng\'iroqlar tarixini ko\'rish uchun'.tr,
+              subtitle: 'Ro\'yxatdan o\'ting yoki tizimga kiring'.tr,
               icon: Icons.history,
             ),
     );

@@ -1067,4 +1067,21 @@ const Map<String, String> kTranslationsRu = {
   'Yakka kuryer sifatida hujjat, paket va boshqa yuklarni A nuqtadan B nuqtaga yetkazasiz.': 'Как индивидуальный курьер вы доставляете документы, посылки и другие грузы из точки А в точку Б.',
   'Yakka repetitor (onlayn yoki uyga) yoki o\'quv markazi — band odamlar va o\'quvchilar uchun.': 'Индивидуальный репетитор (онлайн или на дому) или учебный центр — для занятых людей и учеников.',
   'Yuk va narsalar bilan ishlash mas\'uliyat talab qilgani uchun administrator tasdiqlashi kutilmoqda.': 'Поскольку работа с грузами и вещами требует ответственности, ожидается подтверждение администратора.',
+
+  // ── Qo'ng'iroqlar (tarix + aktiv qo'ng'iroq) ──
+  'Qo\'ng\'iroqlar tarixi': 'История звонков',
+  'Qo\'ng\'iroqlar tarixi bo\'sh': 'История звонков пуста',
+  'Qo\'ng\'iroqlar tarixini ko\'rish uchun': 'Чтобы посмотреть историю звонков',
+  'Kiruvchi': 'Входящий',
+  'Chiquvchi': 'Исходящий',
+  'Davomiyligi': 'Длительность',
+  'Kiruvchi qo\'ng\'iroq...': 'Входящий звонок...',
+  'Ulanmoqda...': 'Соединение...',
+  'Ovozli qo\'ng\'iroq': 'Голосовой звонок',
+  'Rad etish': 'Отклонить',
+  'Ovoz yoq': 'Без звука',
+  'Mikrofon': 'Микрофон',
+  'Karnay': 'Динамик',
+  'Quloq': 'Динамик телефона',
+  'Tugatish': 'Завершить',
 };
