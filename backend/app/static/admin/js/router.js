@@ -46,6 +46,7 @@ import { statusBadge, openModal, formatMoney, formatDate, closeModal, getInitial
                 user_analytics: renderUserAnalytics,
                 premium: renderPremium,
                 support: renderSupport,
+                ai_content: renderAiContent,
                 admins: renderAdmins,
             };
             if (renderers[page]) {

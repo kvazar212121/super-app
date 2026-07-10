@@ -13,6 +13,16 @@ import { navigateTo, renderPage } from '../router.js';
                 }
             } catch(e) {}
 
+            // Bildirishnoma shablonlari (AI va Bildirishnomalar bo'limида tahrirlanadi)
+            var notifTpls = [];
+            try {
+                const rt = await window.api(window.API_BASE + '/admin/notif-templates');
+                if (rt && rt.ok) { var dt = await rt.json(); notifTpls = dt.templates || []; }
+            } catch(e) {}
+            window._notifTplCache = notifTpls;
+            var tplOptions = '<option value="">— Shablon tanlang (ixtiyoriy) —</option>' +
+                notifTpls.map(function(t, i){ return '<option value="'+i+'">'+window.escapeHtml(t.title || ('Shablon '+(i+1)))+'</option>'; }).join('');
+
             var html =
                 '<div class="page-header">' +
                     '<h1 class="page-title">Bildirishnomalar</h1>' +
@@ -30,6 +40,10 @@ import { navigateTo, renderPage } from '../router.js';
                                     '<div class="type-option" data-type="sms" onclick="selectNotifType(this)">&#128242; SMS</div>' +
                                     '<div class="type-option" data-type="in_app" onclick="selectNotifType(this)">&#128276; In-App</div>' +
                                 '</div>' +
+                            '</div>' +
+                            '<div class="form-group">' +
+                                '<label class="form-label">Shablon</label>' +
+                                '<select class="form-input" id="notifTpl" onchange="applyNotifTpl(this.value)">' + tplOptions + '</select>' +
                             '</div>' +
                             '<div class="form-group">' +
                                 '<label class="form-label">Sarlavha</label>' +
@@ -104,9 +118,21 @@ import { navigateTo, renderPage } from '../router.js';
 
         
 
+// Tanlangan shablonni sarlavha/xabar maydonlariga to'ldiradi
+function applyNotifTpl(idx) {
+    var tpls = window._notifTplCache || [];
+    var t = tpls[parseInt(idx, 10)];
+    if (!t) return;
+    var titleEl = document.getElementById('notifTitle');
+    var msgEl = document.getElementById('notifMessage');
+    if (titleEl) titleEl.value = t.title || '';
+    if (msgEl) msgEl.value = t.message || '';
+}
+
 // Exports for ES6 modules
 export { selectNotifType, renderNotifications, sendNotification };
 // Expose to window for inline onclick handlers
 window.selectNotifType = selectNotifType;
 window.renderNotifications = renderNotifications;
 window.sendNotification = sendNotification;
+window.applyNotifTpl = applyNotifTpl;

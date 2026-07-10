@@ -77,7 +77,12 @@ async def ai_chat(
         return await fallback_local_parse(user_msg_clean, current_user.id, db)
 
     current_time_str = datetime.now(timezone.utc).isoformat()
-    system_prompt_formatted = SYSTEM_PROMPT.replace("{current_time}", current_time_str)
+    # Admin paneldan tahrirlangan prompt bo'lsa o'shani, aks holda standart promptni ishlatamiz
+    custom_prompt = (settings_service.get("ai_chat_prompt", "") or "").strip()
+    active_prompt = custom_prompt if custom_prompt else SYSTEM_PROMPT
+    if "{current_time}" not in active_prompt:
+        active_prompt += "\n\nHozirgi sana va vaqt (UTC): {current_time}"
+    system_prompt_formatted = active_prompt.replace("{current_time}", current_time_str)
 
     # Initial message list
     groq_messages = [{"role": "system", "content": system_prompt_formatted}]

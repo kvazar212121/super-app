@@ -3,6 +3,8 @@
 Bularning barchasi PlatformSetting (DB) da saqlanadi va admin paneldan boshqariladi —
 kod yoki .env o'zgartirmasдан kuchга kiradi.
 """
+import json
+
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 from typing import Optional
@@ -15,8 +17,75 @@ from app.models.category import Category
 from app.api.v1.admin.dependencies import require_admin
 from app.core.config import settings
 from app.services import settings_service
+from app.services.ai_agent import SYSTEM_PROMPT as DEFAULT_CHAT_PROMPT
 
 router = APIRouter()
+
+
+# ── AI javob prompti (chat yordamchisi qanday javob berishi) ─────────────────
+
+class AiPromptUpdate(BaseModel):
+    prompt: str = ""  # bo'sh yuborilsa — standart promptga qaytadi
+
+
+@router.get("/ai-prompt")
+async def get_ai_prompt(_admin: User = Depends(require_admin)):
+    saved = (settings_service.get("ai_chat_prompt", "") or "").strip()
+    return {
+        "prompt": saved or DEFAULT_CHAT_PROMPT,
+        "is_custom": bool(saved),
+        "default": DEFAULT_CHAT_PROMPT,
+    }
+
+
+@router.put("/ai-prompt")
+async def update_ai_prompt(data: AiPromptUpdate, _admin: User = Depends(require_admin)):
+    settings_service.set_value("ai_chat_prompt", (data.prompt or "").strip(),
+                               description="AI chat yordamchisi tizim prompti")
+    saved = (settings_service.get("ai_chat_prompt", "") or "").strip()
+    return {"prompt": saved or DEFAULT_CHAT_PROMPT, "is_custom": bool(saved), "default": DEFAULT_CHAT_PROMPT}
+
+
+# ── Bildirishnoma shablonlari (qayta ishlatiladigan statik matnlar) ──────────
+
+class NotifTemplate(BaseModel):
+    id: Optional[str] = None
+    title: str
+    message: str
+
+
+class NotifTemplatesUpdate(BaseModel):
+    templates: list[NotifTemplate]
+
+
+def _load_templates() -> list[dict]:
+    raw = settings_service.get("notif_templates", "") or ""
+    if not raw:
+        return []
+    try:
+        data = json.loads(raw)
+        return data if isinstance(data, list) else []
+    except (json.JSONDecodeError, TypeError):
+        return []
+
+
+@router.get("/notif-templates")
+async def get_notif_templates(_admin: User = Depends(require_admin)):
+    return {"templates": _load_templates()}
+
+
+@router.put("/notif-templates")
+async def update_notif_templates(data: NotifTemplatesUpdate, _admin: User = Depends(require_admin)):
+    items = []
+    for i, t in enumerate(data.templates):
+        title = (t.title or "").strip()
+        message = (t.message or "").strip()
+        if not title and not message:
+            continue
+        items.append({"id": t.id or f"tpl_{i}", "title": title, "message": message})
+    settings_service.set_value("notif_templates", json.dumps(items, ensure_ascii=False),
+                               description="Bildirishnoma shablonlari")
+    return {"templates": items}
 
 PROVIDER_OPTIONS = ["openai", "groq", "deepseek"]
 
