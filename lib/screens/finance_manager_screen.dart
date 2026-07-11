@@ -6,6 +6,7 @@ import '../services/api_service.dart';
 import '../widgets/glass/glass_scaffold.dart';
 import '../theme/glass_tokens.dart';
 import '../l10n/locale_controller.dart';
+import 'family_finance_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 const double pi = 3.1415926535897932;
@@ -1071,6 +1072,19 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
     return GlassScaffold(
       showBackButton: true,
       title: 'Mening moliyam'.tr,
+      actions: [
+        IconButton(
+          tooltip: 'Oilaviy byudjet'.tr,
+          icon: const Icon(LucideIcons.users),
+          onPressed: () async {
+            await Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const FamilyFinanceScreen()),
+            );
+            _loadData();
+          },
+        ),
+      ],
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : Column(
@@ -1849,9 +1863,13 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
                                 ),
                                 const SizedBox(height: 2),
                                 Text(
-                                  item.description ?? dateStr,
-                                  style: const TextStyle(
-                                    color: Colors.white38,
+                                  item.userName != null
+                                      ? '${item.userName} · ${item.description ?? dateStr}'
+                                      : (item.description ?? dateStr),
+                                  style: TextStyle(
+                                    color: item.userName != null
+                                        ? const Color(0xFF34D399)
+                                        : Colors.white38,
                                     fontSize: 11,
                                   ),
                                   maxLines: 1,

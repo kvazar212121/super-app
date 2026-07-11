@@ -30,6 +30,10 @@ class User(Base):
     )
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     reminder_offset_minutes: Mapped[int] = mapped_column(Integer, default=10)
+    # Oilaviy moliya: qaysi umumiy byudjet guruhiga a'zo (null = shaxsiy)
+    finance_group_id: Mapped[int | None] = mapped_column(
+        Integer, ForeignKey("finance_groups.id", ondelete="SET NULL"), nullable=True, index=True
+    )
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
     )

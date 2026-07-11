@@ -1531,6 +1531,32 @@ class ApiService {
     await _dio.delete('/finance/$id');
   }
 
+  // ============ Oilaviy moliya guruhi (QR ulash) ============
+
+  /// Joriy oila guruhi (yo'q bo'lsa null) → {id, name, invite_code, is_owner, members}
+  Future<Map<String, dynamic>?> getFinanceGroup() async {
+    final response = await _dio.get('/finance/group');
+    final g = response.data['group'];
+    return g == null ? null : Map<String, dynamic>.from(g);
+  }
+
+  /// Taklif kodi/QR yaratish (guruh yo'q bo'lsa yangi ochadi)
+  Future<Map<String, dynamic>> createFinanceInvite() async {
+    final response = await _dio.post('/finance/group/invite');
+    return Map<String, dynamic>.from(response.data['group']);
+  }
+
+  /// QR/kod orqali oila guruhiga qo'shilish
+  Future<Map<String, dynamic>> joinFinanceGroup(String code) async {
+    final response = await _dio.post('/finance/group/join', data: {'code': code});
+    return Map<String, dynamic>.from(response.data['group']);
+  }
+
+  /// Oila guruhidan chiqish
+  Future<void> leaveFinanceGroup() async {
+    await _dio.post('/finance/group/leave');
+  }
+
   Future<List<dynamic>> getPlannedPayments() async {
     final response = await _dio.get('/finance/planned');
     return response.data;

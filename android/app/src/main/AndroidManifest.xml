@@ -18,6 +18,8 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <!-- Fitnes: kunlik qadamlarni sanash (pedometer, Android 10+) -->
     <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" />
+    <!-- Oilaviy moliya: QR kodni skanerlash (kamera) -->
+    <uses-permission android:name="android.permission.CAMERA" />
     <!-- Majburlovchi budilnik: aniq vaqtda jiringlash uchun (Android 12+) -->
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
     <uses-permission android:name="android.permission.USE_EXACT_ALARM" />

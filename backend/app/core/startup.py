@@ -105,6 +105,14 @@ async def run_startup_init():
         await conn.execute(text(
             "CREATE INDEX IF NOT EXISTS ix_providers_rating ON providers (rating)"
         ))
+        # Oilaviy moliya: foydalanuvchini umumiy byudjet guruhiga bog'lovchi ustun
+        await conn.execute(text(
+            "ALTER TABLE users ADD COLUMN IF NOT EXISTS finance_group_id INTEGER "
+            "REFERENCES finance_groups(id) ON DELETE SET NULL"
+        ))
+        await conn.execute(text(
+            "CREATE INDEX IF NOT EXISTS ix_users_finance_group_id ON users (finance_group_id)"
+        ))
         # Energiya balansi integratsiyasi: mashg'ulot logiga yoqilgan kaloriya ustunlari
         await conn.execute(text(
             "ALTER TABLE workout_logs ADD COLUMN IF NOT EXISTS duration_min INTEGER"

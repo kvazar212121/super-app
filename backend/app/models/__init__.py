@@ -29,6 +29,7 @@ from app.models.dispute import Dispute
 from app.models.support import SupportTicket, SupportMessage
 from app.models.direct_message import DirectMessage
 from app.models.daily_activity import DailyActivity
+from app.models.finance_group import FinanceGroup
 
 __all__ = [
     "User",
@@ -68,4 +69,5 @@ __all__ = [
     "SupportMessage",
     "DirectMessage",
     "DailyActivity",
+    "FinanceGroup",
 ]

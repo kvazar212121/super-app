@@ -26,6 +26,7 @@ class FinanceRecordUpdate(BaseModel):
 class FinanceRecordOut(FinanceRecordBase):
     id: int
     user_id: int
+    user_name: Optional[str] = None  # kim qo'shgani (oilaviy hisobda)
     created_at: datetime
 
     class Config:
@@ -38,9 +39,38 @@ class FinanceCategoryStat(BaseModel):
     percentage: float
 
 
+class FinanceMemberStat(BaseModel):
+    user_id: int
+    name: str
+    income: float
+    expense: float
+
+
 class FinanceStatsOut(BaseModel):
     total_income: float
     total_expense: float
     balance: float
     category_stats: List[FinanceCategoryStat]
     insight: str
+    # Oilaviy hisob: har a'zoning ulushi (guruh bo'lsa)
+    member_stats: List[FinanceMemberStat] = []
+
+
+# ── Oilaviy moliya guruhi ──
+
+class FinanceGroupMember(BaseModel):
+    user_id: int
+    name: str
+    is_owner: bool
+
+
+class FinanceGroupOut(BaseModel):
+    id: int
+    name: str
+    invite_code: str
+    is_owner: bool
+    members: List[FinanceGroupMember]
+
+
+class JoinGroupIn(BaseModel):
+    code: str

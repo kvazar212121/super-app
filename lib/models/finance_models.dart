@@ -5,6 +5,7 @@ class FinanceRecord {
   final String category;
   final String? description;
   final DateTime date;
+  final String? userName; // oilaviy hisobda kim qo'shgani
 
   FinanceRecord({
     required this.id,
@@ -13,6 +14,7 @@ class FinanceRecord {
     required this.category,
     this.description,
     required this.date,
+    this.userName,
   });
 
   factory FinanceRecord.fromJson(Map<String, dynamic> json) {
@@ -23,6 +25,7 @@ class FinanceRecord {
       category: json['category'] as String,
       description: json['description'] as String?,
       date: DateTime.parse(json['date'] as String).toLocal(),
+      userName: json['user_name'] as String?,
     );
   }
 
