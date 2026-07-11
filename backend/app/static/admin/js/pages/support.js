@@ -32,7 +32,7 @@ async function renderSupport() {
 async function loadTickets() {
     var tickets = [];
     try {
-        var r = await window.api(window.API_BASE + '/admin/support/tickets');
+        var r = await window.api(window.API_BASE + '/support/tickets');
         if (r && r.ok) { var d = await r.json(); tickets = d.tickets || []; }
     } catch (e) {}
 
@@ -70,7 +70,7 @@ async function openSupTicket(id) {
 async function loadMessages(ticketId, silent) {
     var data = { messages: [], status: 'open' };
     try {
-        var r = await window.api(window.API_BASE + '/admin/support/tickets/' + ticketId + '/messages');
+        var r = await window.api(window.API_BASE + '/support/tickets/' + ticketId + '/messages');
         if (r && r.ok) data = await r.json();
     } catch (e) {}
 
@@ -118,7 +118,7 @@ function sendSupReply() {
     var text = (ta && ta.value || '').trim();
     if (!text) return;
     if (ta) ta.value = '';
-    window.api(window.API_BASE + '/admin/support/tickets/' + _supActiveTicket + '/reply', {
+    window.api(window.API_BASE + '/support/tickets/' + _supActiveTicket + '/reply', {
         method: 'POST', body: JSON.stringify({ text: text }),
     }).then(function (r) {
         if (r && r.ok) { loadMessages(_supActiveTicket, true); loadTickets(); }
@@ -129,7 +129,7 @@ function sendSupReply() {
 function closeSupTicket() {
     if (!_supActiveTicket) return;
     if (!confirm('Chatni yopiq deb belgilaysizmi?')) return;
-    window.api(window.API_BASE + '/admin/support/tickets/' + _supActiveTicket + '/close', { method: 'POST' })
+    window.api(window.API_BASE + '/support/tickets/' + _supActiveTicket + '/close', { method: 'POST' })
         .then(function (r) {
             window.showToast(r && r.ok ? 'Chat yopildi' : 'Xatolik', r && r.ok ? 'success' : 'error');
             loadTickets(); loadMessages(_supActiveTicket, true);

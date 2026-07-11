@@ -16,7 +16,7 @@ import { navigateTo, renderPage } from '../router.js';
             // Bildirishnoma shablonlari (AI va Bildirishnomalar bo'limида tahrirlanadi)
             var notifTpls = [];
             try {
-                const rt = await window.api(window.API_BASE + '/admin/notif-templates');
+                const rt = await window.api(window.API_BASE + '/notif-templates');
                 if (rt && rt.ok) { var dt = await rt.json(); notifTpls = dt.templates || []; }
             } catch(e) {}
             window._notifTplCache = notifTpls;
