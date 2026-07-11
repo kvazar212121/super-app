@@ -11,6 +11,8 @@ from app.db.session import get_db
 from app.api.dependencies import get_current_user
 from app.models.user import User
 from app.models.nutrition import NutritionProfile, MealLog
+from app.models.workout import WorkoutLog
+from app.models.daily_activity import DailyActivity
 from app.schemas.calories import (
     FoodAnalyzeOut,
     MealLogCreate,
@@ -164,6 +166,32 @@ async def get_daily_summary(
     profile = profile_result.scalar_one_or_none()
     goal = compute_daily_goal(profile) if profile else None
 
+    # ── Energiya balansi: shu kungi yoqilgan kaloriya (mashg'ulot + yurish) ──
+    exercise_calories = float(
+        await db.scalar(
+            select(func.coalesce(func.sum(WorkoutLog.calories_burned), 0.0)).where(
+                WorkoutLog.user_id == current_user.id,
+                func.date(WorkoutLog.date) == target_date,
+            )
+        ) or 0.0
+    )
+    activity = (
+        await db.execute(
+            select(DailyActivity).where(
+                DailyActivity.user_id == current_user.id,
+                DailyActivity.date == target_date,
+            )
+        )
+    ).scalar_one_or_none()
+    steps = int(activity.steps) if activity else 0
+    steps_calories = float(activity.calories) if activity else 0.0
+    calories_burned = round(exercise_calories + steps_calories, 1)
+
+    # Net model: yoqilgan kaloriya kunlik normani oshiradi
+    remaining = None
+    if goal is not None:
+        remaining = round(goal + calories_burned - float(total_calories), 1)
+
     return DailySummaryOut(
         date=target_date.isoformat(),
         total_calories=float(total_calories),
@@ -171,8 +199,12 @@ async def get_daily_summary(
         fat_g=float(fat_g),
         carbs_g=float(carbs_g),
         goal_calories=goal,
-        remaining=(goal - float(total_calories)) if goal is not None else None,
+        remaining=remaining,
         meals_count=int(meals_count),
+        exercise_calories=round(exercise_calories, 1),
+        steps=steps,
+        steps_calories=round(steps_calories, 1),
+        calories_burned=calories_burned,
     )
 
 

@@ -64,6 +64,7 @@ dependencies:
   cached_network_image: ^3.3.1
   smart_auth: ^3.2.0
   url_launcher: ^6.2.5
+  pedometer: ^4.0.1
 
 dev_dependencies:
   flutter_test:

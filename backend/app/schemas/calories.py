@@ -54,8 +54,13 @@ class DailySummaryOut(BaseModel):
     fat_g: float
     carbs_g: float
     goal_calories: Optional[float] = None
-    remaining: Optional[float] = None
+    remaining: Optional[float] = None  # net = norma + yoqilgan − iste'mol
     meals_count: int
+    # Energiya balansi (fitnes integratsiyasi)
+    exercise_calories: float = 0.0
+    steps: int = 0
+    steps_calories: float = 0.0
+    calories_burned: float = 0.0
 
 
 class NutritionProfileIn(BaseModel):

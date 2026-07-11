@@ -1,7 +1,8 @@
 """Fitnes trener mini-ilovasi API: mashqlar katalogi, reja generatori, mashg'ulot loglari."""
-from datetime import datetime
+from datetime import datetime, date as date_type
 
 from fastapi import APIRouter, Depends, HTTPException, Query
+from pydantic import BaseModel, Field
 from sqlalchemy import select, func, or_, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -10,6 +11,7 @@ from app.api.dependencies import get_current_user
 from app.models.user import User
 from app.models.exercise import Exercise
 from app.models.workout import WorkoutPlan, WorkoutLog
+from app.models.daily_activity import DailyActivity
 from app.schemas.fitness import (
     ExerciseOut,
     ExercisePage,
@@ -22,6 +24,7 @@ from app.schemas.fitness import (
     WorkoutLogOut,
 )
 from app.services.workout_generator import generate_plan
+from app.services import energy_service
 from app.data.exercises_vocab_uz import BODY_PART_UZ, EQUIPMENT_UZ, TARGET_UZ
 
 router = APIRouter(prefix="/fitness", tags=["fitness"])
@@ -192,7 +195,30 @@ async def create_workout_log(
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    new_log = WorkoutLog(**data.model_dump(), user_id=current_user.id)
+    # Energiya balansi: yoqilgan kaloriyani server-side hisoblaymiz
+    duration_min = 0
+    calories_burned = 0.0
+    if data.plan_id:
+        plan = (
+            await db.execute(
+                select(WorkoutPlan).where(
+                    WorkoutPlan.id == data.plan_id,
+                    WorkoutPlan.user_id == current_user.id,
+                )
+            )
+        ).scalar_one_or_none()
+        if plan is not None:
+            weight = await energy_service.get_user_weight(db, current_user.id)
+            duration_min, calories_burned = energy_service.estimate_workout(
+                plan.days, data.day_index, data.completed_exercises, weight, plan.goal
+            )
+
+    new_log = WorkoutLog(
+        **data.model_dump(),
+        user_id=current_user.id,
+        duration_min=duration_min or None,
+        calories_burned=calories_burned,
+    )
     db.add(new_log)
     await db.commit()
     await db.refresh(new_log)
@@ -217,3 +243,112 @@ async def get_workout_logs(
 
     result = await db.execute(query.order_by(WorkoutLog.date.desc()).limit(200))
     return result.scalars().all()
+
+
+# ─────────────── Kunlik faollik (qadamlar → yoqilgan kaloriya) ───────────────
+
+class ActivitySync(BaseModel):
+    date: date_type
+    steps: int = Field(..., ge=0, le=200000)
+
+
+def _activity_out(a: DailyActivity) -> dict:
+    return {
+        "date": a.date.isoformat(),
+        "steps": a.steps,
+        "calories": round(a.calories, 1),
+    }
+
+
+@router.put("/activity")
+async def sync_activity(
+    data: ActivitySync,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Kunlik qadamni saqlash (upsert). Kaloriya vazndan hisoblanadi.
+
+    Qadam faqat oshadi (kunlik kumulyativ) — kichikroq qiymat kelsa e'tiborsiz.
+    """
+    weight = await energy_service.get_user_weight(db, current_user.id)
+    row = (
+        await db.execute(
+            select(DailyActivity).where(
+                DailyActivity.user_id == current_user.id,
+                DailyActivity.date == data.date,
+            )
+        )
+    ).scalar_one_or_none()
+    steps = data.steps
+    if row is None:
+        row = DailyActivity(
+            user_id=current_user.id, date=data.date, steps=steps,
+            calories=energy_service.steps_to_calories(steps, weight),
+        )
+        db.add(row)
+    else:
+        # Kunlik qadam kamaymaydi (qurilma qayta ishga tushsa ham)
+        if steps > row.steps:
+            row.steps = steps
+        row.calories = energy_service.steps_to_calories(row.steps, weight)
+    await db.commit()
+    await db.refresh(row)
+    return _activity_out(row)
+
+
+@router.get("/activity")
+async def get_activity(
+    date: date_type | None = Query(None),
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Bir kunlik faollik (bugungi qadam/kaloriya)."""
+    target = date or datetime.utcnow().date()
+    row = (
+        await db.execute(
+            select(DailyActivity).where(
+                DailyActivity.user_id == current_user.id,
+                DailyActivity.date == target,
+            )
+        )
+    ).scalar_one_or_none()
+    if row is None:
+        return {"date": target.isoformat(), "steps": 0, "calories": 0.0}
+    return _activity_out(row)
+
+
+@router.get("/activity/summary")
+async def activity_summary(
+    from_date: str | None = Query(None, alias="from"),
+    to_date: str | None = Query(None, alias="to"),
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Berilgan oraliqdagi jami qadam va yoqilgan kaloriya (mashq + yurish)."""
+    q = select(
+        func.coalesce(func.sum(DailyActivity.steps), 0),
+        func.coalesce(func.sum(DailyActivity.calories), 0.0),
+    ).where(DailyActivity.user_id == current_user.id)
+    logq = select(func.coalesce(func.sum(WorkoutLog.calories_burned), 0.0)).where(
+        WorkoutLog.user_id == current_user.id
+    )
+    try:
+        if from_date:
+            d = datetime.fromisoformat(from_date).date()
+            q = q.where(DailyActivity.date >= d)
+            logq = logq.where(WorkoutLog.date >= datetime.fromisoformat(from_date))
+        if to_date:
+            d = datetime.fromisoformat(to_date).date()
+            q = q.where(DailyActivity.date <= d)
+            logq = logq.where(WorkoutLog.date <= datetime.fromisoformat(to_date))
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Sana formati noto'g'ri.")
+
+    steps, steps_cal = (await db.execute(q)).one()
+    workout_cal = (await db.execute(logq)).scalar() or 0.0
+    return {
+        "steps": int(steps or 0),
+        "steps_calories": round(float(steps_cal or 0), 1),
+        "workout_calories": round(float(workout_cal), 1),
+        "total_burned": round(float(steps_cal or 0) + float(workout_cal), 1),
+    }

@@ -3,8 +3,10 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../../l10n/locale_controller.dart';
 import '../../services/api_service.dart';
+import '../../services/step_tracker_service.dart';
 import '../../theme/glass_tokens.dart';
 import '../../widgets/glass/glass_scaffold.dart';
+import '../calorie/calorie_profile_screen.dart';
 import 'exercise_library_screen.dart';
 import 'fitness_plan_setup_screen.dart';
 import 'fitness_utils.dart';
@@ -25,10 +27,47 @@ class _FitnessHomeScreenState extends State<FitnessHomeScreen> {
   Map<String, dynamic>? _plan;
   List<dynamic> _weekLogs = [];
 
+  // Energiya balansi
+  final StepTrackerService _steps = StepTrackerService();
+  Map<String, dynamic> _energy = {};
+  bool _hasProfile = true;
+
   @override
   void initState() {
     super.initState();
     _loadData();
+    _initEnergy();
+  }
+
+  Future<void> _initEnergy() async {
+    _steps.addListener(_onStepsChanged);
+    await _steps.init();
+    await _loadEnergy();
+  }
+
+  void _onStepsChanged() {
+    if (mounted) setState(() {});
+  }
+
+  Future<void> _loadEnergy() async {
+    try {
+      await _steps.syncNow();
+      final today = _formatDateForApi(DateTime.now());
+      final energy = await _api.getActivitySummary(from: today, to: today);
+      final profile = await _api.getNutritionProfile();
+      if (mounted) {
+        setState(() {
+          _energy = energy;
+          _hasProfile = profile != null && profile['weight_kg'] != null;
+        });
+      }
+    } catch (_) {}
+  }
+
+  @override
+  void dispose() {
+    _steps.removeListener(_onStepsChanged);
+    super.dispose();
   }
 
   String _formatDateForApi(DateTime date) {
@@ -165,11 +204,95 @@ class _FitnessHomeScreenState extends State<FitnessHomeScreen> {
     );
   }
 
+  /// Bugungi energiya kartasi: qadamlar + yoqilgan kaloriya (mashq + yurish).
+  Widget _buildEnergyCard() {
+    final steps = _steps.available && _steps.todaySteps > 0
+        ? _steps.todaySteps
+        : (_energy['steps'] as num?)?.toInt() ?? 0;
+    final burned = (_energy['total_burned'] as num?)?.toDouble() ?? 0;
+    final stepsCal = (_energy['steps_calories'] as num?)?.toDouble() ?? 0;
+    final workoutCal = (_energy['workout_calories'] as num?)?.toDouble() ?? 0;
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [Color(0xFF0D9488), Color(0xFF0EA5E9)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(GlassTokens.radiusMd),
+      ),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              _energyStat(LucideIcons.footprints, '$steps', 'qadam'.tr),
+              Container(width: 1, height: 40, color: Colors.white24),
+              _energyStat(LucideIcons.flame, '${burned.round()}', 'kkal yoqildi'.tr),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                '${'Mashq'.tr}: ${workoutCal.round()} · ${'Yurish'.tr}: ${stepsCal.round()} kkal',
+                style: const TextStyle(color: Colors.white70, fontSize: 12),
+              ),
+            ],
+          ),
+          if (!_hasProfile) ...[
+            const SizedBox(height: 10),
+            GestureDetector(
+              onTap: () async {
+                await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const CalorieProfileScreen(isFirstSetup: true),
+                  ),
+                );
+                _loadEnergy();
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.2),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Text(
+                  'Aniq hisob uchun bo\'y/vazningizni kiriting'.tr,
+                  style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w600),
+                ),
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _energyStat(IconData icon, String value, String label) {
+    return Expanded(
+      child: Column(
+        children: [
+          Icon(icon, color: Colors.white, size: 22),
+          const SizedBox(height: 6),
+          Text(value,
+              style: const TextStyle(
+                  color: Colors.white, fontSize: 22, fontWeight: FontWeight.w900)),
+          Text(label, style: const TextStyle(color: Colors.white70, fontSize: 12)),
+        ],
+      ),
+    );
+  }
+
   Widget _buildNoPlanState() {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
-        const SizedBox(height: 24),
+        _buildEnergyCard(),
         Container(
           padding: const EdgeInsets.all(24),
           decoration: BoxDecoration(
@@ -262,6 +385,7 @@ class _FitnessHomeScreenState extends State<FitnessHomeScreen> {
     return ListView(
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
       children: [
+        _buildEnergyCard(),
         // Reja sarlavhasi + progress
         Container(
           padding: const EdgeInsets.all(16),

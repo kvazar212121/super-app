@@ -1,5 +1,5 @@
 from datetime import datetime
-from sqlalchemy import DateTime, Integer, String, Boolean, ForeignKey, func, Text
+from sqlalchemy import DateTime, Integer, String, Boolean, ForeignKey, func, Text, Float
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -36,6 +36,9 @@ class WorkoutLog(Base):
     day_index: Mapped[int] = mapped_column(Integer, nullable=False)
     date: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, index=True)
     completed_exercises: Mapped[list | dict | None] = mapped_column(JSONB, nullable=True)
+    # Energiya balansi integratsiyasi: server-side hisoblanadi (davomiylik va yoqilgan kaloriya)
+    duration_min: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    calories_burned: Mapped[float] = mapped_column(Float, default=0.0)
     note: Mapped[str | None] = mapped_column(Text, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 

@@ -86,6 +86,8 @@ class WorkoutLogCreate(BaseModel):
 class WorkoutLogOut(WorkoutLogCreate):
     id: int
     user_id: int
+    duration_min: Optional[int] = None
+    calories_burned: float = 0.0
     created_at: datetime
 
     class Config:

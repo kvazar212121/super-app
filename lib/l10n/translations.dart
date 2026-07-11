@@ -1158,4 +1158,11 @@ const Map<String, String> kTranslationsRu = {
   'Qo\'ng\'iroqlar ro\'yxatidan abonentga xabar yozing': 'Напишите абоненту из списка звонков',
   'Hali xabar yo\'q. Birinchi bo\'lib yozing.': 'Пока нет сообщений. Напишите первым.',
   'SMS': 'SMS',
+
+  // ── Energiya balansi (fitnes↔kaloriya) ──
+  'qadam': 'шагов',
+  'kkal yoqildi': 'ккал сожжено',
+  'Mashq': 'Тренировка',
+  'Yurish': 'Ходьба',
+  'Aniq hisob uchun bo\'y/vazningizni kiriting': 'Укажите рост/вес для точного расчёта',
 };

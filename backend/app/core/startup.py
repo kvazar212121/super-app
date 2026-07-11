@@ -105,6 +105,13 @@ async def run_startup_init():
         await conn.execute(text(
             "CREATE INDEX IF NOT EXISTS ix_providers_rating ON providers (rating)"
         ))
+        # Energiya balansi integratsiyasi: mashg'ulot logiga yoqilgan kaloriya ustunlari
+        await conn.execute(text(
+            "ALTER TABLE workout_logs ADD COLUMN IF NOT EXISTS duration_min INTEGER"
+        ))
+        await conn.execute(text(
+            "ALTER TABLE workout_logs ADD COLUMN IF NOT EXISTS calories_burned FLOAT DEFAULT 0"
+        ))
         # ── Saqlash limiti: eski bildirishnomalarni serverdan tozalash (1 oy) ──
         # Bildirishnomalar mijoz qurilmasida ko'rinadi; serverда 30 kundan ortiq
         # saqlanmaydi (ma'lumotlar bazasi shishmasligi uchun). Eski xabarlar lokal

@@ -37,17 +37,26 @@ class _FitnessWorkoutDayScreenState extends State<FitnessWorkoutDayScreen> {
   Future<void> _finishWorkout() async {
     setState(() => _isSaving = true);
     try {
-      await _api.logWorkout({
+      final res = await _api.logWorkout({
         'plan_id': widget.plan['id'],
         'day_index': widget.day['day_index'],
         'date': DateTime.now().toUtc().toIso8601String(),
         'completed_exercises': _completedIds.toList(),
       });
+      final burned = (res['calories_burned'] as num?)?.round() ?? 0;
       await NotificationHelper().showNotification(
         9001,
         'Barakalla! 🎉'.tr,
         '${widget.day['title']} ${'mashg\'uloti yakunlandi. Shu zaylda davom eting!'.tr}',
       );
+      if (mounted && burned > 0) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            backgroundColor: const Color(0xFF0D9488),
+            content: Text('🔥 ~$burned ${'kkal yoqildi'.tr}'),
+          ),
+        );
+      }
       if (mounted) Navigator.pop(context, true);
     } catch (e) {
       debugPrint('Mashg\'ulotni saqlashda xato: $e');

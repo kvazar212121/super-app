@@ -11,6 +11,7 @@ import 'package:uuid/uuid.dart';
 import '../../config/app_config.dart';
 import '../../l10n/locale_controller.dart';
 import '../../services/api_service.dart';
+import '../../services/step_tracker_service.dart';
 import '../../theme/glass_tokens.dart';
 import '../../widgets/glass/glass_scaffold.dart';
 import 'calorie_analyze_screen.dart';
@@ -47,6 +48,17 @@ class _CalorieHomeScreenState extends State<CalorieHomeScreen> {
     super.initState();
     _loadData();
     _checkProfile();
+    _initSteps();
+  }
+
+  /// Qadam sensorini yoqib, bugungi qadamni serverga sinxronlaymiz — shunda
+  /// net byudjet (yoqilgan kaloriya) yangilanadi.
+  Future<void> _initSteps() async {
+    try {
+      await StepTrackerService().init();
+      await StepTrackerService().syncNow();
+      if (_isToday) _loadData();
+    } catch (_) {}
   }
 
   String _formatDateForApi(DateTime date) {
@@ -280,10 +292,14 @@ class _CalorieHomeScreenState extends State<CalorieHomeScreen> {
     final protein = (_summary?['protein_g'] as num?)?.toDouble() ?? 0;
     final fat = (_summary?['fat_g'] as num?)?.toDouble() ?? 0;
     final carbs = (_summary?['carbs_g'] as num?)?.toDouble() ?? 0;
-    final progress = (goal != null && goal > 0)
-        ? (total / goal).clamp(0.0, 1.0)
+    // Net model: yoqilgan kaloriya (mashq + yurish) kunlik byudjetni oshiradi
+    final burned = (_summary?['calories_burned'] as num?)?.toDouble() ?? 0;
+    final steps = (_summary?['steps'] as num?)?.toInt() ?? 0;
+    final netGoal = goal != null ? goal + burned : null;
+    final progress = (netGoal != null && netGoal > 0)
+        ? (total / netGoal).clamp(0.0, 1.0)
         : 0.0;
-    final over = goal != null && total > goal;
+    final over = netGoal != null && total > netGoal;
 
     return Container(
       padding: const EdgeInsets.all(20),
@@ -341,8 +357,8 @@ class _CalorieHomeScreenState extends State<CalorieHomeScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      goal != null
-                          ? '${'Maqsad'.tr}: ${goal.round()} ${'kkal'.tr}'
+                      netGoal != null
+                          ? '${'Maqsad'.tr}: ${netGoal.round()} ${'kkal'.tr}'
                           : 'Maqsad belgilanmagan'.tr,
                       style: TextStyle(
                         fontWeight: FontWeight.w700,
@@ -351,16 +367,28 @@ class _CalorieHomeScreenState extends State<CalorieHomeScreen> {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      goal != null
+                      netGoal != null
                           ? (over
-                                ? '${(total - goal).round()} ${'kkal oshib ketdi'.tr}'
-                                : '${(goal - total).round()} ${'kkal qoldi'.tr}')
+                                ? '${(total - netGoal).round()} ${'kkal oshib ketdi'.tr}'
+                                : '${(netGoal - total).round()} ${'kkal qoldi'.tr}')
                           : 'Profilni to\'ldiring'.tr,
                       style: TextStyle(
                         fontSize: 13,
                         color: GlassTokens.secondaryText(context),
                       ),
                     ),
+                    if (burned > 0) ...[
+                      const SizedBox(height: 4),
+                      Text(
+                        '🔥 ${burned.round()} ${'kkal yoqildi'.tr}'
+                        '${steps > 0 ? ' · $steps ${'qadam'.tr}' : ''}',
+                        style: const TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFF0D9488),
+                        ),
+                      ),
+                    ],
                     SizedBox(height: 12),
                     _buildMacroRow('Oqsil'.tr, protein, Colors.blueAccent),
                     _buildMacroRow('Yog\''.tr, fat, Colors.orangeAccent),

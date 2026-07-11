@@ -1753,6 +1753,31 @@ class ApiService {
     return response.data;
   }
 
+  /// Kunlik qadamni serverga sinxronlash → {date, steps, calories}
+  Future<Map<String, dynamic>> syncSteps(String date, int steps) async {
+    final response = await _dio.put('/fitness/activity', data: {
+      'date': date,
+      'steps': steps,
+    });
+    return Map<String, dynamic>.from(response.data);
+  }
+
+  /// Bugungi (yoki berilgan sana) faollik → {date, steps, calories}
+  Future<Map<String, dynamic>> getDailyActivity({String? date}) async {
+    final response = await _dio.get('/fitness/activity',
+        queryParameters: date != null ? {'date': date} : null);
+    return Map<String, dynamic>.from(response.data);
+  }
+
+  /// Oraliq bo'yicha jami qadam va yoqilgan kaloriya → {steps, steps_calories, workout_calories, total_burned}
+  Future<Map<String, dynamic>> getActivitySummary({String? from, String? to}) async {
+    final response = await _dio.get('/fitness/activity/summary', queryParameters: {
+      if (from != null) 'from': from,
+      if (to != null) 'to': to,
+    });
+    return Map<String, dynamic>.from(response.data);
+  }
+
   Future<List<dynamic>> getWorkoutLogs({String? from, String? to}) async {
     final response = await _dio.get(
       '/fitness/logs',
