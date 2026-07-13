@@ -139,7 +139,6 @@ extension ServiceHubKindX on ServiceHubKind {
     ServiceHubKind.ishchi => 'assets/images/services3d/ishchi.png',
     ServiceHubKind.usta => 'assets/images/services3d/usta.png',
     ServiceHubKind.elektrik => 'assets/images/services3d/elektrik.png',
-    ServiceHubKind.santexnik => 'assets/images/services3d/santexnik.png',
     ServiceHubKind.tozalash => 'assets/images/services3d/tozalash.png',
     ServiceHubKind.avtoYordam => 'assets/images/services3d/avtoYordam.png',
     ServiceHubKind.enaga => 'assets/images/services3d/enaga.png',
@@ -157,9 +156,10 @@ extension ServiceHubKindX on ServiceHubKind {
     ServiceHubKind.kompUsta => 'assets/images/services3d/kompUsta.png',
     ServiceHubKind.boshqa => 'assets/images/services3d/boshqa.png',
     ServiceHubKind.yana => 'assets/images/services3d/yana.png',
-    // Aynan mos 3D icon yo'q — eng yaqin variant (lab/umbrella)
-    ServiceHubKind.stomatologiya => 'assets/images/services3d/stomatologiya.png',
     ServiceHubKind.konditsioner => 'assets/images/services3d/konditsioner.png',
+    // Bepul 3D to'plamda quvur/tish iconi yo'q — aniq flat Lucide icon ishlatiladi
+    ServiceHubKind.santexnik => null,
+    ServiceHubKind.stomatologiya => null,
   };
 
   Color get accent => switch (this) {
