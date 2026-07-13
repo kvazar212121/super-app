@@ -131,6 +131,37 @@ extension ServiceHubKindX on ServiceHubKind {
     ServiceHubKind.yana => LucideIcons.moreHorizontal,
   };
 
+  /// 3D icon rasm yo'li (3dicons.co). Bo'lmasa null → yuqoridagi [icon] ishlatiladi.
+  String? get asset3d => switch (this) {
+    ServiceHubKind.sartarosh => 'assets/images/services3d/sartarosh.png',
+    ServiceHubKind.salon => 'assets/images/services3d/salon.png',
+    ServiceHubKind.futbol => 'assets/images/services3d/futbol.png',
+    ServiceHubKind.ishchi => 'assets/images/services3d/ishchi.png',
+    ServiceHubKind.usta => 'assets/images/services3d/usta.png',
+    ServiceHubKind.elektrik => 'assets/images/services3d/elektrik.png',
+    ServiceHubKind.santexnik => 'assets/images/services3d/santexnik.png',
+    ServiceHubKind.tozalash => 'assets/images/services3d/tozalash.png',
+    ServiceHubKind.avtoYordam => 'assets/images/services3d/avtoYordam.png',
+    ServiceHubKind.enaga => 'assets/images/services3d/enaga.png',
+    ServiceHubKind.repetitor => 'assets/images/services3d/repetitor.png',
+    ServiceHubKind.dezinfeksiya => 'assets/images/services3d/dezinfeksiya.png',
+    ServiceHubKind.texnikaUstasi => 'assets/images/services3d/texnikaUstasi.png',
+    ServiceHubKind.kuryerlik => 'assets/images/services3d/kuryerlik.png',
+    ServiceHubKind.massajHijoma => 'assets/images/services3d/massajHijoma.png',
+    ServiceHubKind.hamshira => 'assets/images/services3d/hamshira.png',
+    ServiceHubKind.tadbirlar => 'assets/images/services3d/tadbirlar.png',
+    ServiceHubKind.bozorchi => 'assets/images/services3d/bozorchi.png',
+    ServiceHubKind.oshxona => 'assets/images/services3d/oshxona.png',
+    ServiceHubKind.gameZona => 'assets/images/services3d/gameZona.png',
+    ServiceHubKind.sportMaydon => 'assets/images/services3d/sportMaydon.png',
+    ServiceHubKind.kompUsta => 'assets/images/services3d/kompUsta.png',
+    ServiceHubKind.boshqa => 'assets/images/services3d/boshqa.png',
+    ServiceHubKind.yana => 'assets/images/services3d/yana.png',
+    // 3D mos icon topilmadi — Lucide fallback ishlatiladi
+    ServiceHubKind.konditsioner => null,
+    ServiceHubKind.stomatologiya => null,
+  };
+
   Color get accent => switch (this) {
     ServiceHubKind.sartarosh => Colors.blue,
     ServiceHubKind.salon => Colors.pink,

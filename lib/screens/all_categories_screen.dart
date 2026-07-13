@@ -207,23 +207,18 @@ class _AllCategoriesScreenState extends State<AllCategoriesScreen> {
                                         ),
                                         child: Row(
                                           children: [
-                                            Container(
-                                              width: 44,
-                                              height: 44,
-                                              decoration: BoxDecoration(
-                                                color: k.accent,
-                                                borderRadius:
-                                                    BorderRadius.circular(14),
-                                                border: Border.all(
-                                                  color: k.accent,
-                                                ),
-                                              ),
-                                              child: Icon(
-                                                k.icon,
-                                                color: Colors.white,
-                                                size: 22,
-                                              ),
-                                            ),
+                                            k.asset3d != null
+                                                ? SizedBox(
+                                                    width: 48,
+                                                    height: 48,
+                                                    child: Image.asset(
+                                                      k.asset3d!,
+                                                      fit: BoxFit.contain,
+                                                      errorBuilder: (_, __, ___) =>
+                                                          _fallbackIcon(k),
+                                                    ),
+                                                  )
+                                                : _fallbackIcon(k),
                                             const SizedBox(width: 12),
                                             Expanded(
                                               child: Text(
@@ -256,6 +251,20 @@ class _AllCategoriesScreenState extends State<AllCategoriesScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  /// 3D icon topilmasa — rangli Lucide icon (eski ko'rinish).
+  Widget _fallbackIcon(ServiceHubKind k) {
+    return Container(
+      width: 44,
+      height: 44,
+      decoration: BoxDecoration(
+        color: k.accent,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: k.accent),
+      ),
+      child: Icon(k.icon, color: Colors.white, size: 22),
     );
   }
 }
