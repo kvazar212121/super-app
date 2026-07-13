@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import '../providers/app_provider.dart';
 import '../screens/order_detail_screen.dart';
 import '../widgets/glass/glass_scaffold.dart';
+import '../theme/glass_tokens.dart';
 import '../l10n/locale_controller.dart';
 
 class NotificationsScreen extends StatelessWidget {
@@ -252,10 +253,10 @@ class NotificationsScreen extends StatelessWidget {
             const SizedBox(height: 24),
             Text(
               "Bildirishnomalar yo'q".tr,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-                color: Colors.black87,
+                color: GlassTokens.primaryText(context),
               ),
             ),
             const SizedBox(height: 8),
@@ -265,7 +266,7 @@ class NotificationsScreen extends StatelessWidget {
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 14,
-                color: Colors.grey[500],
+                color: GlassTokens.secondaryText(context),
                 height: 1.4,
               ),
             ),

@@ -37,7 +37,7 @@ class _NannyProfileScreenState extends State<NannyProfileScreen> {
   bool _reviewedProfile = false;
   bool _contactedNanny = false;
 
-  static const _accent = Color(0xFFF472B6);
+  static const _accent = Color(0xFF2563EB);
 
   NannyService get nanny => widget.nanny;
 
@@ -379,12 +379,15 @@ class _NannyProfileScreenState extends State<NannyProfileScreen> {
   }
 
   Widget _badgeChip(String label, bool ok, IconData icon) {
+    // To'ldirilgan chip — fon rangli, matn/ikonка OQ (fon bilan bir xil bo'lib
+    // ko'rinmay qolmasligi uchun).
+    final Color bg = ok ? const Color(0xFF10B981) : const Color(0xFF64748B);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: (ok ? const Color(0xFF10B981) : Colors.grey),
+        color: bg,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: (ok ? const Color(0xFF10B981) : Colors.grey)),
+        border: Border.all(color: bg),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -392,15 +395,15 @@ class _NannyProfileScreenState extends State<NannyProfileScreen> {
           Icon(
             icon,
             size: 16,
-            color: ok ? const Color(0xFF10B981) : Colors.grey,
+            color: Colors.white,
           ),
           const SizedBox(width: 6),
           Text(
             label,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w600,
-              color: ok ? const Color(0xFF10B981) : Colors.grey[600],
+              color: Colors.white,
             ),
           ),
         ],

@@ -135,7 +135,7 @@ class _MassageRegistrationScreenState extends State<MassageRegistrationScreen> {
 
   @override
   Widget build(BuildContext context) {
-    const accent = Color(0xFFE11D48);
+    const accent = Color(0xFF2563EB);
     return ProviderTheme(
       child: Scaffold(
         appBar: AppBar(title: Text('Massaj va Hijoma'.tr)),

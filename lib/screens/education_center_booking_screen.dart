@@ -41,7 +41,7 @@ class _EducationCenterBookingScreenState
   List<String> _bookedSlots = [];
   bool _loadingSlots = true;
 
-  static const _accent = Color(0xFF6366F1);
+  static const _accent = Color(0xFF2563EB);
 
   List<String> get _services => widget.center.services.isNotEmpty
       ? widget.center.services

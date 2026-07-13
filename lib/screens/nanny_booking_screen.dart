@@ -43,7 +43,7 @@ class _NannyBookingScreenState extends State<NannyBookingScreen> {
   bool _loadingSlots = true;
   bool _trialDay = false;
 
-  static const _accent = Color(0xFFF472B6);
+  static const _accent = Color(0xFF2563EB);
 
   double get _selectedPrice {
     if (_selectedService == null) return 0.0;

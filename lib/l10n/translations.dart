@@ -1187,4 +1187,7 @@ const Map<String, String> kTranslationsRu = {
   'Yana a\'zo qo\'shish': 'Добавить участника',
   'QR kod ko\'rsatib yangi a\'zoni ulang': 'Покажите QR-код, чтобы добавить участника',
   'QR kodni skanerlang': 'Отсканируйте QR-код',
+
+  'Uyga borib xizmat qiluvchilar': 'Выезжающие на дом',
+  'Bosing — sizga keladigan ustalar': 'Нажмите — мастера с выездом к вам',
 };

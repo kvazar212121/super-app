@@ -72,7 +72,7 @@ class _NursePendingScreenState extends State<NursePendingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    const accent = Color(0xFFEF4444);
+    const accent = Color(0xFF2563EB);
     return ProviderTheme(
       child: Scaffold(
         body: Center(

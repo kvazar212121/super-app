@@ -43,7 +43,7 @@ class _TutorBookingScreenState extends State<TutorBookingScreen> {
   List<String> _bookedSlots = [];
   bool _loadingSlots = true;
 
-  static const _accent = Color(0xFF7C3AED);
+  static const _accent = Color(0xFF2563EB);
 
   double get _selectedPrice {
     if (_selectedService == null) return 0.0;

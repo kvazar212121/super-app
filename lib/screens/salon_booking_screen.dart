@@ -75,7 +75,7 @@ class _SalonBookingScreenState extends State<SalonBookingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final accentColor = const Color(0xFFE91E63); // Pink for Salon
+    final accentColor = const Color(0xFF2563EB); // Pink for Salon
     final currencyFormat = NumberFormat.currency(
       locale: 'uz_UZ',
       symbol: 'so\'m'.tr,
@@ -246,7 +246,7 @@ class _SalonBookingScreenState extends State<SalonBookingScreen> {
               children: [
                 CircleAvatar(
                   radius: 28,
-                  backgroundColor: isSelected ? color : Colors.pink[50],
+                  backgroundColor: isSelected ? color : const Color(0xFFDBEAFE),
                   child: Icon(
                     LucideIcons.user,
                     color: isSelected ? Colors.white : color,

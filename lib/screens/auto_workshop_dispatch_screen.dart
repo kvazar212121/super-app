@@ -29,7 +29,7 @@ class _AutoWorkshopDispatchScreenState
   final _notesCtrl = TextEditingController();
   DateTime _selectedDate = DateTime.now().add(const Duration(days: 1));
 
-  final Color _accent = const Color(0xFF334155);
+  final Color _accent = const Color(0xFF2563EB);
 
   double get _selectedPrice => _selectedService == null
       ? 0

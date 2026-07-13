@@ -45,7 +45,7 @@ class _DentalBookingScreenState extends State<DentalBookingScreen> {
   List<String> _timeSlots = ProviderAvailability.defaultSlots;
   bool _loadingSlots = true;
 
-  static const _accent = Color(0xFF0EA5E9);
+  static const _accent = Color(0xFF2563EB);
 
   double get _price => _selectedService == null
       ? 0

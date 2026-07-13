@@ -27,7 +27,7 @@ class BozorchiProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const accent = Color(0xFFF59E0B); // Amber
+    const accent = Color(0xFF2563EB); // Amber
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return GlassScaffold(

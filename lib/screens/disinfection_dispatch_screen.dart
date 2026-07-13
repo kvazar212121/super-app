@@ -30,7 +30,7 @@ class _DisinfectionDispatchScreenState
   final _problemCtrl = TextEditingController();
   DateTime _selectedDate = DateTime.now().add(const Duration(days: 1));
 
-  final Color _accent = const Color(0xFF10B981); // Emerald
+  final Color _accent = const Color(0xFF2563EB); // Emerald
 
   bool get _canSubmit =>
       _selectedAreaType != null &&

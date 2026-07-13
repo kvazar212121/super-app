@@ -139,7 +139,7 @@ class _NurseBookingScreenState extends State<NurseBookingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final accentColor = const Color(0xFFEF4444);
+    final accentColor = const Color(0xFF2563EB);
     final currencyFormat = NumberFormat.currency(
       locale: 'uz_UZ',
       symbol: "so'm",

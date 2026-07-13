@@ -11,15 +11,22 @@ import '../../screens/auto_workshop_dispatch_screen.dart';
 import '../../screens/tutor_profile_screen.dart';
 import '../../theme/glass_tokens.dart';
 import '../glass/glass_surface.dart';
+import 'hub_filter_chips.dart';
 
 class CourierHubSection extends StatelessWidget {
   final List<CourierService> couriers;
   final Color accentColor;
+  final List<String> categories;
+  final String? selectedCategory;
+  final ValueChanged<String?>? onCategorySelected;
 
   const CourierHubSection({
     super.key,
     required this.couriers,
     required this.accentColor,
+    this.categories = const [],
+    this.selectedCategory,
+    this.onCategorySelected,
   });
 
   @override
@@ -50,6 +57,16 @@ class CourierHubSection extends StatelessWidget {
                   color: GlassTokens.secondaryText(context),
                 ),
               ),
+              if (categories.isNotEmpty) ...[
+                const SizedBox(width: 10),
+                HubFilterButton(
+                  accent: accentColor,
+                  showSort: false,
+                  categories: categories,
+                  selectedCategory: selectedCategory,
+                  onCategorySelected: onCategorySelected,
+                ),
+              ],
             ],
           ),
         ),
@@ -159,11 +176,17 @@ class CourierHubSection extends StatelessWidget {
 class AutoHelpHubSection extends StatelessWidget {
   final List<AutoMobileService> units;
   final Color accentColor;
+  final List<String> categories;
+  final String? selectedCategory;
+  final ValueChanged<String?>? onCategorySelected;
 
   const AutoHelpHubSection({
     super.key,
     required this.units,
     required this.accentColor,
+    this.categories = const [],
+    this.selectedCategory,
+    this.onCategorySelected,
   });
 
   @override
@@ -194,6 +217,16 @@ class AutoHelpHubSection extends StatelessWidget {
                   color: GlassTokens.secondaryText(context),
                 ),
               ),
+              if (categories.isNotEmpty) ...[
+                const SizedBox(width: 10),
+                HubFilterButton(
+                  accent: accentColor,
+                  showSort: false,
+                  categories: categories,
+                  selectedCategory: selectedCategory,
+                  onCategorySelected: onCategorySelected,
+                ),
+              ],
             ],
           ),
         ),
@@ -450,10 +483,16 @@ class TutorHubSection extends StatelessWidget {
     super.key,
     required this.tutors,
     required this.accentColor,
+    this.categories = const [],
+    this.selectedCategory,
+    this.onCategorySelected,
   });
 
   final List<TutorService> tutors;
   final Color accentColor;
+  final List<String> categories;
+  final String? selectedCategory;
+  final ValueChanged<String?>? onCategorySelected;
 
   @override
   Widget build(BuildContext context) {
@@ -463,13 +502,27 @@ class TutorHubSection extends StatelessWidget {
       children: [
         Padding(
           padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),
-          child: Text(
-            'Repetitorlar',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w800,
-              color: GlassTokens.primaryText(context),
-            ),
+          child: Row(
+            children: [
+              Expanded(
+                child: Text(
+                  'Repetitorlar',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w800,
+                    color: GlassTokens.primaryText(context),
+                  ),
+                ),
+              ),
+              if (categories.isNotEmpty)
+                HubFilterButton(
+                  accent: accentColor,
+                  showSort: false,
+                  categories: categories,
+                  selectedCategory: selectedCategory,
+                  onCategorySelected: onCategorySelected,
+                ),
+            ],
           ),
         ),
         SizedBox(

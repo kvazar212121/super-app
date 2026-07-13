@@ -106,7 +106,7 @@ class _MassageBookingScreenState extends State<MassageBookingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    const accentColor = Color(0xFFE11D48);
+    const accentColor = Color(0xFF2563EB);
     final currencyFormat = NumberFormat.currency(
       locale: 'uz_UZ',
       symbol: "so'm",

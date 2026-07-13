@@ -20,7 +20,7 @@ class OshxonaProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const accent = Color(0xFFF44336); // Red
+    const accent = Color(0xFF2563EB); // Red
 
     return GlassScaffold(
       showBackButton: true,

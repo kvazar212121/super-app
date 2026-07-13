@@ -39,7 +39,7 @@ class _NurseRegistrationScreenState extends State<NurseRegistrationScreen> {
 
   final _picker = ImagePicker();
 
-  static const accent = Color(0xFFEF4444);
+  static const accent = Color(0xFF2563EB);
 
   @override
   void dispose() {
@@ -437,7 +437,7 @@ class _DocumentUploadTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const accent = Color(0xFFEF4444);
+    const accent = Color(0xFF2563EB);
     final Color borderColor = isUploaded
         ? Colors.green
         : isUploading

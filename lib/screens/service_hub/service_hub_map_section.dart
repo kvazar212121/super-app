@@ -53,7 +53,7 @@ class _MapSectionState extends State<_MapSection> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 250,
+      height: double.infinity,
       child: HubMapPreview(
         key: ValueKey(_userLocation),
         center: _userLocation,
@@ -598,7 +598,7 @@ class _MapSectionState extends State<_MapSection> {
               height: 55,
               child: _MapPin(
                 icon: LucideIcons.sparkles,
-                color: const Color(0xFFE91E63),
+                color: accentColor,
                 label: salon.name,
                 onTap: () => Navigator.push(
                   context,
@@ -620,7 +620,7 @@ class _MapSectionState extends State<_MapSection> {
               height: 55,
               child: _MapPin(
                 icon: LucideIcons.trophy,
-                color: const Color(0xFF4CAF50),
+                color: accentColor,
                 label: field.name,
                 onTap: () => Navigator.push(
                   context,

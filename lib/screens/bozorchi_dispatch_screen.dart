@@ -95,7 +95,7 @@ class _BozorchiDispatchScreenState extends State<BozorchiDispatchScreen> {
 
   @override
   Widget build(BuildContext context) {
-    const accent = Color(0xFFF59E0B);
+    const accent = Color(0xFF2563EB);
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return GlassScaffold(

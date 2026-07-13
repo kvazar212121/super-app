@@ -7,16 +7,25 @@ import '../../models/service_hub_kind.dart';
 import '../../screens/provider_profile_screen.dart';
 import '../../screens/nanny_profile_screen.dart';
 import '../../theme/glass_tokens.dart';
+import '../../utils/geo_utils.dart';
+import 'package:super_app/l10n/locale_controller.dart';
+import 'hub_filter_chips.dart';
 
 /// Tozalash — yakka tozalovchi va jamoalar.
 class CleaningHubSection extends StatelessWidget {
   final List<Master> cleaners;
   final Color accentColor;
+  final List<String> categories;
+  final String? selectedCategory;
+  final ValueChanged<String?>? onCategorySelected;
 
   const CleaningHubSection({
     super.key,
     required this.cleaners,
     required this.accentColor,
+    this.categories = const [],
+    this.selectedCategory,
+    this.onCategorySelected,
   });
 
   List<Master> get _solo => cleaners.where((m) => m.isCleaningSolo).toList();
@@ -30,15 +39,18 @@ class CleaningHubSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (_solo.isNotEmpty)
-          _section(context, 'Yakka tozalovchilar', _solo, LucideIcons.user),
+          _section(context, 'Yakka tozalovchilar', _solo, LucideIcons.user,
+              withFilter: true),
         if (_teams.isNotEmpty)
-          _section(context, 'Tozalash jamoalari', _teams, LucideIcons.users),
+          _section(context, 'Tozalash jamoalari', _teams, LucideIcons.users,
+              withFilter: _solo.isEmpty),
         if (_solo.isEmpty && _teams.isEmpty)
           _section(
             context,
             'Tozalash xizmatlari',
             cleaners,
             LucideIcons.sprayCan,
+            withFilter: true,
           ),
       ],
     );
@@ -48,8 +60,9 @@ class CleaningHubSection extends StatelessWidget {
     BuildContext context,
     String title,
     List<Master> items,
-    IconData badgeIcon,
-  ) {
+    IconData badgeIcon, {
+    bool withFilter = false,
+  }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -74,6 +87,16 @@ class CleaningHubSection extends StatelessWidget {
                   color: GlassTokens.secondaryText(context),
                 ),
               ),
+              if (withFilter && categories.isNotEmpty) ...[
+                const SizedBox(width: 10),
+                HubFilterButton(
+                  accent: accentColor,
+                  showSort: false,
+                  categories: categories,
+                  selectedCategory: selectedCategory,
+                  onCategorySelected: onCategorySelected,
+                ),
+              ],
             ],
           ),
         ),
@@ -221,8 +244,9 @@ class _CleaningCard extends StatelessWidget {
   }
 }
 
-/// Usta chaqirish — yakka usta va brigadalar.
-class MasterDispatchHubSection extends StatelessWidget {
+/// Usta chaqirish — yakka usta va brigadalar BITTA ro'yxatда (eng yaqin bo'yicha).
+/// Filtrда "Brigada / Yakka usta" tanlovi bor.
+class MasterDispatchHubSection extends StatefulWidget {
   final List<Master> masters;
   final Color accentColor;
 
@@ -232,33 +256,38 @@ class MasterDispatchHubSection extends StatelessWidget {
     required this.accentColor,
   });
 
-  List<Master> get _solo => masters.where((m) => m.isMasterSolo).toList();
-  List<Master> get _brigades =>
-      masters.where((m) => m.isMasterBrigade).toList();
+  @override
+  State<MasterDispatchHubSection> createState() =>
+      _MasterDispatchHubSectionState();
+}
+
+class _MasterDispatchHubSectionState extends State<MasterDispatchHubSection> {
+  static const _kBrigade = 'Brigada';
+  static const _kSolo = 'Yakka usta';
+
+  String? _type; // null = barchasi
+
+  List<Master> get _filtered {
+    var list = List<Master>.from(widget.masters);
+    if (_type == _kBrigade) {
+      list = list.where((m) => m.isMasterBrigade).toList();
+    } else if (_type == _kSolo) {
+      list = list.where((m) => m.isMasterSolo).toList();
+    }
+    // Har doim eng yaqin bo'yicha — yakka usta va brigada aralash.
+    list.sort(
+      (a, b) => a
+          .distanceKmFrom(kDefaultUserLat, kDefaultUserLng)
+          .compareTo(b.distanceKmFrom(kDefaultUserLat, kDefaultUserLng)),
+    );
+    return list;
+  }
 
   @override
   Widget build(BuildContext context) {
-    if (masters.isEmpty) return const SizedBox.shrink();
+    if (widget.masters.isEmpty) return const SizedBox.shrink();
+    final items = _filtered;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        if (_solo.isNotEmpty)
-          _section(context, 'Yakka ustalar', _solo, LucideIcons.user),
-        if (_brigades.isNotEmpty)
-          _section(context, 'Ustalar brigadasi', _brigades, LucideIcons.users),
-        if (_solo.isEmpty && _brigades.isEmpty)
-          _section(context, 'Ustalar', masters, LucideIcons.hammer),
-      ],
-    );
-  }
-
-  Widget _section(
-    BuildContext context,
-    String title,
-    List<Master> items,
-    IconData badgeIcon,
-  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -268,7 +297,7 @@ class MasterDispatchHubSection extends StatelessWidget {
             children: [
               Expanded(
                 child: Text(
-                  title,
+                  'Yaqin ustalar'.tr,
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w800,
@@ -283,32 +312,53 @@ class MasterDispatchHubSection extends StatelessWidget {
                   color: GlassTokens.secondaryText(context),
                 ),
               ),
+              const SizedBox(width: 10),
+              HubFilterButton(
+                accent: widget.accentColor,
+                showSort: false,
+                categories: const [_kBrigade, _kSolo],
+                selectedCategory: _type,
+                onCategorySelected: (v) => setState(() => _type = v),
+              ),
             ],
           ),
         ),
-        SizedBox(
-          height: 172,
-          child: ListView.separated(
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            itemCount: items.length,
-            separatorBuilder: (_, __) => const SizedBox(width: 12),
-            itemBuilder: (_, i) => _MasterDispatchCard(
-              master: items[i],
-              accent: accentColor,
-              badgeIcon: badgeIcon,
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => ProviderProfileScreen(
-                    master: items[i],
-                    category: ServiceHubKind.usta,
+        if (items.isEmpty)
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+            child: Center(
+              child: Text(
+                'Usta topilmadi'.tr,
+                style: TextStyle(color: GlassTokens.secondaryText(context)),
+              ),
+            ),
+          )
+        else
+          SizedBox(
+            height: 172,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              itemCount: items.length,
+              separatorBuilder: (_, __) => const SizedBox(width: 12),
+              itemBuilder: (_, i) => _MasterDispatchCard(
+                master: items[i],
+                accent: widget.accentColor,
+                badgeIcon: items[i].isMasterBrigade
+                    ? LucideIcons.users
+                    : LucideIcons.user,
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => ProviderProfileScreen(
+                      master: items[i],
+                      category: ServiceHubKind.usta,
+                    ),
                   ),
                 ),
               ),
             ),
           ),
-        ),
         const SizedBox(height: 8),
       ],
     );
@@ -432,11 +482,17 @@ class _MasterDispatchCard extends StatelessWidget {
 class ElectricianHubSection extends StatelessWidget {
   final List<Master> electricians;
   final Color accentColor;
+  final List<String> categories;
+  final String? selectedCategory;
+  final ValueChanged<String?>? onCategorySelected;
 
   const ElectricianHubSection({
     super.key,
     required this.electricians,
     required this.accentColor,
+    this.categories = const [],
+    this.selectedCategory,
+    this.onCategorySelected,
   });
 
   @override
@@ -467,6 +523,16 @@ class ElectricianHubSection extends StatelessWidget {
                   color: GlassTokens.secondaryText(context),
                 ),
               ),
+              if (categories.isNotEmpty) ...[
+                const SizedBox(width: 10),
+                HubFilterButton(
+                  accent: accentColor,
+                  showSort: false,
+                  categories: categories,
+                  selectedCategory: selectedCategory,
+                  onCategorySelected: onCategorySelected,
+                ),
+              ],
             ],
           ),
         ),
@@ -579,11 +645,17 @@ class ElectricianHubSection extends StatelessWidget {
 class PlumberHubSection extends StatelessWidget {
   final List<Master> plumbers;
   final Color accentColor;
+  final List<String> categories;
+  final String? selectedCategory;
+  final ValueChanged<String?>? onCategorySelected;
 
   const PlumberHubSection({
     super.key,
     required this.plumbers,
     required this.accentColor,
+    this.categories = const [],
+    this.selectedCategory,
+    this.onCategorySelected,
   });
 
   @override
@@ -614,6 +686,16 @@ class PlumberHubSection extends StatelessWidget {
                   color: GlassTokens.secondaryText(context),
                 ),
               ),
+              if (categories.isNotEmpty) ...[
+                const SizedBox(width: 10),
+                HubFilterButton(
+                  accent: accentColor,
+                  showSort: false,
+                  categories: categories,
+                  selectedCategory: selectedCategory,
+                  onCategorySelected: onCategorySelected,
+                ),
+              ],
             ],
           ),
         ),
@@ -726,11 +808,17 @@ class PlumberHubSection extends StatelessWidget {
 class AcHubSection extends StatelessWidget {
   final List<Master> technicians;
   final Color accentColor;
+  final List<String> categories;
+  final String? selectedCategory;
+  final ValueChanged<String?>? onCategorySelected;
 
   const AcHubSection({
     super.key,
     required this.technicians,
     required this.accentColor,
+    this.categories = const [],
+    this.selectedCategory,
+    this.onCategorySelected,
   });
 
   @override
@@ -761,6 +849,16 @@ class AcHubSection extends StatelessWidget {
                   color: GlassTokens.secondaryText(context),
                 ),
               ),
+              if (categories.isNotEmpty) ...[
+                const SizedBox(width: 10),
+                HubFilterButton(
+                  accent: accentColor,
+                  showSort: false,
+                  categories: categories,
+                  selectedCategory: selectedCategory,
+                  onCategorySelected: onCategorySelected,
+                ),
+              ],
             ],
           ),
         ),
@@ -873,11 +971,17 @@ class AcHubSection extends StatelessWidget {
 class NannyHubSection extends StatelessWidget {
   final List<NannyService> nannies;
   final Color accentColor;
+  final List<String> categories;
+  final String? selectedCategory;
+  final ValueChanged<String?>? onCategorySelected;
 
   const NannyHubSection({
     super.key,
     required this.nannies,
     required this.accentColor,
+    this.categories = const [],
+    this.selectedCategory,
+    this.onCategorySelected,
   });
 
   @override
@@ -908,6 +1012,16 @@ class NannyHubSection extends StatelessWidget {
                   color: GlassTokens.secondaryText(context),
                 ),
               ),
+              if (categories.isNotEmpty) ...[
+                const SizedBox(width: 10),
+                HubFilterButton(
+                  accent: accentColor,
+                  showSort: false,
+                  categories: categories,
+                  selectedCategory: selectedCategory,
+                  onCategorySelected: onCategorySelected,
+                ),
+              ],
             ],
           ),
         ),

@@ -72,7 +72,7 @@ class _BozorchiPendingScreenState extends State<BozorchiPendingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    const accent = Color(0xFFF97316);
+    const accent = Color(0xFF2563EB);
     return ProviderTheme(
       child: Scaffold(
         body: Center(

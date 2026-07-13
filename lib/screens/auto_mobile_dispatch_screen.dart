@@ -28,7 +28,7 @@ class _AutoMobileDispatchScreenState extends State<AutoMobileDispatchScreen> {
   final _carCtrl = TextEditingController();
   final _notesCtrl = TextEditingController();
 
-  final Color _accent = const Color(0xFF8B5CF6);
+  final Color _accent = const Color(0xFF2563EB);
 
   double get _selectedPrice => _selectedService == null
       ? 0

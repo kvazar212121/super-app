@@ -36,7 +36,7 @@ class _NannyRegistrationScreenState extends State<NannyRegistrationScreen> {
   String? _idUrl;
   String? _criminalUrl;
 
-  static const _accent = Color(0xFFF472B6);
+  static const _accent = Color(0xFF2563EB);
   static const _ageOptions = ['0-1', '1-3', '3-7', '7-12'];
   static const _langOptions = ['uz', 'ru', 'en'];
 

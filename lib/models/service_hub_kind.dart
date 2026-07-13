@@ -162,34 +162,9 @@ extension ServiceHubKindX on ServiceHubKind {
     ServiceHubKind.stomatologiya => null,
   };
 
-  Color get accent => switch (this) {
-    ServiceHubKind.sartarosh => Colors.blue,
-    ServiceHubKind.salon => Colors.pink,
-    ServiceHubKind.futbol => Colors.green,
-    ServiceHubKind.ishchi => Colors.orange,
-    ServiceHubKind.usta => Colors.teal,
-    ServiceHubKind.elektrik => const Color(0xFFD97706),
-    ServiceHubKind.santexnik => Colors.lightBlue,
-    ServiceHubKind.tozalash => Colors.cyan,
-    ServiceHubKind.avtoYordam => Colors.deepOrange,
-    ServiceHubKind.konditsioner => Colors.indigo,
-    ServiceHubKind.enaga => Colors.purple,
-    ServiceHubKind.repetitor => Colors.deepPurple,
-    ServiceHubKind.dezinfeksiya => const Color(0xFF10B981),
-    ServiceHubKind.texnikaUstasi => Colors.blueGrey,
-    ServiceHubKind.kuryerlik => Colors.amber,
-    ServiceHubKind.massajHijoma => const Color(0xFF795548),
-    ServiceHubKind.hamshira => const Color(0xFFEF4444),
-    ServiceHubKind.stomatologiya => const Color(0xFF0EA5E9),
-    ServiceHubKind.tadbirlar => const Color(0xFFE91E63),
-    ServiceHubKind.bozorchi => const Color(0xFFFF9800),
-    ServiceHubKind.oshxona => const Color(0xFFF44336),
-    ServiceHubKind.gameZona => const Color(0xFF673AB7),
-    ServiceHubKind.sportMaydon => const Color(0xFF4CAF50),
-    ServiceHubKind.kompUsta => const Color(0xFF607D8B),
-    ServiceHubKind.boshqa => const Color(0xFF9E9E9E),
-    ServiceHubKind.yana => const Color(0xFF9E9E9E),
-  };
+  /// Barcha xizmatlar uchun YAGONA brend rangi — toza, professional ko'k
+  /// (binafsha emas). Ilgari har xizmatда har xil rang edi.
+  Color get accent => const Color(0xFF2563EB);
 
   List<({String label, double basePrice})> get variants => switch (this) {
     ServiceHubKind.sartarosh => const [

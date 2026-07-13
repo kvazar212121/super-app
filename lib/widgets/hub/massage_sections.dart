@@ -16,11 +16,17 @@ import 'venue_hub_card.dart';
 class MassageCenterHubSection extends StatefulWidget {
   final List<MassageHijoma> centers;
   final Color accentColor;
+  final List<String> categories;
+  final String? selectedCategory;
+  final ValueChanged<String?>? onCategorySelected;
 
   const MassageCenterHubSection({
     super.key,
     required this.centers,
     required this.accentColor,
+    this.categories = const [],
+    this.selectedCategory,
+    this.onCategorySelected,
   });
 
   @override
@@ -90,13 +96,17 @@ class _MassageCenterHubSectionState extends State<MassageCenterHubSection> {
                   color: GlassTokens.secondaryText(context),
                 ),
               ),
+              const SizedBox(width: 10),
+              HubFilterButton(
+                selected: _filter,
+                onChanged: (f) => setState(() => _filter = f),
+                accent: widget.accentColor,
+                categories: widget.categories,
+                selectedCategory: widget.selectedCategory,
+                onCategorySelected: widget.onCategorySelected,
+              ),
             ],
           ),
-        ),
-        HubFilterChips(
-          selected: _filter,
-          onChanged: (f) => setState(() => _filter = f),
-          accent: widget.accentColor,
         ),
         const SizedBox(height: 12),
         if (items.isEmpty)

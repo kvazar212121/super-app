@@ -72,7 +72,7 @@ class _CourierPendingScreenState extends State<CourierPendingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    const accent = Color(0xFFF59E0B);
+    const accent = Color(0xFF2563EB);
     return ProviderTheme(
       child: Scaffold(
         body: Center(

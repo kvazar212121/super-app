@@ -27,11 +27,11 @@ import '../widgets/hub_map_preview.dart';
 import '../widgets/hub_listing_widgets.dart';
 import '../widgets/service_hub_widgets.dart';
 import '../widgets/glass/glass_scaffold.dart';
+import '../widgets/glass/glass_surface.dart';
 import '../theme/glass_tokens.dart';
 import '../widgets/hub/massage_sections.dart';
 import '../config/provider_category_config.dart';
-import '../widgets/hub_category_chips.dart';
-import 'all_categories_screen.dart';
+import '../widgets/hub/hub_filter_chips.dart';
 import 'barber_booking_screen.dart';
 import 'barber_map_screen.dart';
 import 'salon_booking_screen.dart';
@@ -119,6 +119,26 @@ class _ServiceHubScreenState extends State<ServiceHubScreen> {
               );
               List<String> subCategories = config?.subCategories ?? [];
 
+              // Ba'zi xizmatlarда config.categoryKey enum nomiga teng emas
+              // (game_zona ≠ gameZona) — subkategoriyani shu yerда beramiz.
+              if (subCategories.isEmpty) {
+                subCategories = const {
+                  ServiceHubKind.gameZona: [
+                    'PS5',
+                    'Kompyuter',
+                    'VR',
+                    'Bolalar zonasi',
+                  ],
+                  ServiceHubKind.sportMaydon: [
+                    'Basketbol',
+                    'Tennis',
+                    'Voleybol',
+                    'Yugurish',
+                  ],
+                }[widget.kind] ??
+                    [];
+              }
+
               for (final c in cats) {
                 if (c['key'] == widget.kind.name) {
                   final variants = c['variants'] as List<dynamic>? ?? [];
@@ -136,30 +156,27 @@ class _ServiceHubScreenState extends State<ServiceHubScreen> {
 
               return Column(
                 children: [
-                  if (subCategories.isNotEmpty) ...[
-                    const SizedBox(height: 12),
-                    HubCategoryChips(
-                      categories: subCategories,
-                      selectedCategory: _selectedSubCategory,
-                      onCategorySelected: (val) {
-                        setState(() {
-                          _selectedSubCategory = val;
-                        });
-                      },
+                  // Filtr endi HAR DOIM xarita OSTIDA — bo'lim sarlavhasida
+                  // (yuqorida alohida filtr qatori yo'q). Xarita katta qism,
+                  // ro'yxat qolganini — ikkalasi Expanded, pastda bo'sh joy qolmaydi.
+                  Expanded(
+                    flex: 11,
+                    child: _MapSection(
+                      kind: widget.kind,
                       accentColor: widget.accentColor,
+                      data: filteredData,
                     ),
-                    const SizedBox(height: 12),
-                  ],
-                  _MapSection(
-                    kind: widget.kind,
-                    accentColor: widget.accentColor,
-                    data: filteredData,
                   ),
                   Expanded(
+                    flex: 9,
                     child: _ActionList(
                       kind: widget.kind,
                       accentColor: widget.accentColor,
                       data: filteredData,
+                      categories: subCategories,
+                      selectedCategory: _selectedSubCategory,
+                      onCategorySelected: (val) =>
+                          setState(() => _selectedSubCategory = val),
                     ),
                   ),
                 ],

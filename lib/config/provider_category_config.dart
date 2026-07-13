@@ -266,6 +266,7 @@ class ProviderCategoryConfig {
     title: 'Bozorchi',
     icon: LucideIcons.shoppingCart,
     accentColor: Color(0xFFFF9800),
+    subCategories: ['Oziq-ovqat', 'Kiyim-kechak', 'Uy-ro\'zg\'or', 'Boshqa'],
   );
   static const oshxona = ProviderCategoryConfig(
     registrationId: 'oshxona',
@@ -273,6 +274,7 @@ class ProviderCategoryConfig {
     title: 'Oshxona',
     icon: LucideIcons.utensils,
     accentColor: Color(0xFFF44336),
+    subCategories: ['Milliy taomlar', 'Fast food', 'Yevropa', 'Shirinliklar'],
   );
   static const gameZona = ProviderCategoryConfig(
     registrationId: 'game_zona',

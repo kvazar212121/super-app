@@ -22,7 +22,7 @@ class CourierProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const accent = Color(0xFF6366F1); // Indigo
+    const accent = Color(0xFF2563EB); // Indigo
     final currency = NumberFormat.currency(
       locale: 'uz_UZ',
       symbol: 'so\'m',

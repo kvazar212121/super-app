@@ -74,7 +74,7 @@ class _DisinfectionPendingScreenState extends State<DisinfectionPendingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    const accent = Color(0xFF14B8A6);
+    const accent = Color(0xFF2563EB);
     return ProviderTheme(
       child: Scaffold(
         body: Center(

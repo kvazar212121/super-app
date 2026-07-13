@@ -13,4 +13,25 @@ class AppConfig {
     final path = url.startsWith('/') ? url : '/$url';
     return '$apiBaseUrl$path';
   }
+
+  /// Provayder rasmini (banner/karta uchun) topib beradi. Backend rasmni
+  /// yuqori darajali `cover_image` ustunda yoki `metadata` ichida turli
+  /// kalitlar bilan qaytarishi mumkin — barchasini tekshiramiz.
+  static String? resolveCoverImage(Map<String, dynamic>? json) {
+    if (json == null) return null;
+    final meta = json['metadata'] as Map<String, dynamic>?;
+    final candidates = [
+      json['cover_image'],
+      json['cover_url'],
+      json['image_url'],
+      json['avatar_url'],
+      meta?['cover_url'],
+      meta?['cover_image'],
+      meta?['image_url'],
+    ];
+    for (final c in candidates) {
+      if (c is String && c.trim().isNotEmpty) return c;
+    }
+    return null;
+  }
 }

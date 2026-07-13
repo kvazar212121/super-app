@@ -19,11 +19,17 @@ import 'venue_hub_card.dart';
 class BarberHubSection extends StatefulWidget {
   final List<BarberShop> shops;
   final Color accentColor;
+  final List<String> categories;
+  final String? selectedCategory;
+  final ValueChanged<String?>? onCategorySelected;
 
   const BarberHubSection({
     super.key,
     required this.shops,
     required this.accentColor,
+    this.categories = const [],
+    this.selectedCategory,
+    this.onCategorySelected,
   });
 
   @override
@@ -80,13 +86,17 @@ class _BarberHubSectionState extends State<BarberHubSection> {
                   color: GlassTokens.secondaryText(context),
                 ),
               ),
+              const SizedBox(width: 10),
+              HubFilterButton(
+                selected: _filter,
+                onChanged: (f) => setState(() => _filter = f),
+                accent: widget.accentColor,
+                categories: widget.categories,
+                selectedCategory: widget.selectedCategory,
+                onCategorySelected: widget.onCategorySelected,
+              ),
             ],
           ),
-        ),
-        HubFilterChips(
-          selected: _filter,
-          onChanged: (f) => setState(() => _filter = f),
-          accent: widget.accentColor,
         ),
         const SizedBox(height: 12),
         if (items.isEmpty)
@@ -134,11 +144,17 @@ class _BarberHubSectionState extends State<BarberHubSection> {
 class SalonHubSection extends StatefulWidget {
   final List<BeautySalon> salons;
   final Color accentColor;
+  final List<String> categories;
+  final String? selectedCategory;
+  final ValueChanged<String?>? onCategorySelected;
 
   const SalonHubSection({
     super.key,
     required this.salons,
     required this.accentColor,
+    this.categories = const [],
+    this.selectedCategory,
+    this.onCategorySelected,
   });
 
   @override
@@ -195,13 +211,17 @@ class _SalonHubSectionState extends State<SalonHubSection> {
                   color: GlassTokens.secondaryText(context),
                 ),
               ),
+              const SizedBox(width: 10),
+              HubFilterButton(
+                selected: _filter,
+                onChanged: (f) => setState(() => _filter = f),
+                accent: widget.accentColor,
+                categories: widget.categories,
+                selectedCategory: widget.selectedCategory,
+                onCategorySelected: widget.onCategorySelected,
+              ),
             ],
           ),
-        ),
-        HubFilterChips(
-          selected: _filter,
-          onChanged: (f) => setState(() => _filter = f),
-          accent: widget.accentColor,
         ),
         const SizedBox(height: 12),
         if (items.isEmpty)

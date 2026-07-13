@@ -104,7 +104,7 @@ class _EventRegistrationScreenState extends State<EventRegistrationScreen> {
 
   @override
   Widget build(BuildContext context) {
-    const accent = Color(0xFFE91E63);
+    const accent = Color(0xFF2563EB);
     return ProviderTheme(
       child: Scaffold(
         appBar: AppBar(title: Text('Tadbir guruhi'.tr)),

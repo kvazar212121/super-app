@@ -43,7 +43,7 @@ class _CallHistoryScreenState extends State<CallHistoryScreen>
     final auth = context.watch<AuthProvider>();
 
     return GlassScaffold(
-      showBackButton: true,
+      showBackButton: false,
       title: "Aloqa tarixi".tr,
       actions: [
         IconButton(

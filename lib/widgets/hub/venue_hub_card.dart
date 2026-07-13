@@ -70,7 +70,7 @@ class VenueHubCard extends StatelessWidget {
       isOpen: shop.isOpenNow(),
       icon: LucideIcons.scissors,
       accent: accent,
-      coverUrl: shop.rawJson?['metadata']?['cover_url'],
+      coverUrl: AppConfig.resolveCoverImage(shop.rawJson),
       onTap: onTap,
     );
   }
@@ -94,7 +94,7 @@ class VenueHubCard extends StatelessWidget {
       isOpen: salon.isOpenNow(),
       icon: LucideIcons.sparkles,
       accent: accent,
-      coverUrl: salon.rawJson?['metadata']?['cover_url'],
+      coverUrl: AppConfig.resolveCoverImage(salon.rawJson),
       onTap: onTap,
     );
   }
@@ -118,7 +118,7 @@ class VenueHubCard extends StatelessWidget {
       isOpen: field.isOpenNow(),
       icon: LucideIcons.trophy,
       accent: accent,
-      coverUrl: field.rawJson?['metadata']?['cover_url'],
+      coverUrl: AppConfig.resolveCoverImage(field.rawJson),
       onTap: onTap,
     );
   }
@@ -147,7 +147,7 @@ class VenueHubCard extends StatelessWidget {
       isOpen: true, // Mocking as open for now
       icon: LucideIcons.heartPulse,
       accent: accent,
-      coverUrl: center.rawJson?['metadata']?['cover_url'],
+      coverUrl: AppConfig.resolveCoverImage(center.rawJson),
       onTap: onTap,
     );
   }
@@ -173,26 +173,21 @@ class VenueHubCard extends StatelessWidget {
                   Container(
                     height: 88,
                     width: double.infinity,
-                    decoration: BoxDecoration(
-                      gradient: (coverUrl != null && coverUrl!.isNotEmpty)
-                          ? null
-                          : LinearGradient(
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                              colors: [accent, accent],
-                            ),
-                      image: (coverUrl != null && coverUrl!.isNotEmpty)
-                          ? DecorationImage(
-                              image: CachedNetworkImageProvider(
-                                AppConfig.formatImageUrl(coverUrl),
-                              ),
-                              fit: BoxFit.cover,
-                            )
-                          : null,
-                    ),
+                    color: accent,
                     child: (coverUrl != null && coverUrl!.isNotEmpty)
-                        ? null
-                        : Icon(icon, color: Colors.white, size: 32),
+                        // Rasm bo'lsa ko'rsatamiz; xato (404) yoki yuklanayotganда
+                        // rang + icon ko'rinadi (bo'sh ko'k qolmaydi).
+                        ? CachedNetworkImage(
+                            imageUrl: AppConfig.formatImageUrl(coverUrl),
+                            fit: BoxFit.cover,
+                            width: double.infinity,
+                            height: 88,
+                            errorWidget: (_, __, ___) =>
+                                Center(child: Icon(icon, color: Colors.white, size: 32)),
+                            placeholder: (_, __) => Center(
+                                child: Icon(icon, color: Colors.white54, size: 32)),
+                          )
+                        : Center(child: Icon(icon, color: Colors.white, size: 32)),
                   ),
                   Positioned(
                     top: 8,

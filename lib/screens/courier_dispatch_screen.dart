@@ -27,7 +27,7 @@ class _CourierDispatchScreenState extends State<CourierDispatchScreen> {
   final _weightController = TextEditingController();
   final _notesController = TextEditingController();
 
-  final Color _accent = const Color(0xFF6366F1); // Indigo
+  final Color _accent = const Color(0xFF2563EB); // Indigo
 
   bool get _canSubmit =>
       _selectedDeliveryType != null &&

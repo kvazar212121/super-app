@@ -54,9 +54,9 @@ class BookingSliverAppBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final String? resolvedCoverUrl =
-        coverUrl ??
-        rawJson?['metadata']?['cover_url'] ??
-        rawJson?['cover_image'];
+        (coverUrl != null && coverUrl!.trim().isNotEmpty)
+            ? coverUrl
+            : AppConfig.resolveCoverImage(rawJson);
 
     final bool hasImage =
         resolvedCoverUrl != null && resolvedCoverUrl.trim().isNotEmpty;
@@ -70,29 +70,21 @@ class BookingSliverAppBar extends StatelessWidget {
       flexibleSpace: FlexibleSpaceBar(
         title: title,
         background: Container(
-          decoration: BoxDecoration(
-            gradient: hasImage
-                ? null
-                : LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [color, color],
-                  ),
-            image: hasImage
-                ? DecorationImage(
-                    image: CachedNetworkImageProvider(
-                      AppConfig.formatImageUrl(resolvedCoverUrl),
-                    ),
-                    fit: BoxFit.cover,
-                    colorFilter: ColorFilter.mode(
-                      Colors.black.withOpacity(0.3),
-                      BlendMode.darken,
-                    ),
-                  )
-                : null,
-          ),
+          color: color,
           child: hasImage
-              ? const SizedBox.shrink()
+              // Rasm bo'lsa ko'rsatamiz; 404/xato yoki yuklanayotganда
+              // rang + icon ko'rinadi (bo'sh rang qolmaydi).
+              ? CachedNetworkImage(
+                  imageUrl: AppConfig.formatImageUrl(resolvedCoverUrl),
+                  fit: BoxFit.cover,
+                  width: double.infinity,
+                  color: Colors.black.withOpacity(0.3),
+                  colorBlendMode: BlendMode.darken,
+                  errorWidget: (_, __, ___) =>
+                      Center(child: Icon(icon, size: 64, color: Colors.white)),
+                  placeholder: (_, __) =>
+                      Center(child: Icon(icon, size: 64, color: Colors.white54)),
+                )
               : Center(child: Icon(icon, size: 64, color: Colors.white)),
         ),
       ),

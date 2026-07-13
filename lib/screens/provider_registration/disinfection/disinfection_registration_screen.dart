@@ -91,7 +91,7 @@ class _DisinfectionRegistrationScreenState
 
   @override
   Widget build(BuildContext context) {
-    const accent = Color(0xFF14B8A6);
+    const accent = Color(0xFF2563EB);
     return ProviderTheme(
       child: Scaffold(
         appBar: AppBar(title: Text('Dezinfeksiya xizmati'.tr)),

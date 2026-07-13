@@ -72,7 +72,7 @@ class _MassagePendingScreenState extends State<MassagePendingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    const accent = Color(0xFFE11D48);
+    const accent = Color(0xFF2563EB);
     return ProviderTheme(
       child: Scaffold(
         body: Center(

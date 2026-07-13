@@ -4,11 +4,18 @@ class _ActionList extends StatelessWidget {
   final ServiceHubKind kind;
   final Color accentColor;
   final HubScreenData data;
+  // Xizmat turi (subkategoriya) — hub bo'limlarining Filtr modaliga uzatiladi
+  final List<String> categories;
+  final String? selectedCategory;
+  final ValueChanged<String?>? onCategorySelected;
 
   const _ActionList({
     required this.kind,
     required this.accentColor,
     required this.data,
+    this.categories = const [],
+    this.selectedCategory,
+    this.onCategorySelected,
   });
 
   @override
@@ -18,27 +25,26 @@ class _ActionList extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.symmetric(vertical: 16),
       children: [
-        if (kind == ServiceHubKind.sartarosh) ...[
-          BarberHubSection(shops: data.barberShops, accentColor: accentColor),
-          MobileBarberHubSection(
-            barbers: data.mobileBarbers,
-            accentColor: accentColor,
-          ),
-        ],
-        if (kind == ServiceHubKind.salon) ...[
-          SalonHubSection(salons: data.salons, accentColor: accentColor),
-          MobileSalonHubSection(
-            stylists: data.mobileStylists,
-            accentColor: accentColor,
-          ),
-        ],
+        if (kind == ServiceHubKind.sartarosh)
+          BarberHubSection(shops: data.barberShops, accentColor: accentColor, categories: categories, selectedCategory: selectedCategory, onCategorySelected: onCategorySelected,),
+        if (kind == ServiceHubKind.salon)
+          SalonHubSection(salons: data.salons, accentColor: accentColor, categories: categories, selectedCategory: selectedCategory, onCategorySelected: onCategorySelected,),
         if (kind == ServiceHubKind.futbol)
           FootballHubSection(
             fields: data.footballFields,
             accentColor: accentColor,
+            categories: categories,
+            selectedCategory: selectedCategory,
+            onCategorySelected: onCategorySelected,
           ),
         if (kind == ServiceHubKind.tozalash)
-          CleaningHubSection(cleaners: data.masters, accentColor: accentColor),
+          CleaningHubSection(
+            cleaners: data.masters,
+            accentColor: accentColor,
+            categories: categories,
+            selectedCategory: selectedCategory,
+            onCategorySelected: onCategorySelected,
+          ),
         if (kind == ServiceHubKind.usta)
           MasterDispatchHubSection(
             masters: data.masters,
@@ -48,24 +54,63 @@ class _ActionList extends StatelessWidget {
           ElectricianHubSection(
             electricians: data.masters,
             accentColor: accentColor,
+            categories: categories,
+            selectedCategory: selectedCategory,
+            onCategorySelected: onCategorySelected,
           ),
         if (kind == ServiceHubKind.santexnik)
-          PlumberHubSection(plumbers: data.masters, accentColor: accentColor),
+          PlumberHubSection(
+            plumbers: data.masters,
+            accentColor: accentColor,
+            categories: categories,
+            selectedCategory: selectedCategory,
+            onCategorySelected: onCategorySelected,
+          ),
         if (kind == ServiceHubKind.konditsioner)
-          AcHubSection(technicians: data.masters, accentColor: accentColor),
+          AcHubSection(
+            technicians: data.masters,
+            accentColor: accentColor,
+            categories: categories,
+            selectedCategory: selectedCategory,
+            onCategorySelected: onCategorySelected,
+          ),
         if (kind == ServiceHubKind.enaga)
-          NannyHubSection(nannies: data.nannies, accentColor: accentColor),
+          NannyHubSection(
+            nannies: data.nannies,
+            accentColor: accentColor,
+            categories: categories,
+            selectedCategory: selectedCategory,
+            onCategorySelected: onCategorySelected,
+          ),
         if (kind == ServiceHubKind.kuryerlik)
-          CourierHubSection(couriers: data.couriers, accentColor: accentColor),
+          CourierHubSection(
+            couriers: data.couriers,
+            accentColor: accentColor,
+            categories: categories,
+            selectedCategory: selectedCategory,
+            onCategorySelected: onCategorySelected,
+          ),
         if (kind == ServiceHubKind.avtoYordam)
-          AutoHelpHubSection(units: data.autoMobile, accentColor: accentColor),
+          AutoHelpHubSection(
+            units: data.autoMobile,
+            accentColor: accentColor,
+            categories: categories,
+            selectedCategory: selectedCategory,
+            onCategorySelected: onCategorySelected,
+          ),
         if (kind == ServiceHubKind.avtoYordam)
           AutoWorkshopHubSection(
             workshops: data.workshops,
             accentColor: accentColor,
           ),
         if (kind == ServiceHubKind.repetitor) ...[
-          TutorHubSection(tutors: data.tutors, accentColor: accentColor),
+          TutorHubSection(
+            tutors: data.tutors,
+            accentColor: accentColor,
+            categories: categories,
+            selectedCategory: selectedCategory,
+            onCategorySelected: onCategorySelected,
+          ),
           Padding(
             padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),
             child: Text(
@@ -91,31 +136,6 @@ class _ActionList extends StatelessWidget {
           const SizedBox(height: 16),
         ],
 
-        if (kind == ServiceHubKind.usta) ...[
-          Padding(
-            padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),
-            child: Text(
-              "Yaqin ustaxonalar".tr,
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w800,
-                color: GlassTokens.primaryText(context),
-              ),
-            ),
-          ),
-          SizedBox(
-            height: 185,
-            child: ListView.separated(
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              itemCount: data.workshops.length,
-              separatorBuilder: (_, __) => const SizedBox(width: 12),
-              itemBuilder: (_, i) =>
-                  WorkshopSmallCard(workshop: data.workshops[i]),
-            ),
-          ),
-          const SizedBox(height: 16),
-        ],
         if (kind == ServiceHubKind.ishchi)
           _buildSection(
             context,
@@ -136,18 +156,14 @@ class _ActionList extends StatelessWidget {
             "Texnika ustalari",
             data.appliance.map((s) => ApplianceSmallCard(service: s)).toList(),
           ),
-        if (kind == ServiceHubKind.massajHijoma) ...[
+        if (kind == ServiceHubKind.massajHijoma)
           MassageCenterHubSection(
             centers: data.massage.where((m) => m.supportsAtCenter).toList(),
             accentColor: accentColor,
+            categories: categories,
+            selectedCategory: selectedCategory,
+            onCategorySelected: onCategorySelected,
           ),
-          MobileMassageHubSection(
-            specialists: data.massage
-                .where((m) => m.supportsHomeVisit)
-                .toList(),
-            accentColor: accentColor,
-          ),
-        ],
         if (kind == ServiceHubKind.hamshira)
           _buildSection(
             context,
@@ -174,6 +190,8 @@ class _ActionList extends StatelessWidget {
               context,
               "Tashkilotchi va Brigadalar",
               data.events.map((s) => EventTeamSmallCard(team: s)).toList(),
+              // Filtr faqat 1-bo'limда (joylar yo'q bo'lsa — shu yerда)
+              withFilter: data.genericProviders.isEmpty,
             ),
         ],
         if (kind == ServiceHubKind.gameZona) ...[
@@ -211,22 +229,21 @@ class _ActionList extends StatelessWidget {
 
         if (actions.isNotEmpty)
           Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              children: actions
-                  .map(
-                    (a) => Padding(
-                      padding: const EdgeInsets.only(bottom: 10),
-                      child: HubActionCard(
-                        title: a.title,
-                        subtitle: a.subtitle,
-                        icon: a.icon,
-                        accentColor: accentColor,
-                        onTap: a.onTap,
-                      ),
+            padding: const EdgeInsets.fromLTRB(16, 4, 16, 16),
+            child: Row(
+              children: [
+                for (int i = 0; i < actions.length; i++) ...[
+                  if (i > 0) const SizedBox(width: 10),
+                  Expanded(
+                    child: _CompactActionTile(
+                      title: actions[i].title,
+                      icon: actions[i].icon,
+                      accentColor: accentColor,
+                      onTap: actions[i].onTap,
                     ),
-                  )
-                  .toList(),
+                  ),
+                ],
+              ],
             ),
           ),
       ],
@@ -250,19 +267,41 @@ class _ActionList extends StatelessWidget {
     return data.masters;
   }
 
-  Widget _buildSection(BuildContext context, String title, List<Widget> items) {
+  Widget _buildSection(
+    BuildContext context,
+    String title,
+    List<Widget> items, {
+    bool withFilter = true,
+  }) {
+    // Xarita OSTIDA — bo'lim sarlavhasining o'ng tarafida bitta "Filtr" tugmasi.
+    final showFilter =
+        withFilter && categories.isNotEmpty && onCategorySelected != null;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
           padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),
-          child: Text(
-            title.tr,
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w800,
-              color: GlassTokens.primaryText(context),
-            ),
+          child: Row(
+            children: [
+              Expanded(
+                child: Text(
+                  title.tr,
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w800,
+                    color: GlassTokens.primaryText(context),
+                  ),
+                ),
+              ),
+              if (showFilter)
+                HubFilterButton(
+                  accent: accentColor,
+                  showSort: false,
+                  categories: categories,
+                  selectedCategory: selectedCategory,
+                  onCategorySelected: onCategorySelected,
+                ),
+            ],
           ),
         ),
         SizedBox(
@@ -277,6 +316,63 @@ class _ActionList extends StatelessWidget {
         ),
         const SizedBox(height: 16),
       ],
+    );
+  }
+
+  /// Ikki xil uslub (joyida + uyga borib) bo'lgan xizmatlar uchun "uyga
+  /// boradiganlar" bo'limi. Yo'q bo'lsa (yoki bir uslub) null qaytadi.
+  Widget? _mobileSection() {
+    switch (kind) {
+      case ServiceHubKind.sartarosh:
+        if (data.mobileBarbers.isEmpty) return null;
+        return MobileBarberHubSection(
+            barbers: data.mobileBarbers, accentColor: accentColor);
+      case ServiceHubKind.salon:
+        if (data.mobileStylists.isEmpty) return null;
+        return MobileSalonHubSection(
+            stylists: data.mobileStylists, accentColor: accentColor);
+      case ServiceHubKind.massajHijoma:
+        final mobile =
+            data.massage.where((m) => m.supportsHomeVisit).toList();
+        if (mobile.isEmpty) return null;
+        return MobileMassageHubSection(
+            specialists: mobile, accentColor: accentColor);
+      default:
+        return null;
+    }
+  }
+
+  /// "Uyga borib xizmat qiluvchilar" tugmasi bosilganда — kartalar modalда.
+  void _openMobileSheet(BuildContext context) {
+    final section = _mobileSection();
+    if (section == null) return;
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
+      ),
+      builder: (_) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.only(top: 14, bottom: 8),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 40,
+                height: 4,
+                margin: const EdgeInsets.only(bottom: 6),
+                decoration: BoxDecoration(
+                  color: Colors.grey.withValues(alpha: 0.4),
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              Flexible(child: SingleChildScrollView(child: section)),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
@@ -628,6 +724,13 @@ class _ActionList extends StatelessWidget {
           _ => <_HubActionSpec>[],
         } +
         [
+          if (_mobileSection() != null)
+            _HubActionSpec(
+              LucideIcons.house,
+              'Uyga borib xizmat qiluvchilar'.tr,
+              'Bosing — sizga keladigan ustalar'.tr,
+              () => _openMobileSheet(context),
+            ),
           _HubActionSpec(
             LucideIcons.bookmark,
             'Saqlangan joylar'.tr,
@@ -639,21 +742,6 @@ class _ActionList extends StatelessWidget {
               ),
             ),
           ),
-          _HubActionSpec(
-            LucideIcons.layoutGrid,
-            'Barcha xizmatlar'.tr,
-            'To‘liq katalog'.tr,
-            () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => AllCategoriesScreen()),
-            ),
-          ),
-          _HubActionSpec(
-            LucideIcons.headphones,
-            'Qo‘llab-quvvatlash'.tr,
-            'Chat yoki qo‘ng‘iroq'.tr,
-            () => toast('Support — tez orada'.tr),
-          ),
         ];
   }
 }
@@ -664,4 +752,54 @@ class _HubActionSpec {
   final String subtitle;
   final VoidCallback onTap;
   _HubActionSpec(this.icon, this.title, this.subtitle, this.onTap);
+}
+
+/// Ixcham amal tugmasi — yonma-yon joylashtirish uchun (icon + nom).
+class _CompactActionTile extends StatelessWidget {
+  final String title;
+  final IconData icon;
+  final Color accentColor;
+  final VoidCallback onTap;
+
+  const _CompactActionTile({
+    required this.title,
+    required this.icon,
+    required this.accentColor,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GlassSurface(
+      onTap: onTap,
+      borderRadius: 16,
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: accentColor.withValues(alpha: 0.15),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Icon(icon, color: accentColor, size: 20),
+          ),
+          const SizedBox(width: 10),
+          Flexible(
+            child: Text(
+              title,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w700,
+                color: GlassTokens.primaryText(context),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }

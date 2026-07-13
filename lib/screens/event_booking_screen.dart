@@ -83,7 +83,7 @@ class _EventBookingScreenState extends State<EventBookingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final accentColor = const Color(0xFFEC4899);
+    final accentColor = const Color(0xFF2563EB);
     final currencyFormat = NumberFormat.currency(
       locale: 'uz_UZ',
       symbol: "so'm",

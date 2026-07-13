@@ -72,7 +72,7 @@ class _EventPendingScreenState extends State<EventPendingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    const accent = Color(0xFFE91E63);
+    const accent = Color(0xFF2563EB);
     return ProviderTheme(
       child: Scaffold(
         body: Center(

@@ -16,7 +16,7 @@ class ProviderCalendarWidget extends StatefulWidget {
   const ProviderCalendarWidget({
     super.key,
     required this.categoryKey,
-    this.accent = const Color(0xFF6366F1),
+    this.accent = const Color(0xFF2563EB),
   });
 
   @override
