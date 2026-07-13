@@ -157,9 +157,9 @@ extension ServiceHubKindX on ServiceHubKind {
     ServiceHubKind.kompUsta => 'assets/images/services3d/kompUsta.png',
     ServiceHubKind.boshqa => 'assets/images/services3d/boshqa.png',
     ServiceHubKind.yana => 'assets/images/services3d/yana.png',
-    // 3D mos icon topilmadi — Lucide fallback ishlatiladi
-    ServiceHubKind.konditsioner => null,
-    ServiceHubKind.stomatologiya => null,
+    // Aynan mos 3D icon yo'q — eng yaqin variant (lab/umbrella)
+    ServiceHubKind.stomatologiya => 'assets/images/services3d/stomatologiya.png',
+    ServiceHubKind.konditsioner => 'assets/images/services3d/konditsioner.png',
   };
 
   Color get accent => switch (this) {
