@@ -15,7 +15,8 @@ class HomePromoSection extends StatefulWidget {
   State<HomePromoSection> createState() => _HomePromoSectionState();
 }
 
-class _HomePromoSectionState extends State<HomePromoSection> {
+class _HomePromoSectionState extends State<HomePromoSection>
+    with WidgetsBindingObserver {
   final ApiService _api = ApiService();
   List<_PromoItem> _promos = [];
   bool _isLoading = true;
@@ -44,7 +45,23 @@ class _HomePromoSectionState extends State<HomePromoSection> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _loadPromos();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    // Ilova old fonga qaytganda aksiyalarni serverdan qayta yuklaymiz
+    // (admin panelda o'zgartirilgan bo'lsa — darhol yangilanadi).
+    if (state == AppLifecycleState.resumed) {
+      _loadPromos();
+    }
   }
 
   Future<void> _loadPromos() async {
@@ -86,14 +103,17 @@ class _HomePromoSectionState extends State<HomePromoSection> {
       }
       if (mounted) {
         setState(() {
-          _promos = loaded.isNotEmpty ? loaded : _fallbackPromos;
+          // Serverdan kelgan HAQIQIY ro'yxat (bo'sh bo'lsa — bo'lim yashiriladi).
+          // Barcha aksiya o'chirilsa, endi qattiq kodlangan fallback ko'rinmaydi.
+          _promos = loaded;
           _isLoading = false;
         });
       }
     } catch (_) {
       if (mounted) {
         setState(() {
-          _promos = _fallbackPromos;
+          // Faqat TARMOQ XATOSIDA fallback (offline'da ham chiroyli ko'rinsin)
+          if (_promos.isEmpty) _promos = _fallbackPromos;
           _isLoading = false;
         });
       }
