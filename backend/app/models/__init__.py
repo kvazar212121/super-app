@@ -30,9 +30,11 @@ from app.models.support import SupportTicket, SupportMessage
 from app.models.direct_message import DirectMessage
 from app.models.daily_activity import DailyActivity
 from app.models.finance_group import FinanceGroup
+from app.models.device_token import DeviceToken
 
 __all__ = [
     "User",
+    "DeviceToken",
     "Category",
     "CategoryVariant",
     "Provider",

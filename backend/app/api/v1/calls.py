@@ -90,7 +90,23 @@ async def websocket_call_endpoint(websocket: WebSocket, token: str):
             
             success = await manager.send_personal_message(payload, target_id)
             if not success and msg_type in ["call_init", "offer"]:
-                # Target is offline, notify the caller
+                # Target ilovasi YOPIQ (WebSocket ulanmagan) — FCM push orqali uyg'otamiz.
+                # Flutter background handler 'incoming_call' data'sini olib CallKit chiqaradi (jiringlaydi).
+                try:
+                    import asyncio as _asyncio
+                    from app.services.notification_service import NotificationService
+                    await _asyncio.to_thread(
+                        NotificationService.push_data_to_user,
+                        target_id,
+                        {
+                            "type": "incoming_call",
+                            "caller_id": str(user.id),
+                            "caller_name": f"{user.name} {user.surname}",
+                        },
+                    )
+                except Exception as _e:
+                    logger.error(f"Call FCM push xatosi: {_e}")
+                # Callerга ham xabar (target hozircha ulanmagan)
                 await manager.send_personal_message({
                     "type": "target_offline",
                     "target_id": target_id

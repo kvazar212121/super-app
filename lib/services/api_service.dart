@@ -457,6 +457,18 @@ class ApiService {
     return response.data['count'] ?? 0;
   }
 
+  /// FCM push token'ini serverga saqlash (ilova yopiq bo'lsa ham push kelishi uchun).
+  /// Login'dan keyin va token yangilanganda chaqiriladi.
+  Future<void> registerFcmToken(String token, {String platform = 'android'}) async {
+    await _dio.post('/notifications/register-token',
+        data: {'token': token, 'platform': platform});
+  }
+
+  /// Logout'da token'ni o'chirish (bu qurilmaga endi push kelmaydi).
+  Future<void> unregisterFcmToken(String token) async {
+    await _dio.delete('/notifications/register-token', data: {'token': token});
+  }
+
   /// O'qilgan deb belgilash
   Future<void> markNotificationRead(String id) async {
     await _dio.post('/notifications/$id/read');

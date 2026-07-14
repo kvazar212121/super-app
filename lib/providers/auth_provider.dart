@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import '../services/api_service.dart';
+import '../services/firebase_service.dart';
 import '../utils/phone_utils.dart';
 import 'package:super_app/l10n/locale_controller.dart';
 
@@ -105,6 +106,7 @@ class AuthProvider extends ChangeNotifier {
       if (data['user_exists'] == true && data['user'] != null) {
         _user = Map<String, dynamic>.from(data['user'] as Map);
         _isAuthenticated = true;
+        FirebaseService().syncToken(); // FCM token'ni serverga saqlaymiz
       }
       _isLoading = false;
       notifyListeners();
@@ -138,6 +140,7 @@ class AuthProvider extends ChangeNotifier {
       );
       _user = data['user'];
       _isAuthenticated = true;
+      FirebaseService().syncToken(); // FCM token'ni serverga saqlaymiz
       _isLoading = false;
       notifyListeners();
       return true;
@@ -160,6 +163,7 @@ class AuthProvider extends ChangeNotifier {
       final userData = await _api.getMe();
       _user = userData;
       _isAuthenticated = true;
+      FirebaseService().syncToken(); // FCM token'ni serverga saqlaymiz
       _isLoading = false;
       notifyListeners();
       return true;

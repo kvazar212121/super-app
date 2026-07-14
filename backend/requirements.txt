@@ -27,3 +27,4 @@ python-multipart>=0.0.9
 
 # Rasm siqish (upload'larni JPEG'ga o'tkazish)
 Pillow>=10.0
+firebase-admin>=6.5,<7

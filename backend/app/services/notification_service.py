@@ -28,7 +28,10 @@ class NotificationService:
 
     @staticmethod
     def send_notification(user_id: int, ntype: str, title: str, message: str) -> dict | None:
-        """Yangi bildirishnoma yaratib DB'ga yozadi."""
+        """Yangi bildirishnoma yaratib DB'ga yozadi VA qurilmaga FCM push yuboradi.
+
+        Push tufayli ilova YOPIQ bo'lsa ham bildirishnoma keladi (ovoz bilan).
+        """
         try:
             with sync_session() as db:
                 row = NotificationModel(
@@ -37,10 +40,50 @@ class NotificationService:
                 db.add(row)
                 db.commit()
                 db.refresh(row)
-                return _to_dict(row)
+                result = _to_dict(row)
         except Exception as e:
             logger.error(f"send_notification failed (user={user_id}): {e}")
             return None
+
+        # FCM push (DB yozuvi muvaffaqiyatli bo'lgach) — xato bo'lsa ham DB yozuvi qoladi
+        try:
+            NotificationService._push_to_user(user_id, title, message, {"type": ntype})
+        except Exception as e:
+            logger.error(f"FCM push failed (user={user_id}): {e}")
+        return result
+
+    @staticmethod
+    def _push_to_user(user_id: int, title: str, body: str, data: dict | None = None) -> None:
+        """Foydalanuvchining barcha qurilmalariga oddiy bildirishnoma push qiladi. Yaroqsiz token'larni tozalaydi."""
+        from app.services import fcm_service
+        from app.models.device_token import DeviceToken
+
+        with sync_session() as db:
+            tokens = [t.token for t in db.query(DeviceToken.token).filter(DeviceToken.user_id == user_id).all()]
+            if not tokens:
+                return
+            invalid = fcm_service.send_notification_to_tokens(tokens, title, body, data)
+            if invalid:
+                db.query(DeviceToken).filter(DeviceToken.token.in_(invalid)).delete(synchronize_session=False)
+                db.commit()
+
+    @staticmethod
+    def push_data_to_user(user_id: int, data: dict) -> None:
+        """Faqat-data (silent) push — qo'ng'iroq/CallKit kabi holatlar uchun."""
+        from app.services import fcm_service
+        from app.models.device_token import DeviceToken
+
+        try:
+            with sync_session() as db:
+                tokens = [t.token for t in db.query(DeviceToken.token).filter(DeviceToken.user_id == user_id).all()]
+                if not tokens:
+                    return
+                invalid = fcm_service.send_data_to_tokens(tokens, data)
+                if invalid:
+                    db.query(DeviceToken).filter(DeviceToken.token.in_(invalid)).delete(synchronize_session=False)
+                    db.commit()
+        except Exception as e:
+            logger.error(f"push_data_to_user failed (user={user_id}): {e}")
 
     @staticmethod
     def get_notifications(user_id: int, limit: int = 100) -> list[dict]:

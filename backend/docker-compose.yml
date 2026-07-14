@@ -47,6 +47,7 @@ services:
       - ./alembic:/app/alembic
       - ./alembic.ini:/app/alembic.ini
       - superapp_uploads:/app/uploads   # yuklangan rasmlar rebuild'да yo'qolmasligi uchun
+      - ./serviceAccountKey.json:/app/serviceAccountKey.json:ro   # Firebase FCM push kaliti (maxfiy)
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:8000/api/v1/health')\" || exit 1"]

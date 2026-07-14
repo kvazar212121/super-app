@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'callkit_service.dart';
+import 'api_service.dart';
 import 'package:super_app/l10n/locale_controller.dart';
 
 /// Firebase Orqa fon (Background) xabarlarini tutib oluvchi funksiya
@@ -29,6 +30,9 @@ class FirebaseService {
   factory FirebaseService() => _instance;
   FirebaseService._();
 
+  /// Joriy FCM token — backendga saqlanadi (ilova yopiq bo'lsa ham push kelishi uchun).
+  String? fcmToken;
+
   Future<void> init() async {
     try {
       await Firebase.initializeApp();
@@ -46,10 +50,17 @@ class FirebaseService {
         debugPrint('FCM: Foydalanuvchi ruxsat berdi');
       }
 
-      // Tokenni olish (Buni backend ga yuborishingiz kerak)
-      String? token = await FirebaseMessaging.instance.getToken();
+      // Tokenni olish va serverga saqlash (login bo'lgan bo'lsa)
+      fcmToken = await FirebaseMessaging.instance.getToken();
       // Token qiymati LOG'ga chiqarilmaydi (maxfiy). Faqat debug'da holat.
-      if (kDebugMode) debugPrint("FCM Token olindi: ${token != null}");
+      if (kDebugMode) debugPrint("FCM Token olindi: ${fcmToken != null}");
+      await syncToken();
+
+      // Token yangilanganda (Firebase vaqti-vaqti bilan yangilaydi) — qayta saqlaymiz
+      FirebaseMessaging.instance.onTokenRefresh.listen((t) {
+        fcmToken = t;
+        syncToken();
+      });
 
       // Ilova ochiq turganda (Foreground) kelgan xabarlarni tutish
       FirebaseMessaging.onMessage.listen((RemoteMessage message) {
@@ -68,6 +79,19 @@ class FirebaseService {
       });
     } catch (e) {
       debugPrint("FCM Initialize error: $e");
+    }
+  }
+
+  /// FCM token'ni serverga saqlaydi (faqat foydalanuvchi login bo'lgan bo'lsa).
+  /// Login muvaffaqiyatli bo'lgach ham chaqirish kerak (auth_provider).
+  Future<void> syncToken() async {
+    final t = fcmToken;
+    if (t == null || !ApiService().hasToken) return;
+    try {
+      await ApiService().registerFcmToken(t, platform: 'android');
+      if (kDebugMode) debugPrint('FCM token serverga saqlandi');
+    } catch (e) {
+      if (kDebugMode) debugPrint('FCM token saqlashda xato: $e');
     }
   }
 }

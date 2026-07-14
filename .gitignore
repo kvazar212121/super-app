@@ -98,3 +98,9 @@ venv/
 *.tar.bz2
 *.tar.xz
 *.tar.zst
+
+# Firebase Admin SDK service account (MAXFIY — hech qachon commit qilinmaydi)
+serviceAccountKey.json
+**/serviceAccountKey.json
+*firebase-adminsdk*.json
+*serviceAccount*.json
