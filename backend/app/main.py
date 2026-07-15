@@ -217,13 +217,77 @@ def create_app() -> FastAPI:
             "<footer>© 2026 HUBSERVIS. Barcha huquqlar himoyalangan.</footer></body></html>"
         )
 
+    def _multilang_legal_page(titles: dict, contents: dict) -> str:
+        """Ko'p tilli huquqiy sahifa (uz/ru/en) — yuqorida til almashtirgich bilan."""
+        LANGS = [("uz", "O'zbekcha"), ("ru", "Русский"), ("en", "English")]
+
+        def _sections(text: str) -> str:
+            return "".join(
+                f"<section><p>{p.replace(chr(10), '<br>')}</p></section>"
+                for p in _htmlmod.escape(text or "").split("\n\n") if p.strip()
+            )
+
+        tabs = "".join(
+            f'<button class="lang-btn{" active" if code == "uz" else ""}" data-lang="{code}" '
+            f'onclick="showLang(\'{code}\')">{label}</button>'
+            for code, label in LANGS
+        )
+        blocks = "".join(
+            f'<div class="lang-block" id="lang-{code}" style="display:{"block" if code == "uz" else "none"}">'
+            f'<h1>{_htmlmod.escape(titles.get(code, titles.get("uz", "")))}</h1>'
+            f'{_sections(contents.get(code) or contents.get("uz", ""))}</div>'
+            for code, _ in LANGS
+        )
+        return (
+            "<!DOCTYPE html><html lang=\"uz\"><head><meta charset=\"UTF-8\">"
+            "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">"
+            f"<title>HubServis — {_htmlmod.escape(titles.get('uz', ''))}</title>"
+            "<style>*{box-sizing:border-box;margin:0;padding:0}"
+            "body{font-family:Inter,system-ui,sans-serif;background:#050505;color:#E5E7EB;line-height:1.65}"
+            "nav{position:sticky;top:0;background:rgba(5,5,5,.85);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,.1);z-index:10}"
+            ".ni{max-width:820px;margin:0 auto;padding:16px 24px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}"
+            ".lg{font-weight:800;font-size:1.4rem;letter-spacing:-1px;color:#fff;text-decoration:none}"
+            ".langs{display:flex;gap:6px}"
+            ".lang-btn{background:transparent;color:#9CA3AF;border:1px solid rgba(255,255,255,.18);border-radius:9px;padding:6px 12px;font-size:.85rem;font-weight:600;cursor:pointer}"
+            ".lang-btn.active{background:#6366F1;color:#fff;border-color:#6366F1}"
+            ".bk{color:#9CA3AF;text-decoration:none;font-size:.9rem}main{max-width:820px;margin:0 auto;padding:40px 24px 72px}"
+            "h1{font-size:2rem;font-weight:800;margin-bottom:24px}"
+            "section{margin-bottom:18px;padding:18px 22px;background:#101012;border:1px solid rgba(255,255,255,.1);border-radius:14px}"
+            "p{color:#D1D5DB;font-size:.98rem}footer{border-top:1px solid rgba(255,255,255,.1);text-align:center;padding:28px;color:#71717A;font-size:.85rem}"
+            "@media(prefers-color-scheme:light){body{background:#fff;color:#0F172A}nav{background:rgba(255,255,255,.9);border-color:rgba(0,0,0,.08)}"
+            ".lg{color:#0F172A}section{background:#F8FAFC;border-color:rgba(0,0,0,.08)}p{color:#334155}}</style></head><body>"
+            "<nav><div class=\"ni\"><a href=\"/\" class=\"lg\">HUBSERVIS</a>"
+            f"<div class=\"langs\">{tabs}</div>"
+            "<a href=\"/\" class=\"bk\">← Bosh sahifa</a></div></nav>"
+            f"<main>{blocks}</main>"
+            "<footer>© 2026 HUBSERVIS. Barcha huquqlar himoyalangan.</footer>"
+            "<script>function showLang(l){document.querySelectorAll('.lang-block').forEach(function(b){b.style.display='none'});"
+            "document.getElementById('lang-'+l).style.display='block';"
+            "document.querySelectorAll('.lang-btn').forEach(function(x){x.classList.toggle('active',x.dataset.lang===l)});"
+            "window.scrollTo(0,0);}</script></body></html>"
+        )
+
     @app.get("/terms", include_in_schema=False)
     async def terms():
-        return HTMLResponse(_legal_page("Foydalanish shartlari", _settings_svc.get_legal("terms")))
+        return HTMLResponse(_multilang_legal_page(
+            {"uz": "Foydalanish shartlari", "ru": "Условия использования", "en": "Terms of Use"},
+            {
+                "uz": _settings_svc.get_legal("terms"),
+                "ru": _settings_svc.get("legal_terms_ru", "") or _settings_svc.get_legal("terms"),
+                "en": _settings_svc.get("legal_terms_en", "") or _settings_svc.get_legal("terms"),
+            },
+        ))
 
     @app.get("/privacy", include_in_schema=False)
     async def privacy():
-        return HTMLResponse(_legal_page("Maxfiylik siyosati", _settings_svc.get_legal("privacy")))
+        return HTMLResponse(_multilang_legal_page(
+            {"uz": "Maxfiylik siyosati", "ru": "Политика конфиденциальности", "en": "Privacy Policy"},
+            {
+                "uz": _settings_svc.get_legal("privacy"),
+                "ru": _settings_svc.get("legal_privacy_ru", "") or _settings_svc.get_legal("privacy"),
+                "en": _settings_svc.get("legal_privacy_en", "") or _settings_svc.get_legal("privacy"),
+            },
+        ))
 
     # CORS
     if settings.cors_allow_all:
