@@ -289,6 +289,64 @@ def create_app() -> FastAPI:
             },
         ))
 
+    @app.get("/delete-account", include_in_schema=False)
+    async def delete_account_page():
+        _support_email = _settings_svc.get("support_email", "") or "support@hubservis.uz"
+        _uz = (
+            "HUBSERVIS — AKKAUNTNI O'CHIRISH\n\n"
+            "Ushbu sahifa HubServis ilovasi hisobingizni va unga bog'liq shaxsiy ma'lumotlarni "
+            "qanday o'chirishni tushuntiradi.\n\n"
+            "1-USUL — ILOVA ORQALI\n"
+            "Ilovaga kiring → Profil → Sozlamalar → \"Akkauntni o'chirish\" tugmasini bosing va tasdiqlang.\n\n"
+            "2-USUL — SO'ROV YUBORISH\n"
+            f"Ilova ichidagi \"Qo'llab-quvvatlash\" bo'limi orqali yoki {_support_email} pochtasiga "
+            "ro'yxatdan o'tgan telefon raqamingizni ko'rsatib xat yuboring. So'rov 30 kun ichida bajariladi.\n\n"
+            "QANDAY MA'LUMOTLAR O'CHIRILADI\n"
+            "Profil (ism, telefon, rasm), buyurtmalar tarixi, moliya/reja/bozorlik yozuvlari, "
+            "kaloriya va mashg'ulot ma'lumotlari, qurilma (push) tokenlari va sharhlaringiz.\n\n"
+            "QANDAY MA'LUMOTLAR VAQTINCHA SAQLANADI\n"
+            "Qonun talab qilgan hollarda (masalan, to'lov/soliq yozuvlari) ayrim ma'lumotlar "
+            "belgilangan muddat davomida saqlanib, so'ng butunlay o'chiriladi.\n\n"
+            f"Savol bo'lsa: {_support_email}"
+        )
+        _ru = (
+            "HUBSERVIS — УДАЛЕНИЕ АККАУНТА\n\n"
+            "На этой странице описано, как удалить ваш аккаунт HubServis и связанные с ним "
+            "персональные данные.\n\n"
+            "СПОСОБ 1 — ЧЕРЕЗ ПРИЛОЖЕНИЕ\n"
+            "Откройте приложение → Профиль → Настройки → нажмите «Удалить аккаунт» и подтвердите.\n\n"
+            "СПОСОБ 2 — ОТПРАВИТЬ ЗАПРОС\n"
+            f"Напишите через раздел «Поддержка» в приложении или на {_support_email}, указав ваш "
+            "зарегистрированный номер телефона. Запрос выполняется в течение 30 дней.\n\n"
+            "КАКИЕ ДАННЫЕ УДАЛЯЮТСЯ\n"
+            "Профиль (имя, телефон, фото), история заказов, записи финансов/планов/покупок, "
+            "данные о калориях и тренировках, токены устройств (push) и ваши отзывы.\n\n"
+            "КАКИЕ ДАННЫЕ ХРАНЯТСЯ ВРЕМЕННО\n"
+            "Если этого требует закон (например, платёжные/налоговые записи), часть данных хранится "
+            "в течение установленного срока, затем полностью удаляется.\n\n"
+            f"Вопросы: {_support_email}"
+        )
+        _en = (
+            "HUBSERVIS — ACCOUNT DELETION\n\n"
+            "This page explains how to delete your HubServis account and the associated personal data.\n\n"
+            "METHOD 1 — IN THE APP\n"
+            "Open the app → Profile → Settings → tap \"Delete account\" and confirm.\n\n"
+            "METHOD 2 — SEND A REQUEST\n"
+            f"Contact us via the \"Support\" section in the app or at {_support_email}, stating your "
+            "registered phone number. Requests are completed within 30 days.\n\n"
+            "WHAT DATA IS DELETED\n"
+            "Profile (name, phone, photo), order history, finance/plan/shopping records, calorie and "
+            "workout data, device (push) tokens, and your reviews.\n\n"
+            "WHAT DATA IS TEMPORARILY RETAINED\n"
+            "Where required by law (e.g. payment/tax records), some data is retained for the required "
+            "period and then permanently deleted.\n\n"
+            f"Questions: {_support_email}"
+        )
+        return HTMLResponse(_multilang_legal_page(
+            {"uz": "Akkauntni o'chirish", "ru": "Удаление аккаунта", "en": "Account Deletion"},
+            {"uz": _uz, "ru": _ru, "en": _en},
+        ))
+
     # CORS
     if settings.cors_allow_all:
         origins = ["*"]
