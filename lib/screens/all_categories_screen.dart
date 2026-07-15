@@ -145,8 +145,8 @@ class _AllCategoriesScreenState extends State<AllCategoriesScreen> {
                                     const SliverGridDelegateWithFixedCrossAxisCount(
                                       crossAxisCount: 2,
                                       crossAxisSpacing: 12,
-                                      mainAxisSpacing: 10,
-                                      mainAxisExtent: 68,
+                                      mainAxisSpacing: 12,
+                                      childAspectRatio: 1.0,
                                     ),
                                 itemBuilder: (ctx, i) {
                                   final k = group.items[i];
@@ -192,47 +192,66 @@ class _AllCategoriesScreenState extends State<AllCategoriesScreen> {
                                       borderRadius: BorderRadius.circular(
                                         GlassTokens.radiusMd,
                                       ),
-                                      child: Container(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 12,
-                                          vertical: 8,
+                                      // Rasm butun kartani to'ldiradi, yozuv
+                                      // pastda gradient ustida (poster uslubi).
+                                      child: ClipRRect(
+                                        borderRadius: BorderRadius.circular(
+                                          GlassTokens.radiusMd,
                                         ),
-                                        decoration: BoxDecoration(
-                                          color: isDark
-                                              ? const Color(0xFF1E293B)
-                                              : Colors.white,
-                                          borderRadius: BorderRadius.circular(
-                                            GlassTokens.radiusMd,
-                                          ),
-                                        ),
-                                        child: Row(
+                                        child: Stack(
+                                          fit: StackFit.expand,
                                           children: [
                                             k.asset3d != null
-                                                ? SizedBox(
-                                                    width: 48,
-                                                    height: 48,
-                                                    child: Image.asset(
-                                                      k.asset3d!,
-                                                      fit: BoxFit.contain,
-                                                      errorBuilder: (_, __, ___) =>
-                                                          _fallbackIcon(k),
-                                                    ),
+                                                ? Image.asset(
+                                                    k.asset3d!,
+                                                    fit: BoxFit.cover,
+                                                    errorBuilder:
+                                                        (_, __, ___) =>
+                                                            _fallbackFill(k),
                                                   )
-                                                : _fallbackIcon(k),
-                                            const SizedBox(width: 12),
-                                            Expanded(
-                                              child: Text(
-                                                k.title.tr,
-                                                style: TextStyle(
-                                                  fontWeight: FontWeight.w700,
-                                                  fontSize: 14,
-                                                  color:
-                                                      GlassTokens.primaryText(
-                                                        context,
-                                                      ),
+                                                : _fallbackFill(k),
+                                            Positioned(
+                                              left: 0,
+                                              right: 0,
+                                              bottom: 0,
+                                              child: Container(
+                                                padding:
+                                                    const EdgeInsets.fromLTRB(
+                                                  10,
+                                                  22,
+                                                  10,
+                                                  9,
                                                 ),
-                                                maxLines: 2,
-                                                overflow: TextOverflow.ellipsis,
+                                                decoration: BoxDecoration(
+                                                  gradient: LinearGradient(
+                                                    begin: Alignment.topCenter,
+                                                    end: Alignment.bottomCenter,
+                                                    colors: [
+                                                      Colors.transparent,
+                                                      Colors.black.withValues(
+                                                        alpha: 0.78,
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                                child: Text(
+                                                  k.title.tr,
+                                                  maxLines: 2,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                  style: const TextStyle(
+                                                    fontWeight: FontWeight.w800,
+                                                    fontSize: 14,
+                                                    height: 1.1,
+                                                    color: Colors.white,
+                                                    shadows: [
+                                                      Shadow(
+                                                        color: Colors.black54,
+                                                        blurRadius: 4,
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
                                               ),
                                             ),
                                           ],
@@ -254,17 +273,13 @@ class _AllCategoriesScreenState extends State<AllCategoriesScreen> {
     );
   }
 
-  /// 3D icon topilmasa — rangli Lucide icon (eski ko'rinish).
-  Widget _fallbackIcon(ServiceHubKind k) {
+  /// Rasm topilmasa — accent rang butun kartani to'ldiradi + icon markazda.
+  Widget _fallbackFill(ServiceHubKind k) {
     return Container(
-      width: 44,
-      height: 44,
-      decoration: BoxDecoration(
-        color: k.accent,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: k.accent),
+      color: k.accent,
+      child: Center(
+        child: Icon(k.icon, color: Colors.white, size: 46),
       ),
-      child: Icon(k.icon, color: Colors.white, size: 22),
     );
   }
 }

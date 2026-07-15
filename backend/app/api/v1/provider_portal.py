@@ -168,6 +168,12 @@ async def list_my_providers(
         )
         providers = list(phone_result.scalars().all())
 
+    # Kategoriyasi yo'q (orphaned — kategoriya o'chirilgan/qayta seed qilingan)
+    # providerlarni chiqarib tashlaymiz — ular panelni ocholmaydi, faqat
+    # "kategoriya mos kelmadi" xatosini beradi. Bunday holatда foydalanuvchi
+    # qaytadan ro'yxatdan o'tadi.
+    providers = [p for p in providers if p.category is not None]
+
     return [ProviderOut.from_provider(p) for p in providers]
 
 

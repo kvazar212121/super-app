@@ -305,7 +305,8 @@ class ProviderCategoryConfig {
   );
   static const boshqa = ProviderCategoryConfig(
     registrationId: 'boshqa_xizmatlar',
-    categoryKey: 'boshqa_xizmatlar',
+    // Backend'da bu kategoriya kaliti 'yana' — panelni ochish uchun mos bo'lsin.
+    categoryKey: 'yana',
     title: 'Boshqa Xizmatlar',
     icon: LucideIcons.layoutGrid,
     accentColor: Color(0xFF9E9E9E),

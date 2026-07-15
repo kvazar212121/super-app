@@ -58,11 +58,40 @@ class _ProviderPortalEntryState extends State<ProviderPortalEntry> {
     if (mounted) setState(() => _loading = false);
   }
 
+  ProviderCategoryConfig? _resolveConfig(String? key) {
+    if (key == null) return null;
+    final k = key.trim();
+    // categoryKey → registrationId fallback (probel/format farqlarini ham yutadi)
+    return ProviderCategoryConfig.byCategoryKey(k) ??
+        ProviderCategoryConfig.byRegistrationId(k);
+  }
+
   void _openDashboard(Map<String, dynamic> provider) {
     final key = provider['category_key'] as String?;
-    if (key == null) return;
-    final config = ProviderCategoryConfig.byCategoryKey(key);
-    if (config == null) return;
+    final config = _resolveConfig(key);
+    if (config == null) {
+      // Jim yiqilmasin — MARKAZDA dialog (pastki menyu ostida yashirinmaydi).
+      if (mounted) {
+        showDialog<void>(
+          context: context,
+          builder: (dctx) => AlertDialog(
+            title: const Text('Panel ochilmadi'),
+            content: Text(
+              'Provider kategoriyangiz ilova sozlamasi bilan mos kelmadi.\n\n'
+              'category_key: ${key ?? "null (kategoriya biriktirilmagan)"}\n'
+              'nomi: ${provider['name'] ?? "-"}',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(dctx),
+                child: const Text('OK'),
+              ),
+            ],
+          ),
+        );
+      }
+      return;
+    }
     Navigator.push(
       context,
       MaterialPageRoute(
