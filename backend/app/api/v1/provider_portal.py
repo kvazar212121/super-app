@@ -70,6 +70,9 @@ async def _get_user_provider(
     base = (
         select(Provider)
         .options(selectinload(Provider.category))
+        # populate_existing: get_current_user provider'ni noload bilan yuklab qo'ygan
+        # bo'lishi mumkin — bu category'ni majburan qayta yuklaydi (aks holda category_key null bo'ladi)
+        .execution_options(populate_existing=True)
         .where(Provider.owner_user_id == user.id)
     )
     if category_key:
@@ -82,6 +85,7 @@ async def _get_user_provider(
         phone_q = (
             select(Provider)
             .options(selectinload(Provider.category))
+            .execution_options(populate_existing=True)
             .where(Provider.phone == user.phone)
         )
         if category_key:
@@ -154,6 +158,7 @@ async def list_my_providers(
     result = await db.execute(
         select(Provider)
         .options(selectinload(Provider.category))
+        .execution_options(populate_existing=True)
         .where(Provider.owner_user_id == user.id)
         .order_by(Provider.id)
     )
@@ -163,6 +168,7 @@ async def list_my_providers(
         phone_result = await db.execute(
             select(Provider)
             .options(selectinload(Provider.category))
+            .execution_options(populate_existing=True)
             .where(Provider.phone == user.phone)
             .order_by(Provider.id)
         )
