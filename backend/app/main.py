@@ -217,13 +217,135 @@ def create_app() -> FastAPI:
             "<footer>© 2026 HUBSERVIS. Barcha huquqlar himoyalangan.</footer></body></html>"
         )
 
+    def _multilang_legal_page(titles: dict, contents: dict) -> str:
+        """Ko'p tilli huquqiy sahifa (uz/ru/en) — yuqorida til almashtirgich bilan."""
+        LANGS = [("uz", "O'zbekcha"), ("ru", "Русский"), ("en", "English")]
+
+        def _sections(text: str) -> str:
+            return "".join(
+                f"<section><p>{p.replace(chr(10), '<br>')}</p></section>"
+                for p in _htmlmod.escape(text or "").split("\n\n") if p.strip()
+            )
+
+        tabs = "".join(
+            f'<button class="lang-btn{" active" if code == "uz" else ""}" data-lang="{code}" '
+            f'onclick="showLang(\'{code}\')">{label}</button>'
+            for code, label in LANGS
+        )
+        blocks = "".join(
+            f'<div class="lang-block" id="lang-{code}" style="display:{"block" if code == "uz" else "none"}">'
+            f'<h1>{_htmlmod.escape(titles.get(code, titles.get("uz", "")))}</h1>'
+            f'{_sections(contents.get(code) or contents.get("uz", ""))}</div>'
+            for code, _ in LANGS
+        )
+        return (
+            "<!DOCTYPE html><html lang=\"uz\"><head><meta charset=\"UTF-8\">"
+            "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">"
+            f"<title>HubServis — {_htmlmod.escape(titles.get('uz', ''))}</title>"
+            "<style>*{box-sizing:border-box;margin:0;padding:0}"
+            "body{font-family:Inter,system-ui,sans-serif;background:#050505;color:#E5E7EB;line-height:1.65}"
+            "nav{position:sticky;top:0;background:rgba(5,5,5,.85);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,.1);z-index:10}"
+            ".ni{max-width:820px;margin:0 auto;padding:16px 24px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}"
+            ".lg{font-weight:800;font-size:1.4rem;letter-spacing:-1px;color:#fff;text-decoration:none}"
+            ".langs{display:flex;gap:6px}"
+            ".lang-btn{background:transparent;color:#9CA3AF;border:1px solid rgba(255,255,255,.18);border-radius:9px;padding:6px 12px;font-size:.85rem;font-weight:600;cursor:pointer}"
+            ".lang-btn.active{background:#6366F1;color:#fff;border-color:#6366F1}"
+            ".bk{color:#9CA3AF;text-decoration:none;font-size:.9rem}main{max-width:820px;margin:0 auto;padding:40px 24px 72px}"
+            "h1{font-size:2rem;font-weight:800;margin-bottom:24px}"
+            "section{margin-bottom:18px;padding:18px 22px;background:#101012;border:1px solid rgba(255,255,255,.1);border-radius:14px}"
+            "p{color:#D1D5DB;font-size:.98rem}footer{border-top:1px solid rgba(255,255,255,.1);text-align:center;padding:28px;color:#71717A;font-size:.85rem}"
+            "@media(prefers-color-scheme:light){body{background:#fff;color:#0F172A}nav{background:rgba(255,255,255,.9);border-color:rgba(0,0,0,.08)}"
+            ".lg{color:#0F172A}section{background:#F8FAFC;border-color:rgba(0,0,0,.08)}p{color:#334155}}</style></head><body>"
+            "<nav><div class=\"ni\"><a href=\"/\" class=\"lg\">HUBSERVIS</a>"
+            f"<div class=\"langs\">{tabs}</div>"
+            "<a href=\"/\" class=\"bk\">← Bosh sahifa</a></div></nav>"
+            f"<main>{blocks}</main>"
+            "<footer>© 2026 HUBSERVIS. Barcha huquqlar himoyalangan.</footer>"
+            "<script>function showLang(l){document.querySelectorAll('.lang-block').forEach(function(b){b.style.display='none'});"
+            "document.getElementById('lang-'+l).style.display='block';"
+            "document.querySelectorAll('.lang-btn').forEach(function(x){x.classList.toggle('active',x.dataset.lang===l)});"
+            "window.scrollTo(0,0);}</script></body></html>"
+        )
+
     @app.get("/terms", include_in_schema=False)
     async def terms():
-        return HTMLResponse(_legal_page("Foydalanish shartlari", _settings_svc.get_legal("terms")))
+        return HTMLResponse(_multilang_legal_page(
+            {"uz": "Foydalanish shartlari", "ru": "Условия использования", "en": "Terms of Use"},
+            {
+                "uz": _settings_svc.get_legal("terms"),
+                "ru": _settings_svc.get("legal_terms_ru", "") or _settings_svc.get_legal("terms"),
+                "en": _settings_svc.get("legal_terms_en", "") or _settings_svc.get_legal("terms"),
+            },
+        ))
 
     @app.get("/privacy", include_in_schema=False)
     async def privacy():
-        return HTMLResponse(_legal_page("Maxfiylik siyosati", _settings_svc.get_legal("privacy")))
+        return HTMLResponse(_multilang_legal_page(
+            {"uz": "Maxfiylik siyosati", "ru": "Политика конфиденциальности", "en": "Privacy Policy"},
+            {
+                "uz": _settings_svc.get_legal("privacy"),
+                "ru": _settings_svc.get("legal_privacy_ru", "") or _settings_svc.get_legal("privacy"),
+                "en": _settings_svc.get("legal_privacy_en", "") or _settings_svc.get_legal("privacy"),
+            },
+        ))
+
+    @app.get("/delete-account", include_in_schema=False)
+    async def delete_account_page():
+        _support_email = _settings_svc.get("support_email", "") or "support@hubservis.uz"
+        _uz = (
+            "HUBSERVIS — AKKAUNTNI O'CHIRISH\n\n"
+            "Ushbu sahifa HubServis ilovasi hisobingizni va unga bog'liq shaxsiy ma'lumotlarni "
+            "qanday o'chirishni tushuntiradi.\n\n"
+            "1-USUL — ILOVA ORQALI\n"
+            "Ilovaga kiring → Profil → Sozlamalar → \"Akkauntni o'chirish\" tugmasini bosing va tasdiqlang.\n\n"
+            "2-USUL — SO'ROV YUBORISH\n"
+            f"Ilova ichidagi \"Qo'llab-quvvatlash\" bo'limi orqali yoki {_support_email} pochtasiga "
+            "ro'yxatdan o'tgan telefon raqamingizni ko'rsatib xat yuboring. So'rov 30 kun ichida bajariladi.\n\n"
+            "QANDAY MA'LUMOTLAR O'CHIRILADI\n"
+            "Profil (ism, telefon, rasm), buyurtmalar tarixi, moliya/reja/bozorlik yozuvlari, "
+            "kaloriya va mashg'ulot ma'lumotlari, qurilma (push) tokenlari va sharhlaringiz.\n\n"
+            "QANDAY MA'LUMOTLAR VAQTINCHA SAQLANADI\n"
+            "Qonun talab qilgan hollarda (masalan, to'lov/soliq yozuvlari) ayrim ma'lumotlar "
+            "belgilangan muddat davomida saqlanib, so'ng butunlay o'chiriladi.\n\n"
+            f"Savol bo'lsa: {_support_email}"
+        )
+        _ru = (
+            "HUBSERVIS — УДАЛЕНИЕ АККАУНТА\n\n"
+            "На этой странице описано, как удалить ваш аккаунт HubServis и связанные с ним "
+            "персональные данные.\n\n"
+            "СПОСОБ 1 — ЧЕРЕЗ ПРИЛОЖЕНИЕ\n"
+            "Откройте приложение → Профиль → Настройки → нажмите «Удалить аккаунт» и подтвердите.\n\n"
+            "СПОСОБ 2 — ОТПРАВИТЬ ЗАПРОС\n"
+            f"Напишите через раздел «Поддержка» в приложении или на {_support_email}, указав ваш "
+            "зарегистрированный номер телефона. Запрос выполняется в течение 30 дней.\n\n"
+            "КАКИЕ ДАННЫЕ УДАЛЯЮТСЯ\n"
+            "Профиль (имя, телефон, фото), история заказов, записи финансов/планов/покупок, "
+            "данные о калориях и тренировках, токены устройств (push) и ваши отзывы.\n\n"
+            "КАКИЕ ДАННЫЕ ХРАНЯТСЯ ВРЕМЕННО\n"
+            "Если этого требует закон (например, платёжные/налоговые записи), часть данных хранится "
+            "в течение установленного срока, затем полностью удаляется.\n\n"
+            f"Вопросы: {_support_email}"
+        )
+        _en = (
+            "HUBSERVIS — ACCOUNT DELETION\n\n"
+            "This page explains how to delete your HubServis account and the associated personal data.\n\n"
+            "METHOD 1 — IN THE APP\n"
+            "Open the app → Profile → Settings → tap \"Delete account\" and confirm.\n\n"
+            "METHOD 2 — SEND A REQUEST\n"
+            f"Contact us via the \"Support\" section in the app or at {_support_email}, stating your "
+            "registered phone number. Requests are completed within 30 days.\n\n"
+            "WHAT DATA IS DELETED\n"
+            "Profile (name, phone, photo), order history, finance/plan/shopping records, calorie and "
+            "workout data, device (push) tokens, and your reviews.\n\n"
+            "WHAT DATA IS TEMPORARILY RETAINED\n"
+            "Where required by law (e.g. payment/tax records), some data is retained for the required "
+            "period and then permanently deleted.\n\n"
+            f"Questions: {_support_email}"
+        )
+        return HTMLResponse(_multilang_legal_page(
+            {"uz": "Akkauntni o'chirish", "ru": "Удаление аккаунта", "en": "Account Deletion"},
+            {"uz": _uz, "ru": _ru, "en": _en},
+        ))
 
     # CORS
     if settings.cors_allow_all:
