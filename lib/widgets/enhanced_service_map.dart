@@ -190,13 +190,11 @@ class _EnhancedServiceMapState extends State<EnhancedServiceMap>
     if (mounted) setState(() => _routing = false);
   }
 
-  bool get _isDark => Theme.of(context).brightness == Brightness.dark;
-
   @override
   Widget build(BuildContext context) {
-    final tileUrl = _isDark
-        ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png'
-        : 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png';
+    // Har doim rangli (voyager) — dark rejimda ham xarita qop-qora chiqmaydi.
+    const tileUrl =
+        'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png';
 
     return Scaffold(
       appBar: AppBar(title: Text(widget.title), elevation: 0),

@@ -165,56 +165,36 @@ class _ProviderReportsWidgetState extends State<ProviderReportsWidget> {
                   color: Colors.black,
                 ),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 6),
               const Text(
-                "To'lovni amalga oshirish uchun quyidagi karta raqamiga kerakli summani o'tkazing va adminga chekni yuboring (Paynet, Click, Payme va h.k).",
-                style: TextStyle(
-                  color: Colors.black87,
-                  fontSize: 14,
-                  height: 1.4,
-                ),
+                "To'lov usulini tanlang",
+                style: TextStyle(color: Colors.black54, fontSize: 14),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 18),
+              _payMethodTile("Payme", const Color(0xFF33C4D8)),
+              const SizedBox(height: 12),
+              _payMethodTile("Click", const Color(0xFF0098EA)),
+              const SizedBox(height: 18),
               Container(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
-                  color: Colors.grey.shade100,
+                  color: Colors.orange.shade50,
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.grey.shade300),
+                  border: Border.all(color: Colors.orange.shade200),
                 ),
-                child: const Row(
+                child: Row(
                   children: [
-                    Icon(Icons.credit_card, color: Colors.black54),
-                    SizedBox(width: 12),
+                    Icon(LucideIcons.clock, color: Colors.orange.shade800, size: 20),
+                    const SizedBox(width: 10),
                     Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "Karta raqami:",
-                            style: TextStyle(
-                              color: Colors.black54,
-                              fontSize: 12,
-                            ),
-                          ),
-                          Text(
-                            "8600 1234 5678 9012",
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18,
-                              color: Colors.black,
-                              letterSpacing: 1.2,
-                            ),
-                          ),
-                          SizedBox(height: 4),
-                          Text(
-                            "Qabul qiluvchi: Adminstrator",
-                            style: TextStyle(
-                              color: Colors.black87,
-                              fontSize: 13,
-                            ),
-                          ),
-                        ],
+                      child: Text(
+                        "Onlayn to'lov (Payme, Click) yaqin orada ochiladi.",
+                        style: TextStyle(
+                          color: Colors.orange.shade900,
+                          fontSize: 13,
+                          height: 1.35,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
                   ],
@@ -241,6 +221,62 @@ class _ProviderReportsWidgetState extends State<ProviderReportsWidget> {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  /// To'lov usuli (Payme/Click) — hozircha "Tez orada" belgisi bilan (ishlamaydi).
+  Widget _payMethodTile(String name, Color color) {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: Colors.grey.shade100,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey.shade300),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 44,
+            height: 44,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: color,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: const Icon(
+              LucideIcons.creditCard,
+              color: Colors.white,
+              size: 22,
+            ),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Text(
+              name,
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+                color: Colors.black,
+              ),
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+            decoration: BoxDecoration(
+              color: Colors.orange.shade100,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Text(
+              "Tez orada",
+              style: TextStyle(
+                color: Colors.orange.shade900,
+                fontSize: 12,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

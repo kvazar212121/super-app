@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 
 import '../config/provider_category_config.dart';
 import '../providers/auth_provider.dart';
+import '../screens/auth/auth_gate_screen.dart';
 import '../screens/provider_registration/provider_onboarding_screen.dart';
 import '../screens/provider_side/unified_provider_dashboard_screen.dart';
 import '../screens/provider_registration/barber/barber_pending_screen.dart';
@@ -47,7 +48,16 @@ class _ProviderPortalEntryState extends State<ProviderPortalEntry> {
       return;
     }
     try {
-      _providers = await _portal.listMine();
+      final all = await _portal.listMine();
+      // Faqat kategoriyasi TO'G'RI (config'da mavjud) providerlar. Kategoriyasiz
+      // yoki buzuq (orphaned, masalan eski "goo") yozuvlar hisobga olinmaydi —
+      // shunda foydalanuvchi to'g'ridan-to'g'ri ro'yxatdan o'tishga yo'naltiriladi.
+      _providers = all.where((p) {
+        final key = (p['category_key'] as String?)?.trim();
+        return key != null &&
+            key.isNotEmpty &&
+            ProviderCategoryConfig.byCategoryKey(key) != null;
+      }).toList();
       if (_providers.isEmpty) {
         _barberStatus = await _barberPortal.getMyStatus();
         _salonStatus = await _salonPortal.getMyStatus();
@@ -149,6 +159,22 @@ class _ProviderPortalEntryState extends State<ProviderPortalEntry> {
   }
 
   void _onTap() async {
+    // Tizim: AVVAL oddiy user bo'lib kirish (telefon raqami), KEYIN soha egasi
+    // bo'lish. Login qilinmagan bo'lsa — provider onboarding xato bermasligi
+    // uchun avval kirish/ro'yxat ekraniga o'tkazamiz.
+    final auth = context.read<AuthProvider>();
+    if (!auth.isAuthenticated) {
+      await Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const AuthGateScreen()),
+      );
+      // Kirgach — provider ro'yxatini qayta yuklaymiz
+      if (mounted && context.read<AuthProvider>().isAuthenticated) {
+        setState(() => _loading = true);
+        await _load();
+      }
+      return;
+    }
     if (_providers.isEmpty) {
       final status = _barberStatus?['status']?.toString();
       final role = _barberStatus?['role']?.toString();
@@ -190,28 +216,30 @@ class _ProviderPortalEntryState extends State<ProviderPortalEntry> {
   @override
   Widget build(BuildContext context) {
     final auth = context.watch<AuthProvider>();
-    if (!auth.isAuthenticated) {
-      return widget.compact
-          ? const SizedBox.shrink()
-          : _buildGuestCard(context);
-    }
-    if (_loading) {
+
+    // Login qilingan bo'lsa — provider ma'lumoti yuklanmoqda
+    if (auth.isAuthenticated && _loading) {
       return const Padding(
         padding: EdgeInsets.symmetric(vertical: 8),
         child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
       );
     }
 
-    final hasProvider = _providers.isNotEmpty;
+    // To'g'ri kategoriyali provider bo'lsagina "panel". Aks holda (login yo'q
+    // yoki ro'yxatdan o'tmagan) — DOIM "Ro'yxatdan o'tish" tugmasi ko'rsatiladi
+    // (hech qachon yashirilmaydi).
+    final hasProvider = auth.isAuthenticated && _providers.isNotEmpty;
+
     final title = hasProvider
         ? 'Soha egasi paneli'.tr
-        : 'Siz qaysi soha egasisiz?'.tr;
+        : 'Soha egasi bo\'lish'.tr;
     final subtitle = hasProvider
         ? '${_providers.length} ' + 'ta xizmat — buyurtmalar va statistika'.tr
-        : 'Biz sizni ushbu platformaga qo\'shamiz — mijozlar sizni topadi.'.tr;
+        : 'Xizmat ko\'rsatuvchi sifatida ro\'yxatdan o\'ting — mijozlar sizni topadi.'
+            .tr;
     final buttonLabel = hasProvider
         ? 'Panelga o\'tish'.tr
-        : 'Usta / xizmat sifatida qo\'shilish'.tr;
+        : 'Ro\'yxatdan o\'tish'.tr;
 
     if (widget.compact) {
       return GlassSurface(
@@ -234,10 +262,31 @@ class _ProviderPortalEntryState extends State<ProviderPortalEntry> {
                 ),
               ),
             ),
-            Icon(
-              Icons.chevron_right,
-              color: GlassTokens.secondaryText(context),
-            ),
+            // Ro'yxatdan o'tmagan bo'lsa — aniq "Ro'yxatdan o'tish" chipi
+            if (!hasProvider)
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF6366F1),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(
+                  'Ro\'yxatdan o\'tish'.tr,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 12,
+                  ),
+                ),
+              )
+            else
+              Icon(
+                Icons.chevron_right,
+                color: GlassTokens.secondaryText(context),
+              ),
           ],
         ),
       );
@@ -290,43 +339,6 @@ class _ProviderPortalEntryState extends State<ProviderPortalEntry> {
           SizedBox(
             width: double.infinity,
             child: FilledButton(onPressed: _onTap, child: Text(buttonLabel)),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildGuestCard(BuildContext context) {
-    return GlassSurface(
-      padding: const EdgeInsets.all(20),
-      borderRadius: GlassTokens.radiusLg,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Soha egasi bo\'lish'.tr,
-            style: TextStyle(
-              fontWeight: FontWeight.w700,
-              fontSize: 16,
-              color: GlassTokens.primaryText(context),
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Xizmat ko\'rsatuvchi sifatida ro\'yxatdan o\'tish uchun avval kiring.'
-                .tr,
-            style: TextStyle(
-              color: GlassTokens.secondaryText(context),
-              height: 1.4,
-            ),
-          ),
-          const SizedBox(height: 16),
-          SizedBox(
-            width: double.infinity,
-            child: OutlinedButton(
-              onPressed: _openOnboarding,
-              child: Text('Batafsil'.tr),
-            ),
           ),
         ],
       ),
