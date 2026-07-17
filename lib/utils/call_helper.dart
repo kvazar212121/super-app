@@ -95,10 +95,14 @@ class CallHelper {
 
     if (!context.mounted) return;
 
+    // Xizmat/provider kartasidan qo'ng'iroq — soha egasi tomoniga (provider),
+    // zakaz sifatida. Qabul qiluvchi majburan provider paneliga o'tkaziladi.
     bool started = await CallService().startCall(
       targetId,
       targetName,
       categoryKey: categoryKey,
+      toRole: 'provider',
+      intent: 'order',
     );
     if (!started) {
       ScaffoldMessenger.of(context).showSnackBar(

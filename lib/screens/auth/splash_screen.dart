@@ -4,7 +4,7 @@ import '../../providers/app_provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../widgets/glass/mesh_background.dart';
 import '../../widgets/hub_servis_brand.dart';
-import '../main_screen.dart';
+import '../root_shell.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:super_app/l10n/locale_controller.dart';
 
@@ -92,7 +92,7 @@ class _SplashScreenState extends State<SplashScreen>
     if (!mounted) return;
     Navigator.of(
       context,
-    ).pushReplacement(MaterialPageRoute(builder: (_) => const MainScreen()));
+    ).pushReplacement(MaterialPageRoute(builder: (_) => const RootShell()));
   }
 
   @override

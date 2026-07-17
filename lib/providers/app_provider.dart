@@ -19,6 +19,11 @@ class AppProvider extends ChangeNotifier {
   UserProfile _user = UserProfile(name: '', surname: '', phone: '');
   final List<PaymentCard> _cards = [];
   bool _isDarkMode = false;
+
+  // Aktiv rejim: 'user' (oddiy foydalanuvchi) yoki 'provider' (soha egasi).
+  // SharedPreferences'da saqlanadi — ilova qayta ochilganda tiklanadi.
+  String _activeMode = 'user';
+  String? _activeProviderKey; // provider rejimidagi kategoriya kaliti
   final List<ServiceOrder> _orders = [];
   List<dynamic> _notifications = [];
   int _unreadCount = 0;
@@ -28,6 +33,8 @@ class AppProvider extends ChangeNotifier {
   UserProfile get user => _user;
   List<PaymentCard> get cards => _cards;
   bool get isDarkMode => _isDarkMode;
+  bool get isProviderMode => _activeMode == 'provider';
+  String? get activeProviderKey => _activeProviderKey;
   double get balance => _user.balance;
   double get cashback => _user.cashback;
   List<dynamic> get notifications => _notifications;
@@ -56,6 +63,39 @@ class AppProvider extends ChangeNotifier {
   void toggleTheme() {
     _isDarkMode = !_isDarkMode;
     notifyListeners();
+  }
+
+  // ── Aktiv rejim (user ↔ provider) ──────────────────────────────
+  /// Ilova ochilganda SharedPreferences'dan rejimni tiklaydi.
+  Future<void> loadActiveMode() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      _activeMode = prefs.getString('active_mode') ?? 'user';
+      _activeProviderKey = prefs.getString('active_provider_key');
+      notifyListeners();
+    } catch (_) {}
+  }
+
+  /// Soha egasi (provider) rejimiga o'tadi va saqlaydi.
+  Future<void> switchToProvider(String providerKey) async {
+    _activeMode = 'provider';
+    _activeProviderKey = providerKey;
+    notifyListeners();
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('active_mode', 'provider');
+      await prefs.setString('active_provider_key', providerKey);
+    } catch (_) {}
+  }
+
+  /// Oddiy foydalanuvchi rejimiga qaytadi va saqlaydi.
+  Future<void> switchToUser() async {
+    _activeMode = 'user';
+    notifyListeners();
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('active_mode', 'user');
+    } catch (_) {}
   }
 
   void applyAuthUser(Map<String, dynamic> data) {

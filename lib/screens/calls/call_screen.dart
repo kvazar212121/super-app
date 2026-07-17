@@ -2,11 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:math';
 import 'dart:async';
-import 'package:provider/provider.dart';
 import '../../l10n/locale_controller.dart';
-import '../../providers/app_provider.dart';
 import '../../services/call_service.dart';
 import '../../services/ringtone_service.dart';
+import '../../app_navigator.dart';
 import 'post_call_dialogs.dart';
 
 /// WhatsApp uslubidagi ovozli qo'ng'iroq ekrani.
@@ -91,17 +90,30 @@ class _CallScreenState extends State<CallScreen> with TickerProviderStateMixin {
 
     _callService.onCallEnded = () {
       _stopRingingEffects();
-      if (mounted) {
-        final appProvider = context.read<AppProvider>();
-        final isProvider = appProvider.user.isProvider && widget.isIncoming;
-        PostCallDialogs.showPostCallDialog(
-          context,
-          isProvider,
-          _callService.remoteUserId,
-          _callService.remoteUserName,
-          appProvider,
-          isBookingCall: widget.isBookingCall,
-          categoryKey: _callService.callCategoryKey ?? '',
+      final cs = _callService;
+
+      // Qo'ng'iroq ekranini yopamiz. Global navigatorKey ishlatamiz — chunki
+      // keyingi kelishuv dialoglari ASINXRON (ekran yopilgandan keyin ham)
+      // davom etadi va barqaror root kontekst kerak.
+      final navCtx = navigatorKey.currentContext;
+      if (navCtx != null && Navigator.of(navCtx).canPop()) {
+        Navigator.of(navCtx).pop();
+      }
+
+      // Kelishuv faqat ZAKAZ qo'ng'irog'i + haqiqiy suhbat bo'lganda so'raladi
+      // (missed/rad etilgan yoki shaxsiy qo'ng'iroqda so'ralmaydi).
+      final isDeal = cs.lastCallWasOrder &&
+          cs.lastCallConnected &&
+          cs.lastCallId != null &&
+          (cs.lastCallRemoteUserId ?? 0) != 0;
+      if (isDeal && navCtx != null) {
+        PostCallDialogs.showDealFlow(
+          navCtx,
+          callId: cs.lastCallId!,
+          otherUserId: cs.lastCallRemoteUserId!,
+          otherName: cs.lastCallRemoteUserName ?? 'Mijoz',
+          categoryKey: cs.lastCallCategoryKey,
+          iAmProvider: cs.lastCallIAmProvider,
         );
       }
     };
@@ -251,6 +263,47 @@ class _CallScreenState extends State<CallScreen> with TickerProviderStateMixin {
                       letterSpacing: 0.5,
                     ),
                   ),
+
+                  // Zakaz qo'ng'irog'i belgisi — bu buyurtma bo'yicha qo'ng'iroq.
+                  if (_callService.isOrderCall) ...[
+                    const SizedBox(height: 12),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 7,
+                      ),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF16A34A).withValues(alpha: 0.18),
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                          color: const Color(0xFF22C55E),
+                          width: 1,
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Container(
+                            width: 8,
+                            height: 8,
+                            decoration: const BoxDecoration(
+                              color: Color(0xFF22C55E),
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            'Zakaz qo\'ng\'irog\'i'.tr,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 13,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
 
                   const Spacer(flex: 2),
 

@@ -22,9 +22,7 @@ import 'services/firebase_service.dart';
 import 'services/feature_service.dart';
 
 import 'providers/saved_places_provider.dart';
-
-/// Global navigator key — har qanday joydan CallScreen ochish uchun
-final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+import 'app_navigator.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -113,6 +111,25 @@ void main() async {
     doPush();
   }
 
+  // ZAKAZ qo'ng'irog'i (to_role=provider) kelganda — qabul qiluvchini MAJBURAN
+  // soha egasi paneliga o'tkazamiz. Shunda telefonni ko'targanda provider
+  // tomonida turadi va "Zakaz qo'ng'irog'i" ko'rinadi (aylanib o'tishni to'sadi).
+  void maybeForceProviderMode() {
+    if (!CallService().isProviderTargetedCall) return;
+    final key = CallService().callCategoryKey;
+    if (key == null || key.isEmpty) return;
+    final ctx = navigatorKey.currentContext;
+    if (ctx == null) {
+      Future.delayed(const Duration(milliseconds: 100), maybeForceProviderMode);
+      return;
+    }
+    try {
+      ctx.read<AppProvider>().switchToProvider(key);
+    } catch (e) {
+      debugPrint('maybeForceProviderMode xato: $e');
+    }
+  }
+
   // CallKit accept/decline eventlarini CallService ga ulash
   CallKitService().onCallAccepted = (callerId, callerName) {
     final id = int.tryParse(callerId) ?? 0;
@@ -121,6 +138,8 @@ void main() async {
         : CallService().remoteUserName;
     CallService().answerCall(id, name);
 
+    // Zakaz qo'ng'irog'i bo'lsa — CallScreen ochilishidan oldin provider tomoniga o't.
+    maybeForceProviderMode();
     safePushCallScreen(id: id, name: name);
   };
 
@@ -144,6 +163,9 @@ void main() async {
       CallService().rejectCall();
       return;
     }
+    // Ilova ochiq (foreground) — jiringlash paytidayoq provider tomoniga o'tkazamiz,
+    // shunda telefon ko'tarilganda soha egasi paneli tayyor turadi.
+    maybeForceProviderMode();
   };
 
   // Ob-havo ma'lumotlarini orqa fonda avtomatik yuklashni boshlash (App ochilishini kutib turmasligi uchun await qilinmaydi)

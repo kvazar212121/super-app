@@ -31,6 +31,7 @@ from app.models.direct_message import DirectMessage
 from app.models.daily_activity import DailyActivity
 from app.models.finance_group import FinanceGroup
 from app.models.device_token import DeviceToken
+from app.models.call_deal import CallDeal
 
 __all__ = [
     "User",
@@ -72,4 +73,5 @@ __all__ = [
     "DirectMessage",
     "DailyActivity",
     "FinanceGroup",
+    "CallDeal",
 ]

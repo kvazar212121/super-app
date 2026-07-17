@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import '../../services/settings_save_controller.dart';
 import 'package:intl/intl.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:provider/provider.dart';
+import '../../providers/app_provider.dart';
 import '../../config/provider_category_config.dart';
 import '../../services/provider_portal_service.dart';
 import 'widgets/provider_calendar_widget.dart';
@@ -382,30 +384,74 @@ class _UnifiedProviderDashboardScreenState
       );
     }
 
-    return Theme(
-      data: ThemeData.light().copyWith(
-        scaffoldBackgroundColor: Colors.white,
-        colorScheme: const ColorScheme.light(
-          primary: Colors.black,
-          onPrimary: Colors.white,
-          surface: Colors.white,
-          onSurface: Colors.black,
-          outline: Colors.black,
-          outlineVariant: Colors.black54,
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        // Android "orqaga" — ilovadan chiqish emas, oddiy foydalanuvchiga qaytish.
+        if (!didPop) context.read<AppProvider>().switchToUser();
+      },
+      child: Theme(
+        data: ThemeData.light().copyWith(
+          scaffoldBackgroundColor: Colors.white,
+          colorScheme: const ColorScheme.light(
+            primary: Colors.black,
+            onPrimary: Colors.white,
+            surface: Colors.white,
+            onSurface: Colors.black,
+            outline: Colors.black,
+            outlineVariant: Colors.black54,
+          ),
+          textTheme: Typography.material2021().black,
         ),
-        textTheme: Typography.material2021().black,
-      ),
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        body: SafeArea(
-          child: (_selectedIndex == _callsIndex)
-              ? _buildBody(theme, Colors.black)
-              : SingleChildScrollView(
-                  padding: const EdgeInsets.all(20),
-                  child: _buildBody(theme, Colors.black),
+        child: Scaffold(
+          backgroundColor: Colors.white,
+          appBar: AppBar(
+            backgroundColor: Colors.white,
+            foregroundColor: Colors.black,
+            elevation: 0,
+            scrolledUnderElevation: 0,
+            automaticallyImplyLeading: false,
+            titleSpacing: 20,
+            title: Text(
+              '${widget.config.title} paneli',
+              style: const TextStyle(
+                color: Colors.black,
+                fontWeight: FontWeight.w800,
+                fontSize: 18,
+              ),
+            ),
+            actions: [
+              Padding(
+                padding: const EdgeInsets.only(right: 8),
+                child: TextButton.icon(
+                  onPressed: () =>
+                      context.read<AppProvider>().switchToUser(),
+                  icon: const Icon(
+                    LucideIcons.arrowLeftRight,
+                    size: 16,
+                    color: Color(0xFF3B82F6),
+                  ),
+                  label: const Text(
+                    'Foydalanuvchi',
+                    style: TextStyle(
+                      color: Color(0xFF3B82F6),
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
                 ),
+              ),
+            ],
+          ),
+          body: SafeArea(
+            child: (_selectedIndex == _callsIndex)
+                ? _buildBody(theme, Colors.black)
+                : SingleChildScrollView(
+                    padding: const EdgeInsets.all(20),
+                    child: _buildBody(theme, Colors.black),
+                  ),
+          ),
+          bottomNavigationBar: _buildBottomNav(Colors.black),
         ),
-        bottomNavigationBar: _buildBottomNav(Colors.black),
       ),
     );
   }

@@ -354,6 +354,65 @@ class ApiService {
     return response.data;
   }
 
+  // ---- Kelishuv (CallDeal) — zakaz qo'ng'irog'idan keyingi ikki tomonlama tasdiq ----
+
+  /// Qo'ng'iroqdan keyingi "Kelishdingizmi?" javobini yuboradi.
+  /// [callId] — ikkala tomon uchun umumiy UUID; [otherUserId] — suhbatdosh;
+  /// [iAmProvider] — men provider tomonidamanmi; [response] — 'agreed'|'declined'.
+  /// Qaytaradi: {deal: {...}, next_action: '...'} — UI keyin nima ko'rsatishini
+  /// shu `next_action` hal qiladi (agreed/declined/await_other/client_recheck/...).
+  Future<Map<String, dynamic>> respondCallDeal({
+    required String callId,
+    required int otherUserId,
+    String? categoryKey,
+    required bool iAmProvider,
+    required String response,
+    bool reconfirm = false,
+  }) async {
+    final res = await _dio.post('/calls/deal/respond', data: {
+      'call_id': callId,
+      'other_user_id': otherUserId,
+      'category_key': categoryKey,
+      'i_am_provider': iAmProvider,
+      'response': response,
+      'reconfirm': reconfirm,
+    });
+    return Map<String, dynamic>.from(res.data as Map);
+  }
+
+  /// Kelishuv holatini so'rash (polling) — ikkinchi tomon javobini kutishda.
+  Future<Map<String, dynamic>> getCallDeal(String callId) async {
+    final res = await _dio.get('/calls/deal/$callId');
+    return Map<String, dynamic>.from(res.data as Map);
+  }
+
+  /// Kelishuv bo'lgach provider BRON yaratadi (kelishilgan sana/vaqt bilan).
+  /// Ikkalasi "kelishdik" bo'lsa → confirmed, aks holda → pending.
+  /// Qaytaradi: {order: {...}, status: 'confirmed'|'pending', both_agreed: bool}.
+  Future<Map<String, dynamic>> createDealBooking({
+    required String callId,
+    required DateTime date,
+    String? serviceName,
+    String? address,
+    double? price,
+    String? notes,
+  }) async {
+    final res = await _dio.post('/calls/deal/$callId/booking', data: {
+      'date': date.toIso8601String(),
+      'service_name': serviceName,
+      'address': address,
+      'price': price ?? 0,
+      'notes': notes,
+    });
+    return Map<String, dynamic>.from(res.data as Map);
+  }
+
+  /// Provider kutilayotgan/tasdiqlangan bronni bekor qiladi (istalgan paytda).
+  Future<Map<String, dynamic>> cancelDealBooking(String callId) async {
+    final res = await _dio.post('/calls/deal/$callId/cancel-booking');
+    return Map<String, dynamic>.from(res.data as Map);
+  }
+
   /// Mening buyurtmalarim
   Future<Map<String, dynamic>> getMyOrders({
     int page = 1,

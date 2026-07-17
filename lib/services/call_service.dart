@@ -6,6 +6,7 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:dio/dio.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:uuid/uuid.dart';
 import '../config/app_config.dart';
 import 'api_service.dart';
 import 'call_history_service.dart';
@@ -48,6 +49,29 @@ class CallService extends ChangeNotifier {
   int? _remoteUserId;
   String? _remoteUserName;
   String? _callCategoryKey;
+  // Qaysi tomonga: 'user' (oddiy) yoki 'provider' (soha egasi paneli).
+  // 'provider' bo'lsa qabul qiluvchi MAJBURAN soha egasi tomoniga o'tkaziladi.
+  String? _callToRole;
+  // Maqsad: 'order' (zakaz — kelishuv kuzatiladi) yoki 'personal' (shaxsiy).
+  String? _callIntent;
+  // Ikkala qurilmada bir xil bo'lgan qo'ng'iroq UUID'si — kelishuv (CallDeal)
+  // yozuvini ikki tomon uchun bog'lash uchun. Mijoz (chaqiruvchi) yaratadi.
+  String? _callId;
+  // Shu qo'ng'iroqda MEN provider (soha egasi) tomonidamanmi. Kelishuv javobini
+  // backendga to'g'ri yozish uchun (provider_response vs client_response).
+  bool _callIAmProvider = false;
+
+  // --- Post-call snapshot ---
+  // endCall() qiymatlarni null qiladi, LEKIN kelishuv dialogi qo'ng'iroq
+  // tugagach kerak bo'ladi. Shuning uchun tugatishdan OLDIN muhim ma'lumotni
+  // shu maydonlarga ko'chiramiz.
+  int? lastCallRemoteUserId;
+  String? lastCallRemoteUserName;
+  String? lastCallCategoryKey;
+  String? lastCallId;
+  bool lastCallWasOrder = false; // zakaz qo'ng'irog'i edimi (kelishuv so'raymizmi)
+  bool lastCallConnected = false; // haqiqiy suhbat bo'ldimi (missed emas)
+  bool lastCallIAmProvider = false;
 
   // Qo'ng'iroq vaqti
   DateTime? _callStartTime;
@@ -79,6 +103,12 @@ class CallService extends ChangeNotifier {
   String get callDuration => _callDuration;
   int? get remoteUserId => _remoteUserId;
   String? get callCategoryKey => _callCategoryKey;
+  String? get callToRole => _callToRole;
+  String? get callIntent => _callIntent;
+  String? get callId => _callId;
+  bool get callIAmProvider => _callIAmProvider;
+  bool get isOrderCall => _callIntent == 'order';
+  bool get isProviderTargetedCall => _callToRole == 'provider';
 
   // Callbacks for UI
   Function(Map<String, dynamic>)? onIncomingCall;
@@ -257,6 +287,12 @@ class CallService extends ChangeNotifier {
       _remoteUserId = senderId;
       _remoteUserName = senderName;
       _callCategoryKey = payload['category']?.toString();
+      _callToRole = payload['to_role']?.toString();
+      _callIntent = payload['intent']?.toString();
+      _callId = payload['call_id']?.toString();
+      // Kiruvchi zakaz qo'ng'irog'i to_role=provider bo'lsa — MEN provider'man
+      // (chaqiruvchi mijoz, meni soha egasi tomonimga chaqirmoqda).
+      _callIAmProvider = _callToRole == 'provider';
       _isRinging = true;
       notifyListeners();
 
@@ -315,6 +351,8 @@ class CallService extends ChangeNotifier {
       _isConnecting = false;
       _isRinging = false;
       _callCategoryKey = null;
+      _callToRole = null;
+      _callIntent = null;
 
       notifyListeners();
       if (_currentCallLogId != null) {
@@ -488,6 +526,8 @@ class CallService extends ChangeNotifier {
     int targetId,
     String targetName, {
     String? categoryKey,
+    String toRole = 'user',
+    String intent = 'personal',
   }) async {
     if (_inCall) {
       debugPrint('Allaqachon qo\'ng\'iroqda');
@@ -497,6 +537,15 @@ class CallService extends ChangeNotifier {
     _remoteUserId = targetId;
     _remoteUserName = targetName;
     _callCategoryKey = categoryKey;
+    _callToRole = toRole;
+    _callIntent = intent;
+    // Zakaz qo'ng'irog'i uchun umumiy identifikator yaratamiz (ikkala tomon
+    // AYNAN bir kelishuv yozuviga javob yozishi uchun).
+    _callId = intent == 'order' ? const Uuid().v4() : null;
+    // Chiquvchi qo'ng'iroqda MEN provider bo'lamanmi:
+    //  - to_role=user + intent=order  → provider mijozga qo'ng'iroq qilyapti (men provider).
+    //  - to_role=provider             → mijoz provider'ga qo'ng'iroq qilyapti (men mijoz).
+    _callIAmProvider = (toRole == 'user' && intent == 'order');
     _inCall = true;
     _isConnecting = true;
     _isRinging = true;
@@ -521,7 +570,12 @@ class CallService extends ChangeNotifier {
     notifyListeners();
 
     // Notify target that a call is initiating
-    sendSignal('call_init', {'category': categoryKey});
+    sendSignal('call_init', {
+      'category': categoryKey,
+      'to_role': toRole,
+      'intent': intent,
+      'call_id': _callId,
+    });
 
     // Javob berilishini kutamiz — target ilovasi yopiq bo'lsa FCM/CallKit orqali
     // uyg'onib javob berishi mumkin. Belgilangan vaqtda javob bo'lmasa — uzamiz.
@@ -724,11 +778,25 @@ class CallService extends ChangeNotifier {
     CallKitService().endAllCalls();
     WakelockPlus.disable();
 
+    // Kelishuv dialogi uchun — NULL qilishdan OLDIN snapshot olamiz.
+    lastCallRemoteUserId = _remoteUserId;
+    lastCallRemoteUserName = _remoteUserName;
+    lastCallCategoryKey = _callCategoryKey;
+    lastCallId = _callId;
+    lastCallWasOrder = _callIntent == 'order';
+    lastCallConnected = _callStartTime != null; // suhbat haqiqatan bo'ldimi
+    lastCallIAmProvider = _callIAmProvider;
+
     _inCall = false;
     _isConnecting = false;
     _isRinging = false;
     _remoteUserId = null;
     _remoteUserName = null;
+    _callCategoryKey = null;
+    _callToRole = null;
+    _callIntent = null;
+    _callId = null;
+    _callIAmProvider = false;
     _callDuration = '00:00';
     _callStartTime = null;
 

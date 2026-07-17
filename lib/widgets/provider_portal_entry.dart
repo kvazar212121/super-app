@@ -4,9 +4,9 @@ import 'package:provider/provider.dart';
 
 import '../config/provider_category_config.dart';
 import '../providers/auth_provider.dart';
+import '../providers/app_provider.dart';
 import '../screens/auth/auth_gate_screen.dart';
 import '../screens/provider_registration/provider_onboarding_screen.dart';
-import '../screens/provider_side/unified_provider_dashboard_screen.dart';
 import '../screens/provider_registration/barber/barber_pending_screen.dart';
 import '../screens/provider_registration/salon/salon_pending_screen.dart';
 import '../services/provider_portal_service.dart';
@@ -102,12 +102,9 @@ class _ProviderPortalEntryState extends State<ProviderPortalEntry> {
       }
       return;
     }
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => UnifiedProviderDashboardScreen(config: config),
-      ),
-    );
+    // Push emas — aktiv rejimni "provider"ga o'tkazamiz. RootShell qayta quriladi
+    // va soha egasi panelini ko'rsatadi (rejim saqlanadi, qayta ochilganda tiklanadi).
+    context.read<AppProvider>().switchToProvider(config.categoryKey);
   }
 
   void _openOnboarding() {
@@ -232,7 +229,7 @@ class _ProviderPortalEntryState extends State<ProviderPortalEntry> {
 
     final title = hasProvider
         ? 'Soha egasi paneli'.tr
-        : 'Soha egasi bo\'lish'.tr;
+        : 'Siz soha egasi bo\'lishni xohlaysizmi?'.tr;
     final subtitle = hasProvider
         ? '${_providers.length} ' + 'ta xizmat — buyurtmalar va statistika'.tr
         : 'Xizmat ko\'rsatuvchi sifatida ro\'yxatdan o\'ting — mijozlar sizni topadi.'
