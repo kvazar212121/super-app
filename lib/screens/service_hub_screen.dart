@@ -160,7 +160,7 @@ class _ServiceHubScreenState extends State<ServiceHubScreen> {
                   // (yuqorida alohida filtr qatori yo'q). Xarita katta qism,
                   // ro'yxat qolganini — ikkalasi Expanded, pastda bo'sh joy qolmaydi.
                   Expanded(
-                    flex: 11,
+                    flex: 8,
                     child: _MapSection(
                       kind: widget.kind,
                       accentColor: widget.accentColor,
@@ -168,7 +168,7 @@ class _ServiceHubScreenState extends State<ServiceHubScreen> {
                     ),
                   ),
                   Expanded(
-                    flex: 9,
+                    flex: 12,
                     child: _ActionList(
                       kind: widget.kind,
                       accentColor: widget.accentColor,

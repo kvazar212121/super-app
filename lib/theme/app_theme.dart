@@ -11,8 +11,9 @@ class AppTheme {
     final isDark = brightness == Brightness.dark;
     final base = isDark ? ThemeData.dark() : ThemeData.light();
     final textTheme = GoogleFonts.interTextTheme(base.textTheme).apply(
-      bodyColor: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF0F172A),
-      displayColor: isDark ? const Color(0xFFF8FAFC) : const Color(0xFF0F172A),
+      // Light rejimda barcha matn TIM QORA
+      bodyColor: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF000000),
+      displayColor: isDark ? const Color(0xFFF8FAFC) : const Color(0xFF000000),
     );
 
     return ThemeData(

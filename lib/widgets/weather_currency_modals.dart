@@ -188,7 +188,7 @@ class _WeatherModalState extends State<WeatherModal> {
         const Text(
           "7 kunlik prognoz",
           style: TextStyle(
-            color: Colors.white,
+            color: Color(0xFF0F172A),
             fontSize: 18,
             fontWeight: FontWeight.bold,
           ),
@@ -206,9 +206,9 @@ class _WeatherModalState extends State<WeatherModal> {
                 margin: const EdgeInsets.only(right: 12),
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.05),
+                  color: const Color(0xFFF1F5F9),
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: Colors.white10),
+                  border: Border.all(color: const Color(0xFFE2E8F0)),
                 ),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -216,13 +216,13 @@ class _WeatherModalState extends State<WeatherModal> {
                     Text(
                       _formatDate(day['date']),
                       style: const TextStyle(
-                        color: Colors.white70,
+                        color: Color(0xFF64748B),
                         fontSize: 12,
                       ),
                     ),
                     Icon(
                       _getWeatherIcon(day['code']),
-                      color: Colors.white,
+                      color: Colors.blueAccent,
                       size: 28,
                     ),
                     Column(
@@ -230,14 +230,14 @@ class _WeatherModalState extends State<WeatherModal> {
                         Text(
                           '${day['max']}°',
                           style: const TextStyle(
-                            color: Colors.white,
+                            color: Color(0xFF0F172A),
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                         Text(
                           '${day['min']}°',
                           style: const TextStyle(
-                            color: Colors.white54,
+                            color: Color(0xFF94A3B8),
                             fontSize: 12,
                           ),
                         ),

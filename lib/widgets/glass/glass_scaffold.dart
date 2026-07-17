@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/app_provider.dart';
 import '../../theme/glass_tokens.dart';
+import '../../theme/app_theme.dart';
 import 'mesh_background.dart';
 import 'package:super_app/l10n/locale_controller.dart';
 
@@ -17,6 +18,10 @@ class GlassScaffold extends StatelessWidget {
   final bool embeddedInShell;
   final bool? resizeToAvoidBottomInset;
 
+  /// Ilova light bo'lsa ham shu ekranni MAJBURAN dark ko'rsatadi (dark fon +
+  /// dark tema). Dark uchun ishlangan "mini-ilova" ekranlari uchun.
+  final bool forceDark;
+
   const GlassScaffold({
     super.key,
     this.title,
@@ -27,6 +32,7 @@ class GlassScaffold extends StatelessWidget {
     this.bottom,
     this.embeddedInShell = false,
     this.resizeToAvoidBottomInset,
+    this.forceDark = false,
   });
 
   @override
@@ -56,9 +62,9 @@ class GlassScaffold extends StatelessWidget {
       );
     }
 
-    final isDark = context.watch<AppProvider>().isDarkMode;
+    final isDark = forceDark || context.watch<AppProvider>().isDarkMode;
 
-    return Stack(
+    final scaffold = Stack(
       fit: StackFit.expand,
       children: [
         MeshBackground(isDark: isDark),
@@ -99,6 +105,11 @@ class GlassScaffold extends StatelessWidget {
         ),
       ],
     );
+
+    // forceDark — butun ekranni dark tema ichida (matn/ikonlar oq bo'ladi)
+    return forceDark
+        ? Theme(data: AppTheme.darkTheme, child: scaffold)
+        : scaffold;
   }
 }
 

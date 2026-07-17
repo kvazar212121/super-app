@@ -154,13 +154,17 @@ class VenueHubCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
+    return Container(
       width: 168,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(18),
+        boxShadow: GlassTokens.glassShadow(context),
+      ),
       child: Material(
         color: Colors.white,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(18),
-          side: const BorderSide(color: Colors.black26),
+          side: BorderSide(color: GlassTokens.glassBorder(context), width: 1),
         ),
         clipBehavior: Clip.antiAlias,
         child: InkWell(

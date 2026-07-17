@@ -24,7 +24,7 @@ class GlassBottomBar extends StatelessWidget {
 
     return ClipRRect(
       borderRadius: const BorderRadius.vertical(
-        top: Radius.circular(GlassTokens.radiusXl),
+        top: Radius.circular(GlassTokens.radiusMd),
       ),
       child: BackdropFilter(
         filter: ImageFilter.blur(
@@ -34,7 +34,7 @@ class GlassBottomBar extends StatelessWidget {
         child: DecoratedBox(
           decoration: BoxDecoration(
             borderRadius: const BorderRadius.vertical(
-              top: Radius.circular(GlassTokens.radiusXl),
+              top: Radius.circular(GlassTokens.radiusMd),
             ),
             gradient: LinearGradient(
               begin: Alignment.topLeft,
@@ -53,11 +53,11 @@ class GlassBottomBar extends StatelessWidget {
                 top: 0,
                 left: 0,
                 right: 0,
-                height: GlassTokens.radiusXl,
+                height: GlassTokens.radiusMd,
                 child: DecoratedBox(
                   decoration: BoxDecoration(
                     borderRadius: const BorderRadius.vertical(
-                      top: Radius.circular(GlassTokens.radiusXl),
+                      top: Radius.circular(GlassTokens.radiusMd),
                     ),
                     gradient: LinearGradient(
                       begin: Alignment.topCenter,
@@ -118,7 +118,9 @@ class _NavButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final activeColor = Colors.white.withOpacity(0.15);
+    // Tanlangan element — tema asosiy KO'KI (binafsha emas), tugmalar bilan bir xil
+    const accent = Color(0xFF3B82F6);
+    final activeColor = accent.withValues(alpha: 0.12);
     final inactive = GlassTokens.secondaryText(context);
 
     return Material(
@@ -140,7 +142,7 @@ class _NavButton extends StatelessWidget {
               Icon(
                 item.icon,
                 size: 22,
-                color: selected ? Colors.white : inactive,
+                color: selected ? accent : inactive,
               ),
               const SizedBox(height: 4),
               FittedBox(
@@ -150,7 +152,7 @@ class _NavButton extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 10.5,
                     fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
-                    color: selected ? Colors.white : inactive,
+                    color: selected ? accent : inactive,
                   ),
                 ),
               ),

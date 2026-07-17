@@ -228,6 +228,13 @@ class _BaseCard extends StatelessWidget {
             ? Color.lerp(const Color(0xFF1E293B), color, 0.15)
             : Color.lerp(Colors.white, color, 0.1),
         borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: isDark ? 0.35 : 0.30),
+            blurRadius: 16,
+            offset: const Offset(0, 6),
+          ),
+        ],
       ),
       child: Row(
         children: [

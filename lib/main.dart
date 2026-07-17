@@ -184,7 +184,7 @@ class MyApp extends StatelessWidget {
               locale: LocaleController.instance.locale,
               theme: AppTheme.lightTheme,
               darkTheme: AppTheme.darkTheme,
-              themeMode: ThemeMode.dark,
+              themeMode: ThemeMode.light,
               home: const SplashScreen(),
             );
           },

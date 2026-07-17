@@ -97,6 +97,8 @@ class CourierHubSection extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(GlassTokens.radiusLg),
+                      border: Border.all(color: GlassTokens.glassBorder(context), width: 1),
+                      boxShadow: GlassTokens.glassShadow(context),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -257,6 +259,8 @@ class AutoHelpHubSection extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(GlassTokens.radiusLg),
+                      border: Border.all(color: GlassTokens.glassBorder(context), width: 1),
+                      boxShadow: GlassTokens.glassShadow(context),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -401,6 +405,8 @@ class AutoWorkshopHubSection extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(GlassTokens.radiusLg),
+                      border: Border.all(color: GlassTokens.glassBorder(context), width: 1),
+                      boxShadow: GlassTokens.glassShadow(context),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,

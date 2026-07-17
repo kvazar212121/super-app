@@ -46,7 +46,6 @@ class GlassSurface extends StatelessWidget {
         borderRadius: BorderRadius.circular(borderRadius),
         color: fill,
         border: showBorder ? Border.all(color: border, width: 1.2) : null,
-        boxShadow: showShadow ? GlassTokens.glassShadow(context) : null,
       ),
       child: Stack(
         children: [
@@ -69,9 +68,16 @@ class GlassSurface extends StatelessWidget {
       ),
     );
 
-    Widget content = ClipRRect(
-      borderRadius: BorderRadius.circular(borderRadius),
-      child: panel,
+    // Soya ClipRRect'DAN TASHQARIDA — aks holda kesilib ko'rinmay qoladi.
+    Widget content = DecoratedBox(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(borderRadius),
+        boxShadow: showShadow ? GlassTokens.glassShadow(context) : null,
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(borderRadius),
+        child: panel,
+      ),
     );
 
     if (margin != null) {

@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'dart:async';
 import '../models/daily_models.dart';
+import '../models/finance_models.dart';
 import '../models/service_hub_kind.dart';
 import '../services/hub_data_service.dart';
 import '../widgets/glass/glass_scaffold.dart';
@@ -29,10 +30,16 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
   final List<ShoppingListItem> _currentItems = [];
   final TextEditingController _itemController = TextEditingController();
   final TextEditingController _qtyController = TextEditingController();
+  final TextEditingController _priceController = TextEditingController();
   final TextEditingController _listNameController = TextEditingController();
   String _selectedUnit = 'kg';
   double _currentTotal = 0;
   bool _isCalculating = false;
+
+  // Moliya integratsiyasi: bu oy oziq-ovqatga sarflangan (byudjet banneri uchun)
+  double _monthGrocerySpent = 0;
+  bool _loggingExpense = false;
+  static const String _groceryCategory = 'Oziq-ovqat';
 
   static const List<String> _units = ['kg', 'dona', 'litr', 'bog\'', 'qadoq'];
 
@@ -41,6 +48,73 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
     _loadLists();
+    _loadGrocerySpent();
+  }
+
+  /// Moliyadan bu oy oziq-ovqatga sarflangan summani oladi (byudjet banneri).
+  Future<void> _loadGrocerySpent() async {
+    try {
+      final data = await _api.getFinanceStats();
+      final stats = FinanceStats.fromJson(data);
+      double spent = 0;
+      for (final c in stats.categoryStats) {
+        if (c.category == _groceryCategory) spent = c.amount;
+      }
+      if (mounted) setState(() => _monthGrocerySpent = spent);
+    } catch (_) {}
+  }
+
+  /// #1 + #3: ro'yxatni yopib, HAQIQIY jamini (actual bo'lsa) "Mening moliyam"ga
+  /// oziq-ovqat xarajati sifatida yozadi.
+  Future<void> _completeAndLogExpense() async {
+    if (_currentItems.isEmpty || _loggingExpense) return;
+    setState(() => _loggingExpense = true);
+    // Haqiqiy jami: har mahsulotning actualPrice bo'lsa u, aks holda estimated.
+    final actualTotal = _currentItems.fold<double>(
+      0,
+      (s, i) => s + i.displayPrice,
+    );
+    final name = _listNameController.text.trim().isNotEmpty
+        ? _listNameController.text.trim()
+        : 'Bozorlik ${DateTime.now().day}.${DateTime.now().month}';
+    try {
+      final itemsMap = _currentItems.map((e) => e.toJson()).toList();
+      final res = await _api.createShoppingList(name, itemsMap);
+      await _api.createFinanceRecord(
+        type: 'expense',
+        amount: actualTotal,
+        category: _groceryCategory,
+        description: name,
+        date: DateTime.now(),
+      );
+      if (!mounted) return;
+      setState(() {
+        _lists.insert(0, ShoppingListModel.fromJson(res));
+        _currentItems.clear();
+        _currentTotal = 0;
+        _listNameController.clear();
+        _loggingExpense = false;
+      });
+      _loadGrocerySpent();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            '${_formatPrice(actualTotal)} — "Mening moliyam"ga xarajat qo\'shildi ✅',
+          ),
+          backgroundColor: Colors.green.shade700,
+        ),
+      );
+    } catch (e) {
+      if (mounted) {
+        setState(() => _loggingExpense = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Xatolik yuz berdi'.tr),
+            backgroundColor: Colors.red.shade700,
+          ),
+        );
+      }
+    }
   }
 
   @override
@@ -48,6 +122,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
     _tabController.dispose();
     _itemController.dispose();
     _qtyController.dispose();
+    _priceController.dispose();
     _listNameController.dispose();
     super.dispose();
   }
@@ -71,10 +146,28 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
   Future<void> _addItem() async {
     final name = _itemController.text.trim();
     if (name.isEmpty) return;
+    final qty = double.tryParse(_qtyController.text) ?? 1.0;
+    final manualPrice = double.tryParse(_priceController.text.trim());
+
+    // Qo'lda narx kiritilgan bo'lsa — AI'ni chaqirmasdan to'g'ridan-to'g'ri qo'shamiz.
+    if (manualPrice != null && manualPrice > 0) {
+      setState(() {
+        _currentItems.add(ShoppingListItem(
+          name: name,
+          qty: qty,
+          unit: _selectedUnit,
+          estimatedPrice: manualPrice,
+        ));
+        _currentTotal += manualPrice;
+        _itemController.clear();
+        _qtyController.clear();
+        _priceController.clear();
+      });
+      return;
+    }
 
     setState(() => _isCalculating = true);
     try {
-      final qty = double.tryParse(_qtyController.text) ?? 1.0;
       final res = await _api.calculateShoppingPrice([
         {'name': name, 'qty': qty, 'unit': _selectedUnit},
       ]);
@@ -86,6 +179,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
           _currentTotal += (item['estimated_price'] as num).toDouble();
           _itemController.clear();
           _qtyController.clear();
+          _priceController.clear();
         });
       }
     } catch (e) {
@@ -245,7 +339,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
             ),
           ),
           ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.orange),
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
             onPressed: () {
               final v = double.tryParse(controller.text) ?? 0.0;
               Navigator.pop(ctx, v);
@@ -307,16 +401,16 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
   Widget build(BuildContext context) {
     return GlassScaffold(
       showBackButton: true,
-      title: '🛒 Aqlli Savdo'.tr,
+      title: 'Aqlli Savdo'.tr,
       resizeToAvoidBottomInset:
           false, // Prevent keyboard from causing bottom overflow
       bottom: PreferredSize(
         preferredSize: const Size.fromHeight(48),
         child: TabBar(
           controller: _tabController,
-          indicatorColor: Colors.orange,
+          indicatorColor: Colors.blue,
           indicatorWeight: 3,
-          labelColor: Colors.orange,
+          labelColor: Colors.blue,
           unselectedLabelColor: GlassTokens.secondaryText(context),
           labelStyle: const TextStyle(
             fontWeight: FontWeight.w700,
@@ -324,7 +418,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
           ),
           tabs: [
             Tab(text: '+ Yangi ro\'yxat'.tr),
-            Tab(text: '📋 Saqlanganlar'.tr),
+            Tab(text: 'Saqlanganlar'.tr),
           ],
         ),
       ),
@@ -344,6 +438,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
       children: [
         _buildListNameInput(),
         _buildInputArea(),
+        if (_currentItems.isNotEmpty) _buildBudgetBanner(),
         Expanded(
           child: _currentItems.isEmpty
               ? _buildEmptyNewList()
@@ -351,6 +446,50 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
         ),
         if (_currentItems.isNotEmpty) _buildTotalBar(),
       ],
+    );
+  }
+
+  /// #2: Byudjet banneri — bu oy oziq-ovqatga sarflangan + shu ro'yxat qo'shsa
+  /// jami qancha bo'lishini ko'rsatadi (Moliya ↔ Xarid bog'lanishi).
+  Widget _buildBudgetBanner() {
+    final projected = _monthGrocerySpent + _currentTotal;
+    return Container(
+      margin: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      decoration: BoxDecoration(
+        color: const Color(0xFFEFF6FF),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: const Color(0xFFBFDBFE)),
+      ),
+      child: Row(
+        children: [
+          const Icon(LucideIcons.wallet, color: Color(0xFF2563EB), size: 20),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Bu oy oziq-ovqatga: ${_formatPrice(_monthGrocerySpent)}',
+                  style: const TextStyle(
+                    fontSize: 12.5,
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xFF1E3A8A),
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  'Bu ro\'yxat bilan ~${_formatPrice(projected)} bo\'ladi',
+                  style: const TextStyle(
+                    fontSize: 11.5,
+                    color: Color(0xFF3B82F6),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -372,7 +511,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
               : Colors.black.withOpacity(0.04),
           prefixIcon: Icon(
             LucideIcons.tag,
-            color: Colors.orange.shade300,
+            color: Colors.blue.shade300,
             size: 18,
           ),
           contentPadding: const EdgeInsets.symmetric(
@@ -411,7 +550,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
             ? Colors.white.withOpacity(0.05)
             : Colors.white.withOpacity(0.85),
         borderRadius: BorderRadius.circular(GlassTokens.radiusMd),
-        border: Border.all(color: Colors.orange.withOpacity(0.35)),
+        border: Border.all(color: Colors.blue.withOpacity(0.35)),
         boxShadow: isDark
             ? []
             : [
@@ -470,6 +609,49 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
                 ),
               ),
             ],
+          ),
+          const SizedBox(height: 10),
+          // Qo'lda narx (ixtiyoriy) — bo'sh qoldirilsa AI hisoblaydi.
+          TextField(
+            controller: _priceController,
+            keyboardType: const TextInputType.numberWithOptions(decimal: true),
+            decoration: InputDecoration(
+              hintText: 'Narx (so\'m) — bo\'sh bo\'lsa AI hisoblaydi'.tr,
+              hintStyle: TextStyle(
+                color: GlassTokens.secondaryText(context),
+                fontSize: 13,
+              ),
+              filled: true,
+              fillColor: isDark
+                  ? Colors.white.withOpacity(0.08)
+                  : Colors.black.withOpacity(0.03),
+              prefixIcon: Icon(
+                LucideIcons.banknote,
+                color: Colors.green.shade400,
+                size: 18,
+              ),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 12,
+                vertical: 12,
+              ),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(
+                  color: isDark
+                      ? Colors.white.withOpacity(0.1)
+                      : Colors.black.withOpacity(0.05),
+                ),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(
+                  color: isDark
+                      ? Colors.white.withOpacity(0.05)
+                      : Colors.black.withOpacity(0.05),
+                ),
+              ),
+            ),
+            style: TextStyle(color: GlassTokens.primaryText(context)),
           ),
           const SizedBox(height: 10),
           Row(
@@ -566,12 +748,12 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
                 duration: const Duration(milliseconds: 200),
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
-                    colors: [Color(0xFFF97316), Color(0xFFEF4444)],
+                    colors: [Color(0xFF3B82F6), Color(0xFF2563EB)],
                   ),
                   borderRadius: BorderRadius.circular(12),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.orange,
+                      color: Colors.blue,
                       blurRadius: 8,
                       offset: const Offset(0, 3),
                     ),
@@ -614,7 +796,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(LucideIcons.shoppingBasket, size: 64, color: Colors.orange),
+          Icon(LucideIcons.shoppingBasket, size: 64, color: Colors.blue),
           const SizedBox(height: 16),
           Text(
             'Mahsulotlar qo\'shing'.tr,
@@ -674,7 +856,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
                   height: 40,
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
-                      colors: [Colors.orange, Colors.deepOrange],
+                      colors: [Colors.blue, Colors.blue.shade700],
                     ),
                     borderRadius: BorderRadius.circular(10),
                   ),
@@ -725,94 +907,100 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
   }
 
   Widget _buildTotalBar() {
+    final hasActual = _currentItems.any((i) => i.actualPrice != null);
+    final actualTotal = _currentItems.fold<double>(
+      0,
+      (s, i) => s + i.displayPrice,
+    );
     return Container(
-      padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
+      padding: const EdgeInsets.fromLTRB(16, 14, 16, 20),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [Colors.black, Colors.black],
-        ),
-        border: Border(top: BorderSide(color: Colors.white)),
+        color: Colors.white,
+        border: const Border(top: BorderSide(color: Color(0xFFE2E8F0))),
+        boxShadow: GlassTokens.glassShadow(context),
       ),
-      child: Row(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Taxminiy jami:'.tr,
-                  style: TextStyle(
-                    color: GlassTokens.secondaryText(context),
-                    fontSize: 12,
-                  ),
+          Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      hasActual ? 'Haqiqiy jami:'.tr : 'Taxminiy jami:'.tr,
+                      style: TextStyle(
+                        color: GlassTokens.secondaryText(context),
+                        fontSize: 12,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      _formatPrice(actualTotal),
+                      style: const TextStyle(
+                        color: Color(0xFF3B82F6),
+                        fontSize: 22,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                    Text(
+                      hasActual
+                          ? '${_currentItems.length} ${'mahsulot'.tr} · AI taxmini ${_formatPrice(_currentTotal)}'
+                          : '${_currentItems.length} ${'mahsulot'.tr}',
+                      style: TextStyle(
+                        color: GlassTokens.secondaryText(context),
+                        fontSize: 11,
+                      ),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 2),
-                Text(
-                  _formatPrice(_currentTotal),
-                  style: const TextStyle(
-                    color: Colors.orange,
-                    fontSize: 22,
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-                Text(
-                  '${_currentItems.length} ${'mahsulot'.tr}',
-                  style: TextStyle(
-                    color: GlassTokens.secondaryText(context),
-                    fontSize: 11,
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
-          Container(
-            decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [Color(0xFFF97316), Color(0xFFEF4444)],
-              ),
-              borderRadius: BorderRadius.circular(14),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.orange,
-                  blurRadius: 12,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
-            child: Material(
-              color: Colors.transparent,
-              child: InkWell(
-                borderRadius: BorderRadius.circular(14),
-                onTap: _saveList,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 24,
-                    vertical: 14,
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Icon(
-                        LucideIcons.save,
-                        color: Colors.white,
-                        size: 18,
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        'Saqlash'.tr,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w700,
-                          fontSize: 15,
-                        ),
-                      ),
-                    ],
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Expanded(
+                child: OutlinedButton.icon(
+                  onPressed: _loggingExpense ? null : _saveList,
+                  icon: const Icon(LucideIcons.save, size: 18),
+                  label: Text('Saqlash'.tr),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: const Color(0xFF3B82F6),
+                    side: const BorderSide(color: Color(0xFF3B82F6)),
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
                   ),
                 ),
               ),
-            ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: FilledButton.icon(
+                  onPressed: _loggingExpense ? null : _completeAndLogExpense,
+                  icon: _loggingExpense
+                      ? const SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
+                        )
+                      : const Icon(LucideIcons.check, size: 18),
+                  label: Text('Xarid qildim'.tr),
+                  style: FilledButton.styleFrom(
+                    backgroundColor: const Color(0xFF16A34A),
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
         ],
       ),
@@ -826,7 +1014,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
   Widget _buildSavedListsTab() {
     if (_isLoading) {
       return const Center(
-        child: CircularProgressIndicator(color: Colors.orange),
+        child: CircularProgressIndicator(color: Colors.blue),
       );
     }
     if (_lists.isEmpty) {
@@ -834,7 +1022,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(LucideIcons.clipboardList, size: 64, color: Colors.orange),
+            Icon(LucideIcons.clipboardList, size: 64, color: Colors.blue),
             const SizedBox(height: 16),
             Text(
               'Saqlangan ro\'yxatlar yo\'q'.tr,
@@ -887,7 +1075,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
               gradient: LinearGradient(
                 colors: isDone
                     ? [Colors.green, Colors.teal]
-                    : [Colors.orange, Colors.deepOrange],
+                    : [Colors.blue, Colors.blue.shade700],
               ),
               borderRadius: BorderRadius.circular(12),
             ),
@@ -939,7 +1127,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
                         value: progress,
                         backgroundColor: Colors.white,
                         valueColor: AlwaysStoppedAnimation(
-                          isDone ? Colors.green : Colors.orange,
+                          isDone ? Colors.green : Colors.blue,
                         ),
                         minHeight: 4,
                       ),
@@ -985,7 +1173,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
                     icon: Icon(LucideIcons.shoppingBag),
                     label: Text('Bozorchi yollash'.tr),
                     style: FilledButton.styleFrom(
-                      backgroundColor: Colors.orange.shade700,
+                      backgroundColor: Colors.blue.shade700,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -1108,7 +1296,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
                     _formatPrice(item.estimatedPrice),
                     style: TextStyle(
                       color: item.estimatedPrice > 0
-                          ? Colors.orange
+                          ? Colors.blue
                           : GlassTokens.secondaryText(context),
                       fontWeight: FontWeight.w600,
                       fontSize: 13,
@@ -1274,12 +1462,12 @@ class _BozorchiSelectionSheetState extends State<_BozorchiSelectionSheet> {
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: Colors.orange.withOpacity(0.1),
+                    color: Colors.blue.withOpacity(0.1),
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(
                     LucideIcons.shoppingBag,
-                    color: Colors.orange,
+                    color: Colors.blue,
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -1311,7 +1499,7 @@ class _BozorchiSelectionSheetState extends State<_BozorchiSelectionSheet> {
           Expanded(
             child: _isLoading
                 ? const Center(
-                    child: CircularProgressIndicator(color: Colors.orange),
+                    child: CircularProgressIndicator(color: Colors.blue),
                   )
                 : _bozorchilar.isEmpty
                 ? Center(child: Text('Hozircha bo\'sh bozorchilar yo\'q'.tr))
@@ -1337,10 +1525,10 @@ class _BozorchiSelectionSheetState extends State<_BozorchiSelectionSheet> {
                             children: [
                               CircleAvatar(
                                 radius: 24,
-                                backgroundColor: Colors.orange.withOpacity(0.1),
+                                backgroundColor: Colors.blue.withOpacity(0.1),
                                 child: const Icon(
                                   LucideIcons.user,
-                                  color: Colors.orange,
+                                  color: Colors.blue,
                                 ),
                               ),
                               const Icon(
@@ -1379,7 +1567,7 @@ class _BozorchiSelectionSheetState extends State<_BozorchiSelectionSheet> {
                               );
                             },
                             style: FilledButton.styleFrom(
-                              backgroundColor: Colors.orange,
+                              backgroundColor: Colors.blue,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),
                               ),

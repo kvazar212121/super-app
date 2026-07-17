@@ -184,7 +184,6 @@ class ProfileScreen extends StatelessWidget {
                 ),
               ),
               SizedBox(height: 16),
-              _sectionTitle(context, 'Soha egasi'.tr),
               const ProviderPortalEntry(compact: true),
               const SizedBox(height: 16),
               if (user.isProvider) ...[
@@ -304,14 +303,14 @@ class ProfileScreen extends StatelessWidget {
           gradient: LinearGradient(
             colors: isPremium
                 ? const [Color(0xFF059669), Color(0xFF10B981)]
-                : const [Color(0xFF7C3AED), Color(0xFF6366F1)],
+                : const [Color(0xFF3B82F6), Color(0xFF2563EB)],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
           borderRadius: BorderRadius.circular(GlassTokens.radiusLg),
           boxShadow: [
             BoxShadow(
-              color: (isPremium ? const Color(0xFF10B981) : const Color(0xFF7C3AED))
+              color: (isPremium ? const Color(0xFF10B981) : const Color(0xFF3B82F6))
                   .withValues(alpha: 0.35),
               blurRadius: 18,
               offset: const Offset(0, 8),
@@ -365,7 +364,7 @@ class ProfileScreen extends StatelessWidget {
                 child: Text(
                   'Sotib olish'.tr,
                   style: const TextStyle(
-                    color: Color(0xFF7C3AED),
+                    color: Color(0xFF3B82F6),
                     fontWeight: FontWeight.w800,
                     fontSize: 13,
                   ),
@@ -498,7 +497,7 @@ class ProfileScreen extends StatelessWidget {
                   Text(
                     user.telegramUsername!,
                     style: const TextStyle(
-                      color: Color(0xFF6366F1),
+                      color: Color(0xFF3B82F6),
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -536,11 +535,11 @@ class ProfileScreen extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
         decoration: BoxDecoration(
-          color: active ? Color(0xFF6366F1) : Colors.transparent,
+          color: active ? Color(0xFF3B82F6) : Colors.transparent,
           borderRadius: BorderRadius.circular(10),
           border: Border.all(
             color: active
-                ? const Color(0xFF6366F1)
+                ? const Color(0xFF3B82F6)
                 : GlassTokens.secondaryText(context).withOpacity(0.4),
           ),
         ),
@@ -718,7 +717,7 @@ class ProfileScreen extends StatelessWidget {
                 style: const TextStyle(color: Colors.white),
               ),
               trailing: isSelected
-                  ? const Icon(Icons.check_circle, color: Color(0xFF6366F1))
+                  ? const Icon(Icons.check_circle, color: Color(0xFF3B82F6))
                   : null,
               onTap: () async {
                 Navigator.pop(ctx);

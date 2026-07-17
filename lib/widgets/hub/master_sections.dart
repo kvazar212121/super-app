@@ -158,6 +158,8 @@ class _CleaningCard extends StatelessWidget {
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(GlassTokens.radiusLg),
+            border: Border.all(color: GlassTokens.glassBorder(context), width: 1),
+            boxShadow: GlassTokens.glassShadow(context),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -394,6 +396,8 @@ class _MasterDispatchCard extends StatelessWidget {
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(GlassTokens.radiusLg),
+            border: Border.all(color: GlassTokens.glassBorder(context), width: 1),
+            boxShadow: GlassTokens.glassShadow(context),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -566,6 +570,8 @@ class ElectricianHubSection extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(GlassTokens.radiusLg),
+                      border: Border.all(color: GlassTokens.glassBorder(context), width: 1),
+                      boxShadow: GlassTokens.glassShadow(context),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -729,6 +735,8 @@ class PlumberHubSection extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(GlassTokens.radiusLg),
+                      border: Border.all(color: GlassTokens.glassBorder(context), width: 1),
+                      boxShadow: GlassTokens.glassShadow(context),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -892,6 +900,8 @@ class AcHubSection extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(GlassTokens.radiusLg),
+                      border: Border.all(color: GlassTokens.glassBorder(context), width: 1),
+                      boxShadow: GlassTokens.glassShadow(context),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -1052,6 +1062,8 @@ class NannyHubSection extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(GlassTokens.radiusLg),
+                      border: Border.all(color: GlassTokens.glassBorder(context), width: 1),
+                      boxShadow: GlassTokens.glassShadow(context),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,

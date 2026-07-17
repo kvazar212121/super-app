@@ -179,8 +179,8 @@ class _HomePromoSectionState extends State<HomePromoSection>
                         borderRadius: BorderRadius.circular(22),
                         boxShadow: [
                           BoxShadow(
-                            color: p.colors[0],
-                            blurRadius: 16,
+                            color: Colors.black.withValues(alpha: 0.30),
+                            blurRadius: 20,
                             offset: const Offset(0, 8),
                           ),
                         ],

@@ -63,21 +63,23 @@ abstract final class GlassTokens {
 
   static Color primaryText(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    return isDark ? const Color(0xFFF8FAFC) : const Color(0xFF0F172A);
+    // Light rejimda — TIM QORA (maksimal o'qilishi uchun)
+    return isDark ? const Color(0xFFF8FAFC) : const Color(0xFF000000);
   }
 
   static Color secondaryText(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    return isDark ? const Color(0xFFCBD5E1) : const Color(0xFF64748B);
+    // Light rejimda — qora-ga yaqin to'q kulrang (grey emas)
+    return isDark ? const Color(0xFFCBD5E1) : const Color(0xFF2A2A2A);
   }
 
   static List<BoxShadow> glassShadow(BuildContext context) => [
     BoxShadow(
       color: Colors.black.withValues(
-        alpha: Theme.of(context).brightness == Brightness.dark ? 0.4 : 0.06,
+        alpha: Theme.of(context).brightness == Brightness.dark ? 0.45 : 0.30,
       ),
-      blurRadius: 10,
-      offset: const Offset(0, 4),
+      blurRadius: 20,
+      offset: const Offset(0, 8),
     ),
   ];
 }

@@ -262,40 +262,56 @@ class _DailyBtn extends StatelessWidget {
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: Colors.black,
-              blurRadius: 10,
-              offset: const Offset(0, 4),
+              color: Colors.black.withValues(alpha: isDark ? 0.4 : 0.30),
+              blurRadius: 20,
+              offset: const Offset(0, 8),
             ),
           ],
         ),
         clipBehavior: Clip
             .antiAlias, // Rasmni burchaklardan chiqib ketmasligi uchun qirqamiz
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+        // Poster uslub: rasm butun kartani to'ldiradi, pastda qora gradient +
+        // oq yozuv ("Barcha xizmatlar" kartalari bilan bir xil).
+        child: Stack(
+          fit: StackFit.expand,
           children: [
-            // Rasm joylashgan yuqori qism (Ramka)
-            Expanded(
-              child: bgImage != null
-                  ? Image.asset(bgImage!, fit: BoxFit.cover)
-                  : Container(
-                      color: isDark
-                          ? Color.lerp(const Color(0xFF1E293B), color, 0.15)
-                          : Color.lerp(Colors.white, color, 0.1),
-                      child: Icon(icon, color: color, size: 30),
-                    ),
-            ),
-            // Kichik yozuv maydoni (Oq fon va qora yozuv)
-            Container(
-              color: Colors.white, // Oq fon
-              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 6),
-              alignment: Alignment.center,
-              child: Text(
-                label.tr,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontWeight: FontWeight.w800,
-                  fontSize: 13,
-                  color: Colors.black, // Qora yozuv
+            bgImage != null
+                ? Image.asset(bgImage!, fit: BoxFit.cover)
+                : Container(
+                    color: isDark
+                        ? Color.lerp(const Color(0xFF1E293B), color, 0.15)
+                        : Color.lerp(Colors.white, color, 0.1),
+                    child: Icon(icon, color: color, size: 34),
+                  ),
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 0,
+              child: Container(
+                padding: const EdgeInsets.fromLTRB(12, 28, 12, 12),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.transparent,
+                      Colors.black.withValues(alpha: 0.45),
+                      Colors.black.withValues(alpha: 0.94),
+                    ],
+                    stops: const [0.0, 0.4, 1.0],
+                  ),
+                ),
+                child: Text(
+                  label.tr,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w800,
+                    fontSize: 16,
+                    height: 1.1,
+                    color: Colors.white,
+                    shadows: [Shadow(color: Colors.black54, blurRadius: 5)],
+                  ),
                 ),
               ),
             ),

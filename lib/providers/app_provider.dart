@@ -18,7 +18,7 @@ class AppProvider extends ChangeNotifier {
 
   UserProfile _user = UserProfile(name: '', surname: '', phone: '');
   final List<PaymentCard> _cards = [];
-  bool _isDarkMode = true;
+  bool _isDarkMode = false;
   final List<ServiceOrder> _orders = [];
   List<dynamic> _notifications = [];
   int _unreadCount = 0;

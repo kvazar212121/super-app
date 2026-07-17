@@ -85,7 +85,6 @@ class _AllCategoriesScreenState extends State<AllCategoriesScreen> {
   Widget build(BuildContext context) {
     return GlassScaffold(
       showBackButton: false,
-      title: 'Barcha xizmatlar'.tr,
       body: Container(
         decoration: BoxDecoration(color: Colors.transparent),
         child: BackdropFilter(

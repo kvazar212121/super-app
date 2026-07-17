@@ -150,7 +150,7 @@ class _CalorieProfileScreenState extends State<CalorieProfileScreen> {
                       margin: const EdgeInsets.only(bottom: 16),
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: Colors.redAccent.withValues(alpha: 0.1),
+                        color: const Color(0xFF3B82F6).withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(
                           GlassTokens.radiusSm,
                         ),
@@ -159,7 +159,7 @@ class _CalorieProfileScreenState extends State<CalorieProfileScreen> {
                         children: [
                           const Icon(
                             LucideIcons.info,
-                            color: Colors.redAccent,
+                            color: const Color(0xFF3B82F6),
                             size: 18,
                           ),
                           const SizedBox(width: 10),
@@ -194,7 +194,7 @@ class _CalorieProfileScreenState extends State<CalorieProfileScreen> {
                         children: [
                           const Icon(
                             LucideIcons.flame,
-                            color: Colors.redAccent,
+                            color: const Color(0xFF3B82F6),
                           ),
                           const SizedBox(width: 8),
                           Text(
@@ -282,7 +282,7 @@ class _CalorieProfileScreenState extends State<CalorieProfileScreen> {
                       value: entry.key,
                       groupValue: _activityLevel,
                       dense: true,
-                      activeColor: Colors.redAccent,
+                      activeColor: const Color(0xFF3B82F6),
                       title: Text(
                         entry.value.tr,
                         style: TextStyle(
@@ -327,7 +327,11 @@ class _CalorieProfileScreenState extends State<CalorieProfileScreen> {
                     child: ElevatedButton(
                       onPressed: _isSaving ? null : _save,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.redAccent,
+                        backgroundColor: const Color(0xFF3B82F6),
+                        elevation: 4,
+                        shadowColor: const Color(0xFF3B82F6).withValues(
+                          alpha: 0.5,
+                        ),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(
                             GlassTokens.radiusSm,
@@ -387,13 +391,14 @@ class _CalorieProfileScreenState extends State<CalorieProfileScreen> {
         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
         alignment: Alignment.center,
         decoration: BoxDecoration(
-          color: selected ? Colors.redAccent : GlassTokens.glassFill(context),
+          color: selected ? const Color(0xFF3B82F6) : GlassTokens.glassFill(context),
           borderRadius: BorderRadius.circular(GlassTokens.radiusSm),
           border: Border.all(
             color: selected
-                ? Colors.redAccent
+                ? const Color(0xFF3B82F6)
                 : GlassTokens.glassBorder(context),
           ),
+          boxShadow: GlassTokens.glassShadow(context),
         ),
         child: Text(
           label,
