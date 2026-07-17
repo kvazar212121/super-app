@@ -68,8 +68,11 @@ class NotificationService:
                 db.commit()
 
     @staticmethod
-    def push_data_to_user(user_id: int, data: dict) -> None:
-        """Faqat-data (silent) push — qo'ng'iroq/CallKit kabi holatlar uchun."""
+    def push_data_to_user(user_id: int, data: dict) -> int:
+        """Faqat-data (silent) push — qo'ng'iroq/CallKit kabi holatlar uchun.
+
+        Foydalanuvchining nechta qurilma token'i borligini qaytaradi (0 = umuman qurilma yo'q).
+        """
         from app.services import fcm_service
         from app.models.device_token import DeviceToken
 
@@ -77,13 +80,15 @@ class NotificationService:
             with sync_session() as db:
                 tokens = [t.token for t in db.query(DeviceToken.token).filter(DeviceToken.user_id == user_id).all()]
                 if not tokens:
-                    return
+                    return 0
                 invalid = fcm_service.send_data_to_tokens(tokens, data)
                 if invalid:
                     db.query(DeviceToken).filter(DeviceToken.token.in_(invalid)).delete(synchronize_session=False)
                     db.commit()
+                return len(tokens)
         except Exception as e:
             logger.error(f"push_data_to_user failed (user={user_id}): {e}")
+            return 0
 
     @staticmethod
     def get_notifications(user_id: int, limit: int = 100) -> list[dict]:

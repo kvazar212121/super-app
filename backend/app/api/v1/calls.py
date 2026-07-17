@@ -92,10 +92,11 @@ async def websocket_call_endpoint(websocket: WebSocket, token: str):
             if not success and msg_type in ["call_init", "offer"]:
                 # Target ilovasi YOPIQ (WebSocket ulanmagan) — FCM push orqali uyg'otamiz.
                 # Flutter background handler 'incoming_call' data'sini olib CallKit chiqaradi (jiringlaydi).
+                pushed = 0
                 try:
                     import asyncio as _asyncio
                     from app.services.notification_service import NotificationService
-                    await _asyncio.to_thread(
+                    pushed = await _asyncio.to_thread(
                         NotificationService.push_data_to_user,
                         target_id,
                         {
@@ -106,11 +107,20 @@ async def websocket_call_endpoint(websocket: WebSocket, token: str):
                     )
                 except Exception as _e:
                     logger.error(f"Call FCM push xatosi: {_e}")
-                # Callerга ham xabar (target hozircha ulanmagan)
-                await manager.send_personal_message({
-                    "type": "target_offline",
-                    "target_id": target_id
-                }, user.id)
+
+                if pushed:
+                    # Qurilmasi bor — push yuborildi (CallKit jiringlaydi). Caller UZMAYDI, KUTADI:
+                    # foydalanuvchi javob berganda 'call_accepted' keladi va odatdagi oqim davom etadi.
+                    await manager.send_personal_message({
+                        "type": "callee_ringing",
+                        "target_id": target_id
+                    }, user.id)
+                else:
+                    # Umuman qurilma yo'q — haqiqatan ulanib bo'lmaydi. Caller uzadi.
+                    await manager.send_personal_message({
+                        "type": "target_offline",
+                        "target_id": target_id
+                    }, user.id)
 
     except WebSocketDisconnect:
         manager.disconnect(user.id)

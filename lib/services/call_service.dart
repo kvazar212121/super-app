@@ -52,6 +52,10 @@ class CallService extends ChangeNotifier {
   // Qo'ng'iroq vaqti
   DateTime? _callStartTime;
   Timer? _callTimer;
+
+  // Chiquvchi qo'ng'iroq javob berilishini kutish limiti (yopiq ilova uyg'onguncha ham)
+  Timer? _ringTimeout;
+  static const Duration _ringTimeoutDuration = Duration(seconds: 45);
   String _callDuration = '00:00';
 
   // Auto-reconnect
@@ -300,7 +304,14 @@ class CallService extends ChangeNotifier {
         );
       }
       endCall(sendSignal: false);
+    } else if (type == 'callee_ringing') {
+      // Target ilovasi yopiq edi — FCM/CallKit orqali jiringlayapti. UZMAYMIZ, KUTAMIZ.
+      // Foydalanuvchi javob berganda 'call_accepted' keladi va oqim davom etadi.
+      _isRinging = true;
+      _isConnecting = true;
+      notifyListeners();
     } else if (type == 'target_offline') {
+      // Umuman qurilma yo'q — haqiqatan ulanib bo'lmaydi.
       _isConnecting = false;
       _isRinging = false;
       _callCategoryKey = null;
@@ -511,6 +522,20 @@ class CallService extends ChangeNotifier {
 
     // Notify target that a call is initiating
     sendSignal('call_init', {'category': categoryKey});
+
+    // Javob berilishini kutamiz — target ilovasi yopiq bo'lsa FCM/CallKit orqali
+    // uyg'onib javob berishi mumkin. Belgilangan vaqtda javob bo'lmasa — uzamiz.
+    _ringTimeout?.cancel();
+    _ringTimeout = Timer(_ringTimeoutDuration, () {
+      if (_inCall && _callStartTime == null) {
+        // Hali ulanmagan (javob yo'q) — "javob bermadi"
+        if (_currentCallLogId != null) {
+          CallHistoryService().updateCallLog(_currentCallLogId!, status: 'missed');
+        }
+        if (onError != null) onError!('Javob bermadi');
+        endCall(sendSignal: true);
+      }
+    });
     return true;
   }
 
@@ -665,6 +690,7 @@ class CallService extends ChangeNotifier {
 
   /// Qo'ng'iroq vaqt hisoblagichini boshlash
   void _startCallTimer() {
+    _ringTimeout?.cancel(); // ulandi — kutish timeout'i endi kerak emas
     _callStartTime = DateTime.now();
     _callTimer?.cancel();
     _callTimer = Timer.periodic(const Duration(seconds: 1), (_) {
@@ -680,6 +706,7 @@ class CallService extends ChangeNotifier {
 
   /// Qo'ng'iroqni tugatish
   void endCall({bool sendSignal = true}) {
+    _ringTimeout?.cancel();
     if (sendSignal && _remoteUserId != null) {
       this.sendSignal('end_call', {});
     }
