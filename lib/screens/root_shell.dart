@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../providers/app_provider.dart';
 import '../config/provider_category_config.dart';
+import '../app_navigator.dart';
 import 'main_screen.dart';
 import 'provider_side/unified_provider_dashboard_screen.dart';
 
@@ -26,6 +27,10 @@ class _RootShellState extends State<RootShell> {
     // Saqlangan rejimni tiklaymiz.
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) context.read<AppProvider>().loadActiveMode();
+      // Ilova ildizi tayyor — sovuq startda kutilayotgan qo'ng'iroq ekranini
+      // endi xavfsiz ko'rsatsak bo'ladi (splash tomonidan o'chirilmaydi).
+      appReady = true;
+      onAppReady?.call();
     });
   }
 

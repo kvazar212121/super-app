@@ -84,11 +84,27 @@ void main() async {
     debugPrint("Firebase init failed: $e");
   }
 
+  // Sovuq startda (ilova yopiq edi) RootShell hali tayyor bo'lmasa — qo'ng'iroq
+  // ma'lumotini shu yerda saqlab turamiz va tayyor bo'lgach ko'rsatamiz.
+  Map<String, dynamic>? pendingCallData;
+  int? pendingCallId;
+  String? pendingCallName;
+
   void safePushCallScreen({
     required int id,
     required String name,
     Map<String, dynamic>? data,
   }) {
+    // App hali ishga tushmoqda (splash) bo'lsa — CallScreen'ni push qilsak,
+    // splash RootShell'ga o'tganda uni o'chirib yuboradi (gaplashuv oynasi
+    // yo'qoladi). Shuning uchun RootShell tayyor bo'lguncha SAQLAB turamiz.
+    if (!appReady) {
+      pendingCallId = id;
+      pendingCallName = name;
+      pendingCallData = data;
+      return;
+    }
+
     void doPush() {
       final ctx = navigatorKey.currentContext;
       if (ctx != null) {
@@ -130,12 +146,63 @@ void main() async {
     }
   }
 
+  // RootShell tayyor bo'lganda — sovuq startda saqlangan qo'ng'iroq ekranini
+  // endi ko'rsatamiz (splash tomonidan o'chirilmaydi).
+  onAppReady = () {
+    // 1) onCallAccepted saqlab qo'ygan kutilayotgan qo'ng'iroq (odatiy yo'l).
+    if (pendingCallId != null) {
+      final id = pendingCallId!;
+      final name = pendingCallName ?? CallService().remoteUserName;
+      final data = pendingCallData;
+      pendingCallId = null;
+      pendingCallName = null;
+      pendingCallData = null;
+      // Zakaz qo'ng'irog'i bo'lsa — avval provider tomoniga o'tkazamiz.
+      maybeForceProviderMode();
+      safePushCallScreen(id: id, name: name, data: data);
+      return;
+    }
+    // 2) SOVUQ START tiklash: ba'zi qurilmalarda accept eventi ilova ishga
+    //    tushmasdan kelib yo'qoladi. Faol (qabul qilingan) qo'ng'iroq bo'lsa —
+    //    uni tiklaymiz (metadatani extra'dan olib, force-switch + CallScreen).
+    if (!CallService().inCall) {
+      CallKitService().getActiveCallExtra().then((extra) {
+        if (extra == null || CallService().inCall) return;
+        final id = int.tryParse(extra['callerId']?.toString() ?? '') ?? 0;
+        if (id == 0) return;
+        final name = extra['callerName']?.toString() ?? 'Noma\'lum';
+        CallService().primeIncomingCall(
+          callerId: id,
+          callerName: name,
+          categoryKey: extra['category']?.toString(),
+          toRole: extra['to_role']?.toString(),
+          intent: extra['intent']?.toString(),
+          callId: extra['call_id']?.toString(),
+        );
+        CallService().answerCall(id, name);
+        maybeForceProviderMode();
+        safePushCallScreen(id: id, name: name);
+      });
+    }
+  };
+
   // CallKit accept/decline eventlarini CallService ga ulash
-  CallKitService().onCallAccepted = (callerId, callerName) {
+  CallKitService().onCallAccepted = (callerId, callerName, extra) {
     final id = int.tryParse(callerId) ?? 0;
     final name = (callerName != 'Noma\'lum')
         ? callerName
         : CallService().remoteUserName;
+    // Sovuq startda WS `call_init` kelmagan — zakaz metadatasini (to_role,
+    // category, call_id) CallKit `extra`dan olamiz. Shunda force-switch va
+    // kelishuv oqimi ilova YOPIQ bo'lgandan javob berilganda ham ishlaydi.
+    CallService().primeIncomingCall(
+      callerId: id,
+      callerName: name,
+      categoryKey: extra['category']?.toString(),
+      toRole: extra['to_role']?.toString(),
+      intent: extra['intent']?.toString(),
+      callId: extra['call_id']?.toString(),
+    );
     CallService().answerCall(id, name);
 
     // Zakaz qo'ng'irog'i bo'lsa — CallScreen ochilishidan oldin provider tomoniga o't.

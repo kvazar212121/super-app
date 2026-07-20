@@ -1,6 +1,7 @@
 from datetime import datetime
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func
+from sqlalchemy.orm import selectinload
 from fastapi import HTTPException
 
 from app.models.order import Order, OrderStatus
@@ -14,7 +15,14 @@ class OrderService:
 
     @staticmethod
     async def create(db: AsyncSession, user: User, data: OrderCreate) -> Order:
-        provider = await db.get(Provider, data.provider_id)
+        # category'ni EAGER yuklaymiz — pastda provider.category ishlatiladi.
+        # (async'da lazy-load 'MissingGreenlet' xatosi berib 500 qiladi.)
+        _pres = await db.execute(
+            select(Provider)
+            .options(selectinload(Provider.category))
+            .where(Provider.id == data.provider_id)
+        )
+        provider = _pres.scalar_one_or_none()
         if not provider:
             raise HTTPException(status_code=404, detail="Provayder topilmadi")
 
@@ -58,7 +66,8 @@ class OrderService:
                     actual_fee = provider.category.lead_fee
                 
                 if actual_fee > 0:
-                    provider.balance -= actual_fee
+                    # balance null bo'lishi mumkin (hech to'ldirilmagan) — himoya.
+                    provider.balance = (provider.balance or 0.0) - actual_fee
                     
                     from app.models.transaction import Transaction
                     tx = Transaction(
@@ -77,7 +86,7 @@ class OrderService:
             from app.models.plan import Plan
             from datetime import timezone
             plan_title = f"{order.service_name}"
-            plan_desc = f"Provayder: {provider.name}\nManzil: {order.address}\nNarxi: {int(order.price):,} so'm".replace(",", " ")
+            plan_desc = f"Provayder: {provider.name}\nManzil: {order.address}\nNarxi: {int(order.price or 0):,} so'm".replace(",", " ")
             if order.notes:
                 plan_desc += f"\nIzoh: {order.notes}"
             

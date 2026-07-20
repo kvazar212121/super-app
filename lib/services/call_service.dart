@@ -642,6 +642,29 @@ class CallService extends ChangeNotifier {
     sendSignal('call_accepted', {});
   }
 
+  /// SOVUQ START (ilova yopiq edi — WS `call_init` kelmagan) uchun qo'ng'iroq
+  /// metadatasini CallKit `extra`dan to'ldiradi: to_role/intent/category/call_id.
+  /// Shu tufayli javob berilganda force-switch (provider tomon) va kelishuv
+  /// oqimi ishlaydi (WS orqali kelgan holatdagidek).
+  void primeIncomingCall({
+    required int callerId,
+    required String callerName,
+    String? categoryKey,
+    String? toRole,
+    String? intent,
+    String? callId,
+  }) {
+    _remoteUserId = callerId;
+    _remoteUserName = callerName;
+    if (categoryKey != null && categoryKey.isNotEmpty) {
+      _callCategoryKey = categoryKey;
+    }
+    if (toRole != null && toRole.isNotEmpty) _callToRole = toRole;
+    if (intent != null && intent.isNotEmpty) _callIntent = intent;
+    if (callId != null && callId.isNotEmpty) _callId = callId;
+    _callIAmProvider = _callToRole == 'provider';
+  }
+
   /// Offer ni qayta ishlash
   Future<void> _handleOffer(
     Map<String, dynamic> offerData,

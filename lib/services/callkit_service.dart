@@ -15,8 +15,10 @@ class CallKitService {
   String? _currentCallId;
   final Uuid _uuid = const Uuid();
 
-  // UI eventlari uchun callbacklar
-  Function(String callerId, String callerName)? onCallAccepted;
+  // UI eventlari uchun callbacklar. `extra` — CallKit'ga solingan qo'shimcha
+  // ma'lumot (category/to_role/intent/call_id) — sovuq startda kerak.
+  Function(String callerId, String callerName, Map<String, dynamic> extra)?
+  onCallAccepted;
   Function(String callerId)? onCallDeclined;
   Function(String callerId)? onCallTimeout;
 
@@ -32,13 +34,14 @@ class CallKitService {
         final extra = body['extra'] as Map<dynamic, dynamic>? ?? {};
         final callerId = extra['callerId']?.toString() ?? '';
         final callerName = extra['callerName']?.toString() ?? 'Noma\'lum';
+        final extraMap = extra.map((k, v) => MapEntry(k.toString(), v));
 
         debugPrint('CallKit event: ${event.event}, callerId: $callerId');
 
         switch (event.event) {
           case Event.actionCallAccept:
             debugPrint('CallKit: Qo\'ng\'iroq qabul qilindi');
-            onCallAccepted?.call(callerId, callerName);
+            onCallAccepted?.call(callerId, callerName, extraMap);
             break;
           case Event.actionCallDecline:
             debugPrint('CallKit: Qo\'ng\'iroq rad etildi');
@@ -63,10 +66,16 @@ class CallKitService {
     }
   }
 
-  /// Tizim darajasidagi kiruvchi qo'ng'iroq ekranini ko'rsatish
+  /// Tizim darajasidagi kiruvchi qo'ng'iroq ekranini ko'rsatish.
+  /// [categoryKey]/[toRole]/[intent]/[callId] — sovuq startda javob berilganda
+  /// force-switch va kelishuv oqimi uchun `extra`ga solinadi.
   Future<void> showIncomingCall({
     required String callerName,
     required int callerId,
+    String? categoryKey,
+    String? toRole,
+    String? intent,
+    String? callId,
   }) async {
     _currentCallId = _uuid.v4();
 
@@ -91,6 +100,10 @@ class CallKitService {
         extra: <String, dynamic>{
           'callerId': callerId.toString(),
           'callerName': callerName,
+          'category': categoryKey ?? '',
+          'to_role': toRole ?? '',
+          'intent': intent ?? '',
+          'call_id': callId ?? '',
         },
         headers: <String, dynamic>{},
         android: const AndroidParams(
@@ -180,5 +193,27 @@ class CallKitService {
     } catch (e) {
       debugPrint('CallKit: endCall xatolik — $e');
     }
+  }
+
+  /// SOVUQ START tiklash: ba'zi qurilmalarda `onEvent` accept eventi ilova
+  /// hali ishga tushmaganda kelib, yo'qolishi mumkin. Ilova tayyor bo'lganda
+  /// bu metod FAOL (qabul qilingan) qo'ng'iroq bor-yo'qligini tekshiradi va
+  /// uning `extra`sini qaytaradi — main.dart shu bilan CallScreen'ni tiklaydi.
+  Future<Map<String, dynamic>?> getActiveCallExtra() async {
+    try {
+      final calls = await FlutterCallkitIncoming.activeCalls();
+      if (calls is List && calls.isNotEmpty) {
+        final first = calls.first;
+        if (first is Map) {
+          final extra = first['extra'];
+          if (extra is Map) {
+            return extra.map((k, v) => MapEntry(k.toString(), v));
+          }
+        }
+      }
+    } catch (e) {
+      debugPrint('CallKit: getActiveCallExtra xato — $e');
+    }
+    return null;
   }
 }

@@ -17,10 +17,15 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
     final callerId = message.data['caller_id']?.toString() ?? '0';
     final callerName = message.data['caller_name']?.toString() ?? "Noma'lum";
 
-    // CallKitService orqali qora ekranda qo'ng'iroqni ko'rsatish
+    // CallKitService orqali qora ekranda qo'ng'iroqni ko'rsatish.
+    // Zakaz metadatasini ham uzatamiz (sovuq startda force-switch + kelishuv uchun).
     await CallKitService().showIncomingCall(
       callerId: int.tryParse(callerId) ?? 0,
       callerName: callerName,
+      categoryKey: message.data['category']?.toString(),
+      toRole: message.data['to_role']?.toString(),
+      intent: message.data['intent']?.toString(),
+      callId: message.data['call_id']?.toString(),
     );
   }
 }
@@ -74,6 +79,10 @@ class FirebaseService {
           CallKitService().showIncomingCall(
             callerId: int.tryParse(callerId) ?? 0,
             callerName: callerName,
+            categoryKey: message.data['category']?.toString(),
+            toRole: message.data['to_role']?.toString(),
+            intent: message.data['intent']?.toString(),
+            callId: message.data['call_id']?.toString(),
           );
         }
       });
