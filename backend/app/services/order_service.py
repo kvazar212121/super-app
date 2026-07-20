@@ -114,7 +114,6 @@ class OrderService:
             # Actually, if db.flush() fails, the session is in a bad state. We must raise.
             raise HTTPException(status_code=500, detail=f"Ichki xatolik: {e}")
         
-        from sqlalchemy.orm import selectinload
         q = (
             select(Order)
             .options(selectinload(Order.category), selectinload(Order.provider))
@@ -136,7 +135,6 @@ class OrderService:
         count_q = select(func.count(Order.id)).where(Order.user_id == user_id)
         total = (await db.execute(count_q)).scalar() or 0
 
-        from sqlalchemy.orm import selectinload
         q = (
             select(Order)
             .options(selectinload(Order.category), selectinload(Order.provider))
@@ -150,7 +148,6 @@ class OrderService:
 
     @staticmethod
     async def get_by_id(db: AsyncSession, user_id: int, order_id: int) -> Order:
-        from sqlalchemy.orm import selectinload
         result = await db.execute(
             select(Order)
             .options(selectinload(Order.category), selectinload(Order.provider))
