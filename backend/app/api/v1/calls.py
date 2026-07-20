@@ -453,7 +453,7 @@ async def create_deal_booking(
         user_id=deal.client_id,
         category_id=category_id,
         provider_id=provider.id,
-        service_name=(data.service_name or (provider.category.title if provider.category else "Kelishilgan xizmat")),
+        service_name=(data.service_name or (provider.category.title_uz if provider.category else "Kelishilgan xizmat")),
         address=(data.address or "Kelishuv bo'yicha"),
         notes=data.notes,
         date=data.date,
