@@ -172,6 +172,7 @@ class _NurseBookingScreenState extends State<NurseBookingScreen> {
                           context,
                           widget.service.ownerUserId,
                           widget.service.name,
+                          asOrder: true,
                         );
                       },
                       contactLabel: "Hamshira bilan bog'lanish",

@@ -141,6 +141,7 @@ class WorkerProfileScreen extends StatelessWidget {
                   context,
                   worker.ownerUserId,
                   worker.name,
+                  asOrder: true,
                 );
               },
               icon: const Icon(LucideIcons.phoneCall),

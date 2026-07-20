@@ -118,11 +118,19 @@ class CallHelper {
     );
   }
 
+  /// To'g'ridan-to'g'ri qo'ng'iroq (maqsad so'ramasdan).
+  ///
+  /// [asOrder] true bo'lsa — bu PROVIDER'ga ZAKAZ qo'ng'irog'i: qabul qiluvchi
+  /// majburan soha egasi tomoniga o'tkaziladi va qo'ng'iroqdan keyin ikkala
+  /// tomondan "Kelishuvga erishdingizmi?" so'raladi. [categoryKey] — provider
+  /// kategoriyasi (bron yaratishda ishlatiladi; ixtiyoriy).
   static Future<void> makeDirectCall(
     BuildContext context,
     int targetId,
-    String targetName,
-  ) async {
+    String targetName, {
+    bool asOrder = false,
+    String? categoryKey,
+  }) async {
     final auth = context.read<AuthProvider>();
     if (!auth.isAuthenticated) {
       final ok = await Navigator.of(context).push<bool>(
@@ -166,7 +174,13 @@ class CallHelper {
       return;
     }
 
-    bool started = await CallService().startCall(targetId, targetName);
+    bool started = await CallService().startCall(
+      targetId,
+      targetName,
+      categoryKey: asOrder ? categoryKey : null,
+      toRole: asOrder ? 'provider' : 'user',
+      intent: asOrder ? 'order' : 'personal',
+    );
     if (!started) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Allaqachon qo'ng'iroqdamiz")),

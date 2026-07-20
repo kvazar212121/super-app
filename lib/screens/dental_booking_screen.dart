@@ -182,6 +182,7 @@ class _DentalBookingScreenState extends State<DentalBookingScreen> {
                             context,
                             widget.clinic.ownerUserId,
                             widget.clinic.name,
+                            asOrder: true,
                           );
                         },
                         contactLabel: "Klinika bilan bog'lanish",

@@ -33,8 +33,14 @@ class SimpleCallBookingScreen extends StatelessWidget {
       return;
     }
 
-    // Call through CallService
-    await CallService().startCall(providerId, providerName);
+    // Provider'ga ZAKAZ qo'ng'irog'i — kelishuv oqimi ishlashi uchun order intent.
+    await CallService().startCall(
+      providerId,
+      providerName,
+      categoryKey: provider['category_key'] as String?,
+      toRole: 'provider',
+      intent: 'order',
+    );
 
     if (!context.mounted) return;
     Navigator.push(

@@ -142,6 +142,7 @@ class _MassageBookingScreenState extends State<MassageBookingScreen> {
                             context,
                             widget.service.ownerUserId,
                             widget.service.name,
+                            asOrder: true,
                           );
                         },
                         contactLabel: "Mutaxassis bilan bog'lanish",

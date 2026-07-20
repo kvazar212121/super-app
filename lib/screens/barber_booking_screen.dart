@@ -163,6 +163,7 @@ class _BarberBookingScreenState extends State<BarberBookingScreen> {
                             context,
                             widget.shop.ownerUserId,
                             widget.shop.name,
+                            asOrder: true,
                           );
                         },
                         contactLabel: "Sartaroshxona bilan bog'lanish".tr,

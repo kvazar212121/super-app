@@ -115,6 +115,7 @@ class _SalonBookingScreenState extends State<SalonBookingScreen> {
                           context,
                           widget.salon.ownerUserId,
                           widget.salon.name,
+                          asOrder: true,
                         );
                       },
                       contactLabel: "Salon bilan bog'lanish".tr,

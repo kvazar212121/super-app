@@ -116,6 +116,7 @@ class _EventBookingScreenState extends State<EventBookingScreen> {
                           context,
                           widget.service.ownerUserId,
                           widget.service.name,
+                          asOrder: true,
                         );
                       },
                       contactLabel: "Guruh bilan bog'lanish",
