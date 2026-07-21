@@ -4,6 +4,8 @@ import 'dart:io';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/foundation.dart';
 
+import '../config/app_config.dart';
+
 /// Internet holatini kuzatuvchi singleton xizmat.
 ///
 /// Nima uchun kerak:
@@ -47,26 +49,35 @@ class ConnectivityService extends ChangeNotifier {
   }
 
   /// HAQIQIY internet borligini tekshirish (chaqiruv oldidan).
-  /// Wi-Fi ulangan-u internet yo'q holatni ham ushlaydi (DNS so'rov).
+  /// Wi-Fi ulangan-u internet yo'q holatni ham ushlaydi.
+  ///
+  /// MUHIM: tekshiruv ILOVANING O'Z serveriga (hubservis.uz) qilinadi —
+  /// chunki qo'ng'iroq/API aynan shu serverga ulanadi. Cloudflare (one.one.one.one)
+  /// ba'zi tarmoqlarda (masalan UZ mobil) bloklangan/sekin bo'lishi mumkin, bu esa
+  /// internet BOR bo'lsa ham qo'ng'iroqni noto'g'ri bloklaydi.
+  /// Tekshiruv aniq javob bermasa — tarmoq bor bo'lsa BLOKLAMAYMIZ.
   Future<bool> hasInternet() async {
+    List<ConnectivityResult> results;
     try {
-      final results = await _connectivity.checkConnectivity();
-      if (results.isEmpty || results.every((r) => r == ConnectivityResult.none)) {
-        return false;
-      }
-      // Tarmoq bor — endi haqiqiy internetni tez DNS bilan tekshiramiz.
-      final lookup = await InternetAddress.lookup(
-        'one.one.one.one',
-      ).timeout(const Duration(seconds: 3));
+      results = await _connectivity.checkConnectivity();
+    } catch (_) {
+      return true; // aniqlab bo'lmadi — bloklamaymiz
+    }
+    // Umuman tarmoq interfeysi yo'q — aniq oflayn.
+    if (results.isEmpty || results.every((r) => r == ConnectivityResult.none)) {
+      return false;
+    }
+    // Tarmoq bor — ilovaning o'z hostiga yetib borishni tez tekshiramiz.
+    try {
+      final host = Uri.parse(AppConfig.apiBaseUrl).host; // hubservis.uz
+      final lookup = await InternetAddress.lookup(host)
+          .timeout(const Duration(seconds: 3));
       return lookup.isNotEmpty && lookup.first.rawAddress.isNotEmpty;
-    } on TimeoutException {
-      return false;
-    } on SocketException {
-      return false;
     } catch (e) {
-      debugPrint('hasInternet tekshiruv xatosi: $e');
-      // Aniqlab bo'lmadi — tarmoq holatiga tayanamiz (bloklab qo'ymaslik uchun)
-      return _isOnline;
+      // DNS/timeout xatosi — lekin tarmoq interfeysi BOR. Bloklamaymiz
+      // (qo'ng'iroq urinib ko'rsin; noto'g'ri "Internet yo'q" chiqmasin).
+      debugPrint('hasInternet host tekshiruvi o\'tmadi, tarmoqqa tayanamiz: $e');
+      return true;
     }
   }
 
