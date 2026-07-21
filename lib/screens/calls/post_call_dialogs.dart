@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:super_app/l10n/locale_controller.dart';
@@ -19,59 +21,43 @@ import '../../services/api_service.dart';
 ///   inform_client_declined
 class PostCallDialogs {
   /// Zakaz qo'ng'irog'idan keyin chaqiriladi (faqat order + suhbat bo'lgan holatda).
-  static void showDealFlow(
+  ///
+  /// 30 SONIYA QOIDASI: savolga 30s ichida javob berilmasa dialog o'zi yopiladi
+  /// va kelishuv AVTOMATIK RAD etiladi (backend ham o'z tomonidan 30s da rad
+  /// qiladi — shuning uchun bir tomon "Kelishdik" bosib, ikkinchisi jim tursa,
+  /// ikkalasiga ham "rad" bo'ladi).
+  static Future<void> showDealFlow(
     BuildContext context, {
     required String callId,
     required int otherUserId,
     required String otherName,
     required String? categoryKey,
     required bool iAmProvider,
-  }) {
-    // Avval "Kelishuvga erishdingizmi?" savolini beramiz.
-    showDialog<void>(
+  }) async {
+    final res = await showDialog<String>(
       context: context,
       barrierDismissible: false,
-      builder: (ctx) => AlertDialog(
-        title: Text('Kelishuvga erishdingizmi?'.tr),
-        content: Text(
-          iAmProvider
-              ? '$otherName bilan xizmat bo\'yicha kelishuvga erishdingizmi?'
-              : '$otherName bilan narx va vaqt bo\'yicha kelisha oldingizmi?',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.pop(ctx);
-              _submit(
-                context,
-                callId: callId,
-                otherUserId: otherUserId,
-                otherName: otherName,
-                categoryKey: categoryKey,
-                iAmProvider: iAmProvider,
-                response: 'declined',
-              );
-            },
-            child: Text('Kelishmadik'.tr),
-          ),
-          FilledButton(
-            onPressed: () {
-              Navigator.pop(ctx);
-              _submit(
-                context,
-                callId: callId,
-                otherUserId: otherUserId,
-                otherName: otherName,
-                categoryKey: categoryKey,
-                iAmProvider: iAmProvider,
-                response: 'agreed',
-              );
-            },
-            child: Text('Kelishdik'.tr),
-          ),
-        ],
+      builder: (ctx) => _DealQuestionDialog(
+        otherName: otherName,
+        iAmProvider: iAmProvider,
       ),
     );
+    if (!context.mounted) return;
+
+    if (res == 'agreed' || res == 'declined') {
+      _submit(
+        context,
+        callId: callId,
+        otherUserId: otherUserId,
+        otherName: otherName,
+        categoryKey: categoryKey,
+        iAmProvider: iAmProvider,
+        response: res!,
+      );
+    } else {
+      // 30s ichida bosilmadi — avtomatik rad (backend ham shunday qiladi).
+      _info(context, 'Vaqt tugadi — kelishuv avtomatik rad etildi.'.tr);
+    }
   }
 
   /// Javobni backendga yuboradi va natijaga qarab keyingi qadamni ochadi.
@@ -278,7 +264,7 @@ class PostCallDialogs {
           Navigator.pop(ctx);
           _info(
             context,
-            'Ikkinchi tomondan javob kelmadi. Keyinroq tekshiring.'.tr,
+            'Ikkinchi tomon javob bermadi — kelishuv avtomatik rad etildi.'.tr,
           );
         },
       ),
@@ -432,7 +418,9 @@ class _DealWaitingDialog extends StatefulWidget {
 
 class _DealWaitingDialogState extends State<_DealWaitingDialog> {
   static const _interval = Duration(seconds: 3);
-  static const _maxAttempts = 20; // ~60 soniya
+  // ~36 soniya: backend 30s da avtomatik rad qiladi — polling o'sha holatni
+  // ('declined') ushlaydi; bu limit faqat zaxira (tarmoq uzilsa) uchun.
+  static const _maxAttempts = 12;
   int _attempts = 0;
   bool _done = false;
 
@@ -483,6 +471,92 @@ class _DealWaitingDialogState extends State<_DealWaitingDialog> {
           ),
         ],
       ),
+    );
+  }
+}
+
+/// "Kelishuvga erishdingizmi?" savoli — 30 soniyalik hisoblagich bilan.
+/// Muddat tugasa dialog o'zi yopiladi (natija: null → avtomatik rad).
+/// Tugmalar: 'agreed' (Kelishdik) / 'declined' (Kelishmadik) qiymatini qaytaradi.
+class _DealQuestionDialog extends StatefulWidget {
+  final String otherName;
+  final bool iAmProvider;
+
+  const _DealQuestionDialog({
+    required this.otherName,
+    required this.iAmProvider,
+  });
+
+  @override
+  State<_DealQuestionDialog> createState() => _DealQuestionDialogState();
+}
+
+class _DealQuestionDialogState extends State<_DealQuestionDialog> {
+  static const int _totalSeconds = 30;
+  int _remaining = _totalSeconds;
+  Timer? _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    _timer = Timer.periodic(const Duration(seconds: 1), (t) {
+      if (!mounted) return;
+      setState(() => _remaining--);
+      if (_remaining <= 0) {
+        t.cancel();
+        // Muddat tugadi — javobsiz yopamiz (avtomatik rad).
+        Navigator.of(context).pop();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text('Kelishuvga erishdingizmi?'.tr),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            widget.iAmProvider
+                ? '${widget.otherName} bilan xizmat bo\'yicha kelishuvga erishdingizmi?'
+                : '${widget.otherName} bilan narx va vaqt bo\'yicha kelisha oldingizmi?',
+          ),
+          const SizedBox(height: 14),
+          // Qolgan vaqt — foydalanuvchi shoshilishi kerakligini ko'rsin.
+          Row(
+            children: [
+              const Icon(Icons.timer_outlined, size: 16, color: Colors.red),
+              const SizedBox(width: 6),
+              Text(
+                '$_remaining soniya qoldi',
+                style: const TextStyle(
+                  color: Colors.red,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 13,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop('declined'),
+          child: Text('Kelishmadik'.tr),
+        ),
+        FilledButton(
+          onPressed: () => Navigator.of(context).pop('agreed'),
+          child: Text('Kelishdik'.tr),
+        ),
+      ],
     );
   }
 }

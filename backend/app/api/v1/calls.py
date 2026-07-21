@@ -283,6 +283,46 @@ def _evaluate_deal(deal: CallDeal) -> None:
         deal.status = CallDealStatus.client_recheck.value
 
 
+# Bir tomon javob bergach, ikkinchi tomonni kutish muddati (soniya).
+# O'tib ketsa — kelishuv IKKI TOMON uchun ham AVTOMATIK rad etiladi.
+DEAL_AUTO_DECLINE_SECONDS = 30
+
+
+def _maybe_auto_decline(deal: CallDeal) -> bool:
+    """30 soniya qoidasi: faqat BITTA tomon javob bergan (await_* holat) va
+    oxirgi o'zgarishdan beri 30s o'tgan bo'lsa — jim turgan tomonga 'timeout'
+    yozib, kelishuvni to'g'ridan-to'g'ri 'declined' qilamiz.
+
+    DIQQAT: _evaluate_deal chaqirilmaydi — aks holda (provider=ha, client=timeout)
+    kombinatsiyasi client_recheck'ka olib borardi; avto-rad esa YAKUNIY.
+    Qaytaradi: True = holat o'zgardi (commit kerak).
+    """
+    from datetime import datetime, timezone
+
+    if deal.status not in (
+        CallDealStatus.await_provider.value,
+        CallDealStatus.await_client.value,
+    ):
+        return False
+    has_p = deal.provider_response is not None
+    has_c = deal.client_response is not None
+    if has_p == has_c:  # hali hech kim javob bermagan — taymer boshlanmagan
+        return False
+    updated = deal.updated_at
+    if updated is None:
+        return False
+    if updated.tzinfo is None:
+        updated = updated.replace(tzinfo=timezone.utc)
+    if (datetime.now(timezone.utc) - updated).total_seconds() < DEAL_AUTO_DECLINE_SECONDS:
+        return False
+    if not has_p:
+        deal.provider_response = "timeout"
+    else:
+        deal.client_response = "timeout"
+    deal.status = CallDealStatus.declined.value
+    return True
+
+
 def _next_action(deal: CallDeal, is_provider: bool) -> str:
     """So'rovchi (provider yoki mijoz) uchun Flutter ko'rsatishi kerak bo'lgan
     keyingi harakatni qaytaradi. Butun UI mantig'i shu qiymatga bog'lanadi."""
@@ -327,6 +367,15 @@ async def respond_call_deal(
     # call_id bo'yicha mavjud yozuvni qidiramiz
     result = await db.execute(select(CallDeal).where(CallDeal.call_id == data.call_id))
     deal = result.scalar_one_or_none()
+
+    # 30s qoidasi: muddat o'tgan bo'lsa avval avto-rad qilamiz — KECHIKKAN
+    # bosish kelishuvni "tiriltira" olmaydi (rad yakuniy holat).
+    if deal is not None and _maybe_auto_decline(deal):
+        await db.commit()
+        await db.refresh(deal)
+    if deal is not None and deal.status == CallDealStatus.declined.value:
+        is_provider = current_user.id == deal.provider_user_id
+        return {"deal": deal.to_dict(), "next_action": _next_action(deal, is_provider)}
 
     if deal is None:
         # Birinchi javob — yangi kelishuv yozuvini yaratamiz.
@@ -390,6 +439,12 @@ async def get_call_deal(
     deal = result.scalar_one_or_none()
     if deal is None:
         return JSONResponse({"detail": "Kelishuv topilmadi"}, status_code=404)
+
+    # 30s qoidasi: polling paytida ham tekshiriladi — ikkinchi tomon jim
+    # tursa, kutayotgan tomon keyingi so'rovda 'declined' holatini ko'radi.
+    if _maybe_auto_decline(deal):
+        await db.commit()
+        await db.refresh(deal)
 
     is_provider = current_user.id == deal.provider_user_id
     return {"deal": deal.to_dict(), "next_action": _next_action(deal, is_provider)}
