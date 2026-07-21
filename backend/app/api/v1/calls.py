@@ -32,37 +32,68 @@ async def get_user_from_token(token: str):
 
 async def check_provider_availability(target_id: int, category_key: str | None = None) -> tuple[bool, str]:
     """Target foydalanuvchining provider sifatida faolligini tekshiradi.
-    
+
     Qaytaradi: (available: bool, reason: str)
+
+    MUHIM tuzatishlar:
+      1. `is_verified` FILTRLANMAYDI — bu tasdiq belgisi (badge), chaqiruv
+         ruxsati emas. Default False bo'lgani uchun u BARCHA yangi providerga
+         qo'ng'iroqni "topilmadi" deb bloklab qo'ygan edi.
+      2. Telefon fallback: eski providerlarda owner_user_id NULL bo'lishi
+         mumkin (telefon raqami orqali bog'langan) — _get_user_provider kabi.
+      3. KAMIDA BITTA profil ochiq bo'lsa — ruxsat (oldin bitta paused profil
+         hammasini bloklardi).
+      4. Yozuv topilmasa — FAIL-OPEN (chaqiruvga ruxsat): bog'lanish yozuvi
+         noaniq bo'lsa asosiy chaqiruv funksiyasi buzilmasligi kerak; blok
+         faqat ANIQ bloklangan/tanaffusdagi provider uchun.
     """
+    from sqlalchemy import or_
+
     async with async_session() as db:
-        query = select(Provider).where(
-            Provider.owner_user_id == target_id,
-            Provider.is_verified == True,
+        # Telefon fallback uchun target userning raqamini olamiz
+        target_user = await db.get(User, target_id)
+        phone = target_user.phone if target_user else None
+
+        cond = (
+            or_(Provider.owner_user_id == target_id, Provider.phone == phone)
+            if phone
+            else (Provider.owner_user_id == target_id)
         )
+        query = select(Provider).where(cond)
         if category_key:
             query = query.join(Category, Provider.category_id == Category.id).where(
                 Category.key == category_key
             )
-        
+
         result = await db.execute(query)
         providers = result.scalars().all()
-        
+
         if not providers:
-            return False, "provider_not_found"
-        
-        # Barcha provider profillarini tekshiramiz
+            # Yozuv topilmadi — bloklamaymiz (fail-open), faqat logga yozamiz.
+            logger.warning(
+                f"check_provider_availability: provider yozuvi topilmadi "
+                f"(target={target_id}, category={category_key}) — chaqiruvga ruxsat"
+            )
+            return True, "ok"
+
+        # Kamida bitta ochiq profil yetarli; hammasi yopiq bo'lsa — birinchi sabab.
+        first_reason: str | None = None
         for provider in providers:
             if provider.is_blocked:
-                return False, "provider_blocked"
+                first_reason = first_reason or "provider_blocked"
+                continue
             if not provider.is_active:
-                return False, "provider_inactive"
+                first_reason = first_reason or "provider_inactive"
+                continue
             if provider.is_paused:
-                return False, "provider_paused"
+                first_reason = first_reason or "provider_paused"
+                continue
             if provider.metadata_json and provider.metadata_json.get("is_suspended"):
-                return False, "provider_suspended"
-        
-        return True, "ok"
+                first_reason = first_reason or "provider_suspended"
+                continue
+            return True, "ok"
+
+        return False, first_reason or "provider_inactive"
 
 
 @router.get("/ice-servers")
