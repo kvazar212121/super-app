@@ -547,8 +547,27 @@ async def get_call_deal(
         await db.commit()
         await db.refresh(deal)
 
+    # Bron yaratilgan bo'lsa — sanasi/holati ham qaytariladi. MIJOZ tomoni shu
+    # orqali "qachonga bron bo'ldi"ni ko'radi (provider vaqtni belgilagach).
+    booking = None
+    if deal.order_id is not None:
+        from app.models.order import Order
+        order = await db.get(Order, deal.order_id)
+        if order is not None:
+            booking = {
+                "order_id": order.id,
+                "date": order.date.isoformat() if order.date else None,
+                "status": order.status.value if hasattr(order.status, "value") else str(order.status),
+                "service_name": order.service_name,
+                "price": order.price,
+            }
+
     is_provider = current_user.id == deal.provider_user_id
-    return {"deal": deal.to_dict(), "next_action": _next_action(deal, is_provider)}
+    return {
+        "deal": deal.to_dict(),
+        "next_action": _next_action(deal, is_provider),
+        "booking": booking,
+    }
 
 
 # ==========================================================================

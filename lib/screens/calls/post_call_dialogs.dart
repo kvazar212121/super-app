@@ -171,11 +171,43 @@ class PostCallDialogs {
       // Provider kelishilgan sana/vaqtni kiritadi → server BRON (Order) yaratadi.
       _showDateForm(context, callId: callId, otherName: otherName);
     } else {
-      _info(
-        context,
-        'Kelishuv tasdiqlandi! $otherName siz uchun vaqtni belgilaydi va bron qiladi.',
-      );
+      // MIJOZ: provider vaqtni belgilashini kutamiz va belgilangach bron
+      // sanasini KATTA tasdiqlash modalida ko'rsatamiz (qachonga bron bo'ldi).
+      _waitForBooking(context, callId: callId, otherName: otherName);
     }
+  }
+
+  /// Mijoz tomoni: provider bron vaqtini kiritishini kutish (polling).
+  /// Vaqt belgilangach — katta ko'k tasdiqlash modali (sana/vaqt bilan).
+  static void _waitForBooking(
+    BuildContext context, {
+    required String callId,
+    required String otherName,
+  }) {
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => _BookingWaitDialog(
+        callId: callId,
+        otherName: otherName,
+        onBooked: (when) {
+          Navigator.pop(ctx);
+          _showSuccessModal(
+            context,
+            title: 'Bitim tasdiqlandi!',
+            subtitle: '$otherName siz uchun bron qildi',
+            when: when,
+          );
+        },
+        onTimeout: () {
+          Navigator.pop(ctx);
+          _info(
+            context,
+            '$otherName hali vaqtni belgilamadi. Belgilanganda sizga bildirishnoma keladi.',
+          );
+        },
+      ),
+    );
   }
 
   /// Nizo: mijozdan qayta so'rash — "Rostan fikringizdan qaytdingizmi?"
@@ -273,6 +305,159 @@ class PostCallDialogs {
 
   // ---- Yordamchi dialoglar ----
 
+  /// KATTA tasdiqlash modali — ko'k gradient doira ichida oq check belgisi,
+  /// pastida kelishilgan SANA va VAQT (katta, ko'k kartada). Oddiy AlertDialog
+  /// o'rniga bitim tasdiqlanганда shu ko'rsatiladi (ikkala tomonda ham).
+  static void _showSuccessModal(
+    BuildContext context, {
+    required String title,
+    String? subtitle,
+    DateTime? when,
+  }) {
+    if (!context.mounted) return;
+    const blue = Color(0xFF3B82F6);
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => Dialog(
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(24, 32, 24, 24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Ko'k gradient doira + katta oq check
+              Container(
+                width: 92,
+                height: 92,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: const LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [Color(0xFF60A5FA), Color(0xFF2563EB)],
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: blue.withValues(alpha: 0.35),
+                      blurRadius: 26,
+                      offset: const Offset(0, 10),
+                    ),
+                  ],
+                ),
+                child: const Icon(
+                  Icons.check_rounded,
+                  color: Colors.white,
+                  size: 54,
+                ),
+              ),
+              const SizedBox(height: 20),
+              Text(
+                title,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.w800,
+                  color: Colors.black,
+                ),
+              ),
+              if (subtitle != null) ...[
+                const SizedBox(height: 8),
+                Text(
+                  subtitle,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 14, color: Colors.grey[700]),
+                ),
+              ],
+              if (when != null) ...[
+                const SizedBox(height: 20),
+                // Kelishilgan sana/vaqt — ko'k kartada, katta va aniq
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 18,
+                    vertical: 16,
+                  ),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFEFF6FF),
+                    borderRadius: BorderRadius.circular(18),
+                    border: Border.all(color: const Color(0xFFBFDBFE)),
+                  ),
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(
+                            Icons.calendar_month_rounded,
+                            color: blue,
+                            size: 20,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            DateFormat('yyyy-MM-dd').format(when),
+                            style: const TextStyle(
+                              fontSize: 17,
+                              fontWeight: FontWeight.w800,
+                              color: blue,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 6),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(
+                            Icons.access_time_rounded,
+                            color: blue,
+                            size: 22,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            DateFormat('HH:mm').format(when),
+                            style: const TextStyle(
+                              fontSize: 26,
+                              fontWeight: FontWeight.w900,
+                              color: blue,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+              const SizedBox(height: 24),
+              SizedBox(
+                width: double.infinity,
+                height: 52,
+                child: FilledButton(
+                  style: FilledButton.styleFrom(
+                    backgroundColor: blue,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                  ),
+                  onPressed: () => Navigator.pop(ctx),
+                  child: Text(
+                    'OK'.tr,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   static void _info(BuildContext context, String message) {
     if (!context.mounted) return;
     showDialog<void>(
@@ -364,15 +549,15 @@ class PostCallDialogs {
                           final bothAgreed = res['both_agreed'] == true;
                           if (ctx.mounted) Navigator.pop(ctx);
                           if (!context.mounted) return;
-                          _info(
+                          _showSuccessModal(
                             context,
-                            bothAgreed
-                                ? '$otherName uchun '
-                                    '${DateFormat('yyyy-MM-dd HH:mm').format(when)} '
-                                    'ga bron tasdiqlandi.'
-                                : '$otherName uchun '
-                                    '${DateFormat('yyyy-MM-dd HH:mm').format(when)} '
-                                    'ga vaqt belgilandi. Mijoz tasdiqlashini kutmoqda.',
+                            title: bothAgreed
+                                ? 'Bitim tasdiqlandi!'
+                                : 'Vaqt belgilandi',
+                            subtitle: bothAgreed
+                                ? '$otherName uchun bron yaratildi'
+                                : 'Mijoz tasdiqlashini kutmoqda',
+                            when: when,
                           );
                         } catch (e) {
                           if (ctx.mounted) setState(() => saving = false);
@@ -555,6 +740,97 @@ class _DealQuestionDialogState extends State<_DealQuestionDialog> {
         FilledButton(
           onPressed: () => Navigator.of(context).pop('agreed'),
           child: Text('Kelishdik'.tr),
+        ),
+      ],
+    );
+  }
+}
+
+/// Mijoz tomonида: provider bron vaqtini kiritishini kutuvchi dialog.
+/// Har 3 soniyada kelishuv holatini so'raydi — `booking.date` paydo bo'lishi
+/// bilan [onBooked] chaqiriladi (katta tasdiqlash modali ko'rsatiladi).
+/// ~2 daqiqada belgilanmasa (yoki foydalanuvchi yopsa) — [onTimeout].
+class _BookingWaitDialog extends StatefulWidget {
+  final String callId;
+  final String otherName;
+  final void Function(DateTime when) onBooked;
+  final VoidCallback onTimeout;
+
+  const _BookingWaitDialog({
+    required this.callId,
+    required this.otherName,
+    required this.onBooked,
+    required this.onTimeout,
+  });
+
+  @override
+  State<_BookingWaitDialog> createState() => _BookingWaitDialogState();
+}
+
+class _BookingWaitDialogState extends State<_BookingWaitDialog> {
+  static const _interval = Duration(seconds: 3);
+  static const _maxAttempts = 40; // ~2 daqiqa
+  int _attempts = 0;
+  bool _done = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _poll();
+  }
+
+  Future<void> _poll() async {
+    while (mounted && !_done && _attempts < _maxAttempts) {
+      await Future.delayed(_interval);
+      if (!mounted || _done) return;
+      _attempts++;
+      try {
+        final res = await ApiService().getCallDeal(widget.callId);
+        final booking = res['booking'];
+        if (booking is Map && booking['date'] != null) {
+          final when = DateTime.tryParse(booking['date'].toString());
+          if (when != null) {
+            _done = true;
+            if (mounted) widget.onBooked(when);
+            return;
+          }
+        }
+      } catch (_) {
+        // Vaqtinchalik tarmoq xatosi — keyingi urinishda davom etamiz.
+      }
+    }
+    if (mounted && !_done) {
+      _done = true;
+      widget.onTimeout();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      content: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const SizedBox(
+            width: 22,
+            height: 22,
+            child: CircularProgressIndicator(strokeWidth: 2.5),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Text('${widget.otherName} vaqtni belgilamoqda...'),
+          ),
+        ],
+      ),
+      actions: [
+        // Foydalanuvchini qamab qo'ymaymiz — yopsa, bildirishnoma orqali biladi.
+        TextButton(
+          onPressed: () {
+            if (_done) return;
+            _done = true;
+            widget.onTimeout();
+          },
+          child: Text('Yopish'.tr),
         ),
       ],
     );
