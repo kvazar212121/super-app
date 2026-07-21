@@ -3,10 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../services/provider_availability_service.dart';
-import '../../../services/provider_availability_service.dart';
 import '../../../services/provider_portal_service.dart';
-import '../../../services/call_service.dart';
-import '../../calls/call_screen.dart';
 import 'package:super_app/l10n/locale_controller.dart';
 
 class ProviderCalendarWidget extends StatefulWidget {
@@ -46,7 +43,7 @@ class _ProviderCalendarWidgetState extends State<ProviderCalendarWidget> {
         _portal.getMe(widget.categoryKey),
         _portal.getCalendar(widget.categoryKey, _selectedDate),
       ]);
-      _provider = results[0] as Map<String, dynamic>;
+      _provider = results[0];
       final meta =
           _provider?['metadata_json'] as Map<String, dynamic>? ??
           _provider?['metadata'] as Map<String, dynamic>? ??
@@ -233,6 +230,8 @@ class _ProviderCalendarWidgetState extends State<ProviderCalendarWidget> {
       },
     );
 
+    if (!mounted) return;
+
     if (doCancel == 1) {
       final order = _orders.firstWhere(
         (o) => o['id'] == orderId,
@@ -308,7 +307,7 @@ class _ProviderCalendarWidgetState extends State<ProviderCalendarWidget> {
               Switch(
                 value: isSuspended,
                 onChanged: _toggleSuspension,
-                activeColor: Colors.red.shade700,
+                activeThumbColor: Colors.red.shade700,
                 activeTrackColor: Colors.red.shade200,
                 inactiveThumbColor: Colors.black,
                 inactiveTrackColor: Colors.black12,
@@ -364,7 +363,7 @@ class _ProviderCalendarWidgetState extends State<ProviderCalendarWidget> {
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
             itemCount: 14,
-            separatorBuilder: (_, __) => const SizedBox(width: 12),
+            separatorBuilder: (_, _) => const SizedBox(width: 12),
             itemBuilder: (context, index) {
               final date = DateTime.now().add(Duration(days: index));
               final isSelected = DateUtils.isSameDay(date, _selectedDate);
@@ -451,7 +450,7 @@ class _ProviderCalendarWidgetState extends State<ProviderCalendarWidget> {
               Switch(
                 value: isBlocked,
                 onChanged: _toggleBlockCurrentDate,
-                activeColor: Colors.black,
+                activeThumbColor: Colors.black,
                 activeTrackColor: Colors.black12,
               ),
             ],

@@ -519,7 +519,7 @@ class _CalorieHomeScreenState extends State<CalorieHomeScreen> {
                       width: 52,
                       height: 52,
                       fit: BoxFit.cover,
-                      errorWidget: (_, __, ___) => _mealIconBox(),
+                      errorWidget: (_, _, _) => _mealIconBox(),
                     )
                   : _mealIconBox(),
             ),

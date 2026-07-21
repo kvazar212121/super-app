@@ -76,7 +76,7 @@ class CourierHubSection extends StatelessWidget {
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.symmetric(horizontal: 20),
             itemCount: couriers.length,
-            separatorBuilder: (_, __) => const SizedBox(width: 12),
+            separatorBuilder: (_, _) => const SizedBox(width: 12),
             itemBuilder: (_, i) {
               final c = couriers[i];
               final minPrice = c.prices.values.isEmpty
@@ -238,7 +238,7 @@ class AutoHelpHubSection extends StatelessWidget {
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.symmetric(horizontal: 20),
             itemCount: units.length,
-            separatorBuilder: (_, __) => const SizedBox(width: 12),
+            separatorBuilder: (_, _) => const SizedBox(width: 12),
             itemBuilder: (_, i) {
               final u = units[i];
               final minPrice = u.prices.values.isEmpty
@@ -384,7 +384,7 @@ class AutoWorkshopHubSection extends StatelessWidget {
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.symmetric(horizontal: 20),
             itemCount: workshops.length,
-            separatorBuilder: (_, __) => const SizedBox(width: 12),
+            separatorBuilder: (_, _) => const SizedBox(width: 12),
             itemBuilder: (_, i) {
               final w = workshops[i];
               final minPrice = w.prices.values.isEmpty
@@ -537,7 +537,7 @@ class TutorHubSection extends StatelessWidget {
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.symmetric(horizontal: 20),
             itemCount: tutors.length,
-            separatorBuilder: (_, __) => const SizedBox(width: 12),
+            separatorBuilder: (_, _) => const SizedBox(width: 12),
             itemBuilder: (_, i) {
               final t = tutors[i];
               final minPrice = t.prices.values.isEmpty

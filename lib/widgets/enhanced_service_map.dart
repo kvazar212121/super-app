@@ -115,7 +115,7 @@ class _EnhancedServiceMapState extends State<EnhancedServiceMap>
   /// Barcha nuqta + foydalanuvchini ekranга sig'diradi.
   void _fitAll() {
     final pts = <LatLng>[
-      if (_userPos != null) _userPos!,
+      ?_userPos,
       ...widget.places.map((p) => LatLng(p.lat, p.lng)),
     ];
     if (pts.isEmpty) return;
@@ -206,7 +206,7 @@ class _EnhancedServiceMapState extends State<EnhancedServiceMap>
               initialCenter: _userPos ??
                   const LatLng(kDefaultUserLat, kDefaultUserLng),
               initialZoom: 12,
-              onTap: (_, __) => _clearRoute(),
+              onTap: (_, _) => _clearRoute(),
             ),
             children: [
               TileLayer(

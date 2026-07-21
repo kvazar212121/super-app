@@ -18,9 +18,9 @@ class FinanceInsightCard extends StatelessWidget {
           child: Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Colors.amberAccent.withOpacity(0.2),
+              color: Colors.amberAccent.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: Colors.amberAccent.withOpacity(0.3)),
+              border: Border.all(color: Colors.amberAccent.withValues(alpha: 0.3)),
             ),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,

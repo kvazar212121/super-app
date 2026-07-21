@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
-import 'package:super_app/l10n/locale_controller.dart';
 
 /// Asosiy ekrandagi katakchalar va yangi qo'shimcha xizmatlar bilan mos
 /// keladigan barcha xizmat turlari.

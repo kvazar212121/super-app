@@ -220,8 +220,8 @@ class FieldInfoCard extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: isDark
-            ? Colors.white.withOpacity(0.05)
-            : Colors.white.withOpacity(0.9),
+            ? Colors.white.withValues(alpha: 0.05)
+            : Colors.white.withValues(alpha: 0.9),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: GlassTokens.glassBorder(context)),
         boxShadow: GlassTokens.glassShadow(context),
@@ -327,7 +327,7 @@ class InfoChip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
-        color: const Color(0xFF4CAF50).withOpacity(0.15),
+        color: const Color(0xFF4CAF50).withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Row(
@@ -435,7 +435,7 @@ class TimeSlotGrid extends StatelessWidget {
       return Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: isDark ? Colors.white.withOpacity(0.05) : Colors.grey.shade50,
+          color: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.grey.shade50,
           borderRadius: BorderRadius.circular(12),
         ),
         child: Center(
@@ -462,20 +462,20 @@ class TimeSlotGrid extends StatelessWidget {
             decoration: BoxDecoration(
               color: !slot.isAvailable
                   ? (isDark
-                        ? Colors.white.withOpacity(0.05)
+                        ? Colors.white.withValues(alpha: 0.05)
                         : Colors.grey.shade100)
                   : isSelected
                   ? accent
-                  : accent.withOpacity(0.15),
+                  : accent.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
                 color: !slot.isAvailable
                     ? (isDark
-                          ? Colors.white.withOpacity(0.1)
+                          ? Colors.white.withValues(alpha: 0.1)
                           : Colors.grey.shade300)
                     : isSelected
                     ? accent
-                    : accent.withOpacity(0.3),
+                    : accent.withValues(alpha: 0.3),
                 width: isSelected ? 2 : 1,
               ),
             ),

@@ -112,7 +112,7 @@ class _BozorchiDispatchScreenState extends State<BozorchiDispatchScreen> {
               children: [
                 CircleAvatar(
                   radius: 24,
-                  backgroundColor: accent.withOpacity(0.1),
+                  backgroundColor: accent.withValues(alpha: 0.1),
                   child: const Icon(LucideIcons.user, color: accent),
                 ),
                 const SizedBox(width: 16),
@@ -167,8 +167,8 @@ class _BozorchiDispatchScreenState extends State<BozorchiDispatchScreen> {
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: isDark
-                    ? Colors.white.withOpacity(0.05)
-                    : Colors.black.withOpacity(0.02),
+                    ? Colors.white.withValues(alpha: 0.05)
+                    : Colors.black.withValues(alpha: 0.02),
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(color: GlassTokens.glassBorder(context)),
               ),
@@ -240,8 +240,8 @@ class _BozorchiDispatchScreenState extends State<BozorchiDispatchScreen> {
               prefixIcon: Icon(LucideIcons.mapPin, color: accent),
               filled: true,
               fillColor: isDark
-                  ? Colors.white.withOpacity(0.05)
-                  : Colors.white.withOpacity(0.8),
+                  ? Colors.white.withValues(alpha: 0.05)
+                  : Colors.white.withValues(alpha: 0.8),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(16),
                 borderSide: BorderSide.none,
@@ -268,8 +268,8 @@ class _BozorchiDispatchScreenState extends State<BozorchiDispatchScreen> {
               hintStyle: TextStyle(color: GlassTokens.secondaryText(context)),
               filled: true,
               fillColor: isDark
-                  ? Colors.white.withOpacity(0.05)
-                  : Colors.white.withOpacity(0.8),
+                  ? Colors.white.withValues(alpha: 0.05)
+                  : Colors.white.withValues(alpha: 0.8),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(16),
                 borderSide: BorderSide.none,

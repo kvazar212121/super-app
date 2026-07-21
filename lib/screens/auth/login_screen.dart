@@ -96,7 +96,7 @@ class _LoginScreenState extends State<LoginScreen>
                                   'SMS kod bilan tasdiqlang — parolsiz kirish mumkin emas'
                                       .tr,
                               onLoginSuccess: _finishLogin,
-                              onNeedRegister: (_, __) {
+                              onNeedRegister: (_, _) {
                                 Navigator.pushReplacement(
                                   context,
                                   MaterialPageRoute(

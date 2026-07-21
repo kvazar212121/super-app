@@ -6,7 +6,6 @@ import '../screens/calls/call_screen.dart';
 import '../providers/auth_provider.dart';
 import '../providers/app_provider.dart';
 import '../screens/auth/auth_gate_screen.dart';
-import 'package:super_app/l10n/locale_controller.dart';
 
 class CallHelper {
   /// Chaqiruvdan OLDIN internet tekshiruvi — oflayn bo'lsa qizil xabar
@@ -48,8 +47,9 @@ class CallHelper {
         }
       }
 
-      if (!context.mounted || !context.read<AuthProvider>().isAuthenticated)
+      if (!context.mounted || !context.read<AuthProvider>().isAuthenticated) {
         return;
+      }
     }
 
     final currentUserId = int.tryParse(auth.user?['id']?.toString() ?? '');
@@ -126,6 +126,7 @@ class CallHelper {
       toRole: 'provider',
       intent: 'order',
     );
+    if (!context.mounted) return;
     if (!started) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Allaqachon qo'ng'iroqdamiz")),
@@ -169,8 +170,9 @@ class CallHelper {
         }
       }
 
-      if (!context.mounted || !context.read<AuthProvider>().isAuthenticated)
+      if (!context.mounted || !context.read<AuthProvider>().isAuthenticated) {
         return;
+      }
     }
 
     final currentUserId = int.tryParse(auth.user?['id']?.toString() ?? '');
@@ -207,6 +209,7 @@ class CallHelper {
       toRole: asOrder ? 'provider' : 'user',
       intent: asOrder ? 'order' : 'personal',
     );
+    if (!context.mounted) return;
     if (!started) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Allaqachon qo'ng'iroqdamiz")),

@@ -146,7 +146,7 @@ class _AutoWorkshopDispatchScreenState
                   children: [
                     CircleAvatar(
                       radius: 28,
-                      backgroundColor: _accent.withOpacity(0.1),
+                      backgroundColor: _accent.withValues(alpha: 0.1),
                       child: Icon(LucideIcons.home, color: _accent, size: 24),
                     ),
                     const SizedBox(width: 16),

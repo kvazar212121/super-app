@@ -133,7 +133,7 @@ class _CourierDispatchScreenState extends State<CourierDispatchScreen> {
                   children: [
                     CircleAvatar(
                       radius: 28,
-                      backgroundColor: _accent.withOpacity(0.1),
+                      backgroundColor: _accent.withValues(alpha: 0.1),
                       child: Icon(
                         LucideIcons.package,
                         color: _accent,
@@ -233,9 +233,9 @@ class _CourierDispatchScreenState extends State<CourierDispatchScreen> {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.blue.withOpacity(0.1),
+                  color: Colors.blue.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.blue.withOpacity(0.3)),
+                  border: Border.all(color: Colors.blue.withValues(alpha: 0.3)),
                 ),
                 child: Row(
                   children: [

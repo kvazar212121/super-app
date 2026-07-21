@@ -332,8 +332,8 @@ class _ExerciseLibraryScreenState extends State<ExerciseLibraryScreen> {
                   width: 52,
                   height: 52,
                   fit: BoxFit.cover,
-                  placeholder: (_, __) => _gifPlaceholder(),
-                  errorWidget: (_, __, ___) => _gifPlaceholder(),
+                  placeholder: (_, _) => _gifPlaceholder(),
+                  errorWidget: (_, _, _) => _gifPlaceholder(),
                 )
               : _gifPlaceholder(),
         ),

@@ -108,14 +108,17 @@ class _MasterDispatchScreenState extends State<MasterDispatchScreen> {
     if (specialty.contains('elek')) return ServiceHubKind.elektrik;
     if (specialty.contains('sant')) return ServiceHubKind.santexnik;
     if (specialty.contains('toza')) return ServiceHubKind.tozalash;
-    if (specialty.contains('kosmet') || specialty.contains('mobil kos'))
+    if (specialty.contains('kosmet') || specialty.contains('mobil kos')) {
       return ServiceHubKind.salon;
-    if (specialty.contains('avto') || specialty.contains('ko\'chir'))
+    }
+    if (specialty.contains('avto') || specialty.contains('ko\'chir')) {
       return ServiceHubKind.avtoYordam;
+    }
     if (specialty.contains('kond')) return ServiceHubKind.konditsioner;
     if (specialty.contains('enag')) return ServiceHubKind.enaga;
-    if (specialty.contains('repa') || specialty.contains('repet'))
+    if (specialty.contains('repa') || specialty.contains('repet')) {
       return ServiceHubKind.repetitor;
+    }
     return widget.category;
   }
 
@@ -320,7 +323,7 @@ class _MasterDispatchScreenState extends State<MasterDispatchScreen> {
                         Container(
                           height: 56,
                           decoration: BoxDecoration(
-                            color: _accent.withOpacity(0.1),
+                            color: _accent.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(14),
                             border: Border.all(color: _accent, width: 1.5),
                           ),

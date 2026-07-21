@@ -163,7 +163,7 @@ class _ProviderDataEntryScreenState extends State<ProviderDataEntryScreen> {
                       decoration: InputDecoration(
                         labelText: 'Kategoriya tanlang'.tr,
                       ),
-                      value: _selectedSubCategory,
+                      initialValue: _selectedSubCategory,
                       items:
                           ProviderCategoryConfig.byRegistrationId(
                                 widget.categoryId,

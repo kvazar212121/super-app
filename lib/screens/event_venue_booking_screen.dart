@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/event_venue.dart';
 import '../models/service_hub_kind.dart';
-import '../widgets/booking_common_widgets.dart' hide SectionTitle;
 import '../widgets/event_widgets.dart';
 import '../widgets/glass/mesh_background.dart';
 import '../widgets/save_provider_button.dart';
@@ -80,7 +79,7 @@ class _EventVenueBookingScreenState extends State<EventVenueBookingScreen> {
                   return FilterChip(
                     label: Text(a.name.tr),
                     selected: isSel,
-                    selectedColor: _accent.withOpacity(0.2),
+                    selectedColor: _accent.withValues(alpha: 0.2),
                     checkmarkColor: _accent,
                     onSelected: (val) {
                       if (val) {

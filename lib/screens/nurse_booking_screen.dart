@@ -1,7 +1,5 @@
 import '../utils/call_helper.dart';
 import 'package:flutter/material.dart';
-import '../services/call_service.dart';
-import 'calls/call_screen.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -52,24 +50,31 @@ class _NurseBookingScreenState extends State<NurseBookingScreen> {
 
     if (keyLower.contains(labelLower)) return true;
 
-    if (service == MedicalService.injection && keyLower.contains('in\'ektsiya'))
+    if (service == MedicalService.injection && keyLower.contains('in\'ektsiya')) {
       return true;
-    if (service == MedicalService.bloodTest && keyLower.contains('qon'))
+    }
+    if (service == MedicalService.bloodTest && keyLower.contains('qon')) {
       return true;
-    if (service == MedicalService.drip && keyLower.contains('kapelnitsa'))
+    }
+    if (service == MedicalService.drip && keyLower.contains('kapelnitsa')) {
       return true;
-    if (service == MedicalService.drip && keyLower.contains('tomchil'))
+    }
+    if (service == MedicalService.drip && keyLower.contains('tomchil')) {
       return true;
+    }
 
     bool matchesAny = widget.service.medicalServices.any((s) {
       final sLabel = s.label.toLowerCase();
       if (keyLower.contains(sLabel)) return true;
-      if (s == MedicalService.injection && keyLower.contains('in\'ektsiya'))
+      if (s == MedicalService.injection && keyLower.contains('in\'ektsiya')) {
         return true;
-      if (s == MedicalService.bloodTest && keyLower.contains('qon'))
+      }
+      if (s == MedicalService.bloodTest && keyLower.contains('qon')) {
         return true;
-      if (s == MedicalService.drip && keyLower.contains('kapelnitsa'))
+      }
+      if (s == MedicalService.drip && keyLower.contains('kapelnitsa')) {
         return true;
+      }
       return false;
     });
 
@@ -468,7 +473,7 @@ class _NurseBookingScreenState extends State<NurseBookingScreen> {
                         ? _addressController.text.trim()
                         : 'Bemor uyi',
                     notes:
-                        'Bemor: ${_patientNameController.text.trim()} (${_selectedAgeGroup})',
+                        'Bemor: ${_patientNameController.text.trim()} ($_selectedAgeGroup)',
                     date: dateTime,
                     price: totalPrice ?? 100000.0,
                     status: OrderStatus.pending,

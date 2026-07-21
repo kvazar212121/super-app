@@ -134,23 +134,23 @@ class OtpCodeFieldState extends State<OtpCodeField> {
                 isDense: true,
                 filled: true,
                 fillColor: isDark
-                    ? Colors.white.withOpacity(0.08)
-                    : Colors.black.withOpacity(0.05),
+                    ? Colors.white.withValues(alpha: 0.08)
+                    : Colors.black.withValues(alpha: 0.05),
                 contentPadding: const EdgeInsets.symmetric(vertical: 12),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                   borderSide: BorderSide(
                     color: isDark
-                        ? Colors.white.withOpacity(0.15)
-                        : Colors.black.withOpacity(0.1),
+                        ? Colors.white.withValues(alpha: 0.15)
+                        : Colors.black.withValues(alpha: 0.1),
                   ),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                   borderSide: BorderSide(
                     color: isDark
-                        ? Colors.white.withOpacity(0.15)
-                        : Colors.black.withOpacity(0.1),
+                        ? Colors.white.withValues(alpha: 0.15)
+                        : Colors.black.withValues(alpha: 0.1),
                   ),
                 ),
                 focusedBorder: OutlineInputBorder(
@@ -323,7 +323,7 @@ class _OtpAuthPanelState extends State<OtpAuthPanel> {
         Text('Kodni kiriting'.tr, style: _titleStyle(context)),
         const SizedBox(height: 8),
         Text(
-          '$_phone ' + 'raqamiga yuborilgan 6 xonali kodni kiriting'.tr,
+          '$_phone ${'raqamiga yuborilgan 6 xonali kodni kiriting'.tr}',
           style: _subStyle(context),
         ),
         if (_devCodeHint != null) ...[
@@ -354,7 +354,7 @@ class _OtpAuthPanelState extends State<OtpAuthPanel> {
               onPressed: (_loading || _resendSeconds > 0) ? null : _sendOtp,
               child: Text(
                 _resendSeconds > 0
-                    ? 'Qayta'.tr + ' ($_resendSeconds)'
+                    ? '${'Qayta'.tr} ($_resendSeconds)'
                     : 'Qayta yuborish'.tr,
               ),
             ),

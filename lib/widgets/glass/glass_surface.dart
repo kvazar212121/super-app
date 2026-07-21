@@ -1,8 +1,6 @@
-import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import '../../theme/glass_tokens.dart';
-import 'package:super_app/l10n/locale_controller.dart';
 
 /// iOS Control Center uslubidagi shaffof/yozilgan panel.
 /// [enableBlur] — standart holatda O'CHIQ (tezlik uchun). Faqat asosiy

@@ -6,7 +6,6 @@ import '../../widgets/glass/mesh_background.dart';
 import '../../widgets/hub_servis_brand.dart';
 import '../root_shell.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:super_app/l10n/locale_controller.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});

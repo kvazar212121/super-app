@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../utils/geo_utils.dart';
-import 'package:super_app/l10n/locale_controller.dart';
 
 /// Futbol maydoni qoplama turi
 enum FieldSurface {

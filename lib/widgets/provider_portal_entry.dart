@@ -231,7 +231,7 @@ class _ProviderPortalEntryState extends State<ProviderPortalEntry> {
         ? 'Soha egasi paneli'.tr
         : 'Siz soha egasi bo\'lishni xohlaysizmi?'.tr;
     final subtitle = hasProvider
-        ? '${_providers.length} ' + 'ta xizmat — buyurtmalar va statistika'.tr
+        ? '${_providers.length} ${'ta xizmat — buyurtmalar va statistika'.tr}'
         : 'Xizmat ko\'rsatuvchi sifatida ro\'yxatdan o\'ting — mijozlar sizni topadi.'
             .tr;
     final buttonLabel = hasProvider

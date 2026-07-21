@@ -511,7 +511,9 @@ void _showAddCategoryDialog(
                 setSheetState(() {});
                 onCategoriesChanged();
               }
-              Navigator.pop(ctx);
+              if (ctx.mounted) {
+                Navigator.pop(ctx);
+              }
             },
             child: Text(
               'Qo\'shish'.tr,
@@ -762,7 +764,7 @@ void showAddPlannedPaymentSheet(
                         onChanged: (val) {
                           setSheetState(() => isRecurring = val);
                         },
-                        activeColor: Colors.blueAccent,
+                        activeThumbColor: Colors.blueAccent,
                       ),
                     ],
                   ),

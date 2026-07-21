@@ -117,7 +117,7 @@ class _BarberMobileScreenState extends State<BarberMobileScreen> {
                   decoration: InputDecoration(
                     labelText: 'Kategoriya tanlang'.tr,
                   ),
-                  value: _selectedSubCategory,
+                  initialValue: _selectedSubCategory,
                   items: ProviderCategoryConfig.barber.subCategories!
                       .map((sc) => DropdownMenuItem(value: sc, child: Text(sc.tr)))
                       .toList(),

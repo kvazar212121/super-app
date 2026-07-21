@@ -65,9 +65,9 @@ List<OrderTimelineStep> buildOrderTimeline(OrderStatus current) {
   }
 
   int currentIndex = 0;
-  if (current == OrderStatus.pending)
+  if (current == OrderStatus.pending) {
     currentIndex = 0;
-  else if (current == OrderStatus.accepted)
+  } else if (current == OrderStatus.accepted)
     currentIndex = 1;
   else if (current == OrderStatus.onTheWay ||
       current == OrderStatus.arrived ||

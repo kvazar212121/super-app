@@ -82,6 +82,7 @@ class _UniversalBookingScreenState extends State<UniversalBookingScreen> {
     if (!await ensureAuthenticated(context)) return;
     if (!mounted) return;
     await context.read<AppProvider>().addOrder(order);
+    if (!mounted) return;
 
     Navigator.pop(context, true);
     ScaffoldMessenger.of(context).showSnackBar(

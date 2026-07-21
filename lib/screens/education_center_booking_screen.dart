@@ -11,7 +11,6 @@ import '../services/provider_availability_service.dart';
 import '../utils/auth_guard.dart';
 import '../widgets/booking_common_widgets.dart';
 import '../widgets/glass/mesh_background.dart';
-import 'package:super_app/l10n/locale_controller.dart';
 
 class EducationCenterBookingScreen extends StatefulWidget {
   final EducationCenter center;

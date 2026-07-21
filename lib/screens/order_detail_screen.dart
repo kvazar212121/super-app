@@ -5,10 +5,8 @@ import 'package:provider/provider.dart';
 import '../models/service_hub_kind.dart';
 import '../models/service_order.dart';
 import '../providers/app_provider.dart';
-import '../services/call_service.dart';
 import '../utils/call_helper.dart';
 import '../theme/glass_tokens.dart';
-import 'calls/call_screen.dart';
 import '../widgets/glass/glass_scaffold.dart';
 import '../widgets/glass/glass_surface.dart';
 import '../widgets/order_status_timeline.dart';
@@ -142,7 +140,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
       if (mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('Xatolik'.tr + ': $e')));
+        ).showSnackBar(SnackBar(content: Text('${'Xatolik'.tr}: $e')));
       }
     } finally {
       if (mounted) setState(() => _cancelling = false);
@@ -282,7 +280,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
 
     final accent = order.category.accent;
     final statusColor = _statusColor(order.status);
-    final two = (int n) => n.toString().padLeft(2, '0');
+    String two(int n) => n.toString().padLeft(2, '0');
     final dateStr =
         '${two(order.date.day)}.${two(order.date.month)}.${order.date.year}  '
         '${two(order.date.hour)}:${two(order.date.minute)}';
@@ -290,7 +288,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
 
     return GlassScaffold(
       showBackButton: true,
-      title: 'Buyurtma'.tr + ' #${order.id}',
+      title: '${'Buyurtma'.tr} #${order.id}',
       body: RefreshIndicator(
         onRefresh: () async {
           await app.fetchOrders();
@@ -309,9 +307,9 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                     width: 52,
                     height: 52,
                     decoration: BoxDecoration(
-                      color: accent.withOpacity(0.15),
+                      color: accent.withValues(alpha: 0.15),
                       borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: accent.withOpacity(0.3)),
+                      border: Border.all(color: accent.withValues(alpha: 0.3)),
                     ),
                     child: Icon(order.category.icon, color: accent, size: 26),
                   ),
@@ -354,9 +352,9 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                       vertical: 6,
                     ),
                     decoration: BoxDecoration(
-                      color: statusColor.withOpacity(0.15),
+                      color: statusColor.withValues(alpha: 0.15),
                       borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: statusColor.withOpacity(0.3)),
+                      border: Border.all(color: statusColor.withValues(alpha: 0.3)),
                     ),
                     child: Text(
                       order.statusText,

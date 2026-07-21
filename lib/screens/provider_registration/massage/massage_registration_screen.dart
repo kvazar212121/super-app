@@ -187,7 +187,7 @@ class _MassageRegistrationScreenState extends State<MassageRegistrationScreen> {
                   decoration: InputDecoration(
                     labelText: 'Kategoriya tanlang'.tr,
                   ),
-                  value: _selectedSubCategory,
+                  initialValue: _selectedSubCategory,
                   items: ProviderCategoryConfig.massage.subCategories!
                       .map((sc) => DropdownMenuItem(value: sc, child: Text(sc.tr)))
                       .toList(),

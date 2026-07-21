@@ -13,7 +13,6 @@ import 'call_history_service.dart';
 import 'ringtone_service.dart';
 import 'callkit_service.dart';
 import 'connectivity_service.dart';
-import 'package:super_app/l10n/locale_controller.dart';
 
 /// WhatsApp uslubidagi ovozli qo'ng'iroq xizmati.
 /// WebSocket signaling + WebRTC peer connection bilan ishlaydi.
@@ -450,6 +449,27 @@ class CallService extends ChangeNotifier {
       if (onError != null) {
         onError!('Foydalanuvchi hozir oflayn');
       }
+    } else if (type == 'provider_unavailable') {
+      // Provider faol emas (is_active=false / is_paused / is_suspended / is_blocked)
+      _isConnecting = false;
+      _isRinging = false;
+      _callCategoryKey = null;
+      _callToRole = null;
+      _callIntent = null;
+
+      notifyListeners();
+      if (_currentCallLogId != null) {
+        CallHistoryService().updateCallLog(
+          _currentCallLogId!,
+          status: 'cancelled',
+        );
+      }
+      endCall(sendSignal: false);
+      final reason = (payload is Map ? payload['message'] : null) ?? 
+          'Soha egasi hozir faol emas';
+      if (onError != null) {
+        onError!(reason.toString());
+      }
     }
   }
 
@@ -501,8 +521,9 @@ class CallService extends ChangeNotifier {
   }
 
   void _flushPendingOutgoingSignals() {
-    if (_pendingOutgoingSignals.isEmpty || _channel == null || !_wsConnected)
+    if (_pendingOutgoingSignals.isEmpty || _channel == null || !_wsConnected) {
       return;
+    }
     debugPrint(
       'Navbatdagi ${_pendingOutgoingSignals.length} ta signal yuborilmoqda',
     );

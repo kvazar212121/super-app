@@ -130,7 +130,7 @@ class _CallsTab extends StatelessWidget {
               child: ListView.separated(
                 padding: const EdgeInsets.fromLTRB(16, 8, 16, 100),
                 itemCount: logs.length,
-                separatorBuilder: (_, __) => const SizedBox(height: 8),
+                separatorBuilder: (_, _) => const SizedBox(height: 8),
                 itemBuilder: (context, idx) {
                   final log = logs[idx];
                   final blocked = svc.isUserBlocked(log.userId);
@@ -207,10 +207,12 @@ class _CallsTab extends StatelessWidget {
             break;
           case 'block':
             await svc.blockUser(log.userId, log.userName);
+            if (!context.mounted) return;
             _toast(context, '${log.userName} ${'bloklandi'.tr}');
             break;
           case 'unblock':
             await svc.unblockUser(log.userId);
+            if (!context.mounted) return;
             _toast(context, '${log.userName} ${'blokdan chiqarildi'.tr}');
             break;
           case 'delete':
@@ -314,10 +316,12 @@ class _MessagesTabState extends State<_MessagesTab> {
   Future<void> _load() async {
     try {
       final list = await _api.getDmConversations();
-      if (mounted) setState(() {
+      if (mounted) {
+        setState(() {
         _convos = list;
         _loading = false;
       });
+      }
     } catch (_) {
       if (mounted) setState(() => _loading = false);
     }
@@ -348,7 +352,7 @@ class _MessagesTabState extends State<_MessagesTab> {
       child: ListView.separated(
         padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
         itemCount: _convos.length,
-        separatorBuilder: (_, __) => const SizedBox(height: 8),
+        separatorBuilder: (_, _) => const SizedBox(height: 8),
         itemBuilder: (context, idx) {
           final c = Map<String, dynamic>.from(_convos[idx] as Map);
           final unread = (c['unread'] as num?)?.toInt() ?? 0;
@@ -443,7 +447,7 @@ class _BlockedTab extends StatelessWidget {
         return ListView.separated(
           padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
           itemCount: blocked.length,
-          separatorBuilder: (_, __) => const SizedBox(height: 8),
+          separatorBuilder: (_, _) => const SizedBox(height: 8),
           itemBuilder: (context, idx) {
             final b = blocked[idx];
             return GlassSurface(

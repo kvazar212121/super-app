@@ -119,7 +119,7 @@ class _BarberHubSectionState extends State<BarberHubSection> {
               scrollDirection: Axis.horizontal,
               padding: const EdgeInsets.symmetric(horizontal: 20),
               itemCount: items.length,
-              separatorBuilder: (_, __) => const SizedBox(width: 12),
+              separatorBuilder: (_, _) => const SizedBox(width: 12),
               itemBuilder: (_, i) {
                 final shop = items[i];
                 return VenueHubCard.fromBarberShop(
@@ -244,7 +244,7 @@ class _SalonHubSectionState extends State<SalonHubSection> {
               scrollDirection: Axis.horizontal,
               padding: const EdgeInsets.symmetric(horizontal: 20),
               itemCount: items.length,
-              separatorBuilder: (_, __) => const SizedBox(width: 12),
+              separatorBuilder: (_, _) => const SizedBox(width: 12),
               itemBuilder: (_, i) {
                 final salon = items[i];
                 return VenueHubCard.fromBeautySalon(
@@ -314,7 +314,7 @@ class MobileSalonHubSection extends StatelessWidget {
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.symmetric(horizontal: 20),
             itemCount: stylists.length,
-            separatorBuilder: (_, __) => const SizedBox(width: 12),
+            separatorBuilder: (_, _) => const SizedBox(width: 12),
             itemBuilder: (_, i) {
               final s = stylists[i];
               final minPrice = s.prices.values.isEmpty
@@ -481,7 +481,7 @@ class MobileBarberHubSection extends StatelessWidget {
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.symmetric(horizontal: 20),
             itemCount: barbers.length,
-            separatorBuilder: (_, __) => const SizedBox(width: 12),
+            separatorBuilder: (_, _) => const SizedBox(width: 12),
             itemBuilder: (_, i) {
               final b = barbers[i];
               return _MobileBarberCard(

@@ -77,7 +77,7 @@ class AutoMobileProfileScreen extends StatelessWidget {
               children: [
                 CircleAvatar(
                   radius: 44,
-                  backgroundColor: accent.withOpacity(0.1),
+                  backgroundColor: accent.withValues(alpha: 0.1),
                   child: Icon(
                     service.vehicleType.icon,
                     color: accent,

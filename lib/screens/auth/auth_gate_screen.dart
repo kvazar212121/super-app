@@ -198,7 +198,7 @@ class _AuthGateScreenState extends State<AuthGateScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Telefon tasdiqlandi'.tr + ': $_verifiedPhone',
+          '${'Telefon tasdiqlandi'.tr}: $_verifiedPhone',
           style: TextStyle(color: GlassTokens.secondaryText(context)),
         ),
         const SizedBox(height: 20),

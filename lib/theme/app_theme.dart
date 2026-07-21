@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'glass_tokens.dart';
-import 'package:super_app/l10n/locale_controller.dart';
 
 class AppTheme {
   static ThemeData lightTheme = _build(Brightness.light);

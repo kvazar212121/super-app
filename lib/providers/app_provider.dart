@@ -8,7 +8,6 @@ import '../models/service_order.dart';
 import '../services/api_service.dart';
 import '../services/call_service.dart';
 import '../services/notification_helper.dart';
-import 'package:super_app/l10n/locale_controller.dart';
 
 class AppProvider extends ChangeNotifier {
   final ApiService _api = ApiService();

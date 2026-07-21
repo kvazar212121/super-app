@@ -1,5 +1,4 @@
 import '../utils/geo_utils.dart';
-import 'package:super_app/l10n/locale_controller.dart';
 
 class Master {
   final String id;
@@ -238,8 +237,9 @@ class Master {
       if (lower.contains('profil') || lower.contains('tozal')) return 180000;
       if (lower.contains('gaz') ||
           lower.contains('freon') ||
-          lower.contains('toldir'))
+          lower.contains('toldir')) {
         return 350000;
+      }
       return 200000;
     }
     if (isCleaner) {

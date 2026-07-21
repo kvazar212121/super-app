@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:intl/intl.dart';
 import '../models/user_profile.dart';
 import '../providers/app_provider.dart';
 import '../providers/auth_provider.dart';
@@ -12,10 +11,6 @@ import '../widgets/provider_portal_entry.dart';
 import '../theme/glass_tokens.dart';
 import '../l10n/locale_controller.dart';
 import 'auth/auth_gate_screen.dart';
-import '../services/call_history_service.dart';
-import '../services/call_service.dart';
-import 'calls/call_screen.dart';
-import 'calls/call_history_screen.dart';
 import 'premium/premium_screen.dart';
 import 'support/support_center_screen.dart';
 import '../config/app_config.dart';
@@ -448,8 +443,8 @@ class ProfileScreen extends StatelessWidget {
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
                 colors: [
-                  Colors.white.withOpacity(0.25),
-                  Colors.white.withOpacity(0.05),
+                  Colors.white.withValues(alpha: 0.25),
+                  Colors.white.withValues(alpha: 0.05),
                 ],
               ),
               border: Border.all(color: Colors.white, width: 2),
@@ -540,7 +535,7 @@ class ProfileScreen extends StatelessWidget {
           border: Border.all(
             color: active
                 ? const Color(0xFF3B82F6)
-                : GlassTokens.secondaryText(context).withOpacity(0.4),
+                : GlassTokens.secondaryText(context).withValues(alpha: 0.4),
           ),
         ),
         child: Text(

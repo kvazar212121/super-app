@@ -106,7 +106,7 @@ class CleaningHubSection extends StatelessWidget {
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.symmetric(horizontal: 20),
             itemCount: items.length,
-            separatorBuilder: (_, __) => const SizedBox(width: 12),
+            separatorBuilder: (_, _) => const SizedBox(width: 12),
             itemBuilder: (_, i) => _CleaningCard(
               master: items[i],
               accent: accentColor,
@@ -342,7 +342,7 @@ class _MasterDispatchHubSectionState extends State<MasterDispatchHubSection> {
               scrollDirection: Axis.horizontal,
               padding: const EdgeInsets.symmetric(horizontal: 20),
               itemCount: items.length,
-              separatorBuilder: (_, __) => const SizedBox(width: 12),
+              separatorBuilder: (_, _) => const SizedBox(width: 12),
               itemBuilder: (_, i) => _MasterDispatchCard(
                 master: items[i],
                 accent: widget.accentColor,
@@ -546,7 +546,7 @@ class ElectricianHubSection extends StatelessWidget {
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.symmetric(horizontal: 20),
             itemCount: electricians.length,
-            separatorBuilder: (_, __) => const SizedBox(width: 12),
+            separatorBuilder: (_, _) => const SizedBox(width: 12),
             itemBuilder: (_, i) {
               final e = electricians[i];
               final minPrice = e.prices.values.isEmpty
@@ -711,7 +711,7 @@ class PlumberHubSection extends StatelessWidget {
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.symmetric(horizontal: 20),
             itemCount: plumbers.length,
-            separatorBuilder: (_, __) => const SizedBox(width: 12),
+            separatorBuilder: (_, _) => const SizedBox(width: 12),
             itemBuilder: (_, i) {
               final p = plumbers[i];
               final minPrice = p.prices.values.isEmpty
@@ -876,7 +876,7 @@ class AcHubSection extends StatelessWidget {
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.symmetric(horizontal: 20),
             itemCount: technicians.length,
-            separatorBuilder: (_, __) => const SizedBox(width: 12),
+            separatorBuilder: (_, _) => const SizedBox(width: 12),
             itemBuilder: (_, i) {
               final t = technicians[i];
               final minPrice = t.prices.values.isEmpty
@@ -1041,7 +1041,7 @@ class NannyHubSection extends StatelessWidget {
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.symmetric(horizontal: 20),
             itemCount: nannies.length,
-            separatorBuilder: (_, __) => const SizedBox(width: 12),
+            separatorBuilder: (_, _) => const SizedBox(width: 12),
             itemBuilder: (_, i) {
               final n = nannies[i];
               final minPrice = n.prices.values.isEmpty

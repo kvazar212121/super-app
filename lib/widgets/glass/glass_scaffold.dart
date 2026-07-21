@@ -4,7 +4,6 @@ import '../../providers/app_provider.dart';
 import '../../theme/glass_tokens.dart';
 import '../../theme/app_theme.dart';
 import 'mesh_background.dart';
-import 'package:super_app/l10n/locale_controller.dart';
 
 /// Shaffof AppBar va mesh fon bilan scaffold.
 /// [embeddedInShell] — MainScreen tab ichida: fon takrorlanmaydi, SafeArea qo'llanadi.
@@ -54,7 +53,7 @@ class GlassScaffold extends StatelessWidget {
                   showBackButton: showBackButton,
                   actions: actions,
                 ),
-              if (bottom != null) bottom!,
+              ?bottom,
               Expanded(child: body),
             ],
           ),
@@ -151,7 +150,7 @@ class _ShellHeader extends StatelessWidget {
               ),
             ),
           ),
-          if (actions != null) ...actions!,
+          ...?actions,
           if (actions == null && showBackButton) const SizedBox(width: 48),
         ],
       ),

@@ -3,7 +3,6 @@ import 'package:dio/dio.dart';
 import '../services/api_service.dart';
 import '../services/firebase_service.dart';
 import '../utils/phone_utils.dart';
-import 'package:super_app/l10n/locale_controller.dart';
 
 /// Auth holati — OTP orqali login/register.
 class AuthProvider extends ChangeNotifier {

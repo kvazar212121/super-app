@@ -21,7 +21,6 @@ import '../screens/barber_booking_screen.dart';
 import '../screens/salon_booking_screen.dart';
 import '../screens/football_field_booking_screen.dart';
 import '../screens/provider_profile_screen.dart';
-import '../screens/master_dispatch_screen.dart';
 import '../screens/disinfection_profile_screen.dart';
 import '../screens/appliance_profile_screen.dart';
 import '../screens/courier_profile_screen.dart';
@@ -31,7 +30,6 @@ import '../screens/event_venue_booking_screen.dart';
 import '../screens/event_team_profile_screen.dart';
 import '../screens/oshxona_profile_screen.dart';
 import '../screens/bozorchi_profile_screen.dart';
-import '../screens/auto_mobile_profile_screen.dart';
 import '../screens/auto_workshop_profile_screen.dart';
 import '../screens/massage_booking_screen.dart';
 import '../screens/nurse_booking_screen.dart';
@@ -470,7 +468,7 @@ class EventTeamSmallCard extends StatelessWidget {
               Container(
                 height: 80,
                 decoration: BoxDecoration(
-                  color: accentColor.withOpacity(0.1),
+                  color: accentColor.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Center(
@@ -655,7 +653,7 @@ class HubActionCard extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: accentColor.withOpacity(0.15),
+              color: accentColor.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(icon, color: Colors.white, size: 24),

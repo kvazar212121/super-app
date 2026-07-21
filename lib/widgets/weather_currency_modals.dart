@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../services/api_service.dart';
 import '../services/weather_service.dart';
-import '../theme/glass_tokens.dart';
 import 'package:super_app/l10n/locale_controller.dart';
 
 class WeatherModal extends StatefulWidget {
@@ -194,7 +192,7 @@ class _WeatherModalState extends State<WeatherModal> {
           ),
         ),
         const SizedBox(height: 16),
-        Container(
+        SizedBox(
           height: 150,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
@@ -272,12 +270,14 @@ class _WeatherModalState extends State<WeatherModal> {
       final now = DateTime.now();
       if (date.year == now.year &&
           date.month == now.month &&
-          date.day == now.day)
+          date.day == now.day) {
         return "Bugun";
+      }
       if (date.year == now.year &&
           date.month == now.month &&
-          date.day == now.day + 1)
+          date.day == now.day + 1) {
         return "Ertaga";
+      }
 
       const months = [
         'Yan',

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:provider/provider.dart';
-import 'package:intl/intl.dart';
 
 import '../models/appliance_repair.dart';
 import '../models/service_hub_kind.dart';
@@ -124,7 +123,7 @@ class _ApplianceDispatchScreenState extends State<ApplianceDispatchScreen> {
                   children: [
                     CircleAvatar(
                       radius: 28,
-                      backgroundColor: _accent.withOpacity(0.1),
+                      backgroundColor: _accent.withValues(alpha: 0.1),
                       child: Icon(LucideIcons.wrench, color: _accent, size: 24),
                     ),
                     const SizedBox(width: 16),

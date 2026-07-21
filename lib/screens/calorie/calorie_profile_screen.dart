@@ -128,8 +128,9 @@ class _CalorieProfileScreenState extends State<CalorieProfileScreen> {
   String? _validateNumber(String? value, double min, double max, String label) {
     final parsed = double.tryParse((value ?? '').replaceAll(',', '.'));
     if (parsed == null) return '$label ${'kiriting'.tr}';
-    if (parsed < min || parsed > max)
+    if (parsed < min || parsed > max) {
       return '$min–$max ${'oralig\'ida bo\'lsin'.tr}';
+    }
     return null;
   }
 
@@ -159,7 +160,7 @@ class _CalorieProfileScreenState extends State<CalorieProfileScreen> {
                         children: [
                           const Icon(
                             LucideIcons.info,
-                            color: const Color(0xFF3B82F6),
+                            color: Color(0xFF3B82F6),
                             size: 18,
                           ),
                           const SizedBox(width: 10),
@@ -194,7 +195,7 @@ class _CalorieProfileScreenState extends State<CalorieProfileScreen> {
                         children: [
                           const Icon(
                             LucideIcons.flame,
-                            color: const Color(0xFF3B82F6),
+                            color: Color(0xFF3B82F6),
                           ),
                           const SizedBox(width: 8),
                           Text(

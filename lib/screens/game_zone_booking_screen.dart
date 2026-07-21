@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/game_zone.dart';
 import '../models/service_hub_kind.dart';
-import '../widgets/booking_common_widgets.dart' hide SectionTitle;
 import '../widgets/game_zone_widgets.dart';
 import '../widgets/glass/mesh_background.dart';
 import '../widgets/save_provider_button.dart';
@@ -77,7 +76,7 @@ class _GameZoneBookingScreenState extends State<GameZoneBookingScreen> {
                   return FilterChip(
                     label: Text(a.name.tr),
                     selected: isSel,
-                    selectedColor: _accent.withOpacity(0.2),
+                    selectedColor: _accent.withValues(alpha: 0.2),
                     checkmarkColor: _accent,
                     onSelected: (val) {
                       if (val) {

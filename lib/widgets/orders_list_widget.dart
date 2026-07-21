@@ -94,7 +94,7 @@ class _OrderCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final accent = order.category.accent;
     final icon = order.category.icon;
-    final two = (int n) => n.toString().padLeft(2, '0');
+    String two(int n) => n.toString().padLeft(2, '0');
     final dateStr =
         "${two(order.date.day)}.${two(order.date.month)}.${order.date.year}  ${two(order.date.hour)}:${two(order.date.minute)}";
 
@@ -119,9 +119,9 @@ class _OrderCard extends StatelessWidget {
                   width: 44,
                   height: 44,
                   decoration: BoxDecoration(
-                    color: accent.withOpacity(0.15),
+                    color: accent.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(14),
-                    border: Border.all(color: accent.withOpacity(0.3)),
+                    border: Border.all(color: accent.withValues(alpha: 0.3)),
                   ),
                   child: Icon(icon, color: accent),
                 ),
@@ -153,9 +153,9 @@ class _OrderCard extends StatelessWidget {
                     vertical: 6,
                   ),
                   decoration: BoxDecoration(
-                    color: statusColor.withOpacity(0.15),
+                    color: statusColor.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: statusColor.withOpacity(0.3)),
+                    border: Border.all(color: statusColor.withValues(alpha: 0.3)),
                   ),
                   child: Text(
                     order.statusText,
@@ -213,7 +213,7 @@ class _OrderCard extends StatelessWidget {
                   ],
                 ),
                 Text(
-                  "${order.price.toStringAsFixed(0)} " + "so'm".tr,
+                  "${order.price.toStringAsFixed(0)} ${"so'm".tr}",
                   style: TextStyle(
                     fontWeight: FontWeight.w800,
                     color: GlassTokens.primaryText(context),

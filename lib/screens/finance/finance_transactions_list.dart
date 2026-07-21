@@ -73,8 +73,8 @@ class FinanceTransactionsList extends StatelessWidget {
                             padding: const EdgeInsets.all(8),
                             decoration: BoxDecoration(
                               color: isExpense
-                                  ? Colors.redAccent.withOpacity(0.2)
-                                  : Colors.greenAccent.withOpacity(0.2),
+                                  ? Colors.redAccent.withValues(alpha: 0.2)
+                                  : Colors.greenAccent.withValues(alpha: 0.2),
                               shape: BoxShape.circle,
                             ),
                             child: Icon(

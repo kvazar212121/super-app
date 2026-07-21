@@ -8,6 +8,8 @@ from app.db.session import async_session
 from app.api.dependencies import get_current_user
 from sqlalchemy import select
 from app.models.user import User
+from app.models.provider import Provider
+from app.models.category import Category
 
 router = APIRouter(prefix="/calls", tags=["calls"])
 logger = logging.getLogger(__name__)
@@ -26,6 +28,41 @@ async def get_user_from_token(token: str):
         if not user:
             raise Exception("User not found")
         return user
+
+
+async def check_provider_availability(target_id: int, category_key: str | None = None) -> tuple[bool, str]:
+    """Target foydalanuvchining provider sifatida faolligini tekshiradi.
+    
+    Qaytaradi: (available: bool, reason: str)
+    """
+    async with async_session() as db:
+        query = select(Provider).where(
+            Provider.owner_user_id == target_id,
+            Provider.is_verified == True,
+        )
+        if category_key:
+            query = query.join(Category, Provider.category_id == Category.id).where(
+                Category.key == category_key
+            )
+        
+        result = await db.execute(query)
+        providers = result.scalars().all()
+        
+        if not providers:
+            return False, "provider_not_found"
+        
+        # Barcha provider profillarini tekshiramiz
+        for provider in providers:
+            if provider.is_blocked:
+                return False, "provider_blocked"
+            if not provider.is_active:
+                return False, "provider_inactive"
+            if provider.is_paused:
+                return False, "provider_paused"
+            if provider.metadata_json and provider.metadata_json.get("is_suspended"):
+                return False, "provider_suspended"
+        
+        return True, "ok"
 
 
 @router.get("/ice-servers")
@@ -78,6 +115,39 @@ async def websocket_call_endpoint(websocket: WebSocket, token: str):
             if not target_id:
                 logger.warning(f"No target_id provided by user {user.id}")
                 continue
+
+            # ── Zakaz qo'ng'irog'ida provider faolligini tekshirish ──
+            if msg_type == "call_init":
+                inner = data.get("data", {}) or {}
+                to_role = inner.get("to_role", "")
+                intent = inner.get("intent", "")
+                category_key = inner.get("category", "")
+                # Faqat zakaz qo'ng'iroqlari (mijoz → provider) uchun tekshiramiz
+                if to_role == "provider" and intent == "order":
+                    avail, reason = await check_provider_availability(
+                        target_id, category_key if category_key else None
+                    )
+                    if not avail:
+                        reason_map = {
+                            "provider_not_found": "Soha egasi topilmadi",
+                            "provider_blocked": "Soha egasi bloklangan",
+                            "provider_inactive": "Soha egasi hozir faol emas",
+                            "provider_paused": "Soha egasi tanaffusda",
+                            "provider_suspended": "Soha egasi uzoq muddatli tanaffusda",
+                        }
+                        msg = reason_map.get(reason, "Soha egasi mavjud emas")
+                        logger.info(
+                            f"call_init BLOCKED: user={user.id} → target={target_id} "
+                            f"category={category_key} reason={reason}"
+                        )
+                        await manager.send_personal_message({
+                            "type": "provider_unavailable",
+                            "sender_id": target_id,
+                            "sender_name": "",
+                            "data": {"reason": reason, "message": msg},
+                        }, user.id)
+                        continue
+                # ──────────────────────────────────────────────────────
 
             # Forward the message to the target user
             # We inject the sender_id so the receiver knows who it's from

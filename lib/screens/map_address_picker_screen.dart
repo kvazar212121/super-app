@@ -108,10 +108,11 @@ class _MapAddressPickerScreenState extends State<MapAddressPickerScreen> {
     try {
       bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) {
-        if (mounted)
+        if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Joylashuv xizmati o\'chirilgan')),
           );
+        }
         return;
       }
       LocationPermission permission = await Geolocator.checkPermission();
@@ -120,10 +121,11 @@ class _MapAddressPickerScreenState extends State<MapAddressPickerScreen> {
         if (permission == LocationPermission.denied) return;
       }
       if (permission == LocationPermission.deniedForever) {
-        if (mounted)
+        if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Joylashuv ruxsati rad etilgan'.tr)),
           );
+        }
         return;
       }
       final pos = await Geolocator.getCurrentPosition(
@@ -137,10 +139,11 @@ class _MapAddressPickerScreenState extends State<MapAddressPickerScreen> {
       });
       await _reverseGeocode(myPos);
     } catch (e) {
-      if (mounted)
+      if (mounted) {
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text('Xato: $e')));
+      }
     } finally {
       if (mounted) setState(() => _locating = false);
     }

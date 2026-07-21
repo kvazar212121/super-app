@@ -57,14 +57,17 @@ class _TutorBookingScreenState extends State<TutorBookingScreen> {
   }
 
   bool get _canSubmit {
-    if (_selectedService == null || _selectedTimeSlot == null || _loadingSlots)
+    if (_selectedService == null || _selectedTimeSlot == null || _loadingSlots) {
       return false;
+    }
     if (_studentCtrl.text.trim().length < 2) return false;
     if (_lessonMode == LessonMode.homeVisit &&
-        _addressCtrl.text.trim().length < 5)
+        _addressCtrl.text.trim().length < 5) {
       return false;
-    if (_lessonMode == LessonMode.online && _onlineCtrl.text.trim().isEmpty)
+    }
+    if (_lessonMode == LessonMode.online && _onlineCtrl.text.trim().isEmpty) {
       return false;
+    }
     return _lessonMode != null;
   }
 

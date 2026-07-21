@@ -222,9 +222,9 @@ class _NurseRegistrationScreenState extends State<NurseRegistrationScreen> {
               Container(
                 padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
-                  color: accent.withOpacity(0.08),
+                  color: accent.withValues(alpha: 0.08),
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: accent.withOpacity(0.3)),
+                  border: Border.all(color: accent.withValues(alpha: 0.3)),
                 ),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -273,7 +273,7 @@ class _NurseRegistrationScreenState extends State<NurseRegistrationScreen> {
                   Container(
                     height: 56,
                     decoration: BoxDecoration(
-                      color: accent.withOpacity(0.1),
+                      color: accent.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(14),
                       border: Border.all(color: accent, width: 1.5),
                     ),
@@ -441,10 +441,10 @@ class _DocumentUploadTile extends StatelessWidget {
     final Color borderColor = isUploaded
         ? Colors.green
         : isUploading
-        ? accent.withOpacity(0.5)
+        ? accent.withValues(alpha: 0.5)
         : Colors.grey.shade300;
     final Color bgColor = isUploaded
-        ? Colors.green.withOpacity(0.06)
+        ? Colors.green.withValues(alpha: 0.06)
         : Colors.grey.shade50;
 
     return GestureDetector(
@@ -468,7 +468,7 @@ class _DocumentUploadTile extends StatelessWidget {
                       height: 52,
                       decoration: BoxDecoration(
                         color: isUploaded
-                            ? Colors.green.withOpacity(0.1)
+                            ? Colors.green.withValues(alpha: 0.1)
                             : Colors.grey.shade200,
                         borderRadius: BorderRadius.circular(8),
                       ),

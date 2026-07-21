@@ -3,7 +3,6 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'callkit_service.dart';
 import 'api_service.dart';
-import 'package:super_app/l10n/locale_controller.dart';
 
 /// Firebase Orqa fon (Background) xabarlarini tutib oluvchi funksiya
 /// DIQQAT: Bu funksiya asosiy ilovadan tashqarida (boshqa izolyatsiyada) ishlaydi.

@@ -32,10 +32,12 @@ class _FamilyFinanceScreenState extends State<FamilyFinanceScreen> {
   Future<void> _load() async {
     try {
       final g = await _api.getFinanceGroup();
-      if (mounted) setState(() {
+      if (mounted) {
+        setState(() {
         _group = g;
         _loading = false;
       });
+      }
     } catch (_) {
       if (mounted) setState(() => _loading = false);
     }

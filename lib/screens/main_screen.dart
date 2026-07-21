@@ -10,7 +10,6 @@ import 'home_screen.dart';
 import 'orders_screen.dart';
 import 'profile_screen.dart';
 import 'all_categories_screen.dart';
-import 'calls/call_screen.dart';
 import 'calls/call_history_screen.dart';
 
 class MainScreen extends StatefulWidget {

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:super_app/l10n/locale_controller.dart';
 
 /// iOS-style frosted glass dizayn tokenlari.
 abstract final class GlassTokens {

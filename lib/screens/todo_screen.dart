@@ -153,7 +153,7 @@ class _TodoScreenState extends State<TodoScreen> {
     try {
       await _api.updatePlan(item.id, isCompleted: val);
     } catch (e) {
-      // Revert if error
+      if (!mounted) return;
       setState(() {
         _plans[index] = item;
       });
@@ -171,6 +171,7 @@ class _TodoScreenState extends State<TodoScreen> {
     try {
       await _api.deletePlan(id);
     } catch (e) {
+      if (!mounted) return;
       setState(() => _plans = prev);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("O'chirishda xatolik yuz berdi".tr)),
@@ -409,6 +410,7 @@ class _TodoScreenState extends State<TodoScreen> {
                           _plans.sort((a, b) => a.dueDate.compareTo(b.dueDate));
                         });
                       } else {
+                        if (!mounted) return;
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content: Text(
@@ -427,6 +429,7 @@ class _TodoScreenState extends State<TodoScreen> {
                         );
                       }
                     } catch (e) {
+                      if (!mounted) return;
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Text("Reja yaratishda xatolik yuz berdi".tr),

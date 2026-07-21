@@ -23,6 +23,7 @@ class SimpleCallBookingScreen extends StatelessWidget {
 
   Future<void> _initiateCall(BuildContext context) async {
     if (!await ensureAuthenticated(context)) return;
+    if (!context.mounted) return;
 
     final providerId = provider['id'] as int? ?? 0;
     final providerName = provider['name'] as String? ?? 'Soha egasi';

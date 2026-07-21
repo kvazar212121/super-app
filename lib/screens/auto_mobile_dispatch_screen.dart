@@ -148,7 +148,7 @@ class _AutoMobileDispatchScreenState extends State<AutoMobileDispatchScreen> {
                   children: [
                     CircleAvatar(
                       radius: 28,
-                      backgroundColor: _accent.withOpacity(0.1),
+                      backgroundColor: _accent.withValues(alpha: 0.1),
                       child: Icon(
                         widget.service.vehicleType.icon,
                         color: _accent,

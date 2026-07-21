@@ -340,7 +340,7 @@ class ApiService {
       data: {
         'provider_id': providerId,
         'rating': rating,
-        if (comment != null) 'comment': comment,
+        'comment': ?comment,
       },
     );
     return response.data;
@@ -688,7 +688,7 @@ class ApiService {
       queryParameters: {'category_key': categoryKey},
       data: {
         'status': status,
-        if (notifiedClient != null) 'notified_client': notifiedClient,
+        'notified_client': ?notifiedClient,
       },
     );
   }
@@ -702,7 +702,7 @@ class ApiService {
       '/provider/orders',
       queryParameters: {
         'category_key': categoryKey,
-        if (status != null) 'status': status,
+        'status': ?status,
         'per_page': perPage,
       },
     );
@@ -765,8 +765,8 @@ class ApiService {
         'lat': lat,
         'lng': lng,
         'also_works_as_barber': alsoWorksAsBarber,
-        if (hours != null) 'hours': hours,
-        if (subCategory != null) 'sub_category': subCategory,
+        'hours': ?hours,
+        'sub_category': ?subCategory,
       },
     );
     return response.data as Map<String, dynamic>;
@@ -785,8 +785,8 @@ class ApiService {
         'name': name,
         'phone': phone,
         'service_area': serviceArea,
-        if (address != null) 'address': address,
-        if (subCategory != null) 'sub_category': subCategory,
+        'address': ?address,
+        'sub_category': ?subCategory,
       },
     );
     return response.data as Map<String, dynamic>;
@@ -801,7 +801,7 @@ class ApiService {
       '/provider/barber/join-request',
       data: {
         'display_name': displayName,
-        if (shopId != null) 'shop_id': shopId,
+        'shop_id': ?shopId,
         if (inviteCode != null && inviteCode.isNotEmpty)
           'invite_code': inviteCode,
       },
@@ -841,7 +841,7 @@ class ApiService {
         'name': name,
         'phone': phone,
         'service_area': serviceArea,
-        if (address != null) 'address': address,
+        'address': ?address,
       },
     );
     return response.data as Map<String, dynamic>;
@@ -885,7 +885,7 @@ class ApiService {
         'name': name,
         'phone': phone,
         'service_area': serviceArea,
-        if (address != null) 'address': address,
+        'address': ?address,
       },
     );
     return response.data as Map<String, dynamic>;
@@ -945,7 +945,7 @@ class ApiService {
         'lat': lat,
         'lng': lng,
         'also_works_as_stylist': alsoWorksAsStylist,
-        if (hours != null) 'hours': hours,
+        'hours': ?hours,
       },
     );
     return response.data as Map<String, dynamic>;
@@ -963,7 +963,7 @@ class ApiService {
         'name': name,
         'phone': phone,
         'service_area': serviceArea,
-        if (address != null) 'address': address,
+        'address': ?address,
       },
     );
     return response.data as Map<String, dynamic>;
@@ -978,7 +978,7 @@ class ApiService {
       '/provider/salon/join-request',
       data: {
         'display_name': displayName,
-        if (salonId != null) 'salon_id': salonId,
+        'salon_id': ?salonId,
         if (inviteCode != null && inviteCode.isNotEmpty)
           'invite_code': inviteCode,
       },
@@ -1018,7 +1018,7 @@ class ApiService {
         'name': name,
         'phone': phone,
         'service_area': serviceArea,
-        if (address != null) 'address': address,
+        'address': ?address,
       },
     );
     return response.data as Map<String, dynamic>;
@@ -1038,7 +1038,7 @@ class ApiService {
         'name': name,
         'phone': phone,
         'service_area': serviceArea,
-        if (address != null) 'address': address,
+        'address': ?address,
       },
     );
     return response.data as Map<String, dynamic>;
@@ -1060,7 +1060,7 @@ class ApiService {
         'phone': phone,
         'service_area': serviceArea,
         'vehicle_type': vehicleType,
-        if (address != null) 'address': address,
+        'address': ?address,
       },
     );
     return response.data as Map<String, dynamic>;
@@ -1100,7 +1100,7 @@ class ApiService {
         'phone': phone,
         'service_area': serviceArea,
         'vehicle_type': vehicleType,
-        if (address != null) 'address': address,
+        'address': ?address,
       },
     );
     return response.data as Map<String, dynamic>;
@@ -1139,7 +1139,7 @@ class ApiService {
         'name': name,
         'phone': phone,
         'service_area': serviceArea,
-        if (address != null) 'address': address,
+        'address': ?address,
       },
     );
     return response.data as Map<String, dynamic>;
@@ -1164,12 +1164,12 @@ class ApiService {
         'name': name,
         'phone': phone,
         'service_area': serviceArea,
-        if (address != null) 'address': address,
+        'address': ?address,
         'experience_years': experienceYears,
         if (ageGroups.isNotEmpty) 'age_groups': ageGroups,
         if (languages.isNotEmpty) 'languages': languages,
         if (serviceTypes.isNotEmpty) 'service_types': serviceTypes,
-        if (documents != null) 'documents': documents,
+        'documents': ?documents,
       },
     );
     return response.data as Map<String, dynamic>;
@@ -1192,7 +1192,7 @@ class ApiService {
         'name': name,
         'phone': phone,
         'service_area': serviceArea,
-        if (address != null) 'address': address,
+        'address': ?address,
         if (subjects.isNotEmpty) 'subjects': subjects,
         if (lessonModes.isNotEmpty) 'lesson_modes': lessonModes,
         'experience_years': experienceYears,
@@ -1235,7 +1235,7 @@ class ApiService {
         'name': name,
         'phone': phone,
         'service_area': serviceArea,
-        if (address != null) 'address': address,
+        'address': ?address,
         if (areaTypes.isNotEmpty) 'area_types': areaTypes,
         'is_certified': isCertified,
       },
@@ -1265,14 +1265,14 @@ class ApiService {
         'name': name,
         'phone': phone,
         'service_area': serviceArea,
-        if (address != null) 'address': address,
-        if (lat != null) 'lat': lat,
-        if (lng != null) 'lng': lng,
+        'address': ?address,
+        'lat': ?lat,
+        'lng': ?lng,
         'massage_role': massageRole,
         if (visitModes.isNotEmpty) 'visit_modes': visitModes,
         if (serviceTypes.isNotEmpty) 'service_types': serviceTypes,
         'gender': gender,
-        if (subCategory != null) 'sub_category': subCategory,
+        'sub_category': ?subCategory,
         'concurrent_capacity': concurrentCapacity,
       },
     );
@@ -1315,11 +1315,11 @@ class ApiService {
         'name': name,
         'phone': phone,
         'service_area': serviceArea,
-        if (address != null) 'address': address,
+        'address': ?address,
         if (medicalTypes.isNotEmpty) 'medical_types': medicalTypes,
-        if (qualifications != null) 'qualifications': qualifications,
-        if (documentUrl != null) 'document_url': documentUrl,
-        if (passportUrl != null) 'passport_url': passportUrl,
+        'qualifications': ?qualifications,
+        'document_url': ?documentUrl,
+        'passport_url': ?passportUrl,
       },
     );
     return response.data as Map<String, dynamic>;
@@ -1363,7 +1363,7 @@ class ApiService {
         'name': name,
         'phone': phone,
         'service_area': serviceArea,
-        if (address != null) 'address': address,
+        'address': ?address,
         'team_size': teamSize,
         if (organizerTypes.isNotEmpty) 'organizer_types': organizerTypes,
         if (eventTypes.isNotEmpty) 'event_types': eventTypes,
@@ -1421,7 +1421,7 @@ class ApiService {
       '/todos/',
       data: {
         'title': title,
-        if (description != null) 'description': description,
+        'description': ?description,
       },
     );
     return response.data;
@@ -1442,7 +1442,7 @@ class ApiService {
   Future<List<dynamic>> getPlans({String? date}) async {
     final response = await _dio.get(
       '/plans/',
-      queryParameters: {if (date != null) 'date': date},
+      queryParameters: {'date': ?date},
     );
     return response.data;
   }
@@ -1457,7 +1457,7 @@ class ApiService {
       data: {
         'title': title,
         'due_date': dueDate.toUtc().toIso8601String(),
-        if (description != null) 'description': description,
+        'description': ?description,
       },
     );
     return response.data;
@@ -1553,7 +1553,7 @@ class ApiService {
   Future<List<dynamic>> getFinanceRecords({String? month}) async {
     final response = await _dio.get(
       '/finance/',
-      queryParameters: {if (month != null) 'month': month},
+      queryParameters: {'month': ?month},
     );
     return response.data;
   }
@@ -1561,7 +1561,7 @@ class ApiService {
   Future<Map<String, dynamic>> getFinanceStats({String? month}) async {
     final response = await _dio.get(
       '/finance/stats',
-      queryParameters: {if (month != null) 'month': month},
+      queryParameters: {'month': ?month},
     );
     return response.data;
   }
@@ -1579,7 +1579,7 @@ class ApiService {
         'type': type,
         'amount': amount,
         'category': category,
-        if (description != null) 'description': description,
+        'description': ?description,
         'date': date.toUtc().toIso8601String(),
       },
     );
@@ -1703,7 +1703,7 @@ class ApiService {
         'date': date,
         'price': price,
         'notes': 'Telefon orqali kelishildi',
-        if (staffProviderId != null) 'staff_provider_id': staffProviderId,
+        'staff_provider_id': ?staffProviderId,
       },
     );
     if (response.statusCode != 200) {
@@ -1759,7 +1759,7 @@ class ApiService {
   Future<List<dynamic>> getMealLogs({String? date}) async {
     final response = await _dio.get(
       '/calories/log',
-      queryParameters: {if (date != null) 'date': date},
+      queryParameters: {'date': ?date},
     );
     return response.data;
   }
@@ -1771,7 +1771,7 @@ class ApiService {
   Future<Map<String, dynamic>> getCalorieSummary({String? date}) async {
     final response = await _dio.get(
       '/calories/summary',
-      queryParameters: {if (date != null) 'date': date},
+      queryParameters: {'date': ?date},
     );
     return response.data;
   }
@@ -1806,9 +1806,9 @@ class ApiService {
     final response = await _dio.get(
       '/fitness/exercises',
       queryParameters: {
-        if (bodyPart != null) 'body_part': bodyPart,
-        if (equipment != null) 'equipment': equipment,
-        if (target != null) 'target': target,
+        'body_part': ?bodyPart,
+        'equipment': ?equipment,
+        'target': ?target,
         if (search != null && search.isNotEmpty) 'search': search,
         'page': page,
         'page_size': pageSize,
@@ -1876,8 +1876,8 @@ class ApiService {
   /// Oraliq bo'yicha jami qadam va yoqilgan kaloriya → {steps, steps_calories, workout_calories, total_burned}
   Future<Map<String, dynamic>> getActivitySummary({String? from, String? to}) async {
     final response = await _dio.get('/fitness/activity/summary', queryParameters: {
-      if (from != null) 'from': from,
-      if (to != null) 'to': to,
+      'from': ?from,
+      'to': ?to,
     });
     return Map<String, dynamic>.from(response.data);
   }
@@ -1886,8 +1886,8 @@ class ApiService {
     final response = await _dio.get(
       '/fitness/logs',
       queryParameters: {
-        if (from != null) 'from': from,
-        if (to != null) 'to': to,
+        'from': ?from,
+        'to': ?to,
       },
     );
     return response.data;

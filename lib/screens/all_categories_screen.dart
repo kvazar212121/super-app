@@ -5,7 +5,6 @@ import '../services/feature_service.dart';
 import '../l10n/locale_controller.dart';
 import '../theme/glass_tokens.dart';
 import '../widgets/glass/glass_scaffold.dart';
-import '../widgets/glass/glass_surface.dart';
 import 'service_hub_screen.dart';
 
 import '../widgets/search_input_widget.dart';
@@ -205,7 +204,7 @@ class _AllCategoriesScreenState extends State<AllCategoriesScreen> {
                                                     k.asset3d!,
                                                     fit: BoxFit.cover,
                                                     errorBuilder:
-                                                        (_, __, ___) =>
+                                                        (_, _, _) =>
                                                             _fallbackFill(k),
                                                   )
                                                 : _fallbackFill(k),

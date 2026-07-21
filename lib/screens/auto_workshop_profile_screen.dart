@@ -77,7 +77,7 @@ class AutoWorkshopProfileScreen extends StatelessWidget {
               children: [
                 CircleAvatar(
                   radius: 44,
-                  backgroundColor: accent.withOpacity(0.1),
+                  backgroundColor: accent.withValues(alpha: 0.1),
                   child: const Icon(LucideIcons.home, color: accent, size: 40),
                 ),
                 const SizedBox(height: 16),
@@ -138,8 +138,8 @@ class AutoWorkshopProfileScreen extends StatelessWidget {
                   .map(
                     (t) => Chip(
                       label: Text(t),
-                      backgroundColor: accent.withOpacity(0.1),
-                      side: BorderSide(color: accent.withOpacity(0.3)),
+                      backgroundColor: accent.withValues(alpha: 0.1),
+                      side: BorderSide(color: accent.withValues(alpha: 0.3)),
                     ),
                   )
                   .toList(),

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../../services/api_service.dart';
-import 'package:super_app/l10n/locale_controller.dart';
 
 /// HubServis huquqiy hujjati (foydalanish shartlari / maxfiylik / FAQ).
 /// Matn backenddan (admin panelдан tahrirlanadi) olinadi; xato bo'lsa zaxira matn ko'rsatiladi.

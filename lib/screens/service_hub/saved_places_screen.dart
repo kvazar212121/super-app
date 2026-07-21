@@ -28,9 +28,7 @@ import '../../widgets/glass/glass_scaffold.dart';
 import '../../widgets/glass/glass_surface.dart';
 import '../../widgets/hub/venue_hub_card.dart';
 
-import '../barber_booking_screen.dart';
 import '../salon_booking_screen.dart';
-import '../football_field_booking_screen.dart';
 import '../massage_booking_screen.dart';
 import '../event_team_profile_screen.dart';
 import '../provider_profile_screen.dart';
@@ -70,7 +68,7 @@ class SavedPlacesScreen extends StatelessWidget {
                   Icon(
                     LucideIcons.bookmark,
                     size: 64,
-                    color: GlassTokens.secondaryText(context).withOpacity(0.5),
+                    color: GlassTokens.secondaryText(context).withValues(alpha: 0.5),
                   ),
                   const SizedBox(height: 16),
                   Text(
@@ -102,7 +100,7 @@ class SavedPlacesScreen extends StatelessWidget {
                             width: 48,
                             height: 48,
                             decoration: BoxDecoration(
-                              color: accent.withOpacity(0.15),
+                              color: accent.withValues(alpha: 0.15),
                               shape: BoxShape.circle,
                             ),
                             child: Icon(category.icon, color: accent, size: 24),

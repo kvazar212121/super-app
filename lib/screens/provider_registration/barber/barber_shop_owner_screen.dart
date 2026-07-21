@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../../../providers/auth_provider.dart';
 import '../../../config/provider_category_config.dart';
@@ -184,7 +183,7 @@ class _BarberShopOwnerScreenState extends State<BarberShopOwnerScreen> {
                   decoration: InputDecoration(
                     labelText: 'Kategoriya tanlang'.tr,
                   ),
-                  value: _selectedSubCategory,
+                  initialValue: _selectedSubCategory,
                   items: ProviderCategoryConfig.barber.subCategories!
                       .map((sc) => DropdownMenuItem(value: sc, child: Text(sc.tr)))
                       .toList(),

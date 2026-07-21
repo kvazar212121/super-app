@@ -11,7 +11,6 @@ import '../utils/call_helper.dart';
 import '../widgets/glass/glass_scaffold.dart';
 import '../widgets/glass/glass_surface.dart';
 import '../widgets/save_provider_button.dart';
-import 'package:super_app/l10n/locale_controller.dart';
 
 class OshxonaProfileScreen extends StatelessWidget {
   final Master oshxona;
@@ -70,7 +69,7 @@ class OshxonaProfileScreen extends StatelessWidget {
               children: [
                 CircleAvatar(
                   radius: 44,
-                  backgroundColor: accent.withOpacity(0.1),
+                  backgroundColor: accent.withValues(alpha: 0.1),
                   child: Icon(LucideIcons.utensils, color: accent, size: 40),
                 ),
                 const SizedBox(height: 16),
@@ -129,9 +128,9 @@ class OshxonaProfileScreen extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: accent.withOpacity(0.05),
+              color: accent.withValues(alpha: 0.05),
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: accent.withOpacity(0.2)),
+              border: Border.all(color: accent.withValues(alpha: 0.2)),
             ),
             child: Column(
               children: [

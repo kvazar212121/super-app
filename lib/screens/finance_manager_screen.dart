@@ -83,10 +83,10 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
 
       setState(() {
         _stats = FinanceStats.fromJson(statsData);
-        _records = (recordsData as List)
+        _records = (recordsData)
             .map((e) => FinanceRecord.fromJson(e))
             .toList();
-        _plannedPayments = (plannedData as List)
+        _plannedPayments = (plannedData)
             .map((e) => PlannedPayment.fromJson(e))
             .toList();
       });
@@ -124,6 +124,7 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
       );
       _loadData();
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Tranzaksiya kiritishda xatolik yuz berdi".tr)),
       );
@@ -139,6 +140,7 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
       await _api.deleteFinanceRecord(id);
       _loadData();
     } catch (e) {
+      if (!mounted) return;
       setState(() {
         _records = prevRecords;
       });
@@ -165,6 +167,7 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
       );
       _loadData();
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text("Rejalashtirilgan to'lov qo'shishda xatolik".tr),
@@ -176,6 +179,7 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
   Future<void> _markPlannedPaymentPaid(PlannedPayment payment) async {
     try {
       await _api.updatePlannedPayment(payment.id, isPaid: true);
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
@@ -188,6 +192,7 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
       );
       _loadData();
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text("Xatolik yuz berdi".tr)));
@@ -199,6 +204,7 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
       await _api.deletePlannedPayment(id);
       _loadData();
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text("Xatolik yuz berdi".tr)));

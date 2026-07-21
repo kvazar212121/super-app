@@ -1,4 +1,3 @@
-import 'package:super_app/l10n/locale_controller.dart';
 
 class PaymentCard {
   final String id;

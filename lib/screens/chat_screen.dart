@@ -96,7 +96,7 @@ class _ChatScreenState extends State<ChatScreen>
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(
-                  'Ovoz yozishda xatolik yuz berdi'.tr + ': ${error.errorMsg}',
+                  '${'Ovoz yozishda xatolik yuz berdi'.tr}: ${error.errorMsg}',
                 ),
               ),
             );
@@ -135,6 +135,7 @@ class _ChatScreenState extends State<ChatScreen>
 
     bool hasPermission = await _requestMicrophonePermission();
     if (!hasPermission) {
+      if (!mounted) return;
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text('Mikrofonga ruxsat berilmadi'.tr)));
@@ -144,6 +145,7 @@ class _ChatScreenState extends State<ChatScreen>
     if (!_isSpeechInitialized) {
       await _initSpeechEngine();
       if (!_isSpeechInitialized) {
+        if (!mounted) return;
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text('Ovozli tizim faollashmadi'.tr)));
@@ -410,7 +412,7 @@ class _ChatScreenState extends State<ChatScreen>
                   decoration: BoxDecoration(
                     color: isRecording
                         ? (isDark
-                              ? Colors.red.withOpacity(0.1)
+                              ? Colors.red.withValues(alpha: 0.1)
                               : Colors.red.shade50)
                         : (isDark ? Colors.black : Colors.grey.shade100),
                     borderRadius: BorderRadius.circular(24),
@@ -440,7 +442,7 @@ class _ChatScreenState extends State<ChatScreen>
                           : 'Xabar yozish...'.tr,
                       hintStyle: TextStyle(
                         color: isRecording
-                            ? Colors.redAccent.withOpacity(0.7)
+                            ? Colors.redAccent.withValues(alpha: 0.7)
                             : GlassTokens.secondaryText(context),
                       ),
                       contentPadding: const EdgeInsets.symmetric(
@@ -492,11 +494,11 @@ class _ChatScreenState extends State<ChatScreen>
                           boxShadow: [
                             BoxShadow(
                               color: isRecording
-                                  ? Colors.redAccent.withOpacity(0.5)
+                                  ? Colors.redAccent.withValues(alpha: 0.5)
                                   : (_hasText
                                             ? const Color(0xFF3B82F6)
                                             : const Color(0xFF10B981))
-                                        .withOpacity(0.5),
+                                        .withValues(alpha: 0.5),
                               blurRadius: isRecording ? 12 : 8,
                               offset: const Offset(0, 4),
                             ),

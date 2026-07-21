@@ -77,7 +77,7 @@ class ApplianceProfileScreen extends StatelessWidget {
               children: [
                 CircleAvatar(
                   radius: 44,
-                  backgroundColor: accent.withOpacity(0.1),
+                  backgroundColor: accent.withValues(alpha: 0.1),
                   child: const Icon(
                     LucideIcons.monitor,
                     color: accent,
@@ -131,8 +131,8 @@ class ApplianceProfileScreen extends StatelessWidget {
                     (t) => Chip(
                       avatar: Icon(t.icon, size: 16, color: accent),
                       label: Text(t.label.tr),
-                      backgroundColor: accent.withOpacity(0.1),
-                      side: BorderSide(color: accent.withOpacity(0.3)),
+                      backgroundColor: accent.withValues(alpha: 0.1),
+                      side: BorderSide(color: accent.withValues(alpha: 0.3)),
                     ),
                   )
                   .toList(),

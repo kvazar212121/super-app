@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
-import 'package:super_app/l10n/locale_controller.dart';
 
 /// Provider ro'yxatdan o'tish ID → backend category_key
 class ProviderCategoryConfig {

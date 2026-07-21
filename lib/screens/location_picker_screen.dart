@@ -73,8 +73,9 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
         if (mounted) setState(() => _currentAddress = result);
       }
     } catch (e) {
-      if (mounted)
+      if (mounted) {
         setState(() => _currentAddress = "Manzilni aniqlab bo'lmadi");
+      }
     } finally {
       if (mounted) setState(() => _isLoadingAddress = false);
     }
@@ -117,6 +118,7 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
       return;
     }
 
+    if (!mounted) return;
     ScaffoldMessenger.of(
       context,
     ).showSnackBar(SnackBar(content: Text('Joylashuv aniqlanmoqda...'.tr)));
@@ -142,8 +144,8 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
               initialCenter: _currentCenter,
               initialZoom: 14,
               onPositionChanged: (pos, hasGesture) {
-                if (hasGesture && pos.center != null) {
-                  _currentCenter = pos.center!;
+                if (hasGesture) {
+                  _currentCenter = pos.center;
                 }
               },
               onMapEvent: (event) {

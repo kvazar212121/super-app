@@ -193,7 +193,7 @@ class _AlarmHomeScreenState extends State<AlarmHomeScreen> {
     return ListView.separated(
       padding: const EdgeInsets.fromLTRB(12, 12, 12, 96),
       itemCount: _alarms.length,
-      separatorBuilder: (_, __) => const SizedBox(height: 8),
+      separatorBuilder: (_, _) => const SizedBox(height: 8),
       itemBuilder: (_, i) {
         final a = _alarms[i];
         return Card(

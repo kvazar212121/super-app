@@ -39,8 +39,6 @@ import 'widgets/provider_event_settings_widget.dart';
 import 'widgets/provider_reports_widget.dart';
 import 'widgets/provider_venue_settings_widget.dart';
 import '../../services/call_history_service.dart';
-import '../../services/call_service.dart';
-import '../calls/call_screen.dart';
 import 'widgets/incoming_order_dialog.dart';
 import 'widgets/provider_profile_editor_widget.dart';
 import '../../services/hub_data_service.dart';
@@ -771,7 +769,7 @@ class _UnifiedProviderDashboardScreenState
               Switch(
                 value: _isActive,
                 onChanged: _toggleActive,
-                activeColor: Colors.black,
+                activeThumbColor: Colors.black,
                 activeTrackColor: Colors.black12,
               ),
             ],
@@ -803,7 +801,7 @@ class _UnifiedProviderDashboardScreenState
               Switch(
                 value: _isPaused,
                 onChanged: _togglePaused,
-                activeColor: Colors.black,
+                activeThumbColor: Colors.black,
                 activeTrackColor: Colors.black12,
               ),
             ],
@@ -881,7 +879,7 @@ class _UnifiedProviderDashboardScreenState
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
                       itemCount: activeOrders.length,
-                      separatorBuilder: (_, __) => const SizedBox(height: 12),
+                      separatorBuilder: (_, _) => const SizedBox(height: 12),
                       itemBuilder: (context, i) =>
                           _orderTile(activeOrders[i], theme, accent),
                     ),
@@ -901,7 +899,7 @@ class _UnifiedProviderDashboardScreenState
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
                       itemCount: completedOrders.length,
-                      separatorBuilder: (_, __) => const SizedBox(height: 12),
+                      separatorBuilder: (_, _) => const SizedBox(height: 12),
                       itemBuilder: (context, i) =>
                           _orderTile(completedOrders[i], theme, accent),
                     ),
@@ -921,7 +919,7 @@ class _UnifiedProviderDashboardScreenState
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
                       itemCount: cancelledOrders.length,
-                      separatorBuilder: (_, __) => const SizedBox(height: 12),
+                      separatorBuilder: (_, _) => const SizedBox(height: 12),
                       itemBuilder: (context, i) =>
                           _orderTile(cancelledOrders[i], theme, accent),
                     ),
@@ -1164,7 +1162,7 @@ class _UnifiedProviderDashboardScreenState
         return ListView.separated(
           padding: const EdgeInsets.all(20),
           itemCount: logs.length,
-          separatorBuilder: (_, __) => const Divider(height: 1),
+          separatorBuilder: (_, _) => const Divider(height: 1),
           itemBuilder: (context, index) {
             final log = logs[index];
             final dateStr = DateFormat(
@@ -1290,7 +1288,7 @@ class _UnifiedProviderDashboardScreenState
         return ListView.separated(
           padding: const EdgeInsets.all(20),
           itemCount: blocked.length,
-          separatorBuilder: (_, __) => const Divider(height: 1),
+          separatorBuilder: (_, _) => const Divider(height: 1),
           itemBuilder: (context, index) {
             final user = blocked[index];
             final dateStr = DateFormat('dd.MM.yyyy').format(user.blockedAt);

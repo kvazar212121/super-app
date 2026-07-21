@@ -63,7 +63,7 @@ class FinanceBalanceCard extends StatelessWidget {
                               Container(
                                 padding: const EdgeInsets.all(4),
                                 decoration: BoxDecoration(
-                                  color: Colors.greenAccent.withOpacity(0.2),
+                                  color: Colors.greenAccent.withValues(alpha: 0.2),
                                   shape: BoxShape.circle,
                                 ),
                                 child: const Icon(
@@ -105,7 +105,7 @@ class FinanceBalanceCard extends StatelessWidget {
                               Container(
                                 padding: const EdgeInsets.all(4),
                                 decoration: BoxDecoration(
-                                  color: Colors.redAccent.withOpacity(0.2),
+                                  color: Colors.redAccent.withValues(alpha: 0.2),
                                   shape: BoxShape.circle,
                                 ),
                                 child: const Icon(

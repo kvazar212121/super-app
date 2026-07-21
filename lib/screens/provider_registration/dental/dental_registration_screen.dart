@@ -121,7 +121,7 @@ class _DentalRegistrationScreenState extends State<DentalRegistrationScreen> {
                     height: 56,
                     margin: const EdgeInsets.only(top: 8),
                     decoration: BoxDecoration(
-                      color: accent.withOpacity(0.1),
+                      color: accent.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(14),
                       border: Border.all(color: accent, width: 1.5),
                     ),

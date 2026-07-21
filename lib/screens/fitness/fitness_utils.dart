@@ -211,11 +211,11 @@ class _ExerciseDetailSheetState extends State<_ExerciseDetailSheet> {
                   imageUrl: gifUrl,
                   height: 240,
                   fit: BoxFit.contain,
-                  placeholder: (_, __) => const SizedBox(
+                  placeholder: (_, _) => const SizedBox(
                     height: 240,
                     child: Center(child: CircularProgressIndicator()),
                   ),
-                  errorWidget: (_, __, ___) => Container(
+                  errorWidget: (_, _, _) => Container(
                     height: 240,
                     color: Colors.tealAccent.withValues(alpha: 0.08),
                     child: const Icon(

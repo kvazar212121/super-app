@@ -207,7 +207,7 @@ class _ProviderProfileEditorWidgetState
                 ? Image.network(
                     AppConfig.formatImageUrl(_coverUrl),
                     fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) => const Center(
+                    errorBuilder: (_, _, _) => const Center(
                       child: Icon(
                         LucideIcons.image,
                         size: 40,

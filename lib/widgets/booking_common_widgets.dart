@@ -78,11 +78,11 @@ class BookingSliverAppBar extends StatelessWidget {
                   imageUrl: AppConfig.formatImageUrl(resolvedCoverUrl),
                   fit: BoxFit.cover,
                   width: double.infinity,
-                  color: Colors.black.withOpacity(0.3),
+                  color: Colors.black.withValues(alpha: 0.3),
                   colorBlendMode: BlendMode.darken,
-                  errorWidget: (_, __, ___) =>
+                  errorWidget: (_, _, _) =>
                       Center(child: Icon(icon, size: 64, color: Colors.white)),
-                  placeholder: (_, __) =>
+                  placeholder: (_, _) =>
                       Center(child: Icon(icon, size: 64, color: Colors.white54)),
                 )
               : Center(child: Icon(icon, size: 64, color: Colors.white)),
@@ -137,7 +137,7 @@ class ServiceProfileHeader extends StatelessWidget {
               FilledButton.icon(
                 onPressed: onCallPressed,
                 style: FilledButton.styleFrom(
-                  backgroundColor: accent.withOpacity(0.15),
+                  backgroundColor: accent.withValues(alpha: 0.15),
                   foregroundColor: accent,
                   elevation: 0,
                   minimumSize: const Size(0, 36),
@@ -147,7 +147,7 @@ class ServiceProfileHeader extends StatelessWidget {
                   ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
-                    side: BorderSide(color: accent.withOpacity(0.4)),
+                    side: BorderSide(color: accent.withValues(alpha: 0.4)),
                   ),
                 ),
                 icon: const Icon(Icons.phone, size: 16),
@@ -552,7 +552,7 @@ class BookingActionBar extends StatelessWidget {
             style: ElevatedButton.styleFrom(
               backgroundColor: onPrimary != null
                   ? accent
-                  : Colors.grey[300]!.withOpacity(0.5),
+                  : Colors.grey[300]!.withValues(alpha: 0.5),
               foregroundColor: onPrimary != null
                   ? Colors.white
                   : Colors.grey[500],
@@ -689,7 +689,7 @@ class SelectableStaffRow extends StatelessWidget {
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         itemCount: items.length,
-        separatorBuilder: (_, __) => const SizedBox(width: 14),
+        separatorBuilder: (_, _) => const SizedBox(width: 14),
         itemBuilder: (context, index) {
           final item = items[index];
           final isAny = item.id == anyOptionId;
@@ -894,7 +894,7 @@ class HorizontalDatePicker extends StatelessWidget {
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         itemCount: daysCount,
-        separatorBuilder: (_, __) => const SizedBox(width: 10),
+        separatorBuilder: (_, _) => const SizedBox(width: 10),
         itemBuilder: (context, index) {
           final date = DateTime.now().add(
             Duration(days: index + startDaysOffset),

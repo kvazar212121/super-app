@@ -5,7 +5,6 @@ import '../widgets/event_widgets.dart';
 import '../widgets/glass/mesh_background.dart';
 import '../widgets/save_provider_button.dart';
 import '../utils/call_helper.dart';
-import 'package:super_app/l10n/locale_controller.dart';
 
 class EventTeamProfileScreen extends StatefulWidget {
   final EventPlanning team;
@@ -54,7 +53,7 @@ class _EventTeamProfileScreenState extends State<EventTeamProfileScreen> {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.9),
+                color: Colors.white.withValues(alpha: 0.9),
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Column(

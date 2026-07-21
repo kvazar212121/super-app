@@ -552,7 +552,7 @@ class _MapSectionState extends State<_MapSection> {
             border: Border.all(color: Colors.white, width: 3),
             boxShadow: [
               BoxShadow(
-                color: Colors.blue.withOpacity(0.5),
+                color: Colors.blue.withValues(alpha: 0.5),
                 blurRadius: 10,
                 spreadRadius: 2,
                 offset: const Offset(0, 3),

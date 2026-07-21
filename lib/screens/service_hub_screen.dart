@@ -5,20 +5,9 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart';
 
-import '../models/barber_shop.dart';
-import '../models/beauty_salon.dart';
-import '../models/football_field.dart';
 import '../models/master_worker.dart';
-import '../models/auto_workshop.dart';
-import '../models/education_center.dart';
-import '../models/disinfection_service.dart';
-import '../models/appliance_repair.dart';
-import '../models/courier_service.dart';
-import '../models/nanny_service.dart' as nanny_model;
 import '../models/auto_mobile_service.dart';
-import '../models/massage_hijoma.dart';
 import '../models/nurse_service.dart';
-import '../models/dental_clinic.dart';
 import '../models/event_planning.dart';
 import '../models/service_hub_kind.dart';
 import '../services/hub_data_service.dart';
@@ -31,17 +20,12 @@ import '../widgets/glass/glass_surface.dart';
 import '../theme/glass_tokens.dart';
 import '../widgets/hub/massage_sections.dart';
 import '../config/provider_category_config.dart';
-import '../widgets/hub/hub_filter_chips.dart';
 import 'barber_booking_screen.dart';
-import 'barber_map_screen.dart';
 import 'salon_booking_screen.dart';
-import 'master_dispatch_screen.dart';
 import 'provider_profile_screen.dart';
 import 'football_field_booking_screen.dart';
 import 'universal_booking_screen.dart';
 import 'disinfection_profile_screen.dart';
-import 'appliance_profile_screen.dart';
-import 'courier_profile_screen.dart';
 import 'appliance_dispatch_screen.dart';
 import 'courier_dispatch_screen.dart';
 import 'auto_mobile_profile_screen.dart';
@@ -109,7 +93,7 @@ class _ServiceHubScreenState extends State<ServiceHubScreen> {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());
               }
-              final resultMap = snapshot.data as Map<String, dynamic>? ?? {};
+              final resultMap = snapshot.data ?? {};
               final data =
                   resultMap['data'] as HubScreenData? ?? HubScreenData();
               final cats = resultMap['cats'] as List<dynamic>? ?? [];

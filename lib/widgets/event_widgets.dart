@@ -3,7 +3,6 @@ import 'package:intl/intl.dart';
 import '../models/event_venue.dart';
 import '../models/event_planning.dart';
 import '../theme/glass_tokens.dart';
-import 'package:super_app/l10n/locale_controller.dart';
 
 // ===================================================================
 //              EVENT VENUE WIDGETS
@@ -42,7 +41,7 @@ class EventVenueVisualWidget extends StatelessWidget {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20),
                 gradient: LinearGradient(
-                  colors: [Colors.black.withOpacity(0.7), Colors.transparent],
+                  colors: [Colors.black.withValues(alpha: 0.7), Colors.transparent],
                   begin: Alignment.bottomCenter,
                   end: Alignment.topCenter,
                 ),
@@ -68,7 +67,7 @@ class EventVenueVisualWidget extends StatelessWidget {
                           vertical: 4,
                         ),
                         decoration: BoxDecoration(
-                          color: accent.withOpacity(0.9),
+                          color: accent.withValues(alpha: 0.9),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Text(
@@ -113,8 +112,8 @@ class EventVenueInfoCard extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: isDark
-            ? Colors.white.withOpacity(0.05)
-            : Colors.white.withOpacity(0.9),
+            ? Colors.white.withValues(alpha: 0.05)
+            : Colors.white.withValues(alpha: 0.9),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: GlassTokens.glassBorder(context)),
         boxShadow: GlassTokens.glassShadow(context),
@@ -227,8 +226,8 @@ class EventTeamVisualWidget extends StatelessWidget {
       height: 200,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
-        color: accent.withOpacity(0.1),
-        border: Border.all(color: accent.withOpacity(0.3)),
+        color: accent.withValues(alpha: 0.1),
+        border: Border.all(color: accent.withValues(alpha: 0.3)),
       ),
       child: Stack(
         children: [
@@ -236,7 +235,7 @@ class EventTeamVisualWidget extends StatelessWidget {
             child: Icon(
               Icons.celebration,
               size: 80,
-              color: accent.withOpacity(0.3),
+              color: accent.withValues(alpha: 0.3),
             ),
           ),
           Positioned(
@@ -258,7 +257,7 @@ class EventTeamVisualWidget extends StatelessWidget {
                           vertical: 4,
                         ),
                         decoration: BoxDecoration(
-                          color: accent.withOpacity(0.9),
+                          color: accent.withValues(alpha: 0.9),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Text(
@@ -303,8 +302,8 @@ class EventTeamInfoCard extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: isDark
-            ? Colors.white.withOpacity(0.05)
-            : Colors.white.withOpacity(0.9),
+            ? Colors.white.withValues(alpha: 0.05)
+            : Colors.white.withValues(alpha: 0.9),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: GlassTokens.glassBorder(context)),
         boxShadow: GlassTokens.glassShadow(context),
@@ -391,7 +390,7 @@ class _InfoChip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.15),
+        color: color.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Row(

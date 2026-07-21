@@ -2,7 +2,6 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import '../../theme/glass_tokens.dart';
-import 'package:super_app/l10n/locale_controller.dart';
 
 class GlassBottomBar extends StatelessWidget {
   final int currentIndex;

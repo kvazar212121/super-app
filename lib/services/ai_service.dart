@@ -71,8 +71,9 @@ class AiService {
       return "Kechirasiz, javob olishda xatolik yuz berdi.";
     } on DioException catch (e) {
       // Javob tanasini (maxfiy bo'lishi mumkin) log'ga chiqarmaymiz — faqat status.
-      if (kDebugMode)
+      if (kDebugMode) {
         debugPrint("AI API Error: ${e.response?.statusCode ?? e.message}");
+      }
 
       // Tarix dan oxirgi user xabarini olib tashlash (muvaffaqiyatsiz bo'ldi)
       if (_messages.isNotEmpty && _messages.last['role'] == 'user') {

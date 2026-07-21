@@ -186,9 +186,9 @@ class VenueHubCard extends StatelessWidget {
                             fit: BoxFit.cover,
                             width: double.infinity,
                             height: 88,
-                            errorWidget: (_, __, ___) =>
+                            errorWidget: (_, _, _) =>
                                 Center(child: Icon(icon, color: Colors.white, size: 32)),
-                            placeholder: (_, __) => Center(
+                            placeholder: (_, _) => Center(
                                 child: Icon(icon, color: Colors.white54, size: 32)),
                           )
                         : Center(child: Icon(icon, color: Colors.white, size: 32)),
@@ -384,7 +384,7 @@ Future<void> showVenuePreviewSheet(
               width: 40,
               height: 4,
               decoration: BoxDecoration(
-                color: GlassTokens.secondaryText(context).withOpacity(0.3),
+                color: GlassTokens.secondaryText(context).withValues(alpha: 0.3),
                 borderRadius: BorderRadius.circular(2),
               ),
             ),

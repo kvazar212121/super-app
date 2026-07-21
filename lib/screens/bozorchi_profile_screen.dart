@@ -13,7 +13,6 @@ import '../widgets/glass/glass_scaffold.dart';
 import '../widgets/glass/glass_surface.dart';
 import '../widgets/save_provider_button.dart';
 import 'bozorchi_dispatch_screen.dart';
-import 'package:super_app/l10n/locale_controller.dart';
 
 class BozorchiProfileScreen extends StatelessWidget {
   final Master bozorchi;
@@ -81,7 +80,7 @@ class BozorchiProfileScreen extends StatelessWidget {
                   children: [
                     CircleAvatar(
                       radius: 44,
-                      backgroundColor: accent.withOpacity(0.1),
+                      backgroundColor: accent.withValues(alpha: 0.1),
                       child: Icon(
                         LucideIcons.shoppingBag,
                         color: accent,
@@ -147,13 +146,13 @@ class BozorchiProfileScreen extends StatelessWidget {
               gradient: LinearGradient(
                 colors: isDark
                     ? [
-                        Colors.green.shade900.withOpacity(0.5),
-                        Colors.teal.shade900.withOpacity(0.5),
+                        Colors.green.shade900.withValues(alpha: 0.5),
+                        Colors.teal.shade900.withValues(alpha: 0.5),
                       ]
                     : [Colors.green.shade50, Colors.teal.shade50],
               ),
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: Colors.green.withOpacity(0.3)),
+              border: Border.all(color: Colors.green.withValues(alpha: 0.3)),
             ),
             child: Row(
               children: [

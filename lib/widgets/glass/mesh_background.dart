@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../theme/glass_tokens.dart';
 
 /// Orqa fonda rangli "orb"lar — glass effekt uchun asos (yengil versiya).
 class MeshBackground extends StatelessWidget {
@@ -50,38 +49,4 @@ class GlassBackdrop extends StatelessWidget {
   }
 }
 
-class _Orb extends StatelessWidget {
-  final double? top;
-  final double? left;
-  final double? right;
-  final double? bottom;
-  final double size;
-  final Color color;
 
-  const _Orb({
-    this.top,
-    this.left,
-    this.right,
-    this.bottom,
-    required this.size,
-    required this.color,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Positioned(
-      top: top,
-      left: left,
-      right: right,
-      bottom: bottom,
-      child: Container(
-        width: size,
-        height: size,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          gradient: RadialGradient(colors: [color, color.withValues(alpha: 0)]),
-        ),
-      ),
-    );
-  }
-}

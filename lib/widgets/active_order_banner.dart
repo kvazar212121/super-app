@@ -38,7 +38,7 @@ class ActiveOrderBanner extends StatelessWidget {
     final order = active.first;
     final accent = order.category.accent;
     final statusColor = _statusColor(order.status);
-    final two = (int n) => n.toString().padLeft(2, '0');
+    String two(int n) => n.toString().padLeft(2, '0');
     final dateStr =
         '${two(order.date.day)}.${two(order.date.month)}  ${two(order.date.hour)}:${two(order.date.minute)}';
 
@@ -143,7 +143,7 @@ class ActiveOrderBanner extends StatelessWidget {
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        '${order.price.toStringAsFixed(0)} ' + 'so‘m'.tr,
+                        '${order.price.toStringAsFixed(0)} ${'so‘m'.tr}',
                         style: const TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.w600,

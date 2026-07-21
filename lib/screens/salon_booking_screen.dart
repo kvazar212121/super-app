@@ -1,7 +1,5 @@
 import '../utils/call_helper.dart';
 import 'package:flutter/material.dart';
-import '../services/call_service.dart';
-import 'calls/call_screen.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -234,7 +232,7 @@ class _SalonBookingScreenState extends State<SalonBookingScreen> {
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         itemCount: widget.salon.staff.length,
-        separatorBuilder: (_, __) => const SizedBox(width: 16),
+        separatorBuilder: (_, _) => const SizedBox(width: 16),
         itemBuilder: (context, index) {
           final st = widget.salon.staff[index];
           final isSelected = _selectedStaff?.id == st.id;

@@ -167,8 +167,8 @@ class _FitnessWorkoutDayScreenState extends State<FitnessWorkoutDayScreen> {
                         width: 64,
                         height: 64,
                         fit: BoxFit.cover,
-                        placeholder: (_, __) => _gifPlaceholder(),
-                        errorWidget: (_, __, ___) => _gifPlaceholder(),
+                        placeholder: (_, _) => _gifPlaceholder(),
+                        errorWidget: (_, _, _) => _gifPlaceholder(),
                       )
                     : _gifPlaceholder(),
               ),

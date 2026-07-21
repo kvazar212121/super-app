@@ -285,7 +285,7 @@ class _ProviderVenueSettingsWidgetState
           children: [
             Expanded(
               child: DropdownButtonFormField<String>(
-                value: _startHour,
+                initialValue: _startHour,
                 decoration: InputDecoration(
                   labelText: 'Ish boshlanishi'.tr,
                   border: OutlineInputBorder(),
@@ -309,7 +309,7 @@ class _ProviderVenueSettingsWidgetState
             const SizedBox(width: 16),
             Expanded(
               child: DropdownButtonFormField<String>(
-                value: _endHour,
+                initialValue: _endHour,
                 decoration: InputDecoration(
                   labelText: 'Ish tugashi'.tr,
                   border: OutlineInputBorder(),

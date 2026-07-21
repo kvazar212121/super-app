@@ -123,15 +123,15 @@ class _PromotionMapScreenState extends State<PromotionMapScreen> {
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  widget.colors[0].withOpacity(0.85),
-                  widget.colors[1].withOpacity(0.85),
+                  widget.colors[0].withValues(alpha: 0.85),
+                  widget.colors[1].withValues(alpha: 0.85),
                 ],
               ),
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: Colors.white.withOpacity(0.3)),
+              border: Border.all(color: Colors.white.withValues(alpha: 0.3)),
               boxShadow: [
                 BoxShadow(
-                  color: widget.colors[0].withOpacity(0.3),
+                  color: widget.colors[0].withValues(alpha: 0.3),
                   blurRadius: 10,
                   offset: const Offset(0, 4),
                 ),

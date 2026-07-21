@@ -1,7 +1,5 @@
 import '../utils/call_helper.dart';
 import 'package:flutter/material.dart';
-import '../services/call_service.dart';
-import 'calls/call_screen.dart';
 import 'package:intl/intl.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:provider/provider.dart';
@@ -371,7 +369,7 @@ class _BarberBookingScreenState extends State<BarberBookingScreen> {
                             padding: const EdgeInsets.all(8),
                             decoration: BoxDecoration(
                               color: isSelected
-                                  ? Colors.white.withOpacity(0.2)
+                                  ? Colors.white.withValues(alpha: 0.2)
                                   : const Color(0xFFF1F5F9),
                               shape: BoxShape.circle,
                             ),
@@ -411,7 +409,7 @@ class _BarberBookingScreenState extends State<BarberBookingScreen> {
                           fontSize: 11,
                           height: 1.3,
                           color: isSelected
-                              ? Colors.white.withOpacity(0.8)
+                              ? Colors.white.withValues(alpha: 0.8)
                               : const Color(0xFF64748B),
                         ),
                       ),

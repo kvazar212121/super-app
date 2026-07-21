@@ -135,7 +135,7 @@ class _DisinfectionDispatchScreenState
                   children: [
                     CircleAvatar(
                       radius: 28,
-                      backgroundColor: _accent.withOpacity(0.1),
+                      backgroundColor: _accent.withValues(alpha: 0.1),
                       child: Icon(
                         LucideIcons.shieldCheck,
                         color: _accent,

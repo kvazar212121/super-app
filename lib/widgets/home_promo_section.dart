@@ -193,7 +193,7 @@ class _HomePromoSectionState extends State<HomePromoSection>
                             CachedNetworkImage(
                               imageUrl: p.imageUrl!,
                               fit: BoxFit.cover,
-                              errorWidget: (_, __, ___) =>
+                              errorWidget: (_, _, _) =>
                                   const SizedBox.shrink(),
                             ),
                           // Matn o'qilishi uchun qoraytiruvchi qatlam

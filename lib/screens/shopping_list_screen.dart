@@ -298,8 +298,8 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
                     hintStyle: TextStyle(color: GlassTokens.secondaryText(ctx)),
                     filled: true,
                     fillColor: isDark
-                        ? Colors.white.withOpacity(0.08)
-                        : Colors.black.withOpacity(0.05),
+                        ? Colors.white.withValues(alpha: 0.08)
+                        : Colors.black.withValues(alpha: 0.05),
                     contentPadding: const EdgeInsets.symmetric(
                       horizontal: 16,
                       vertical: 12,
@@ -308,16 +308,16 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
                       borderRadius: BorderRadius.circular(12),
                       borderSide: BorderSide(
                         color: isDark
-                            ? Colors.white.withOpacity(0.15)
-                            : Colors.black.withOpacity(0.1),
+                            ? Colors.white.withValues(alpha: 0.15)
+                            : Colors.black.withValues(alpha: 0.1),
                       ),
                     ),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                       borderSide: BorderSide(
                         color: isDark
-                            ? Colors.white.withOpacity(0.15)
-                            : Colors.black.withOpacity(0.1),
+                            ? Colors.white.withValues(alpha: 0.15)
+                            : Colors.black.withValues(alpha: 0.1),
                       ),
                     ),
                   ),
@@ -507,8 +507,8 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
           ),
           filled: true,
           fillColor: isDark
-              ? Colors.white.withOpacity(0.08)
-              : Colors.black.withOpacity(0.04),
+              ? Colors.white.withValues(alpha: 0.08)
+              : Colors.black.withValues(alpha: 0.04),
           prefixIcon: Icon(
             LucideIcons.tag,
             color: Colors.blue.shade300,
@@ -522,16 +522,16 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
             borderRadius: BorderRadius.circular(14),
             borderSide: BorderSide(
               color: isDark
-                  ? Colors.white.withOpacity(0.15)
-                  : Colors.black.withOpacity(0.1),
+                  ? Colors.white.withValues(alpha: 0.15)
+                  : Colors.black.withValues(alpha: 0.1),
             ),
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(14),
             borderSide: BorderSide(
               color: isDark
-                  ? Colors.white.withOpacity(0.1)
-                  : Colors.black.withOpacity(0.05),
+                  ? Colors.white.withValues(alpha: 0.1)
+                  : Colors.black.withValues(alpha: 0.05),
             ),
           ),
         ),
@@ -547,15 +547,15 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: isDark
-            ? Colors.white.withOpacity(0.05)
-            : Colors.white.withOpacity(0.85),
+            ? Colors.white.withValues(alpha: 0.05)
+            : Colors.white.withValues(alpha: 0.85),
         borderRadius: BorderRadius.circular(GlassTokens.radiusMd),
-        border: Border.all(color: Colors.blue.withOpacity(0.35)),
+        border: Border.all(color: Colors.blue.withValues(alpha: 0.35)),
         boxShadow: isDark
             ? []
             : [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.03),
+                  color: Colors.black.withValues(alpha: 0.03),
                   blurRadius: 10,
                   offset: const Offset(0, 4),
                 ),
@@ -577,8 +577,8 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
                     ),
                     filled: true,
                     fillColor: isDark
-                        ? Colors.white.withOpacity(0.08)
-                        : Colors.black.withOpacity(0.03),
+                        ? Colors.white.withValues(alpha: 0.08)
+                        : Colors.black.withValues(alpha: 0.03),
                     prefixIcon: Icon(
                       LucideIcons.search,
                       color: GlassTokens.secondaryText(context),
@@ -592,16 +592,16 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
                       borderRadius: BorderRadius.circular(12),
                       borderSide: BorderSide(
                         color: isDark
-                            ? Colors.white.withOpacity(0.1)
-                            : Colors.black.withOpacity(0.05),
+                            ? Colors.white.withValues(alpha: 0.1)
+                            : Colors.black.withValues(alpha: 0.05),
                       ),
                     ),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                       borderSide: BorderSide(
                         color: isDark
-                            ? Colors.white.withOpacity(0.05)
-                            : Colors.black.withOpacity(0.05),
+                            ? Colors.white.withValues(alpha: 0.05)
+                            : Colors.black.withValues(alpha: 0.05),
                       ),
                     ),
                   ),
@@ -623,8 +623,8 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
               ),
               filled: true,
               fillColor: isDark
-                  ? Colors.white.withOpacity(0.08)
-                  : Colors.black.withOpacity(0.03),
+                  ? Colors.white.withValues(alpha: 0.08)
+                  : Colors.black.withValues(alpha: 0.03),
               prefixIcon: Icon(
                 LucideIcons.banknote,
                 color: Colors.green.shade400,
@@ -638,16 +638,16 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
                 borderRadius: BorderRadius.circular(12),
                 borderSide: BorderSide(
                   color: isDark
-                      ? Colors.white.withOpacity(0.1)
-                      : Colors.black.withOpacity(0.05),
+                      ? Colors.white.withValues(alpha: 0.1)
+                      : Colors.black.withValues(alpha: 0.05),
                 ),
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
                 borderSide: BorderSide(
                   color: isDark
-                      ? Colors.white.withOpacity(0.05)
-                      : Colors.black.withOpacity(0.05),
+                      ? Colors.white.withValues(alpha: 0.05)
+                      : Colors.black.withValues(alpha: 0.05),
                 ),
               ),
             ),
@@ -671,8 +671,8 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
                     ),
                     filled: true,
                     fillColor: isDark
-                        ? Colors.white.withOpacity(0.08)
-                        : Colors.black.withOpacity(0.03),
+                        ? Colors.white.withValues(alpha: 0.08)
+                        : Colors.black.withValues(alpha: 0.03),
                     contentPadding: const EdgeInsets.symmetric(
                       horizontal: 12,
                       vertical: 12,
@@ -681,16 +681,16 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
                       borderRadius: BorderRadius.circular(12),
                       borderSide: BorderSide(
                         color: isDark
-                            ? Colors.white.withOpacity(0.1)
-                            : Colors.black.withOpacity(0.05),
+                            ? Colors.white.withValues(alpha: 0.1)
+                            : Colors.black.withValues(alpha: 0.05),
                       ),
                     ),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                       borderSide: BorderSide(
                         color: isDark
-                            ? Colors.white.withOpacity(0.05)
-                            : Colors.black.withOpacity(0.05),
+                            ? Colors.white.withValues(alpha: 0.05)
+                            : Colors.black.withValues(alpha: 0.05),
                       ),
                     ),
                   ),
@@ -702,13 +702,13 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
                 padding: const EdgeInsets.symmetric(horizontal: 12),
                 decoration: BoxDecoration(
                   color: isDark
-                      ? Colors.white.withOpacity(0.08)
-                      : Colors.black.withOpacity(0.03),
+                      ? Colors.white.withValues(alpha: 0.08)
+                      : Colors.black.withValues(alpha: 0.03),
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
                     color: isDark
-                        ? Colors.white.withOpacity(0.1)
-                        : Colors.black.withOpacity(0.05),
+                        ? Colors.white.withValues(alpha: 0.1)
+                        : Colors.black.withValues(alpha: 0.05),
                   ),
                 ),
                 child: DropdownButtonHideUnderline(
@@ -844,8 +844,8 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(
               color: isDark
-                  ? Colors.white.withOpacity(0.05)
-                  : Colors.white.withOpacity(0.9),
+                  ? Colors.white.withValues(alpha: 0.05)
+                  : Colors.white.withValues(alpha: 0.9),
               borderRadius: BorderRadius.circular(14),
               border: Border.all(color: GlassTokens.glassBorder(context)),
             ),
@@ -1055,8 +1055,8 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
         color: isDark
-            ? Colors.white.withOpacity(0.05)
-            : Colors.white.withOpacity(0.9),
+            ? Colors.white.withValues(alpha: 0.05)
+            : Colors.white.withValues(alpha: 0.9),
         borderRadius: BorderRadius.circular(GlassTokens.radiusMd),
         border: Border.all(
           color: isDone ? Colors.green : GlassTokens.glassBorder(context),
@@ -1200,17 +1200,17 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
         decoration: BoxDecoration(
           color: item.isBought
-              ? Colors.green.withOpacity(0.15)
+              ? Colors.green.withValues(alpha: 0.15)
               : (isDark
-                    ? Colors.white.withOpacity(0.04)
-                    : Colors.white.withOpacity(0.8)),
+                    ? Colors.white.withValues(alpha: 0.04)
+                    : Colors.white.withValues(alpha: 0.8)),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: item.isBought
-                ? Colors.green.withOpacity(0.3)
+                ? Colors.green.withValues(alpha: 0.3)
                 : (isDark
-                      ? Colors.white.withOpacity(0.05)
-                      : Colors.black.withOpacity(0.05)),
+                      ? Colors.white.withValues(alpha: 0.05)
+                      : Colors.black.withValues(alpha: 0.05)),
           ),
         ),
         child: Row(
@@ -1450,7 +1450,7 @@ class _BozorchiSelectionSheetState extends State<_BozorchiSelectionSheet> {
             width: 40,
             height: 4,
             decoration: BoxDecoration(
-              color: Colors.grey.withOpacity(0.3),
+              color: Colors.grey.withValues(alpha: 0.3),
               borderRadius: BorderRadius.circular(2),
             ),
           ),
@@ -1462,7 +1462,7 @@ class _BozorchiSelectionSheetState extends State<_BozorchiSelectionSheet> {
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: Colors.blue.withOpacity(0.1),
+                    color: Colors.blue.withValues(alpha: 0.1),
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(
@@ -1511,11 +1511,11 @@ class _BozorchiSelectionSheetState extends State<_BozorchiSelectionSheet> {
                       return Card(
                         elevation: 0,
                         color: isDark
-                            ? Colors.white.withOpacity(0.05)
+                            ? Colors.white.withValues(alpha: 0.05)
                             : Colors.grey.shade50,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(16),
-                          side: BorderSide(color: Colors.grey.withOpacity(0.2)),
+                          side: BorderSide(color: Colors.grey.withValues(alpha: 0.2)),
                         ),
                         margin: const EdgeInsets.only(bottom: 12),
                         child: ListTile(
@@ -1525,7 +1525,7 @@ class _BozorchiSelectionSheetState extends State<_BozorchiSelectionSheet> {
                             children: [
                               CircleAvatar(
                                 radius: 24,
-                                backgroundColor: Colors.blue.withOpacity(0.1),
+                                backgroundColor: Colors.blue.withValues(alpha: 0.1),
                                 child: const Icon(
                                   LucideIcons.user,
                                   color: Colors.blue,

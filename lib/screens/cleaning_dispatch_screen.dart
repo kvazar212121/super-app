@@ -75,7 +75,7 @@ class _CleaningDispatchScreenState extends State<CleaningDispatchScreen> {
       MapEntry('Obyekt turi', _selectedAreaType!),
       MapEntry(
         'Maydon',
-        '$areaSize m²' + (rooms.isNotEmpty ? ' ($rooms xona)' : ''),
+        '$areaSize m²${rooms.isNotEmpty ? ' ($rooms xona)' : ''}',
       ),
       MapEntry('Taxminiy sana', DateFormat('dd.MM.yyyy').format(_selectedDate)),
       MapEntry('Manzil', address),
@@ -161,7 +161,7 @@ class _CleaningDispatchScreenState extends State<CleaningDispatchScreen> {
                   children: [
                     CircleAvatar(
                       radius: 28,
-                      backgroundColor: _accent.withOpacity(0.1),
+                      backgroundColor: _accent.withValues(alpha: 0.1),
                       child: Icon(
                         LucideIcons.sprayCan,
                         color: _accent,
@@ -206,7 +206,7 @@ class _CleaningDispatchScreenState extends State<CleaningDispatchScreen> {
                     selected: isSelected,
                     onSelected: (val) =>
                         setState(() => _selectedAreaType = val ? type : null),
-                    selectedColor: _accent.withOpacity(0.2),
+                    selectedColor: _accent.withValues(alpha: 0.2),
                     backgroundColor: Colors.white,
                     side: BorderSide(
                       color: isSelected ? _accent : Colors.grey.shade300,
