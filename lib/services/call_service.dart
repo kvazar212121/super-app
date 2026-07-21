@@ -12,6 +12,7 @@ import 'api_service.dart';
 import 'call_history_service.dart';
 import 'ringtone_service.dart';
 import 'callkit_service.dart';
+import 'connectivity_service.dart';
 import 'package:super_app/l10n/locale_controller.dart';
 
 /// WhatsApp uslubidagi ovozli qo'ng'iroq xizmati.
@@ -80,6 +81,14 @@ class CallService extends ChangeNotifier {
   // Chiquvchi qo'ng'iroq javob berilishini kutish limiti (yopiq ilova uyg'onguncha ham)
   Timer? _ringTimeout;
   static const Duration _ringTimeoutDuration = Duration(seconds: 45);
+
+  // ABONENT YETIB BORDIMI (WhatsApp mantiqi): qarshi tomon qurilmasi chaqiruvni
+  // HAQIQATAN qabul qilganda (WS: call_ack yoki FCM keyin HTTP ack) true bo'ladi.
+  // Ringback ("tuut-tuut") faqat shundan keyin chalinadi. Belgilangan vaqtda
+  // ack kelmasa — abonent aloqada emas (interneti o'chiq) deb hisoblanadi.
+  bool _calleeAcked = false;
+  Timer? _ackTimeout;
+  static const Duration _ackTimeoutDuration = Duration(seconds: 25);
   String _callDuration = '00:00';
 
   // Auto-reconnect
@@ -300,17 +309,36 @@ class CallService extends ChangeNotifier {
       CallKitService().showIncomingCall(
         callerName: senderName ?? 'Noma\'lum',
         callerId: senderId ?? 0,
+        categoryKey: _callCategoryKey,
+        toRole: _callToRole,
+        intent: _callIntent,
+        callId: _callId,
       );
       WakelockPlus.enable();
+
+      // WhatsApp mantiqi: chaqiruvchiga "qurilmam chaqiruvni oldi, jiringlayapman"
+      // deb bildiramiz — u shundan keyingina ringback ("tuut-tuut") chaladi.
+      sendSignal('call_ack', {});
 
       if (onIncomingCall != null) {
         onIncomingCall!(data);
       }
+    } else if (type == 'call_ack') {
+      // Qarshi qurilma chaqiruvni HAQIQATAN oldi (jiringlayapti) — endi
+      // chaqiruvchida ringback chalinadi va "oflayn" taymeri bekor bo'ladi.
+      _calleeAcked = true;
+      _ackTimeout?.cancel();
+      if (_inCall && _callStartTime == null && _isRinging) {
+        RingtoneService().playDialTone();
+      }
+      notifyListeners();
     } else if (type == 'call_accepted') {
       // Qo'ng'iroq qabul qilindi — offer yaratish
+      _calleeAcked = true;
+      _ackTimeout?.cancel();
       _isRinging = false;
       _isConnecting = true;
-      RingtoneService().stop(); // Dial tone to'xtatish
+      RingtoneService().stop(); // Ringback to'xtatish
       notifyListeners();
       await processOffer();
     } else if (type == 'offer') {
@@ -341,8 +369,10 @@ class CallService extends ChangeNotifier {
       }
       endCall(sendSignal: false);
     } else if (type == 'callee_ringing') {
-      // Target ilovasi yopiq edi — FCM/CallKit orqali jiringlayapti. UZMAYMIZ, KUTAMIZ.
-      // Foydalanuvchi javob berganda 'call_accepted' keladi va oqim davom etadi.
+      // Target ilovasi yopiq edi — FCM push YUBORILDI (lekin yetib borgani hali
+      // noma'lum). UZMAYMIZ, KUTAMIZ. Ringback esa faqat qurilmadan haqiqiy
+      // 'call_ack' kelganda chalinadi — abonent oflayn bo'lsa ack kelmaydi va
+      // _ackTimeout "aloqada emas" deb uzadi.
       _isRinging = true;
       _isConnecting = true;
       notifyListeners();
@@ -512,6 +542,12 @@ class CallService extends ChangeNotifier {
       _localStream = await navigator.mediaDevices.getUserMedia(
         mediaConstraints,
       );
+      // KARNAY SINXRONI: WebRTC audio ba'zi qurilmalarda default KARNAYda
+      // boshlanadi, bizning holatimiz esa _isSpeaker=false (quloqqa). Shu
+      // nomuvofiqlik "karnay tugmasi teskari ishlayapti" xatosini berardi.
+      // Media ochilishi bilan haqiqiy yo'lni holatga majburan tenglashtiramiz
+      // (WhatsApp kabi: suhbat doim QULOQ dinamigidan boshlanadi).
+      await Helper.setSpeakerphoneOn(_isSpeaker);
     } catch (e) {
       debugPrint('Mikrofon ruxsati olinmadi yoki xatolik: $e');
       if (onError != null) {
@@ -531,6 +567,12 @@ class CallService extends ChangeNotifier {
   }) async {
     if (_inCall) {
       debugPrint('Allaqachon qo\'ng\'iroqda');
+      return false;
+    }
+
+    // INTERNET TEKSHIRUVI: oflayn holatda chaqiruv umuman boshlanmaydi.
+    if (!await ConnectivityService().hasInternet()) {
+      onError?.call('Internet yo\'q — chaqiruv amalga oshmaydi');
       return false;
     }
 
@@ -563,8 +605,9 @@ class CallService extends ChangeNotifier {
       ),
     );
 
-    // Chiquvchi qo'ng'iroq uchun dial tone va wakelock
-    RingtoneService().playDialTone();
+    // WhatsApp mantiqi: ringback ("tuut-tuut") DARHOL chalinmaydi — qarshi
+    // tomon qurilmasi chaqiruvni haqiqatan olganda ('call_ack') chalinadi.
+    _calleeAcked = false;
     WakelockPlus.enable();
 
     notifyListeners();
@@ -587,6 +630,19 @@ class CallService extends ChangeNotifier {
           CallHistoryService().updateCallLog(_currentCallLogId!, status: 'missed');
         }
         if (onError != null) onError!('Javob bermadi');
+        endCall(sendSignal: true);
+      }
+    });
+
+    // ABONENT OFLAYN TEKSHIRUVI: qarshi qurilmadan 'call_ack' kelmasa —
+    // uning interneti o'chiq/telefon o'chiq. Uzoq "jiringlatib" o'tirmaymiz.
+    _ackTimeout?.cancel();
+    _ackTimeout = Timer(_ackTimeoutDuration, () {
+      if (_inCall && !_calleeAcked && _callStartTime == null) {
+        if (_currentCallLogId != null) {
+          CallHistoryService().updateCallLog(_currentCallLogId!, status: 'missed');
+        }
+        onError?.call('Abonent aloqada emas — interneti o\'chiq bo\'lishi mumkin');
         endCall(sendSignal: true);
       }
     });
@@ -784,6 +840,8 @@ class CallService extends ChangeNotifier {
   /// Qo'ng'iroqni tugatish
   void endCall({bool sendSignal = true}) {
     _ringTimeout?.cancel();
+    _ackTimeout?.cancel();
+    _calleeAcked = false;
     if (sendSignal && _remoteUserId != null) {
       this.sendSignal('end_call', {});
     }
@@ -877,10 +935,10 @@ class CallService extends ChangeNotifier {
 
   void toggleSpeaker() {
     _isSpeaker = !_isSpeaker;
-    if (_localStream != null) {
-      Helper.setSpeakerphoneOn(_isSpeaker);
-      notifyListeners();
-    }
+    // Har doim qo'llaymiz — stream hali null bo'lsa ham holat va haqiqiy
+    // audio-yo'l keyin _getUserMedia'dagi sinxron bilan mos tushadi.
+    Helper.setSpeakerphoneOn(_isSpeaker);
+    notifyListeners();
   }
 
   /// WebSocket ulanishni yopish

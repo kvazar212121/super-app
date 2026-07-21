@@ -67,6 +67,7 @@ dependencies:
   pedometer: ^4.0.1
   qr_flutter: ^4.1.0
   mobile_scanner: ^5.2.3
+  connectivity_plus: ^6.1.0
 
 dev_dependencies:
   flutter_test:
@@ -94,6 +95,7 @@ flutter:
   assets:
     - assets/images/
     - assets/images/services3d/
+    - assets/sounds/
     
   #   - images/a_dot_ham.jpeg
 

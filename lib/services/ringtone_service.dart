@@ -32,22 +32,24 @@ class RingtoneService {
     }
   }
 
-  /// Chiquvchi qo'ng'iroq uchun kutish ovozi (dial tone)
+  /// Chiquvchi qo'ng'iroq uchun kutish ovozi — klassik "tuut ... tuut" ringback.
+  /// ESLATMA: avval bu yerda tizim RINGTONE'i (kiruvchi melodiya) chalinardi —
+  /// bu xato edi. Endi maxsus generatsiya qilingan 425Hz ringback (1s ton +
+  /// 4s pauza, WhatsApp/telefon standartidagi kabi) asset'dan chalinadi.
   Future<void> playDialTone() async {
     if (_isPlaying) return;
     _isPlaying = true;
 
     try {
       await FlutterRingtonePlayer().play(
-        android: AndroidSounds.ringtone,
-        ios: IosSounds.electronic,
+        fromAsset: 'assets/sounds/ringback.wav',
         looping: true,
-        volume: 0.5, // Dial tone ovozi pastroq
+        volume: 0.6,
         asAlarm: false,
       );
-      debugPrint('RingtoneService: Dial tone boshlandi');
+      debugPrint('RingtoneService: Ringback (tuut-tuut) boshlandi');
     } catch (e) {
-      debugPrint('RingtoneService: Dial tone xatolik — $e');
+      debugPrint('RingtoneService: Ringback xatolik — $e');
       _isPlaying = false;
     }
   }

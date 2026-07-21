@@ -380,6 +380,13 @@ class ApiService {
     return Map<String, dynamic>.from(res.data as Map);
   }
 
+  /// Kiruvchi chaqiruv qurilmaga YETIB KELGANINI chaqiruvchiga bildirish.
+  /// Ilova FCM/CallKit orqali (WS ulanmagan holatda) jiringlaganda ishlatiladi —
+  /// backend chaqiruvchiga 'call_ack' yetkazadi va u ringback chala boshlaydi.
+  Future<void> ackIncomingCall(int callerId) async {
+    await _dio.post('/calls/ack', data: {'caller_id': callerId});
+  }
+
   /// Kelishuv holatini so'rash (polling) — ikkinchi tomon javobini kutishda.
   Future<Map<String, dynamic>> getCallDeal(String callId) async {
     final res = await _dio.get('/calls/deal/$callId');

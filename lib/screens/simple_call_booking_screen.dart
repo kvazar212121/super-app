@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../models/service_hub_kind.dart';
 import '../services/call_service.dart';
+import '../services/connectivity_service.dart';
 import '../utils/auth_guard.dart';
 import '../widgets/glass/glass_scaffold.dart';
 import '../widgets/glass/glass_surface.dart';
@@ -32,6 +33,22 @@ class SimpleCallBookingScreen extends StatelessWidget {
       );
       return;
     }
+
+    // Internet yo'q bo'lsa — chaqiruv boshlanmaydi (qizil xabar)
+    if (!await ConnectivityService().hasInternet()) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Internet yo\'q — chaqiruv amalga oshmaydi. Internetga ulaning.',
+            ),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+      return;
+    }
+    if (!context.mounted) return;
 
     // Provider'ga ZAKAZ qo'ng'irog'i — kelishuv oqimi ishlashi uchun order intent.
     await CallService().startCall(

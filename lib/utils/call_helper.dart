@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../services/call_service.dart';
+import '../services/connectivity_service.dart';
 import '../screens/calls/call_screen.dart';
 import '../providers/auth_provider.dart';
 import '../providers/app_provider.dart';
@@ -8,6 +9,23 @@ import '../screens/auth/auth_gate_screen.dart';
 import 'package:super_app/l10n/locale_controller.dart';
 
 class CallHelper {
+  /// Chaqiruvdan OLDIN internet tekshiruvi — oflayn bo'lsa qizil xabar
+  /// ko'rsatiladi va chaqiruv umuman boshlanmaydi (4-xato talabi).
+  static Future<bool> _ensureInternet(BuildContext context) async {
+    final ok = await ConnectivityService().hasInternet();
+    if (!ok && context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Internet yo\'q — chaqiruv amalga oshmaydi. Internetga ulaning.',
+          ),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+    return ok;
+  }
+
   static Future<void> startCallWithPurposeCheck(
     BuildContext context,
     int targetId,
@@ -56,6 +74,10 @@ class CallHelper {
       );
       return;
     }
+
+    // Internet yo'q bo'lsa — chaqiruv boshlanmaydi (qizil xabar)
+    if (!await _ensureInternet(context)) return;
+    if (!context.mounted) return;
 
     // Show a bottom sheet or dialog to ask purpose
     bool? isBooking = await showModalBottomSheet<bool>(
@@ -173,6 +195,10 @@ class CallHelper {
       );
       return;
     }
+
+    // Internet yo'q bo'lsa — chaqiruv boshlanmaydi (qizil xabar)
+    if (!await _ensureInternet(context)) return;
+    if (!context.mounted) return;
 
     bool started = await CallService().startCall(
       targetId,

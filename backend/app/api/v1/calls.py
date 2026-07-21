@@ -142,6 +142,31 @@ from typing import Optional
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.db.session import get_db
 
+class CallAckIn(BaseModel):
+    caller_id: int
+
+
+@router.post("/ack")
+async def ack_incoming_call(
+    data: CallAckIn,
+    current_user: User = Depends(get_current_user),
+):
+    """Qabul qiluvchi qurilma chaqiruvni HAQIQATAN olganini bildiradi.
+
+    WS ochiq bo'lsa callee 'call_ack' signalini o'zi yuboradi; ilova YOPIQ
+    bo'lib FCM/CallKit orqali jiringlayotganda esa shu HTTP endpoint chaqiriladi.
+    Backend chaqiruvchiga 'call_ack' yetkazadi — u shunda ringback ("tuut")
+    chaladi. Ack kelmasa chaqiruvchi "abonent aloqada emas" deb uzadi.
+    """
+    delivered = await manager.send_personal_message({
+        "type": "call_ack",
+        "sender_id": current_user.id,
+        "sender_name": f"{current_user.name} {current_user.surname}",
+        "data": {},
+    }, data.caller_id)
+    return {"delivered": bool(delivered)}
+
+
 class CallHistoryCreate(BaseModel):
     target_id: int
     duration: Optional[str] = "00:00"

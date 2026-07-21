@@ -27,6 +27,16 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
       intent: message.data['intent']?.toString(),
       callId: message.data['call_id']?.toString(),
     );
+
+    // Chaqiruvchiga "qurilma chaqiruvni oldi" deb bildiramiz (ack) — u shunda
+    // ringback ("tuut") chaladi. Bu isolate alohida, shuning uchun avval token
+    // yuklaymiz. Xato bo'lsa jim o'tamiz — chaqiruvchi taymer bilan o'zi uzadi.
+    try {
+      await ApiService().loadTokens();
+      await ApiService().ackIncomingCall(int.tryParse(callerId) ?? 0);
+    } catch (e) {
+      debugPrint('FCM bg ack xatosi: $e');
+    }
   }
 }
 
@@ -84,6 +94,11 @@ class FirebaseService {
             intent: message.data['intent']?.toString(),
             callId: message.data['call_id']?.toString(),
           );
+
+          // Chaqiruvchiga ack — ringback faqat shu yetganda chalinadi.
+          ApiService()
+              .ackIncomingCall(int.tryParse(callerId) ?? 0)
+              .catchError((e) => debugPrint('FCM fg ack xatosi: $e'));
         }
       });
     } catch (e) {
