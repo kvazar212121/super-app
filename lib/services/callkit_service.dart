@@ -195,6 +195,29 @@ class CallKitService {
     }
   }
 
+  /// Android 14+ da Play Marketdan tashqari o'rnatilgan ilovaga "to'liq
+  /// ekranli bildirishnoma" (full-screen intent) ruxsati AVTOMATIK berilmaydi —
+  /// natijada ekran o'chiq bo'lsa chaqiruv OVOZI keladi-yu, EKRAN UYG'ONMAYDI.
+  /// Bu metod ruxsat bor-yo'qligini tekshiradi (eski Androidlarda doim true).
+  Future<bool> canUseFullScreenIntent() async {
+    try {
+      final res = await FlutterCallkitIncoming.canUseFullScreenIntent();
+      return res == true;
+    } catch (_) {
+      return true; // API mavjud bo'lmasa (eski Android) — muammo ham yo'q
+    }
+  }
+
+  /// Tizim sozlamalarida "To'liq ekranli bildirishnomalar" sahifasini ochadi —
+  /// foydalanuvchi ruxsatni yoqib qo'yadi (chaqiruvda ekran yonishi uchun).
+  Future<void> requestFullIntentPermission() async {
+    try {
+      await FlutterCallkitIncoming.requestFullIntentPermission();
+    } catch (e) {
+      debugPrint('CallKit: requestFullIntentPermission xato — $e');
+    }
+  }
+
   /// SOVUQ START tiklash: ba'zi qurilmalarda `onEvent` accept eventi ilova
   /// hali ishga tushmaganda kelib, yo'qolishi mumkin. Ilova tayyor bo'lganda
   /// bu metod FAOL (qabul qilingan) qo'ng'iroq bor-yo'qligini tekshiradi va

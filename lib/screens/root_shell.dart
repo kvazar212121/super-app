@@ -6,6 +6,7 @@ import '../providers/auth_provider.dart';
 import '../config/provider_category_config.dart';
 import '../app_navigator.dart';
 import '../services/call_service.dart';
+import '../services/callkit_service.dart';
 import '../services/connectivity_service.dart';
 import 'main_screen.dart';
 import 'provider_side/unified_provider_dashboard_screen.dart';
@@ -50,7 +51,42 @@ class _RootShellState extends State<RootShell> with WidgetsBindingObserver {
       // endi xavfsiz ko'rsatsak bo'ladi (splash tomonidan o'chirilmaydi).
       appReady = true;
       onAppReady?.call();
+
+      // Android 14+: full-screen intent ruxsati yo'q bo'lsa — ekran o'chiq
+      // holatda chaqiruv kelganda EKRAN UYG'ONMAYDI. Foydalanuvchiga bir
+      // tushuntirib, sozlamalar sahifasini ochamiz (ruxsat berilgach boshqa
+      // so'ralmaydi, chunki canUse=true qaytadi).
+      _checkFullScreenIntentPermission();
     });
+  }
+
+  Future<void> _checkFullScreenIntentPermission() async {
+    final can = await CallKitService().canUseFullScreenIntent();
+    if (can || !mounted) return;
+    showDialog<void>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Chaqiruvda ekran yonishi uchun'),
+        content: const Text(
+          'Telefon ekrani o\'chiq bo\'lganda kiruvchi chaqiruv ekranda '
+          'ko\'rinishi uchun "To\'liq ekranli bildirishnomalar" ruxsatini '
+          'yoqing. Sozlamalar ochilganda HubServis uchun ruxsatni yoqib qo\'ying.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Keyinroq'),
+          ),
+          FilledButton(
+            onPressed: () {
+              Navigator.pop(ctx);
+              CallKitService().requestFullIntentPermission();
+            },
+            child: const Text('Sozlamalarni ochish'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
