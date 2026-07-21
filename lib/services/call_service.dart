@@ -254,14 +254,12 @@ class CallService extends ChangeNotifier {
     debugPrint('WebSocket signal olindi: $type dan $senderId ($senderName)');
 
     final token = await ApiService().getToken();
-    if (token != null) {
-      final currentUserId = _parseUserIdFromToken(token);
-      if (currentUserId != null && senderId == currentUserId) {
-        debugPrint(
-          'O\'z-o\'zidan kelgan (loopback) signaling xabar e\'tiborga olinmaydi',
-        );
-        return;
-      }
+    final int? myId = token != null ? _parseUserIdFromToken(token) : null;
+    if (myId != null && senderId == myId) {
+      debugPrint(
+        'O\'z-o\'zidan kelgan (loopback) signaling xabar e\'tiborga olinmaydi',
+      );
+      return;
     }
 
     if (type == 'call_init') {
@@ -277,6 +275,53 @@ class CallService extends ChangeNotifier {
         });
         _channel?.sink.add(msg);
         return;
+      }
+
+      // BAND (busy): men allaqachon BOSHQA odam bilan suhbatdaman yoki boshqa
+      // odam jiringlatyapti — yangi chaqiruvchiga 'user_busy' qaytaramiz
+      // (WhatsApp'dagi kabi). Joriy suhbat buzilmaydi; urinish "o'tkazib
+      // yuborilgan" sifatida tarixga tushadi.
+      final bool busyWithOther = (_inCall || _isRinging) &&
+          _remoteUserId != null &&
+          _remoteUserId != senderId;
+      if (busyWithOther) {
+        CallHistoryService().addCallLog(
+          CallLog(
+            id: DateTime.now().millisecondsSinceEpoch.toString(),
+            userId: senderId ?? 0,
+            userName: senderName ?? 'Noma\'lum',
+            isIncoming: true,
+            timestamp: DateTime.now(),
+            duration: '00:00',
+            status: 'missed',
+          ),
+        );
+        final msg = jsonEncode({
+          'type': 'user_busy',
+          'target_id': senderId,
+          'data': {},
+        });
+        _channel?.sink.add(msg);
+        return;
+      }
+
+      // IKKALAMIZ BIR VAQTDA bir-birimizga qo'ng'iroq qildik (signallar
+      // kesishdi). AVTO-ULANISH YO'Q — oddiy mantiq: deterministik ravishda
+      // BITTA chaqiruv "g'olib" bo'ladi (ID kichik tomonniki), ikkinchi tomon
+      // o'z urinishini JIMGINA bekor qiladi va telefoni ODDIY jiringlaydi —
+      // xohlasa javob beradi, xohlamasa rad etadi.
+      if (_inCall && _remoteUserId == senderId && _callStartTime == null) {
+        if (myId != null && senderId != null && myId < senderId) {
+          // Mening chaqiruvim g'olib — ularning init'i e'tiborsiz qoldiriladi
+          // (ularning qurilmasi bizning chaqiruvимиз bilan jiringlaydi).
+          debugPrint('Glare: mening chaqiruvim davom etadi (id kichik)');
+          return;
+        }
+        // Men yutqazdim — o'z chiquvchi urinishimni signal YUBORMAY bekor
+        // qilaman (aks holda ularning chaqiruvi ham o'chib ketardi), so'ng
+        // ularning chaqiruvi quyida ODDIY kiruvchi sifatida jiringlaydi.
+        debugPrint('Glare: o\'z urinishim bekor — ularniki jiringlaydi');
+        endCall(sendSignal: false);
       }
 
       _currentCallLogId = DateTime.now().millisecondsSinceEpoch.toString();
@@ -357,6 +402,16 @@ class CallService extends ChangeNotifier {
       if (onCallAnswered != null) onCallAnswered!();
     } else if (type == 'ice_candidate') {
       await _handleIceCandidate(payload);
+    } else if (type == 'user_busy') {
+      // Qarshi tomon hozir BOSHQA suhbatda — WhatsApp'dagi kabi "band" deymiz.
+      if (_currentCallLogId != null) {
+        CallHistoryService().updateCallLog(
+          _currentCallLogId!,
+          status: 'declined',
+        );
+      }
+      onError?.call('Abonent band — hozir boshqa suhbatda');
+      endCall(sendSignal: false);
     } else if (type == 'end_call' || type == 'reject_call') {
       if (_currentCallLogId != null) {
         CallHistoryService().updateCallLog(
