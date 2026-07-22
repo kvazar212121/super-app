@@ -1,5 +1,7 @@
+import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'api_service.dart';
 import 'notification_helper.dart';
 import '../models/alarm.dart';
@@ -26,8 +28,43 @@ class AiService {
     );
   }
 
-  /// Chat tarixini saqlaydi (faqat user va assistant xabarlari)
+  /// Chat tarixini saqlaydi (faqat user va assistant xabarlari).
+  /// Lokal xotira (SharedPreferences) — ilova yopilsa ham chat qoladi.
   final List<Map<String, String>> _messages = [];
+  static const String _historyKey = 'ai_chat_history_v1';
+  // Prompt hajmi cheklangani uchun so'nggi N xabarni yuboramiz (kichik "xotira").
+  static const int _maxContextMessages = 20;
+  // Diskda saqlanadigan maksimal xabar (eskilarini kesib tashlaymiz).
+  static const int _maxStoredMessages = 100;
+  bool _loaded = false;
+
+  /// Saqlangan chat tarixini diskdan yuklaydi (ilova ochilganda bir marta).
+  Future<List<Map<String, String>>> loadHistory() async {
+    if (_loaded) return List.unmodifiable(_messages);
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final raw = prefs.getString(_historyKey);
+      if (raw != null && raw.isNotEmpty) {
+        final List<dynamic> data = jsonDecode(raw) as List<dynamic>;
+        _messages
+          ..clear()
+          ..addAll(data.map((e) => Map<String, String>.from(e as Map)));
+      }
+    } catch (_) {}
+    _loaded = true;
+    return List.unmodifiable(_messages);
+  }
+
+  /// Chat tarixini diskka saqlaydi (oxirgi _maxStoredMessages ta).
+  Future<void> _persist() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final toStore = _messages.length > _maxStoredMessages
+          ? _messages.sublist(_messages.length - _maxStoredMessages)
+          : _messages;
+      await prefs.setString(_historyKey, jsonEncode(toStore));
+    } catch (_) {}
+  }
 
   Future<String> sendMessage(String userText) async {
     _messages.add({'role': 'user', 'content': userText});
@@ -39,7 +76,11 @@ class AiService {
         return "Iltimos, avval tizimga kiring.";
       }
 
-      final payloadMessages = List<Map<String, String>>.from(_messages);
+      // Faqat so'nggi N xabarни kontekst sifatida yuboramiz (prompt hajmi cheklovi).
+      final recent = _messages.length > _maxContextMessages
+          ? _messages.sublist(_messages.length - _maxContextMessages)
+          : _messages;
+      final payloadMessages = List<Map<String, String>>.from(recent);
       if (payloadMessages.isNotEmpty &&
           payloadMessages.last['role'] == 'user') {
         payloadMessages.last = {
@@ -66,6 +107,7 @@ class AiService {
 
       if (aiReply.isNotEmpty) {
         _messages.add({'role': 'assistant', 'content': aiReply});
+        await _persist(); // chatni diskka saqlaymiz
         return aiReply;
       }
       return "Kechirasiz, javob olishda xatolik yuz berdi.";
@@ -106,19 +148,39 @@ class AiService {
   /// AI qaytargan yon-amalni bajaradi.
   Future<void> _handleAction(Map<String, dynamic> act) async {
     try {
-      if (act['type'] == 'schedule_alarm' && act['alarm'] != null) {
+      final type = act['type'];
+      if (type == 'schedule_alarm' && act['alarm'] != null) {
         final alarm = Alarm.fromJson(
           Map<String, dynamic>.from(act['alarm'] as Map),
         );
         await NotificationHelper().scheduleAlarm(alarm);
         debugPrint('AI budilnik rejalashtirildi: ${alarm.timeLabel}');
+      } else if (type == 'alarms_changed') {
+        // Budilnik o'chirilgan yoki o'chirib qo'yilgan bo'lsa — qurilmadagi
+        // rejalashtirilgan bildirishnomani ham bekor qilamiz.
+        final alarmId = act['alarm_id'];
+        final deleted = act['deleted'] == true;
+        final enabled = act['enabled'];
+        if (alarmId is int && (deleted || enabled == false)) {
+          try {
+            await NotificationHelper().cancelAlarm(alarmId);
+          } catch (_) {}
+        }
       }
+      // orders_changed / plans_changed / todos_changed / shopping_changed /
+      // finance_changed — bu ekranlar ochilganда/refresh'да serverdan yangilanadi,
+      // shu sabab qo'shimcha lokal amal talab qilinmaydi.
     } catch (e) {
       debugPrint('AI action bajarishda xato: $e');
     }
   }
 
-  void clearHistory() {
+  /// Chat tarixini tozalaydi (xotira + disk).
+  Future<void> clearHistory() async {
     _messages.clear();
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.remove(_historyKey);
+    } catch (_) {}
   }
 }

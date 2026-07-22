@@ -1055,6 +1055,15 @@ class _UnifiedProviderDashboardScreenState
               ),
             ],
           ),
+          // Mijozga qo'ng'iroq — soha egasi buyurtma bergan mijoz bilan
+          // to'g'ridan-to'g'ri bog'lana oladi (WebRTC).
+          if (((o['user_id'] as num?)?.toInt() ?? 0) > 0) ...[
+            const SizedBox(width: 8),
+            _CallClientButton(
+              userId: (o['user_id'] as num).toInt(),
+              userName: o['user_name'] as String? ?? 'Mijoz',
+            ),
+          ],
         ],
       ),
     );
@@ -1337,6 +1346,29 @@ class _UnifiedProviderDashboardScreenState
           },
         );
       },
+    );
+  }
+}
+
+/// Soha egasi (provider) buyurtma bergan mijozga to'g'ridan qo'ng'iroq qilish tugmasi.
+class _CallClientButton extends StatelessWidget {
+  final int userId;
+  final String userName;
+  const _CallClientButton({required this.userId, required this.userName});
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.green,
+      shape: const CircleBorder(),
+      child: InkWell(
+        customBorder: const CircleBorder(),
+        onTap: () => CallHelper.makeDirectCall(context, userId, userName),
+        child: const Padding(
+          padding: EdgeInsets.all(10),
+          child: Icon(LucideIcons.phone, color: Colors.white, size: 18),
+        ),
+      ),
     );
   }
 }

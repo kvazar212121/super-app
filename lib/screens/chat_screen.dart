@@ -61,6 +61,9 @@ class _ChatScreenState extends State<ChatScreen>
               .tr,
     });
 
+    // Saqlangan chat tarixini yuklaymiz (ilova qayta ochilganda ham chat qoladi).
+    _loadSavedHistory();
+
     _initSpeechEngine().then((_) {
       if (widget.startVoice) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -68,6 +71,23 @@ class _ChatScreenState extends State<ChatScreen>
         });
       }
     });
+  }
+
+  /// AiService diskdagi tarixni yuklaydi va ekranga qo'shadi.
+  Future<void> _loadSavedHistory() async {
+    try {
+      final saved = await _aiService.loadHistory();
+      if (saved.isEmpty || !mounted) return;
+      setState(() {
+        for (final m in saved) {
+          _chatHistory.add({
+            'role': m['role'] ?? 'assistant',
+            'content': m['content'] ?? '',
+          });
+        }
+      });
+      WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToBottom());
+    } catch (_) {}
   }
 
   @override
@@ -268,7 +288,7 @@ class _ChatScreenState extends State<ChatScreen>
             size: 20,
           ),
           onPressed: () {
-            _aiService.clearHistory();
+            unawaited(_aiService.clearHistory());
             setState(() {
               _chatHistory.clear();
               _chatHistory.add({
