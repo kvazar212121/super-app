@@ -106,7 +106,7 @@ async def get_bonus_rules(
         return []
     try:
         return json.loads(setting.value)
-    except:
+    except (json.JSONDecodeError, TypeError, ValueError):
         return []
 
 @router.post("/finance/bonus-rules")

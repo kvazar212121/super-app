@@ -128,6 +128,11 @@ async def lifespan(app: FastAPI):
     root_logger = logging.getLogger()
     root_logger.addFilter(request_id_filter)
 
+    # Production xavfsizlik guard'i — DB'дан OLDIN. Xavfli default sozlamalar
+    # (secret_key, ochiq CORS, standart admin paroli) bilan prod'да ishga tushmaydi.
+    from app.core.security_guard import enforce_production_config
+    enforce_production_config(settings)
+
     # Startup DDL + seed — ko'p workerда FAQAT bitta worker bajaradi.
     await run_startup_init()
 

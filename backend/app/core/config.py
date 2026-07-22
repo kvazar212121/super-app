@@ -9,6 +9,10 @@ class Settings(BaseSettings):
 
     app_name: str = "super-app-api"
     debug: bool = True  # Development
+    # "development" | "production". Production'да xavfli default qiymatlar
+    # (secret_key, cors_allow_all, admin paroli) ishlatib bo'lmaydi — startup
+    # guard ilovani ishga tushirmaydi. Localда o'zgartirishsiz ishlayveradi.
+    environment: str = "development"
     bypass_auth: bool = False  # Production: faqat OTP orqali kirish
     require_otp_auth: bool = True  # Login/register uchun SMS OTP majburiy
     api_v1_prefix: str = "/api/v1"
