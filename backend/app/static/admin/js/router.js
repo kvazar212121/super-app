@@ -51,6 +51,8 @@ import { statusBadge, openModal, formatMoney, formatDate, closeModal, getInitial
             };
             if (renderers[page]) {
                 await renderers[page]();
+                // Sahifадаги lucide ikonlarni chizamiz (tezkor amal kartalari va h.k.)
+                if (window.lucide) lucide.createIcons();
                 if (page === 'dashboard') setTimeout(function() { initDashboardCharts(); }, 50);
             }
         }

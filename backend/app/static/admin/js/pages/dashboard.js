@@ -16,6 +16,20 @@ import { navigateTo, renderPage } from '../router.js';
 
             var providerOptions = providers.map(p => '<option value="' + p.id + '">' + window.escapeHtml(p.name) + ' (Balans: ' + window.formatMoney(p.balance) + ')</option>').join('');
 
+            // Kutayotgan ishlar sonlari (tezkor amallar + nav badge uchun)
+            var pendingOrders = (s.orders_by_status && s.orders_by_status.pending) || 0;
+            var pendingProviders = s.pending_providers || 0;
+            var openTickets = 0;
+            try {
+                const tk = await window.api(window.API_BASE + '/support/tickets?status=open');
+                if (tk && tk.ok) {
+                    var td = await tk.json();
+                    openTickets = (td.tickets || td.items || td || []).length || 0;
+                }
+            } catch(e) {}
+            // Nav badge'larni yangilaymiz
+            window.updateNavBadges({ orders: pendingOrders, providers: pendingProviders, support: openTickets });
+
             var recentOrders = [];
             var topProviders = [];
             try {
@@ -107,6 +121,7 @@ import { navigateTo, renderPage } from '../router.js';
                         '<div class="stat-card-value">' + s.avg_rating + '</div>' +
                     '</div>' +
                 '</div>' +
+                _quickActionsHtml(pendingOrders, pendingProviders, openTickets) +
                 '<div class="charts-grid">' +
                     '<div class="card">' +
                         '<div class="card-header"><h3 class="card-title">Tushum dinamikasi (30 kun)</h3></div>' +
@@ -253,8 +268,63 @@ import { navigateTo, renderPage } from '../router.js';
 
         
 
+// ===== Tezkor amallar (kutayotgan ishlar) =====
+function _quickActionsHtml(pendingOrders, pendingProviders, openTickets) {
+    var cards = [];
+    if (pendingOrders > 0) {
+        cards.push(_qaCard('shopping-bag', '#6366F1', pendingOrders, 'Kutayotgan buyurtma', 'Ko\'rib chiqish kerak', 'orders'));
+    }
+    if (pendingProviders > 0) {
+        cards.push(_qaCard('briefcase', '#10B981', pendingProviders, 'Tasdiq kutayotgan soha egasi', 'Tasdiqlash kerak', 'providers'));
+    }
+    if (openTickets > 0) {
+        cards.push(_qaCard('headset', '#F59E0B', openTickets, 'Ochiq murojaat', 'Javob berish kerak', 'support'));
+    }
+    if (cards.length === 0) {
+        return '<div class="card" style="margin-bottom:24px;"><div class="card-body" style="display:flex;align-items:center;gap:10px;color:#16a34a;">' +
+            '<i data-lucide="check-circle"></i><span style="font-weight:600;">Barcha ishlar bajarilgan — kutayotgan vazifa yo\'q.</span></div></div>';
+    }
+    return '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin-bottom:24px;">' +
+        cards.join('') + '</div>';
+}
+
+function _qaCard(icon, color, count, title, subtitle, page) {
+    return '<div onclick="navigateTo(\'' + page + '\')" style="cursor:pointer;background:#fff;border:2px solid ' + color + '22;border-left:5px solid ' + color + ';border-radius:14px;padding:18px 20px;display:flex;align-items:center;gap:16px;transition:all .15s;box-shadow:0 1px 4px rgba(0,0,0,.06);" ' +
+        'onmouseover="this.style.transform=\'translateY(-2px)\';this.style.boxShadow=\'0 4px 14px rgba(0,0,0,.12)\';" ' +
+        'onmouseout="this.style.transform=\'\';this.style.boxShadow=\'0 1px 4px rgba(0,0,0,.06)\';">' +
+        '<div style="width:48px;height:48px;border-radius:12px;background:' + color + '18;display:flex;align-items:center;justify-content:center;color:' + color + ';flex-shrink:0;"><i data-lucide="' + icon + '"></i></div>' +
+        '<div style="flex:1;min-width:0;">' +
+            '<div style="font-size:26px;font-weight:800;color:' + color + ';line-height:1;">' + count + '</div>' +
+            '<div style="font-size:14px;font-weight:700;color:#0f172a;margin-top:4px;">' + title + '</div>' +
+            '<div style="font-size:12px;color:#94a3b8;">' + subtitle + '</div>' +
+        '</div>' +
+        '<i data-lucide="chevron-right" style="color:#cbd5e1;flex-shrink:0;"></i>' +
+    '</div>';
+}
+
+// ===== Nav badge'larni yangilash =====
+function updateNavBadges(counts) {
+    var map = {
+        orders: 'navOrdersBadge',
+        providers: 'navProvidersBadge',
+        support: 'supNavBadge',
+    };
+    Object.keys(map).forEach(function(key) {
+        var el = document.getElementById(map[key]);
+        if (!el) return;
+        var n = counts[key] || 0;
+        if (n > 0) {
+            el.textContent = n > 99 ? '99+' : String(n);
+            el.style.display = '';
+        } else {
+            el.style.display = 'none';
+        }
+    });
+}
+
 // Exports for ES6 modules
-export { initDashboardCharts, renderDashboard };
+export { initDashboardCharts, renderDashboard, updateNavBadges };
 // Expose to window for inline onclick handlers
 window.initDashboardCharts = initDashboardCharts;
 window.renderDashboard = renderDashboard;
+window.updateNavBadges = updateNavBadges;
