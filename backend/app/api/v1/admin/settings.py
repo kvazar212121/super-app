@@ -6,6 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.db.session import get_db
 from app.models.user import User
 from app.api.v1.admin.dependencies import require_admin
+from app.services import settings_service
 
 router = APIRouter()
 
@@ -32,16 +33,37 @@ class SettingsUpdate(BaseModel):
     support_telegram: Optional[str] = None
 
 
-DEFAULT_SETTINGS = SettingsOut(
-    commission_rate=15.0,
-    cashback_rate=2.0,
-    currency="UZS",
-    maintenance_mode=False,
-    registration_open=True,
-    min_withdrawal=50000.0,
-    support_phone="+998 71 200 00 00",
-    support_telegram="@superapp_support",
-)
+# Standart qiymatlar — DB'da sozlanmagan bo'lsa shular qaytadi
+_DEFAULTS = {
+    "commission_rate": 15.0,
+    "cashback_rate": 2.0,
+    "currency": "UZS",
+    "maintenance_mode": False,
+    "registration_open": True,
+    "min_withdrawal": 50000.0,
+    "support_phone": "+998 71 200 00 00",
+    "support_telegram": "@superapp_support",
+}
+
+
+def _read_settings() -> SettingsOut:
+    def _f(key: str) -> float:
+        val = settings_service.get(key, None)
+        try:
+            return float(val) if val is not None else float(_DEFAULTS[key])
+        except (TypeError, ValueError):
+            return float(_DEFAULTS[key])
+
+    return SettingsOut(
+        commission_rate=_f("commission_rate"),
+        cashback_rate=_f("cashback_rate"),
+        currency=(settings_service.get("currency", None) or _DEFAULTS["currency"]),
+        maintenance_mode=settings_service.get_bool("maintenance_mode", _DEFAULTS["maintenance_mode"]),
+        registration_open=settings_service.get_bool("registration_open", _DEFAULTS["registration_open"]),
+        min_withdrawal=_f("min_withdrawal"),
+        support_phone=(settings_service.get("support_phone", None) or _DEFAULTS["support_phone"]),
+        support_telegram=(settings_service.get("support_telegram", None) or _DEFAULTS["support_telegram"]),
+    )
 
 
 @router.get("/settings", response_model=SettingsOut)
@@ -49,7 +71,7 @@ async def get_settings(
     _admin: User = Depends(require_admin),
     db: AsyncSession = Depends(get_db),
 ):
-    return DEFAULT_SETTINGS
+    return _read_settings()
 
 
 @router.patch("/settings", response_model=SettingsOut)
@@ -58,5 +80,15 @@ async def update_settings(
     _admin: User = Depends(require_admin),
     db: AsyncSession = Depends(get_db),
 ):
-    updated = DEFAULT_SETTINGS.model_copy(update=data.model_dump(exclude_unset=True))
-    return updated
+    updates: dict[str, str] = {}
+    payload = data.model_dump(exclude_unset=True)
+    for key, val in payload.items():
+        if val is None:
+            continue
+        if isinstance(val, bool):
+            updates[key] = "true" if val else "false"
+        else:
+            updates[key] = str(val)
+    if updates:
+        settings_service.set_many(updates)
+    return _read_settings()
