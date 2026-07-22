@@ -53,4 +53,29 @@ window.canEdit = function (section) {
 
     window.renderPage(firstAllowed || 'dashboard');
     if (window.lucide) lucide.createIcons();
+
+    // Nav badge'larni boshlanishда bir marta yuklaymiz (dashboardga kirmasa ham
+    // kutayotgan buyurtma/provayder/murojaat sonlari ko'rinsin).
+    _loadInitialNavBadges();
 })();
+
+async function _loadInitialNavBadges() {
+    if (typeof window.updateNavBadges !== 'function') return;
+    var orders = 0, providers = 0, support = 0;
+    try {
+        var r = await window.api(window.API_BASE + '/stats');
+        if (r && r.ok) {
+            var s = await r.json();
+            orders = (s.orders_by_status && s.orders_by_status.pending) || 0;
+            providers = s.pending_providers || 0;
+        }
+    } catch (e) {}
+    try {
+        var tk = await window.api(window.API_BASE + '/support/tickets?status=open');
+        if (tk && tk.ok) {
+            var td = await tk.json();
+            support = (td.tickets || td.items || td || []).length || 0;
+        }
+    } catch (e) {}
+    window.updateNavBadges({ orders: orders, providers: providers, support: support });
+}
