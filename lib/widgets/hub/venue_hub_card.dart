@@ -150,6 +150,43 @@ class VenueHubCard extends StatelessWidget {
     );
   }
 
+  /// Umumiy (generik) karta — istalgan xizmat provayderi uchun. Barcha hub
+  /// bo'limlari BIR XIL o'lcham/ko'rinishдаги karta ishlatishi uchun (usta,
+  /// kuryer, repetitor, hamshira va h.k.). Cover rasm bo'lsa ko'rsatiladi,
+  /// bo'lmasa ikonka+rang fon.
+  factory VenueHubCard.generic({
+    required String name,
+    required String subtitle,
+    required double rating,
+    required int reviewCount,
+    required String priceLabel,
+    required IconData icon,
+    required Color accent,
+    required VoidCallback onTap,
+    double? distanceKmValue,
+    String? coverUrl,
+    Map<String, dynamic>? rawJson,
+    bool isOpen = true,
+  }) {
+    return VenueHubCard(
+      name: name,
+      subtitle: subtitle,
+      distanceLabel: distanceKmValue != null
+          ? formatDistanceKm(distanceKmValue)
+          : '',
+      priceLabel: priceLabel,
+      rating: rating,
+      reviewCount: reviewCount,
+      completedCount: rawJson?['completed_orders_count'] ?? 0,
+      cancelledCount: rawJson?['cancelled_orders_count'] ?? 0,
+      isOpen: isOpen,
+      icon: icon,
+      accent: accent,
+      coverUrl: coverUrl ?? AppConfig.resolveCoverImage(rawJson),
+      onTap: onTap,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(

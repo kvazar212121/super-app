@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../../models/barber_shop.dart';
@@ -311,7 +310,7 @@ class MobileSalonHubSection extends StatelessWidget {
           ),
         ),
         SizedBox(
-          height: 168,
+          height: 198,
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -320,108 +319,26 @@ class MobileSalonHubSection extends StatelessWidget {
             itemBuilder: (_, i) {
               final s = stylists[i];
               final minPrice = s.prices.values.isEmpty
-                  ? 50000
+                  ? 50000.0
                   : s.prices.values.reduce((a, b) => a < b ? a : b);
-              return SizedBox(
-                width: 150,
-                child: InkWell(
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => ProviderProfileScreen(
-                        master: s,
-                        category: ServiceHubKind.salon,
-                      ),
-                    ),
-                  ),
-                  borderRadius: BorderRadius.circular(18),
-                  child: Container(
-                    padding: const EdgeInsets.all(14),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(GlassTokens.radiusLg),
-                      border: Border.all(color: GlassTokens.glassBorder(context), width: 1),
-                      boxShadow: GlassTokens.glassShadow(context),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        CircleAvatar(
-                          radius: 22,
-                          backgroundColor: accentColor,
-                          child: Icon(
-                            LucideIcons.sparkles,
-                            color: Colors.white,
-                            size: 20,
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        Text(
-                          s.name,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontWeight: FontWeight.w700,
-                            fontSize: 14,
-                            color: const Color(0xFF0F172A),
-                          ),
-                        ),
-                        Text(
-                          s.specialty,
-                          style: TextStyle(
-                            fontSize: 11,
-                            color: accentColor,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        const Spacer(),
-                        Row(
-                          children: [
-                            Text(
-                              '${(minPrice / 1000).round()}k+',
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                                color: accentColor,
-                              ),
-                            ),
-                            const Spacer(),
-                            if ((s.rawJson?['completed_orders_count'] ?? 0) >
-                                0) ...[
-                              const Icon(
-                                Icons.check_circle,
-                                size: 10,
-                                color: Colors.green,
-                              ),
-                              const SizedBox(width: 2),
-                              Text(
-                                '${s.rawJson?['completed_orders_count']}',
-                                style: const TextStyle(
-                                  fontSize: 10,
-                                  color: Colors.green,
-                                ),
-                              ),
-                              const SizedBox(width: 4),
-                            ],
-                            if ((s.rawJson?['cancelled_orders_count'] ?? 0) >
-                                0) ...[
-                              const Icon(
-                                Icons.cancel,
-                                size: 10,
-                                color: Colors.red,
-                              ),
-                              const SizedBox(width: 2),
-                              Text(
-                                '${s.rawJson?['cancelled_orders_count']}',
-                                style: const TextStyle(
-                                  fontSize: 10,
-                                  color: Colors.red,
-                                ),
-                              ),
-                            ],
-                          ],
-                        ),
-                      ],
+              return VenueHubCard.generic(
+                name: s.name,
+                subtitle: s.specialty,
+                rating: s.rating,
+                reviewCount: s.reviewCount,
+                priceLabel: '${(minPrice / 1000).round()}k+',
+                icon: LucideIcons.sparkles,
+                accent: accentColor,
+                rawJson: s.rawJson,
+                distanceKmValue: distanceKm(
+                  kDefaultUserLat, kDefaultUserLng, s.latitude, s.longitude,
+                ),
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => ProviderProfileScreen(
+                      master: s,
+                      category: ServiceHubKind.salon,
                     ),
                   ),
                 ),
@@ -478,7 +395,7 @@ class MobileBarberHubSection extends StatelessWidget {
           ),
         ),
         SizedBox(
-          height: 168,
+          height: 198,
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -486,9 +403,21 @@ class MobileBarberHubSection extends StatelessWidget {
             separatorBuilder: (_, _) => const SizedBox(width: 12),
             itemBuilder: (_, i) {
               final b = barbers[i];
-              return _MobileBarberCard(
-                master: b,
+              final minPrice = b.prices.values.isEmpty
+                  ? 35000.0
+                  : b.prices.values.reduce((a, b) => a < b ? a : b);
+              return VenueHubCard.generic(
+                name: b.name,
+                subtitle: 'Uyga xizmat',
+                rating: b.rating,
+                reviewCount: b.reviewCount,
+                priceLabel: '${(minPrice / 1000).round()}k+',
+                icon: LucideIcons.scissors,
                 accent: accentColor,
+                rawJson: b.rawJson,
+                distanceKmValue: distanceKm(
+                  kDefaultUserLat, kDefaultUserLng, b.latitude, b.longitude,
+                ),
                 onTap: () => Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -504,139 +433,6 @@ class MobileBarberHubSection extends StatelessWidget {
         ),
         const SizedBox(height: 8),
       ],
-    );
-  }
-}
-
-class _MobileBarberCard extends StatelessWidget {
-  final Master master;
-  final Color accent;
-  final VoidCallback onTap;
-
-  const _MobileBarberCard({
-    required this.master,
-    required this.accent,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final minPrice = master.prices.values.isEmpty
-        ? 35000
-        : master.prices.values.reduce((a, b) => a < b ? a : b);
-
-    return SizedBox(
-      width: 150,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(18),
-        child: Container(
-          padding: const EdgeInsets.all(14),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(GlassTokens.radiusLg),
-            border: Border.all(color: GlassTokens.glassBorder(context), width: 1),
-            boxShadow: GlassTokens.glassShadow(context),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  CircleAvatar(
-                    radius: 22,
-                    backgroundColor: accent,
-                    child: Icon(
-                      LucideIcons.scissors,
-                      color: Colors.white,
-                      size: 20,
-                    ),
-                  ),
-                  const Spacer(),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 6,
-                      vertical: 2,
-                    ),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF10B981),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: const Text(
-                      'Uyga',
-                      style: TextStyle(
-                        fontSize: 10,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 10),
-              Text(
-                master.name,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  fontWeight: FontWeight.w800,
-                  fontSize: 14,
-                  color: const Color(0xFF0F172A),
-                ),
-              ),
-              Row(
-                children: [
-                  const Icon(Icons.star, size: 12, color: Colors.amber),
-                  const SizedBox(width: 2),
-                  Text(
-                    '${master.rating}',
-                    style: const TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF0F172A),
-                    ),
-                  ),
-                ],
-              ),
-              const Spacer(),
-              Row(
-                children: [
-                  Text(
-                    'dan ${NumberFormat('#,###').format(minPrice)} so\'m',
-                    style: TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w600,
-                      color: accent,
-                    ),
-                  ),
-                  const Spacer(),
-                  if ((master.rawJson?['completed_orders_count'] ?? 0) > 0) ...[
-                    const Icon(
-                      Icons.check_circle,
-                      size: 10,
-                      color: Colors.green,
-                    ),
-                    const SizedBox(width: 2),
-                    Text(
-                      '${master.rawJson?['completed_orders_count']}',
-                      style: const TextStyle(fontSize: 10, color: Colors.green),
-                    ),
-                    const SizedBox(width: 4),
-                  ],
-                  if ((master.rawJson?['cancelled_orders_count'] ?? 0) > 0) ...[
-                    const Icon(Icons.cancel, size: 10, color: Colors.red),
-                    const SizedBox(width: 2),
-                    Text(
-                      '${master.rawJson?['cancelled_orders_count']}',
-                      style: const TextStyle(fontSize: 10, color: Colors.red),
-                    ),
-                  ],
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
     );
   }
 }

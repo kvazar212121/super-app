@@ -10,8 +10,9 @@ import '../../screens/auto_mobile_dispatch_screen.dart';
 import '../../screens/auto_workshop_dispatch_screen.dart';
 import '../../screens/tutor_profile_screen.dart';
 import '../../theme/glass_tokens.dart';
-import '../glass/glass_surface.dart';
+import '../../utils/geo_utils.dart';
 import 'hub_filter_chips.dart';
+import 'venue_hub_card.dart';
 
 class CourierHubSection extends StatelessWidget {
   final List<CourierService> couriers;
@@ -71,7 +72,7 @@ class CourierHubSection extends StatelessWidget {
           ),
         ),
         SizedBox(
-          height: 172,
+          height: 198,
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -80,89 +81,23 @@ class CourierHubSection extends StatelessWidget {
             itemBuilder: (_, i) {
               final c = couriers[i];
               final minPrice = c.prices.values.isEmpty
-                  ? 25000
+                  ? 25000.0
                   : c.prices.values.reduce((a, b) => a < b ? a : b);
-              return SizedBox(
-                width: 158,
-                child: InkWell(
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => CourierDispatchScreen(service: c),
-                    ),
-                  ),
-                  borderRadius: BorderRadius.circular(18),
-                  child: Container(
-                    padding: const EdgeInsets.all(14),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(GlassTokens.radiusLg),
-                      border: Border.all(color: GlassTokens.glassBorder(context), width: 1),
-                      boxShadow: GlassTokens.glassShadow(context),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        CircleAvatar(
-                          radius: 22,
-                          backgroundColor: accentColor,
-                          child: Icon(
-                            LucideIcons.bike,
-                            color: Colors.white,
-                            size: 20,
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        Text(
-                          c.name,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontWeight: FontWeight.w700,
-                            fontSize: 14,
-                            color: const Color(0xFF0F172A),
-                          ),
-                        ),
-                        Text(
-                          c.serviceArea ?? c.vehicleType.label,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: 11,
-                            color: accentColor,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        const Spacer(),
-                        Row(
-                          children: [
-                            const Icon(
-                              Icons.star,
-                              color: Colors.amber,
-                              size: 14,
-                            ),
-                            const SizedBox(width: 3),
-                            Text(
-                              '${c.rating}',
-                              style: const TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
-                                color: Color(0xFF0F172A),
-                              ),
-                            ),
-                            const Spacer(),
-                            Text(
-                              '${(minPrice / 1000).round()}k+',
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                                color: accentColor,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
+              return VenueHubCard.generic(
+                name: c.name,
+                subtitle: c.serviceArea ?? c.vehicleType.label,
+                rating: c.rating,
+                reviewCount: c.reviewCount,
+                priceLabel: '${(minPrice / 1000).round()}k+',
+                icon: LucideIcons.bike,
+                accent: accentColor,
+                distanceKmValue: distanceKm(
+                  kDefaultUserLat, kDefaultUserLng, c.latitude, c.longitude,
+                ),
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => CourierDispatchScreen(service: c),
                   ),
                 ),
               );
@@ -233,7 +168,7 @@ class AutoHelpHubSection extends StatelessWidget {
           ),
         ),
         SizedBox(
-          height: 172,
+          height: 198,
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -242,89 +177,23 @@ class AutoHelpHubSection extends StatelessWidget {
             itemBuilder: (_, i) {
               final u = units[i];
               final minPrice = u.prices.values.isEmpty
-                  ? 80000
+                  ? 80000.0
                   : u.prices.values.reduce((a, b) => a < b ? a : b);
-              return SizedBox(
-                width: 158,
-                child: InkWell(
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => AutoMobileDispatchScreen(service: u),
-                    ),
-                  ),
-                  borderRadius: BorderRadius.circular(18),
-                  child: Container(
-                    padding: const EdgeInsets.all(14),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(GlassTokens.radiusLg),
-                      border: Border.all(color: GlassTokens.glassBorder(context), width: 1),
-                      boxShadow: GlassTokens.glassShadow(context),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        CircleAvatar(
-                          radius: 22,
-                          backgroundColor: accentColor,
-                          child: Icon(
-                            u.vehicleType.icon,
-                            color: Colors.white,
-                            size: 20,
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        Text(
-                          u.name,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontWeight: FontWeight.w700,
-                            fontSize: 14,
-                            color: const Color(0xFF0F172A),
-                          ),
-                        ),
-                        Text(
-                          u.serviceArea ?? u.vehicleType.label,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: 11,
-                            color: accentColor,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        const Spacer(),
-                        Row(
-                          children: [
-                            const Icon(
-                              Icons.star,
-                              color: Colors.amber,
-                              size: 14,
-                            ),
-                            const SizedBox(width: 3),
-                            Text(
-                              '${u.rating}',
-                              style: const TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
-                                color: Color(0xFF0F172A),
-                              ),
-                            ),
-                            const Spacer(),
-                            Text(
-                              '${(minPrice / 1000).round()}k+',
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                                color: accentColor,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
+              return VenueHubCard.generic(
+                name: u.name,
+                subtitle: u.serviceArea ?? u.vehicleType.label,
+                rating: u.rating,
+                reviewCount: u.reviewCount,
+                priceLabel: '${(minPrice / 1000).round()}k+',
+                icon: u.vehicleType.icon,
+                accent: accentColor,
+                distanceKmValue: distanceKm(
+                  kDefaultUserLat, kDefaultUserLng, u.latitude, u.longitude,
+                ),
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => AutoMobileDispatchScreen(service: u),
                   ),
                 ),
               );
@@ -379,7 +248,7 @@ class AutoWorkshopHubSection extends StatelessWidget {
           ),
         ),
         SizedBox(
-          height: 172,
+          height: 198,
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -388,89 +257,23 @@ class AutoWorkshopHubSection extends StatelessWidget {
             itemBuilder: (_, i) {
               final w = workshops[i];
               final minPrice = w.prices.values.isEmpty
-                  ? 80000
+                  ? 80000.0
                   : w.prices.values.reduce((a, b) => a < b ? a : b);
-              return SizedBox(
-                width: 158,
-                child: InkWell(
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => AutoWorkshopDispatchScreen(workshop: w),
-                    ),
-                  ),
-                  borderRadius: BorderRadius.circular(18),
-                  child: Container(
-                    padding: const EdgeInsets.all(14),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(GlassTokens.radiusLg),
-                      border: Border.all(color: GlassTokens.glassBorder(context), width: 1),
-                      boxShadow: GlassTokens.glassShadow(context),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        CircleAvatar(
-                          radius: 22,
-                          backgroundColor: const Color(0xFF334155),
-                          child: Icon(
-                            LucideIcons.home,
-                            color: Colors.white,
-                            size: 20,
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        Text(
-                          w.name,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontWeight: FontWeight.w700,
-                            fontSize: 14,
-                            color: const Color(0xFF0F172A),
-                          ),
-                        ),
-                        Text(
-                          w.specializations.take(2).join(', '),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: 11,
-                            color: accentColor,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        const Spacer(),
-                        Row(
-                          children: [
-                            const Icon(
-                              Icons.star,
-                              color: Colors.amber,
-                              size: 14,
-                            ),
-                            const SizedBox(width: 3),
-                            Text(
-                              '${w.rating}',
-                              style: const TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
-                                color: Color(0xFF0F172A),
-                              ),
-                            ),
-                            const Spacer(),
-                            Text(
-                              '${(minPrice / 1000).round()}k+',
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                                color: accentColor,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
+              return VenueHubCard.generic(
+                name: w.name,
+                subtitle: w.specializations.take(2).join(', '),
+                rating: w.rating,
+                reviewCount: w.reviewCount,
+                priceLabel: '${(minPrice / 1000).round()}k+',
+                icon: LucideIcons.home,
+                accent: const Color(0xFF334155),
+                distanceKmValue: distanceKm(
+                  kDefaultUserLat, kDefaultUserLng, w.latitude, w.longitude,
+                ),
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => AutoWorkshopDispatchScreen(workshop: w),
                   ),
                 ),
               );
@@ -532,7 +335,7 @@ class TutorHubSection extends StatelessWidget {
           ),
         ),
         SizedBox(
-          height: 200,
+          height: 198,
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -541,99 +344,23 @@ class TutorHubSection extends StatelessWidget {
             itemBuilder: (_, i) {
               final t = tutors[i];
               final minPrice = t.prices.values.isEmpty
-                  ? 100000
+                  ? 100000.0
                   : t.prices.values.reduce((a, b) => a < b ? a : b);
-              return GestureDetector(
+              return VenueHubCard.generic(
+                name: t.name,
+                subtitle: t.subjectsLabel,
+                rating: t.rating,
+                reviewCount: t.reviewCount,
+                priceLabel: '${(minPrice / 1000).round()}k+',
+                icon: LucideIcons.bookOpen,
+                accent: accentColor,
+                distanceKmValue: distanceKm(
+                  kDefaultUserLat, kDefaultUserLng, t.latitude, t.longitude,
+                ),
                 onTap: () => Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (_) => TutorProfileScreen(tutor: t),
-                  ),
-                ),
-                child: GlassSurface(
-                  borderRadius: GlassTokens.radiusLg,
-                  padding: const EdgeInsets.all(14),
-                  child: SizedBox(
-                    width: 260,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            CircleAvatar(
-                              radius: 22,
-                              backgroundColor: accentColor,
-                              child: Icon(
-                                LucideIcons.bookOpen,
-                                color: Colors.white,
-                                size: 20,
-                              ),
-                            ),
-                            const SizedBox(width: 10),
-                            Expanded(
-                              child: Text(
-                                t.name,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w800,
-                                  fontSize: 15,
-                                  color: GlassTokens.primaryText(context),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          t.subjectsLabel,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: GlassTokens.secondaryText(context),
-                          ),
-                        ),
-                        const Spacer(),
-                        Row(
-                          children: [
-                            Icon(
-                              LucideIcons.star,
-                              size: 14,
-                              color: accentColor,
-                            ),
-                            const SizedBox(width: 4),
-                            Text(
-                              t.rating.toStringAsFixed(1),
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w700,
-                                color: GlassTokens.primaryText(context),
-                              ),
-                            ),
-                            const Spacer(),
-                            Text(
-                              '${(minPrice / 1000).round()}k+',
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                                color: accentColor,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          t.lessonModesLabel,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: 11,
-                            color: GlassTokens.secondaryText(context),
-                          ),
-                        ),
-                      ],
-                    ),
                   ),
                 ),
               );

@@ -195,7 +195,7 @@ class MobileMassageHubSection extends StatelessWidget {
           ),
         ),
         SizedBox(
-          height: 168,
+          height: 198,
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -204,72 +204,28 @@ class MobileMassageHubSection extends StatelessWidget {
             itemBuilder: (_, i) {
               final s = specialists[i];
               final minPrice = s.prices.values.isEmpty
-                  ? 50000
+                  ? 50000.0
                   : s.prices.values.reduce((a, b) => a < b ? a : b);
-              return SizedBox(
-                width: 150,
-                child: InkWell(
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => ProviderProfileScreen(
-                        master: _convertToMaster(s),
-                        category: ServiceHubKind.massajHijoma,
-                      ),
-                    ),
-                  ),
-                  borderRadius: BorderRadius.circular(18),
-                  child: Container(
-                    padding: const EdgeInsets.all(14),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(GlassTokens.radiusLg),
-                      border: Border.all(color: GlassTokens.glassBorder(context), width: 1),
-                      boxShadow: GlassTokens.glassShadow(context),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        CircleAvatar(
-                          radius: 22,
-                          backgroundColor: accentColor,
-                          child: Icon(
-                            LucideIcons.heartPulse,
-                            color: Colors.white,
-                            size: 20,
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        Text(
-                          s.name,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontWeight: FontWeight.w700,
-                            fontSize: 14,
-                            color: const Color(0xFF0F172A),
-                          ),
-                        ),
-                        Text(
-                          s.serviceTypes.isNotEmpty
-                              ? s.serviceTypes.first.label
-                              : 'Mutaxassis',
-                          style: TextStyle(
-                            fontSize: 11,
-                            color: accentColor,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        const Spacer(),
-                        Text(
-                          '${(minPrice / 1000).round()}k+',
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                            color: accentColor,
-                          ),
-                        ),
-                      ],
+              return VenueHubCard.generic(
+                name: s.name,
+                subtitle: s.serviceTypes.isNotEmpty
+                    ? s.serviceTypes.first.label
+                    : 'Mutaxassis',
+                rating: s.rating,
+                reviewCount: s.reviewCount,
+                priceLabel: '${(minPrice / 1000).round()}k+',
+                icon: LucideIcons.heartPulse,
+                accent: accentColor,
+                rawJson: s.rawJson,
+                distanceKmValue: distanceKm(
+                  kDefaultUserLat, kDefaultUserLng, s.latitude, s.longitude,
+                ),
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => ProviderProfileScreen(
+                      master: _convertToMaster(s),
+                      category: ServiceHubKind.massajHijoma,
                     ),
                   ),
                 ),

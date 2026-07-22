@@ -10,6 +10,7 @@ import '../../theme/glass_tokens.dart';
 import '../../utils/geo_utils.dart';
 import 'package:super_app/l10n/locale_controller.dart';
 import 'hub_filter_chips.dart';
+import 'venue_hub_card.dart';
 
 /// Tozalash — yakka tozalovchi va jamoalar.
 class CleaningHubSection extends StatelessWidget {
@@ -101,147 +102,47 @@ class CleaningHubSection extends StatelessWidget {
           ),
         ),
         SizedBox(
-          height: 172,
+          height: 198,
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.symmetric(horizontal: 20),
             itemCount: items.length,
             separatorBuilder: (_, _) => const SizedBox(width: 12),
-            itemBuilder: (_, i) => _CleaningCard(
-              master: items[i],
-              accent: accentColor,
-              badgeIcon: badgeIcon,
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => ProviderProfileScreen(
-                    master: items[i],
-                    category: ServiceHubKind.tozalash,
+            itemBuilder: (_, i) {
+              final m = items[i];
+              final minPrice = m.prices.values.isEmpty
+                  ? 200000.0
+                  : m.prices.values.reduce((a, b) => a < b ? a : b);
+              return VenueHubCard.generic(
+                name: m.name,
+                subtitle: m.isCleaningTeam && m.teamSize != null
+                    ? 'Jamoa · ${m.teamSize} kishi'
+                    : m.isMasterBrigade && m.teamSize != null
+                    ? 'Brigada · ${m.teamSize} kishi'
+                    : m.specialty,
+                rating: m.rating,
+                reviewCount: m.reviewCount,
+                priceLabel: '${(minPrice / 1000).round()}k+',
+                icon: LucideIcons.sprayCan,
+                accent: accentColor,
+                distanceKmValue: distanceKm(
+                  kDefaultUserLat, kDefaultUserLng, m.latitude, m.longitude,
+                ),
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => ProviderProfileScreen(
+                      master: m,
+                      category: ServiceHubKind.tozalash,
+                    ),
                   ),
                 ),
-              ),
-            ),
+              );
+            },
           ),
         ),
         const SizedBox(height: 8),
       ],
-    );
-  }
-}
-
-class _CleaningCard extends StatelessWidget {
-  final Master master;
-  final Color accent;
-  final IconData badgeIcon;
-  final VoidCallback onTap;
-
-  const _CleaningCard({
-    required this.master,
-    required this.accent,
-    required this.badgeIcon,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final minPrice = master.prices.values.isEmpty
-        ? 200000
-        : master.prices.values.reduce((a, b) => a < b ? a : b);
-
-    return SizedBox(
-      width: 158,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(18),
-        child: Container(
-          padding: const EdgeInsets.all(14),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(GlassTokens.radiusLg),
-            border: Border.all(color: GlassTokens.glassBorder(context), width: 1),
-            boxShadow: GlassTokens.glassShadow(context),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  CircleAvatar(
-                    radius: 22,
-                    backgroundColor: accent,
-                    child: Icon(
-                      LucideIcons.sprayCan,
-                      color: Colors.white,
-                      size: 20,
-                    ),
-                  ),
-                  const Spacer(),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 6,
-                      vertical: 2,
-                    ),
-                    decoration: BoxDecoration(
-                      color: accent,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Icon(badgeIcon, size: 12, color: Colors.white),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 10),
-              Text(
-                master.name,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  fontWeight: FontWeight.w700,
-                  fontSize: 14,
-                  color: const Color(0xFF0F172A),
-                ),
-              ),
-              Text(
-                master.isCleaningTeam && master.teamSize != null
-                    ? 'Jamoa · ${master.teamSize} kishi'
-                    : master.isMasterBrigade && master.teamSize != null
-                    ? 'Brigada · ${master.teamSize} kishi'
-                    : master.specialty,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  fontSize: 11,
-                  color: accent,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const Spacer(),
-              Row(
-                children: [
-                  const Icon(Icons.star, color: Colors.amber, size: 14),
-                  const SizedBox(width: 3),
-                  Text(
-                    '${master.rating}',
-                    style: const TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: Color(0xFF0F172A),
-                    ),
-                  ),
-                  const Spacer(),
-                  Text(
-                    '${(minPrice / 1000).round()}k+',
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                      color: accent,
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
     );
   }
 }
@@ -337,147 +238,47 @@ class _MasterDispatchHubSectionState extends State<MasterDispatchHubSection> {
           )
         else
           SizedBox(
-            height: 172,
+            height: 198,
             child: ListView.separated(
               scrollDirection: Axis.horizontal,
               padding: const EdgeInsets.symmetric(horizontal: 20),
               itemCount: items.length,
               separatorBuilder: (_, _) => const SizedBox(width: 12),
-              itemBuilder: (_, i) => _MasterDispatchCard(
-                master: items[i],
-                accent: widget.accentColor,
-                badgeIcon: items[i].isMasterBrigade
-                    ? LucideIcons.users
-                    : LucideIcons.user,
-                onTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => ProviderProfileScreen(
-                      master: items[i],
-                      category: ServiceHubKind.usta,
+              itemBuilder: (_, i) {
+                final m = items[i];
+                final minPrice = m.prices.values.isEmpty
+                    ? 100000.0
+                    : m.prices.values.reduce((a, b) => a < b ? a : b);
+                return VenueHubCard.generic(
+                  name: m.name,
+                  subtitle: m.isMasterBrigade && m.teamSize != null
+                      ? 'Brigada · ${m.teamSize} kishi'
+                      : m.specialty,
+                  rating: m.rating,
+                  reviewCount: m.reviewCount,
+                  priceLabel: '${(minPrice / 1000).round()}k+',
+                  icon: m.isMasterBrigade
+                      ? LucideIcons.users
+                      : LucideIcons.user,
+                  accent: widget.accentColor,
+                  distanceKmValue: distanceKm(
+                    kDefaultUserLat, kDefaultUserLng, m.latitude, m.longitude,
+                  ),
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => ProviderProfileScreen(
+                        master: m,
+                        category: ServiceHubKind.usta,
+                      ),
                     ),
                   ),
-                ),
-              ),
+                );
+              },
             ),
           ),
         const SizedBox(height: 8),
       ],
-    );
-  }
-}
-
-class _MasterDispatchCard extends StatelessWidget {
-  final Master master;
-  final Color accent;
-  final IconData badgeIcon;
-  final VoidCallback onTap;
-
-  const _MasterDispatchCard({
-    required this.master,
-    required this.accent,
-    required this.badgeIcon,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final minPrice = master.prices.values.isEmpty
-        ? 100000
-        : master.prices.values.reduce((a, b) => a < b ? a : b);
-
-    return SizedBox(
-      width: 158,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(18),
-        child: Container(
-          padding: const EdgeInsets.all(14),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(GlassTokens.radiusLg),
-            border: Border.all(color: GlassTokens.glassBorder(context), width: 1),
-            boxShadow: GlassTokens.glassShadow(context),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  CircleAvatar(
-                    radius: 22,
-                    backgroundColor: accent,
-                    child: Icon(
-                      LucideIcons.hammer,
-                      color: Colors.white,
-                      size: 20,
-                    ),
-                  ),
-                  const Spacer(),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 6,
-                      vertical: 2,
-                    ),
-                    decoration: BoxDecoration(
-                      color: accent,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Icon(badgeIcon, size: 12, color: Colors.white),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 10),
-              Text(
-                master.name,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  fontWeight: FontWeight.w700,
-                  fontSize: 14,
-                  color: const Color(0xFF0F172A),
-                ),
-              ),
-              Text(
-                master.isMasterBrigade && master.teamSize != null
-                    ? 'Brigada · ${master.teamSize} kishi'
-                    : master.specialty,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  fontSize: 11,
-                  color: accent,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const Spacer(),
-              Row(
-                children: [
-                  const Icon(Icons.star, color: Colors.amber, size: 14),
-                  const SizedBox(width: 3),
-                  Text(
-                    '${master.rating}',
-                    style: const TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: Color(0xFF0F172A),
-                    ),
-                  ),
-                  const Spacer(),
-                  Text(
-                    '${(minPrice / 1000).round()}k+',
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                      color: accent,
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
     );
   }
 }
@@ -541,7 +342,7 @@ class ElectricianHubSection extends StatelessWidget {
           ),
         ),
         SizedBox(
-          height: 172,
+          height: 198,
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -550,91 +351,25 @@ class ElectricianHubSection extends StatelessWidget {
             itemBuilder: (_, i) {
               final e = electricians[i];
               final minPrice = e.prices.values.isEmpty
-                  ? 100000
+                  ? 100000.0
                   : e.prices.values.reduce((a, b) => a < b ? a : b);
-              return SizedBox(
-                width: 158,
-                child: InkWell(
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => ProviderProfileScreen(
-                        master: e,
-                        category: ServiceHubKind.elektrik,
-                      ),
-                    ),
-                  ),
-                  borderRadius: BorderRadius.circular(18),
-                  child: Container(
-                    padding: const EdgeInsets.all(14),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(GlassTokens.radiusLg),
-                      border: Border.all(color: GlassTokens.glassBorder(context), width: 1),
-                      boxShadow: GlassTokens.glassShadow(context),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        CircleAvatar(
-                          radius: 22,
-                          backgroundColor: accentColor,
-                          child: Icon(
-                            LucideIcons.zap,
-                            color: Colors.white,
-                            size: 20,
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        Text(
-                          e.name,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontWeight: FontWeight.w700,
-                            fontSize: 14,
-                            color: const Color(0xFF0F172A),
-                          ),
-                        ),
-                        Text(
-                          e.serviceArea ?? 'Uyga xizmat',
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: 11,
-                            color: accentColor,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        const Spacer(),
-                        Row(
-                          children: [
-                            const Icon(
-                              Icons.star,
-                              color: Colors.amber,
-                              size: 14,
-                            ),
-                            const SizedBox(width: 3),
-                            Text(
-                              '${e.rating}',
-                              style: const TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
-                                color: Color(0xFF0F172A),
-                              ),
-                            ),
-                            const Spacer(),
-                            Text(
-                              '${(minPrice / 1000).round()}k+',
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                                color: accentColor,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
+              return VenueHubCard.generic(
+                name: e.name,
+                subtitle: e.serviceArea ?? 'Uyga xizmat',
+                rating: e.rating,
+                reviewCount: e.reviewCount,
+                priceLabel: '${(minPrice / 1000).round()}k+',
+                icon: LucideIcons.zap,
+                accent: accentColor,
+                distanceKmValue: distanceKm(
+                  kDefaultUserLat, kDefaultUserLng, e.latitude, e.longitude,
+                ),
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => ProviderProfileScreen(
+                      master: e,
+                      category: ServiceHubKind.elektrik,
                     ),
                   ),
                 ),
@@ -706,7 +441,7 @@ class PlumberHubSection extends StatelessWidget {
           ),
         ),
         SizedBox(
-          height: 172,
+          height: 198,
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -715,91 +450,25 @@ class PlumberHubSection extends StatelessWidget {
             itemBuilder: (_, i) {
               final p = plumbers[i];
               final minPrice = p.prices.values.isEmpty
-                  ? 100000
+                  ? 100000.0
                   : p.prices.values.reduce((a, b) => a < b ? a : b);
-              return SizedBox(
-                width: 158,
-                child: InkWell(
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => ProviderProfileScreen(
-                        master: p,
-                        category: ServiceHubKind.santexnik,
-                      ),
-                    ),
-                  ),
-                  borderRadius: BorderRadius.circular(18),
-                  child: Container(
-                    padding: const EdgeInsets.all(14),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(GlassTokens.radiusLg),
-                      border: Border.all(color: GlassTokens.glassBorder(context), width: 1),
-                      boxShadow: GlassTokens.glassShadow(context),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        CircleAvatar(
-                          radius: 22,
-                          backgroundColor: accentColor,
-                          child: Icon(
-                            LucideIcons.droplet,
-                            color: Colors.white,
-                            size: 20,
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        Text(
-                          p.name,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontWeight: FontWeight.w700,
-                            fontSize: 14,
-                            color: const Color(0xFF0F172A),
-                          ),
-                        ),
-                        Text(
-                          p.serviceArea ?? 'Uyga xizmat',
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: 11,
-                            color: accentColor,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        const Spacer(),
-                        Row(
-                          children: [
-                            const Icon(
-                              Icons.star,
-                              color: Colors.amber,
-                              size: 14,
-                            ),
-                            const SizedBox(width: 3),
-                            Text(
-                              '${p.rating}',
-                              style: const TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
-                                color: Color(0xFF0F172A),
-                              ),
-                            ),
-                            const Spacer(),
-                            Text(
-                              '${(minPrice / 1000).round()}k+',
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                                color: accentColor,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
+              return VenueHubCard.generic(
+                name: p.name,
+                subtitle: p.serviceArea ?? 'Uyga xizmat',
+                rating: p.rating,
+                reviewCount: p.reviewCount,
+                priceLabel: '${(minPrice / 1000).round()}k+',
+                icon: LucideIcons.droplet,
+                accent: accentColor,
+                distanceKmValue: distanceKm(
+                  kDefaultUserLat, kDefaultUserLng, p.latitude, p.longitude,
+                ),
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => ProviderProfileScreen(
+                      master: p,
+                      category: ServiceHubKind.santexnik,
                     ),
                   ),
                 ),
@@ -871,7 +540,7 @@ class AcHubSection extends StatelessWidget {
           ),
         ),
         SizedBox(
-          height: 172,
+          height: 198,
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -880,91 +549,25 @@ class AcHubSection extends StatelessWidget {
             itemBuilder: (_, i) {
               final t = technicians[i];
               final minPrice = t.prices.values.isEmpty
-                  ? 180000
+                  ? 180000.0
                   : t.prices.values.reduce((a, b) => a < b ? a : b);
-              return SizedBox(
-                width: 158,
-                child: InkWell(
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => ProviderProfileScreen(
-                        master: t,
-                        category: ServiceHubKind.konditsioner,
-                      ),
-                    ),
-                  ),
-                  borderRadius: BorderRadius.circular(18),
-                  child: Container(
-                    padding: const EdgeInsets.all(14),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(GlassTokens.radiusLg),
-                      border: Border.all(color: GlassTokens.glassBorder(context), width: 1),
-                      boxShadow: GlassTokens.glassShadow(context),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        CircleAvatar(
-                          radius: 22,
-                          backgroundColor: accentColor,
-                          child: Icon(
-                            LucideIcons.wind,
-                            color: Colors.white,
-                            size: 20,
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        Text(
-                          t.name,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontWeight: FontWeight.w700,
-                            fontSize: 14,
-                            color: const Color(0xFF0F172A),
-                          ),
-                        ),
-                        Text(
-                          t.serviceArea ?? 'Uyga xizmat',
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: 11,
-                            color: accentColor,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        const Spacer(),
-                        Row(
-                          children: [
-                            const Icon(
-                              Icons.star,
-                              color: Colors.amber,
-                              size: 14,
-                            ),
-                            const SizedBox(width: 3),
-                            Text(
-                              '${t.rating}',
-                              style: const TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
-                                color: Color(0xFF0F172A),
-                              ),
-                            ),
-                            const Spacer(),
-                            Text(
-                              '${(minPrice / 1000).round()}k+',
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                                color: accentColor,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
+              return VenueHubCard.generic(
+                name: t.name,
+                subtitle: t.serviceArea ?? 'Uyga xizmat',
+                rating: t.rating,
+                reviewCount: t.reviewCount,
+                priceLabel: '${(minPrice / 1000).round()}k+',
+                icon: LucideIcons.wind,
+                accent: accentColor,
+                distanceKmValue: distanceKm(
+                  kDefaultUserLat, kDefaultUserLng, t.latitude, t.longitude,
+                ),
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => ProviderProfileScreen(
+                      master: t,
+                      category: ServiceHubKind.konditsioner,
                     ),
                   ),
                 ),
@@ -1036,7 +639,7 @@ class NannyHubSection extends StatelessWidget {
           ),
         ),
         SizedBox(
-          height: 188,
+          height: 198,
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -1045,101 +648,23 @@ class NannyHubSection extends StatelessWidget {
             itemBuilder: (_, i) {
               final n = nannies[i];
               final minPrice = n.prices.values.isEmpty
-                  ? 80000
+                  ? 80000.0
                   : n.prices.values.reduce((a, b) => a < b ? a : b);
-              return SizedBox(
-                width: 168,
-                child: InkWell(
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => NannyProfileScreen(nanny: n),
-                    ),
-                  ),
-                  borderRadius: BorderRadius.circular(18),
-                  child: Container(
-                    padding: const EdgeInsets.all(14),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(GlassTokens.radiusLg),
-                      border: Border.all(color: GlassTokens.glassBorder(context), width: 1),
-                      boxShadow: GlassTokens.glassShadow(context),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            CircleAvatar(
-                              radius: 22,
-                              backgroundColor: accentColor,
-                              child: Icon(
-                                LucideIcons.baby,
-                                color: Colors.white,
-                                size: 20,
-                              ),
-                            ),
-                            if (n.isVerified) ...[
-                              const Spacer(),
-                              Icon(
-                                LucideIcons.badgeCheck,
-                                size: 16,
-                                color: accentColor,
-                              ),
-                            ],
-                          ],
-                        ),
-                        const SizedBox(height: 10),
-                        Text(
-                          n.name,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontWeight: FontWeight.w700,
-                            fontSize: 14,
-                            color: const Color(0xFF0F172A),
-                          ),
-                        ),
-                        Text(
-                          '${n.experienceYears} yil • ${n.ageGroupsLabel}',
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: 11,
-                            color: accentColor,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        const Spacer(),
-                        Row(
-                          children: [
-                            const Icon(
-                              Icons.star,
-                              color: Colors.amber,
-                              size: 14,
-                            ),
-                            const SizedBox(width: 3),
-                            Text(
-                              '${n.rating}',
-                              style: const TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
-                                color: Color(0xFF0F172A),
-                              ),
-                            ),
-                            const Spacer(),
-                            Text(
-                              '${(minPrice / 1000).round()}k+',
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                                color: accentColor,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
+              return VenueHubCard.generic(
+                name: n.name,
+                subtitle: '${n.experienceYears} yil • ${n.ageGroupsLabel}',
+                rating: n.rating,
+                reviewCount: n.reviewCount,
+                priceLabel: '${(minPrice / 1000).round()}k+',
+                icon: LucideIcons.baby,
+                accent: accentColor,
+                distanceKmValue: distanceKm(
+                  kDefaultUserLat, kDefaultUserLng, n.latitude, n.longitude,
+                ),
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => NannyProfileScreen(nanny: n),
                   ),
                 ),
               );
