@@ -112,8 +112,70 @@ import { navigateTo, renderPage } from '../router.js';
                         '<div class="detail-item"><div class="detail-label">Premium</div><div class="detail-value">' + (u.is_premium ? 'Ha' : 'Yo\'q') + '</div></div>' +
                         '<div class="detail-item"><div class="detail-label">Telegram</div><div class="detail-value">' + window.escapeHtml(u.telegram_username || '—') + '</div></div>' +
                         '<div class="detail-item"><div class="detail-label">Sana</div><div class="detail-value">' + (u.created_at ? window.formatDate(u.created_at) : '—') + '</div></div>' +
+                    '</div>' +
+                    '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:16px;">' +
+                        '<button class="btn btn-primary" onclick="topUpBalanceApi(' + u.id + ')">💰 Balans to\'ldirish</button>' +
+                        (u.is_premium
+                            ? '<button class="btn btn-secondary" onclick="revokePremiumApi(' + u.id + ')">⭐ Premiumni bekor qilish</button>'
+                            : '<button class="btn btn-primary" onclick="grantPremiumApi(' + u.id + ')">⭐ Premium berish</button>') +
                     '</div>',
                     '<button class="btn btn-secondary" onclick="window.closeModal()">Yopish</button>');
+            } catch(e) { window.showToast('Xatolik', 'error'); }
+        }
+
+        // ===== Balans to'ldirish (admin) =====
+        async function topUpBalanceApi(id) {
+            var input = prompt('Balansga qancha pul qo\'shiladi? (so\'m)\nManfiy son yechish uchun. Masalan: 50000');
+            if (input === null) return;
+            var amount = parseFloat(String(input).replace(/\s/g, '').replace(',', '.'));
+            if (isNaN(amount) || amount === 0) { window.showToast('Noto\'g\'ri summa', 'error'); return; }
+            try {
+                const r = await window.api(window.API_BASE + '/users/' + id + '/balance', {
+                    method: 'POST',
+                    body: JSON.stringify({ amount: amount, description: 'Admin balans o\'zgartirdi' })
+                });
+                if (!r || !r.ok) {
+                    var msg = 'Xatolik';
+                    try { var e = await r.json(); if (e && e.detail) msg = e.detail; } catch(_) {}
+                    window.showToast(msg, 'error');
+                    return;
+                }
+                var u = await r.json();
+                window.showToast('Balans yangilandi: ' + window.formatMoney(u.balance), 'success');
+                window.closeModal();
+                renderUsers(usersPage);
+            } catch(e) { window.showToast('Xatolik', 'error'); }
+        }
+
+        // ===== Premium berish (admin) =====
+        async function grantPremiumApi(id) {
+            var input = prompt('Necha kunga premium beriladi?', '30');
+            if (input === null) return;
+            var days = parseInt(input, 10);
+            if (isNaN(days) || days < 1) { window.showToast('Noto\'g\'ri kun soni', 'error'); return; }
+            try {
+                const r = await window.api(window.API_BASE + '/users/' + id + '/premium', {
+                    method: 'POST',
+                    body: JSON.stringify({ is_premium: true, days: days })
+                });
+                if (!r || !r.ok) { window.showToast('Xatolik', 'error'); return; }
+                window.showToast(days + ' kunlik premium berildi', 'success');
+                window.closeModal();
+                renderUsers(usersPage);
+            } catch(e) { window.showToast('Xatolik', 'error'); }
+        }
+
+        async function revokePremiumApi(id) {
+            if (!confirm('Premiumni bekor qilasizmi?')) return;
+            try {
+                const r = await window.api(window.API_BASE + '/users/' + id + '/premium', {
+                    method: 'POST',
+                    body: JSON.stringify({ is_premium: false, days: 0 })
+                });
+                if (!r || !r.ok) { window.showToast('Xatolik', 'error'); return; }
+                window.showToast('Premium bekor qilindi', 'info');
+                window.closeModal();
+                renderUsers(usersPage);
             } catch(e) { window.showToast('Xatolik', 'error'); }
         }
 
@@ -141,7 +203,7 @@ import { navigateTo, renderPage } from '../router.js';
         
 
 // Exports for ES6 modules
-export { renderUsers, renderUserRowsApi, renderPagination, blockUserApi, deleteUserApi, viewUserApi };
+export { renderUsers, renderUserRowsApi, renderPagination, blockUserApi, deleteUserApi, viewUserApi, topUpBalanceApi, grantPremiumApi, revokePremiumApi };
 // Expose to window for inline onclick handlers
 window.renderUsers = renderUsers;
 window.renderUserRowsApi = renderUserRowsApi;
@@ -149,3 +211,6 @@ window.renderPagination = renderPagination;
 window.blockUserApi = blockUserApi;
 window.deleteUserApi = deleteUserApi;
 window.viewUserApi = viewUserApi;
+window.topUpBalanceApi = topUpBalanceApi;
+window.grantPremiumApi = grantPremiumApi;
+window.revokePremiumApi = revokePremiumApi;

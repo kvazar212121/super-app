@@ -102,7 +102,10 @@ async def list_payments(
 
 async def _activate_premium(db: AsyncSession, user: User, days: int):
     now = datetime.now(timezone.utc)
-    base = user.premium_until if (user.premium_until and user.premium_until > now) else now
+    cur = user.premium_until
+    if cur is not None and cur.tzinfo is None:
+        cur = cur.replace(tzinfo=timezone.utc)
+    base = cur if (cur and cur > now) else now
     user.is_premium = True
     user.premium_until = base + timedelta(days=days)
 

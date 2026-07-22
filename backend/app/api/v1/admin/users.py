@@ -1,4 +1,5 @@
 from typing import Optional
+from datetime import datetime, timezone, timedelta
 from fastapi import APIRouter, Depends, Query, HTTPException
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -6,6 +7,7 @@ from sqlalchemy import func, select, or_, desc
 
 from app.db.session import get_db
 from app.models.user import User
+from app.models.transaction import Transaction
 from app.schemas.common import PaginatedResponse
 from app.api.v1.admin.dependencies import require_admin
 
@@ -55,6 +57,19 @@ class UserUpdate(BaseModel):
 
 class UserBlockUpdate(BaseModel):
     is_blocked: bool
+
+
+class BalanceAdjust(BaseModel):
+    # Musbat = pul qo'shish, manfiy = yechish. Yakuniy balans 0 dan pastga tushmaydi.
+    amount: float
+    description: Optional[str] = None
+
+
+class PremiumGrant(BaseModel):
+    # is_premium=True bo'lsa days kun premium beriladi (mavjud muddat ustiga qo'shiladi).
+    # is_premium=False bo'lsa premium bekor qilinadi.
+    is_premium: bool = True
+    days: int = 30
 
 
 @router.get("/users", response_model=PaginatedResponse)
@@ -158,6 +173,73 @@ async def block_user(
     if user.is_admin:
         raise HTTPException(status_code=400, detail="Adminni bloklab bo'lmaydi")
     user.is_active = not data.is_blocked
+    await db.flush()
+    await db.refresh(user)
+    return UserOut.from_user(user)
+
+
+@router.post("/users/{user_id}/balance", response_model=UserOut)
+async def adjust_balance(
+    user_id: int,
+    data: BalanceAdjust,
+    admin: User = Depends(require_admin),
+    db: AsyncSession = Depends(get_db),
+):
+    """Foydalanuvchi balansiga pul qo'shish (musbat) yoki yechish (manfiy).
+    Moliya defteriga Transaction yoziladi (audit)."""
+    result = await db.execute(select(User).where(User.id == user_id))
+    user = result.scalar_one_or_none()
+    if not user:
+        raise HTTPException(status_code=404, detail="Foydalanuvchi topilmadi")
+    if data.amount == 0:
+        raise HTTPException(status_code=400, detail="Summa 0 bo'lishi mumkin emas")
+
+    new_balance = (user.balance or 0) + data.amount
+    if new_balance < 0:
+        raise HTTPException(status_code=400, detail="Balans manfiy bo'la olmaydi")
+    user.balance = new_balance
+
+    is_topup = data.amount > 0
+    db.add(Transaction(
+        user_id=user.id,
+        type="admin_topup" if is_topup else "admin_deduct",
+        amount=abs(data.amount),
+        description=(data.description or ("Admin balans to'ldirdi" if is_topup else "Admin balansdan yechdi")),
+        status="completed",
+    ))
+    await db.flush()
+    await db.refresh(user)
+    return UserOut.from_user(user)
+
+
+@router.post("/users/{user_id}/premium", response_model=UserOut)
+async def grant_premium(
+    user_id: int,
+    data: PremiumGrant,
+    admin: User = Depends(require_admin),
+    db: AsyncSession = Depends(get_db),
+):
+    """Foydalanuvchiga premium berish (muddat bilan) yoki bekor qilish.
+    Balansga TEGMAYDI — bu admin sovg'asi, pul yechilmaydi."""
+    result = await db.execute(select(User).where(User.id == user_id))
+    user = result.scalar_one_or_none()
+    if not user:
+        raise HTTPException(status_code=404, detail="Foydalanuvchi topilmadi")
+
+    if data.is_premium:
+        days = max(1, data.days)
+        now = datetime.now(timezone.utc)
+        cur = user.premium_until
+        # DB tz-naive qaytarishi mumkin (SQLite) — solishtirishдан oldin aware qilamiz
+        if cur is not None and cur.tzinfo is None:
+            cur = cur.replace(tzinfo=timezone.utc)
+        base = cur if (cur and cur > now) else now
+        user.is_premium = True
+        user.premium_until = base + timedelta(days=days)
+    else:
+        user.is_premium = False
+        user.premium_until = None
+
     await db.flush()
     await db.refresh(user)
     return UserOut.from_user(user)
