@@ -9,8 +9,6 @@ import '../models/master_worker.dart';
 import '../models/auto_mobile_service.dart';
 import '../models/courier_service.dart';
 import '../models/massage_hijoma.dart';
-import '../models/nurse_service.dart';
-import '../models/event_planning.dart';
 import '../models/service_hub_kind.dart';
 import '../services/hub_data_service.dart';
 import '../services/api_service.dart';
