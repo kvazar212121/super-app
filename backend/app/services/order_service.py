@@ -49,37 +49,11 @@ class OrderService:
         db.add(order)
         await db.flush()
 
-        if provider.owner_user_id:
-            owner_user = await db.get(User, provider.owner_user_id)
-            if owner_user:
-                from app.models.setting import PlatformSetting
-                default_fee_setting = await db.scalar(select(PlatformSetting).where(PlatformSetting.key == "default_lead_fee"))
-                default_fee = float(default_fee_setting.value) if default_fee_setting else 5000.0
-                
-                actual_fee = default_fee
-                if provider.lead_fee is not None:
-                    actual_fee = provider.lead_fee
-                elif provider.category and provider.category.lead_fee is not None:
-                    actual_fee = provider.category.lead_fee
-                
-                if actual_fee > 0:
-                    # B-model: yagona hamyon — user.balance. Lead fee provider egasining
-                    # user.balance'idan yechiladi (avval xato provider.balance'idan yechilardi,
-                    # u esa hech qachon to'ldirilmасди — top-up user.balance'ga tushadi).
-                    owner_user.balance = (owner_user.balance or 0.0) - actual_fee
+        # DIQQAT (moliya modeli): lead fee (mijoz topish komissiyasi) buyurtma
+        # YARATILGANDA olinmaydi. U faqat ish YAKUNLANGANDA (status=completed)
+        # `process_commission` orqali provider egasining user.balance'idan yechiladi.
+        # Shунday qilib bekor qilingan/amalga oshmagan buyurtmalar uchun pul olinmaydi.
 
-                    from app.models.transaction import Transaction
-                    tx = Transaction(
-                        user_id=owner_user.id,
-                        provider_id=provider.id,
-                        order_id=order.id,
-                        type="lead_fee",
-                        amount=-actual_fee,
-                        description=f"Mijoz topilganligi uchun komissiya (Buyurtma #{order.id})",
-                        status="completed",
-                    )
-                    db.add(tx)
-        
         import traceback
         try:
             from app.models.plan import Plan
@@ -353,8 +327,71 @@ class OrderService:
 
     @staticmethod
     async def process_commission(db: AsyncSession, order) -> None:
+        """Ish YAKUNLANGANDA (status=completed) lead fee'ni ushlab qoladi.
+
+        Moliya modeli (B-variant):
+          - Lead fee = "mijoz topib berganimiz uchun" qat'iy komissiya.
+          - Provayder egasining YAGONA hamyonidan (user.balance) yechiladi.
+          - Fee miqdori: provider.lead_fee → category.lead_fee → default_lead_fee.
+          - IDEMPOTENT: bitta buyurtma uchun faqat bir marta olinadi (takroriy
+            'completed' o'tishlarida yoki turli yakunlash yo'llarida ikki marta
+            yechilmaydi). Balans manfiyга ketishi mumkin — bu qarz sifatida qoladi,
+            provayder keyin to'ldiradi.
         """
-        Foizlik komissiya ushlab qolish tizimi bekor qilindi.
-        Buning o'rniga faqat buyurtma yaratilayotganda qat'iy "Lead fee" olinadi.
-        """
-        pass
+        from app.models.transaction import Transaction
+        from app.models.setting import PlatformSetting
+        from app.models.provider import Provider
+
+        if not order or not getattr(order, "provider_id", None):
+            return
+
+        # Idempotentlik: shu buyurtma uchun lead_fee allaqachon olinganmi?
+        existing = await db.scalar(
+            select(func.count(Transaction.id)).where(
+                Transaction.order_id == order.id,
+                Transaction.type == "lead_fee",
+            )
+        )
+        if existing and int(existing) > 0:
+            return
+
+        provider = await db.execute(
+            select(Provider).options(selectinload(Provider.category)).where(Provider.id == order.provider_id)
+        )
+        provider = provider.scalar_one_or_none()
+        if not provider or not provider.owner_user_id:
+            return
+
+        owner_user = await db.get(User, provider.owner_user_id)
+        if not owner_user:
+            return
+
+        # Fee miqdorini aniqlaymiz: provider → category → default_lead_fee
+        actual_fee = None
+        if provider.lead_fee is not None:
+            actual_fee = provider.lead_fee
+        elif provider.category and provider.category.lead_fee is not None:
+            actual_fee = provider.category.lead_fee
+        else:
+            default_fee_setting = await db.scalar(
+                select(PlatformSetting).where(PlatformSetting.key == "default_lead_fee")
+            )
+            try:
+                actual_fee = float(default_fee_setting.value) if default_fee_setting else 5000.0
+            except (TypeError, ValueError):
+                actual_fee = 5000.0
+
+        if not actual_fee or actual_fee <= 0:
+            return
+
+        owner_user.balance = (owner_user.balance or 0.0) - actual_fee
+        db.add(Transaction(
+            user_id=owner_user.id,
+            provider_id=provider.id,
+            order_id=order.id,
+            type="lead_fee",
+            amount=-actual_fee,
+            description=f"Mijoz topilganligi uchun komissiya (Buyurtma #{order.id})",
+            status="completed",
+        ))
+        await db.flush()
