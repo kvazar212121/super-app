@@ -116,8 +116,11 @@ class _HomePromoSectionState extends State<HomePromoSection>
       final List<Color> parsedColors = [];
       for (final c in colorsStr.split(',')) {
         final cleanHex = c.trim().replaceAll('#', '');
+        // int.tryParse — YAROQSIZ hex (masalan "eeews5") null qaytaradi, XATO TASHLAMAYDI.
+        // Aks holda bitta buzuq rang butun promo yuklashni yiqitib, statik fallback chiqarardi.
         if (cleanHex.length == 6) {
-          parsedColors.add(Color(int.parse('FF$cleanHex', radix: 16)));
+          final v = int.tryParse('FF$cleanHex', radix: 16);
+          if (v != null) parsedColors.add(Color(v));
         }
       }
       if (parsedColors.length < 2) {
