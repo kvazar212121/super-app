@@ -2,6 +2,7 @@
 from datetime import date, datetime
 
 from fastapi import APIRouter, Depends, HTTPException, Query, UploadFile, File
+from pydantic import BaseModel
 from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.requests import Request
@@ -90,6 +91,26 @@ async def analyze_food_photo(
     compressed = UploadService._compress_to_jpeg(contents, 1024, 70)
 
     result = await analyze_food(compressed, "image/jpeg")
+    result["photo_url"] = None
+    return result
+
+
+class FoodTextIn(BaseModel):
+    text: str
+
+
+@router.post("/analyze-text", response_model=FoodAnalyzeOut)
+@limiter.limit("15/minute")
+async def analyze_food_text_endpoint(
+    request: Request,
+    data: FoodTextIn,
+    current_user: User = Depends(get_current_user),
+):
+    """Rasmga olib bo'lmasa — foydalanuvchi yozgan ovqat ta'rifidan AI kaloriya
+    taxminlaydi. Natija tahrirlanadi va /log orqali saqlanadi."""
+    from app.services.vision_service import analyze_food_text
+
+    result = await analyze_food_text(data.text)
     result["photo_url"] = None
     return result
 

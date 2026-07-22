@@ -14,6 +14,8 @@ import 'screens/calls/call_screen.dart';
 import 'services/call_service.dart';
 import 'services/notification_helper.dart';
 import 'services/callkit_service.dart';
+import 'services/meal_reminder_service.dart';
+import 'screens/calorie/meal_check_dialog.dart';
 
 import 'package:flutter/services.dart';
 import 'services/call_history_service.dart';
@@ -73,6 +75,24 @@ void main() async {
     NotificationHelper().pendingAlarmPayload = null;
     openAlarmRing(pending);
   }
+
+  // OVQAT eslatmasi bosilganda — "nima yedingiz?" modalini ochamiz.
+  void openMealCheck(String mealType) {
+    void doShow() {
+      final ctx = navigatorKey.currentContext;
+      if (ctx != null) {
+        MealCheckDialog.show(ctx, mealType);
+      } else {
+        Future.delayed(const Duration(milliseconds: 250), doShow);
+      }
+    }
+
+    doShow();
+  }
+
+  NotificationHelper().onMealPayload = openMealCheck;
+  // Ovqat eslatmalarini (yoqiq bo'lsa) rejalaymiz.
+  MealReminderService().init();
 
   // CallKit tizim darajasidagi qo'ng'iroq UI ni ishga tushirish
   await CallKitService().init();
@@ -183,6 +203,13 @@ void main() async {
         maybeForceProviderMode();
         safePushCallScreen(id: id, name: name);
       });
+    }
+
+    // Sovuq startda ovqat eslatmasi orqali ochilgan bo'lsa — modalni endi ko'rsatamiz.
+    final pm = NotificationHelper().pendingMealPayload;
+    if (pm != null) {
+      NotificationHelper().pendingMealPayload = null;
+      openMealCheck(pm);
     }
   };
 

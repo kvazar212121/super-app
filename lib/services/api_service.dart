@@ -1751,6 +1751,16 @@ class ApiService {
     return response.data;
   }
 
+  /// Rasmga olib bo'lmasa — YOZILGAN ovqat ta'rifidan AI kaloriya taxminlaydi.
+  Future<Map<String, dynamic>> analyzeFoodText(String text) async {
+    final response = await _dio.post(
+      '/calories/analyze-text',
+      data: {'text': text},
+      options: Options(receiveTimeout: const Duration(seconds: 60)),
+    );
+    return Map<String, dynamic>.from(response.data as Map);
+  }
+
   Future<Map<String, dynamic>> logMeal(Map<String, dynamic> data) async {
     final response = await _dio.post('/calories/log', data: data);
     return response.data;

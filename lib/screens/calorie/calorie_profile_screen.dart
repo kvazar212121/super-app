@@ -3,6 +3,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../../l10n/locale_controller.dart';
 import '../../services/api_service.dart';
+import '../../services/meal_reminder_service.dart';
 import '../../theme/glass_tokens.dart';
 import '../../widgets/glass/glass_scaffold.dart';
 
@@ -23,6 +24,7 @@ class _CalorieProfileScreenState extends State<CalorieProfileScreen> {
   bool _isLoading = true;
   bool _isSaving = false;
   double? _computedGoal;
+  bool _mealOn = MealReminderService().enabled;
 
   String _sex = 'male';
   String _activityLevel = 'light';
@@ -323,6 +325,36 @@ class _CalorieProfileScreenState extends State<CalorieProfileScreen> {
                     ),
                   ),
                   const SizedBox(height: 24),
+                  // Aqlli ovqat-monitoring toggle — foydalanuvchi o'chira oladi.
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(GlassTokens.radiusMd),
+                      border: Border.all(color: const Color(0xFFE5E7EB)),
+                    ),
+                    child: SwitchListTile(
+                      value: _mealOn,
+                      activeThumbColor: const Color(0xFF3B82F6),
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+                      secondary: const Icon(
+                        LucideIcons.bellRing,
+                        color: Color(0xFF3B82F6),
+                      ),
+                      title: Text(
+                        'Ovqat eslatmalari'.tr,
+                        style: const TextStyle(fontWeight: FontWeight.w700),
+                      ),
+                      subtitle: Text(
+                        'Kuniga 3 marta "nima yedingiz?" deb eslatib turadi'.tr,
+                        style: const TextStyle(fontSize: 12),
+                      ),
+                      onChanged: (v) {
+                        setState(() => _mealOn = v);
+                        MealReminderService().setEnabled(v);
+                      },
+                    ),
+                  ),
+                  const SizedBox(height: 16),
                   SizedBox(
                     height: 52,
                     child: ElevatedButton(

@@ -12,6 +12,8 @@ import '../../config/app_config.dart';
 import '../../l10n/locale_controller.dart';
 import '../../services/api_service.dart';
 import '../../services/step_tracker_service.dart';
+import '../../services/meal_reminder_service.dart';
+import 'meal_check_dialog.dart';
 import '../../theme/glass_tokens.dart';
 import '../../widgets/glass/glass_scaffold.dart';
 import 'calorie_analyze_screen.dart';
@@ -49,6 +51,18 @@ class _CalorieHomeScreenState extends State<CalorieHomeScreen> {
     _loadData();
     _checkProfile();
     _initSteps();
+    _maybeAskMeal();
+  }
+
+  /// Panel ochilganda: ovqat vaqti o'tган-u hali yozilmagan bo'lsa "nima
+  /// yedingiz?" modalini ko'rsatamiz (agar monitoring yoqiq bo'lsa).
+  Future<void> _maybeAskMeal() async {
+    final pending = await MealReminderService().pendingMealNow();
+    if (pending == null || !mounted) return;
+    // Birinchi kadrdan keyin — kontekst tayyor bo'lsin.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) MealCheckDialog.show(context, pending);
+    });
   }
 
   /// Qadam sensorini yoqib, bugungi qadamni serverga sinxronlaymiz — shunda

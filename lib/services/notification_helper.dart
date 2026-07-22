@@ -25,6 +25,15 @@ class NotificationHelper {
   /// main.dart uni o'qib jiringlash ekranini ochadi (init'dan keyin).
   String? pendingAlarmPayload;
 
+  /// Ovqat eslatmasi bosilganda chaqiriladi (payload = ovqat turi: breakfast/lunch/dinner).
+  void Function(String mealType)? onMealPayload;
+
+  /// Ilova o'chiq holatdan ovqat eslatmasi orqali ochilsa — shu yerda saqlanadi.
+  String? pendingMealPayload;
+
+  /// Ovqat eslatmalari uchun notification ID bazasi (boshqalar bilan to'qnashmasin).
+  static const int mealIdBase = 90000;
+
   /// Budilnik notification ID'lari shu bazadan boshlanadi (boshqa bildirishnomalar bilan
   /// to'qnashmasligi uchun). Har budilnik uchun: base + alarm.id*10 + kun-indeksi.
   static const int alarmIdBase = 100000;
@@ -106,6 +115,8 @@ class NotificationHelper {
           final payload = details.payload;
           if (payload != null && payload.startsWith('alarm:')) {
             onAlarmPayload?.call(payload.substring('alarm:'.length));
+          } else if (payload != null && payload.startsWith('meal:')) {
+            onMealPayload?.call(payload.substring('meal:'.length));
           }
         },
       );
@@ -119,6 +130,8 @@ class NotificationHelper {
         final p = launch!.notificationResponse?.payload;
         if (p != null && p.startsWith('alarm:')) {
           pendingAlarmPayload = p.substring('alarm:'.length);
+        } else if (p != null && p.startsWith('meal:')) {
+          pendingMealPayload = p.substring('meal:'.length);
         }
       }
 
@@ -206,6 +219,44 @@ class NotificationHelper {
       );
     } catch (e) {
       debugPrint('Error scheduling weekly notification: $e');
+    }
+  }
+
+  /// HAR KUNI belgilangan vaqtda takrorlanadigan OVQAT eslatmasi.
+  /// [mealType] — breakfast/lunch/dinner (payload'da 'meal:<type>' bo'lib boradi).
+  Future<void> scheduleDailyMeal(
+    int id,
+    String title,
+    String body, {
+    required int hour,
+    required int minute,
+    required String mealType,
+  }) async {
+    if (!_isInitialized) await init();
+    const androidDetails = AndroidNotificationDetails(
+      _generalChannelId,
+      'Eslatmalar va bildirishnomalar',
+      channelDescription: 'Ovqat va boshqa eslatmalar',
+      importance: Importance.high,
+      priority: Priority.high,
+      showWhen: true,
+    );
+    try {
+      await _notificationsPlugin.zonedSchedule(
+        id,
+        title,
+        body,
+        _nextInstanceOfTime(hour, minute),
+        const NotificationDetails(android: androidDetails),
+        androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+        uiLocalNotificationDateInterpretation:
+            UILocalNotificationDateInterpretation.absoluteTime,
+        // Har kuni shu vaqtda takrorlanadi.
+        matchDateTimeComponents: DateTimeComponents.time,
+        payload: 'meal:$mealType',
+      );
+    } catch (e) {
+      debugPrint('Ovqat eslatmasini rejalashda xato: $e');
     }
   }
 

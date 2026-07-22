@@ -139,6 +139,89 @@ async def analyze_food(image_bytes: bytes, content_type: str) -> dict:
     }
 
 
+FOOD_TEXT_SYSTEM_PROMPT = """Siz ovqat ta'rifini tahlil qiluvchi mutaxassis dietolog AI siz.
+Foydalanuvchi nima yeganini MATN bilan yozadi (masalan: "2 ta non, bir piyola shirin choy"
+yoki "bir kosa osh"). Shu ta'rifga qarab UMUMIY ozuqaviy qiymatni baholang.
+
+FAQAT quyidagi JSON formatda javob bering (boshqa hech qanday matn yozmang):
+{
+  "is_food": true yoki false (matn ovqatni tasvirlaydimi),
+  "dish_name_uz": "taom nomi o'zbekcha lotin alifbosida (qisqa umumlashma)",
+  "portion_grams": taxminiy umumiy og'irlik grammda (son) yoki 0,
+  "calories": umumiy kaloriya kkal (son),
+  "protein_g": oqsil grammda (son),
+  "fat_g": yog' grammda (son),
+  "carbs_g": uglevod grammda (son),
+  "confidence": 0 dan 1 gacha ishonch darajasi (son)
+}
+
+Miqdor ko'rsatilgan bo'lsa (2 ta, bir kosa) shuni hisobga oling. Agar matn ovqatga
+aloqasiz bo'lsa: {"is_food": false} qaytaring."""
+
+
+async def analyze_food_text(description: str) -> dict:
+    """Foydalanuvchi YOZGAN ovqat ta'rifidan ozuqaviy qiymatni baholaydi (rasm emas).
+
+    Rasmga olib bo'lmagan holatda ishlatiladi — foydalanuvchi nima yeganini yozadi,
+    AI kaloriyani taxminlaydi (keyin foydalanuvchi qo'lda to'g'rilay oladi).
+    """
+    api_url, api_key, model = _resolve_provider()
+    if not api_key:
+        raise HTTPException(status_code=503, detail="AI xizmati hozircha sozlanmagan")
+
+    text = (description or "").strip()
+    if not text:
+        raise HTTPException(status_code=400, detail="Ovqat ta'rifi bo'sh")
+
+    async with httpx.AsyncClient(timeout=60.0) as client:
+        try:
+            response = await client.post(
+                api_url,
+                headers={
+                    "Content-Type": "application/json",
+                    "Authorization": f"Bearer {api_key}",
+                },
+                json={
+                    "model": model,
+                    "messages": [
+                        {"role": "system", "content": FOOD_TEXT_SYSTEM_PROMPT},
+                        {"role": "user", "content": text},
+                    ],
+                    "response_format": {"type": "json_object"},
+                    "temperature": 0.2,
+                    "max_tokens": 512,
+                },
+            )
+        except httpx.HTTPError as exc:
+            logger.error(f"Food-text ({model}) so'rovi muvaffaqiyatsiz: {exc}")
+            raise HTTPException(status_code=502, detail="AI xizmatiga ulanib bo'lmadi")
+
+    if response.status_code != 200:
+        logger.error(f"Food-text ({model}) status {response.status_code}: {response.text[:300]}")
+        raise HTTPException(status_code=502, detail="AI xizmati vaqtincha ishlamayapti")
+
+    try:
+        content = response.json()["choices"][0]["message"]["content"]
+        parsed = json.loads(content)
+    except (KeyError, IndexError, json.JSONDecodeError) as exc:
+        logger.error(f"Food-text ({model}) javobini o'qib bo'lmadi: {exc}")
+        raise HTTPException(status_code=502, detail="AI javobini o'qib bo'lmadi")
+
+    if not parsed.get("is_food"):
+        raise HTTPException(status_code=422, detail="Matndan taom aniqlanmadi")
+
+    return {
+        "is_food": True,
+        "dish_name_uz": str(parsed.get("dish_name_uz") or text[:60]),
+        "portion_grams": _num(parsed.get("portion_grams"), 0.0) or None,
+        "calories": _num(parsed.get("calories")),
+        "protein_g": _num(parsed.get("protein_g")),
+        "fat_g": _num(parsed.get("fat_g")),
+        "carbs_g": _num(parsed.get("carbs_g")),
+        "confidence": min(max(_num(parsed.get("confidence"), 0.5), 0.0), 1.0),
+    }
+
+
 VERIFY_SYSTEM_PROMPT = """Siz rasmni tekshiruvchi AI siz. Foydalanuvchi budilnikni o'chirish uchun
 ma'lum bir narsani rasmga olishi kerak. Rasmda talab qilingan narsa haqiqatan bor-yo'qligini aniqlang.
 
