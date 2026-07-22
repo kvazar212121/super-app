@@ -53,35 +53,23 @@ async def subscribe(
     method = (data.method or "balance").lower()
 
     if method == "balance":
-        # Balans qatorini QULFLAB o'qiymiz — parallel so'rovlar overdraft/ikki marta yechishning oldini oladi
-        locked = (
-            await db.execute(
-                select(User).where(User.id == current.id).with_for_update()
-            )
-        ).scalar_one()
-        if (locked.balance or 0) < price:
-            raise HTTPException(
-                status_code=400,
-                detail=f"Balansда mablag' yetarli emas. Kerak: {int(price)} so'm. Balansni to'ldiring.",
-            )
-        # Balansdан yechib, darhol ochamiz
-        locked.balance = (locked.balance or 0) - price
+        # MUHIM: balansda pul bo'lsa ham premium AVTOMATIK ochilmaydi va balansdan
+        # DARHOL yechilmaydi. So'rov "pending" bo'lib qoladi, admin tasdiqlaganda
+        # (admin/premium confirm) balansdan yechiladi va premium ochiladi.
+        # Sabab: bir odam ham user, ham provider bo'lishi mumkin — uning balansи
+        # lead-fee (mijoz topish komissiyasi) uchun. Premium uni "yeb qo'ymasligi" kerak.
         payment = PremiumPayment(
-            user_id=locked.id, amount=price, duration_days=days,
+            user_id=current.id, amount=price, duration_days=days,
             status="pending", method="balance",
         )
         db.add(payment)
-        premium_service.activate_premium(locked, payment, days, method="balance")
-        # Moliya defteri: premium daromadi (admin hisobotida ko'rinishi uchun)
-        db.add(Transaction(
-            user_id=locked.id, type="premium_subscription", amount=price,
-            description="Premium obuna (balansdan)", status="completed",
-        ))
         await db.commit()
+        await db.refresh(payment)
         return {
-            "status": "confirmed",
-            "premium_until": locked.premium_until.isoformat(),
-            "message": "Premium ochildi! 🎉",
+            "status": "pending",
+            "payment_id": payment.id,
+            "amount": price,
+            "message": "So'rov qabul qilindi. Tasdiqlangach premium ochiladi.",
         }
 
     # ── Onlayn to'lov (Payme / Click) — pending yozuv + checkout havolasi ──

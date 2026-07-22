@@ -79,7 +79,7 @@ class _PremiumScreenState extends State<PremiumScreen> with WidgetsBindingObserv
     if (mounted) setState(() => _loading = false);
   }
 
-  /// Balansdan darhol to'lash.
+  /// Balansdan to'lash SO'ROVI — darhol ochilmaydi, admin tasdiqlaydi.
   Future<void> _payWithBalance() async {
     setState(() => _busy = true);
     try {
@@ -87,14 +87,19 @@ class _PremiumScreenState extends State<PremiumScreen> with WidgetsBindingObserv
       await FeatureService().refreshPremium();
       if (!mounted) return;
       if (res['status'] == 'confirmed') {
+        // (Kelajakda avtomatik tasdiq bo'lsa) — darhol ochilgan holat
         _showMsg('Premium ochildi! 🎉'.tr, success: true);
+        await _load();
+      } else {
+        // Odatiy holat: so'rov qabul qilindi, tasdiq kutilmoqda
+        _showMsg(
+          'So\'rovingiz qabul qilindi. Tasdiqlangach premium ochiladi.'.tr,
+          success: true,
+        );
         await _load();
       }
     } catch (e) {
-      final d = e.toString();
-      _showMsg(d.contains('yetarli emas')
-          ? 'Balansда mablag\' yetarli emas. Balansni to\'ldiring.'.tr
-          : 'Xatolik'.tr);
+      _showMsg('Xatolik'.tr);
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -288,9 +293,9 @@ class _PremiumScreenState extends State<PremiumScreen> with WidgetsBindingObserv
             color: const Color(0xFF0098EB),
             onTap: () => _payOnline('click'),
           ),
-        // Balans
+        // Balans — so'rov (admin tasdiqlaydi, avtomatik yechilmaydi)
         _payButton(
-          label: '${'Balansdan to\'lash'.tr} (${_balance.toStringAsFixed(0)} ${'so\'m'.tr})',
+          label: 'Balans orqali so\'rov yuborish'.tr,
           icon: Icons.account_balance_wallet,
           color: const Color(0xFF7C3AED),
           outlined: _paymeEnabled || _clickEnabled,

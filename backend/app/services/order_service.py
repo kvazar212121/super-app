@@ -66,9 +66,11 @@ class OrderService:
                     actual_fee = provider.category.lead_fee
                 
                 if actual_fee > 0:
-                    # balance null bo'lishi mumkin (hech to'ldirilmagan) — himoya.
-                    provider.balance = (provider.balance or 0.0) - actual_fee
-                    
+                    # B-model: yagona hamyon — user.balance. Lead fee provider egasining
+                    # user.balance'idan yechiladi (avval xato provider.balance'idan yechilardi,
+                    # u esa hech qachon to'ldirilmасди — top-up user.balance'ga tushadi).
+                    owner_user.balance = (owner_user.balance or 0.0) - actual_fee
+
                     from app.models.transaction import Transaction
                     tx = Transaction(
                         user_id=owner_user.id,
