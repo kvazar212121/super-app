@@ -104,3 +104,6 @@ serviceAccountKey.json
 **/serviceAccountKey.json
 *firebase-adminsdk*.json
 *serviceAccount*.json
+
+# LibreOffice lock fayllari
+.~lock.*#
