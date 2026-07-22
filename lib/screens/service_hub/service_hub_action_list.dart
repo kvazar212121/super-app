@@ -270,23 +270,6 @@ class _ActionList extends StatelessWidget {
     );
   }
 
-  List<Master> _filteredMasters() {
-    if (kind == ServiceHubKind.usta) return data.masters;
-    final specialty = switch (kind) {
-      ServiceHubKind.elektrik => 'Elektrik',
-      ServiceHubKind.santexnik => 'Santexnik',
-      ServiceHubKind.tozalash => 'Tozalash',
-      ServiceHubKind.konditsioner => 'Konditsioner',
-      ServiceHubKind.enaga => 'Enaga',
-      ServiceHubKind.repetitor => 'Repetitor',
-      _ => null,
-    };
-    if (specialty != null) {
-      return data.masters.where((m) => m.specialty == specialty).toList();
-    }
-    return data.masters;
-  }
-
   double _minPrice(Map<String, double> prices, double fallback) {
     if (prices.values.isEmpty) return fallback;
     return prices.values.reduce((a, b) => a < b ? a : b);
