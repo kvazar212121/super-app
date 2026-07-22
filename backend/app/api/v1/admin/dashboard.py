@@ -92,7 +92,10 @@ async def admin_stats(
 
     pending_providers = int(
         await db.scalar(
-            select(func.count(Provider.id)).where(Provider.is_active == False)
+            select(func.count(Provider.id)).where(
+                Provider.is_active == False,
+                Provider.is_blocked == False,
+            )
         ) or 0
     )
 
