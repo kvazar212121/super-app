@@ -1,7 +1,9 @@
+import 'dart:convert';
 import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../config/app_config.dart';
 import '../services/api_service.dart';
 import '../theme/glass_tokens.dart';
@@ -20,6 +22,11 @@ class _HomePromoSectionState extends State<HomePromoSection>
   final ApiService _api = ApiService();
   List<_PromoItem> _promos = [];
   bool _isLoading = true;
+
+  // Lokal kesh kaliti — admin panelda yuklangan bannerlar shu yerda
+  // (JSON matn sifatida) saqlanadi. Internet yo'q yoki server javob bermasa,
+  // yangi banner kelguncha oxirgi ko'rilgan haqiqiy bannerlar ko'rsatiladi.
+  static const String _cacheKey = 'cached_promos_v1';
 
   static final List<_PromoItem> _fallbackPromos = [
     _PromoItem(
@@ -46,7 +53,7 @@ class _HomePromoSectionState extends State<HomePromoSection>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    _loadPromos();
+    _loadFromCacheThenNetwork();
   }
 
   @override
@@ -64,56 +71,99 @@ class _HomePromoSectionState extends State<HomePromoSection>
     }
   }
 
+  /// Avval keshdan (tez, offline ham) ko'rsatamiz, so'ng tarmoqdan yangilaymiz.
+  Future<void> _loadFromCacheThenNetwork() async {
+    final cached = await _readCache();
+    if (cached.isNotEmpty && mounted) {
+      setState(() {
+        _promos = cached;
+        _isLoading = false;
+      });
+    }
+    await _loadPromos();
+  }
+
+  /// Kesh (SharedPreferences) dagi bannerlarni o'qiydi.
+  Future<List<_PromoItem>> _readCache() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final raw = prefs.getString(_cacheKey);
+      if (raw == null || raw.isEmpty) return [];
+      final List<dynamic> data = jsonDecode(raw) as List<dynamic>;
+      return _parsePromos(data);
+    } catch (_) {
+      return [];
+    }
+  }
+
+  /// Serverdan kelgan xom ro'yxatni keshga (JSON) yozadi.
+  Future<void> _writeCache(List<dynamic> data) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString(_cacheKey, jsonEncode(data));
+    } catch (_) {}
+  }
+
+  /// Xom JSON ro'yxatni _PromoItem ro'yxatiga aylantiradi.
+  List<_PromoItem> _parsePromos(List<dynamic> data) {
+    final List<_PromoItem> loaded = [];
+    for (final item in data) {
+      final title = item['title'] ?? '';
+      final subtitle = item['subtitle'] ?? '';
+      final badge = item['badge'] ?? '';
+      final colorsStr = item['colors'] ?? '#6366F1,#A855F7';
+
+      final List<Color> parsedColors = [];
+      for (final c in colorsStr.split(',')) {
+        final cleanHex = c.trim().replaceAll('#', '');
+        if (cleanHex.length == 6) {
+          parsedColors.add(Color(int.parse('FF$cleanHex', radix: 16)));
+        }
+      }
+      if (parsedColors.length < 2) {
+        parsedColors.addAll([
+          const Color(0xFF6366F1),
+          const Color(0xFFA855F7),
+        ]);
+      }
+
+      final rawImageUrl = (item['image_url'] as String?)?.trim();
+      loaded.add(
+        _PromoItem(
+          title: title,
+          subtitle: subtitle,
+          badge: badge,
+          colors: parsedColors,
+          imageUrl: (rawImageUrl != null && rawImageUrl.isNotEmpty)
+              ? AppConfig.formatImageUrl(rawImageUrl)
+              : null,
+        ),
+      );
+    }
+    return loaded;
+  }
+
   Future<void> _loadPromos() async {
     try {
       final data = await _api.getPromos();
-      final List<_PromoItem> loaded = [];
-      for (final item in data) {
-        final title = item['title'] ?? '';
-        final subtitle = item['subtitle'] ?? '';
-        final badge = item['badge'] ?? '';
-        final colorsStr = item['colors'] ?? '#6366F1,#A855F7';
-
-        final List<Color> parsedColors = [];
-        for (final c in colorsStr.split(',')) {
-          final cleanHex = c.trim().replaceAll('#', '');
-          if (cleanHex.length == 6) {
-            parsedColors.add(Color(int.parse('FF$cleanHex', radix: 16)));
-          }
-        }
-        if (parsedColors.length < 2) {
-          parsedColors.addAll([
-            const Color(0xFF6366F1),
-            const Color(0xFFA855F7),
-          ]);
-        }
-
-        final rawImageUrl = (item['image_url'] as String?)?.trim();
-        loaded.add(
-          _PromoItem(
-            title: title,
-            subtitle: subtitle,
-            badge: badge,
-            colors: parsedColors,
-            imageUrl: (rawImageUrl != null && rawImageUrl.isNotEmpty)
-                ? AppConfig.formatImageUrl(rawImageUrl)
-                : null,
-          ),
-        );
-      }
+      final loaded = _parsePromos(data);
+      // Serverdan muvaffaqiyatli keldi — keshni yangilaymiz (offline uchun).
+      await _writeCache(data);
       if (mounted) {
         setState(() {
           // Serverdan kelgan HAQIQIY ro'yxat (bo'sh bo'lsa — bo'lim yashiriladi).
-          // Barcha aksiya o'chirilsa, endi qattiq kodlangan fallback ko'rinmaydi.
           _promos = loaded;
           _isLoading = false;
         });
       }
     } catch (_) {
       if (mounted) {
+        // TARMOQ XATOSI: avval kesh, kesh ham bo'sh bo'lsagina statik fallback.
+        final cached = await _readCache();
         setState(() {
-          // Faqat TARMOQ XATOSIDA fallback (offline'da ham chiroyli ko'rinsin)
-          if (_promos.isEmpty) _promos = _fallbackPromos;
+          if (_promos.isEmpty) {
+            _promos = cached.isNotEmpty ? cached : _fallbackPromos;
+          }
           _isLoading = false;
         });
       }
