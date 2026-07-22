@@ -210,6 +210,7 @@ async def admin_update_order_status(
     await db.refresh(order)
 
     if old_status != new_status:
+        import asyncio
         from app.services.notification_service import NotificationService
         status_translations = {
             OrderStatus.pending: "kutilmoqda",
@@ -218,11 +219,13 @@ async def admin_update_order_status(
             OrderStatus.cancelled: "bekor qilindi"
         }
         status_str = status_translations.get(new_status, new_status.value)
-        NotificationService.send_notification(
-            user_id=order.user_id,
-            ntype="order_status_changed",
-            title="Buyurtma holati o'zgardi",
-            message=f"Sizning #{order.id} raqamli buyurtmangiz holati '{status_str}' ga o'zgardi."
+        # Sync + FCM tarmoq chaqiruvi — event loop'ni bloklamaslik uchun thread'да
+        await asyncio.to_thread(
+            NotificationService.send_notification,
+            order.user_id,
+            "order_status_changed",
+            "Buyurtma holati o'zgardi",
+            f"Sizning #{order.id} raqamli buyurtmangiz holati '{status_str}' ga o'zgardi.",
         )
         if new_status == OrderStatus.completed:
             from app.services.order_service import OrderService

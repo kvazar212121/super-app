@@ -23,6 +23,8 @@ class UserOut(BaseModel):
     cashback: float
     is_premium: bool
     is_admin: bool
+    is_active: bool
+    is_blocked: bool
     created_at: Optional[str] = None
 
     @classmethod
@@ -39,6 +41,8 @@ class UserOut(BaseModel):
             cashback=u.cashback,
             is_premium=u.is_premium,
             is_admin=u.is_admin,
+            is_active=u.is_active,
+            is_blocked=not u.is_active,
             created_at=created,
         )
 

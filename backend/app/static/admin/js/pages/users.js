@@ -65,15 +65,21 @@ import { navigateTo, renderPage } from '../router.js';
             return users.map(function(u) {
                 var name = (u.name || '') + ' ' + (u.surname || '');
                 var created = u.created_at ? window.formatDate(u.created_at) : '—';
+                var blocked = !!u.is_blocked;
+                var premiumCell = u.is_premium ? '<span class="badge-status confirmed">Premium</span>' : '<span class="badge-status pending">Oddiy</span>';
+                if (blocked) premiumCell += ' <span class="badge-status cancelled">Bloklangan</span>';
+                var blockBtn = blocked
+                    ? '<button class="btn-icon success" title="Blokdan chiqarish" onclick="blockUserApi(' + u.id + ', false)">&#128275;</button>'
+                    : '<button class="btn-icon warning" title="Bloklash" onclick="blockUserApi(' + u.id + ', true)">&#128274;</button>';
                 return '<tr>' +
                     '<td>' + u.id + '</td>' +
                     '<td><div class="table-user"><div class="table-avatar">' + window.getInitials(name) + '</div><span>' + window.escapeHtml(name.trim()) + '</span></div></td>' +
                     '<td>' + window.escapeHtml(u.phone || '') + '</td>' +
-                    '<td>' + (u.is_premium ? '<span class="badge-status confirmed">Premium</span>' : '<span class="badge-status pending">Oddiy</span>') + '</td>' +
+                    '<td>' + premiumCell + '</td>' +
                     '<td>' + created + '</td>' +
                     '<td><div class="action-group">' +
                         '<button class="btn-icon" title="Ko\'rish" onclick="viewUserApi(' + u.id + ')">&#128065;</button>' +
-                        '<button class="btn-icon warning" title="Bloklash" onclick="blockUserApi(' + u.id + ')">&#128274;</button>' +
+                        blockBtn +
                         '<button class="btn-icon danger" title="O\'chirish" onclick="deleteUserApi(' + u.id + ')">&#128465;</button>' +
                     '</div></td>' +
                 '</tr>';
@@ -112,11 +118,13 @@ import { navigateTo, renderPage } from '../router.js';
             } catch(e) { window.showToast('Xatolik', 'error'); }
         }
 
-        async function blockUserApi(id) {
-            if (!confirm('Foydalanuvchini bloklash/blokdan chiqarish?')) return;
+        async function blockUserApi(id, block) {
+            if (block === undefined) block = true;
+            var msg = block ? 'Foydalanuvchini bloklaysizmi?' : 'Foydalanuvchini blokdan chiqarasizmi?';
+            if (!confirm(msg)) return;
             try {
-                await window.api(window.API_BASE + '/users/' + id + '/block', { method: 'PATCH', body: JSON.stringify({ is_blocked: true }) });
-                window.showToast('Foydalanuvchi holati o\'zgartirildi', 'info');
+                await window.api(window.API_BASE + '/users/' + id + '/block', { method: 'PATCH', body: JSON.stringify({ is_blocked: !!block }) });
+                window.showToast(block ? 'Foydalanuvchi bloklandi' : 'Foydalanuvchi blokdan chiqarildi', 'info');
                 renderUsers(usersPage);
             } catch(e) { window.showToast('Xatolik', 'error'); }
         }
