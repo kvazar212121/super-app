@@ -7,10 +7,14 @@ ruxsatни tekshiradi va yozuv (edit) amallarini audit jurnaliga yozadi.
 from fastapi import Depends, HTTPException, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 
+import logging
+
 from app.api.dependencies import get_current_user
-from app.db.session import get_db
+from app.db.session import get_db, async_session
 from app.models.user import User
 from app.models.admin_role import AdminRole, AuditLog
+
+logger = logging.getLogger(__name__)
 
 # Boshqarilishi mumkin bo'lgan bo'limlar (rol tahrirlagichда ko'rsatiladi)
 SECTIONS = [
@@ -49,13 +53,20 @@ def _method_action(method: str) -> str:
 
 
 def section_guard(section: str):
-    """Berilgan bo'lim uchun ruxsatни tekshiruvchi router dependency."""
+    """Berilgan bo'lim uchun ruxsatни tekshiruvchi router dependency.
+
+    Ruxsat endpointдан OLDIN tekshiriladi. Yozuv (edit) amallari audit jurnaliga
+    faqat endpoint MUVAFFAQIYATLI tugagach yoziladi. Buning uchun bu dependency
+    `yield` bilan ishlaydi: FastAPI endpoint xatosini generatorga qaytaradi, shунда
+    biz muvaffaqiyat/xatolikni ajratamiz. Audit alohida (mustaqil) sessiyada yoziladi,
+    shунday qilib u endpointning ichki commit/rollback'iга bog'lanmaydi.
+    """
 
     async def _guard(
         request: Request,
         current_user: User = Depends(get_current_user),
         db: AsyncSession = Depends(get_db),
-    ) -> User:
+    ):
         if not current_user.is_admin:
             raise HTTPException(status_code=403, detail="Faqat admin uchun ruxsat")
 
@@ -69,16 +80,37 @@ def section_guard(section: str):
                     detail=f"Ruxsat yo'q: '{section}' bo'limi uchun {action} huquqi berilmagan",
                 )
 
-        # Audit: yozuv (edit) amallarини qayд etamiz — endpoint muvaffaqiyatли bo'lsa commit bo'ladi
-        if action == "edit":
-            db.add(AuditLog(
-                admin_user_id=current_user.id,
-                admin_name=f"{current_user.name} {current_user.surname}".strip(),
-                section=section,
-                action=request.method.upper(),
-                path=str(request.url.path),
-            ))
+        # View (GET/HEAD/OPTIONS) audit qilinmaydi — teardown'siz qaytamiz
+        if action != "edit":
+            yield current_user
+            return
 
-        return current_user
+        admin_id = current_user.id
+        admin_name = f"{current_user.name} {current_user.surname}".strip()
+        http_method = request.method.upper()
+        path = str(request.url.path)
+
+        endpoint_failed = False
+        try:
+            # Endpoint shu yerда ishga tushadi. Xato bo'lsa FastAPI uni bu generatorга qaytaradi.
+            yield current_user
+        except Exception:
+            endpoint_failed = True
+            raise
+        finally:
+            # Faqat endpoint xatosiz tugaganda audit yozuvини saqlaymiz.
+            if not endpoint_failed:
+                try:
+                    async with async_session() as audit_db:
+                        audit_db.add(AuditLog(
+                            admin_user_id=admin_id,
+                            admin_name=admin_name,
+                            section=section,
+                            action=http_method,
+                            path=path,
+                        ))
+                        await audit_db.commit()
+                except Exception as exc:
+                    logger.error("Audit yozuvида xatolik: %s", exc)
 
     return _guard
