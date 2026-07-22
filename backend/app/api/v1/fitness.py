@@ -1,5 +1,5 @@
 """Fitnes trener mini-ilovasi API: mashqlar katalogi, reja generatori, mashg'ulot loglari."""
-from datetime import datetime, date as date_type
+from datetime import datetime, date as date_type, timedelta
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, Field
@@ -340,7 +340,12 @@ async def activity_summary(
         if to_date:
             d = datetime.fromisoformat(to_date).date()
             q = q.where(DailyActivity.date <= d)
-            logq = logq.where(WorkoutLog.date <= datetime.fromisoformat(to_date))
+            # WorkoutLog.date to'liq DATETIME (vaqt bilan). "<= to_date 00:00"
+            # bugun KUNDUZI qilingan mashqni chiqarib yuborardi (0 kkal xatosi).
+            # To'g'risi: kun OXIRIGACHA — ya'ni (to_date + 1 kun) dan kichik.
+            logq = logq.where(
+                WorkoutLog.date < datetime.fromisoformat(to_date) + timedelta(days=1)
+            )
     except ValueError:
         raise HTTPException(status_code=400, detail="Sana formati noto'g'ri.")
 
