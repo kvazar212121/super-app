@@ -378,10 +378,46 @@ def create_app() -> FastAPI:
     )
 
     @app.middleware("http")
+    async def maintenance_gate(request: Request, call_next):
+        """Texnik xizmat rejimi yoqilganda API'ни vaqtincha yopadi.
+
+        Admin panel (/admin), autentifikatsiya (/auth), health va docs ochiq qoladi —
+        shунday qilib adminlar tizimга kirib rejimни o'chira oladi. Rejim admin
+        panelдан (settings) yoqiladi va DB'да saqlanadi.
+        """
+        path = request.url.path
+        _exempt = (
+            path == "/"
+            or path.startswith("/admin")
+            or path.startswith("/api/v1/auth")
+            or path.startswith("/api/v1/health")
+            or path.startswith("/docs")
+            or path.startswith("/redoc")
+            or path.startswith("/openapi")
+            or path.startswith("/static")
+            or path.startswith("/uploads")
+            or path.startswith("/admin-assets")
+            or path in ("/favicon.ico", "/favicon.png", "/robots.txt", "/sitemap.xml")
+            or path in ("/terms", "/privacy", "/delete-account")
+        )
+        if not _exempt:
+            try:
+                from app.services import settings_service
+                if settings_service.get_bool("maintenance_mode", False):
+                    return JSONResponse(
+                        status_code=503,
+                        content={"detail": "Texnik ishlar olib borilmoqda. Iltimos, birozdan so'ng urinib ko'ring."},
+                        headers={"Retry-After": "300"},
+                    )
+            except Exception as exc:
+                logger.error("maintenance_gate xatosi: %s", exc)
+        return await call_next(request)
+
+    @app.middleware("http")
     async def security_headers(request: Request, call_next):
         response = await call_next(request)
         path = request.url.path
-        # Swagger/Redoc CDN'lardan yuklanadi — ularga CSP qo'ymaymiz
+        # Swagger/Redoc CDN'lardan yuklanadi — ularга CSP qo'ymaymiz
         if not (path.startswith("/docs") or path.startswith("/redoc") or path.startswith("/openapi")):
             response.headers.setdefault("Content-Security-Policy", _CSP)
         response.headers.setdefault("X-Content-Type-Options", "nosniff")

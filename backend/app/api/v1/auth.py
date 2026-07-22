@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, Request, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
@@ -86,6 +86,13 @@ async def verify_otp(
 @router.post("/register", response_model=TokenResponse)
 @limiter.limit("10/minute")
 async def register(request: Request, data: RegisterRequest, db: AsyncSession = Depends(get_db)):
+    # Admin panelдан ro'yxatdan o'tish yopilgan bo'lsa — yangi hisob yaratishга ruxsat yo'q
+    from app.services import settings_service
+    if not settings_service.get_bool("registration_open", True):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Hozircha ro'yxatdan o'tish vaqtincha yopiq. Keyinroq urinib ko'ring.",
+        )
     return await AuthService.register(db, data)
 
 
