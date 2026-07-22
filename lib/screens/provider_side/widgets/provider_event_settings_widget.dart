@@ -234,7 +234,7 @@ class _ProviderEventSettingsWidgetState
           ),
         ),
         const SizedBox(height: 16),
-        Text('Xizmat turlari', style: Theme.of(context).textTheme.titleMedium),
+        Text('Xizmat turlari'.tr, style: Theme.of(context).textTheme.titleMedium),
         const SizedBox(height: 8),
         Wrap(
           spacing: 8,
@@ -341,7 +341,7 @@ class _ProviderEventSettingsWidgetState
         TextButton.icon(
           onPressed: () => setState(() => _addService('', '')),
           icon: const Icon(Icons.add),
-          label: const Text('Xizmat qo\'shish'),
+          label: Text('Xizmat qo\'shish'.tr),
         ),
         const SizedBox(height: 24),
         Text('Mumkin vaqtlar', style: Theme.of(context).textTheme.titleMedium),

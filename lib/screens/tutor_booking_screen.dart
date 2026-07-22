@@ -211,15 +211,15 @@ class _TutorBookingScreenState extends State<TutorBookingScreen> {
       if (!mounted) return;
       Navigator.pop(context);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('So\'rov yuborildi! Repetitor javob beradi.'),
+        SnackBar(
+          content: Text('So\'rov yuborildi! Repetitor javob beradi.'.tr),
           backgroundColor: Colors.green,
         ),
       );
     } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Buyurtma yuborib bo\'lmadi')),
+          SnackBar(content: Text('Buyurtma yuborib bo\'lmadi'.tr)),
         );
       }
     }

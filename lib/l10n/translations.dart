@@ -1190,4 +1190,77 @@ const Map<String, String> kTranslationsRu = {
 
   'Uyga borib xizmat qiluvchilar': 'Выезжающие на дом',
   'Bosing — sizga keladigan ustalar': 'Нажмите — мастера с выездом к вам',
+
+  // ── .tr qo'shilgan yangi matnlar (avval o'zbekcha qolib ketardi) ──
+  "AI taxminlay olmadi — kaloriyani qo'lda kiriting":
+      'ИИ не смог определить — введите калории вручную',
+  "Allaqachon qo'ng'iroqdamiz": 'Мы уже на связи',
+  "Bo'sh vaqtlar": 'Свободное время',
+  "Buyurtma yuborib bo'lmadi": 'Не удалось отправить заказ',
+  "Buyurtmani yuborib bo'lmadi": 'Не удалось отправить заказ',
+  "Chaqiruv yuborib bo'lmadi": 'Не удалось отправить вызов',
+  "Enaga bilan bog'landim": 'Я связался с няней',
+  "Faoliyat holatini yangilab bo'lmadi": 'Не удалось обновить статус активности',
+  "Hisobni to'ldirish": 'Пополнить счёт',
+  "Joylashuv xizmati o'chirilgan": 'Служба геолокации отключена',
+  "Karta qo'shish": 'Добавить карту',
+  "Kirish / Ro'yxatdan o'tish": 'Вход / Регистрация',
+  "Kun holatini yangilab bo'lmadi": 'Не удалось обновить статус дня',
+  "Ma'lumot yuklanmadi": 'Данные не загружены',
+  "O'zingizga qo'ng'iroq qila olmaysiz": 'Нельзя позвонить самому себе',
+  "Profil va hujjatlarni ko'rib chiqdim": 'Я проверил профиль и документы',
+  "Qo'ng'iroq": 'Звонок',
+  "Shifokor qo'shish": 'Добавить врача',
+  "So'rov yuborib bo'lmadi": 'Не удалось отправить запрос',
+  "So'rov yuborildi! Markaz javob beradi.": 'Запрос отправлен! Центр ответит.',
+  "So'rov yuborildi! Repetitor javob beradi.": 'Запрос отправлен! Репетитор ответит.',
+  "Tarif qo'shish": 'Добавить тариф',
+  "Tez orada qo'shiladi": 'Скоро будет добавлено',
+  "To'ldirish": 'Пополнить',
+  "Xatolik: Provayder ma'lumoti yo'q": 'Ошибка: нет данных поставщика',
+  "Xizmat qo'shish": 'Добавить услугу',
+  "Yo'l kira xizmat narxi ichida (bepul)": 'Дорога входит в стоимость услуги (бесплатно)',
+
+  // ── Sport / o'yin / tadbir turlari (facility/zone/venue type qiymatlari) ──
+  'Tennis': 'Теннис',
+  'Basseyn': 'Бассейн',
+  'Basketbol/Voleybol': 'Баскетбол/Волейбол',
+  'PC Arena': 'PC Арена',
+  'PS5 Klub': 'PS5 Клуб',
+  'VR Zona': 'VR Зона',
+  "To'yxona": 'Свадебный зал',
+  'Ochiq maydon (Tabiat)': 'Открытая площадка (Природа)',
+  'Konferens zal': 'Конференц-зал',
+
+  // ── Qo'ng'iroqdan keyingi kelishuv (post-call dialoglari) ──
+  'Kelishuvga erishdingizmi?': 'Вы договорились?',
+  'Kelishdik': 'Договорились',
+  'Kelishmadik': 'Не договорились',
+  'Ha, qaytdim': 'Да, вернулся',
+  "Yo'q, kelishgandik": 'Нет, мы договорились',
+  'Tasdiqlang': 'Подтвердите',
+  'Ikkinchi tomon javobi kutilmoqda...': 'Ожидается ответ второй стороны...',
+  'Ikkinchi tomon javob bermadi — kelishuv avtomatik rad etildi.':
+      'Вторая сторона не ответила — сделка автоматически отклонена.',
+  'Vaqt tugadi — kelishuv avtomatik rad etildi.':
+      'Время истекло — сделка автоматически отклонена.',
+  "Kelishuv bo'lmadi.": 'Сделка не состоялась.',
+
+  // ── Xarid ro'yxati (shopping) ──
+  'Aqlli Savdo': 'Умные покупки',
+  'Haqiqiy jami:': 'Фактически всего:',
+  'Xarid qildim': 'Купил',
+  "Narx (so'm) — bo'sh bo'lsa AI hisoblaydi": 'Цена (сум) — если пусто, посчитает ИИ',
+
+  // ── Kaloriya / ovqat eslatmalari ──
+  'Ovqat eslatmalari': 'Напоминания о еде',
+  'Kuniga 3 marta "nima yedingiz?" deb eslatib turadi':
+      'Напоминает 3 раза в день «что вы съели?»',
+
+  // ── Usta / master / filtr ──
+  'Usta topilmadi': 'Мастер не найден',
+  'Yaqin ustalar': 'Ближайшие мастера',
+  'Filtr': 'Фильтр',
+  "Siz soha egasi bo'lishni xohlaysizmi?": 'Хотите стать поставщиком услуг?',
+  "Zakaz qo'ng'irog'i": 'Звонок-заказ',
 };

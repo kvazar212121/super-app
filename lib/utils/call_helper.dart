@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 import 'package:provider/provider.dart';
 import '../services/call_service.dart';
 import '../services/connectivity_service.dart';
@@ -55,8 +56,8 @@ class CallHelper {
     final currentUserId = int.tryParse(auth.user?['id']?.toString() ?? '');
     if (currentUserId != null && currentUserId == targetId) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("O'zingizga qo'ng'iroq qila olmaysiz"),
+        SnackBar(
+          content: Text("O'zingizga qo'ng'iroq qila olmaysiz".tr),
           backgroundColor: Colors.red,
         ),
       );
@@ -129,7 +130,7 @@ class CallHelper {
     if (!context.mounted) return;
     if (!started) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Allaqachon qo'ng'iroqdamiz")),
+        SnackBar(content: Text("Allaqachon qo'ng'iroqdamiz".tr)),
       );
       return;
     }
@@ -178,8 +179,8 @@ class CallHelper {
     final currentUserId = int.tryParse(auth.user?['id']?.toString() ?? '');
     if (currentUserId != null && currentUserId == targetId) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("O'zingizga qo'ng'iroq qila olmaysiz"),
+        SnackBar(
+          content: Text("O'zingizga qo'ng'iroq qila olmaysiz".tr),
           backgroundColor: Colors.red,
         ),
       );
@@ -212,7 +213,7 @@ class CallHelper {
     if (!context.mounted) return;
     if (!started) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Allaqachon qo'ng'iroqdamiz")),
+        SnackBar(content: Text("Allaqachon qo'ng'iroqdamiz".tr)),
       );
       return;
     }

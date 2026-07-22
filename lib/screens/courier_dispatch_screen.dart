@@ -102,7 +102,7 @@ class _CourierDispatchScreenState extends State<CourierDispatchScreen> {
     } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Buyurtmani yuborib bo\'lmadi')),
+          SnackBar(content: Text('Buyurtmani yuborib bo\'lmadi'.tr)),
         );
       }
     }

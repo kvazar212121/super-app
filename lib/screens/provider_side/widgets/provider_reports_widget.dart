@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 import 'package:intl/intl.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../services/provider_portal_service.dart';
@@ -39,7 +40,7 @@ class _ProviderReportsWidgetState extends State<ProviderReportsWidget> {
     }
 
     if (_report == null) {
-      return const Center(child: Text('Ma\'lumot yuklanmadi'));
+      return Center(child: Text('Ma\'lumot yuklanmadi'.tr));
     }
 
     final totalLeads = _report!['total_leads'] as int? ?? 0;

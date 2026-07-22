@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:super_app/l10n/locale_controller.dart';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -211,8 +212,8 @@ class _MealTextDialogState extends State<_MealTextDialog> {
       if (mounted) {
         setState(() => _analyzed = true);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('AI taxminlay olmadi — kaloriyani qo\'lda kiriting'),
+          SnackBar(
+            content: Text('AI taxminlay olmadi — kaloriyani qo\'lda kiriting'.tr),
           ),
         );
       }
@@ -316,7 +317,7 @@ class _MealTextDialogState extends State<_MealTextDialog> {
       actions: [
         TextButton(
           onPressed: _saving ? null : () => Navigator.pop(context),
-          child: const Text('Bekor'),
+          child: Text('Bekor'.tr),
         ),
         FilledButton(
           onPressed: (!_analyzed || _saving) ? null : _save,

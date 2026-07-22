@@ -252,11 +252,11 @@ class _NannyProfileScreenState extends State<NannyProfileScreen> {
                 OutlinedButton.icon(
                   onPressed: _callNanny,
                   icon: const Icon(LucideIcons.phone),
-                  label: const Text('Qo\'ng\'iroq qilish'),
+                  label: Text('Qo\'ng\'iroq qilish'.tr),
                 ),
                 CheckboxListTile(
                   contentPadding: EdgeInsets.zero,
-                  title: const Text('Enaga bilan bog\'landim'),
+                  title: Text('Enaga bilan bog\'landim'.tr),
                   value: _contactedNanny,
                   onChanged: (v) =>
                       setState(() => _contactedNanny = v ?? false),
@@ -264,7 +264,7 @@ class _NannyProfileScreenState extends State<NannyProfileScreen> {
                 ),
                 CheckboxListTile(
                   contentPadding: EdgeInsets.zero,
-                  title: const Text('Profil va hujjatlarni ko\'rib chiqdim'),
+                  title: Text('Profil va hujjatlarni ko\'rib chiqdim'.tr),
                   value: _reviewedProfile,
                   onChanged: (v) =>
                       setState(() => _reviewedProfile = v ?? false),

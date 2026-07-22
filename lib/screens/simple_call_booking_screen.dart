@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../models/service_hub_kind.dart';
 import '../services/call_service.dart';
@@ -30,7 +31,7 @@ class SimpleCallBookingScreen extends StatelessWidget {
 
     if (providerId <= 0) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Xatolik: Provayder ma\'lumoti yo\'q')),
+        SnackBar(content: Text('Xatolik: Provayder ma\'lumoti yo\'q'.tr)),
       );
       return;
     }

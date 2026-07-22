@@ -267,7 +267,7 @@ class _ProviderDentalSettingsWidgetState
         TextButton.icon(
           onPressed: () => setState(() => _addDentist('')),
           icon: const Icon(Icons.add),
-          label: const Text('Shifokor qo\'shish'),
+          label: Text('Shifokor qo\'shish'.tr),
         ),
         const SizedBox(height: 24),
         Text(
@@ -324,7 +324,7 @@ class _ProviderDentalSettingsWidgetState
         TextButton.icon(
           onPressed: () => setState(() => _addService('', '')),
           icon: const Icon(Icons.add),
-          label: const Text('Xizmat qo\'shish'),
+          label: Text('Xizmat qo\'shish'.tr),
         ),
         const SizedBox(height: 24),
         Text('Qabul vaqtlari', style: Theme.of(context).textTheme.titleMedium),

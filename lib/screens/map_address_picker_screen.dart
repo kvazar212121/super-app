@@ -110,7 +110,7 @@ class _MapAddressPickerScreenState extends State<MapAddressPickerScreen> {
       if (!serviceEnabled) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Joylashuv xizmati o\'chirilgan')),
+            SnackBar(content: Text('Joylashuv xizmati o\'chirilgan'.tr)),
           );
         }
         return;

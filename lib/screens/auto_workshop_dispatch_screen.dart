@@ -109,7 +109,7 @@ class _AutoWorkshopDispatchScreenState
     } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('So\'rov yuborib bo\'lmadi')),
+          SnackBar(content: Text('So\'rov yuborib bo\'lmadi'.tr)),
         );
       }
     }

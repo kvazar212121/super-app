@@ -266,7 +266,7 @@ class _ProviderTutorSettingsWidgetState
           }).toList(),
         ),
         const SizedBox(height: 20),
-        Text('Dars formati', style: Theme.of(context).textTheme.titleMedium),
+        Text('Dars formati'.tr, style: Theme.of(context).textTheme.titleMedium),
         const SizedBox(height: 8),
         Wrap(
           spacing: 8,
@@ -343,10 +343,10 @@ class _ProviderTutorSettingsWidgetState
         TextButton.icon(
           onPressed: () => setState(() => _addService('', '')),
           icon: const Icon(Icons.add),
-          label: const Text('Xizmat qo\'shish'),
+          label: Text('Xizmat qo\'shish'.tr),
         ),
         const SizedBox(height: 24),
-        Text('Bo\'sh vaqtlar', style: Theme.of(context).textTheme.titleMedium),
+        Text('Bo\'sh vaqtlar'.tr, style: Theme.of(context).textTheme.titleMedium),
         const SizedBox(height: 8),
         Wrap(
           spacing: 8,
@@ -374,7 +374,7 @@ class _ProviderTutorSettingsWidgetState
         const SizedBox(height: 16),
         SwitchListTile(
           contentPadding: EdgeInsets.zero,
-          title: const Text('Yo\'l kira xizmat narxi ichida (bepul)'),
+          title: Text('Yo\'l kira xizmat narxi ichida (bepul)'.tr),
           value: _isTravelFeeIncluded,
           onChanged: (val) => setState(() => _isTravelFeeIncluded = val),
         ),

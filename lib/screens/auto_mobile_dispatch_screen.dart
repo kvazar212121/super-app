@@ -111,7 +111,7 @@ class _AutoMobileDispatchScreenState extends State<AutoMobileDispatchScreen> {
     } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Chaqiruv yuborib bo\'lmadi')),
+          SnackBar(content: Text('Chaqiruv yuborib bo\'lmadi'.tr)),
         );
       }
     }

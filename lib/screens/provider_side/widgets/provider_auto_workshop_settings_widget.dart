@@ -285,7 +285,7 @@ class _ProviderAutoWorkshopSettingsWidgetState
         TextButton.icon(
           onPressed: () => setState(() => _addService('', '')),
           icon: const Icon(Icons.add),
-          label: const Text('Xizmat qo\'shish'),
+          label: Text('Xizmat qo\'shish'.tr),
         ),
         const SizedBox(height: 16),
         Wrap(

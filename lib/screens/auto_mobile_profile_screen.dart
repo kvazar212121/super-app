@@ -169,7 +169,7 @@ class AutoMobileProfileScreen extends StatelessWidget {
                     );
                   },
                   icon: const Icon(LucideIcons.phoneCall),
-                  label: const Text('Qo\'ng\'iroq'),
+                  label: Text('Qo\'ng\'iroq'.tr),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: accent,
                     side: const BorderSide(color: accent, width: 2),

@@ -52,7 +52,7 @@ class ProfileScreen extends StatelessWidget {
                   child: FilledButton.icon(
                     onPressed: () => _showTopUpSheet(context, provider),
                     icon: const Icon(Icons.account_balance_wallet_outlined),
-                    label: const Text('Hisobni to\'ldirish'),
+                    label: Text('Hisobni to\'ldirish'.tr),
                   ),
                 ),
                 const SizedBox(height: 20),
@@ -414,7 +414,7 @@ class ProfileScreen extends StatelessWidget {
                   }
                 }
               },
-              child: const Text('Kirish / Ro\'yxatdan o\'tish'),
+              child: Text('Kirish / Ro\'yxatdan o\'tish'.tr),
             ),
           ),
         ],
@@ -607,7 +607,7 @@ class ProfileScreen extends StatelessWidget {
                     if (ctx.mounted) Navigator.pop(ctx);
                   }
                 },
-                child: const Text('To\'ldirish'),
+                child: Text('To\'ldirish'.tr),
               ),
             ],
           ),
@@ -620,8 +620,8 @@ class ProfileScreen extends StatelessWidget {
     showDialog<void>(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('Karta qo\'shish'),
-        content: const Text('Tez orada qo\'shiladi'),
+        title: Text('Karta qo\'shish'.tr),
+        content: Text('Tez orada qo\'shiladi'.tr),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -641,7 +641,7 @@ class ProfileScreen extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Yo\'q'),
+            child: Text('Yo\'q'.tr),
           ),
           FilledButton(
             onPressed: () async {
@@ -659,7 +659,7 @@ class ProfileScreen extends StatelessWidget {
     showDialog<void>(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('Hisobni o\'chirish'),
+        title: Text('Hisobni o\'chirish'.tr),
         content: const Text(
           'Haqiqatan ham hisobingizni butunlay o\'chirmoqchimisiz? Bu amalni ortga qaytarib bo\'lmaydi.',
         ),
@@ -676,7 +676,7 @@ class ProfileScreen extends StatelessWidget {
               Navigator.pop(context);
               await context.read<AuthProvider>().deleteAccount();
             },
-            child: const Text('O\'chirish'),
+            child: Text('O\'chirish'.tr),
           ),
         ],
       ),

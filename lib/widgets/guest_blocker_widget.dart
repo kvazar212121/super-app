@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 import 'package:provider/provider.dart';
 import '../providers/app_provider.dart';
 import '../providers/auth_provider.dart';
@@ -68,7 +69,7 @@ class GuestBlockerWidget extends StatelessWidget {
                       }
                     }
                   },
-                  child: const Text('Kirish / Ro\'yxatdan o\'tish'),
+                  child: Text('Kirish / Ro\'yxatdan o\'tish'.tr),
                 ),
               ),
             ],

@@ -218,7 +218,7 @@ class _NannyBookingScreenState extends State<NannyBookingScreen> {
     } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Buyurtma yuborib bo\'lmadi')),
+          SnackBar(content: Text('Buyurtma yuborib bo\'lmadi'.tr)),
         );
       }
     }

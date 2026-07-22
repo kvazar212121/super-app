@@ -106,7 +106,7 @@ class _ProviderCalendarWidgetState extends State<ProviderCalendarWidget> {
     } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Faoliyat holatini yangilab bo\'lmadi')),
+          SnackBar(content: Text('Faoliyat holatini yangilab bo\'lmadi'.tr)),
         );
       }
       setState(() => _loading = false);
@@ -139,7 +139,7 @@ class _ProviderCalendarWidgetState extends State<ProviderCalendarWidget> {
     } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Kun holatini yangilab bo\'lmadi')),
+          SnackBar(content: Text('Kun holatini yangilab bo\'lmadi'.tr)),
         );
       }
       setState(() => _loading = false);

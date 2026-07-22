@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:provider/provider.dart';
 
@@ -215,7 +216,7 @@ class BozorchiProfileScreen extends StatelessWidget {
                     );
                   },
                   icon: const Icon(LucideIcons.phoneCall),
-                  label: const Text('Qo\'ng\'iroq'),
+                  label: Text('Qo\'ng\'iroq'.tr),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: accent,
                     side: const BorderSide(color: accent, width: 2),

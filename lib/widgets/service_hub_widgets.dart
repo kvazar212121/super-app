@@ -293,7 +293,7 @@ class SportFacilitySmallCard extends StatelessWidget {
                 maxLines: 1,
               ),
               Text(
-                '${facility.sportType}'.tr,
+                facility.sportType.tr,
                 style: TextStyle(fontSize: 11, color: accentColor),
                 maxLines: 1,
               ),
@@ -359,7 +359,7 @@ class GameZoneSmallCard extends StatelessWidget {
                 maxLines: 1,
               ),
               Text(
-                '${zone.zoneType}'.tr,
+                zone.zoneType.tr,
                 style: TextStyle(fontSize: 11, color: accentColor),
                 maxLines: 1,
               ),
@@ -427,7 +427,7 @@ class EventVenueSmallCard extends StatelessWidget {
                 maxLines: 1,
               ),
               Text(
-                '${venue.venueType}'.tr,
+                venue.venueType.tr,
                 style: TextStyle(fontSize: 11, color: accentColor),
                 maxLines: 1,
               ),

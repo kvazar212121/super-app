@@ -251,7 +251,7 @@ class _ProviderVenueSettingsWidgetState
         TextButton.icon(
           onPressed: () => setState(() => _addService('', '')),
           icon: const Icon(LucideIcons.plus),
-          label: const Text('Xizmat qo\'shish'),
+          label: Text('Xizmat qo\'shish'.tr),
         ),
         const SizedBox(height: 24),
         Text(

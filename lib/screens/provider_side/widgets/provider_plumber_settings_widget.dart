@@ -249,7 +249,7 @@ class _ProviderPlumberSettingsWidgetState
         TextButton.icon(
           onPressed: () => setState(() => _addService('', '')),
           icon: const Icon(Icons.add),
-          label: const Text('Xizmat qo\'shish'),
+          label: Text('Xizmat qo\'shish'.tr),
         ),
         const SizedBox(height: 24),
         Wrap(
@@ -278,7 +278,7 @@ class _ProviderPlumberSettingsWidgetState
         const SizedBox(height: 16),
         SwitchListTile(
           contentPadding: EdgeInsets.zero,
-          title: const Text('Yo\'l kira xizmat narxi ichida (bepul)'),
+          title: Text('Yo\'l kira xizmat narxi ichida (bepul)'.tr),
           value: _isTravelFeeIncluded,
           onChanged: (val) => setState(() => _isTravelFeeIncluded = val),
         ),

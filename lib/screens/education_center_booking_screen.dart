@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:super_app/l10n/locale_controller.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -168,15 +169,15 @@ class _EducationCenterBookingScreenState
       if (!mounted) return;
       Navigator.pop(context);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('So\'rov yuborildi! Markaz javob beradi.'),
+        SnackBar(
+          content: Text('So\'rov yuborildi! Markaz javob beradi.'.tr),
           backgroundColor: Colors.green,
         ),
       );
     } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Buyurtma yuborib bo\'lmadi')),
+          SnackBar(content: Text('Buyurtma yuborib bo\'lmadi'.tr)),
         );
       }
     }
