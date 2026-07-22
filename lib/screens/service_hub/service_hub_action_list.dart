@@ -21,6 +21,7 @@ class _ActionList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final actions = _actions(context);
+    final catalog = _catalogEntries(context);
 
     return ListView(
       padding: const EdgeInsets.symmetric(vertical: 16),
@@ -227,19 +228,19 @@ class _ActionList extends StatelessWidget {
             data.masters.map((m) => MasterSmallCard(master: m)).toList(),
           ),
 
-        if (_catalogEntries(context).isNotEmpty)
+        if (catalog.isNotEmpty)
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
             child: _CatalogButton(
               accentColor: accentColor,
-              count: _catalogEntries(context).length,
+              count: catalog.length,
               onTap: () => Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (_) => ServiceCatalogScreen(
                     title: '${kind.title.tr} — ${'Umumiy katalog'.tr}',
                     accentColor: accentColor,
-                    entries: _catalogEntries(context),
+                    entries: catalog,
                   ),
                 ),
               ),
@@ -321,6 +322,8 @@ class _ActionList extends StatelessWidget {
   /// Joriy xizmat turi uchun BARCHA provayderlarni katalog elementlariga
   /// o'giradi. Gorizontal kartalar bilan bir xil onTap/ma'lumot ishlatadi.
   List<CatalogEntry> _catalogEntries(BuildContext context) {
+    // context parametri interfeys izchilligi uchun (ishlatilmaydi — onOpen
+    // o'z BuildContext'ini oladi).
     switch (kind) {
       case ServiceHubKind.elektrik:
         return data.masters
