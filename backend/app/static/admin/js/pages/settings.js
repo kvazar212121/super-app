@@ -11,7 +11,7 @@ var AI_FEATURES = [
 
 // ===== PAGE: SETTINGS =====
 async function renderSettings() {
-    var f = { maintenance_mode: false, registration_open: true, support_phone: '+998 71 200 00 00', support_telegram: '@superapp_support' };
+    var f = { maintenance_mode: false, registration_open: true, default_lead_fee: 5000, support_phone: '+998 71 200 00 00', support_telegram: '@superapp_support' };
     var ai = null;
     var flags = [];
     var cats = [];
@@ -179,6 +179,13 @@ async function renderSettings() {
                         '</div>' +
                     '</div>' +
                     '<div class="setting-row">' +
+                        '<div class="setting-info">' +
+                            '<div class="setting-label">Standart lead fee (so\'m)</div>' +
+                            '<div class="setting-description">Mijoz topilganda provayder balansidan yechiladigan komissiya. Provayder/kategoriya alohida belgilamasa shu qo\'llanadi.</div>' +
+                        '</div>' +
+                        '<div class="setting-control"><input type="number" class="form-input" id="settingLeadFee" value="' + (f.default_lead_fee != null ? f.default_lead_fee : 5000) + '" min="0" step="500" style="width:120px;"></div>' +
+                    '</div>' +
+                    '<div class="setting-row">' +
                         '<div class="setting-info"><div class="setting-label">Support telefon</div></div>' +
                         '<div class="setting-control"><input type="text" class="form-input" id="settingSupportPhone" value="' + window.escapeHtml(f.support_phone || '') + '" style="width:200px;"></div>' +
                     '</div>' +
@@ -267,6 +274,11 @@ function saveSettings() {
         support_phone: document.getElementById('settingSupportPhone').value,
         support_telegram: document.getElementById('settingSupportTelegram').value
     };
+    var leadFeeEl = document.getElementById('settingLeadFee');
+    if (leadFeeEl) {
+        var lf = parseFloat(leadFeeEl.value);
+        if (!isNaN(lf) && lf >= 0) payload.default_lead_fee = lf;
+    }
     window.api(window.API_BASE + '/settings', { method: 'PATCH', body: JSON.stringify(payload) })
         .then(function(r) {
             window.showToast(r && r.ok ? 'Sozlamalar muvaffaqiyatli saqlandi' : 'Saqlab bo\'lmadi', r && r.ok ? 'success' : 'error');

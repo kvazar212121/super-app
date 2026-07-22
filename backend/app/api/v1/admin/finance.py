@@ -136,11 +136,19 @@ async def topup_provider_balance(
     if not provider:
         raise HTTPException(status_code=404, detail="Provayder topilmadi")
 
+    # B-model: yagona hamyon — provayder egasining user.balance'iga to'ldiriladi
+    # (lead fee ham shundan yechiladi). provider.balance ISHLATILMAYDI.
+    if not provider.owner_user_id:
+        raise HTTPException(status_code=400, detail="Provayderning egasi (foydalanuvchi) yo'q — balans to'ldirib bo'lmaydi")
+    owner = await db.get(User, provider.owner_user_id)
+    if not owner:
+        raise HTTPException(status_code=404, detail="Provayder egasi topilmadi")
+
     # Add main topup
-    provider.balance += data.amount
+    owner.balance = (owner.balance or 0.0) + data.amount
     tx = Transaction(
         provider_id=provider.id,
-        user_id=provider.owner_user_id,
+        user_id=owner.id,
         type="topup",
         amount=data.amount,
         description=data.note or "Balans to'ldirildi",
@@ -150,22 +158,22 @@ async def topup_provider_balance(
 
     # Check for bonuses
     setting = await db.scalar(select(PlatformSetting).where(PlatformSetting.key == "topup_bonus_rules"))
-    bonus_amount = 0
+    bonus_amount = 0.0
     if setting and setting.value:
         try:
             rules = json.loads(setting.value)
             for rule in rules:
                 if rule["min_amount"] <= data.amount <= rule["max_amount"]:
-                    bonus_amount = rule["bonus_amount"]
+                    bonus_amount = float(rule["bonus_amount"])
                     break
-        except Exception as e:
+        except Exception:
             pass
-    
+
     if bonus_amount > 0:
-        provider.balance += bonus_amount
+        owner.balance = (owner.balance or 0.0) + bonus_amount
         bonus_tx = Transaction(
             provider_id=provider.id,
-            user_id=provider.owner_user_id,
+            user_id=owner.id,
             type="topup_bonus",
             amount=bonus_amount,
             description=f"{data.amount} summalik to'ldirish uchun bonus",
@@ -180,7 +188,7 @@ async def topup_provider_balance(
         "provider_id": provider.id,
         "amount": data.amount,
         "bonus_amount": bonus_amount,
-        "new_balance": provider.balance
+        "new_balance": owner.balance
     }
 
 @router.post("/finance/admin-withdraw")
@@ -221,14 +229,16 @@ async def get_providers_for_finance(
     _admin: User = Depends(require_admin),
     db: AsyncSession = Depends(get_db),
 ):
-    result = await db.execute(select(Provider))
+    from sqlalchemy.orm import selectinload
+    result = await db.execute(select(Provider).options(selectinload(Provider.owner)))
     providers = result.scalars().all()
+    # B-model: ko'rsatiladigan balans — provayder egasining user.balance'i
     return [
         {
             "id": p.id,
             "name": p.name,
             "phone": p.phone,
-            "balance": p.balance,
+            "balance": (p.owner.balance if p.owner else 0.0),
             "lead_fee": p.lead_fee
         }
         for p in providers
