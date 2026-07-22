@@ -1263,4 +1263,28 @@ const Map<String, String> kTranslationsRu = {
   'Filtr': 'Фильтр',
   "Siz soha egasi bo'lishni xohlaysizmi?": 'Хотите стать поставщиком услуг?',
   "Zakaz qo'ng'irog'i": 'Звонок-заказ',
+
+  // ── Xizmat variantlari (service_hub_kind label qiymatlari) ──
+  '1 soat (kichik maydon)': '1 час (малое поле)',
+  '1 soat (katta maydon)': '1 час (большое поле)',
+  '2 soat (kichik maydon)': '2 часа (малое поле)',
+  '2 soat (katta maydon)': '2 часа (большое поле)',
+  '1 xonali kvartira': '1-комнатная квартира',
+  '2 xonali kvartira': '2-комнатная квартира',
+  '3 xonali kvartira': '3-комнатная квартира',
+
+  // ── DetailRow (bron tasdig'i) label qiymatlari ──
+  'Bemor': 'Пациент',
+  'Guruh': 'Группа',
+  'Jinsiyat': 'Пол',
+  'Joy turi': 'Тип места',
+  'Mehmonlar': 'Гости',
+  'Narx varianti': 'Вариант цены',
+  'Paket': 'Пакет',
+  'Qabul': 'Приём',
+  'Tadbir turi': 'Тип мероприятия',
+  'Tibbiy xizmat': 'Медицинская услуга',
+  'Turi': 'Тип',
+  "Yo'l kira": 'Проезд',
+  'Yosh guruhi': 'Возрастная группа',
 };

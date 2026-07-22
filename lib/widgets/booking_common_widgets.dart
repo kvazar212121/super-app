@@ -614,7 +614,7 @@ class DetailRow extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
-            label,
+            label.tr,
             style: TextStyle(color: GlassTokens.secondaryText(context)),
           ),
           const SizedBox(width: 12),
