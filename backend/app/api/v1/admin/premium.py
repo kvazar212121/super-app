@@ -124,16 +124,9 @@ async def confirm_payment(
     if not user:
         raise HTTPException(status_code=404, detail="Foydalanuvchi topilmadi")
 
-    # "balance" usuli — tasdiqlash paytida balansdan yechiladi (subscribe paytida emas).
-    # Onlayn (payme/click) usulida pul tashqi provayderда to'langan, balansga tegmaymiz.
-    if p.method == "balance":
-        if (user.balance or 0) < p.amount:
-            raise HTTPException(
-                status_code=400,
-                detail=f"Foydalanuvchi balansида mablag' yetarli emas ({int(user.balance or 0)}/{int(p.amount)} so'm).",
-            )
-        user.balance = (user.balance or 0) - p.amount
-
+    # Eslatma: premium odatda Payme/Click webhook orqali AVTOMATIK ochiladi.
+    # Bu qo'l-tasdiq faqat favqulodda holat uchun (masalan webhook kelmay qolsa).
+    # Balansga tegmaymiz — premium hech qachon user.balance'дан yechilmaydi.
     await _activate_premium(db, user, p.duration_days)
     p.status = "confirmed"
     p.confirmed_at = datetime.now(timezone.utc)

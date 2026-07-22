@@ -35,7 +35,7 @@ async def premium_status(current: User = Depends(get_current_user)):
 
 
 class SubscribeIn(BaseModel):
-    method: str = "balance"  # balance | payme | click
+    method: str = "payme"  # payme | click (premium faqat onlayn to'lov bilan)
 
 
 @router.post("/subscribe")
@@ -50,27 +50,13 @@ async def subscribe(
     if price <= 0:
         raise HTTPException(status_code=400, detail="Premium hozircha sozlanmagan")
 
-    method = (data.method or "balance").lower()
+    method = (data.method or "").lower()
 
-    if method == "balance":
-        # MUHIM: balansda pul bo'lsa ham premium AVTOMATIK ochilmaydi va balansdan
-        # DARHOL yechilmaydi. So'rov "pending" bo'lib qoladi, admin tasdiqlaganda
-        # (admin/premium confirm) balansdan yechiladi va premium ochiladi.
-        # Sabab: bir odam ham user, ham provider bo'lishi mumkin — uning balansи
-        # lead-fee (mijoz topish komissiyasi) uchun. Premium uni "yeb qo'ymasligi" kerak.
-        payment = PremiumPayment(
-            user_id=current.id, amount=price, duration_days=days,
-            status="pending", method="balance",
-        )
-        db.add(payment)
-        await db.commit()
-        await db.refresh(payment)
-        return {
-            "status": "pending",
-            "payment_id": payment.id,
-            "amount": price,
-            "message": "So'rov qabul qilindi. Tasdiqlangach premium ochiladi.",
-        }
+    # MUHIM (moliya modeli):
+    #  - Premium FAQAT onlayn to'lov (Payme/Click) orqali olinadi va to'lov
+    #    provayderining webhook'i uni AVTOMATIK ochadi — admin tasdig'i shart emas.
+    #  - Balans (user.balance) — bu provayderning lead-fee (mijoz topish komissiyasi)
+    #    hamyoni. Premium uni hech qachon ishlatmaydi ("balance" usuli yo'q).
 
     # ── Onlayn to'lov (Payme / Click) — pending yozuv + checkout havolasi ──
     # To'lov provayderi (Payme/Click) webhook orqali tasdiqlaydi va premium

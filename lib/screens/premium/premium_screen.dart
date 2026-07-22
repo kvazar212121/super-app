@@ -19,7 +19,6 @@ class _PremiumScreenState extends State<PremiumScreen> with WidgetsBindingObserv
   bool _busy = false;
   double _price = 0;
   int _days = 30;
-  double _balance = 0;
   bool _isPremium = false;
   bool _paymeEnabled = false;
   bool _clickEnabled = false;
@@ -64,7 +63,6 @@ class _PremiumScreenState extends State<PremiumScreen> with WidgetsBindingObserv
       final s = await ApiService().getPremiumStatus();
       _price = (s['price'] is num) ? (s['price'] as num).toDouble() : 0;
       _days = (s['duration_days'] is num) ? (s['duration_days'] as num).toInt() : 30;
-      _balance = (s['balance'] is num) ? (s['balance'] as num).toDouble() : 0;
       _isPremium = s['is_premium'] == true;
       _paymeEnabled = s['payme_enabled'] == true;
       _clickEnabled = s['click_enabled'] == true;
@@ -77,32 +75,6 @@ class _PremiumScreenState extends State<PremiumScreen> with WidgetsBindingObserv
       }
     } catch (_) {}
     if (mounted) setState(() => _loading = false);
-  }
-
-  /// Balansdan to'lash SO'ROVI — darhol ochilmaydi, admin tasdiqlaydi.
-  Future<void> _payWithBalance() async {
-    setState(() => _busy = true);
-    try {
-      final res = await ApiService().subscribePremium('balance');
-      await FeatureService().refreshPremium();
-      if (!mounted) return;
-      if (res['status'] == 'confirmed') {
-        // (Kelajakda avtomatik tasdiq bo'lsa) — darhol ochilgan holat
-        _showMsg('Premium ochildi! 🎉'.tr, success: true);
-        await _load();
-      } else {
-        // Odatiy holat: so'rov qabul qilindi, tasdiq kutilmoqda
-        _showMsg(
-          'So\'rovingiz qabul qilindi. Tasdiqlangach premium ochiladi.'.tr,
-          success: true,
-        );
-        await _load();
-      }
-    } catch (e) {
-      _showMsg('Xatolik'.tr);
-    } finally {
-      if (mounted) setState(() => _busy = false);
-    }
   }
 
   /// Onlayn to'lov (payme/click) — checkout sahifasini ochadi va holatni kuzatadi.
@@ -293,14 +265,6 @@ class _PremiumScreenState extends State<PremiumScreen> with WidgetsBindingObserv
             color: const Color(0xFF0098EB),
             onTap: () => _payOnline('click'),
           ),
-        // Balans — so'rov (admin tasdiqlaydi, avtomatik yechilmaydi)
-        _payButton(
-          label: 'Balans orqali so\'rov yuborish'.tr,
-          icon: Icons.account_balance_wallet,
-          color: const Color(0xFF7C3AED),
-          outlined: _paymeEnabled || _clickEnabled,
-          onTap: _payWithBalance,
-        ),
         if (!_paymeEnabled && !_clickEnabled)
           Padding(
             padding: const EdgeInsets.only(top: 14),
