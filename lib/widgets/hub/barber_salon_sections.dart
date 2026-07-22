@@ -7,6 +7,7 @@ import '../../models/beauty_salon.dart';
 import '../../models/master_worker.dart';
 import '../../models/service_hub_kind.dart';
 import '../../screens/salon_booking_screen.dart';
+import '../../screens/barber_booking_screen.dart';
 import '../../screens/provider_profile_screen.dart';
 import '../../l10n/locale_controller.dart';
 import '../../theme/glass_tokens.dart';
@@ -125,10 +126,11 @@ class _BarberHubSectionState extends State<BarberHubSection> {
                 return VenueHubCard.fromBarberShop(
                   shop,
                   accent: widget.accentColor,
-                  onTap: () => showVenuePreviewSheet(
+                  onTap: () => Navigator.push(
                     context,
-                    shop: shop,
-                    accent: widget.accentColor,
+                    MaterialPageRoute(
+                      builder: (_) => BarberBookingScreen(shop: shop),
+                    ),
                   ),
                 );
               },

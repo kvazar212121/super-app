@@ -45,6 +45,7 @@ import '../bozorchi_profile_screen.dart';
 import '../auto_mobile_profile_screen.dart';
 import '../auto_workshop_profile_screen.dart';
 import '../education_center_booking_screen.dart';
+import '../barber_booking_screen.dart';
 
 class SavedPlacesScreen extends StatelessWidget {
   final ServiceHubKind category;
@@ -186,7 +187,10 @@ class SavedPlacesScreen extends StatelessWidget {
         break;
       case 'barber_shop':
         final shop = BarberShop.fromProviderJson(item.rawJson);
-        showVenuePreviewSheet(context, shop: shop, accent: accent);
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => BarberBookingScreen(shop: shop)),
+        );
         break;
       case 'beauty_salon':
         final salon = BeautySalon.fromProviderJson(item.rawJson);
