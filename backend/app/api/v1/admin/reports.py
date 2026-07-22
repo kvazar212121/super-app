@@ -51,12 +51,12 @@ async def export_orders(_admin: User = Depends(require_admin), db: AsyncSession 
 async def export_users(_admin: User = Depends(require_admin), db: AsyncSession = Depends(get_db)):
     rows = (await db.execute(select(User).order_by(sa_desc(User.id)).limit(10000))).scalars().all()
     data = [
-        [u.id, u.name, u.surname, u.phone, u.balance, u.cashback,
+        [u.id, u.name, u.surname, u.phone, u.balance,
          u.is_premium, u.is_admin, u.created_at.isoformat() if u.created_at else ""]
         for u in rows
     ]
     return _csv_response("users.csv",
-        ["id", "name", "surname", "phone", "balance", "cashback", "is_premium", "is_admin", "created_at"], data)
+        ["id", "name", "surname", "phone", "balance", "is_premium", "is_admin", "created_at"], data)
 
 
 @router.get("/reports/export/finance.csv")
@@ -114,7 +114,6 @@ class ReportOut(BaseModel):
     net_profit: float
     total_revenue: float
     total_commission: float
-    total_cashback: float
     new_users: int
     new_providers: int
     top_category: Optional[str] = None
@@ -256,7 +255,6 @@ async def get_report(
         net_profit=net_profit,
         total_revenue=total_revenue,
         total_commission=round(total_lead_fee, 2),
-        total_cashback=0.0,
         new_users=new_users,
         new_providers=new_providers,
         top_category=top_category,

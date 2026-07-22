@@ -109,7 +109,6 @@ import { navigateTo, renderPage } from '../router.js';
                         '<div class="detail-item"><div class="detail-label">Ism</div><div class="detail-value">' + window.escapeHtml(name) + '</div></div>' +
                         '<div class="detail-item"><div class="detail-label">Telefon</div><div class="detail-value">' + window.escapeHtml(u.phone) + '</div></div>' +
                         '<div class="detail-item"><div class="detail-label">Balans</div><div class="detail-value">' + window.formatMoney(u.balance) + '</div></div>' +
-                        '<div class="detail-item"><div class="detail-label">Cashback</div><div class="detail-value">' + window.formatMoney(u.cashback) + '</div></div>' +
                         '<div class="detail-item"><div class="detail-label">Premium</div><div class="detail-value">' + (u.is_premium ? 'Ha' : 'Yo\'q') + '</div></div>' +
                         '<div class="detail-item"><div class="detail-label">Telegram</div><div class="detail-value">' + window.escapeHtml(u.telegram_username || '—') + '</div></div>' +
                         '<div class="detail-item"><div class="detail-label">Sana</div><div class="detail-value">' + (u.created_at ? window.formatDate(u.created_at) : '—') + '</div></div>' +

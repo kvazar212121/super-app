@@ -4,7 +4,7 @@ import '../models/user_profile.dart';
 import '../providers/app_provider.dart';
 import '../providers/auth_provider.dart';
 import '../widgets/card_item_widget.dart';
-import '../widgets/cashback_card_widget.dart';
+import '../widgets/account_balance_card_widget.dart';
 import '../widgets/glass/glass_scaffold.dart';
 import '../widgets/glass/glass_surface.dart';
 import '../widgets/provider_portal_entry.dart';
@@ -42,9 +42,8 @@ class ProfileScreen extends StatelessWidget {
               _buildPremiumBanner(context, user),
               const SizedBox(height: 20),
               if (user.isProvider) ...[
-                CashbackCardWidget(
+                AccountBalanceCard(
                   balance: user.balance,
-                  cashback: user.cashback,
                   isPremium: user.isPremium,
                 ),
                 const SizedBox(height: 12),

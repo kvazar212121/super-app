@@ -5,7 +5,6 @@ class UserProfile {
   final String? avatarUrl;
   final String? telegramUsername;
   final double balance;
-  final double cashback;
   final bool isPremium;
   final int reminderOffsetMinutes;
   final bool isProvider;
@@ -17,7 +16,6 @@ class UserProfile {
     this.avatarUrl,
     this.telegramUsername,
     this.balance = 0.0,
-    this.cashback = 0.0,
     this.isPremium = false,
     this.reminderOffsetMinutes = 10,
     this.isProvider = false,
@@ -30,7 +28,6 @@ class UserProfile {
     String? avatarUrl,
     String? telegramUsername,
     double? balance,
-    double? cashback,
     bool? isPremium,
     int? reminderOffsetMinutes,
     bool? isProvider,
@@ -42,7 +39,6 @@ class UserProfile {
       avatarUrl: avatarUrl ?? this.avatarUrl,
       telegramUsername: telegramUsername ?? this.telegramUsername,
       balance: balance ?? this.balance,
-      cashback: cashback ?? this.cashback,
       isPremium: isPremium ?? this.isPremium,
       reminderOffsetMinutes:
           reminderOffsetMinutes ?? this.reminderOffsetMinutes,
@@ -58,7 +54,6 @@ class UserProfile {
       avatarUrl: json['avatar_url'],
       telegramUsername: json['telegram_username'],
       balance: (json['balance'] as num?)?.toDouble() ?? 0.0,
-      cashback: (json['cashback'] as num?)?.toDouble() ?? 0.0,
       isPremium: json['is_premium'] ?? false,
       reminderOffsetMinutes: json['reminder_offset_minutes'] ?? 10,
       isProvider: json['is_provider'] ?? false,

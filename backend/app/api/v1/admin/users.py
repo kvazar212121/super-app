@@ -20,7 +20,6 @@ class UserOut(BaseModel):
     avatar_url: Optional[str] = None
     telegram_username: Optional[str] = None
     balance: float
-    cashback: float
     is_premium: bool
     is_admin: bool
     is_active: bool
@@ -38,7 +37,6 @@ class UserOut(BaseModel):
             avatar_url=u.avatar_url,
             telegram_username=u.telegram_username,
             balance=u.balance,
-            cashback=u.cashback,
             is_premium=u.is_premium,
             is_admin=u.is_admin,
             is_active=u.is_active,
@@ -52,7 +50,6 @@ class UserUpdate(BaseModel):
     surname: Optional[str] = None
     telegram_username: Optional[str] = None
     balance: Optional[float] = None
-    cashback: Optional[float] = None
     is_premium: Optional[bool] = None
 
 

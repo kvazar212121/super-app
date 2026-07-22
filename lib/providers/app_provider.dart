@@ -35,7 +35,6 @@ class AppProvider extends ChangeNotifier {
   bool get isProviderMode => _activeMode == 'provider';
   String? get activeProviderKey => _activeProviderKey;
   double get balance => _user.balance;
-  double get cashback => _user.cashback;
   List<dynamic> get notifications => _notifications;
   int get unreadCount => _unreadCount;
 

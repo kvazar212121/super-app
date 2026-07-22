@@ -28,7 +28,6 @@ class OrderOut(BaseModel):
     notes: Optional[str] = None
     date: Optional[datetime] = None
     price: float
-    cashback_earned: float
     status: str
     category_key: Optional[str] = None
     provider_name: Optional[str] = None

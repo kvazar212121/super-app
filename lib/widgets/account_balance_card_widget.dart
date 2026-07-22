@@ -3,15 +3,16 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import '../theme/glass_tokens.dart';
 
-class CashbackCardWidget extends StatelessWidget {
+/// Provayder hisob (balans) kartasi.
+/// Balans — provayder lead-fee (mijoz topish komissiyasi) hamyoni.
+/// (Keshbek tizimi olib tashlandi — biz to'lov tizimi emasmiz.)
+class AccountBalanceCard extends StatelessWidget {
   final double balance;
-  final double cashback;
   final bool isPremium;
 
-  const CashbackCardWidget({
+  const AccountBalanceCard({
     super.key,
     required this.balance,
-    required this.cashback,
     required this.isPremium,
   });
 
@@ -42,6 +43,7 @@ class CashbackCardWidget extends StatelessWidget {
           ),
           padding: const EdgeInsets.all(22),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -84,28 +86,21 @@ class CashbackCardWidget extends StatelessWidget {
                   letterSpacing: -0.5,
                 ),
               ),
-              Divider(color: Colors.white, height: 30),
+              const SizedBox(height: 6),
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Keshbek', style: TextStyle(color: Colors.white)),
-                      Text(
-                        '+${cashback.toStringAsFixed(0)} so\'m',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w700,
-                          fontSize: 18,
-                        ),
-                      ),
-                    ],
-                  ),
-                  Icon(
-                    Icons.card_giftcard_rounded,
+                  const Icon(
+                    Icons.account_balance_wallet_rounded,
                     color: Colors.white,
-                    size: 32,
+                    size: 18,
+                  ),
+                  const SizedBox(width: 6),
+                  Text(
+                    'Xizmat hisobingiz',
+                    style: TextStyle(
+                      color: Colors.white.withValues(alpha: 0.85),
+                      fontSize: 13,
+                    ),
                   ),
                 ],
               ),

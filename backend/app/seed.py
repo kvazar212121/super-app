@@ -117,7 +117,6 @@ async def seed():
                 phone=u["phone"],
                 hashed_password=hash_password(u["password"]),
                 balance=u.get("balance", 0),
-                cashback=u.get("cashback", 0),
                 is_premium=u.get("is_premium", False),
                 is_active=True,
             )
@@ -179,7 +178,6 @@ async def seed():
                         address="Toshkent",
                         date=now + timedelta(days=1),
                         price=o["price"],
-                        cashback_earned=round(o["price"] * 0.01, 2),
                         status=OrderStatus(o["status"]),
                         created_at=now - timedelta(days=o["days_ago"]),
                     )

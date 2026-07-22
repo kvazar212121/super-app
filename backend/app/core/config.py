@@ -36,9 +36,6 @@ class Settings(BaseSettings):
     max_upload_size_mb: int = 10
     upload_dir: str = "uploads"
 
-    # Cashback
-    cashback_rate: float = 1.0  # percent
-
     # Admin
     admin_default_phone: str = "admin"
     admin_default_password: str = "admin123"

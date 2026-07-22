@@ -44,7 +44,7 @@ class Order(Base):
     notes: Mapped[str | None] = mapped_column(String(1000), nullable=True)
     date: Mapped[datetime] = mapped_column(DateTime, index=True)
     price: Mapped[float] = mapped_column(Float)
-    cashback_earned: Mapped[float] = mapped_column(Float, default=0.0)
+    cashback_earned: Mapped[float] = mapped_column(Float, default=0.0)  # DEPRECATED: keshbek olib tashlandi
     status: Mapped[OrderStatus] = mapped_column(
         SAEnum(OrderStatus), default=OrderStatus.pending, index=True
     )
@@ -79,7 +79,6 @@ class Order(Base):
             "notes": self.notes,
             "date": self.date.isoformat() if self.date else None,
             "price": self.price,
-            "cashback_earned": self.cashback_earned,
             "status": self.status.value,
             "booking_mode": self.booking_mode,
             "created_at": self.created_at.isoformat() if self.created_at else None,

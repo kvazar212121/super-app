@@ -20,8 +20,7 @@ class PlatformSetting(Base):
 
     # Default settings
     DEFAULTS = {
-        "commission_rate": {"value": "15", "description": "Komissiya foizi (%)"},
-        "cashback_rate": {"value": "2", "description": "Cashback foizi (%)"},
+        "default_lead_fee": {"value": "5000", "description": "Standart lead fee (mijoz topilganda provayder balansidan yechiladigan komissiya, so'm)"},
         "currency": {"value": "UZS", "description": "Asosiy valyuta"},
         "min_order_amount": {"value": "10000", "description": "Minimal buyurtma summasi"},
         "max_order_amount": {"value": "50000000", "description": "Maksimal buyurtma summasi"},

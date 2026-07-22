@@ -12,35 +12,32 @@ router = APIRouter()
 
 
 class SettingsOut(BaseModel):
-    commission_rate: float
-    cashback_rate: float
+    # default_lead_fee — provayder balansidan (user.balance) mijoz topilganda
+    # yechiladigan qat'iy komissiya (so'm). Provayder yoki kategoriya alohida
+    # lead_fee belgilamasa, shu qiymat ishlatiladi.
+    default_lead_fee: float
     currency: str
     maintenance_mode: bool
     registration_open: bool
-    min_withdrawal: float
     support_phone: str
     support_telegram: str
 
 
 class SettingsUpdate(BaseModel):
-    commission_rate: Optional[float] = None
-    cashback_rate: Optional[float] = None
+    default_lead_fee: Optional[float] = None
     currency: Optional[str] = None
     maintenance_mode: Optional[bool] = None
     registration_open: Optional[bool] = None
-    min_withdrawal: Optional[float] = None
     support_phone: Optional[str] = None
     support_telegram: Optional[str] = None
 
 
 # Standart qiymatlar — DB'da sozlanmagan bo'lsa shular qaytadi
 _DEFAULTS = {
-    "commission_rate": 15.0,
-    "cashback_rate": 2.0,
+    "default_lead_fee": 5000.0,
     "currency": "UZS",
     "maintenance_mode": False,
     "registration_open": True,
-    "min_withdrawal": 50000.0,
     "support_phone": "+998 71 200 00 00",
     "support_telegram": "@superapp_support",
 }
@@ -55,12 +52,10 @@ def _read_settings() -> SettingsOut:
             return float(_DEFAULTS[key])
 
     return SettingsOut(
-        commission_rate=_f("commission_rate"),
-        cashback_rate=_f("cashback_rate"),
+        default_lead_fee=_f("default_lead_fee"),
         currency=(settings_service.get("currency", None) or _DEFAULTS["currency"]),
         maintenance_mode=settings_service.get_bool("maintenance_mode", _DEFAULTS["maintenance_mode"]),
         registration_open=settings_service.get_bool("registration_open", _DEFAULTS["registration_open"]),
-        min_withdrawal=_f("min_withdrawal"),
         support_phone=(settings_service.get("support_phone", None) or _DEFAULTS["support_phone"]),
         support_telegram=(settings_service.get("support_telegram", None) or _DEFAULTS["support_telegram"]),
     )

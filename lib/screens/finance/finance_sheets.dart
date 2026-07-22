@@ -36,7 +36,7 @@ void showAddTransactionSheet(
   final List<Map<String, dynamic>> incomeCategories = [
     {'name': 'Maosh', 'icon': LucideIcons.banknote},
     {'name': 'Biznes', 'icon': LucideIcons.briefcase},
-    {'name': 'Keshbek', 'icon': LucideIcons.coins},
+    {'name': 'Boshqa', 'icon': LucideIcons.coins},
   ];
 
   showModalBottomSheet(

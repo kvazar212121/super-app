@@ -19,6 +19,8 @@ class User(Base):
         String(100), nullable=True
     )
     balance: Mapped[float] = mapped_column(Float, default=0.0)
+    # DEPRECATED: keshbek tizimi olib tashlandi (biz to'lov tizimi emasmiz).
+    # Ustun DB'da eski ma'lumot uchun qoladi, lekin API/UI'da ishlatilmaydi.
     cashback: Mapped[float] = mapped_column(Float, default=0.0)
     is_premium: Mapped[bool] = mapped_column(Boolean, default=False)
     premium_until: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
@@ -64,7 +66,6 @@ class User(Base):
             "avatar_url": self.avatar_url,
             "telegram_username": self.telegram_username,
             "balance": self.balance,
-            "cashback": self.cashback,
             "is_premium": self.is_premium,
             "is_admin": self.is_admin,
             "is_active": self.is_active,

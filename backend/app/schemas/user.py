@@ -11,7 +11,6 @@ class UserOut(BaseModel):
     avatar_url: Optional[str] = None
     telegram_username: Optional[str] = None
     balance: float
-    cashback: float
     is_premium: bool
     reminder_offset_minutes: Optional[int] = 10
     created_at: Optional[datetime] = None
@@ -34,7 +33,6 @@ class UserOut(BaseModel):
             avatar_url=u.avatar_url,
             telegram_username=u.telegram_username,
             balance=u.balance,
-            cashback=u.cashback,
             is_premium=u.is_premium,
             reminder_offset_minutes=getattr(u, "reminder_offset_minutes", 10),
             created_at=u.created_at,

@@ -33,8 +33,6 @@ class OrderService:
             if slot_str in availability.get("booked", []):
                 raise HTTPException(status_code=400, detail="Tanlangan vaqt band qilingan yoki ruxsat etilmagan")
 
-        cashback_earned = 0.0
-
         order = Order(
             user_id=user.id,
             category_id=data.category_id,
@@ -46,7 +44,6 @@ class OrderService:
             notes=data.notes,
             date=data.date,
             price=data.price,
-            cashback_earned=cashback_earned,
             status=OrderStatus.pending,
         )
         db.add(order)

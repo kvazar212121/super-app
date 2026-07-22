@@ -4,14 +4,14 @@ from datetime import datetime, timedelta, timezone
 
 # ── Foydalanuvchilar (seed) ─────────────────────────────────────────────
 USERS = [
-    {"name": "Kudratulloh", "surname": "Rahimov", "phone": "+998901112233", "balance": 250000, "cashback": 18500, "is_premium": True, "password": "demo1234"},
-    {"name": "Abdulloh", "surname": "Karimov", "phone": "+998901234567", "balance": 150000, "cashback": 12500, "is_premium": True, "password": "demo1234"},
-    {"name": "Nilufar", "surname": "Rustamova", "phone": "+998912345678", "balance": 85000, "cashback": 7200, "is_premium": False, "password": "demo1234"},
-    {"name": "Sardor", "surname": "Aliyev", "phone": "+998933456789", "balance": 230000, "cashback": 18900, "is_premium": True, "password": "demo1234"},
-    {"name": "Dilnoza", "surname": "Hakimova", "phone": "+998944567890", "balance": 45000, "cashback": 3200, "is_premium": False, "password": "demo1234"},
-    {"name": "Jasur", "surname": "Bekmurodov", "phone": "+998955678901", "balance": 320000, "cashback": 25600, "is_premium": True, "password": "demo1234"},
-    {"name": "Malika", "surname": "Tursunova", "phone": "+998976789012", "balance": 67000, "cashback": 5400, "is_premium": False, "password": "demo1234"},
-    {"name": "Bobur", "surname": "Normurodov", "phone": "+998997890123", "balance": 190000, "cashback": 14300, "is_premium": True, "password": "demo1234"},
+    {"name": "Kudratulloh", "surname": "Rahimov", "phone": "+998901112233", "balance": 250000, "is_premium": True, "password": "demo1234"},
+    {"name": "Abdulloh", "surname": "Karimov", "phone": "+998901234567", "balance": 150000, "is_premium": True, "password": "demo1234"},
+    {"name": "Nilufar", "surname": "Rustamova", "phone": "+998912345678", "balance": 85000, "is_premium": False, "password": "demo1234"},
+    {"name": "Sardor", "surname": "Aliyev", "phone": "+998933456789", "balance": 230000, "is_premium": True, "password": "demo1234"},
+    {"name": "Dilnoza", "surname": "Hakimova", "phone": "+998944567890", "balance": 45000, "is_premium": False, "password": "demo1234"},
+    {"name": "Jasur", "surname": "Bekmurodov", "phone": "+998955678901", "balance": 320000, "is_premium": True, "password": "demo1234"},
+    {"name": "Malika", "surname": "Tursunova", "phone": "+998976789012", "balance": 67000, "is_premium": False, "password": "demo1234"},
+    {"name": "Bobur", "surname": "Normurodov", "phone": "+998997890123", "balance": 190000, "is_premium": True, "password": "demo1234"},
 ]
 
 # category_key, name, address, phone, lat, lng, rating, review_count, metadata
@@ -237,7 +237,6 @@ REVIEWS = [
 
 PLATFORM_SETTINGS = [
     {"key": "commission_rate", "value": "10", "description": "Platforma komissiyasi (%)"},
-    {"key": "cashback_rate", "value": "1", "description": "Cashback foizi (%)"},
     {"key": "currency", "value": "UZS", "description": "Asosiy valyuta"},
 ]
 
@@ -248,7 +247,7 @@ PAYMENT_CARDS = [
 
 NOTIFICATIONS = [
     {"user_phone": "+998901112233", "type": "push", "title": "Buyurtma qabul qilindi", "message": "Elektrik xizmati buyurtmangiz tasdiqlandi"},
-    {"user_phone": "+998901112233", "type": "push", "title": "Cashback qo'shildi", "message": "500 so'm cashback hisobingizga qo'shildi"},
+    {"user_phone": "+998901112233", "type": "push", "title": "Xush kelibsiz", "message": "HubServis'ga xush kelibsiz! Xizmatlardan foydalanishni boshlang."},
 ]
 
 PRODUCT_CATALOG = [
