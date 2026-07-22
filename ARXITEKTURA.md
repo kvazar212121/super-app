@@ -285,6 +285,383 @@ order_id  — kelishuv bo'lsa yaratilgan bron
 - **SupportTicket + SupportMessage** — qo'llab-quvvatlash chat
 - **ProductCatalog + ProductPriceEntry** — bozor narxlari (scraper)
 
+### 4.7 To'liq ER-diagramma (Entity-Relationship)
+
+Quyida barcha jadvallar va ular orasidagi bog'lanishlar ko'rsatilgan. O'qish qulay bo'lishi uchun 4 mantiqiy guruhga bo'lingan.
+
+**Belgilar:** `PK` = asosiy kalit, `FK` = tashqi kalit, `UK` = unikal. `||--o{` = biriga-ko'p, `||--o|` = biriga-bir(ixtiyoriy), `}o--o{` = ko'pga-ko'p.
+
+#### A) Marketplace yadrosi (User, Provider, Order, Category, pul, sharh)
+
+```mermaid
+erDiagram
+    USER ||--o{ PROVIDER : "egasi (owner_user_id)"
+    USER ||--o{ ORDER : "buyurtma beradi"
+    USER ||--o{ REVIEW : "yozadi"
+    USER ||--o{ TRANSACTION : "hamyoni"
+    USER ||--o{ PAYMENT_CARD : "kartalari"
+    CATEGORY ||--o{ PROVIDER : "tarkibida"
+    CATEGORY ||--o{ CATEGORY_VARIANT : "variantlari"
+    CATEGORY ||--o{ ORDER : "turi"
+    CATEGORY_VARIANT ||--o{ ORDER : "tanlangan variant"
+    PROVIDER ||--o{ ORDER : "bajaradi"
+    PROVIDER ||--o{ REVIEW : "oladi"
+    PROVIDER ||--o{ TRANSACTION : "bog'liq"
+    PROVIDER ||--o{ BLOCKED_USER : "bloklaydi"
+    PROVIDER ||--o{ PROVIDER_BLOCKED_TIME : "band vaqtlari"
+    PROVIDER ||--o| PROVIDER_FRAUD_STATS : "firibgarlik statistikasi"
+    ORDER ||--o{ TRANSACTION : "lead_fee"
+    ORDER ||--o{ DISPUTE : "nizosi"
+    ORDER ||--o{ ORDER_CHECKIN : "checkin"
+
+    USER {
+        int id PK
+        string phone UK
+        string hashed_password
+        float balance "yagona hamyon"
+        bool is_premium
+        datetime premium_until
+        bool is_admin
+        bool is_super_admin
+        int admin_role_id FK
+        bool is_active
+        int finance_group_id FK
+    }
+    PROVIDER {
+        int id PK
+        int category_id FK
+        int owner_user_id FK
+        string name
+        float rating
+        float lead_fee "null=category/default"
+        bool is_verified
+        bool is_blocked
+        bool is_active
+        json metadata_json "KYC"
+    }
+    CATEGORY {
+        int id PK
+        string key UK
+        string title_uz
+        float lead_fee
+    }
+    CATEGORY_VARIANT {
+        int id PK
+        int category_id FK
+        string label_uz
+        float base_price
+    }
+    ORDER {
+        int id PK
+        int user_id FK
+        int category_id FK
+        int provider_id FK
+        int variant_id FK
+        string service_name
+        float price
+        enum status "12 holat"
+        string booking_mode
+        datetime date
+    }
+    REVIEW {
+        int id PK
+        int user_id FK
+        int provider_id FK
+        int rating
+        string comment
+    }
+    TRANSACTION {
+        int id PK
+        int user_id FK
+        int provider_id FK
+        int order_id FK
+        string type "topup/lead_fee/..."
+        numeric amount
+        string status
+    }
+    PAYMENT_CARD {
+        int id PK
+        int user_id FK
+        string masked_number
+        string bank
+    }
+    BLOCKED_USER {
+        int id PK
+        int provider_id FK
+        int user_id FK
+    }
+    PROVIDER_BLOCKED_TIME {
+        int id PK
+        int provider_id FK
+    }
+    PROVIDER_FRAUD_STATS {
+        int id PK
+        int provider_id FK
+    }
+    DISPUTE {
+        int id PK
+        int order_id FK
+        int user_id FK
+        string status "open/resolved/rejected"
+        float refund_amount
+    }
+    ORDER_CHECKIN {
+        int id PK
+        int order_id FK
+        enum side
+        enum response
+    }
+```
+
+#### B) Qo'ng'iroqlar, bitim va bildirishnomalar
+
+```mermaid
+erDiagram
+    USER ||--o{ CALL_DEAL : "mijoz (client_id)"
+    USER ||--o{ CALL_DEAL : "provayder (provider_user_id)"
+    ORDER ||--o| CALL_DEAL : "kelishuvdan yaralgan bron"
+    USER ||--o{ CALL_HISTORY : "qo'ng'iroq qiladi (caller)"
+    USER ||--o{ CALL_HISTORY : "qabul qiladi (receiver)"
+    PROVIDER ||--o{ CALL_HISTORY : "bog'liq"
+    USER ||--o{ DIRECT_MESSAGE : "yuboradi (sender)"
+    USER ||--o{ DIRECT_MESSAGE : "oladi (recipient)"
+    USER ||--o{ NOTIFICATION : "bildirishnomalari"
+    USER ||--o{ DEVICE_TOKEN : "qurilma tokenlari"
+
+    CALL_DEAL {
+        int id PK
+        string call_id UK "mijoz UUID"
+        int client_id FK
+        int provider_user_id FK
+        string category_key
+        string provider_response "agreed/declined/timeout"
+        string client_response
+        string status "await/agreed/recheck/declined"
+        int order_id FK
+    }
+    CALL_HISTORY {
+        int id PK
+        int caller_id FK
+        int receiver_id FK
+        int provider_id FK
+        int duration_seconds
+        string status "missed/completed/rejected"
+    }
+    DIRECT_MESSAGE {
+        int id PK
+        int sender_id FK
+        int recipient_id FK
+        text text
+        bool is_read
+    }
+    NOTIFICATION {
+        int id PK
+        int user_id FK
+        string type
+        string title
+        text message
+        bool is_read
+    }
+    DEVICE_TOKEN {
+        int id PK
+        int user_id FK
+        string token UK
+        string platform "android/ios/web"
+    }
+```
+
+#### C) Premium, moliya, admin (RBAC), qo'llab-quvvatlash
+
+```mermaid
+erDiagram
+    USER ||--o{ PREMIUM_PAYMENT : "premium to'lovlari"
+    USER ||--o| FINANCE_GROUP : "guruh egasi (owner_id)"
+    FINANCE_GROUP ||--o{ USER : "a'zolari (finance_group_id)"
+    USER ||--o{ FINANCE_RECORD : "daromad/xarajat"
+    USER ||--o{ PLANNED_PAYMENT : "rejalashtirilgan to'lov"
+    ADMIN_ROLE ||--o{ USER : "rol biriktirilgan (admin_role_id)"
+    USER ||--o{ AUDIT_LOG : "admin harakatlari"
+    USER ||--o{ SUPPORT_TICKET : "murojaatlari"
+    SUPPORT_TICKET ||--o{ SUPPORT_MESSAGE : "xabarlari"
+
+    PREMIUM_PAYMENT {
+        int id PK
+        int user_id FK
+        float amount
+        int duration_days
+        string status "pending/confirmed/rejected"
+        string method "payme/click"
+    }
+    FINANCE_GROUP {
+        int id PK
+        int owner_id FK
+        string name
+        string invite_code UK
+    }
+    FINANCE_RECORD {
+        int id PK
+        int user_id FK
+        string type "income/expense"
+        float amount
+        string category
+        datetime date
+    }
+    PLANNED_PAYMENT {
+        int id PK
+        int user_id FK
+        float amount
+        bool is_paid
+        bool is_notified
+    }
+    ADMIN_ROLE {
+        int id PK
+        string name UK
+        json permissions "bo'lim: [view/edit]"
+    }
+    AUDIT_LOG {
+        int id PK
+        int admin_user_id FK
+        string section
+        string action
+        string path
+    }
+    SUPPORT_TICKET {
+        int id PK
+        int user_id FK
+        string status
+        int unread_admin
+        int unread_user
+    }
+    SUPPORT_MESSAGE {
+        int id PK
+        int ticket_id FK
+        string sender "user/admin"
+        text text
+    }
+    PLATFORM_SETTING {
+        int id PK
+        string key UK
+        string value
+    }
+    PROMO {
+        int id PK
+        string title
+        string image_url
+    }
+    PRODUCT_CATALOG {
+        int id PK
+        string name
+        float average_price
+    }
+    PRODUCT_PRICE_ENTRY {
+        int id PK
+        int product_id FK
+        string source_type "admin/ai/scraper"
+        float price
+    }
+    PRODUCT_CATALOG ||--o{ PRODUCT_PRICE_ENTRY : "narx yozuvlari"
+```
+
+#### D) Productivity modullari (reja, fitnes, kaloriya, budilnik)
+
+```mermaid
+erDiagram
+    USER ||--o{ PLAN : "rejalari"
+    USER ||--o{ TODO : "vazifalari"
+    USER ||--o{ SHOPPING_LIST : "xarid ro'yxatlari"
+    USER ||--o{ ALARM : "budilniklari"
+    ALARM ||--o{ ALARM_LOG : "jiringlash tarixi"
+    USER ||--o{ ALARM_LOG : "budilnik loglari"
+    USER ||--o{ WORKOUT_PLAN : "mashg'ulot rejalari"
+    USER ||--o{ WORKOUT_LOG : "mashg'ulot loglari"
+    WORKOUT_PLAN ||--o{ WORKOUT_LOG : "reja loglari"
+    USER ||--o| NUTRITION_PROFILE : "ovqatlanish profili"
+    USER ||--o{ MEAL_LOG : "ovqat loglari"
+    USER ||--o{ DAILY_ACTIVITY : "kunlik faollik (qadam)"
+
+    PLAN {
+        int id PK
+        int user_id FK
+        string title
+        datetime due_date
+        bool is_completed
+        bool is_notified
+    }
+    TODO {
+        int id PK
+        int user_id FK
+        string title
+        bool is_completed
+    }
+    SHOPPING_LIST {
+        int id PK
+        int user_id FK
+        json items
+        float total_estimated_price
+    }
+    ALARM {
+        int id PK
+        int user_id FK
+        int hour
+        int minute
+        string mission_type "math/qr/..."
+        bool is_enabled
+    }
+    ALARM_LOG {
+        int id PK
+        int alarm_id FK
+        int user_id FK
+        datetime fired_at
+        int snooze_count
+    }
+    WORKOUT_PLAN {
+        int id PK
+        int user_id FK
+    }
+    WORKOUT_LOG {
+        int id PK
+        int user_id FK
+        int plan_id FK
+    }
+    NUTRITION_PROFILE {
+        int id PK
+        int user_id FK-UK
+        string sex
+        int age
+        float weight_kg
+        string goal "lose/maintain/gain"
+    }
+    MEAL_LOG {
+        int id PK
+        int user_id FK
+        string meal_type "breakfast/lunch/dinner/snack"
+        string dish_name
+        float calories
+        float ai_confidence
+    }
+    DAILY_ACTIVITY {
+        int id PK
+        int user_id FK
+        date date
+        int steps
+        float calories
+    }
+    EXERCISE {
+        int id PK
+        string external_id UK
+        string name_uz
+        string body_part
+        string equipment
+    }
+```
+
+**Diagramma xulosasi:**
+- **`USER`** — markaziy jadval, deyarli hamma narsa unga bog'lanadi (16+ relationship)
+- **`ORDER`** — marketplace yuragi: User + Provider + Category ni bog'laydi, undan Transaction/Dispute/Checkin kelib chiqadi
+- **`CALL_DEAL`** — User (mijoz) ↔ User (provayder) bitim, Order ga aylanadi
+- **`EXERCISE`** — yagona "mustaqil" jadval (foydalanuvchiga bog'lanmagan, umumiy katalog)
+- Ko'p jadvallarda `ondelete=CASCADE` — foydalanuvchi o'chirilsa uning ma'lumotlari ham o'chadi (GDPR/akkaunt o'chirish uchun)
+
 ---
 
 ## 5. Autentifikatsiya va xavfsizlik
