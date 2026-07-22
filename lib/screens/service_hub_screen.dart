@@ -7,6 +7,8 @@ import 'package:geolocator/geolocator.dart';
 
 import '../models/master_worker.dart';
 import '../models/auto_mobile_service.dart';
+import '../models/courier_service.dart';
+import '../models/massage_hijoma.dart';
 import '../models/nurse_service.dart';
 import '../models/event_planning.dart';
 import '../models/service_hub_kind.dart';
@@ -39,6 +41,9 @@ import 'tutor_profile_screen.dart';
 import 'education_center_booking_screen.dart';
 import 'simple_call_booking_screen.dart';
 import 'service_hub/saved_places_screen.dart';
+import 'service_hub/service_catalog_screen.dart';
+import 'auto_mobile_dispatch_screen.dart';
+import 'auto_workshop_dispatch_screen.dart';
 import '../widgets/enhanced_service_map.dart';
 import 'package:super_app/l10n/locale_controller.dart';
 

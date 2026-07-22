@@ -227,6 +227,25 @@ class _ActionList extends StatelessWidget {
             data.masters.map((m) => MasterSmallCard(master: m)).toList(),
           ),
 
+        if (_catalogEntries(context).isNotEmpty)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
+            child: _CatalogButton(
+              accentColor: accentColor,
+              count: _catalogEntries(context).length,
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => ServiceCatalogScreen(
+                    title: '${kind.title.tr} — ${'Umumiy katalog'.tr}',
+                    accentColor: accentColor,
+                    entries: _catalogEntries(context),
+                  ),
+                ),
+              ),
+            ),
+          ),
+
         if (actions.isNotEmpty)
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 4, 16, 16),
@@ -265,6 +284,208 @@ class _ActionList extends StatelessWidget {
       return data.masters.where((m) => m.specialty == specialty).toList();
     }
     return data.masters;
+  }
+
+  double _minPrice(Map<String, double> prices, double fallback) {
+    if (prices.values.isEmpty) return fallback;
+    return prices.values.reduce((a, b) => a < b ? a : b);
+  }
+
+  CatalogEntry _masterEntry(
+    Master m,
+    IconData icon,
+    ServiceHubKind category,
+    double fallbackPrice,
+    String defaultSubtitle,
+  ) {
+    final min = _minPrice(m.prices, fallbackPrice);
+    return CatalogEntry(
+      name: m.name,
+      subtitle: m.serviceArea ?? defaultSubtitle,
+      rating: m.rating,
+      reviewCount: m.reviewCount,
+      priceLabel: '${(min / 1000).round()}k+',
+      icon: icon,
+      latitude: m.latitude,
+      longitude: m.longitude,
+      rawJson: m.rawJson,
+      onOpen: (ctx) => Navigator.push(
+        ctx,
+        MaterialPageRoute(
+          builder: (_) => ProviderProfileScreen(master: m, category: category),
+        ),
+      ),
+    );
+  }
+
+  /// Joriy xizmat turi uchun BARCHA provayderlarni katalog elementlariga
+  /// o'giradi. Gorizontal kartalar bilan bir xil onTap/ma'lumot ishlatadi.
+  List<CatalogEntry> _catalogEntries(BuildContext context) {
+    switch (kind) {
+      case ServiceHubKind.elektrik:
+        return data.masters
+            .map((e) => _masterEntry(
+                e, LucideIcons.zap, ServiceHubKind.elektrik, 100000, 'Uyga xizmat'))
+            .toList();
+      case ServiceHubKind.santexnik:
+        return data.masters
+            .map((e) => _masterEntry(e, LucideIcons.droplet,
+                ServiceHubKind.santexnik, 100000, 'Uyga xizmat'))
+            .toList();
+      case ServiceHubKind.konditsioner:
+        return data.masters
+            .map((e) => _masterEntry(e, LucideIcons.wind,
+                ServiceHubKind.konditsioner, 180000, 'Uyga xizmat'))
+            .toList();
+      case ServiceHubKind.tozalash:
+        return data.masters
+            .map((e) => _masterEntry(e, LucideIcons.sprayCan,
+                ServiceHubKind.tozalash, 200000, 'Tozalash'))
+            .toList();
+      case ServiceHubKind.usta:
+        return data.masters
+            .map((e) => _masterEntry(
+                e, LucideIcons.hammer, ServiceHubKind.usta, 100000, 'Usta'))
+            .toList();
+      case ServiceHubKind.sartarosh:
+        return data.mobileBarbers
+            .map((e) => _masterEntry(e, LucideIcons.scissors,
+                ServiceHubKind.sartarosh, 35000, 'Uyga xizmat'))
+            .toList();
+      case ServiceHubKind.salon:
+        return data.mobileStylists
+            .map((e) => _masterEntry(e, LucideIcons.sparkles,
+                ServiceHubKind.salon, 50000, 'Mutaxassis'))
+            .toList();
+      case ServiceHubKind.enaga:
+        return data.nannies
+            .map((n) => CatalogEntry(
+                  name: n.name,
+                  subtitle: '${n.experienceYears} yil • ${n.ageGroupsLabel}',
+                  rating: n.rating,
+                  reviewCount: n.reviewCount,
+                  priceLabel:
+                      '${(_minPrice(n.prices, 80000) / 1000).round()}k+',
+                  icon: LucideIcons.baby,
+                  latitude: n.latitude,
+                  longitude: n.longitude,
+                  rawJson: n.rawJson,
+                  onOpen: (ctx) => Navigator.push(
+                    ctx,
+                    MaterialPageRoute(
+                      builder: (_) => NannyProfileScreen(nanny: n),
+                    ),
+                  ),
+                ))
+            .toList();
+      case ServiceHubKind.kuryerlik:
+        return data.couriers
+            .map((c) => CatalogEntry(
+                  name: c.name,
+                  subtitle: c.serviceArea ?? c.vehicleType.label,
+                  rating: c.rating,
+                  reviewCount: c.reviewCount,
+                  priceLabel:
+                      '${(_minPrice(c.prices, 25000) / 1000).round()}k+',
+                  icon: LucideIcons.bike,
+                  latitude: c.latitude,
+                  longitude: c.longitude,
+                  rawJson: c.rawJson,
+                  onOpen: (ctx) => Navigator.push(
+                    ctx,
+                    MaterialPageRoute(
+                      builder: (_) => CourierDispatchScreen(service: c),
+                    ),
+                  ),
+                ))
+            .toList();
+      case ServiceHubKind.avtoYordam:
+        return [
+          ...data.autoMobile.map((u) => CatalogEntry(
+                name: u.name,
+                subtitle: u.serviceArea ?? u.vehicleType.label,
+                rating: u.rating,
+                reviewCount: u.reviewCount,
+                priceLabel: '${(_minPrice(u.prices, 80000) / 1000).round()}k+',
+                icon: u.vehicleType.icon,
+                latitude: u.latitude,
+                longitude: u.longitude,
+                rawJson: u.rawJson,
+                onOpen: (ctx) => Navigator.push(
+                  ctx,
+                  MaterialPageRoute(
+                    builder: (_) => AutoMobileDispatchScreen(service: u),
+                  ),
+                ),
+              )),
+          ...data.workshops.map((w) => CatalogEntry(
+                name: w.name,
+                subtitle: w.specializations.take(2).join(', '),
+                rating: w.rating,
+                reviewCount: w.reviewCount,
+                priceLabel: '${(_minPrice(w.prices, 80000) / 1000).round()}k+',
+                icon: LucideIcons.house,
+                latitude: w.latitude,
+                longitude: w.longitude,
+                rawJson: w.rawJson,
+                onOpen: (ctx) => Navigator.push(
+                  ctx,
+                  MaterialPageRoute(
+                    builder: (_) => AutoWorkshopDispatchScreen(workshop: w),
+                  ),
+                ),
+              )),
+        ];
+      case ServiceHubKind.repetitor:
+        return data.tutors
+            .map((t) => CatalogEntry(
+                  name: t.name,
+                  subtitle: t.subjectsLabel,
+                  rating: t.rating,
+                  reviewCount: t.reviewCount,
+                  priceLabel:
+                      '${(_minPrice(t.prices, 100000) / 1000).round()}k+',
+                  icon: LucideIcons.bookOpen,
+                  latitude: t.latitude,
+                  longitude: t.longitude,
+                  rawJson: t.rawJson,
+                  onOpen: (ctx) => Navigator.push(
+                    ctx,
+                    MaterialPageRoute(
+                      builder: (_) => TutorProfileScreen(tutor: t),
+                    ),
+                  ),
+                ))
+            .toList();
+      case ServiceHubKind.massajHijoma:
+        return data.massage
+            .map((s) => CatalogEntry(
+                  name: s.name,
+                  subtitle: s.serviceTypes.isNotEmpty
+                      ? s.serviceTypes.first.label
+                      : 'Mutaxassis',
+                  rating: s.rating,
+                  reviewCount: s.reviewCount,
+                  priceLabel:
+                      '${(_minPrice(s.prices, 50000) / 1000).round()}k+',
+                  icon: LucideIcons.heartPulse,
+                  latitude: s.latitude,
+                  longitude: s.longitude,
+                  rawJson: s.rawJson,
+                  onOpen: (ctx) => Navigator.push(
+                    ctx,
+                    MaterialPageRoute(
+                      builder: (_) => ProviderProfileScreen(
+                        master: massageToMaster(s),
+                        category: ServiceHubKind.massajHijoma,
+                      ),
+                    ),
+                  ),
+                ))
+            .toList();
+      default:
+        return const [];
+    }
   }
 
   Widget _buildSection(
@@ -799,6 +1020,68 @@ class _CompactActionTile extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// "Umumiy katalog" tugmasi — grid ko'rinishда barcha provayderlarni ochadi.
+class _CatalogButton extends StatelessWidget {
+  final Color accentColor;
+  final int count;
+  final VoidCallback onTap;
+
+  const _CatalogButton({
+    required this.accentColor,
+    required this.count,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: accentColor,
+      borderRadius: BorderRadius.circular(14),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(14),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          child: Row(
+            children: [
+              const Icon(LucideIcons.layoutGrid, color: Colors.white, size: 20),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  'Umumiy katalog'.tr,
+                  style: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w800,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.25),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Text(
+                  '$count',
+                  style: const TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 6),
+              const Icon(LucideIcons.chevronRight,
+                  color: Colors.white, size: 18),
+            ],
+          ),
+        ),
       ),
     );
   }

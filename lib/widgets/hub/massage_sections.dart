@@ -138,7 +138,7 @@ class _MassageCenterHubSectionState extends State<MassageCenterHubSection> {
                     context,
                     MaterialPageRoute(
                       builder: (_) => ProviderProfileScreen(
-                        master: _convertToMaster(center),
+                        master: massageToMaster(center),
                         category: ServiceHubKind.massajHijoma,
                       ),
                     ),
@@ -224,7 +224,7 @@ class MobileMassageHubSection extends StatelessWidget {
                   context,
                   MaterialPageRoute(
                     builder: (_) => ProviderProfileScreen(
-                      master: _convertToMaster(s),
+                      master: massageToMaster(s),
                       category: ServiceHubKind.massajHijoma,
                     ),
                   ),
@@ -240,7 +240,7 @@ class MobileMassageHubSection extends StatelessWidget {
 }
 
 // Yordamchi metod ProviderProfileScreen g'am Master modeli kutgani uchun MassageHijoma dan o'girishga
-Master _convertToMaster(MassageHijoma mh) {
+Master massageToMaster(MassageHijoma mh) {
   return Master(
     id: mh.id,
     providerId: mh.providerId,

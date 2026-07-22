@@ -32,6 +32,10 @@ class VenueHubCard extends StatelessWidget {
   final String? coverUrl;
   final VoidCallback onTap;
 
+  /// Karta kengligi. Gorizontal ro'yxatда 168 (default). Grid katalogда
+  /// null berilsa — grid katakчаsi kengligini oladi (double.infinity).
+  final double? width;
+
   const VenueHubCard({
     super.key,
     required this.name,
@@ -47,6 +51,7 @@ class VenueHubCard extends StatelessWidget {
     required this.accent,
     this.coverUrl,
     required this.onTap,
+    this.width = 168,
   });
 
   factory VenueHubCard.fromBarberShop(
@@ -167,6 +172,7 @@ class VenueHubCard extends StatelessWidget {
     String? coverUrl,
     Map<String, dynamic>? rawJson,
     bool isOpen = true,
+    double? width = 168,
   }) {
     return VenueHubCard(
       name: name,
@@ -184,13 +190,14 @@ class VenueHubCard extends StatelessWidget {
       accent: accent,
       coverUrl: coverUrl ?? AppConfig.resolveCoverImage(rawJson),
       onTap: onTap,
+      width: width,
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 168,
+      width: width,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(18),
         boxShadow: GlassTokens.glassShadow(context),
