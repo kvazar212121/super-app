@@ -351,14 +351,68 @@ class _ActionList extends StatelessWidget {
                 e, LucideIcons.hammer, ServiceHubKind.usta, 100000, 'Usta'))
             .toList();
       case ServiceHubKind.sartarosh:
-        return data.mobileBarbers
-            .map((e) => _masterEntry(e, LucideIcons.scissors,
-                ServiceHubKind.sartarosh, 35000, 'Uyga xizmat'))
-            .toList();
+        return [
+          ...data.barberShops.map((s) => CatalogEntry(
+                name: s.name,
+                subtitle: s.address,
+                rating: s.rating,
+                reviewCount: s.reviewCount,
+                priceLabel: s.priceRangeLabel(),
+                icon: LucideIcons.scissors,
+                latitude: s.latitude,
+                longitude: s.longitude,
+                rawJson: s.rawJson,
+                onOpen: (ctx) => Navigator.push(
+                  ctx,
+                  MaterialPageRoute(
+                    builder: (_) => BarberBookingScreen(shop: s),
+                  ),
+                ),
+              )),
+          ...data.mobileBarbers.map((e) => _masterEntry(e,
+              LucideIcons.scissors, ServiceHubKind.sartarosh, 35000, 'Uyga xizmat')),
+        ];
       case ServiceHubKind.salon:
-        return data.mobileStylists
-            .map((e) => _masterEntry(e, LucideIcons.sparkles,
-                ServiceHubKind.salon, 50000, 'Mutaxassis'))
+        return [
+          ...data.salons.map((s) => CatalogEntry(
+                name: s.name,
+                subtitle: s.address,
+                rating: s.rating,
+                reviewCount: s.reviewCount,
+                priceLabel: s.priceRangeLabel(),
+                icon: LucideIcons.sparkles,
+                latitude: s.latitude,
+                longitude: s.longitude,
+                rawJson: s.rawJson,
+                onOpen: (ctx) => Navigator.push(
+                  ctx,
+                  MaterialPageRoute(
+                    builder: (_) => SalonBookingScreen(salon: s),
+                  ),
+                ),
+              )),
+          ...data.mobileStylists.map((e) => _masterEntry(
+              e, LucideIcons.sparkles, ServiceHubKind.salon, 50000, 'Mutaxassis')),
+        ];
+      case ServiceHubKind.futbol:
+        return data.footballFields
+            .map((f) => CatalogEntry(
+                  name: f.name,
+                  subtitle: '${f.sizeSurfaceLabel} · ${f.address}',
+                  rating: f.rating,
+                  reviewCount: f.reviewCount,
+                  priceLabel: f.priceLabel,
+                  icon: LucideIcons.trophy,
+                  latitude: f.latitude,
+                  longitude: f.longitude,
+                  rawJson: f.rawJson,
+                  onOpen: (ctx) => Navigator.push(
+                    ctx,
+                    MaterialPageRoute(
+                      builder: (_) => FootballFieldBookingScreen(field: f),
+                    ),
+                  ),
+                ))
             .toList();
       case ServiceHubKind.enaga:
         return data.nannies
