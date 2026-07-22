@@ -391,6 +391,8 @@ def create_app() -> FastAPI:
             or path.startswith("/admin")
             or path.startswith("/api/v1/auth")
             or path.startswith("/api/v1/health")
+            or path.startswith("/api/v1/ready")
+            or path.startswith("/api/v1/config")
             or path.startswith("/docs")
             or path.startswith("/redoc")
             or path.startswith("/openapi")
