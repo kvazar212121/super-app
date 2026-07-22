@@ -9,7 +9,7 @@ from datetime import datetime, timezone
 from typing import List
 
 from pydantic import BaseModel, Field
-from sqlalchemy import select
+from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.plan import Plan
@@ -19,26 +19,41 @@ from app.models.shopping_list import ShoppingList
 logger = logging.getLogger(__name__)
 
 
-SYSTEM_PROMPT = """Siz HubServis SuperApp (universal ilovasi) uchun sun'iy intellekt yordamchi agentsiz. 
-Sizning vazifangiz: foydalanuvchi so'rovlariga javob berish va agar foydalanuvchi reja, xarajat yoki bozorlik haqida aytsa, funksiyalarni (tools) ishlatib, uni avtomatik ravishda bazaga qo'shishdir.
+SYSTEM_PROMPT = """Siz HubServis SuperApp (universal ilovasi) uchun sun'iy intellekt yordamchi AGENTsiz.
+Sizning vazifangiz: foydalanuvchi nomidan ilovadagi deyarli HAMMA ishni bajarish — reja/vazifa/xarajat/bozorlik/budilnik qo'shish, ularni ko'rish, tahrirlash, o'chirish, xizmat bron qilish va bekor qilish, hamda ob-havo/valyuta/namoz vaqtlari kabi ma'lumotlarni berish.
 
-ILOVANING ASOSIY BO'LIMLARI VA FUNKSIYALARI:
-1. Rejalarim: Foydalanuvchi ma'lum sana va vaqtga rejalar qo'shishi mumkin.
-2. Mening moliyam: Daromad va xarajatlarni kiritish mumkin.
-3. Aqlli savdo: Bozorga borishdan oldin mahsulot ro'yxatini tuzish.
-4. Barcha xizmatlar: Ustalar, tozalash, repetitor kabi xizmatlarga buyurtma berish.
-5. Aksiyalar: Chegirma kodlari.
-6. Majburlovchi budilnik: Foydalanuvchi uchun budilnik qo'yish (o'chirish uchun vazifa bajariladi).
+ILOVANING ASOSIY BO'LIMLARI:
+1. Rejalarim / Vazifalar (todo): sana-vaqtli rejalar va vazifalar.
+2. Mening moliyam: daromad/xarajat, oylik xulosa, balans.
+3. Aqlli savdo: bozorlik ro'yxati.
+4. Barcha xizmatlar: ustalar (sartarosh, tozalash, santexnik va h.k.) bron qilish.
+5. Majburlovchi budilnik: budilnik qo'yish/yoqish/o'chirish.
+6. Fitnes: bugungi qadamlar.
+7. Ma'lumot: ob-havo, valyuta kurslari, namoz vaqtlari.
 
-QOIDALAR:
+SIZ QILA OLADIGAN AMALLAR (tool'lar orqali):
+- QO'SHISH: add_plan, add_finance_record, add_shopping_item, set_alarm, search_providers→create_booking
+- KO'RISH: list_orders, list_plans, list_todos, list_alarms, list_shopping, get_finance_summary, get_account_info, get_steps_today
+- O'ZGARTIRISH/BEKOR: cancel_order, complete_plan, delete_plan, complete_todo, delete_todo, toggle_alarm, delete_alarm, mark_shopping_bought, delete_finance_record
+- MA'LUMOT: get_weather, get_currency, get_prayer_times
+
+MUHIM QOIDALAR:
 - Faqat o'zbek tilida, qisqa va aniq javob bering. Emojilardan foydalaning.
-- Agar foydalanuvchi biron bir xarajat ("bugun oshga 50 ming ketdi"), daromad, reja ("ertaga soat 10 da majlis"), bozorlik ("bozorlikka 2kg go'sht qo'sh"), yoki budilnik ("ertalab 7 da budilnik qo'y", "6:30 ga uyg'ot") haqida yozsa, MAJBURIY ravishda mos tool ni chaqiring.
-- BRON (xizmat buyurtma qilish): foydalanuvchi biror xizmat/usta so'rasa ("sartarosh kerak", "uyga tozalash chaqir", "santexnik bron qil"):
-  1) AVVAL `search_providers` ni chaqirib mos ustalarni toping va foydalanuvchiga 2-3 tasini (nomi, reytingi) taklif qiling.
-  2) Foydalanuvchi ustani tanlagach, MANZIL va VAQTni so'rang (agar aytilmagan bo'lsa).
-  3) So'ng `create_booking` ni chaqirib buyurtmani rasmiylashtiring. Buyurtmadan keyin "Buyurtmalarim"da ko'rish mumkinligini ayting.
+- SIZ QILA OLMAYDIGAN narsalar: hisobni (akkauntni) o'chirish, tizimdan chiqish (logout), va HAR QANDAY PUL operatsiyasi (balans to'ldirish, premium sotib olish, pul o'tkazish). Bunday so'rovda: "Bu amalni o'zingiz ilova ichida bajarishingiz kerak" deb ayting.
+
+- BEKOR QILISH / O'CHIRISH — IKKI QADAMLI TASDIQ:
+  1) Avval kerakli ID'ni topish uchun mos list_* tool'ini chaqiring.
+  2) Foydalanuvchiga aniq nima o'chirilishini/bekor qilinishini ayting va "Tasdiqlaysizmi?" deb SO'RANG. Bu bosqichда o'chirish/bekor tool'ini confirm=false bilan chaqirmang yoki umuman chaqirmang.
+  3) Foydalanuvchi "ha / tasdiqlayman / bekor qil" deb aniq javob bergandagina tegishli tool'ni confirm=true bilan chaqiring.
+
+- BRON QILISH (aqlli):
+  1) search_providers bilan ustalarni toping, 2-3 tasini taklif qiling.
+  2) Kerakli ma'lumot (manzil, vaqt, necha kishi, qaysi joy) yetishmasa — foydalanuvchidan SO'RANG.
+  3) Lekin foydalanuvchi "o'zing tanla / farqi yo'q / bemalol" desa yoki javob bermasa — mantiqiy DEFAULT qiymatni o'zingiz belgilab (masalan eng yuqori reytingli usta, yaqin vaqt), create_booking bilan bron qiling.
+
+- Har qanday xarajat/daromad/reja/bozorlik/budilnik haqida yozsa, MAJBURIY mos tool'ni chaqiring.
 - Hozirgi sana va vaqt (UTC): {current_time}
-- Siz tool ni chaqirganingizdan keyin, tizim sizga natijani qaytaradi va siz foydalanuvchiga "Xarajat qo'shildi", "Reja saqlandi" degan ma'noda javob qilasiz. Qachonki tool result "success" bo'lsa, qisqa tasdiqlovchi matn yozing."""
+- Tool natijasini olganingizdan so'ng, foydalanuvchiga tabiiy, qisqa javob yozing (masalan "3 ta faol buyurtmangiz bor:", "Buyurtma bekor qilindi ✅")."""
 
 # AI Tools sxemalari
 TOOLS = [
@@ -140,6 +155,210 @@ TOOLS = [
                 },
                 "required": ["provider_id", "service_name", "date", "address", "price"]
             }
+        }
+    },
+    # ── O'QISH (READ) toollari — foydalanuvchi "nima bor / qancha" deb so'raganda ──
+    {
+        "type": "function",
+        "function": {
+            "name": "list_orders",
+            "description": "Foydalanuvchining buyurtmalari (bronlari) ro'yxati. 'buyurtmalarim', 'qanaqa bronlarim bor' kabi so'rovlarда, shuningdek bekor qilishдан OLDIN id topish uchun chaqiring.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "only_active": {"type": "boolean", "description": "true bo'lsa faqat faol (bekor/yakunlanmagan) buyurtmalar. Default true."}
+                },
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "list_plans",
+            "description": "Foydalanuvchining rejalari ro'yxati. 'rejalarim', 'bugun nima rejam bor' kabi so'rovlarда yoki reja bekor/bajarilgan qilishдан oldin id topish uchun.",
+            "parameters": {"type": "object", "properties": {
+                "only_pending": {"type": "boolean", "description": "true bo'lsa faqat bajarilmagan rejalar. Default true."}
+            }}
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "list_todos",
+            "description": "Foydalanuvchining vazifalari (todo) ro'yxati.",
+            "parameters": {"type": "object", "properties": {
+                "only_pending": {"type": "boolean", "description": "true bo'lsa faqat bajarilmagan vazifalar. Default true."}
+            }}
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "list_alarms",
+            "description": "Foydalanuvchining budilniklari ro'yxati. Budilnik o'chirish/yoqishдан oldin id topish uchun.",
+            "parameters": {"type": "object", "properties": {}}
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "list_shopping",
+            "description": "Foydalanuvchining joriy bozorlik (xarid) ro'yxati mahsulotlari.",
+            "parameters": {"type": "object", "properties": {}}
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "get_finance_summary",
+            "description": "Joriy oy uchun moliya xulosasi: jami daromad, jami xarajat, balans va toifalar bo'yicha. 'bu oy qancha sarfladim', 'balansim' kabi so'rovlarда.",
+            "parameters": {"type": "object", "properties": {}}
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "get_account_info",
+            "description": "Foydalanuvchi hisobi haqida: ism, hamyon balansi (so'm), premium holati. 'balansim qancha', 'premiumim bormi' kabi so'rovlarда.",
+            "parameters": {"type": "object", "properties": {}}
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "get_steps_today",
+            "description": "Bugungi qadamlar soni va yoqilган kaloriya (fitnes). 'bugun necha qadam yurdim' kabi so'rovlarда.",
+            "parameters": {"type": "object", "properties": {}}
+        }
+    },
+    # ── BEKOR / O'CHIRISH / TAHRIRLASH — HAMISHA confirm bilan (2-qadamli) ──
+    {
+        "type": "function",
+        "function": {
+            "name": "cancel_order",
+            "description": "Foydalanuvchining buyurtmasini (bronini) bekor qilish. FAQAT foydalanuvchi aniq tasdiqlaganда confirm=true bilan chaqiring. Avval confirm=false bilan chaqirib, foydalanuvchiдан tasdiq so'rang.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "order_id": {"type": "integer", "description": "Bekor qilinadigan buyurtma id'si (list_orders'дан)"},
+                    "confirm": {"type": "boolean", "description": "Foydalanuvchi 'ha, bekor qil' deb aniq tasdiqlaganда true. Aks holda false."}
+                },
+                "required": ["order_id", "confirm"]
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "complete_plan",
+            "description": "Rejani 'bajarildi' deb belgilash. confirm shart emas (zararsiz amal).",
+            "parameters": {"type": "object", "properties": {
+                "plan_id": {"type": "integer", "description": "Reja id'si (list_plans'дан)"}
+            }, "required": ["plan_id"]}
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "delete_plan",
+            "description": "Rejani butunlay o'chirish. FAQAT foydalanuvchi tasdiqlaganда confirm=true.",
+            "parameters": {"type": "object", "properties": {
+                "plan_id": {"type": "integer", "description": "Reja id'si"},
+                "confirm": {"type": "boolean", "description": "Tasdiqlanганда true"}
+            }, "required": ["plan_id", "confirm"]}
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "complete_todo",
+            "description": "Vazifani (todo) bajarildi deb belgilash.",
+            "parameters": {"type": "object", "properties": {
+                "todo_id": {"type": "integer", "description": "Vazifa id'si (list_todos'дан)"}
+            }, "required": ["todo_id"]}
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "delete_todo",
+            "description": "Vazifani o'chirish. FAQAT tasdiqlanганда confirm=true.",
+            "parameters": {"type": "object", "properties": {
+                "todo_id": {"type": "integer", "description": "Vazifa id'si"},
+                "confirm": {"type": "boolean"}
+            }, "required": ["todo_id", "confirm"]}
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "toggle_alarm",
+            "description": "Budilnikni yoqish yoki o'chirish (is_enabled). Bu zararsiz — confirm shart emas.",
+            "parameters": {"type": "object", "properties": {
+                "alarm_id": {"type": "integer", "description": "Budilnik id'si (list_alarms'дан)"},
+                "enabled": {"type": "boolean", "description": "Yoqish uchun true, o'chirish uchun false"}
+            }, "required": ["alarm_id", "enabled"]}
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "delete_alarm",
+            "description": "Budilnikni butunlay o'chirish. FAQAT tasdiqlanганда confirm=true.",
+            "parameters": {"type": "object", "properties": {
+                "alarm_id": {"type": "integer", "description": "Budilnik id'si"},
+                "confirm": {"type": "boolean"}
+            }, "required": ["alarm_id", "confirm"]}
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "mark_shopping_bought",
+            "description": "Bozorlik ro'yxatidagi mahsulotni 'sotib olindi' deb belgilash.",
+            "parameters": {"type": "object", "properties": {
+                "item_name": {"type": "string", "description": "Mahsulot nomi (list_shopping'дан)"}
+            }, "required": ["item_name"]}
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "delete_finance_record",
+            "description": "Moliya yozuvini o'chirish. FAQAT tasdiqlanганда confirm=true.",
+            "parameters": {"type": "object", "properties": {
+                "record_id": {"type": "integer", "description": "Yozuv id'si"},
+                "confirm": {"type": "boolean"}
+            }, "required": ["record_id", "confirm"]}
+        }
+    },
+    # ── FOYDALI MA'LUMOTLAR (utility) — tashqi API'lar ──
+    {
+        "type": "function",
+        "function": {
+            "name": "get_weather",
+            "description": "Ob-havo ma'lumoti (harorat, holat, shamol). 'ob-havo qanaqa', 'bugun sovuqmi' kabi so'rovlarда.",
+            "parameters": {"type": "object", "properties": {
+                "city": {"type": "string", "description": "Shahar nomi (default: Tashkent)"}
+            }}
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "get_currency",
+            "description": "Valyuta kurslari (USD, EUR, RUB, GBP, KZT — CBU rasmiy). 'dollar kursi qancha' kabi so'rovlarда.",
+            "parameters": {"type": "object", "properties": {}}
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "get_prayer_times",
+            "description": "Namoz vaqtlari. 'namoz vaqtlari', 'peshin qachon' kabi so'rovlarда.",
+            "parameters": {"type": "object", "properties": {
+                "city": {"type": "string", "description": "Shahar nomi (default: Tashkent)"}
+            }}
         }
     }
 ]
@@ -345,6 +564,287 @@ async def handle_tool_call(db: AsyncSession, user_id: int, tool_call: dict) -> t
                 {"status": "success", "message": "Buyurtma yaratildi", "order_id": order.id},
                 ensure_ascii=False,
             ), action
+
+        # ══════════════ O'QISH (READ) toollari ══════════════
+        elif func_name == "list_orders":
+            from app.models.order import Order, OrderStatus
+            from app.models.provider import Provider
+            only_active = args.get("only_active", True)
+            stmt = select(Order).where(Order.user_id == user_id)
+            if only_active:
+                stmt = stmt.where(Order.status.notin_([OrderStatus.completed, OrderStatus.cancelled, OrderStatus.no_show]))
+            stmt = stmt.order_by(Order.created_at.desc()).limit(15)
+            orders = (await db.execute(stmt)).scalars().all()
+            out = []
+            for o in orders:
+                prov = await db.get(Provider, o.provider_id)
+                out.append({
+                    "order_id": o.id,
+                    "service_name": o.service_name,
+                    "provider": prov.name if prov else None,
+                    "status": o.status.value,
+                    "date": o.date.isoformat() if o.date else None,
+                    "price": o.price,
+                })
+            return json.dumps({"status": "success", "orders": out, "count": len(out)}, ensure_ascii=False), None
+
+        elif func_name == "list_plans":
+            only_pending = args.get("only_pending", True)
+            stmt = select(Plan).where(Plan.user_id == user_id)
+            if only_pending:
+                stmt = stmt.where(Plan.is_completed == False)
+            stmt = stmt.order_by(Plan.due_date.asc()).limit(20)
+            plans = (await db.execute(stmt)).scalars().all()
+            out = [{"plan_id": p.id, "title": p.title, "due_date": p.due_date.isoformat() if p.due_date else None,
+                    "is_completed": p.is_completed} for p in plans]
+            return json.dumps({"status": "success", "plans": out, "count": len(out)}, ensure_ascii=False), None
+
+        elif func_name == "list_todos":
+            from app.models.todo import Todo
+            only_pending = args.get("only_pending", True)
+            stmt = select(Todo).where(Todo.user_id == user_id)
+            if only_pending:
+                stmt = stmt.where(Todo.is_completed == False)
+            stmt = stmt.order_by(Todo.created_at.desc()).limit(20)
+            todos = (await db.execute(stmt)).scalars().all()
+            out = [{"todo_id": t.id, "title": t.title, "is_completed": t.is_completed} for t in todos]
+            return json.dumps({"status": "success", "todos": out, "count": len(out)}, ensure_ascii=False), None
+
+        elif func_name == "list_alarms":
+            from app.models.alarm import Alarm
+            alarms = (await db.execute(
+                select(Alarm).where(Alarm.user_id == user_id).order_by(Alarm.hour, Alarm.minute)
+            )).scalars().all()
+            out = [{"alarm_id": a.id, "label": a.label, "time": f"{a.hour:02d}:{a.minute:02d}",
+                    "is_enabled": a.is_enabled, "repeat_days": a.repeat_days} for a in alarms]
+            return json.dumps({"status": "success", "alarms": out, "count": len(out)}, ensure_ascii=False), None
+
+        elif func_name == "list_shopping":
+            result = await db.execute(
+                select(ShoppingList).where(ShoppingList.user_id == user_id).order_by(ShoppingList.id.desc()).limit(1)
+            )
+            s_list = result.scalar_one_or_none()
+            items = (s_list.items if s_list and s_list.items else [])
+            out = [{"name": it.get("name"), "qty": it.get("qty"), "unit": it.get("unit"),
+                    "is_bought": it.get("is_bought", False)} for it in items]
+            return json.dumps({"status": "success", "items": out, "count": len(out)}, ensure_ascii=False), None
+
+        elif func_name == "get_finance_summary":
+            income = float(await db.scalar(
+                select(func.coalesce(func.sum(FinanceRecord.amount), 0)).where(
+                    FinanceRecord.user_id == user_id, FinanceRecord.type == "income",
+                    func.extract("month", FinanceRecord.date) == datetime.now(timezone.utc).month,
+                    func.extract("year", FinanceRecord.date) == datetime.now(timezone.utc).year,
+                )
+            ) or 0)
+            expense = float(await db.scalar(
+                select(func.coalesce(func.sum(FinanceRecord.amount), 0)).where(
+                    FinanceRecord.user_id == user_id, FinanceRecord.type == "expense",
+                    func.extract("month", FinanceRecord.date) == datetime.now(timezone.utc).month,
+                    func.extract("year", FinanceRecord.date) == datetime.now(timezone.utc).year,
+                )
+            ) or 0)
+            return json.dumps({
+                "status": "success", "month_income": income, "month_expense": expense,
+                "balance": income - expense,
+            }, ensure_ascii=False), None
+
+        elif func_name == "get_account_info":
+            from app.models.user import User as _U
+            u = await db.get(_U, user_id)
+            if not u:
+                return '{"status": "error", "message": "Foydalanuvchi topilmadi"}', None
+            from app.services import premium_service
+            return json.dumps({
+                "status": "success", "name": u.name,
+                "balance": float(u.balance or 0),
+                "is_premium": premium_service.is_active(u),
+                "premium_until": u.premium_until.isoformat() if u.premium_until else None,
+            }, ensure_ascii=False), None
+
+        elif func_name == "get_steps_today":
+            from app.models.daily_activity import DailyActivity
+            from datetime import date as _date
+            row = (await db.execute(
+                select(DailyActivity).where(
+                    DailyActivity.user_id == user_id, DailyActivity.date == _date.today()
+                )
+            )).scalar_one_or_none()
+            return json.dumps({
+                "status": "success",
+                "steps": (row.steps if row else 0),
+                "calories": (round(row.calories, 1) if row else 0),
+            }, ensure_ascii=False), None
+
+        # ══════════════ BEKOR / O'CHIRISH / TAHRIRLASH ══════════════
+        elif func_name == "cancel_order":
+            from app.models.order import Order, OrderStatus
+            if not args.get("confirm"):
+                return json.dumps({"status": "needs_confirmation",
+                    "message": "Bekor qilishni tasdiqlashini so'rang."}, ensure_ascii=False), None
+            o = (await db.execute(
+                select(Order).where(Order.id == int(args.get("order_id")), Order.user_id == user_id)
+            )).scalar_one_or_none()
+            if not o:
+                return '{"status": "error", "message": "Buyurtma topilmadi"}', None
+            if o.status in (OrderStatus.completed, OrderStatus.cancelled, OrderStatus.no_show):
+                return '{"status": "error", "message": "Bu buyurtmani bekor qilib bo\'lmaydi"}', None
+            o.status = OrderStatus.cancelled
+            await db.commit()
+            return json.dumps({"status": "success", "message": "Buyurtma bekor qilindi", "order_id": o.id},
+                              ensure_ascii=False), {"type": "orders_changed"}
+
+        elif func_name == "complete_plan":
+            p = (await db.execute(
+                select(Plan).where(Plan.id == int(args.get("plan_id")), Plan.user_id == user_id)
+            )).scalar_one_or_none()
+            if not p:
+                return '{"status": "error", "message": "Reja topilmadi"}', None
+            p.is_completed = True
+            await db.commit()
+            return '{"status": "success", "message": "Reja bajarildi deb belgilandi."}', {"type": "plans_changed"}
+
+        elif func_name == "delete_plan":
+            if not args.get("confirm"):
+                return '{"status": "needs_confirmation", "message": "O\'chirishni tasdiqlashini so\'rang."}', None
+            p = (await db.execute(
+                select(Plan).where(Plan.id == int(args.get("plan_id")), Plan.user_id == user_id)
+            )).scalar_one_or_none()
+            if not p:
+                return '{"status": "error", "message": "Reja topilmadi"}', None
+            await db.delete(p)
+            await db.commit()
+            return '{"status": "success", "message": "Reja o\'chirildi."}', {"type": "plans_changed"}
+
+        elif func_name == "complete_todo":
+            from app.models.todo import Todo
+            t = (await db.execute(
+                select(Todo).where(Todo.id == int(args.get("todo_id")), Todo.user_id == user_id)
+            )).scalar_one_or_none()
+            if not t:
+                return '{"status": "error", "message": "Vazifa topilmadi"}', None
+            t.is_completed = True
+            await db.commit()
+            return '{"status": "success", "message": "Vazifa bajarildi deb belgilandi."}', {"type": "todos_changed"}
+
+        elif func_name == "delete_todo":
+            from app.models.todo import Todo
+            if not args.get("confirm"):
+                return '{"status": "needs_confirmation", "message": "O\'chirishni tasdiqlashini so\'rang."}', None
+            t = (await db.execute(
+                select(Todo).where(Todo.id == int(args.get("todo_id")), Todo.user_id == user_id)
+            )).scalar_one_or_none()
+            if not t:
+                return '{"status": "error", "message": "Vazifa topilmadi"}', None
+            await db.delete(t)
+            await db.commit()
+            return '{"status": "success", "message": "Vazifa o\'chirildi."}', {"type": "todos_changed"}
+
+        elif func_name == "toggle_alarm":
+            from app.models.alarm import Alarm
+            a = (await db.execute(
+                select(Alarm).where(Alarm.id == int(args.get("alarm_id")), Alarm.user_id == user_id)
+            )).scalar_one_or_none()
+            if not a:
+                return '{"status": "error", "message": "Budilnik topilmadi"}', None
+            a.is_enabled = bool(args.get("enabled"))
+            await db.commit()
+            msg = "Budilnik yoqildi." if a.is_enabled else "Budilnik o'chirildi."
+            return json.dumps({"status": "success", "message": msg}, ensure_ascii=False), {"type": "alarms_changed", "alarm_id": a.id, "enabled": a.is_enabled}
+
+        elif func_name == "delete_alarm":
+            from app.models.alarm import Alarm
+            if not args.get("confirm"):
+                return '{"status": "needs_confirmation", "message": "O\'chirishni tasdiqlashini so\'rang."}', None
+            a = (await db.execute(
+                select(Alarm).where(Alarm.id == int(args.get("alarm_id")), Alarm.user_id == user_id)
+            )).scalar_one_or_none()
+            if not a:
+                return '{"status": "error", "message": "Budilnik topilmadi"}', None
+            aid = a.id
+            await db.delete(a)
+            await db.commit()
+            return '{"status": "success", "message": "Budilnik o\'chirildi."}', {"type": "alarms_changed", "alarm_id": aid, "deleted": True}
+
+        elif func_name == "mark_shopping_bought":
+            result = await db.execute(
+                select(ShoppingList).where(ShoppingList.user_id == user_id).order_by(ShoppingList.id.desc()).limit(1)
+            )
+            s_list = result.scalar_one_or_none()
+            if not s_list or not s_list.items:
+                return '{"status": "error", "message": "Bozorlik ro\'yxati bo\'sh"}', None
+            name_q = (args.get("item_name") or "").strip().lower()
+            items = list(s_list.items)
+            found = False
+            for it in items:
+                if (it.get("name") or "").strip().lower() == name_q:
+                    it["is_bought"] = True
+                    found = True
+                    break
+            if not found:
+                return '{"status": "error", "message": "Mahsulot topilmadi"}', None
+            s_list.items = items
+            await db.commit()
+            return '{"status": "success", "message": "Mahsulot sotib olindi deb belgilandi."}', {"type": "shopping_changed"}
+
+        elif func_name == "delete_finance_record":
+            if not args.get("confirm"):
+                return '{"status": "needs_confirmation", "message": "O\'chirishni tasdiqlashini so\'rang."}', None
+            r = (await db.execute(
+                select(FinanceRecord).where(FinanceRecord.id == int(args.get("record_id")), FinanceRecord.user_id == user_id)
+            )).scalar_one_or_none()
+            if not r:
+                return '{"status": "error", "message": "Yozuv topilmadi"}', None
+            await db.delete(r)
+            await db.commit()
+            return '{"status": "success", "message": "Moliya yozuvi o\'chirildi."}', {"type": "finance_changed"}
+
+        # ══════════════ FOYDALI MA'LUMOTLAR (utility) ══════════════
+        elif func_name == "get_weather":
+            import httpx as _httpx
+            city = args.get("city") or "Tashkent"
+            try:
+                async with _httpx.AsyncClient(timeout=10.0) as client:
+                    resp = await client.get(
+                        "https://api.open-meteo.com/v1/forecast?latitude=41.2995&longitude=69.2401&current_weather=true"
+                    )
+                    resp.raise_for_status()
+                    cur = resp.json().get("current_weather", {})
+                    return json.dumps({"status": "success", "city": city,
+                        "temperature": cur.get("temperature"), "windspeed": cur.get("windspeed")},
+                        ensure_ascii=False), None
+            except Exception:
+                return '{"status": "error", "message": "Ob-havo olinmadi"}', None
+
+        elif func_name == "get_currency":
+            import httpx as _httpx
+            try:
+                async with _httpx.AsyncClient(timeout=10.0) as client:
+                    resp = await client.get("https://cbu.uz/uz/arkhiv-kursov-valyut/json/")
+                    resp.raise_for_status()
+                    data = resp.json()
+                    want = ["USD", "EUR", "RUB", "GBP", "KZT"]
+                    rates = {i["Ccy"]: i["Rate"] for i in data if i["Ccy"] in want}
+                    return json.dumps({"status": "success", "rates": rates}, ensure_ascii=False), None
+            except Exception:
+                return '{"status": "error", "message": "Valyuta kurslari olinmadi"}', None
+
+        elif func_name == "get_prayer_times":
+            import httpx as _httpx
+            city = args.get("city") or "Tashkent"
+            try:
+                async with _httpx.AsyncClient(timeout=10.0) as client:
+                    resp = await client.get(
+                        f"https://api.aladhan.com/v1/timingsByCity?city={city}&country=Uzbekistan&method=3"
+                    )
+                    resp.raise_for_status()
+                    t = resp.json()["data"]["timings"]
+                    return json.dumps({"status": "success", "timings": {
+                        "Bomdod": t.get("Fajr"), "Quyosh": t.get("Sunrise"), "Peshin": t.get("Dhuhr"),
+                        "Asr": t.get("Asr"), "Shom": t.get("Maghrib"), "Xufton": t.get("Isha"),
+                    }}, ensure_ascii=False), None
+            except Exception:
+                return '{"status": "error", "message": "Namoz vaqtlari olinmadi"}', None
 
         else:
             return '{"status": "error", "message": "Noma\'lum funksiya"}', None
