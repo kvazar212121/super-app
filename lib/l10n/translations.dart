@@ -1151,6 +1151,8 @@ const Map<String, String> kTranslationsRu = {
   'Faqat oxirgi 1 oy saqlanadi': 'Хранится только за последний месяц',
   'bloklandi': 'заблокирован',
   'blokdan chiqarildi': 'разблокирован',
+  'Suhbatni o\'chirish': 'Удалить переписку',
+  'bilan yozishma o\'chiriladi. Davom etasizmi?': 'переписка будет удалена. Продолжить?',
   'Bloklash': 'Заблокировать',
   'Blokdan chiqarish': 'Разблокировать',
   'Bloklangan kontaktlar yo\'q': 'Нет заблокированных контактов',

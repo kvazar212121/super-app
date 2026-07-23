@@ -356,6 +356,8 @@ class _MessagesTabState extends State<_MessagesTab> {
         itemBuilder: (context, idx) {
           final c = Map<String, dynamic>.from(_convos[idx] as Map);
           final unread = (c['unread'] as num?)?.toInt() ?? 0;
+          final peerId = (c['peer_id'] as num).toInt();
+          final peerName = c['peer_name'] as String? ?? '';
           String time = '';
           try {
             time = DateFormat('dd.MM HH:mm').format(DateTime.parse(c['last_at']).toLocal());
@@ -366,8 +368,8 @@ class _MessagesTabState extends State<_MessagesTab> {
                 context,
                 MaterialPageRoute(
                   builder: (_) => DmChatScreen(
-                    peerId: (c['peer_id'] as num).toInt(),
-                    peerName: c['peer_name'] as String? ?? '',
+                    peerId: peerId,
+                    peerName: peerName,
                   ),
                 ),
               );
@@ -394,30 +396,119 @@ class _MessagesTabState extends State<_MessagesTab> {
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(color: GlassTokens.secondaryText(context)),
               ),
-              trailing: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.end,
+              trailing: Row(
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(time,
-                      style: TextStyle(fontSize: 11, color: GlassTokens.secondaryText(context))),
-                  if (unread > 0)
-                    Container(
-                      margin: const EdgeInsets.only(top: 4),
-                      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
-                      decoration: const BoxDecoration(
-                        color: Color(0xFFEF4444),
-                        borderRadius: BorderRadius.all(Radius.circular(10)),
-                      ),
-                      child: Text('$unread',
-                          style: const TextStyle(
-                              color: Colors.white, fontSize: 11, fontWeight: FontWeight.w700)),
-                    ),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(time,
+                          style: TextStyle(fontSize: 11, color: GlassTokens.secondaryText(context))),
+                      if (unread > 0)
+                        Container(
+                          margin: const EdgeInsets.only(top: 4),
+                          padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+                          decoration: const BoxDecoration(
+                            color: Color(0xFFEF4444),
+                            borderRadius: BorderRadius.all(Radius.circular(10)),
+                          ),
+                          child: Text('$unread',
+                              style: const TextStyle(
+                                  color: Colors.white, fontSize: 11, fontWeight: FontWeight.w700)),
+                        ),
+                    ],
+                  ),
+                  _msgMenu(context, peerId, peerName),
                 ],
               ),
             ),
           );
         },
       ),
+    );
+  }
+
+  /// SMS suhbat uchun amallar menyusi: qo'ng'iroq, bloklash/blokdan chiqarish,
+  /// suhbatни o'chirish.
+  Widget _msgMenu(BuildContext context, int peerId, String peerName) {
+    final svc = CallHistoryService();
+    final blocked = svc.isUserBlocked(peerId);
+    return PopupMenuButton<String>(
+      icon: Icon(LucideIcons.ellipsisVertical, color: GlassTokens.secondaryText(context)),
+      onSelected: (v) async {
+        switch (v) {
+          case 'call':
+            CallHelper.makeDirectCall(context, peerId, peerName);
+            break;
+          case 'block':
+            await svc.blockUser(peerId, peerName);
+            if (!context.mounted) return;
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('$peerName ${'bloklandi'.tr}')),
+            );
+            break;
+          case 'unblock':
+            await svc.unblockUser(peerId);
+            if (!context.mounted) return;
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('$peerName ${'blokdan chiqarildi'.tr}')),
+            );
+            break;
+          case 'delete':
+            final ok = await showDialog<bool>(
+              context: context,
+              builder: (ctx) => AlertDialog(
+                title: Text('Suhbatni o\'chirish'.tr),
+                content: Text('$peerName ${'bilan yozishma o\'chiriladi. Davom etasizmi?'.tr}'),
+                actions: [
+                  TextButton(
+                      onPressed: () => Navigator.pop(ctx, false),
+                      child: Text('Bekor qilish'.tr)),
+                  TextButton(
+                    onPressed: () => Navigator.pop(ctx, true),
+                    child: Text('O\'chirish'.tr,
+                        style: const TextStyle(color: Color(0xFFEF4444))),
+                  ),
+                ],
+              ),
+            );
+            if (ok == true) {
+              try {
+                await _api.deleteDmThread(peerId);
+              } catch (_) {}
+              _load();
+            }
+            break;
+        }
+      },
+      itemBuilder: (_) => [
+        PopupMenuItem(
+          value: 'call',
+          child: Row(children: [
+            const Icon(Icons.phone, color: Colors.green, size: 18),
+            const SizedBox(width: 10),
+            Text('Qo\'ng\'iroq qilish'.tr),
+          ]),
+        ),
+        PopupMenuItem(
+          value: blocked ? 'unblock' : 'block',
+          child: Row(children: [
+            Icon(blocked ? LucideIcons.circleCheck : LucideIcons.ban,
+                color: blocked ? Colors.green : Colors.red, size: 18),
+            const SizedBox(width: 10),
+            Text(blocked ? 'Blokdan chiqarish'.tr : 'Bloklash'.tr),
+          ]),
+        ),
+        PopupMenuItem(
+          value: 'delete',
+          child: Row(children: [
+            const Icon(LucideIcons.trash2, color: Color(0xFFEF4444), size: 18),
+            const SizedBox(width: 10),
+            Text('Suhbatni o\'chirish'.tr),
+          ]),
+        ),
+      ],
     );
   }
 }
