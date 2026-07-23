@@ -130,9 +130,13 @@ class ProviderProfileScreen extends StatelessWidget {
                   children: [
                     const Icon(Icons.star, color: Colors.amber, size: 18),
                     const SizedBox(width: 4),
-                    Text('${master.rating} (${master.reviewCount} sharh)'),
+                    Text('${master.rating} (${master.reviewCount} ${'sharh'.tr})'),
                   ],
                 ),
+                if (master.reviewCount > 0) ...[
+                  const SizedBox(height: 6),
+                  _satisfactionBar(context, master.rating),
+                ],
               ],
             ),
           ),
@@ -321,6 +325,47 @@ class ProviderProfileScreen extends StatelessWidget {
                     'team_size': master.teamSize,
                   },
                 },
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Umumiy reytingни 5 ballдан foizga aylantirib (mamnunlik %) progress bar
+  /// bilan ko'rsatadi. Masalan 4.8/5 = 96% mamnunlik.
+  Widget _satisfactionBar(BuildContext context, double rating) {
+    final percent = (rating / 5 * 100).clamp(0, 100).round();
+    final color = percent >= 80
+        ? const Color(0xFF16A34A)
+        : percent >= 60
+        ? const Color(0xFFF59E0B)
+        : const Color(0xFFEF4444);
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 32),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                '$percent% ${'mamnunlik'.tr}',
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                  color: color,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 4),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(6),
+            child: LinearProgressIndicator(
+              value: percent / 100,
+              minHeight: 6,
+              backgroundColor: color.withValues(alpha: 0.15),
+              valueColor: AlwaysStoppedAnimation<Color>(color),
+            ),
           ),
         ],
       ),
