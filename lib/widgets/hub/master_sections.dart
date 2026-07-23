@@ -36,23 +36,23 @@ class CleaningHubSection extends StatelessWidget {
   Widget build(BuildContext context) {
     if (cleaners.isEmpty) return const SizedBox.shrink();
 
+    // Yakka va jamoa tozalovchilar BITTA aralash ro'yxatда, eng yaqin bo'yicha
+    // saralanadi. Karta ichидаги subtitle "Yakka tozalovchi" yoki "Jamoa · N
+    // kishi" deb turini ko'rsatadi (ajratuvchi belgi).
+    final all = [..._solo, ..._teams]
+      ..sort((a, b) => distanceKm(kDefaultUserLat, kDefaultUserLng, a.latitude, a.longitude)
+          .compareTo(distanceKm(kDefaultUserLat, kDefaultUserLng, b.latitude, b.longitude)));
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (_solo.isNotEmpty)
-          _section(context, 'Yakka tozalovchilar', _solo, LucideIcons.user,
-              withFilter: true),
-        if (_teams.isNotEmpty)
-          _section(context, 'Tozalash jamoalari', _teams, LucideIcons.users,
-              withFilter: _solo.isEmpty),
-        if (_solo.isEmpty && _teams.isEmpty)
-          _section(
-            context,
-            'Tozalash xizmatlari',
-            cleaners,
-            LucideIcons.sprayCan,
-            withFilter: true,
-          ),
+        _section(
+          context,
+          'Tozalash xizmatlari',
+          all.isEmpty ? cleaners : all,
+          LucideIcons.sprayCan,
+          withFilter: true,
+        ),
       ],
     );
   }
@@ -119,6 +119,8 @@ class CleaningHubSection extends StatelessWidget {
                     ? 'Jamoa · ${m.teamSize} kishi'
                     : m.isMasterBrigade && m.teamSize != null
                     ? 'Brigada · ${m.teamSize} kishi'
+                    : m.isCleaningSolo
+                    ? 'Yakka tozalovchi'
                     : m.specialty,
                 rating: m.rating,
                 reviewCount: m.reviewCount,
