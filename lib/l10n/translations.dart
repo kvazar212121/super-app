@@ -1157,6 +1157,7 @@ const Map<String, String> kTranslationsRu = {
   'Buyurtmani ko\'rish': 'Посмотреть заказ',
   'bo\'limiga o\'tish': 'перейти в раздел',
   'Bo\'limga o\'tish': 'Перейти в раздел',
+  'Provayderni ochib bo\'lmadi': 'Не удалось открыть провайдера',
   'Suhbatni o\'chirish': 'Удалить переписку',
   'bilan yozishma o\'chiriladi. Davom etasizmi?': 'переписка будет удалена. Продолжить?',
   'Bloklash': 'Заблокировать',

@@ -554,14 +554,22 @@ async def handle_tool_call(db: AsyncSession, user_id: int, tool_call: dict) -> t
                     if matched_cat else None
                 ),
             }
-            # Chatда "sahifaga o'tish" tugmasi uchun action (provayderlar ro'yxati).
+            # Chatда HAR provayder uchun alohida "bron qilish" tugmasi chiqadi.
             action = None
             if results and matched_cat:
                 action = {
-                    "type": "open_category",
+                    "type": "provider_list",
                     "category_key": matched_cat.key,
                     "category_name": matched_cat.title_uz,
-                    "provider_ids": [r["id"] for r in results],
+                    "providers": [
+                        {
+                            "id": r["id"],
+                            "name": r["name"],
+                            "rating": r["rating"],
+                            "address": r["address"],
+                        }
+                        for r in results
+                    ],
                 }
             return json.dumps(payload, ensure_ascii=False), action
 

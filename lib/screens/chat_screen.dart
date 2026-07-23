@@ -4,8 +4,10 @@ import 'dart:async';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:permission_handler/permission_handler.dart';
 import '../services/ai_service.dart';
+import '../services/api_service.dart';
+import '../models/master_worker.dart';
 import 'orders_screen.dart';
-import 'service_hub_screen.dart';
+import 'provider_profile_screen.dart';
 import '../models/service_hub_kind.dart';
 import '../widgets/glass/glass_scaffold.dart';
 import '../theme/glass_tokens.dart';
@@ -407,17 +409,20 @@ class _ChatScreenState extends State<ChatScreen>
               : 'Buyurtmani ko\'rish'.tr,
           onTap: () => _openBookings(),
         ));
-      } else if (type == 'open_category') {
-        // search_providers natijasi — tegishli xizmat bo'limiga o'tish.
+      } else if (type == 'provider_list') {
+        // Har provayder uchun ALOHIDA tugma — bosilса o'sha provayderning
+        // bron/profil sahifasi ochiladi.
         final key = a['category_key'] as String?;
-        final catName = a['category_name'] as String?;
-        if (key != null) {
+        final provs = (a['providers'] as List?) ?? const [];
+        for (final p in provs) {
+          final pm = Map<String, dynamic>.from(p as Map);
+          final id = (pm['id'] as num?)?.toInt();
+          final name = pm['name'] as String? ?? '';
+          if (id == null) continue;
           buttons.add(_chatActionButton(
-            icon: LucideIcons.arrowRight,
-            label: catName != null
-                ? "$catName ${'bo\'limiga o\'tish'.tr}"
-                : 'Bo\'limga o\'tish'.tr,
-            onTap: () => _openCategory(key),
+            icon: LucideIcons.calendarPlus,
+            label: name.isNotEmpty ? name : 'Bron qilish'.tr,
+            onTap: () => _openProviderBooking(id, key),
           ));
         }
       } else if (type == 'orders_changed') {
@@ -479,25 +484,39 @@ class _ChatScreenState extends State<ChatScreen>
     );
   }
 
-  /// search_providers natijasidagi xizmat bo'limini ochadi (foydalanuvchi
-  /// o'zi ko'rib, tanlaб bron qilishi uchun).
-  void _openCategory(String categoryKey) {
-    ServiceHubKind? kind;
-    try {
-      kind = ServiceHubKind.values.byName(categoryKey);
-    } catch (_) {
-      kind = null;
+  /// Provayder id bo'yicha to'liq ma'lumot olib, uning bron/profil sahifasini
+  /// ochadi. Foydalanuvchi o'sha yerда vaqt tanlaб bron qiladi.
+  Future<void> _openProviderBooking(int providerId, String? categoryKey) async {
+    ServiceHubKind kind = ServiceHubKind.sartarosh;
+    if (categoryKey != null) {
+      try {
+        kind = ServiceHubKind.values.byName(categoryKey);
+      } catch (_) {}
     }
-    if (kind == null) {
-      _openBookings();
-      return;
-    }
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => ServiceHubScreen(kind: kind!, accentColor: kind.accent),
-      ),
+    // Yuklanmoqda indikatori
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const Center(child: CircularProgressIndicator()),
     );
+    try {
+      final json = await ApiService().getProvider(providerId);
+      final master = Master.fromProviderJson(json);
+      if (!mounted) return;
+      Navigator.pop(context); // yuklanmoqda dialogини yopamiz
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => ProviderProfileScreen(master: master, category: kind),
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      Navigator.pop(context);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Provayderni ochib bo\'lmadi'.tr)),
+      );
+    }
   }
 
   void _handleNavigate(String route) {
