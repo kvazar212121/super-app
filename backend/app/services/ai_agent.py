@@ -51,6 +51,11 @@ MUHIM QOIDALAR:
   2) Kerakli ma'lumot (manzil, vaqt, necha kishi, qaysi joy) yetishmasa — foydalanuvchidan SO'RANG.
   3) Lekin foydalanuvchi "o'zing tanla / farqi yo'q / bemalol" desa yoki javob bermasa — mantiqiy DEFAULT qiymatni o'zingiz belgilab (masalan eng yuqori reytingli usta, yaqin vaqt), create_booking bilan bron qiling.
 
+- ⚠️ REJA (add_plan) va BRON (search_providers→create_booking) — BUTUNLAY BOSHQA:
+  • "sartaroshxona/salon/ustani BRON qil / band qil / buyurtma ber / chaqir / topib ber" → BU BRON. add_plan ISHLATMANG! Avval search_providers, keyin create_booking.
+  • "eslat / rejamga qo'sh / kun tartibimga yoz / vazifa qo'sh" (masalan 'ertaga majlisni eslat') → BU REJA, add_plan ishlating.
+  • Shubha bo'lsa: agar gapда biror XIZMAT/USTA nomi bo'lsa (sartarosh, tozalash, massaj...) — bu deyarli har doim BRON, reja emas.
+
 - Har qanday xarajat/daromad/reja/bozorlik/budilnik haqida yozsa, MAJBURIY mos tool'ni chaqiring.
 - Hozirgi sana va vaqt (UTC): {current_time}
 - Tool natijasini olganingizdan so'ng, foydalanuvchiga tabiiy, qisqa javob yozing (masalan "3 ta faol buyurtmangiz bor:", "Buyurtma bekor qilindi ✅")."""
@@ -61,7 +66,7 @@ TOOLS = [
         "type": "function",
         "function": {
             "name": "add_plan",
-            "description": "Foydalanuvchi uchun yangi reja (vazifa/eslatma) qo'shish.",
+            "description": "Foydalanuvchining SHAXSIY kun tartibiga eslatma/vazifa qo'shish (masalan 'ertaga majlis', 'soat 3da shifokorga borish', 'onamga qo'ng'iroq qilish'). DIQQAT: bu FAQAT o'zi uchun eslatma. Agar foydalanuvchi biror USTA/XIZMATNI bron qilishni so'rasa (sartarosh, tozalash, santexnik, salon, massaj va h.k.) — bu add_plan EMAS, balki search_providers→create_booking ishlatiladi.",
             "parameters": {
                 "type": "object",
                 "properties": {
@@ -129,7 +134,7 @@ TOOLS = [
         "type": "function",
         "function": {
             "name": "search_providers",
-            "description": "Xizmat ustalarini (sartarosh, santexnik, tozalash, repetitor, avto-yordam va h.k.) qidirish. Bron qilishdan OLDIN chaqiriladi.",
+            "description": "Xizmat ustalari/joylarini (sartarosh, sartaroshxona, salon, santexnik, tozalash, massaj, repetitor, avto-yordam va h.k.) qidirish. Foydalanuvchi 'bron qil', 'band qil', 'rezerv qil', 'buyurtma ber', 'chaqir', 'topib ber' desa — ENG BIRINCHI shu tool chaqiriladi (create_booking'дан oldin). Bu reja/eslatma EMAS.",
             "parameters": {
                 "type": "object",
                 "properties": {
