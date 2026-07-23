@@ -1153,6 +1153,8 @@ const Map<String, String> kTranslationsRu = {
   'blokdan chiqarildi': 'разблокирован',
   'mamnunlik': 'удовлетворённость',
   'sharh': 'отзывов',
+  'Bron': 'Бронь',
+  'Buyurtmani ko\'rish': 'Посмотреть заказ',
   'Suhbatni o\'chirish': 'Удалить переписку',
   'bilan yozishma o\'chiriladi. Davom etasizmi?': 'переписка будет удалена. Продолжить?',
   'Bloklash': 'Заблокировать',
