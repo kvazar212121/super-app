@@ -51,6 +51,12 @@ MUHIM QOIDALAR:
   2) Kerakli ma'lumot (manzil, vaqt, necha kishi, qaysi joy) yetishmasa — foydalanuvchidan SO'RANG.
   3) Lekin foydalanuvchi "o'zing tanla / farqi yo'q / bemalol" desa yoki javob bermasa — mantiqiy DEFAULT qiymatni o'zingiz belgilab (masalan eng yuqori reytingli usta, yaqin vaqt), create_booking bilan bron qiling.
 
+- RO'YXAT SO'RALSA (bron EMAS): foydalanuvchi "sartaroshxonalar ro'yxatini ber", "eng yaqin 5 ta sartarosh", "Chilonzordagi salonlar" desa — FAQAT search_providers chaqiring (create_booking EMAS). Natijani QISQA ro'yxat qilib bering. Foydalanuvchi keyin o'zi tanlab bron qiladi (chatда sahifaга o'tish tugmasi avtomatik chiqadi).
+  • "eng yaqin N ta" → limit=N. Hudud aytilsa (Chilonzor, Yunusobod...) → location.
+  • Ro'yxatда har bittasини qisqa yozing: "1. Nomi ⭐reyting — manzil". Uzun tavsif YOZMANG.
+
+- JAVOB USLUBI: QISQA va ANIQ bo'ling. 100 ta natija emas, eng mosini (5-10 ta) bering. Ortiqcha gap, takror, uzun izohlardan saqlaning. Foydalanuvchi so'ramasa, qo'shimcha ma'lumot tiqishtirmang.
+
 - ⚠️ REJA (add_plan) va BRON (search_providers→create_booking) — BUTUNLAY BOSHQA:
   • "sartaroshxona/salon/ustani BRON qil / band qil / buyurtma ber / chaqir / topib ber" → BU BRON. add_plan ISHLATMANG! Avval search_providers, keyin create_booking.
   • "eslat / rejamga qo'sh / kun tartibimga yoz / vazifa qo'sh" (masalan 'ertaga majlisni eslat') → BU REJA, add_plan ishlating.
@@ -138,7 +144,9 @@ TOOLS = [
             "parameters": {
                 "type": "object",
                 "properties": {
-                    "service_query": {"type": "string", "description": "Xizmat turi yoki usta nomi (masalan 'sartarosh', 'santexnik', 'tozalash')"}
+                    "service_query": {"type": "string", "description": "Xizmat turi yoki usta nomi (masalan 'sartarosh', 'santexnik', 'tozalash')"},
+                    "location": {"type": "string", "description": "Ixtiyoriy: hudud/tuman/manzil (masalan 'Chilonzor', 'Yunusobod'). Foydalanuvchi 'shu hududдан', 'Chilonzordagi' desa shu yerга yoziladi."},
+                    "limit": {"type": "integer", "description": "Nechta natija (default 10, maksimum 15). Foydalanuvchi 'eng yaqin 5 ta' desa 5."}
                 },
                 "required": ["service_query"]
             }
@@ -498,6 +506,12 @@ async def handle_tool_call(db: AsyncSession, user_id: int, tool_call: dict) -> t
             from app.models.provider import Provider
             from app.models.category import Category
             query = (args.get("service_query") or "").strip()
+            location = (args.get("location") or "").strip()
+            try:
+                limit = int(args.get("limit") or 10)
+            except (TypeError, ValueError):
+                limit = 10
+            limit = max(1, min(limit, 15))  # 1..15 oralig'i
             ql = query.lower()
             cats = (await db.execute(select(Category))).scalars().all()
             matched_cat = None
@@ -507,29 +521,49 @@ async def handle_tool_call(db: AsyncSession, user_id: int, tool_call: dict) -> t
                 if ql and (ql in key_l or ql in name_l or (name_l and name_l in ql) or (key_l and key_l in ql)):
                     matched_cat = c
                     break
-            pstmt = select(Provider).where(Provider.is_active == True, Provider.is_paused == False)
+            # Mobil ilova bilan bir xil filter: is_active + not paused + not blocked
+            pstmt = select(Provider).where(
+                Provider.is_active == True,
+                Provider.is_paused == False,
+                Provider.is_blocked == False,
+            )
             if matched_cat:
                 pstmt = pstmt.where(Provider.category_id == matched_cat.id)
             elif query:
                 pstmt = pstmt.where(Provider.name.ilike(f"%{query}%"))
-            pstmt = pstmt.order_by(Provider.rating.desc()).limit(5)
+            # Hudud berilса — manzil bo'yicha ham filtrlaymiz.
+            if location:
+                pstmt = pstmt.where(Provider.address.ilike(f"%{location}%"))
+            pstmt = pstmt.order_by(Provider.rating.desc()).limit(limit)
             provs = (await db.execute(pstmt)).scalars().all()
             results = [
                 {
                     "id": p.id, "name": p.name, "category_id": p.category_id,
-                    "rating": p.rating, "review_count": p.review_count, "address": p.address,
+                    "rating": p.rating, "review_count": p.review_count,
+                    "address": p.address,
+                    "lat": p.latitude, "lng": p.longitude,
                 }
                 for p in provs
             ]
             payload = {
                 "status": "success",
+                "count": len(results),
                 "providers": results,
                 "matched_category": (
                     {"id": matched_cat.id, "key": matched_cat.key, "name": matched_cat.title_uz}
                     if matched_cat else None
                 ),
             }
-            return json.dumps(payload, ensure_ascii=False), None
+            # Chatда "sahifaga o'tish" tugmasi uchun action (provayderlar ro'yxati).
+            action = None
+            if results and matched_cat:
+                action = {
+                    "type": "open_category",
+                    "category_key": matched_cat.key,
+                    "category_name": matched_cat.title_uz,
+                    "provider_ids": [r["id"] for r in results],
+                }
+            return json.dumps(payload, ensure_ascii=False), action
 
         elif func_name == "create_booking":
             from app.models.provider import Provider

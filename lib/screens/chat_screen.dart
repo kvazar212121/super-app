@@ -5,6 +5,8 @@ import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:permission_handler/permission_handler.dart';
 import '../services/ai_service.dart';
 import 'orders_screen.dart';
+import 'service_hub_screen.dart';
+import '../models/service_hub_kind.dart';
 import '../widgets/glass/glass_scaffold.dart';
 import '../theme/glass_tokens.dart';
 import '../l10n/locale_controller.dart';
@@ -405,6 +407,19 @@ class _ChatScreenState extends State<ChatScreen>
               : 'Buyurtmani ko\'rish'.tr,
           onTap: () => _openBookings(),
         ));
+      } else if (type == 'open_category') {
+        // search_providers natijasi — tegishli xizmat bo'limiga o'tish.
+        final key = a['category_key'] as String?;
+        final catName = a['category_name'] as String?;
+        if (key != null) {
+          buttons.add(_chatActionButton(
+            icon: LucideIcons.arrowRight,
+            label: catName != null
+                ? "$catName ${'bo\'limiga o\'tish'.tr}"
+                : 'Bo\'limga o\'tish'.tr,
+            onTap: () => _openCategory(key),
+          ));
+        }
       } else if (type == 'orders_changed') {
         buttons.add(_chatActionButton(
           icon: LucideIcons.shoppingBag,
@@ -461,6 +476,27 @@ class _ChatScreenState extends State<ChatScreen>
     Navigator.push(
       context,
       MaterialPageRoute(builder: (_) => const OrdersScreen()),
+    );
+  }
+
+  /// search_providers natijasidagi xizmat bo'limini ochadi (foydalanuvchi
+  /// o'zi ko'rib, tanlaб bron qilishi uchun).
+  void _openCategory(String categoryKey) {
+    ServiceHubKind? kind;
+    try {
+      kind = ServiceHubKind.values.byName(categoryKey);
+    } catch (_) {
+      kind = null;
+    }
+    if (kind == null) {
+      _openBookings();
+      return;
+    }
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ServiceHubScreen(kind: kind!, accentColor: kind.accent),
+      ),
     );
   }
 
