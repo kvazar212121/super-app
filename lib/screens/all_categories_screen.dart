@@ -18,7 +18,11 @@ class _CategoryGroup {
 
 /// Barcha xizmat kategoriyalarini ro'yxat ko'rinishida ko'rsatadi.
 class AllCategoriesScreen extends StatefulWidget {
-  const AllCategoriesScreen({super.key});
+  /// Orqага qaytish tugmasi ko'rsatilsinmi. Bottom-tab sifatida ochilganда
+  /// (main_screen) false, boshqa ekrandan push qilinganда true.
+  final bool showBackButton;
+
+  const AllCategoriesScreen({super.key, this.showBackButton = false});
 
   @override
   State<AllCategoriesScreen> createState() => _AllCategoriesScreenState();
@@ -83,7 +87,7 @@ class _AllCategoriesScreenState extends State<AllCategoriesScreen> {
   @override
   Widget build(BuildContext context) {
     return GlassScaffold(
-      showBackButton: false,
+      showBackButton: widget.showBackButton,
       body: Container(
         decoration: BoxDecoration(color: Colors.transparent),
         child: BackdropFilter(

@@ -117,7 +117,7 @@ class HomeScreen extends StatelessWidget {
                 onTap: () => _openFeature(
                   context,
                   'services',
-                  () => const AllCategoriesScreen(),
+                  () => const AllCategoriesScreen(showBackButton: true),
                   needAuth: false,
                 ),
               ),

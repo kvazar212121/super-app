@@ -8,7 +8,7 @@ class ServicesGridWidget extends StatelessWidget {
   void _openAll(BuildContext context) {
     Navigator.push<void>(
       context,
-      MaterialPageRoute<void>(builder: (_) => const AllCategoriesScreen()),
+      MaterialPageRoute<void>(builder: (_) => const AllCategoriesScreen(showBackButton: true)),
     );
   }
 
