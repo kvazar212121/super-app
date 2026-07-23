@@ -42,6 +42,15 @@ import 'service_hub/saved_places_screen.dart';
 import 'service_hub/service_catalog_screen.dart';
 import 'auto_mobile_dispatch_screen.dart';
 import 'auto_workshop_dispatch_screen.dart';
+import 'worker_profile_screen.dart';
+import 'appliance_profile_screen.dart';
+import 'game_zone_booking_screen.dart';
+import 'sport_facility_booking_screen.dart';
+import 'event_venue_booking_screen.dart';
+import 'oshxona_profile_screen.dart';
+import '../models/game_zone.dart';
+import '../models/sport_facility.dart';
+import '../models/event_venue.dart';
 import '../widgets/enhanced_service_map.dart';
 import 'package:super_app/l10n/locale_controller.dart';
 

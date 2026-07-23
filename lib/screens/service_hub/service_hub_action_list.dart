@@ -523,6 +523,190 @@ class _ActionList extends StatelessWidget {
                   ),
                 ))
             .toList();
+      case ServiceHubKind.hamshira:
+        return data.nurses
+            .map((n) => CatalogEntry(
+                  name: n.name,
+                  subtitle: n.serviceArea ?? 'Hamshira xizmati',
+                  rating: n.rating,
+                  reviewCount: n.reviewCount,
+                  priceLabel: '',
+                  icon: LucideIcons.heartPulse,
+                  latitude: n.latitude,
+                  longitude: n.longitude,
+                  onOpen: (ctx) => Navigator.push(
+                    ctx,
+                    MaterialPageRoute(
+                      builder: (_) => NurseBookingScreen(service: n),
+                    ),
+                  ),
+                ))
+            .toList();
+      case ServiceHubKind.stomatologiya:
+        return data.dentalClinics
+            .map((c) => CatalogEntry(
+                  name: c.name,
+                  subtitle: c.subCategory ?? c.address,
+                  rating: c.rating,
+                  reviewCount: c.reviewCount,
+                  priceLabel: c.prices.values.isEmpty
+                      ? ''
+                      : '${(_minPrice(c.prices, 0) / 1000).round()}k+',
+                  icon: LucideIcons.stethoscope,
+                  latitude: c.latitude,
+                  longitude: c.longitude,
+                  onOpen: (ctx) => Navigator.push(
+                    ctx,
+                    MaterialPageRoute(
+                      builder: (_) => DentalBookingScreen(clinic: c),
+                    ),
+                  ),
+                ))
+            .toList();
+      case ServiceHubKind.dezinfeksiya:
+        return data.disinfection
+            .map((s) => CatalogEntry(
+                  name: s.name,
+                  subtitle: s.serviceArea ?? 'Dezinfeksiya',
+                  rating: s.rating,
+                  reviewCount: s.reviewCount,
+                  priceLabel: '',
+                  icon: LucideIcons.sprayCan,
+                  latitude: s.latitude,
+                  longitude: s.longitude,
+                  onOpen: (ctx) => Navigator.push(
+                    ctx,
+                    MaterialPageRoute(
+                      builder: (_) => DisinfectionProfileScreen(service: s),
+                    ),
+                  ),
+                ))
+            .toList();
+      case ServiceHubKind.texnikaUstasi:
+        return data.appliance
+            .map((s) => CatalogEntry(
+                  name: s.name,
+                  subtitle: s.subCategory ?? 'Texnika ustasi',
+                  rating: s.rating,
+                  reviewCount: s.reviewCount,
+                  priceLabel: '',
+                  icon: LucideIcons.wrench,
+                  latitude: s.latitude,
+                  longitude: s.longitude,
+                  onOpen: (ctx) => Navigator.push(
+                    ctx,
+                    MaterialPageRoute(
+                      builder: (_) => ApplianceProfileScreen(service: s),
+                    ),
+                  ),
+                ))
+            .toList();
+      case ServiceHubKind.ishchi:
+        return data.workers
+            .map((w) => CatalogEntry(
+                  name: w.name,
+                  subtitle: w.type,
+                  rating: w.rating,
+                  reviewCount: 0,
+                  priceLabel: (w.price ?? 0) > 0
+                      ? '${((w.price ?? 0) / 1000).round()}k+'
+                      : '',
+                  icon: LucideIcons.hardHat,
+                  latitude: w.latitude,
+                  longitude: w.longitude,
+                  onOpen: (ctx) => Navigator.push(
+                    ctx,
+                    MaterialPageRoute(
+                      builder: (_) => WorkerProfileScreen(worker: w),
+                    ),
+                  ),
+                ))
+            .toList();
+      case ServiceHubKind.gameZona:
+        return data.genericProviders
+            .whereType<GameZone>()
+            .map((z) => CatalogEntry(
+                  name: z.name,
+                  subtitle: z.zoneType,
+                  rating: 0,
+                  reviewCount: 0,
+                  priceLabel: '${(z.basePricePerHour / 1000).round()}k/soat',
+                  icon: LucideIcons.gamepad2,
+                  latitude: z.latitude,
+                  longitude: z.longitude,
+                  onOpen: (ctx) => Navigator.push(
+                    ctx,
+                    MaterialPageRoute(
+                      builder: (_) => GameZoneBookingScreen(zone: z),
+                    ),
+                  ),
+                ))
+            .toList();
+      case ServiceHubKind.sportMaydon:
+        return data.genericProviders
+            .whereType<SportFacility>()
+            .map((f) => CatalogEntry(
+                  name: f.name,
+                  subtitle: f.sportType,
+                  rating: 0,
+                  reviewCount: 0,
+                  priceLabel: '${(f.basePricePerHour / 1000).round()}k/soat',
+                  icon: LucideIcons.dumbbell,
+                  latitude: f.latitude,
+                  longitude: f.longitude,
+                  onOpen: (ctx) => Navigator.push(
+                    ctx,
+                    MaterialPageRoute(
+                      builder: (_) => SportFacilityBookingScreen(facility: f),
+                    ),
+                  ),
+                ))
+            .toList();
+      case ServiceHubKind.tadbirlar:
+        return data.genericProviders
+            .whereType<EventVenue>()
+            .map((v) => CatalogEntry(
+                  name: v.name,
+                  subtitle: v.venueType,
+                  rating: 0,
+                  reviewCount: 0,
+                  priceLabel: '',
+                  icon: LucideIcons.partyPopper,
+                  latitude: v.latitude,
+                  longitude: v.longitude,
+                  onOpen: (ctx) => Navigator.push(
+                    ctx,
+                    MaterialPageRoute(
+                      builder: (_) => EventVenueBookingScreen(venue: v),
+                    ),
+                  ),
+                ))
+            .toList();
+      case ServiceHubKind.bozorchi:
+        return data.masters
+            .map((m) => _masterEntry(
+                m, LucideIcons.shoppingCart, ServiceHubKind.bozorchi, 0, 'Bozorchi'))
+            .toList();
+      case ServiceHubKind.oshxona:
+        return data.masters
+            .map((m) => CatalogEntry(
+                  name: m.name,
+                  subtitle: m.serviceArea ?? 'Oshxona',
+                  rating: m.rating,
+                  reviewCount: m.reviewCount,
+                  priceLabel: '${(_minPrice(m.prices, 0) / 1000).round()}k+',
+                  icon: LucideIcons.utensils,
+                  latitude: m.latitude,
+                  longitude: m.longitude,
+                  rawJson: m.rawJson,
+                  onOpen: (ctx) => Navigator.push(
+                    ctx,
+                    MaterialPageRoute(
+                      builder: (_) => OshxonaProfileScreen(oshxona: m),
+                    ),
+                  ),
+                ))
+            .toList();
       default:
         return const [];
     }
