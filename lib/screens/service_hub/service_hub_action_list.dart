@@ -92,50 +92,9 @@ class _ActionList extends StatelessWidget {
             onCategorySelected: onCategorySelected,
           ),
         if (kind == ServiceHubKind.avtoYordam)
-          AutoHelpHubSection(
-            units: data.autoMobile,
-            accentColor: accentColor,
-            categories: categories,
-            selectedCategory: selectedCategory,
-            onCategorySelected: onCategorySelected,
-          ),
-        if (kind == ServiceHubKind.avtoYordam)
-          AutoWorkshopHubSection(
-            workshops: data.workshops,
-            accentColor: accentColor,
-          ),
-        if (kind == ServiceHubKind.repetitor) ...[
-          TutorHubSection(
-            tutors: data.tutors,
-            accentColor: accentColor,
-            categories: categories,
-            selectedCategory: selectedCategory,
-            onCategorySelected: onCategorySelected,
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),
-            child: Text(
-              "Yaqin o'quv markazlari".tr,
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w800,
-                color: GlassTokens.primaryText(context),
-              ),
-            ),
-          ),
-          SizedBox(
-            height: 185,
-            child: ListView.separated(
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              itemCount: data.educationCenters.length,
-              separatorBuilder: (_, _) => const SizedBox(width: 12),
-              itemBuilder: (_, i) =>
-                  EducationCenterSmallCard(center: data.educationCenters[i]),
-            ),
-          ),
-          const SizedBox(height: 16),
-        ],
+          _mixedRow(context, "Avto-yordam va ustaxonalar", catalog),
+        if (kind == ServiceHubKind.repetitor)
+          _mixedRow(context, "Repetitor va o'quv markazlari", catalog),
 
         if (kind == ServiceHubKind.ishchi)
           _buildSection(
@@ -177,24 +136,8 @@ class _ActionList extends StatelessWidget {
             "Stomatologiya klinikalari",
             data.dentalClinics.map((c) => DentalSmallCard(clinic: c)).toList(),
           ),
-        if (kind == ServiceHubKind.tadbirlar) ...[
-          if (data.genericProviders.isNotEmpty)
-            _buildSection(
-              context,
-              "Tadbir o'tkazish joylari",
-              data.genericProviders
-                  .map((f) => EventVenueSmallCard(venue: f))
-                  .toList(),
-            ),
-          if (data.events.isNotEmpty)
-            _buildSection(
-              context,
-              "Tashkilotchi va Brigadalar",
-              data.events.map((s) => EventTeamSmallCard(team: s)).toList(),
-              // Filtr faqat 1-bo'limда (joylar yo'q bo'lsa — shu yerда)
-              withFilter: data.genericProviders.isEmpty,
-            ),
-        ],
+        if (kind == ServiceHubKind.tadbirlar)
+          _mixedRow(context, "Tadbir joylari va tashkilotchilar", catalog),
         if (kind == ServiceHubKind.gameZona) ...[
           if (data.genericProviders.isNotEmpty)
             _buildSection(
@@ -443,7 +386,7 @@ class _ActionList extends StatelessWidget {
         return [
           ...data.autoMobile.map((u) => CatalogEntry(
                 name: u.name,
-                subtitle: u.serviceArea ?? u.vehicleType.label,
+                subtitle: 'Mobil · ${u.serviceArea ?? u.vehicleType.label}',
                 rating: u.rating,
                 reviewCount: u.reviewCount,
                 priceLabel: '${(_minPrice(u.prices, 80000) / 1000).round()}k+',
@@ -460,7 +403,9 @@ class _ActionList extends StatelessWidget {
               )),
           ...data.workshops.map((w) => CatalogEntry(
                 name: w.name,
-                subtitle: w.specializations.take(2).join(', '),
+                subtitle: w.specializations.isEmpty
+                    ? 'Ustaxona'
+                    : 'Ustaxona · ${w.specializations.take(2).join(', ')}',
                 rating: w.rating,
                 reviewCount: w.reviewCount,
                 priceLabel: '${(_minPrice(w.prices, 80000) / 1000).round()}k+',
@@ -477,26 +422,43 @@ class _ActionList extends StatelessWidget {
               )),
         ];
       case ServiceHubKind.repetitor:
-        return data.tutors
-            .map((t) => CatalogEntry(
-                  name: t.name,
-                  subtitle: t.subjectsLabel,
-                  rating: t.rating,
-                  reviewCount: t.reviewCount,
-                  priceLabel:
-                      '${(_minPrice(t.prices, 100000) / 1000).round()}k+',
-                  icon: LucideIcons.bookOpen,
-                  latitude: t.latitude,
-                  longitude: t.longitude,
-                  rawJson: t.rawJson,
-                  onOpen: (ctx) => Navigator.push(
-                    ctx,
-                    MaterialPageRoute(
-                      builder: (_) => TutorProfileScreen(tutor: t),
-                    ),
+        return [
+          ...data.tutors.map((t) => CatalogEntry(
+                name: t.name,
+                subtitle: 'Repetitor · ${t.subjectsLabel}',
+                rating: t.rating,
+                reviewCount: t.reviewCount,
+                priceLabel: '${(_minPrice(t.prices, 100000) / 1000).round()}k+',
+                icon: LucideIcons.bookOpen,
+                latitude: t.latitude,
+                longitude: t.longitude,
+                rawJson: t.rawJson,
+                onOpen: (ctx) => Navigator.push(
+                  ctx,
+                  MaterialPageRoute(
+                    builder: (_) => TutorProfileScreen(tutor: t),
                   ),
-                ))
-            .toList();
+                ),
+              )),
+          ...data.educationCenters.map((c) => CatalogEntry(
+                name: c.name,
+                subtitle: c.courses.isEmpty
+                    ? "O'quv markazi"
+                    : "Markaz · ${c.courses.take(2).join(', ')}",
+                rating: c.rating,
+                reviewCount: c.reviewCount,
+                priceLabel: '',
+                icon: LucideIcons.graduationCap,
+                latitude: c.latitude,
+                longitude: c.longitude,
+                onOpen: (ctx) => Navigator.push(
+                  ctx,
+                  MaterialPageRoute(
+                    builder: (_) => EducationCenterBookingScreen(center: c),
+                  ),
+                ),
+              )),
+        ];
       case ServiceHubKind.massajHijoma:
         return data.massage
             .map((s) => CatalogEntry(
@@ -663,25 +625,40 @@ class _ActionList extends StatelessWidget {
                 ))
             .toList();
       case ServiceHubKind.tadbirlar:
-        return data.genericProviders
-            .whereType<EventVenue>()
-            .map((v) => CatalogEntry(
-                  name: v.name,
-                  subtitle: v.venueType,
-                  rating: 0,
-                  reviewCount: 0,
-                  priceLabel: '',
-                  icon: LucideIcons.partyPopper,
-                  latitude: v.latitude,
-                  longitude: v.longitude,
-                  onOpen: (ctx) => Navigator.push(
-                    ctx,
-                    MaterialPageRoute(
-                      builder: (_) => EventVenueBookingScreen(venue: v),
-                    ),
+        return [
+          ...data.genericProviders.whereType<EventVenue>().map((v) => CatalogEntry(
+                name: v.name,
+                subtitle: 'Joy · ${v.venueType}',
+                rating: 0,
+                reviewCount: 0,
+                priceLabel: '',
+                icon: LucideIcons.partyPopper,
+                latitude: v.latitude,
+                longitude: v.longitude,
+                onOpen: (ctx) => Navigator.push(
+                  ctx,
+                  MaterialPageRoute(
+                    builder: (_) => EventVenueBookingScreen(venue: v),
                   ),
-                ))
-            .toList();
+                ),
+              )),
+          ...data.events.map((s) => CatalogEntry(
+                name: s.name,
+                subtitle: 'Tashkilotchi',
+                rating: s.rating,
+                reviewCount: s.reviewCount,
+                priceLabel: '',
+                icon: LucideIcons.users,
+                latitude: s.latitude,
+                longitude: s.longitude,
+                onOpen: (ctx) => Navigator.push(
+                  ctx,
+                  MaterialPageRoute(
+                    builder: (_) => EventTeamProfileScreen(team: s),
+                  ),
+                ),
+              )),
+        ];
       case ServiceHubKind.bozorchi:
         return data.masters
             .map((m) => _masterEntry(
@@ -710,6 +687,89 @@ class _ActionList extends StatelessWidget {
       default:
         return const [];
     }
+  }
+
+  /// Turli xil uslubдаги (masalan mobil avto-yordam + ustaxona) provayderlarni
+  /// BITTA gorizontal qatorда, eng yaqin bo'yicha aralash ko'rsatadi. Har karta
+  /// subtitle turini ajratib turadi. `_catalogEntries` bilan bir manba.
+  Widget _mixedRow(
+    BuildContext context,
+    String title,
+    List<CatalogEntry> entries, {
+    bool withFilter = true,
+  }) {
+    if (entries.isEmpty) return const SizedBox.shrink();
+    final sorted = [...entries]
+      ..sort((a, b) => distanceKm(kDefaultUserLat, kDefaultUserLng, a.latitude, a.longitude)
+          .compareTo(distanceKm(kDefaultUserLat, kDefaultUserLng, b.latitude, b.longitude)));
+    final showFilter =
+        withFilter && categories.isNotEmpty && onCategorySelected != null;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(20, 8, 20, 10),
+          child: Row(
+            children: [
+              Expanded(
+                child: Text(
+                  title.tr,
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w800,
+                    color: GlassTokens.primaryText(context),
+                  ),
+                ),
+              ),
+              Text(
+                '${sorted.length} ta',
+                style: TextStyle(
+                  fontSize: 13,
+                  color: GlassTokens.secondaryText(context),
+                ),
+              ),
+              if (showFilter) ...[
+                const SizedBox(width: 10),
+                HubFilterButton(
+                  accent: accentColor,
+                  showSort: false,
+                  categories: categories,
+                  selectedCategory: selectedCategory,
+                  onCategorySelected: onCategorySelected,
+                ),
+              ],
+            ],
+          ),
+        ),
+        SizedBox(
+          height: 198,
+          child: ListView.separated(
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            itemCount: sorted.length,
+            separatorBuilder: (_, _) => const SizedBox(width: 12),
+            itemBuilder: (_, i) {
+              final e = sorted[i];
+              return VenueHubCard.generic(
+                name: e.name,
+                subtitle: e.subtitle,
+                rating: e.rating,
+                reviewCount: e.reviewCount,
+                priceLabel: e.priceLabel,
+                icon: e.icon,
+                accent: accentColor,
+                rawJson: e.rawJson,
+                distanceKmValue: distanceKm(
+                  kDefaultUserLat, kDefaultUserLng, e.latitude, e.longitude,
+                ),
+                onTap: () => e.onOpen(context),
+              );
+            },
+          ),
+        ),
+        const SizedBox(height: 16),
+      ],
+    );
   }
 
   Widget _buildSection(
