@@ -134,9 +134,9 @@ class _ServiceCatalogScreenState extends State<ServiceCatalogScreen> {
                       crossAxisCount: 2,
                       mainAxisSpacing: 12,
                       crossAxisSpacing: 12,
-                      // VenueHubCard balandligi ~198 => 168 keng bo'lgani uchun
-                      // nisbat taxminan 168/198 ≈ 0.85.
-                      childAspectRatio: 0.72,
+                      // VenueHubCard taxminiy nisbati: 168 (keng) / 198 (baland) ≈ 0.85.
+                      // Kartalar ustma-ust tushmasligi uchun aniq moslangan.
+                      childAspectRatio: 0.82,
                     ),
                     itemCount: filtered.length,
                     itemBuilder: (context, i) {
