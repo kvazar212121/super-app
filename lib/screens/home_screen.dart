@@ -99,8 +99,79 @@ class HomeScreen extends StatelessWidget {
   }
 
   Widget _buildMainGrid(BuildContext context) {
+    // Karta tartibi (foydalanuvchi so'roviga ko'ra):
+    //  1-qator: Barcha xizmatlar · AI Yordamchi
+    //  2-qator: Kaloriya · Fitnes
+    //  3-qator: Rejalarim · Mening moliyam
+    //  4-qator: Aqlli savdo · Majburlovchi budilnik
     return Column(
       children: [
+        Row(
+          children: [
+            Expanded(
+              child: _DailyBtn(
+                icon: LucideIcons.layoutGrid,
+                label: 'Barcha xizmatlar'.tr,
+                color: Colors.purpleAccent,
+                bgImage: 'assets/images/all_services.jpg',
+                onTap: () => _openFeature(
+                  context,
+                  'services',
+                  () => const AllCategoriesScreen(),
+                  needAuth: false,
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: _DailyBtn(
+                icon: LucideIcons.bot,
+                label: 'AI Yordamchi'.tr,
+                color: const Color(0xFF06B6D4),
+                bgImage: 'assets/images/ai.jpg',
+                onTap: () => _openFeature(
+                  context,
+                  'ai_chat',
+                  () => const ChatScreen(),
+                  needAuth: false,
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        Row(
+          children: [
+            Expanded(
+              child: _DailyBtn(
+                icon: LucideIcons.flame,
+                label: 'Kaloriya hisoblagich'.tr,
+                color: Colors.redAccent,
+                bgImage: 'assets/images/calorie_counter.jpg',
+                onTap: () => _openFeature(
+                  context,
+                  'calorie',
+                  () => const CalorieHomeScreen(),
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: _DailyBtn(
+                icon: LucideIcons.dumbbell,
+                label: 'Fitnes trener'.tr,
+                color: Colors.tealAccent,
+                bgImage: 'assets/images/fitness_trainer.jpg',
+                onTap: () => _openFeature(
+                  context,
+                  'fitness',
+                  () => const FitnessHomeScreen(),
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
         Row(
           children: [
             Expanded(
@@ -148,57 +219,6 @@ class HomeScreen extends StatelessWidget {
             const SizedBox(width: 12),
             Expanded(
               child: _DailyBtn(
-                icon: LucideIcons.layoutGrid,
-                label: 'Barcha xizmatlar'.tr,
-                color: Colors.purpleAccent,
-                bgImage: 'assets/images/all_services.jpg',
-                onTap: () => _openFeature(
-                  context,
-                  'services',
-                  () => const AllCategoriesScreen(),
-                  needAuth: false,
-                ),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 12),
-        Row(
-          children: [
-            Expanded(
-              child: _DailyBtn(
-                icon: LucideIcons.flame,
-                label: 'Kaloriya hisoblagich'.tr,
-                color: Colors.redAccent,
-                bgImage: 'assets/images/calorie_counter.jpg',
-                onTap: () => _openFeature(
-                  context,
-                  'calorie',
-                  () => const CalorieHomeScreen(),
-                ),
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: _DailyBtn(
-                icon: LucideIcons.dumbbell,
-                label: 'Fitnes trener'.tr,
-                color: Colors.tealAccent,
-                bgImage: 'assets/images/fitness_trainer.jpg',
-                onTap: () => _openFeature(
-                  context,
-                  'fitness',
-                  () => const FitnessHomeScreen(),
-                ),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 12),
-        Row(
-          children: [
-            Expanded(
-              child: _DailyBtn(
                 icon: LucideIcons.alarmClock,
                 label: 'Majburlovchi budilnik'.tr,
                 color: Colors.indigoAccent,
@@ -207,21 +227,6 @@ class HomeScreen extends StatelessWidget {
                   context,
                   'alarm',
                   () => const AlarmHomeScreen(),
-                ),
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: _DailyBtn(
-                icon: LucideIcons.bot,
-                label: 'AI Yordamchi'.tr,
-                color: const Color(0xFF06B6D4),
-                bgImage: 'assets/images/ai.jpg',
-                onTap: () => _openFeature(
-                  context,
-                  'ai_chat',
-                  () => const ChatScreen(),
-                  needAuth: false,
                 ),
               ),
             ),
