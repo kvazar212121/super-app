@@ -83,6 +83,10 @@ class Settings(BaseSettings):
     # DeepSeek (OpenAI-mos API) — matn/chat/tarjima uchun. Vision yo'q.
     deepseek_api_key: str = ""
     deepseek_chat_model: str = "deepseek-chat"
+
+    # Google Gemini (OpenAI-mos API) — BEPUL vision (rasm/kaloriya) uchun.
+    gemini_api_key: str = ""
+    gemini_vision_model: str = "gemini-flash-latest"
     vision_provider: str = "groq"  # "groq" yoki "openai"
     translate_provider: str = "groq"  # "groq" yoki "openai" (mashq tarjimasi uchun)
     chat_provider: str = "groq"  # "groq" yoki "openai" (AI chat/agent uchun)

@@ -58,11 +58,13 @@ def _resolve_provider() -> tuple[str, str, str]:
             "openai": settings.openai_api_key,
             "groq": settings.groq_api_key,
             "deepseek": settings.deepseek_api_key,
+            "gemini": settings.gemini_api_key,
         },
         default_models={
             "openai": settings.openai_vision_model,
             "groq": settings.groq_vision_model,
             "deepseek": settings.deepseek_chat_model,
+            "gemini": settings.gemini_vision_model,
         },
     )
 
@@ -106,7 +108,7 @@ async def analyze_food(image_bytes: bytes, content_type: str) -> dict:
                     ],
                     "response_format": {"type": "json_object"},
                     "temperature": 0.2,
-                    "max_tokens": 512,
+                    "max_tokens": 1500,  # Gemini "thinking" modeli uchun zaxira token
                 },
             )
         except httpx.HTTPError as exc:
@@ -189,7 +191,7 @@ async def analyze_food_text(description: str) -> dict:
                     ],
                     "response_format": {"type": "json_object"},
                     "temperature": 0.2,
-                    "max_tokens": 512,
+                    "max_tokens": 1500,  # Gemini "thinking" modeli uchun zaxira token
                 },
             )
         except httpx.HTTPError as exc:
@@ -272,7 +274,7 @@ async def verify_photo_contains(image_bytes: bytes, content_type: str, target: s
                     ],
                     "response_format": {"type": "json_object"},
                     "temperature": 0.0,
-                    "max_tokens": 256,
+                    "max_tokens": 1500,  # Gemini "thinking" modeli uchun zaxira token
                 },
             )
         except httpx.HTTPError as exc:

@@ -116,6 +116,8 @@ PROVIDER_URLS = {
     "openai": "https://api.openai.com/v1/chat/completions",
     "groq": "https://api.groq.com/openai/v1/chat/completions",
     "deepseek": "https://api.deepseek.com/v1/chat/completions",
+    # Google Gemini (OpenAI-mos endpoint) — bepul vision (rasm) uchun
+    "gemini": "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
 }
 
 
