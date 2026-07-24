@@ -4,6 +4,11 @@ import 'dart:async';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:permission_handler/permission_handler.dart';
 import '../services/ai_service.dart';
+import '../services/api_service.dart';
+import '../models/master_worker.dart';
+import 'orders_screen.dart';
+import 'provider_profile_screen.dart';
+import '../models/service_hub_kind.dart';
 import '../widgets/glass/glass_scaffold.dart';
 import '../theme/glass_tokens.dart';
 import '../l10n/locale_controller.dart';
@@ -269,7 +274,12 @@ class _ChatScreenState extends State<ChatScreen>
     if (mounted) {
       setState(() {
         _isTyping = false;
-        _chatHistory.add({'role': 'assistant', 'content': response});
+        _chatHistory.add({
+          'role': 'assistant',
+          'content': response,
+          // AI amallari (masalan bron yaratildi) — chatда tugma ko'rsatish uchun.
+          'actions': List<Map<String, dynamic>>.from(_aiService.lastActions),
+        });
       });
       _scrollToBottom();
     }
@@ -316,6 +326,8 @@ class _ChatScreenState extends State<ChatScreen>
                 return _buildMessageBubble(
                   content: message['content'],
                   isUser: message['role'] == 'user',
+                  actions: (message['actions'] as List?)
+                      ?.cast<Map<String, dynamic>>(),
                 );
               },
             ),
@@ -326,43 +338,191 @@ class _ChatScreenState extends State<ChatScreen>
     );
   }
 
-  Widget _buildMessageBubble({required String content, required bool isUser}) {
+  Widget _buildMessageBubble({
+    required String content,
+    required bool isUser,
+    List<Map<String, dynamic>>? actions,
+  }) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final actionButtons = isUser ? const <Widget>[] : _actionButtons(actions);
 
     return Align(
       alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 16),
-        constraints: BoxConstraints(
-          maxWidth: MediaQuery.of(context).size.width * 0.75,
-        ),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        decoration: BoxDecoration(
-          color: isUser
-              ? Colors.blue
-              : (isDark ? const Color(0xFF334155) : Colors.white),
-          borderRadius: BorderRadius.only(
-            topLeft: const Radius.circular(20),
-            topRight: const Radius.circular(20),
-            bottomLeft: Radius.circular(isUser ? 20 : 0),
-            bottomRight: Radius.circular(isUser ? 0 : 20),
+      child: Column(
+        crossAxisAlignment:
+            isUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+        children: [
+          Container(
+            margin: EdgeInsets.only(bottom: actionButtons.isEmpty ? 16 : 8),
+            constraints: BoxConstraints(
+              maxWidth: MediaQuery.of(context).size.width * 0.75,
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            decoration: BoxDecoration(
+              color: isUser
+                  ? Colors.blue
+                  : (isDark ? const Color(0xFF334155) : Colors.white),
+              borderRadius: BorderRadius.only(
+                topLeft: const Radius.circular(20),
+                topRight: const Radius.circular(20),
+                bottomLeft: Radius.circular(isUser ? 20 : 0),
+                bottomRight: Radius.circular(isUser ? 0 : 20),
+              ),
+              border: Border.all(
+                color: isUser ? Colors.blue : GlassTokens.glassBorder(context),
+              ),
+            ),
+            child: Text(
+              content,
+              style: TextStyle(
+                color: isUser
+                    ? Colors.white
+                    : (isDark ? Colors.white : Colors.black87),
+                fontSize: 15,
+                height: 1.4,
+              ),
+            ),
           ),
-          border: Border.all(
-            color: isUser ? Colors.blue : GlassTokens.glassBorder(context),
-          ),
-        ),
-        child: Text(
-          content,
-          style: TextStyle(
-            color: isUser
-                ? Colors.white
-                : (isDark ? Colors.white : Colors.black87),
-            fontSize: 15,
-            height: 1.4,
+          if (actionButtons.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 16, left: 4),
+              child: Wrap(spacing: 8, runSpacing: 8, children: actionButtons),
+            ),
+        ],
+      ),
+    );
+  }
+
+  /// AI amallaridan chatда bosiladigan tugma yasaydi. Masalan bron yaratilса —
+  /// "Buyurtmani ko'rish" tugmasi (Buyurtmalar bo'limiga o'tadi).
+  List<Widget> _actionButtons(List<Map<String, dynamic>>? actions) {
+    if (actions == null || actions.isEmpty) return const [];
+    final buttons = <Widget>[];
+    for (final a in actions) {
+      final type = a['type'];
+      if (type == 'booking_created') {
+        final providerName = a['provider_name'] as String?;
+        buttons.add(_chatActionButton(
+          icon: LucideIcons.calendarCheck,
+          label: providerName != null
+              ? "${'Bron'.tr}: $providerName"
+              : 'Buyurtmani ko\'rish'.tr,
+          onTap: () => _openBookings(),
+        ));
+      } else if (type == 'provider_list') {
+        // Har provayder uchun ALOHIDA tugma — bosilса o'sha provayderning
+        // bron/profil sahifasi ochiladi.
+        final key = a['category_key'] as String?;
+        final provs = (a['providers'] as List?) ?? const [];
+        for (final p in provs) {
+          final pm = Map<String, dynamic>.from(p as Map);
+          final id = (pm['id'] as num?)?.toInt();
+          final name = pm['name'] as String? ?? '';
+          if (id == null) continue;
+          buttons.add(_chatActionButton(
+            icon: LucideIcons.calendarPlus,
+            label: name.isNotEmpty ? name : 'Bron qilish'.tr,
+            onTap: () => _openProviderBooking(id, key),
+          ));
+        }
+      } else if (type == 'orders_changed') {
+        buttons.add(_chatActionButton(
+          icon: LucideIcons.shoppingBag,
+          label: 'Buyurtmalarim'.tr,
+          onTap: () => _openBookings(),
+        ));
+      } else if (type == 'navigate' && a['route'] is String) {
+        // Kelajakда backend 'navigate' action bersa — shu ishlaydi.
+        buttons.add(_chatActionButton(
+          icon: LucideIcons.arrowRight,
+          label: (a['label'] as String?) ?? 'Ochish'.tr,
+          onTap: () => _handleNavigate(a['route'] as String),
+        ));
+      }
+    }
+    return buttons;
+  }
+
+  Widget _chatActionButton({
+    required IconData icon,
+    required String label,
+    required VoidCallback onTap,
+  }) {
+    return Material(
+      color: Colors.blue,
+      borderRadius: BorderRadius.circular(14),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(14),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, color: Colors.white, size: 16),
+              const SizedBox(width: 6),
+              Text(
+                label,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 13,
+                ),
+              ),
+            ],
           ),
         ),
       ),
     );
+  }
+
+  void _openBookings() {
+    // Buyurtmalar ro'yxati ekraniga o'tadi.
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const OrdersScreen()),
+    );
+  }
+
+  /// Provayder id bo'yicha to'liq ma'lumot olib, uning bron/profil sahifasini
+  /// ochadi. Foydalanuvchi o'sha yerда vaqt tanlaб bron qiladi.
+  Future<void> _openProviderBooking(int providerId, String? categoryKey) async {
+    ServiceHubKind kind = ServiceHubKind.sartarosh;
+    if (categoryKey != null) {
+      try {
+        kind = ServiceHubKind.values.byName(categoryKey);
+      } catch (_) {}
+    }
+    // Yuklanmoqda indikatori
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const Center(child: CircularProgressIndicator()),
+    );
+    try {
+      final json = await ApiService().getProvider(providerId);
+      final master = Master.fromProviderJson(json);
+      if (!mounted) return;
+      Navigator.pop(context); // yuklanmoqda dialogини yopamiz
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => ProviderProfileScreen(master: master, category: kind),
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      Navigator.pop(context);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Provayderni ochib bo\'lmadi'.tr)),
+      );
+    }
+  }
+
+  void _handleNavigate(String route) {
+    // Backend kelajakда 'navigate' action bersa — bu yerда route bo'yicha
+    // tegishli ekranga o'tkazish qo'shiladi. Hozircha buyurtmalar.
+    _openBookings();
   }
 
   Widget _buildTypingIndicator() {

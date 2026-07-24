@@ -38,6 +38,11 @@ class AiService {
   static const int _maxStoredMessages = 100;
   bool _loaded = false;
 
+  /// Oxirgi AI javobидаги amallar (chat tugmalari uchun). sendMessage'дан
+  /// keyin chat ekrani buni o'qib, mos tugma (masalan 'Buyurtmani ko'rish')
+  /// ko'rsatadi.
+  List<Map<String, dynamic>> lastActions = const [];
+
   /// Saqlangan chat tarixini diskdan yuklaydi (ilova ochilganda bir marta).
   Future<List<Map<String, String>>> loadHistory() async {
     if (_loaded) return List.unmodifiable(_messages);
@@ -67,6 +72,7 @@ class AiService {
   }
 
   Future<String> sendMessage(String userText) async {
+    lastActions = const []; // yangi so'rov — eski tugmalarни tozalaymiz
     _messages.add({'role': 'user', 'content': userText});
 
     try {
@@ -101,9 +107,14 @@ class AiService {
 
       // AI yon-amallarini bajaramiz (masalan budilnikni qurilmada rejalashtirish)
       final actions = (responseData['actions'] as List?) ?? const [];
+      final parsedActions = <Map<String, dynamic>>[];
       for (final act in actions) {
-        await _handleAction(Map<String, dynamic>.from(act as Map));
+        final m = Map<String, dynamic>.from(act as Map);
+        parsedActions.add(m);
+        await _handleAction(m);
       }
+      // Chat ekrani tugma ko'rsatishi uchun oxirgi amallarни saqlaymiz.
+      lastActions = parsedActions;
 
       if (aiReply.isNotEmpty) {
         _messages.add({'role': 'assistant', 'content': aiReply});
