@@ -22,7 +22,12 @@ from app.core.config import settings
 logger = logging.getLogger(__name__)
 
 CALL_CHANNEL = "call_signal"
-ONLINE_KEY = "call_online_users"
+ONLINE_KEY = "call_online_users"  # (eskisi — endi ishlatilmaydi, moslik uchun qoldirildi)
+PRESENCE_PREFIX = "call_presence:"  # har user uchun alohida TTL kaliti
+# Presence TTL: mijoz har ~20s ping yuboradi, server har xabarда TTL'ni yangilaydi.
+# Agar telefon o'lsa/tarmoq uzilsa — ping kelmaydi, kalit ~60s ичида o'chadi va
+# user "offline" bo'ladi → chaqiruvchi to'g'ri FCM push yuboradi (telefon jiringlaydi).
+PRESENCE_TTL = 60
 
 
 class CallManager:
@@ -47,13 +52,26 @@ class CallManager:
     async def connect(self, websocket: WebSocket, user_id: int):
         await websocket.accept()
         self.active_connections[user_id] = websocket
+        await self._mark_online(user_id)
+        logger.info(f"User {user_id} signaling WS ulandi. Lokal: {len(self.active_connections)}")
+
+    async def _mark_online(self, user_id: int):
+        """Presence kalitini TTL bilan yozadi/yangilaydi (SETEX)."""
         r = await self._get_redis()
         if r:
             try:
-                await r.sadd(ONLINE_KEY, user_id)
+                await r.set(f"{PRESENCE_PREFIX}{user_id}", "1", ex=PRESENCE_TTL)
             except Exception:
                 pass
-        logger.info(f"User {user_id} signaling WS ulandi. Lokal: {len(self.active_connections)}")
+
+    async def refresh_presence(self, user_id: int):
+        """Mijozdan har qanday xabar (yoki server heartbeat) kelganda TTL'ni uzaytiradi.
+
+        Faqat lokal socket hali tirik bo'lsa yangilaymiz — o'lik socket qayd etilib
+        qolmasligi uchun. Bu presence'ni socket tirikligiga qattiq bog'laydi.
+        """
+        if user_id in self.active_connections:
+            await self._mark_online(user_id)
 
     def disconnect(self, user_id: int):
         if user_id in self.active_connections:
@@ -62,13 +80,13 @@ class CallManager:
         # Redis presence tozalashni best-effort fon vazifasi qilib bajaramiz
         if self._redis is not None:
             try:
-                asyncio.create_task(self._redis_srem(user_id))
+                asyncio.create_task(self._redis_del_presence(user_id))
             except RuntimeError:
                 pass
 
-    async def _redis_srem(self, user_id: int):
+    async def _redis_del_presence(self, user_id: int):
         try:
-            await self._redis.srem(ONLINE_KEY, user_id)
+            await self._redis.delete(f"{PRESENCE_PREFIX}{user_id}")
         except Exception:
             pass
 
@@ -94,7 +112,7 @@ class CallManager:
         r = await self._get_redis()
         if r:
             try:
-                is_online = await r.sismember(ONLINE_KEY, user_id)
+                is_online = await r.exists(f"{PRESENCE_PREFIX}{user_id}")
                 if is_online:
                     await r.publish(CALL_CHANNEL, json.dumps({"target": user_id, "message": message}))
                     return True

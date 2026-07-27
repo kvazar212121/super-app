@@ -1,5 +1,6 @@
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect, Depends
 from fastapi.responses import JSONResponse
+import asyncio
 import logging
 from app.core.call_manager import manager
 from app.core.config import settings
@@ -135,14 +136,25 @@ async def websocket_call_endpoint(websocket: WebSocket, token: str):
         return
 
     await manager.connect(websocket, user.id)
-    
+    # Server heartbeat: har ~20s ping yuboramiz. Bu (a) proksi/NAT ni tirik ushlaydi,
+    # (b) o'lik soketni yuborishда xato orqali tez sezib, uzib tashlaydi (presence
+    # kaliti darrov o'chadi → chaqiruvchi FCM push yuboradi).
+    hb_task = asyncio.create_task(_heartbeat(websocket, user.id))
+
     try:
         while True:
             data = await websocket.receive_json()
+            # Har qanday kirish xabari = mijoz tirik → presence TTL'ni yangilaymiz.
+            await manager.refresh_presence(user.id)
             # Expected data format: {"type": "offer", "target_id": 123, "data": {...}}
             target_id = data.get("target_id")
             msg_type = data.get("type")
-            
+
+            # Keepalive ping/pong — signaling emas, faqat tiriklik belgisi (yuqorida
+            # presence yangilandi). Boshqa ishlov shart emas.
+            if msg_type in ("ping", "pong"):
+                continue
+
             if not target_id:
                 logger.warning(f"No target_id provided by user {user.id}")
                 continue
@@ -236,6 +248,32 @@ async def websocket_call_endpoint(websocket: WebSocket, token: str):
     except Exception as e:
         logger.error(f"WebSocket error for user {user.id}: {e}")
         manager.disconnect(user.id)
+    finally:
+        hb_task.cancel()
+
+
+async def _heartbeat(websocket: WebSocket, user_id: int):
+    """Har ~20s ping yuboradi va presence TTL'ni yangilaydi.
+
+    Yuborish xato bersa (soket o'lgan) — chiqamiz; asosiy receive-loop ham tez orada
+    tugaydi va manager.disconnect presence'ni tozalaydi.
+    """
+    try:
+        while True:
+            await asyncio.sleep(20)
+            await websocket.send_json({"type": "ping"})
+            await manager.refresh_presence(user_id)
+    except asyncio.CancelledError:
+        raise
+    except Exception:
+        # Soket o'lgan — receive-loop bloklanib turган bo'lishi mumkin. Soketni yopib
+        # va presence'ni darrov o'chirib, chaqiruvchi 60s kutmasдан FCM'ga o'tsin.
+        try:
+            await websocket.close()
+        except Exception:
+            pass
+        manager.disconnect(user_id)
+        return
 
 
 from pydantic import BaseModel

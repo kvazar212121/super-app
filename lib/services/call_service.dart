@@ -95,6 +95,13 @@ class CallService extends ChangeNotifier {
   int _reconnectAttempts = 0;
   static const int _maxReconnectAttempts = 10;
 
+  // Keepalive ping: har ~20s serverga {"type":"ping"} yuboramiz. Shunda server
+  // presence TTL'ni yangilaydi va bizni "onlayn" deb biladi. Aks holda tarmoq
+  // jim tursa soket yarim-o'lik bo'lib, boshqalar qo'ng'iroq qilganda bizga
+  // yetmaydi (server bizni xato "onlayn" deb hisoblab, FCM push yubormaydi).
+  Timer? _pingTimer;
+  static const Duration _pingInterval = Duration(seconds: 20);
+
   // ICE servers (backenddan olinadi)
   List<Map<String, dynamic>> _iceServers = [
     {"urls": "stun:stun.l.google.com:19302"},
@@ -213,6 +220,7 @@ class CallService extends ChangeNotifier {
       );
 
       _flushPendingOutgoingSignals();
+      _startPing();
       notifyListeners();
       debugPrint('WebSocket muvaffaqiyatli ulandi');
     } catch (e) {
@@ -222,8 +230,25 @@ class CallService extends ChangeNotifier {
     }
   }
 
+  /// Keepalive ping timer'ini ishga tushiradi (avval borini to'xtatib).
+  void _startPing() {
+    _pingTimer?.cancel();
+    _pingTimer = Timer.periodic(_pingInterval, (_) {
+      if (_channel == null) return;
+      try {
+        _channel?.sink.add(jsonEncode({'type': 'ping'}));
+      } catch (_) {}
+    });
+  }
+
+  void _stopPing() {
+    _pingTimer?.cancel();
+    _pingTimer = null;
+  }
+
   /// Avtomatik qayta ulanish
   void _scheduleReconnect() {
+    _stopPing();
     if (_reconnectAttempts >= _maxReconnectAttempts) {
       debugPrint('WebSocket: Maksimal qayta ulanish urinishlari tugadi');
       return;
@@ -246,6 +271,8 @@ class CallService extends ChangeNotifier {
   /// Signaling xabarlarini qayta ishlash
   Future<void> _handleSignalingMessage(Map<String, dynamic> data) async {
     final type = data['type'];
+    // Server keepalive ping/pong — signaling emas, e'tiborsiz qoldiramiz.
+    if (type == 'ping' || type == 'pong') return;
     final senderId = data['sender_id'];
     final senderName = data['sender_name'];
     final payload = data['data'] ?? {};
@@ -1020,6 +1047,7 @@ class CallService extends ChangeNotifier {
   /// WebSocket ulanishni yopish
   void disconnectWebSocket() {
     _reconnectTimer?.cancel();
+    _stopPing();
     _channel?.sink.close();
     _channel = null;
     _wsConnected = false;
