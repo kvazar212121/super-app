@@ -83,6 +83,7 @@ TOOLS = [
                     "category_key": {"type": "string", "description": "System promptdagi XIZMAT KATEGORIYALARI ro'yxatidan ANIQ key (masalan 'sartarosh', 'santexnik', 'tozalash'). Xizmat turi so'ralganda HAR DOIM shu paramni bering — natija faqat shu kategoriyadan chiqadi."},
                     "service_query": {"type": "string", "description": "Xizmat turi yoki usta NOMI (masalan 'sartarosh' yoki 'Premium Cut'). category_key berilgan bo'lsa bu faqat qo'shimcha kontekst."},
                     "location": {"type": "string", "description": "Ixtiyoriy: hudud/tuman/manzil (masalan 'Chilonzor', 'Yunusobod'). Foydalanuvchi 'shu hududдан', 'Chilonzordagi' desa shu yerга yoziladi."},
+                    "sort_by": {"type": "string", "enum": ["distance", "rating"], "description": "Saralash tartibi. Foydalanuvchi 'eng yaqin', 'yaqin oradagi', 'yonimdagi', 'atrofimdagi' desa — 'distance' (masofa bo'yicha, foydalanuvchi joylashuvidan). Aks holda 'rating' (default)."},
                     "limit": {"type": "integer", "description": "Nechta natija (default 10, maksimum 15). Foydalanuvchi 'eng yaqin 5 ta' desa 5."}
                 },
                 "required": ["service_query"]
@@ -280,6 +281,28 @@ TOOLS = [
                 "record_id": {"type": "integer", "description": "Yozuv id'si"},
                 "confirm": {"type": "boolean"}
             }, "required": ["record_id", "confirm"]}
+        }
+    },
+    # ── NAVIGATSIYA — chatда ilova bo'limiga o'tish tugmasi ──
+    {
+        "type": "function",
+        "function": {
+            "name": "open_app_section",
+            "description": "Javob ostiga ilova bo'limiga o'tish TUGMASI(lari)ni chiqaradi. Foydalanuvchi 'qayerдан ko'raman', 'ochib ber', 'qanday qo'shaman' desa yoki siz biror bo'limni tavsiya qilsangiz chaqiring. Bir nechta bo'lim bersangiz — bir nechta tugma chiqadi. DIQQAT: usta/xizmat tavsiya qilishда bu EMAS, search_providers ishlatiladi (u har usta uchun tugma chiqaradi).",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "sections": {
+                        "type": "array",
+                        "items": {"type": "string", "enum": [
+                            "plans", "todos", "finance", "shopping", "orders", "alarms",
+                            "services", "calorie", "fitness", "calls", "profile", "premium"
+                        ]},
+                        "description": "Bo'limlar ro'yxati (ko'pi bilan 6 ta). Masalan ['finance'] yoki ['plans','alarms']."
+                    }
+                },
+                "required": ["sections"]
+            }
         }
     },
     # ── FOYDALI MA'LUMOTLAR (utility) — tashqi API'lar ──

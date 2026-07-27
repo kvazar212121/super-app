@@ -18,7 +18,7 @@ def _build_alarm_mission_config(mission_type: str) -> dict:
     return {"difficulty": "medium", "count": 1}
 
 
-async def add_plan(db: AsyncSession, user_id: int, args: dict) -> tuple[str, dict | None]:
+async def add_plan(db: AsyncSession, user_id: int, args: dict, ctx: dict | None = None) -> tuple[str, dict | None]:
     plan = Plan(
         user_id=user_id,
         title=args.get("title"),
@@ -30,7 +30,7 @@ async def add_plan(db: AsyncSession, user_id: int, args: dict) -> tuple[str, dic
     return '{"status": "success", "message": "Reja muvaffaqiyatli qo\'shildi."}', None
 
 
-async def add_finance_record(db: AsyncSession, user_id: int, args: dict) -> tuple[str, dict | None]:
+async def add_finance_record(db: AsyncSession, user_id: int, args: dict, ctx: dict | None = None) -> tuple[str, dict | None]:
     record = FinanceRecord(
         user_id=user_id,
         type=args.get("type"),
@@ -44,7 +44,7 @@ async def add_finance_record(db: AsyncSession, user_id: int, args: dict) -> tupl
     return '{"status": "success", "message": "Moliya yozuvi muvaffaqiyatli qo\'shildi."}', None
 
 
-async def add_shopping_item(db: AsyncSession, user_id: int, args: dict) -> tuple[str, dict | None]:
+async def add_shopping_item(db: AsyncSession, user_id: int, args: dict, ctx: dict | None = None) -> tuple[str, dict | None]:
     # Active shopping list ni topish yoki yaratish
     result = await db.execute(
         select(ShoppingList).where(ShoppingList.user_id == user_id, ShoppingList.total_estimated_price >= 0).order_by(ShoppingList.id.desc()).limit(1)
@@ -81,7 +81,7 @@ async def add_shopping_item(db: AsyncSession, user_id: int, args: dict) -> tuple
     return '{"status": "success", "message": "Mahsulot bozorlik ro\'yxatiga muvaffaqiyatli qo\'shildi."}', None
 
 
-async def set_alarm(db: AsyncSession, user_id: int, args: dict) -> tuple[str, dict | None]:
+async def set_alarm(db: AsyncSession, user_id: int, args: dict, ctx: dict | None = None) -> tuple[str, dict | None]:
     from app.models.alarm import Alarm
     hour = max(0, min(23, int(args.get("hour"))))
     minute = max(0, min(59, int(args.get("minute"))))

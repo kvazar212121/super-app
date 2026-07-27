@@ -11,7 +11,7 @@ from app.models.finance_record import FinanceRecord
 from app.models.shopping_list import ShoppingList
 
 
-async def list_orders(db: AsyncSession, user_id: int, args: dict) -> tuple[str, dict | None]:
+async def list_orders(db: AsyncSession, user_id: int, args: dict, ctx: dict | None = None) -> tuple[str, dict | None]:
     from app.models.order import Order, OrderStatus
     from app.models.provider import Provider
     only_active = args.get("only_active", True)
@@ -34,7 +34,7 @@ async def list_orders(db: AsyncSession, user_id: int, args: dict) -> tuple[str, 
     return json.dumps({"status": "success", "orders": out, "count": len(out)}, ensure_ascii=False), None
 
 
-async def list_plans(db: AsyncSession, user_id: int, args: dict) -> tuple[str, dict | None]:
+async def list_plans(db: AsyncSession, user_id: int, args: dict, ctx: dict | None = None) -> tuple[str, dict | None]:
     only_pending = args.get("only_pending", True)
     stmt = select(Plan).where(Plan.user_id == user_id)
     if only_pending:
@@ -46,7 +46,7 @@ async def list_plans(db: AsyncSession, user_id: int, args: dict) -> tuple[str, d
     return json.dumps({"status": "success", "plans": out, "count": len(out)}, ensure_ascii=False), None
 
 
-async def list_todos(db: AsyncSession, user_id: int, args: dict) -> tuple[str, dict | None]:
+async def list_todos(db: AsyncSession, user_id: int, args: dict, ctx: dict | None = None) -> tuple[str, dict | None]:
     from app.models.todo import Todo
     only_pending = args.get("only_pending", True)
     stmt = select(Todo).where(Todo.user_id == user_id)
@@ -58,7 +58,7 @@ async def list_todos(db: AsyncSession, user_id: int, args: dict) -> tuple[str, d
     return json.dumps({"status": "success", "todos": out, "count": len(out)}, ensure_ascii=False), None
 
 
-async def list_alarms(db: AsyncSession, user_id: int, args: dict) -> tuple[str, dict | None]:
+async def list_alarms(db: AsyncSession, user_id: int, args: dict, ctx: dict | None = None) -> tuple[str, dict | None]:
     from app.models.alarm import Alarm
     alarms = (await db.execute(
         select(Alarm).where(Alarm.user_id == user_id).order_by(Alarm.hour, Alarm.minute)
@@ -68,7 +68,7 @@ async def list_alarms(db: AsyncSession, user_id: int, args: dict) -> tuple[str, 
     return json.dumps({"status": "success", "alarms": out, "count": len(out)}, ensure_ascii=False), None
 
 
-async def list_shopping(db: AsyncSession, user_id: int, args: dict) -> tuple[str, dict | None]:
+async def list_shopping(db: AsyncSession, user_id: int, args: dict, ctx: dict | None = None) -> tuple[str, dict | None]:
     result = await db.execute(
         select(ShoppingList).where(ShoppingList.user_id == user_id).order_by(ShoppingList.id.desc()).limit(1)
     )
@@ -79,7 +79,7 @@ async def list_shopping(db: AsyncSession, user_id: int, args: dict) -> tuple[str
     return json.dumps({"status": "success", "items": out, "count": len(out)}, ensure_ascii=False), None
 
 
-async def get_finance_summary(db: AsyncSession, user_id: int, args: dict) -> tuple[str, dict | None]:
+async def get_finance_summary(db: AsyncSession, user_id: int, args: dict, ctx: dict | None = None) -> tuple[str, dict | None]:
     income = float(await db.scalar(
         select(func.coalesce(func.sum(FinanceRecord.amount), 0)).where(
             FinanceRecord.user_id == user_id, FinanceRecord.type == "income",
@@ -100,7 +100,7 @@ async def get_finance_summary(db: AsyncSession, user_id: int, args: dict) -> tup
     }, ensure_ascii=False), None
 
 
-async def get_account_info(db: AsyncSession, user_id: int, args: dict) -> tuple[str, dict | None]:
+async def get_account_info(db: AsyncSession, user_id: int, args: dict, ctx: dict | None = None) -> tuple[str, dict | None]:
     from app.models.user import User as _U
     u = await db.get(_U, user_id)
     if not u:
@@ -114,7 +114,7 @@ async def get_account_info(db: AsyncSession, user_id: int, args: dict) -> tuple[
     }, ensure_ascii=False), None
 
 
-async def get_steps_today(db: AsyncSession, user_id: int, args: dict) -> tuple[str, dict | None]:
+async def get_steps_today(db: AsyncSession, user_id: int, args: dict, ctx: dict | None = None) -> tuple[str, dict | None]:
     from app.models.daily_activity import DailyActivity
     from datetime import date as _date
     row = (await db.execute(

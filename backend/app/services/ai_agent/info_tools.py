@@ -5,7 +5,7 @@ import httpx
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
-async def get_weather(db: AsyncSession, user_id: int, args: dict) -> tuple[str, dict | None]:
+async def get_weather(db: AsyncSession, user_id: int, args: dict, ctx: dict | None = None) -> tuple[str, dict | None]:
     city = args.get("city") or "Tashkent"
     try:
         async with httpx.AsyncClient(timeout=10.0) as client:
@@ -21,7 +21,7 @@ async def get_weather(db: AsyncSession, user_id: int, args: dict) -> tuple[str, 
         return '{"status": "error", "message": "Ob-havo olinmadi"}', None
 
 
-async def get_currency(db: AsyncSession, user_id: int, args: dict) -> tuple[str, dict | None]:
+async def get_currency(db: AsyncSession, user_id: int, args: dict, ctx: dict | None = None) -> tuple[str, dict | None]:
     try:
         async with httpx.AsyncClient(timeout=10.0) as client:
             resp = await client.get("https://cbu.uz/uz/arkhiv-kursov-valyut/json/")
@@ -34,7 +34,7 @@ async def get_currency(db: AsyncSession, user_id: int, args: dict) -> tuple[str,
         return '{"status": "error", "message": "Valyuta kurslari olinmadi"}', None
 
 
-async def get_prayer_times(db: AsyncSession, user_id: int, args: dict) -> tuple[str, dict | None]:
+async def get_prayer_times(db: AsyncSession, user_id: int, args: dict, ctx: dict | None = None) -> tuple[str, dict | None]:
     city = args.get("city") or "Tashkent"
     try:
         async with httpx.AsyncClient(timeout=10.0) as client:

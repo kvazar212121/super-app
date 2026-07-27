@@ -6,6 +6,7 @@ AI natija topilmaganda foydalanuvchidan xizmat turini aniqlashtiradi.
 """
 import json
 import logging
+import math
 from datetime import datetime
 
 from sqlalchemy import select
@@ -13,8 +14,21 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 logger = logging.getLogger(__name__)
 
+# Masofa bo'yicha saralashda nechta nomzod olinadi (keyin Python'да saralanadi)
+_DISTANCE_CANDIDATES = 200
 
-async def search_providers(db: AsyncSession, user_id: int, args: dict) -> tuple[str, dict | None]:
+
+def _distance_km(lat1: float, lng1: float, lat2: float, lng2: float) -> float:
+    """Ikki nuqta orasidagi masofa (km) — haversine formulasi."""
+    r = 6371.0  # Yer radiusi (km)
+    p1, p2 = math.radians(lat1), math.radians(lat2)
+    dp = math.radians(lat2 - lat1)
+    dl = math.radians(lng2 - lng1)
+    a = math.sin(dp / 2) ** 2 + math.cos(p1) * math.cos(p2) * math.sin(dl / 2) ** 2
+    return 2 * r * math.asin(math.sqrt(a))
+
+
+async def search_providers(db: AsyncSession, user_id: int, args: dict, ctx: dict | None = None) -> tuple[str, dict | None]:
     from app.models.provider import Provider
     from app.models.category import Category
 
@@ -26,6 +40,17 @@ async def search_providers(db: AsyncSession, user_id: int, args: dict) -> tuple[
     except (TypeError, ValueError):
         limit = 10
     limit = max(1, min(limit, 15))  # 1..15 oralig'i
+
+    # ── "Eng yaqin" — foydalanuvchi joylashuvi bo'yicha saralash ──
+    sort_by = (args.get("sort_by") or "").strip().lower()
+    user_lat = user_lng = None
+    if ctx:
+        try:
+            if ctx.get("lat") is not None and ctx.get("lng") is not None:
+                user_lat, user_lng = float(ctx["lat"]), float(ctx["lng"])
+        except (TypeError, ValueError):
+            user_lat = user_lng = None
+    by_distance = sort_by == "distance" and user_lat is not None
 
     cats = (await db.execute(select(Category))).scalars().all()
     cat_by_id = {c.id: c for c in cats}
@@ -69,6 +94,10 @@ async def search_providers(db: AsyncSession, user_id: int, args: dict) -> tuple[
         Provider.is_blocked == False,
     ]
 
+    # Masofa bo'yicha saralashда ko'proq nomzod olamiz (saralash Python'да),
+    # aks holda to'g'ridan-to'g'ri reyting bo'yicha limit qo'yamiz.
+    sql_limit = _DISTANCE_CANDIDATES if by_distance else limit
+
     provs = []
     matched_by_name = False
     if matched_cat:
@@ -76,16 +105,23 @@ async def search_providers(db: AsyncSession, user_id: int, args: dict) -> tuple[
         pstmt = select(Provider).where(*base_filter, Provider.category_id == matched_cat.id)
         if location:
             pstmt = pstmt.where(Provider.address.ilike(f"%{location}%"))
-        pstmt = pstmt.order_by(Provider.rating.desc()).limit(limit)
+        pstmt = pstmt.order_by(Provider.rating.desc()).limit(sql_limit)
         provs = (await db.execute(pstmt)).scalars().all()
     elif query:
         # Kategoriya aniqlanmadi — provider NOMI bo'yicha maqsadli qidiruv
         pstmt = select(Provider).where(*base_filter, Provider.name.ilike(f"%{query}%"))
         if location:
             pstmt = pstmt.where(Provider.address.ilike(f"%{location}%"))
-        pstmt = pstmt.order_by(Provider.rating.desc()).limit(limit)
+        pstmt = pstmt.order_by(Provider.rating.desc()).limit(sql_limit)
         provs = (await db.execute(pstmt)).scalars().all()
         matched_by_name = bool(provs)
+
+    # Eng yaqindan saralab, so'ralган songa qisqartiramiz
+    if by_distance and provs:
+        provs = sorted(
+            provs,
+            key=lambda p: _distance_km(user_lat, user_lng, p.lat or 0.0, p.lng or 0.0),
+        )[:limit]
 
     # ── Hech narsa topilmadi: aralash ro'yxat O'RNIGA aniqlashtirish so'raymiz ──
     if not provs:
@@ -105,14 +141,17 @@ async def search_providers(db: AsyncSession, user_id: int, args: dict) -> tuple[
             continue
         seen_ids.add(p.id)
         pcat = cat_by_id.get(p.category_id)
-        results.append({
+        row = {
             "id": p.id, "name": p.name, "category_id": p.category_id,
             "category_key": pcat.key if pcat else None,
             "category_name": pcat.title_uz if pcat else None,
             "rating": p.rating, "review_count": p.review_count,
             "address": p.address,
             "lat": p.lat, "lng": p.lng,
-        })
+        }
+        if user_lat is not None and p.lat is not None and p.lng is not None:
+            row["distance_km"] = round(_distance_km(user_lat, user_lng, p.lat, p.lng), 1)
+        results.append(row)
 
     payload = {
         "status": "success",
@@ -123,6 +162,10 @@ async def search_providers(db: AsyncSession, user_id: int, args: dict) -> tuple[
             if matched_cat else None
         ),
         "matched_by_name": matched_by_name,
+        # AI shu belgilarga qarab javobda "eng yaqin" deyishi yoki joylashuv
+        # aniqlanmaganini aytishi mumkin.
+        "sorted_by": "distance" if by_distance else "rating",
+        "user_location_available": user_lat is not None,
     }
     # Chatда HAR provayder uchun alohida "bron qilish" tugmasi chiqadi.
     # category_key: kategoriya qidiruvida — umumiy; nom qidiruvida — provayderniki.
@@ -140,6 +183,7 @@ async def search_providers(db: AsyncSession, user_id: int, args: dict) -> tuple[
                     "rating": r["rating"],
                     "address": r["address"],
                     "category_key": r["category_key"],
+                    "distance_km": r.get("distance_km"),
                 }
                 for r in results
             ],
@@ -147,7 +191,7 @@ async def search_providers(db: AsyncSession, user_id: int, args: dict) -> tuple[
     return json.dumps(payload, ensure_ascii=False), action
 
 
-async def create_booking(db: AsyncSession, user_id: int, args: dict) -> tuple[str, dict | None]:
+async def create_booking(db: AsyncSession, user_id: int, args: dict, ctx: dict | None = None) -> tuple[str, dict | None]:
     from app.models.provider import Provider
     from app.models.order import Order, OrderStatus
     from app.services.notification_service import NotificationService

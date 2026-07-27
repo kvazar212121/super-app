@@ -9,6 +9,16 @@ import '../services/api_service.dart';
 import '../models/master_worker.dart';
 import 'orders_screen.dart';
 import 'provider_profile_screen.dart';
+import 'todo_screen.dart';
+import 'finance_manager_screen.dart';
+import 'shopping_list_screen.dart';
+import 'all_categories_screen.dart';
+import 'profile_screen.dart';
+import 'alarm/alarm_home_screen.dart';
+import 'calorie/calorie_home_screen.dart';
+import 'fitness/fitness_home_screen.dart';
+import 'calls/call_history_screen.dart';
+import 'premium/premium_screen.dart';
 import '../models/service_hub_kind.dart';
 import '../widgets/glass/glass_scaffold.dart';
 import '../theme/glass_tokens.dart';
@@ -426,10 +436,17 @@ class _ChatScreenState extends State<ChatScreen>
           final id = (pm['id'] as num?)?.toInt();
           final name = pm['name'] as String? ?? '';
           if (id == null) continue;
+          // "Eng yaqin" qidiruvида masofa ham ko'rsatiladi: "goo · 4.0 km"
+          final dist = (pm['distance_km'] as num?)?.toDouble();
+          final label = name.isEmpty
+              ? 'Bron qilish'.tr
+              : (dist != null ? '$name · ${dist.toStringAsFixed(1)} km' : name);
+          // Har provayder o'z kategoriyasi bilan ochiladi (bo'lmasa umumiy kalit)
+          final pKey = pm['category_key'] as String? ?? key;
           buttons.add(_chatActionButton(
             icon: LucideIcons.calendarPlus,
-            label: name.isNotEmpty ? name : 'Bron qilish'.tr,
-            onTap: () => _openProviderBooking(id, key),
+            label: label,
+            onTap: () => _openProviderBooking(id, pKey),
           ));
         }
       } else if (type == 'orders_changed') {
@@ -438,13 +455,28 @@ class _ChatScreenState extends State<ChatScreen>
           label: 'Buyurtmalarim'.tr,
           onTap: () => _openBookings(),
         ));
-      } else if (type == 'navigate' && a['route'] is String) {
-        // Kelajakда backend 'navigate' action bersa — shu ishlaydi.
-        buttons.add(_chatActionButton(
-          icon: LucideIcons.arrowRight,
-          label: (a['label'] as String?) ?? 'Ochish'.tr,
-          onTap: () => _handleNavigate(a['route'] as String),
-        ));
+      } else if (type == 'navigate') {
+        // Backend bir yoki bir nechta bo'lim tugmasini yuborishi mumkin:
+        //   {type: navigate, items: [{route, label}, ...]}  yoki  {route, label}
+        final items = (a['items'] as List?) ?? const [];
+        if (items.isNotEmpty) {
+          for (final it in items) {
+            final m = Map<String, dynamic>.from(it as Map);
+            final route = m['route'] as String?;
+            if (route == null) continue;
+            buttons.add(_chatActionButton(
+              icon: _sectionIcon(route),
+              label: (m['label'] as String?) ?? 'Ochish'.tr,
+              onTap: () => _handleNavigate(route),
+            ));
+          }
+        } else if (a['route'] is String) {
+          buttons.add(_chatActionButton(
+            icon: _sectionIcon(a['route'] as String),
+            label: (a['label'] as String?) ?? 'Ochish'.tr,
+            onTap: () => _handleNavigate(a['route'] as String),
+          ));
+        }
       }
     }
     return buttons;
@@ -526,10 +558,82 @@ class _ChatScreenState extends State<ChatScreen>
     }
   }
 
+  /// Bo'lim uchun mos ikonka (backend'даги route kalitlari bo'yicha).
+  IconData _sectionIcon(String route) {
+    switch (route) {
+      case 'plans':
+      case 'todos':
+        return LucideIcons.calendarCheck;
+      case 'finance':
+        return LucideIcons.wallet;
+      case 'shopping':
+        return LucideIcons.shoppingBag;
+      case 'orders':
+        return LucideIcons.briefcase;
+      case 'alarms':
+        return LucideIcons.alarmClock;
+      case 'services':
+        return LucideIcons.layoutGrid;
+      case 'calorie':
+        return LucideIcons.flame;
+      case 'fitness':
+        return LucideIcons.dumbbell;
+      case 'calls':
+        return LucideIcons.phone;
+      case 'profile':
+        return LucideIcons.user;
+      case 'premium':
+        return LucideIcons.crown;
+      default:
+        return LucideIcons.arrowRight;
+    }
+  }
+
+  /// Backend 'navigate' action'ida kelgan bo'lim kalitiga qarab ilova ichидаги
+  /// tegishli ekranni ochadi. Kalitlar backend nav_tools.SECTIONS bilan bir xil.
   void _handleNavigate(String route) {
-    // Backend kelajakда 'navigate' action bersa — bu yerда route bo'yicha
-    // tegishli ekranga o'tkazish qo'shiladi. Hozircha buyurtmalar.
-    _openBookings();
+    Widget? screen;
+    switch (route) {
+      case 'plans':
+      case 'todos':
+        screen = const TodoScreen();
+        break;
+      case 'finance':
+        screen = const FinanceManagerScreen();
+        break;
+      case 'shopping':
+        screen = const ShoppingListScreen();
+        break;
+      case 'orders':
+        screen = const OrdersScreen();
+        break;
+      case 'alarms':
+        screen = const AlarmHomeScreen();
+        break;
+      case 'services':
+        screen = const AllCategoriesScreen(showBackButton: true);
+        break;
+      case 'calorie':
+        screen = const CalorieHomeScreen();
+        break;
+      case 'fitness':
+        screen = const FitnessHomeScreen();
+        break;
+      case 'calls':
+        screen = const CallHistoryScreen();
+        break;
+      case 'profile':
+        screen = const ProfileScreen();
+        break;
+      case 'premium':
+        screen = const PremiumScreen();
+        break;
+    }
+    if (screen == null) {
+      _openBookings(); // noma'lum bo'lim — buyurtmalarga tushamiz
+      return;
+    }
+    Navigator.push(context, MaterialPageRoute(builder: (_) => screen!));
   }
 
   Widget _buildTypingIndicator() {

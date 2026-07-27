@@ -118,6 +118,10 @@ async def ai_chat(
                 },
             )
 
+    # Tool konteksti — foydalanuvchi joylashuvi (ilova yuborsa) "eng yaqin"
+    # qidiruvида ishlatiladi.
+    tool_ctx = {"lat": body.lat, "lng": body.lng} if body.lat is not None and body.lng is not None else None
+
     try:
         # Agentic loop — model bir turда bir necha tool chaqira oladi (masalan: search → book → javob).
         actions: list[dict] = []
@@ -138,7 +142,9 @@ async def ai_chat(
             # Model tool(lar) chaqirdi — bajarib, natijani qaytaramiz
             groq_messages.append(message)
             for tool_call in message["tool_calls"]:
-                tool_result_str, action = await handle_tool_call(db, current_user.id, tool_call)
+                tool_result_str, action = await handle_tool_call(
+                    db, current_user.id, tool_call, ctx=tool_ctx
+                )
                 if action:
                     actions.append(action)
                 groq_messages.append({

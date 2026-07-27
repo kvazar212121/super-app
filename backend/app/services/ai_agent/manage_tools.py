@@ -9,7 +9,7 @@ from app.models.finance_record import FinanceRecord
 from app.models.shopping_list import ShoppingList
 
 
-async def cancel_order(db: AsyncSession, user_id: int, args: dict) -> tuple[str, dict | None]:
+async def cancel_order(db: AsyncSession, user_id: int, args: dict, ctx: dict | None = None) -> tuple[str, dict | None]:
     from app.models.order import Order, OrderStatus
     if not args.get("confirm"):
         return json.dumps({"status": "needs_confirmation",
@@ -27,7 +27,7 @@ async def cancel_order(db: AsyncSession, user_id: int, args: dict) -> tuple[str,
                       ensure_ascii=False), {"type": "orders_changed"}
 
 
-async def complete_plan(db: AsyncSession, user_id: int, args: dict) -> tuple[str, dict | None]:
+async def complete_plan(db: AsyncSession, user_id: int, args: dict, ctx: dict | None = None) -> tuple[str, dict | None]:
     p = (await db.execute(
         select(Plan).where(Plan.id == int(args.get("plan_id")), Plan.user_id == user_id)
     )).scalar_one_or_none()
@@ -38,7 +38,7 @@ async def complete_plan(db: AsyncSession, user_id: int, args: dict) -> tuple[str
     return '{"status": "success", "message": "Reja bajarildi deb belgilandi."}', {"type": "plans_changed"}
 
 
-async def delete_plan(db: AsyncSession, user_id: int, args: dict) -> tuple[str, dict | None]:
+async def delete_plan(db: AsyncSession, user_id: int, args: dict, ctx: dict | None = None) -> tuple[str, dict | None]:
     if not args.get("confirm"):
         return '{"status": "needs_confirmation", "message": "O\'chirishni tasdiqlashini so\'rang."}', None
     p = (await db.execute(
@@ -51,7 +51,7 @@ async def delete_plan(db: AsyncSession, user_id: int, args: dict) -> tuple[str, 
     return '{"status": "success", "message": "Reja o\'chirildi."}', {"type": "plans_changed"}
 
 
-async def complete_todo(db: AsyncSession, user_id: int, args: dict) -> tuple[str, dict | None]:
+async def complete_todo(db: AsyncSession, user_id: int, args: dict, ctx: dict | None = None) -> tuple[str, dict | None]:
     from app.models.todo import Todo
     t = (await db.execute(
         select(Todo).where(Todo.id == int(args.get("todo_id")), Todo.user_id == user_id)
@@ -63,7 +63,7 @@ async def complete_todo(db: AsyncSession, user_id: int, args: dict) -> tuple[str
     return '{"status": "success", "message": "Vazifa bajarildi deb belgilandi."}', {"type": "todos_changed"}
 
 
-async def delete_todo(db: AsyncSession, user_id: int, args: dict) -> tuple[str, dict | None]:
+async def delete_todo(db: AsyncSession, user_id: int, args: dict, ctx: dict | None = None) -> tuple[str, dict | None]:
     from app.models.todo import Todo
     if not args.get("confirm"):
         return '{"status": "needs_confirmation", "message": "O\'chirishni tasdiqlashini so\'rang."}', None
@@ -77,7 +77,7 @@ async def delete_todo(db: AsyncSession, user_id: int, args: dict) -> tuple[str, 
     return '{"status": "success", "message": "Vazifa o\'chirildi."}', {"type": "todos_changed"}
 
 
-async def toggle_alarm(db: AsyncSession, user_id: int, args: dict) -> tuple[str, dict | None]:
+async def toggle_alarm(db: AsyncSession, user_id: int, args: dict, ctx: dict | None = None) -> tuple[str, dict | None]:
     from app.models.alarm import Alarm
     a = (await db.execute(
         select(Alarm).where(Alarm.id == int(args.get("alarm_id")), Alarm.user_id == user_id)
@@ -90,7 +90,7 @@ async def toggle_alarm(db: AsyncSession, user_id: int, args: dict) -> tuple[str,
     return json.dumps({"status": "success", "message": msg}, ensure_ascii=False), {"type": "alarms_changed", "alarm_id": a.id, "enabled": a.is_enabled}
 
 
-async def delete_alarm(db: AsyncSession, user_id: int, args: dict) -> tuple[str, dict | None]:
+async def delete_alarm(db: AsyncSession, user_id: int, args: dict, ctx: dict | None = None) -> tuple[str, dict | None]:
     from app.models.alarm import Alarm
     if not args.get("confirm"):
         return '{"status": "needs_confirmation", "message": "O\'chirishni tasdiqlashini so\'rang."}', None
@@ -105,7 +105,7 @@ async def delete_alarm(db: AsyncSession, user_id: int, args: dict) -> tuple[str,
     return '{"status": "success", "message": "Budilnik o\'chirildi."}', {"type": "alarms_changed", "alarm_id": aid, "deleted": True}
 
 
-async def mark_shopping_bought(db: AsyncSession, user_id: int, args: dict) -> tuple[str, dict | None]:
+async def mark_shopping_bought(db: AsyncSession, user_id: int, args: dict, ctx: dict | None = None) -> tuple[str, dict | None]:
     result = await db.execute(
         select(ShoppingList).where(ShoppingList.user_id == user_id).order_by(ShoppingList.id.desc()).limit(1)
     )
@@ -127,7 +127,7 @@ async def mark_shopping_bought(db: AsyncSession, user_id: int, args: dict) -> tu
     return '{"status": "success", "message": "Mahsulot sotib olindi deb belgilandi."}', {"type": "shopping_changed"}
 
 
-async def delete_finance_record(db: AsyncSession, user_id: int, args: dict) -> tuple[str, dict | None]:
+async def delete_finance_record(db: AsyncSession, user_id: int, args: dict, ctx: dict | None = None) -> tuple[str, dict | None]:
     if not args.get("confirm"):
         return '{"status": "needs_confirmation", "message": "O\'chirishni tasdiqlashini so\'rang."}', None
     r = (await db.execute(

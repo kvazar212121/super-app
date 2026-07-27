@@ -11,6 +11,10 @@ class ChatMessage(BaseModel):
 
 class ChatRequest(BaseModel):
     messages: List[ChatMessage] = Field(..., min_length=1, max_length=50)
+    # Foydalanuvchining joriy joylashuvi (ixtiyoriy) — "eng yaqin ustalar"
+    # so'ralganda masofa bo'yicha saralash uchun. Ilova ruxsat bermasa yuborilmaydi.
+    lat: float | None = Field(default=None, ge=-90, le=90)
+    lng: float | None = Field(default=None, ge=-180, le=180)
 
 
 class ChatResponse(BaseModel):

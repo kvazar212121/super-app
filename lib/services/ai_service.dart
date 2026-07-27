@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'api_service.dart';
 import 'notification_helper.dart';
@@ -71,6 +72,46 @@ class AiService {
     } catch (_) {}
   }
 
+  // Joylashuv keshi — chat davomida qayta-qayta GPS so'ramaslik uchun.
+  Position? _cachedPos;
+  DateTime? _cachedPosAt;
+  static const Duration _posTtl = Duration(minutes: 10);
+
+  /// Foydalanuvchining oxirgi ma'lum joylashuvi (bo'lsa).
+  ///
+  /// MUHIM: chatni hech qachon kutdirmaydi va ruxsat SO'RAMAYDI — ruxsat
+  /// allaqachon berilган bo'lsagina ishlaydi (xizmatlar xaritasида beriladi).
+  /// Xato/ruxsat yo'q bo'lsa null qaytadi va AI reyting bo'yicha saralaydi.
+  Future<Position?> _lastKnownLocation() async {
+    final now = DateTime.now();
+    if (_cachedPos != null &&
+        _cachedPosAt != null &&
+        now.difference(_cachedPosAt!) < _posTtl) {
+      return _cachedPos;
+    }
+    try {
+      final perm = await Geolocator.checkPermission();
+      if (perm != LocationPermission.always &&
+          perm != LocationPermission.whileInUse) {
+        return null;
+      }
+      // Avval keshlangan (tezkor) joylashuv
+      Position? pos = await Geolocator.getLastKnownPosition();
+      // Bo'lmasa — qisqa muddatli aniqlash (chat kutib qolmasligi uchun 4s limit)
+      pos ??= await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.low,
+        timeLimit: const Duration(seconds: 4),
+      );
+      if (pos != null) {
+        _cachedPos = pos;
+        _cachedPosAt = now;
+      }
+      return pos;
+    } catch (_) {
+      return null; // joylashuv bo'lmasa ham chat normal ishlaydi
+    }
+  }
+
   Future<String> sendMessage(String userText) async {
     lastActions = const []; // yangi so'rov — eski tugmalarни tozalaymiz
     _messages.add({'role': 'user', 'content': userText});
@@ -96,9 +137,17 @@ class AiService {
         };
       }
 
+      // Joylashuv (bo'lsa) — "eng yaqin sartaroshxonalar" kabi so'rovlar uchun.
+      // Hech qachon chatni kutdirmaydi: faqat oxirgi ma'lum joylashuv olinadi.
+      final pos = await _lastKnownLocation();
+
       final response = await _dio.post(
         '/ai/chat',
-        data: {'messages': payloadMessages},
+        data: {
+          'messages': payloadMessages,
+          if (pos != null) 'lat': pos.latitude,
+          if (pos != null) 'lng': pos.longitude,
+        },
         options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
 
