@@ -541,7 +541,7 @@ async def handle_tool_call(db: AsyncSession, user_id: int, tool_call: dict) -> t
                     "id": p.id, "name": p.name, "category_id": p.category_id,
                     "rating": p.rating, "review_count": p.review_count,
                     "address": p.address,
-                    "lat": p.latitude, "lng": p.longitude,
+                    "lat": p.lat, "lng": p.lng,
                 }
                 for p in provs
             ]
