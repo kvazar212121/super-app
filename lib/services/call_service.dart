@@ -780,6 +780,69 @@ class CallService extends ChangeNotifier {
     return true;
   }
 
+  /// Opus kodekini zaif tarmoq uchun sozlaydi (SDP ustida):
+  ///   - useinbandfec=1  → yo'qolган paketlarni tiklaydi ("ovoz uzilishi"ni kamaytiradi)
+  ///   - usedtx=1        → jimlik paytида kam yuboradi (bandwidth tejaydi)
+  ///   - maxaveragebitrate=32000 → maks bitrate ~32 kbps (zaif tarmoqда yukni kamaytiradi;
+  ///     tarmoq yomonlashsa WebRTC o'zi pastroqqa moslashadi)
+  ///   - stereo=0        → mono (ovoz uchun yetarli, 2x tejaydi)
+  String _tuneOpusSdp(String? sdp) {
+    if (sdp == null || sdp.isEmpty) return sdp ?? '';
+    final lines = sdp.split('\r\n');
+    // Opus payload type raqamini topamiz (masalan: a=rtpmap:111 opus/48000/2)
+    String? pt;
+    final rtpmap = RegExp(r'^a=rtpmap:(\d+) opus/48000', caseSensitive: false);
+    for (final l in lines) {
+      final m = rtpmap.firstMatch(l);
+      if (m != null) {
+        pt = m.group(1);
+        break;
+      }
+    }
+    if (pt == null) return sdp; // Opus topilmadi — o'zgartirmaymiz
+
+    const wanted = {
+      'useinbandfec': '1',
+      'usedtx': '1',
+      'maxaveragebitrate': '32000',
+      'stereo': '0',
+    };
+    final fmtpPrefix = 'a=fmtp:$pt ';
+    int fmtpIdx = -1;
+    for (int i = 0; i < lines.length; i++) {
+      if (lines[i].startsWith(fmtpPrefix)) {
+        fmtpIdx = i;
+        break;
+      }
+    }
+
+    if (fmtpIdx >= 0) {
+      // Mavjud fmtp parametrlariga qo'shamiz (dublikat bo'lmasin — bizniki ustun).
+      final Map<String, String> kv = {};
+      for (final p in lines[fmtpIdx].substring(fmtpPrefix.length).split(';')) {
+        final t = p.trim();
+        if (t.contains('=')) {
+          kv[t.split('=')[0].trim()] = t.split('=')[1].trim();
+        }
+      }
+      kv.addAll(wanted);
+      lines[fmtpIdx] =
+          fmtpPrefix + kv.entries.map((e) => '${e.key}=${e.value}').join(';');
+    } else {
+      // fmtp qatori yo'q — rtpmap'дан keyin qo'shamiz.
+      for (int i = 0; i < lines.length; i++) {
+        if (lines[i].startsWith('a=rtpmap:$pt opus')) {
+          lines.insert(
+            i + 1,
+            fmtpPrefix + wanted.entries.map((e) => '${e.key}=${e.value}').join(';'),
+          );
+          break;
+        }
+      }
+    }
+    return lines.join('\r\n');
+  }
+
   /// Offer yaratish va yuborish
   Future<void> processOffer() async {
     if (_peerConnection != null) return;
@@ -796,6 +859,8 @@ class CallService extends ChangeNotifier {
       RTCSessionDescription offer = await _peerConnection!.createOffer(
         offerSdpConstraints,
       );
+      // Opus'ни zaif tarmoq uchun sozlaymiz (FEC/DTX/bitrate).
+      offer = RTCSessionDescription(_tuneOpusSdp(offer.sdp), offer.type);
       await _peerConnection!.setLocalDescription(offer);
 
       sendSignal('offer', {'sdp': offer.sdp, 'type': offer.type});
@@ -831,7 +896,7 @@ class CallService extends ChangeNotifier {
     debugPrint('ICE restart #$_iceRestartAttempts');
 
     try {
-      final offer = await _peerConnection!.createOffer({
+      RTCSessionDescription offer = await _peerConnection!.createOffer({
         'mandatory': {
           'IceRestart': true,
           'OfferToReceiveAudio': true,
@@ -839,6 +904,7 @@ class CallService extends ChangeNotifier {
         },
         'optional': [],
       });
+      offer = RTCSessionDescription(_tuneOpusSdp(offer.sdp), offer.type);
       await _peerConnection!.setLocalDescription(offer);
       sendSignal('offer', {'sdp': offer.sdp, 'type': offer.type});
     } catch (e) {
@@ -950,6 +1016,8 @@ class CallService extends ChangeNotifier {
       RTCSessionDescription answer = await _peerConnection!.createAnswer(
         answerSdpConstraints,
       );
+      // Opus'ни zaif tarmoq uchun sozlaymiz (FEC/DTX/bitrate).
+      answer = RTCSessionDescription(_tuneOpusSdp(answer.sdp), answer.type);
       await _peerConnection?.setLocalDescription(answer);
 
       sendSignal('answer', {'sdp': answer.sdp, 'type': answer.type});
