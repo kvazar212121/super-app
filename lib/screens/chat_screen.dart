@@ -98,9 +98,15 @@ class _ChatScreenState extends State<ChatScreen>
       if (saved.isEmpty || !mounted) return;
       setState(() {
         for (final m in saved) {
+          // Saqlangan tugmalarni (actions) ham tiklaymiz — chatga qaytganda
+          // "bron qilish" / bo'lim tugmalari yo'qolib qolmasin.
+          final acts = (m['actions'] as List?)
+              ?.map((e) => Map<String, dynamic>.from(e as Map))
+              .toList();
           _chatHistory.add({
             'role': m['role'] ?? 'assistant',
             'content': m['content'] ?? '',
+            if (acts != null && acts.isNotEmpty) 'actions': acts,
           });
         }
       });

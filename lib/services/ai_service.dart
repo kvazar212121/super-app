@@ -29,10 +29,12 @@ class AiService {
     );
   }
 
-  /// Chat tarixini saqlaydi (faqat user va assistant xabarlari).
-  /// Lokal xotira (SharedPreferences) — ilova yopilsa ham chat qoladi.
-  final List<Map<String, String>> _messages = [];
-  static const String _historyKey = 'ai_chat_history_v1';
+  /// Chat tarixi: {role, content} va assistant xabarlarida ixtiyoriy 'actions'
+  /// (chat tugmalari). Lokal xotira (SharedPreferences) — ilova yopilsa ham
+  /// chat VA tugmalar qoladi.
+  final List<Map<String, dynamic>> _messages = [];
+  // v2: endi 'actions' ham saqlanadi (v1 tarixi o'qilaveradi — actions'siz).
+  static const String _historyKey = 'ai_chat_history_v2';
   // Prompt hajmi cheklangani uchun so'nggi N xabarni yuboramiz (kichik "xotira").
   static const int _maxContextMessages = 20;
   // Diskda saqlanadigan maksimal xabar (eskilarini kesib tashlaymiz).
@@ -45,16 +47,20 @@ class AiService {
   List<Map<String, dynamic>> lastActions = const [];
 
   /// Saqlangan chat tarixini diskdan yuklaydi (ilova ochilganda bir marta).
-  Future<List<Map<String, String>>> loadHistory() async {
+  /// Assistant xabarlarida 'actions' ham qaytadi — shunda chatga qaytganda
+  /// tugmalar yo'qolmaydi.
+  Future<List<Map<String, dynamic>>> loadHistory() async {
     if (_loaded) return List.unmodifiable(_messages);
     try {
       final prefs = await SharedPreferences.getInstance();
-      final raw = prefs.getString(_historyKey);
+      // Avval yangi kalit; bo'lmasa eski (v1) tarixni ko'chirib olamiz.
+      final raw = prefs.getString(_historyKey) ??
+          prefs.getString('ai_chat_history_v1');
       if (raw != null && raw.isNotEmpty) {
         final List<dynamic> data = jsonDecode(raw) as List<dynamic>;
         _messages
           ..clear()
-          ..addAll(data.map((e) => Map<String, String>.from(e as Map)));
+          ..addAll(data.map((e) => Map<String, dynamic>.from(e as Map)));
       }
     } catch (_) {}
     _loaded = true;
@@ -127,7 +133,13 @@ class AiService {
       final recent = _messages.length > _maxContextMessages
           ? _messages.sublist(_messages.length - _maxContextMessages)
           : _messages;
-      final payloadMessages = List<Map<String, String>>.from(recent);
+      // Serverga faqat role/content yuboriladi ('actions' — lokal tugmalar uchun).
+      final payloadMessages = recent
+          .map((m) => {
+                'role': (m['role'] ?? 'user').toString(),
+                'content': (m['content'] ?? '').toString(),
+              })
+          .toList();
       if (payloadMessages.isNotEmpty &&
           payloadMessages.last['role'] == 'user') {
         payloadMessages.last = {
@@ -166,8 +178,23 @@ class AiService {
       lastActions = parsedActions;
 
       if (aiReply.isNotEmpty) {
-        _messages.add({'role': 'assistant', 'content': aiReply});
-        await _persist(); // chatni diskka saqlaymiz
+        // Tugmalar (actions) ham xabar bilan birga saqlanadi — chatga qaytganda
+        // qayta ko'rsatiladi. Faqat KO'RSATILADIGAN turlar saqlanadi: bir
+        // martalik amallar (masalan schedule_alarm) qayta bajarilmasligi kerak.
+        final uiActions = parsedActions
+            .where((a) => const {
+                  'provider_list',
+                  'booking_created',
+                  'orders_changed',
+                  'navigate',
+                }.contains(a['type']))
+            .toList();
+        _messages.add({
+          'role': 'assistant',
+          'content': aiReply,
+          if (uiActions.isNotEmpty) 'actions': uiActions,
+        });
+        await _persist(); // chatni (tugmalari bilan) diskka saqlaymiz
         return aiReply;
       }
       return "Kechirasiz, javob olishda xatolik yuz berdi.";
@@ -238,9 +265,11 @@ class AiService {
   /// Chat tarixini tozalaydi (xotira + disk).
   Future<void> clearHistory() async {
     _messages.clear();
+    lastActions = const [];
     try {
       final prefs = await SharedPreferences.getInstance();
       await prefs.remove(_historyKey);
+      await prefs.remove('ai_chat_history_v1'); // eski tarix ham tozalansin
     } catch (_) {}
   }
 }

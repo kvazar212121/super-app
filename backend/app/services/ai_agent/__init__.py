@@ -20,6 +20,7 @@ from .prompt import SYSTEM_PROMPT, build_system_prompt
 from .tools_schema import TOOLS
 from .dispatcher import HANDLERS, handle_tool_call
 from .fallback import fallback_local_parse
+from .formatting import clean_for_mobile
 
 __all__ = [
     "ChatMessage",
@@ -31,4 +32,5 @@ __all__ = [
     "HANDLERS",
     "handle_tool_call",
     "fallback_local_parse",
+    "clean_for_mobile",
 ]

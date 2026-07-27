@@ -23,6 +23,7 @@ from app.services.ai_agent import (
     ChatRequest,
     ChatResponse,
     build_system_prompt,
+    clean_for_mobile,
     handle_tool_call,
     fallback_local_parse,
 )
@@ -158,6 +159,9 @@ async def ai_chat(
 
         # Clean <think> blocks just in case
         final_reply = re.sub(r"<think>.*?</think>", "", final_reply, flags=re.DOTALL).strip()
+        # Mobil ilova markdown'ni render qilmaydi — jadval/qalin belgilarni
+        # kafolatli tozalaymiz (model promptga har doim ham amal qilavermaydi).
+        final_reply = clean_for_mobile(final_reply)
         return ChatResponse(reply=final_reply, actions=actions)
 
     except (httpx.TimeoutException, httpx.HTTPError) as e:
