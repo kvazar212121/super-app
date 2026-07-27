@@ -63,7 +63,7 @@ class _DailyUtilitiesWidgetState extends State<DailyUtilitiesWidget> {
     return Row(
       children: [
         Expanded(child: _buildWeatherCard()),
-        const SizedBox(width: 8),
+        const SizedBox(width: 6),
         Expanded(child: _buildCurrencyCard()),
       ],
     );
@@ -222,7 +222,7 @@ class _BaseCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 7),
       decoration: BoxDecoration(
         color: isDark
             ? Color.lerp(const Color(0xFF1E293B), color, 0.15)

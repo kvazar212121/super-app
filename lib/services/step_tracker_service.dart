@@ -116,6 +116,22 @@ class StepTrackerService extends ChangeNotifier {
     await _syncToServer(_todaySteps);
   }
 
+  /// Foydalanuvchi "Yoqish" tugmasini bosganda — ruxsatni so'raydi (agar butunlay
+  /// rad etilgan bo'lsa ilova sozlamalarini ochadi) va oqimni qayta ishga tushiradi.
+  /// Eslatma: emulatorда qadam sensori bo'lmagani uchun qadam baribir 0 qoladi —
+  /// bu faqat haqiqiy telefonда ishlaydi.
+  Future<void> enable() async {
+    if (kIsWeb) return;
+    try {
+      final status = await Permission.activityRecognition.status;
+      if (status.isPermanentlyDenied) {
+        await openAppSettings();
+        return;
+      }
+    } catch (_) {}
+    await init();
+  }
+
   @override
   void dispose() {
     _sub?.cancel();

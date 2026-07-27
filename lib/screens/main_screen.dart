@@ -8,9 +8,9 @@ import '../widgets/glass/glass_bottom_bar.dart';
 import '../widgets/glass/mesh_background.dart';
 import 'home_screen.dart';
 import 'orders_screen.dart';
-import 'profile_screen.dart';
 import 'all_categories_screen.dart';
 import 'calls/call_history_screen.dart';
+import 'chat_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -26,9 +26,9 @@ class _MainScreenState extends State<MainScreen> {
   List<GlassNavItem> get _navItems => [
     GlassNavItem(icon: LucideIcons.home, label: 'Asosiy'.tr),
     GlassNavItem(icon: LucideIcons.layoutGrid, label: 'Xizmatlar'.tr),
-    GlassNavItem(icon: LucideIcons.briefcase, label: 'Buyurtmalar'.tr),
+    GlassNavItem(icon: LucideIcons.sparkles, label: 'AiHub'.tr),
     GlassNavItem(icon: LucideIcons.phone, label: 'Aloqa'.tr),
-    GlassNavItem(icon: LucideIcons.user, label: 'Profil'.tr),
+    GlassNavItem(icon: LucideIcons.clipboardList, label: 'Buyurtmalar'.tr),
   ];
 
   @override
@@ -58,7 +58,11 @@ class _MainScreenState extends State<MainScreen> {
         content: Text(msg),
         action: SnackBarAction(
           label: 'Ko\'rish'.tr,
-          onPressed: () => setState(() => _selectedIndex = 2),
+          // Buyurtmalar endi alohida tab emas — to'g'ridan-to'g'ri ochamiz.
+          onPressed: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const OrdersScreen()),
+          ),
         ),
       ),
     );
@@ -67,9 +71,10 @@ class _MainScreenState extends State<MainScreen> {
   final List<Widget> _screens = [
     const HomeScreen(),
     const AllCategoriesScreen(),
-    const OrdersScreen(),
+    const ChatScreen(),
     const CallHistoryScreen(),
-    const ProfileScreen(),
+    // Profil endi header'da (yuqori o'ng) — bu joyда buyurtmalar tabi.
+    const OrdersScreen(embedded: true),
   ];
 
   @override
@@ -95,8 +100,28 @@ class _MainScreenState extends State<MainScreen> {
             right: false,
             child: GlassBottomBar(
               currentIndex: _selectedIndex,
-              onTap: (i) => setState(() => _selectedIndex = i),
+              onTap: (i) {
+                // AiHub markaziy orbi — chatni TO'LIQ EKRAN sifatida ochadi
+                // (tab emas). Aks holda chat matn maydoni pastki menyu ostida
+                // qolib ko'rinmaydi.
+                if (i == 2) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const ChatScreen()),
+                  );
+                  return;
+                }
+                setState(() => _selectedIndex = i);
+              },
               items: _navItems,
+              centerIndex: 2, // AiHub — markaziy jonli orb
+              // Orbni bosib turganda — ovoz rejimi (AiHub darrov tinglaydi).
+              onCenterLongPress: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const ChatScreen(startVoice: true),
+                ),
+              ),
             ),
           ),
         ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'dart:async';
+import 'dart:math' as math;
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:permission_handler/permission_handler.dart';
 import '../services/ai_service.dart';
@@ -41,6 +42,8 @@ class _ChatScreenState extends State<ChatScreen>
 
   late AnimationController _pulseController;
   late Animation<double> _pulseAnim;
+  // Mikrofon ovoz balandligi (ekvalayzer chiziqlarini jonlantirish uchun).
+  double _soundLevel = 0;
 
   @override
   void initState() {
@@ -62,7 +65,7 @@ class _ChatScreenState extends State<ChatScreen>
     _chatHistory.add({
       'role': 'assistant',
       'content':
-          "Assalomu alaykum! Men HubServis SuperApp'ning sun'iy intellekt yordamchisiman. Ilova bo'yicha qanday savollaringiz bor? Sizga bajonidil yordam beraman. 🤖✨"
+          "Assalomu alaykum! Men AiHub — HubServis SuperApp'ning sun'iy intellekt yordamchisiman. Ilova bo'yicha qanday savollaringiz bor? Sizga bajonidil yordam beraman. 🤖✨"
               .tr,
     });
 
@@ -193,6 +196,10 @@ class _ChatScreenState extends State<ChatScreen>
             });
           }
         },
+        onSoundLevelChange: (level) {
+          // Ekvalayzer chiziqlari shu qiymatga qarab jonlanadi.
+          if (mounted) setState(() => _soundLevel = level);
+        },
         localeId: _speechLocale,
         listenMode: stt.ListenMode.dictation,
         cancelOnError: false,
@@ -289,7 +296,7 @@ class _ChatScreenState extends State<ChatScreen>
   Widget build(BuildContext context) {
     return GlassScaffold(
       showBackButton: true,
-      title: 'AI Yordamchi'.tr,
+      title: 'AiHub'.tr,
       actions: [
         IconButton(
           icon: Icon(
@@ -567,6 +574,41 @@ class _ChatScreenState extends State<ChatScreen>
     );
   }
 
+  /// Ovozga reaksiya qiluvchi ekvalayzer — recording paytida input ustida.
+  Widget _buildEqualizer() {
+    final norm = (_soundLevel.clamp(0, 10)) / 10.0; // 0..1
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: AnimatedBuilder(
+        animation: _pulseController,
+        builder: (context, _) {
+          final t = _pulseController.value;
+          return Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: List.generate(11, (i) {
+              final phase = i * 0.6;
+              final wave = 0.5 + 0.5 * math.sin(t * 2 * math.pi + phase);
+              final h = 6.0 + (8 + norm * 34) * wave;
+              return Container(
+                width: 4,
+                height: h,
+                margin: const EdgeInsets.symmetric(horizontal: 3),
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [Color(0xFF8B5CF6), Color(0xFF3B82F6)],
+                  ),
+                  borderRadius: BorderRadius.circular(3),
+                ),
+              );
+            }),
+          );
+        },
+      ),
+    );
+  }
+
   Widget _buildInputArea() {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final isRecording = _voiceState == _VoiceState.recording;
@@ -585,9 +627,13 @@ class _ChatScreenState extends State<ChatScreen>
         right: false,
         child: Padding(
           padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
-          child: Row(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Expanded(
+              if (isRecording) _buildEqualizer(),
+              Row(
+                children: [
+                  Expanded(
                 child: Container(
                   decoration: BoxDecoration(
                     color: isRecording
@@ -696,6 +742,8 @@ class _ChatScreenState extends State<ChatScreen>
                     );
                   },
                 ),
+              ),
+            ],
               ),
             ],
           ),

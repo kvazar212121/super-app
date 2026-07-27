@@ -9,7 +9,12 @@ import '../widgets/guest_blocker_widget.dart';
 import '../l10n/locale_controller.dart';
 
 class OrdersScreen extends StatefulWidget {
-  const OrdersScreen({super.key});
+  /// [embedded] — MainScreen pastki menyu tabi ichida (o'z foni MainScreen'dan,
+  /// orqaga tugma yo'q). false bo'lsa — alohida route (Profil bannneridan),
+  /// o'z MeshBackground foni + orqaga tugmasi bilan.
+  final bool embedded;
+
+  const OrdersScreen({super.key, this.embedded = false});
 
   @override
   State<OrdersScreen> createState() => _OrdersScreenState();
@@ -24,7 +29,10 @@ class _OrdersScreenState extends State<OrdersScreen> {
     final auth = context.watch<AuthProvider>();
 
     return GlassScaffold(
-      embeddedInShell: true,
+      // Tab ichida — embeddedInShell (fon MainScreen'dan). Alohida route
+      // sifatida (Profil banneri) — o'z MeshBackground foni + orqaga tugmasi.
+      embeddedInShell: widget.embedded,
+      showBackButton: !widget.embedded,
       title: 'Buyurtmalarim'.tr,
       body: auth.isAuthenticated
           ? Column(

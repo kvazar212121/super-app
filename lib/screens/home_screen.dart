@@ -13,7 +13,6 @@ import '../screens/auth/auth_gate_screen.dart';
 import '../screens/calorie/calorie_home_screen.dart';
 import '../screens/fitness/fitness_home_screen.dart';
 import '../screens/alarm/alarm_home_screen.dart';
-import '../screens/chat_screen.dart';
 import '../providers/auth_provider.dart';
 import '../services/feature_service.dart';
 import '../l10n/locale_controller.dart';
@@ -99,47 +98,17 @@ class HomeScreen extends StatelessWidget {
   }
 
   Widget _buildMainGrid(BuildContext context) {
-    // Karta tartibi (foydalanuvchi so'roviga ko'ra):
-    //  1-qator: Barcha xizmatlar · AI Yordamchi
-    //  2-qator: Kaloriya · Fitnes
-    //  3-qator: Rejalarim · Mening moliyam
-    //  4-qator: Aqlli savdo · Majburlovchi budilnik
+    // Tuzilma (foydalanuvchi so'roviga ko'ra):
+    //  • Tepada — "Barcha xizmatlar" UZUN TUGMA (butun enli, karta emas).
+    //  • So'ng kartalar:
+    //     1-qator: Kaloriya · Fitnes
+    //     2-qator: Rejalarim · Mening moliyam
+    //     3-qator: Aqlli savdo · Majburlovchi budilnik
+    //  (AI Yordamchi kartasi olib tashlandi — AiHub endi pastki menyuda.)
     return Column(
       children: [
-        Row(
-          children: [
-            Expanded(
-              child: _DailyBtn(
-                icon: LucideIcons.layoutGrid,
-                label: 'Barcha xizmatlar'.tr,
-                color: Colors.purpleAccent,
-                bgImage: 'assets/images/all_services.jpg',
-                onTap: () => _openFeature(
-                  context,
-                  'services',
-                  () => const AllCategoriesScreen(showBackButton: true),
-                  needAuth: false,
-                ),
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: _DailyBtn(
-                icon: LucideIcons.bot,
-                label: 'AI Yordamchi'.tr,
-                color: const Color(0xFF06B6D4),
-                bgImage: 'assets/images/ai.jpg',
-                onTap: () => _openFeature(
-                  context,
-                  'ai_chat',
-                  () => const ChatScreen(),
-                  needAuth: false,
-                ),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 12),
+        _buildServicesButton(context),
+        const SizedBox(height: 14),
         Row(
           children: [
             Expanded(
@@ -235,6 +204,61 @@ class HomeScreen extends StatelessWidget {
       ],
     );
   }
+
+  /// "Barcha xizmatlar" — butun enli UZUN TUGMA (karta emas). Ko'k gradient
+  /// fon (rasmsiz), ingichka; chapda belgi+yozuv, o'ngda strelka.
+  Widget _buildServicesButton(BuildContext context) {
+    return InkWell(
+      onTap: () => _openFeature(
+        context,
+        'services',
+        () => const AllCategoriesScreen(showBackButton: true),
+        needAuth: false,
+      ),
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        height: 58,
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(horizontal: 18),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          gradient: const LinearGradient(
+            colors: [Color(0xFF3B82F6), Color(0xFF2563EB)],
+            begin: Alignment.centerLeft,
+            end: Alignment.centerRight,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: const Color(0xFF3B82F6).withValues(alpha: 0.35),
+              blurRadius: 16,
+              offset: const Offset(0, 6),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            const Icon(LucideIcons.layoutGrid, color: Colors.white, size: 22),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Text(
+                'Barcha xizmatlar'.tr,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w800,
+                  fontSize: 16,
+                ),
+              ),
+            ),
+            const Icon(
+              LucideIcons.chevronRight,
+              color: Colors.white,
+              size: 22,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }
 
 class _DailyBtn extends StatelessWidget {
@@ -272,50 +296,33 @@ class _DailyBtn extends StatelessWidget {
             ),
           ],
         ),
-        clipBehavior: Clip
-            .antiAlias, // Rasmni burchaklardan chiqib ketmasligi uchun qirqamiz
-        // Poster uslub: rasm butun kartani to'ldiradi, pastda qora gradient +
-        // oq yozuv ("Barcha xizmatlar" kartalari bilan bir xil).
-        child: Stack(
-          fit: StackFit.expand,
+        clipBehavior: Clip.antiAlias,
+        // Rasm YUQORIDA (to'liq ko'rinadi, qirqilmaydi), yozuv PASTDA alohida
+        // tasmada — rasm yozuv paneli ostida qolib ketmaydi.
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            bgImage != null
-                ? Image.asset(bgImage!, fit: BoxFit.cover)
-                : Container(
-                    color: isDark
-                        ? Color.lerp(const Color(0xFF1E293B), color, 0.15)
-                        : Color.lerp(Colors.white, color, 0.1),
-                    child: Icon(icon, color: color, size: 34),
-                  ),
-            Positioned(
-              left: 0,
-              right: 0,
-              bottom: 0,
-              child: Container(
-                padding: const EdgeInsets.fromLTRB(12, 28, 12, 12),
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Colors.transparent,
-                      Colors.black.withValues(alpha: 0.45),
-                      Colors.black.withValues(alpha: 0.94),
-                    ],
-                    stops: const [0.0, 0.4, 1.0],
-                  ),
-                ),
-                child: Text(
-                  label.tr,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w800,
-                    fontSize: 16,
-                    height: 1.1,
-                    color: Colors.white,
-                    shadows: [Shadow(color: Colors.black54, blurRadius: 5)],
-                  ),
+            Expanded(
+              child: bgImage != null
+                  // cover — rasm yuqori qismni butunlay to'ldiradi (cheti/chegarasi
+                  // ko'rinmaydi). Yozuv pastда alohida bo'lgani uchun subyekt bekilmaydi.
+                  ? SizedBox(
+                      width: double.infinity,
+                      child: Image.asset(bgImage!, fit: BoxFit.cover),
+                    )
+                  : Center(child: Icon(icon, color: color, size: 34)),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(12, 4, 12, 10),
+              child: Text(
+                label,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontWeight: FontWeight.w800,
+                  fontSize: 14.5,
+                  height: 1.1,
+                  color: isDark ? Colors.white : const Color(0xFF1E293B),
                 ),
               ),
             ),

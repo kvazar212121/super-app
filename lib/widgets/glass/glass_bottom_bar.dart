@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../../theme/glass_tokens.dart';
 
 class GlassBottomBar extends StatelessWidget {
@@ -8,11 +9,21 @@ class GlassBottomBar extends StatelessWidget {
   final ValueChanged<int> onTap;
   final List<GlassNavItem> items;
 
+  /// Maxsus MARKAZIY orb (AiHub) indeksi — harakatlanuvchi, ko'zga tashlanadigan
+  /// dumaloq tugma. -1 bo'lsa hech qaysi element maxsus emas.
+  final int centerIndex;
+
+  /// Orbni BOSIB TURGANDA (long-press) — ovoz rejimi (AiHub'ni startVoice bilan
+  /// ochish). Bir marta bosish esa oddiy onTap (chat).
+  final VoidCallback? onCenterLongPress;
+
   const GlassBottomBar({
     super.key,
     required this.currentIndex,
     required this.onTap,
     required this.items,
+    this.centerIndex = -1,
+    this.onCenterLongPress,
   });
 
   @override
@@ -78,6 +89,16 @@ class GlassBottomBar extends StatelessWidget {
                     children: List.generate(items.length, (i) {
                       final item = items[i];
                       final selected = i == currentIndex;
+                      if (i == centerIndex) {
+                        return Expanded(
+                          child: _AiOrb(
+                            item: item,
+                            selected: selected,
+                            onTap: () => onTap(i),
+                            onLongPress: onCenterLongPress,
+                          ),
+                        );
+                      }
                       return Expanded(
                         child: _NavButton(
                           item: item,
@@ -102,6 +123,128 @@ class GlassNavItem {
   final String label;
 
   const GlassNavItem({required this.icon, required this.label});
+}
+
+/// AiHub markaziy orbi — jonli (breathing) gradient dumaloq tugma.
+/// 1-bosqich: bir marta bosilganda AiHub chat ochiladi (onTap).
+/// Keyingi bosqichda bosib-turib ovoz rejimi qo'shiladi.
+class _AiOrb extends StatefulWidget {
+  final GlassNavItem item;
+  final bool selected;
+  final VoidCallback onTap;
+  final VoidCallback? onLongPress;
+
+  const _AiOrb({
+    required this.item,
+    required this.selected,
+    required this.onTap,
+    this.onLongPress,
+  });
+
+  @override
+  State<_AiOrb> createState() => _AiOrbState();
+}
+
+class _AiOrbState extends State<_AiOrb> with SingleTickerProviderStateMixin {
+  late final AnimationController _c;
+
+  @override
+  void initState() {
+    super.initState();
+    // Uzluksiz "nafas olish" animatsiyasi (scale + porlash).
+    _c = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1600),
+    )..repeat(reverse: true);
+  }
+
+  @override
+  void dispose() {
+    _c.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    const c1 = Color(0xFF6366F1); // indigo
+    const c2 = Color(0xFF22D3EE); // cyan — "AI" ohangi
+    const accent = Color(0xFF3B82F6);
+    final inactive = GlassTokens.secondaryText(context);
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: widget.onTap,
+        onLongPress: widget.onLongPress == null
+            ? null
+            : () {
+                HapticFeedback.mediumImpact();
+                widget.onLongPress!();
+              },
+        borderRadius: BorderRadius.circular(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            AnimatedBuilder(
+              animation: _c,
+              builder: (context, _) {
+                final t = _c.value; // 0..1
+                return Transform.scale(
+                  scale: 1.0 + 0.07 * t,
+                  child: Container(
+                    width: 42,
+                    height: 42,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      // Orbning o'z ranglariga mos ikki qatlamli porlash
+                      // (indigo + cyan) — jonli "nafas" bilan pulslaydi.
+                      boxShadow: [
+                        BoxShadow(
+                          color: c1.withValues(alpha: 0.32 + 0.30 * t),
+                          blurRadius: 10 + 10 * t,
+                          spreadRadius: 0.5 + 1.5 * t,
+                        ),
+                        BoxShadow(
+                          color: c2.withValues(alpha: 0.16 + 0.22 * t),
+                          blurRadius: 14 + 12 * t,
+                          spreadRadius: 0.0 + 1.0 * t,
+                        ),
+                      ],
+                    ),
+                    // Iridescent sphere video (animatsiyali WebP, to'liq loop —
+                    // barcha kadrlar) — doira shaklida kesilgan.
+                    child: ClipOval(
+                      child: Image.asset(
+                        'assets/images/ai_orb.webp',
+                        width: 42,
+                        height: 42,
+                        fit: BoxFit.cover,
+                        gaplessPlayback: true,
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+            const SizedBox(height: 2),
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(
+                widget.item.label,
+                style: TextStyle(
+                  fontSize: 10.5,
+                  fontWeight: widget.selected
+                      ? FontWeight.w700
+                      : FontWeight.w600,
+                  color: widget.selected ? accent : inactive,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }
 
 class _NavButton extends StatelessWidget {

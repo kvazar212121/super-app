@@ -56,29 +56,36 @@ async def ai_chat(
     )
     user_msg_clean = emoji_pattern.sub(r'', user_msg).strip()
 
-    # Chat provayderi — admin panelдан (DB) tanlanadi, aks holda env (CHAT_PROVIDER)
+    # Chat provayderi — admin panelдан (DB) tanlanadi, aks holda env (CHAT_PROVIDER).
+    # settings_service DB'ga murojaat qiladi — xato bo'lsa 500 emas, lokal fallback.
     from app.services import settings_service
-    _chat_url, _chat_key, _chat_model = settings_service.resolve_ai(
-        feature="chat",
-        env_provider=settings.chat_provider,
-        keys={
-            "openai": settings.openai_api_key,
-            "groq": settings.groq_api_key,
-            "deepseek": settings.deepseek_api_key,
-        },
-        default_models={
-            "openai": settings.openai_chat_model,
-            "groq": settings.groq_model,
-            "deepseek": settings.deepseek_chat_model,
-        },
-    )
+    try:
+        _chat_url, _chat_key, _chat_model = settings_service.resolve_ai(
+            feature="chat",
+            env_provider=settings.chat_provider,
+            keys={
+                "openai": settings.openai_api_key,
+                "groq": settings.groq_api_key,
+                "deepseek": settings.deepseek_api_key,
+            },
+            default_models={
+                "openai": settings.openai_chat_model,
+                "groq": settings.groq_model,
+                "deepseek": settings.deepseek_chat_model,
+            },
+        )
+        # Admin paneldan tahrirlangan prompt bo'lsa o'shani, aks holda standart
+        custom_prompt = (settings_service.get("ai_chat_prompt", "") or "").strip()
+    except Exception as e:
+        logger.error(
+            f"ai_chat settings/provider resolve error: {e}. Falling back to local parse."
+        )
+        return await fallback_local_parse(user_msg_clean, current_user.id, db)
 
     if not _chat_key:
         return await fallback_local_parse(user_msg_clean, current_user.id, db)
 
     current_time_str = datetime.now(timezone.utc).isoformat()
-    # Admin paneldan tahrirlangan prompt bo'lsa o'shani, aks holda standart promptni ishlatamiz
-    custom_prompt = (settings_service.get("ai_chat_prompt", "") or "").strip()
     active_prompt = custom_prompt if custom_prompt else SYSTEM_PROMPT
     if "{current_time}" not in active_prompt:
         active_prompt += "\n\nHozirgi sana va vaqt (UTC): {current_time}"

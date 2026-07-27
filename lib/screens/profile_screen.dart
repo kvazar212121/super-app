@@ -12,6 +12,7 @@ import '../theme/glass_tokens.dart';
 import '../l10n/locale_controller.dart';
 import 'auth/auth_gate_screen.dart';
 import 'premium/premium_screen.dart';
+import 'orders_screen.dart';
 import 'support/support_center_screen.dart';
 import '../config/app_config.dart';
 
@@ -25,9 +26,10 @@ class ProfileScreen extends StatelessWidget {
     final user = provider.user;
 
     return GlassScaffold(
-      embeddedInShell: true,
+      // Endi header'dagi (yuqori o'ng) profil tugmasidan alohida route sifatida
+      // ochiladi — o'z MeshBackground foni + orqaga tugmasi kerak.
+      showBackButton: true,
       title: 'Profil',
-      actions: const [],
       body: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 100),
         child: Column(
@@ -39,6 +41,8 @@ class ProfileScreen extends StatelessWidget {
             _buildProfileHeader(context, user, auth.isAuthenticated),
             const SizedBox(height: 20),
             if (auth.isAuthenticated) ...[
+              _buildOrdersBanner(context),
+              const SizedBox(height: 20),
               _buildPremiumBanner(context, user),
               const SizedBox(height: 20),
               if (user.isProvider) ...[
@@ -276,6 +280,73 @@ class ProfileScreen extends StatelessWidget {
                 ],
               ),
             ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// Buyurtmalar paneli — Premium banner o'lchamida, undan yuqorida turadi.
+  /// Bosilganda buyurtmalar ro'yxati (OrdersScreen) ochiladi.
+  Widget _buildOrdersBanner(BuildContext context) {
+    return GestureDetector(
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const OrdersScreen()),
+      ),
+      child: Container(
+        padding: const EdgeInsets.all(18),
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            colors: [Color(0xFF6366F1), Color(0xFF4F46E5)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(GlassTokens.radiusLg),
+          boxShadow: [
+            BoxShadow(
+              color: const Color(0xFF6366F1).withValues(alpha: 0.35),
+              blurRadius: 18,
+              offset: const Offset(0, 8),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.2),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Icon(
+                Icons.receipt_long,
+                color: Colors.white,
+                size: 26,
+              ),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Buyurtmalarim'.tr,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    'Faol va o\'tgan buyurtmalar'.tr,
+                    style: const TextStyle(color: Colors.white70, fontSize: 13),
+                  ),
+                ],
+              ),
+            ),
+            const Icon(Icons.chevron_right, color: Colors.white, size: 24),
           ],
         ),
       ),

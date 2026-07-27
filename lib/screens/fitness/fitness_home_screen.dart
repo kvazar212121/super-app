@@ -268,9 +268,45 @@ class _FitnessHomeScreenState extends State<FitnessHomeScreen> {
               ),
             ),
           ],
+          if (steps == 0) ...[
+            const SizedBox(height: 10),
+            GestureDetector(
+              onTap: _enableSteps,
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.2),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(LucideIcons.footprints,
+                        color: Colors.white, size: 16),
+                    const SizedBox(width: 8),
+                    Flexible(
+                      child: Text(
+                        'Qadam sanagichni yoqing'.tr,
+                        style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
         ],
       ),
     );
+  }
+
+  Future<void> _enableSteps() async {
+    await _steps.enable();
+    if (mounted) setState(() {});
   }
 
   Widget _energyStat(IconData icon, String value, String label) {
