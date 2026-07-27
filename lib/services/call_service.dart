@@ -102,6 +102,14 @@ class CallService extends ChangeNotifier {
   Timer? _pingTimer;
   static const Duration _pingInterval = Duration(seconds: 20);
 
+  // ── ICE tiklash (media yo'li uzilib qolganda qayta ulash) ──
+  // Kim offer yaratgan (chaqiruvchi) — faqat SHU tomon ICE restart boshlaydi
+  // (ikkala tomon bir vaqtda offer yasab "glare" bo'lmasligi uchun).
+  bool _isOfferer = false;
+  Timer? _iceRecoveryTimer;
+  int _iceRestartAttempts = 0;
+  static const int _maxIceRestartAttempts = 5;
+
   // ICE servers (backenddan olinadi)
   List<Map<String, dynamic>> _iceServers = [
     {"urls": "stun:stun.l.google.com:19302"},
@@ -249,14 +257,18 @@ class CallService extends ChangeNotifier {
   /// Avtomatik qayta ulanish
   void _scheduleReconnect() {
     _stopPing();
-    if (_reconnectAttempts >= _maxReconnectAttempts) {
+    // Qo'ng'iroq davomida HECH QACHON taslim bo'lmaymiz — aloqa uzluksiz bo'lishi
+    // shart. Faqat qo'ng'iroqdan tashqarida cheklovga rioya qilamiz.
+    if (!_inCall && _reconnectAttempts >= _maxReconnectAttempts) {
       debugPrint('WebSocket: Maksimal qayta ulanish urinishlari tugadi');
       return;
     }
 
     _reconnectTimer?.cancel();
+    // Qo'ng'iroqда tez qayta urinamiz (maks 5s), aks holda 30s gacha.
+    final int maxDelay = _inCall ? 5 : 30;
     final delay = Duration(
-      seconds: (2 * (_reconnectAttempts + 1)).clamp(2, 30),
+      seconds: (2 * (_reconnectAttempts + 1)).clamp(2, maxDelay),
     );
     _reconnectAttempts++;
 
@@ -589,22 +601,38 @@ class CallService extends ChangeNotifier {
 
     _peerConnection?.onIceConnectionState = (RTCIceConnectionState state) {
       debugPrint('ICE ulanish holati: $state');
-      if (state == RTCIceConnectionState.RTCIceConnectionStateConnected) {
+      if (state == RTCIceConnectionState.RTCIceConnectionStateConnected ||
+          state == RTCIceConnectionState.RTCIceConnectionStateCompleted) {
+        // Media yo'li tiklandi — tiklash hisoblagichlarini nolga qaytaramiz.
+        _iceRecoveryTimer?.cancel();
+        _iceRecoveryTimer = null;
+        _iceRestartAttempts = 0;
         _isConnecting = false;
         if (!_inCall) {
           _startCallTimer();
         }
         notifyListeners();
-      } else if (state == RTCIceConnectionState.RTCIceConnectionStateFailed ||
-          state == RTCIceConnectionState.RTCIceConnectionStateDisconnected) {
-        debugPrint('ICE ulanish uzildi yoki muvaffaqiyatsiz');
-        // Qisqa vaqtda qayta ulanishga urinish yoki tugatish
-        if (state == RTCIceConnectionState.RTCIceConnectionStateFailed) {
-          endCall(sendSignal: true);
-          if (onError != null) {
-            onError!('Ulanish muvaffaqiyatsiz');
+      } else if (state == RTCIceConnectionState.RTCIceConnectionStateDisconnected) {
+        // Vaqtincha uzilish — ko'pincha o'zi tiklanadi. 4s kutamiz, tiklanmasa
+        // ICE restart qilamiz. Qo'ng'iroqni UZMAYMIZ.
+        debugPrint('ICE vaqtincha uzildi — tiklanishini kutamiz');
+        _isConnecting = true;
+        notifyListeners();
+        _iceRecoveryTimer?.cancel();
+        _iceRecoveryTimer = Timer(const Duration(seconds: 4), () {
+          final st = _peerConnection?.iceConnectionState;
+          if (_inCall &&
+              st != RTCIceConnectionState.RTCIceConnectionStateConnected &&
+              st != RTCIceConnectionState.RTCIceConnectionStateCompleted) {
+            _attemptIceRestart();
           }
-        }
+        });
+      } else if (state == RTCIceConnectionState.RTCIceConnectionStateFailed) {
+        // To'liq uzildi — darrov ICE restart (qo'ng'iroqni saqlab qolishga urinamiz).
+        debugPrint('ICE muvaffaqiyatsiz — ICE restart urinamiz');
+        _isConnecting = true;
+        notifyListeners();
+        _attemptIceRestart();
       }
     };
 
@@ -755,6 +783,7 @@ class CallService extends ChangeNotifier {
   /// Offer yaratish va yuborish
   Future<void> processOffer() async {
     if (_peerConnection != null) return;
+    _isOfferer = true; // men chaqiruvchi — ICE restartni men boshlaydigan tomonман
     try {
       await _createPeerConnection();
       final Map<String, dynamic> offerSdpConstraints = {
@@ -773,6 +802,68 @@ class CallService extends ChangeNotifier {
     } catch (e) {
       debugPrint('processOffer xatolik: $e');
       endCall(sendSignal: true);
+    }
+  }
+
+  /// Media yo'li uzilганda ICE'ni qayta ishga tushiradi — qo'ng'iroqni UZMASDAN.
+  /// Faqat chaqiruvchi (offerer) yangi offer yuboradi; javob bergan tomon qarshi
+  /// tomondан yangi offer kelishini kutadi (glare bo'lmasligi uchun).
+  Future<void> _attemptIceRestart() async {
+    if (!_inCall || _peerConnection == null) return;
+
+    // WS uzilган bo'lsa — qo'ng'iroq davomida uzluksiz qayta ulanamiz. Signal
+    // (offer) navbatga tushib, ulanishi bilanoq yuboriladi.
+    _ensureWsAlive();
+
+    if (!_isOfferer) {
+      // Javob bergan tomon: yangi offer WS orqali keladi, shунга tayyor turamiz.
+      debugPrint('ICE tiklash: offer kutilyapti (men javob beruvchi tomonман)');
+      return;
+    }
+
+    if (_iceRestartAttempts >= _maxIceRestartAttempts) {
+      debugPrint('ICE restart limiti tugadi — qo\'ng\'iroq uziladi');
+      onError?.call('Aloqa tiklanmadi');
+      endCall(sendSignal: true);
+      return;
+    }
+    _iceRestartAttempts++;
+    debugPrint('ICE restart #$_iceRestartAttempts');
+
+    try {
+      final offer = await _peerConnection!.createOffer({
+        'mandatory': {
+          'IceRestart': true,
+          'OfferToReceiveAudio': true,
+          'OfferToReceiveVideo': false,
+        },
+        'optional': [],
+      });
+      await _peerConnection!.setLocalDescription(offer);
+      sendSignal('offer', {'sdp': offer.sdp, 'type': offer.type});
+    } catch (e) {
+      debugPrint('ICE restart xatolik: $e');
+    }
+
+    // Yordam bermasa — biroздан keyin yana urinamiz (limitgacha).
+    _iceRecoveryTimer?.cancel();
+    _iceRecoveryTimer = Timer(const Duration(seconds: 6), () {
+      final st = _peerConnection?.iceConnectionState;
+      if (_inCall &&
+          st != RTCIceConnectionState.RTCIceConnectionStateConnected &&
+          st != RTCIceConnectionState.RTCIceConnectionStateCompleted) {
+        _attemptIceRestart();
+      }
+    });
+  }
+
+  /// WS uzilган bo'lsa qayta ulanishni boshlaydi (qo'ng'iroq davomida hech qachon
+  /// taslim bo'lmaymiz — urinish hisoblagichini nolga qaytaramiz).
+  void _ensureWsAlive() {
+    if (!_wsConnected) {
+      _reconnectAttempts = 0;
+      _reconnectTimer?.cancel();
+      connectWebSocket();
     }
   }
 
@@ -834,7 +925,15 @@ class CallService extends ChangeNotifier {
     _remoteUserName = senderName;
 
     try {
-      await _createPeerConnection();
+      // MUHIM: peer connection allaqachon bor bo'lsa — bu ICE restart (qayta
+      // kelishuv) offeri. Uni QAYTA YARATMAYMIZ (aks holda mavjud aloqa buziladi),
+      // balki mavjud connection ustida yangi remote description o'rnatamiz.
+      final bool renegotiation = _peerConnection != null;
+      if (!renegotiation) {
+        _isOfferer = false; // men javob beruvchi tomonман
+        await _createPeerConnection();
+      }
+
       await _peerConnection?.setRemoteDescription(
         RTCSessionDescription(offerData['sdp'], offerData['type']),
       );
@@ -855,13 +954,19 @@ class CallService extends ChangeNotifier {
 
       sendSignal('answer', {'sdp': answer.sdp, 'type': answer.type});
 
-      _inCall = true;
-      _isConnecting = false;
-      _startCallTimer();
+      if (!renegotiation) {
+        _inCall = true;
+        _isConnecting = false;
+        _startCallTimer();
+      }
       notifyListeners();
     } catch (e) {
       debugPrint('_handleOffer xatolik: $e');
-      endCall(sendSignal: true);
+      // Renegotiation (ICE restart) xato bersa qo'ng'iroqni UZMAYMIZ — mavjud
+      // aloqa hali tirik bo'lishi mumkin. Faqat dastlabki offer xato bersa uzamiz.
+      if (_peerConnection == null) {
+        endCall(sendSignal: true);
+      }
     }
   }
 
@@ -944,6 +1049,10 @@ class CallService extends ChangeNotifier {
   void endCall({bool sendSignal = true}) {
     _ringTimeout?.cancel();
     _ackTimeout?.cancel();
+    _iceRecoveryTimer?.cancel();
+    _iceRecoveryTimer = null;
+    _iceRestartAttempts = 0;
+    _isOfferer = false;
     _calleeAcked = false;
     if (sendSignal && _remoteUserId != null) {
       this.sendSignal('end_call', {});
