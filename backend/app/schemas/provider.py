@@ -1,6 +1,7 @@
 from datetime import datetime
 from typing import Optional
 from pydantic import BaseModel, Field
+from sqlalchemy import inspect as sa_inspect
 
 
 class ProviderOut(BaseModel):
@@ -25,12 +26,30 @@ class ProviderOut(BaseModel):
 
     model_config = {"from_attributes": False}
 
+    @staticmethod
+    def _category_key(p) -> Optional[str]:
+        """`p.category.key` ni XAVFSIZ o'qiydi.
+
+        Async sessiyada yuklanmagan bog'lanishga murojaat lazy-load (IO) chaqiradi
+        va MissingGreenlet → 500 beradi. Shuning uchun avval bog'lanish yuklangan
+        (loaded) ekanini tekshiramiz; yuklanmagan bo'lsa category_key=None bo'ladi
+        (endpoint yiqilmaydi). Kerakli joyda selectinload(Provider.category) bilan
+        oldindan yuklanadi.
+        """
+        try:
+            if "category" in sa_inspect(p).unloaded:
+                return None
+        except Exception:
+            pass  # ORM obyekti bo'lmasa (masalan test dublyori) — odatdagidek o'qiymiz
+        cat = getattr(p, "category", None)
+        return cat.key if cat else None
+
     @classmethod
     def from_provider(cls, p) -> "ProviderOut":
         return cls(
             id=p.id,
             category_id=p.category_id,
-            category_key=p.category.key if getattr(p, "category", None) else None,
+            category_key=cls._category_key(p),
             name=p.name,
             address=p.address,
             phone=p.phone,

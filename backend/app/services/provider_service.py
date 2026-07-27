@@ -69,10 +69,17 @@ class ProviderService:
 
     @staticmethod
     async def get_by_id(db: AsyncSession, provider_id: int) -> Provider:
+        from sqlalchemy.orm import selectinload
+
         result = await db.execute(
-            select(Provider).where(
-                Provider.id == provider_id, Provider.is_active == True
-            )
+            # category EAGER yuklanadi: ProviderOut.from_provider p.category.key ni
+            # o'qiydi — async sessiyada lazy-load MissingGreenlet (500) beradi.
+            # populate_existing: identity map'да "yalang'och" nusxa qolgan bo'lsa ham
+            # bog'lanish qayta yuklanadi.
+            select(Provider)
+            .options(selectinload(Provider.category))
+            .where(Provider.id == provider_id, Provider.is_active == True)
+            .execution_options(populate_existing=True)
         )
         p = result.scalar_one_or_none()
         if not p:
