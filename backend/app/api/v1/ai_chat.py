@@ -19,10 +19,10 @@ from app.core.limiter import limiter
 from app.db.session import get_db
 from app.models.user import User
 from app.services.ai_agent import (
-    SYSTEM_PROMPT,
     TOOLS,
     ChatRequest,
     ChatResponse,
+    build_system_prompt,
     handle_tool_call,
     fallback_local_parse,
 )
@@ -86,7 +86,9 @@ async def ai_chat(
         return await fallback_local_parse(user_msg_clean, current_user.id, db)
 
     current_time_str = datetime.now(timezone.utc).isoformat()
-    active_prompt = custom_prompt if custom_prompt else SYSTEM_PROMPT
+    # (custom yoki standart) prompt + DB'dagi DINAMIK kategoriyalar ro'yxati —
+    # AI search_providers'ga har doim ANIQ category_key uzatishi uchun.
+    active_prompt = await build_system_prompt(db, base=custom_prompt or None)
     if "{current_time}" not in active_prompt:
         active_prompt += "\n\nHozirgi sana va vaqt (UTC): {current_time}"
     system_prompt_formatted = active_prompt.replace("{current_time}", current_time_str)
