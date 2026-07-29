@@ -15,6 +15,10 @@ from app.models.category import Category
 router = APIRouter(prefix="/calls", tags=["calls"])
 logger = logging.getLogger(__name__)
 
+# WS orqali yuborilgan chaqiruv necha soniyada tasdiqlanmasa zaxira FCM push
+# yuboriladi (ilova fonda to'xtatilgan bo'lishi mumkin).
+FALLBACK_PUSH_DELAY = 5.0
+
 async def get_user_from_token(token: str):
     if not token:
         raise Exception("No token provided")
@@ -201,43 +205,48 @@ async def websocket_call_endpoint(websocket: WebSocket, token: str):
                 "data": data.get("data", {})
             }
             
+            # Qurilma chaqiruvni oldi (WS yoki FCM) — zaxira pushni bekor qilamiz.
+            if msg_type == "call_ack":
+                await manager.clear_pending_ack(target_id, user.id)
+
             success = await manager.send_personal_message(payload, target_id)
+
+            if success and msg_type == "call_init":
+                # Soket TIRIK, lekin ilova fonda to'xtatilgan bo'lishi mumkin —
+                # u holda xabar qayta ishlanmaydi va telefon jiringlamaydi.
+                # WhatsApp kabi: qisqa vaqt tasdiq (ack) kutamiz, kelmasa FCM
+                # push bilan qurilmani uyg'otamiz.
+                await manager.mark_pending_ack(user.id, target_id)
+                asyncio.create_task(
+                    _fallback_push_if_no_ack(user.id, target_id, _call_push_data(user, data))
+                )
+
             if not success and msg_type in ["call_init", "offer"]:
                 # Target ilovasi YOPIQ (WebSocket ulanmagan) — FCM push orqali uyg'otamiz.
                 # Flutter background handler 'incoming_call' data'sini olib CallKit chiqaradi (jiringlaydi).
                 pushed = 0
                 try:
-                    import asyncio as _asyncio
                     from app.services.notification_service import NotificationService
-                    # Zakaz/kelishuv maydonlarini ham yuboramiz — ilova YOPIQ bo'lsa
-                    # ham force-switch va kelishuv oqimi ishlashi uchun (call_init'dagi
-                    # data: category / to_role / intent / call_id).
-                    inner = data.get("data", {}) or {}
-                    pushed = await _asyncio.to_thread(
+                    pushed = await asyncio.to_thread(
                         NotificationService.push_data_to_user,
                         target_id,
-                        {
-                            "type": "incoming_call",
-                            "caller_id": str(user.id),
-                            "caller_name": f"{user.name} {user.surname}",
-                            "category": str(inner.get("category") or ""),
-                            "to_role": str(inner.get("to_role") or ""),
-                            "intent": str(inner.get("intent") or ""),
-                            "call_id": str(inner.get("call_id") or ""),
-                        },
+                        _call_push_data(user, data),
                     )
                 except Exception as _e:
                     logger.error(f"Call FCM push xatosi: {_e}")
 
                 if pushed:
-                    # Qurilmasi bor — push yuborildi (CallKit jiringlaydi). Caller UZMAYDI, KUTADI:
-                    # foydalanuvchi javob berganda 'call_accepted' keladi va odatdagi oqim davom etadi.
+                    # Push HAQIQATAN qurilmaga yetdi (CallKit jiringlaydi). Caller UZMAYDI,
+                    # KUTADI: javob berilganda 'call_accepted' keladi.
+                    logger.info(f"Chaqiruv FCM bilan yuborildi: {user.id} → {target_id} ({pushed} qurilma)")
                     await manager.send_personal_message({
                         "type": "callee_ringing",
                         "target_id": target_id
                     }, user.id)
                 else:
-                    # Umuman qurilma yo'q — haqiqatan ulanib bo'lmaydi. Caller uzadi.
+                    # Hech bir qurilmaga yetmadi (token yo'q yoki hammasi o'lik) —
+                    # abonent haqiqatan tarmoqda emas. Caller uzadi va shuni ko'radi.
+                    logger.info(f"Chaqiruv yetkazilmadi (qurilma yo'q/oflayn): {user.id} → {target_id}")
                     await manager.send_personal_message({
                         "type": "target_offline",
                         "target_id": target_id
@@ -250,6 +259,55 @@ async def websocket_call_endpoint(websocket: WebSocket, token: str):
         manager.disconnect(user.id)
     finally:
         hb_task.cancel()
+
+
+def _call_push_data(user: User, data: dict) -> dict:
+    """Chaqiruv uchun FCM data'si (CallKit shu maydonlar bilan chiqadi).
+
+    Zakaz/kelishuv maydonlari ham yuboriladi — ilova YOPIQ bo'lsa ham force-switch
+    va kelishuv oqimi ishlashi uchun (call_init'dagi category/to_role/intent/call_id).
+    """
+    inner = data.get("data", {}) or {}
+    return {
+        "type": "incoming_call",
+        "caller_id": str(user.id),
+        "caller_name": f"{user.name} {user.surname}",
+        "category": str(inner.get("category") or ""),
+        "to_role": str(inner.get("to_role") or ""),
+        "intent": str(inner.get("intent") or ""),
+        "call_id": str(inner.get("call_id") or ""),
+    }
+
+
+async def _fallback_push_if_no_ack(caller_id: int, target_id: int, push_data: dict) -> None:
+    """WS orqali yuborilgan chaqiruv tasdiqlanmasa — FCM push bilan uyg'otadi.
+
+    Ilova fonda to'xtatilganda soket "tirik" ko'rinadi, lekin xabar qayta
+    ishlanmaydi. Qurilma chaqiruvni olsa 'call_ack' keladi va belgi o'chadi —
+    bu holatда push YUBORILMAYDI (ikki marta jiringlamaydi).
+    """
+    try:
+        await asyncio.sleep(FALLBACK_PUSH_DELAY)
+        if not await manager.is_pending_ack(caller_id, target_id):
+            return  # qurilma tasdiqladi — hammasi joyida
+        from app.services.notification_service import NotificationService
+        pushed = await asyncio.to_thread(
+            NotificationService.push_data_to_user, target_id, push_data
+        )
+        await manager.clear_pending_ack(caller_id, target_id)
+        logger.info(
+            f"Zaxira push: {caller_id} → {target_id} "
+            f"(WS tasdiqlanmadi, {pushed} qurilmaga yuborildi)"
+        )
+        if not pushed:
+            # Uyg'otib ham bo'lmadi — chaqiruvchiga rostini aytamiz.
+            await manager.send_personal_message(
+                {"type": "target_offline", "target_id": target_id}, caller_id
+            )
+    except asyncio.CancelledError:
+        raise
+    except Exception as e:
+        logger.error(f"Zaxira push xatosi ({caller_id}→{target_id}): {e}")
 
 
 async def _heartbeat(websocket: WebSocket, user_id: int):
@@ -297,6 +355,10 @@ async def ack_incoming_call(
     Backend chaqiruvchiga 'call_ack' yetkazadi — u shunda ringback ("tuut")
     chaladi. Ack kelmasa chaqiruvchi "abonent aloqada emas" deb uzadi.
     """
+    # Qurilma chaqiruvni oldi — zaxira FCM push endi kerak emas (ikki marta
+    # jiringlamasligi uchun belgini o'chiramiz).
+    await manager.clear_pending_ack(data.caller_id, current_user.id)
+
     delivered = await manager.send_personal_message({
         "type": "call_ack",
         "sender_id": current_user.id,

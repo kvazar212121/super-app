@@ -28,6 +28,9 @@ PRESENCE_PREFIX = "call_presence:"  # har user uchun alohida TTL kaliti
 # Agar telefon o'lsa/tarmoq uzilsa — ping kelmaydi, kalit ~60s ичида o'chadi va
 # user "offline" bo'ladi → chaqiruvchi to'g'ri FCM push yuboradi (telefon jiringlaydi).
 PRESENCE_TTL = 60
+# "Chaqiruv yuborildi, qurilma tasdig'i kutilmoqda" belgisi
+PENDING_ACK_PREFIX = "call_pending_ack:"
+PENDING_ACK_TTL = 30
 
 
 class CallManager:
@@ -89,6 +92,37 @@ class CallManager:
             await self._redis.delete(f"{PRESENCE_PREFIX}{user_id}")
         except Exception:
             pass
+
+    # ── "Ack kutilmoqda" belgisi (zaxira FCM push uchun) ─────────────────────
+    # Soket TIRIK ko'rinishi mumkin, lekin ilova fonda to'xtatilgan bo'lsa xabarni
+    # qayta ishlamaydi — telefon jiringlamaydi. Shuning uchun WS orqali yetkazgach
+    # qisqa vaqt ack kutamiz; kelmasa FCM push bilan qurilmani uyg'otamiz.
+
+    async def mark_pending_ack(self, caller_id: int, target_id: int) -> None:
+        r = await self._get_redis()
+        if r:
+            try:
+                await r.set(f"{PENDING_ACK_PREFIX}{target_id}:{caller_id}", "1", ex=PENDING_ACK_TTL)
+            except Exception:
+                pass
+
+    async def clear_pending_ack(self, caller_id: int, target_id: int) -> None:
+        r = await self._get_redis()
+        if r:
+            try:
+                await r.delete(f"{PENDING_ACK_PREFIX}{target_id}:{caller_id}")
+            except Exception:
+                pass
+
+    async def is_pending_ack(self, caller_id: int, target_id: int) -> bool:
+        """True — WS orqali yuborilgan, lekin qurilma hali tasdiqlamagan."""
+        r = await self._get_redis()
+        if not r:
+            return False
+        try:
+            return bool(await r.exists(f"{PENDING_ACK_PREFIX}{target_id}:{caller_id}"))
+        except Exception:
+            return False
 
     async def _deliver_local(self, message: dict, user_id: int) -> bool:
         websocket = self.active_connections.get(user_id)

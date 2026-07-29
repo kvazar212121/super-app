@@ -15,6 +15,11 @@ class CallKitService {
   String? _currentCallId;
   final Uuid _uuid = const Uuid();
 
+  // Takroriy chaqiruvni aniqlash uchun: kalit (call_id yoki caller) → ko'rsatilgan vaqt.
+  // Bitta chaqiruv WebSocket va zaxira FCM push orqali ikki marta kelishi mumkin.
+  final Map<String, DateTime> _recentCalls = {};
+  static const Duration _dedupeWindow = Duration(seconds: 40);
+
   // UI eventlari uchun callbacklar. `extra` — CallKit'ga solingan qo'shimcha
   // ma'lumot (category/to_role/intent/call_id) — sovuq startda kerak.
   Function(String callerId, String callerName, Map<String, dynamic> extra)?
@@ -77,6 +82,20 @@ class CallKitService {
     String? intent,
     String? callId,
   }) async {
+    // DEDUPE: bitta chaqiruv ikki yo'ldan kelishi mumkin (WebSocket va zaxira
+    // FCM push). Qisqa vaqt ичida AYNAN shu chaqiruvchidan kelgan takroriy
+    // so'rovni e'tiborsiz qoldiramiz — aks holda ikki marta jiringlaydi.
+    final key = callId != null && callId.isNotEmpty ? callId : 'caller:$callerId';
+    final now = DateTime.now();
+    final shownAt = _recentCalls[key];
+    if (shownAt != null && now.difference(shownAt) < _dedupeWindow) {
+      debugPrint('CallKit: takroriy chaqiruv e\'tiborsiz qoldirildi ($key)');
+      return;
+    }
+    _recentCalls[key] = now;
+    // Eski yozuvlarni tozalab turamiz (xotira o'smasin)
+    _recentCalls.removeWhere((_, t) => now.difference(t) > _dedupeWindow * 2);
+
     _currentCallId = _uuid.v4();
 
     try {

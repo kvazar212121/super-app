@@ -62,7 +62,7 @@ class NotificationService:
             tokens = [t.token for t in db.query(DeviceToken.token).filter(DeviceToken.user_id == user_id).all()]
             if not tokens:
                 return
-            invalid = fcm_service.send_notification_to_tokens(tokens, title, body, data)
+            _sent, invalid = fcm_service.send_notification_to_tokens(tokens, title, body, data)
             if invalid:
                 db.query(DeviceToken).filter(DeviceToken.token.in_(invalid)).delete(synchronize_session=False)
                 db.commit()
@@ -71,7 +71,12 @@ class NotificationService:
     def push_data_to_user(user_id: int, data: dict) -> int:
         """Faqat-data (silent) push — qo'ng'iroq/CallKit kabi holatlar uchun.
 
-        Foydalanuvchining nechta qurilma token'i borligini qaytaradi (0 = umuman qurilma yo'q).
+        HAQIQATAN yetkazilgan qurilmalar sonini qaytaradi (0 = hech qaysi qurilmaga
+        yetmadi → chaqiruvchiga "abonent tarmoqda emas" deyiladi).
+
+        MUHIM: avval token SONI qaytarilardi — token o'lik bo'lsa ham "yetkazildi"
+        deb hisoblanardi. Natijada chaqiruvchida "jiringlayapti" ko'rinardi, narigi
+        telefon esa umuman jiringlamasdi.
         """
         from app.services import fcm_service
         from app.models.device_token import DeviceToken
@@ -81,11 +86,12 @@ class NotificationService:
                 tokens = [t.token for t in db.query(DeviceToken.token).filter(DeviceToken.user_id == user_id).all()]
                 if not tokens:
                     return 0
-                invalid = fcm_service.send_data_to_tokens(tokens, data)
+                sent, invalid = fcm_service.send_data_to_tokens(tokens, data)
                 if invalid:
                     db.query(DeviceToken).filter(DeviceToken.token.in_(invalid)).delete(synchronize_session=False)
                     db.commit()
-                return len(tokens)
+                    logger.info(f"FCM: user={user_id} uchun {len(invalid)} o'lik token o'chirildi")
+                return sent
         except Exception as e:
             logger.error(f"push_data_to_user failed (user={user_id}): {e}")
             return 0

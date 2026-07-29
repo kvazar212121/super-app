@@ -39,30 +39,60 @@ def _init() -> bool:
     return _available
 
 
-def _send_multicast(tokens, message_builder) -> list:
-    """Berilgan token'larga xabar yuboradi. Yaroqsiz (o'chirilishi kerak) token'lar ro'yxatini qaytaradi."""
+def _is_dead_token(exc) -> bool:
+    """Token butunlay yaroqsizmi (bazadan o'chirilishi kerakmi).
+
+    firebase-admin aniq XATO SINFLARINI beradi — matn bo'yicha tekshirish
+    ishonchsiz (avval shu sabab o'lik token'lar tozalanmay yig'ilib qolgan edi):
+      • UnregisteredError   — ilova o'chirilgan / token eskirgan (code=NOT_FOUND)
+      • SenderIdMismatchError — token boshqa Firebase loyihasiniki
+      • InvalidArgumentError — token formati buzuq (code=INVALID_ARGUMENT)
+    Vaqtinchalik xatolar (UnavailableError, InternalError, QuotaExceeded) —
+    O'CHIRILMAYDI, keyingi urinishda ishlashi mumkin.
+    """
+    from firebase_admin import messaging, exceptions as fb_exc
+
+    if isinstance(exc, (messaging.UnregisteredError, messaging.SenderIdMismatchError)):
+        return True
+    if isinstance(exc, fb_exc.InvalidArgumentError):
+        return True
+    return str(getattr(exc, "code", "")).upper() in {"NOT_FOUND", "INVALID_ARGUMENT"}
+
+
+def _send_multicast(tokens, message_builder) -> tuple[int, list]:
+    """Token'larga xabar yuboradi.
+
+    Qaytaradi: (muvaffaqiyatli yetkazilganlar soni, o'chirilishi kerak token'lar).
+    MUHIM: muvaffaqiyat SONI kerak — chaqiruvда "qurilma bor" degani "push yetdi"
+    degani emas. Aks holda hamma token o'lik bo'lsa ham chaqiruvchiga "jiringlayapti"
+    deb ko'rsatiladi, narigi telefon esa jim turadi.
+    """
     if not _init() or not tokens:
-        return []
+        return 0, []
     from firebase_admin import messaging
     invalid = []
     try:
         msg = message_builder(messaging, tokens)
         resp = messaging.send_each_for_multicast(msg)
         for idx, r in enumerate(resp.responses):
-            if not r.success:
-                err = getattr(r.exception, "code", "") or str(r.exception)
-                # Ro'yxatdan o'tmagan/yaroqsiz token — bazadan o'chirish kerak
-                if "registration-token-not-registered" in str(err) or "invalid-argument" in str(err).lower():
-                    invalid.append(tokens[idx])
+            if not r.success and _is_dead_token(r.exception):
+                invalid.append(tokens[idx])
         if resp.failure_count:
-            logger.info("FCM: %d yuborildi, %d xato", resp.success_count, resp.failure_count)
+            logger.info(
+                "FCM: %d yuborildi, %d xato (%d o'lik token o'chiriladi)",
+                resp.success_count, resp.failure_count, len(invalid),
+            )
+        return resp.success_count, invalid
     except Exception as e:
         logger.error(f"FCM yuborishda xato: {e}")
-    return invalid
+        return 0, invalid
 
 
-def send_notification_to_tokens(tokens, title: str, body: str, data: dict | None = None) -> list:
-    """Oddiy bildirishnoma (title+body) — Android yopiq holatda ham ovoz bilan ko'rsatadi."""
+def send_notification_to_tokens(tokens, title: str, body: str, data: dict | None = None) -> tuple[int, list]:
+    """Oddiy bildirishnoma (title+body) — Android yopiq holatda ham ovoz bilan ko'rsatadi.
+
+    Qaytaradi: (yetkazilganlar soni, o'chirilishi kerak token'lar).
+    """
     def build(messaging, toks):
         return messaging.MulticastMessage(
             tokens=toks,
@@ -83,8 +113,11 @@ def send_notification_to_tokens(tokens, title: str, body: str, data: dict | None
     return _send_multicast(tokens, build)
 
 
-def send_data_to_tokens(tokens, data: dict) -> list:
-    """Faqat-data (silent) xabar — Flutter background handler qabul qiladi (masalan qo'ng'iroq/CallKit)."""
+def send_data_to_tokens(tokens, data: dict) -> tuple[int, list]:
+    """Faqat-data (silent) xabar — Flutter background handler qabul qiladi (masalan qo'ng'iroq/CallKit).
+
+    Qaytaradi: (yetkazilganlar soni, o'chirilishi kerak token'lar).
+    """
     def build(messaging, toks):
         return messaging.MulticastMessage(
             tokens=toks,
