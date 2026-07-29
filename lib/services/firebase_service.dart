@@ -112,9 +112,39 @@ class FirebaseService {
     if (t == null || !ApiService().hasToken) return;
     try {
       await ApiService().registerFcmToken(t, platform: 'android');
+      _lastSyncedAt = DateTime.now();
       if (kDebugMode) debugPrint('FCM token serverga saqlandi');
     } catch (e) {
       if (kDebugMode) debugPrint('FCM token saqlashda xato: $e');
     }
+  }
+
+  // Token oxirgi marta serverga tasdiqlangan vaqt (ilova ishlagan davrда).
+  DateTime? _lastSyncedAt;
+  static const Duration _syncInterval = Duration(hours: 12);
+
+  /// Token eskirган bo'lsa (yoki umuman yuborilmagan bo'lsa) qayta yuboradi.
+  ///
+  /// NEGA KERAK: FCM token'ning O'ZI tez-tez o'zgarmaydi (Firebase uni faqat
+  /// ilova qayta o'rnatilганda / ma'lumot tozalanганda / uzoq muddat ishlatilmasa
+  /// yangilaydi — buni onTokenRefresh tutadi). Lekin serverdagi NUSXA yo'qolishi
+  /// mumkin (o'lik deb tozalangan, DB muammosi, boshqa hisobga ko'chgan). Shunda
+  /// ilova YOPIQ holatда chaqiruv/bildirishnoma kelmay qoladi. Shu sabab tokenni
+  /// vaqti-vaqti bilan (12 soatда bir) qayta tasdiqlaymiz — arzon va ishonchli.
+  /// Token'ni ATAYLAB o'chirib qayta yaratish TAVSIYA ETILMAYDI: yo'lда ketayotgan
+  /// xabarlar yo'qoladi va foyda bermaydi.
+  Future<void> syncTokenIfStale() async {
+    if (!ApiService().hasToken) return;
+    final last = _lastSyncedAt;
+    if (last != null && DateTime.now().difference(last) < _syncInterval) return;
+    // Token hali olinmagan bo'lsa (init paytida xato bo'lgan) — qayta so'raymiz.
+    if (fcmToken == null) {
+      try {
+        fcmToken = await FirebaseMessaging.instance.getToken();
+      } catch (_) {
+        return;
+      }
+    }
+    await syncToken();
   }
 }

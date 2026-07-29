@@ -6,6 +6,7 @@ import '../providers/auth_provider.dart';
 import '../config/provider_category_config.dart';
 import '../app_navigator.dart';
 import '../services/call_service.dart';
+import '../services/firebase_service.dart';
 import '../services/callkit_service.dart';
 import '../services/connectivity_service.dart';
 import 'main_screen.dart';
@@ -102,6 +103,10 @@ class _RootShellState extends State<RootShell> with WidgetsBindingObserver {
     if (state == AppLifecycleState.resumed) {
       if (mounted && context.read<AuthProvider>().isAuthenticated) {
         CallService().connectWebSocket();
+        // Push token'ni ham vaqti-vaqti bilan serverga tasdiqlaymiz — shunda
+        // token yo'qolib qolsa (server tozalagan, xato bilan o'chgan) o'zi
+        // tiklanadi va ilova YOPIQ holatda chaqiruv/bildirishnoma kelaveradi.
+        FirebaseService().syncTokenIfStale();
       }
     }
   }

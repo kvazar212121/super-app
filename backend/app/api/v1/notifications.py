@@ -1,3 +1,5 @@
+from datetime import datetime, timezone
+
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel, Field
 from sqlalchemy import select
@@ -34,6 +36,10 @@ async def register_token(
         # Token boshqa/shu userга bog'langan bo'lsa — joriy userга ko'chiramiz
         existing.user_id = current_user.id
         existing.platform = data.platform or existing.platform
+        # updated_at'ni ATAYLAB yangilaymiz: bu "qurilma oxirgi marta qachon
+        # o'zini tasdiqlagan" degani. Aks holda hech bir maydon o'zgarmasa
+        # SQLAlchemy UPDATE yubormaydi va onupdate ishlamay, sana eskirib qoladi.
+        existing.updated_at = datetime.now(timezone.utc)
     else:
         db.add(DeviceToken(user_id=current_user.id, token=data.token, platform=data.platform))
     await db.commit()
