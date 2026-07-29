@@ -138,6 +138,11 @@ class _CallScreenState extends State<CallScreen> with TickerProviderStateMixin {
 
   @override
   void dispose() {
+    // Ekranга bog'liq callback'larni tozalaymiz — singleton CallService o'lgan
+    // State'ni (va uning setState'larini) ushlab qolmasin. onCallEnded — ataylab
+    // global qoldiriladi (kelishuv dialogи ekran yopilgandan keyin ham chiqadi).
+    _callService.onCallAnswered = null;
+    _callService.onError = null;
     _pulseController.dispose();
     _ringController.dispose();
     _stopRingingEffects();

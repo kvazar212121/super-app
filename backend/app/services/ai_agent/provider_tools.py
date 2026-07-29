@@ -195,25 +195,69 @@ async def create_booking(db: AsyncSession, user_id: int, args: dict, ctx: dict |
     from app.models.provider import Provider
     from app.models.order import Order, OrderStatus
     from app.services.notification_service import NotificationService
-    provider_id = int(args.get("provider_id"))
+
+    # ── Usta ──
+    try:
+        provider_id = int(args.get("provider_id"))
+    except (TypeError, ValueError):
+        return json.dumps({"status": "error",
+            "message": "provider_id kiritilmagan yoki noto'g'ri."}, ensure_ascii=False), None
     prov = (await db.execute(select(Provider).where(Provider.id == provider_id))).scalar_one_or_none()
     if not prov:
         return '{"status": "error", "message": "Usta topilmadi"}', None
-    price = float(args.get("price") or 0)
-    if price <= 0:
-        price = 50000.0
+
+    # ── Majburiy maydonlarni tekshirish (indamay default QO'YMAYMIZ) ──
+    service_name = (args.get("service_name") or "").strip()
+    if not service_name:
+        return json.dumps({"status": "error",
+            "message": "Xizmat nomi (service_name) kiritilmagan."}, ensure_ascii=False), None
+
     try:
-        booking_date = datetime.fromisoformat(
-            (args.get("date") or "").replace("Z", "+00:00")
-        ).replace(tzinfo=None)
+        price = float(args.get("price"))
+    except (TypeError, ValueError):
+        return json.dumps({"status": "error",
+            "message": "Narx (price) kiritilmagan yoki noto'g'ri."}, ensure_ascii=False), None
+    if price <= 0:
+        return json.dumps({"status": "error",
+            "message": "Narx (price) 0 dan katta bo'lishi kerak."}, ensure_ascii=False), None
+
+    date_raw = (args.get("date") or "").strip()
+    if not date_raw:
+        return json.dumps({"status": "error",
+            "message": "Sana/vaqt (date) kiritilmagan."}, ensure_ascii=False), None
+    try:
+        booking_date = datetime.fromisoformat(date_raw.replace("Z", "+00:00")).replace(tzinfo=None)
     except Exception:
-        booking_date = datetime.now()
+        return json.dumps({"status": "error",
+            "message": "Sana/vaqt (date) formati noto'g'ri — ISO 8601 kutiladi (masalan '2026-07-07T15:00:00Z')."},
+            ensure_ascii=False), None
+
+    address = (args.get("address") or "").strip()
+    if not address:
+        return json.dumps({"status": "error",
+            "message": "Manzil (address) kiritilmagan."}, ensure_ascii=False), None
+
+    # ── TASDIQ DARVOZASI: confirm=true bo'lmasa buyurtma YARATILMAYDI ──
+    if not args.get("confirm"):
+        return json.dumps({
+            "status": "needs_confirmation",
+            "summary": {
+                "provider": prov.name,
+                "service": service_name,
+                "date": booking_date.isoformat(),
+                "price": price,
+                "address": address,
+            },
+            "message": "Bron tafsilotlarini foydalanuvchiga ko'rsatib tasdiqini so'rang, "
+                       "so'ng create_booking'ni confirm=true bilan qayta chaqiring.",
+        }, ensure_ascii=False), None
+
     order = Order(
         user_id=user_id,
         category_id=prov.category_id,
         provider_id=prov.id,
-        service_name=args.get("service_name") or "Xizmat",
-        address=args.get("address") or "Manzil kiritilmagan",
+        service_name=service_name,
+        address=address,
         date=booking_date,
         price=price,
         status=OrderStatus.pending,

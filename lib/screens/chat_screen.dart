@@ -52,8 +52,13 @@ class _ChatScreenState extends State<ChatScreen>
 
   late AnimationController _pulseController;
   late Animation<double> _pulseAnim;
-  // Mikrofon ovoz balandligi (ekvalayzer chiziqlarini jonlantirish uchun).
-  double _soundLevel = 0;
+  // Mikrofon ovoz balandligi (modal ekvalayzerni jonlantirish uchun). ValueNotifier
+  // orqali — butun ekranни qayta chizmasdan silliq yangilanadi.
+  final ValueNotifier<double> _soundLevelVN = ValueNotifier<double>(0.0);
+  // Ovoz yozish paytida ko'rinadigan modal overlay (gapirib bo'lgach yo'qoladi).
+  OverlayEntry? _voiceOverlay;
+  // dispose'дан keyin kech kelган speech callback disposed notifier'ga yozmasin.
+  bool _disposed = false;
 
   @override
   void initState() {
@@ -116,10 +121,15 @@ class _ChatScreenState extends State<ChatScreen>
 
   @override
   void dispose() {
+    _disposed = true;
+    // Avval ovoz oqimini to'xtatamiz — keyingi onSoundLevelChange callback'lar
+    // kelmasligi uchun; so'ng notifier'ni yo'q qilamiz (disposed'ga yozilmasin).
+    _speech.cancel();
+    _hideVoiceOverlay();
     _pulseController.dispose();
     _textController.dispose();
     _scrollController.dispose();
-    _speech.cancel();
+    _soundLevelVN.dispose();
     super.dispose();
   }
 
@@ -197,29 +207,41 @@ class _ChatScreenState extends State<ChatScreen>
       }
     }
 
+    // Ruxsat/init oynasi ochiqligida ekrandan chiqilgan bo'lishi mumkin —
+    // await'lardan keyin mounted tekshiramiz (aks holda setState/Overlay crash).
+    if (!mounted) return;
     setState(() {
       _voiceState = _VoiceState.recording;
       _textController.clear();
     });
     _pulseController.repeat(reverse: true);
+    _showVoiceOverlay();
 
     try {
       await _speech.listen(
         onResult: (result) {
-          if (mounted) {
-            setState(() {
-              _textController.text = result.recognizedWords;
-            });
+          if (!mounted) return;
+          setState(() {
+            _textController.text = result.recognizedWords;
+          });
+          // Ovoz avtomatik tugaganда (yakuniy natija) — tugmani qayta bosmasdan
+          // matnni o'zi yuboramiz.
+          if (result.finalResult) {
+            _stopRecordingAndSend();
           }
         },
         onSoundLevelChange: (level) {
-          // Ekvalayzer chiziqlari shu qiymatga qarab jonlanadi.
-          if (mounted) setState(() => _soundLevel = level);
+          // Modal ekvalayzer shu qiymatga qarab jonlanadi (setState shart emas).
+          if (_disposed) return;
+          _soundLevelVN.value = level;
         },
         localeId: _speechLocale,
         listenMode: stt.ListenMode.dictation,
         cancelOnError: false,
         partialResults: true,
+        // 3 soniya sukunatдан keyin avtomatik to'xtaydi (qo'lda bosish shart emas).
+        pauseFor: const Duration(seconds: 3),
+        listenFor: const Duration(seconds: 30),
       );
     } catch (e) {
       debugPrint('Speech listen exception: $e');
@@ -228,6 +250,11 @@ class _ChatScreenState extends State<ChatScreen>
   }
 
   void _stopRecordingAndSend() async {
+    // Bir vaqtда bir necha marta chaqirilishi mumkin (onResult final + onStatus
+    // notListening + tugma). Faqat "recording" holatдан bir marta o'tamiz.
+    if (_voiceState != _VoiceState.recording) return;
+    setState(() => _voiceState = _VoiceState.processing);
+    _hideVoiceOverlay();
     _pulseController.stop();
     _pulseController.reset();
 
@@ -245,10 +272,6 @@ class _ChatScreenState extends State<ChatScreen>
       return;
     }
 
-    setState(() {
-      _voiceState = _VoiceState.processing;
-    });
-
     await _sendMessage(text: text, isVoice: true);
 
     if (mounted) {
@@ -257,6 +280,7 @@ class _ChatScreenState extends State<ChatScreen>
   }
 
   void _resetVoiceState() {
+    _hideVoiceOverlay();
     if (mounted) {
       setState(() {
         _voiceState = _VoiceState.idle;
@@ -266,16 +290,34 @@ class _ChatScreenState extends State<ChatScreen>
     }
   }
 
+  /// Ovoz yozish modalини ko'rsatadi (jonli mic + ekvalayzer).
+  void _showVoiceOverlay() {
+    if (_voiceOverlay != null) return;
+    final overlay = Overlay.of(context);
+    _voiceOverlay = OverlayEntry(
+      builder: (_) => _VoiceListeningOverlay(
+        soundLevel: _soundLevelVN,
+        onStop: _stopRecordingAndSend,
+      ),
+    );
+    overlay.insert(_voiceOverlay!);
+  }
+
+  void _hideVoiceOverlay() {
+    _voiceOverlay?.remove();
+    _voiceOverlay = null;
+  }
+
   void _scrollToBottom() {
-    if (_scrollController.hasClients) {
-      Future.delayed(const Duration(milliseconds: 100), () {
-        _scrollController.animateTo(
-          _scrollController.position.maxScrollExtent,
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeOut,
-        );
-      });
-    }
+    Future.delayed(const Duration(milliseconds: 100), () {
+      // Kechikish davomida ekran yopilgan bo'lishi mumkin — qayta tekshiramiz.
+      if (!mounted || !_scrollController.hasClients) return;
+      _scrollController.animateTo(
+        _scrollController.position.maxScrollExtent,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOut,
+      );
+    });
   }
 
   Future<void> _sendMessage({String? text, bool isVoice = false}) async {
@@ -684,41 +726,6 @@ class _ChatScreenState extends State<ChatScreen>
     );
   }
 
-  /// Ovozga reaksiya qiluvchi ekvalayzer — recording paytida input ustida.
-  Widget _buildEqualizer() {
-    final norm = (_soundLevel.clamp(0, 10)) / 10.0; // 0..1
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: AnimatedBuilder(
-        animation: _pulseController,
-        builder: (context, _) {
-          final t = _pulseController.value;
-          return Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: List.generate(11, (i) {
-              final phase = i * 0.6;
-              final wave = 0.5 + 0.5 * math.sin(t * 2 * math.pi + phase);
-              final h = 6.0 + (8 + norm * 34) * wave;
-              return Container(
-                width: 4,
-                height: h,
-                margin: const EdgeInsets.symmetric(horizontal: 3),
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [Color(0xFF8B5CF6), Color(0xFF3B82F6)],
-                  ),
-                  borderRadius: BorderRadius.circular(3),
-                ),
-              );
-            }),
-          );
-        },
-      ),
-    );
-  }
-
   Widget _buildInputArea() {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final isRecording = _voiceState == _VoiceState.recording;
@@ -740,7 +747,6 @@ class _ChatScreenState extends State<ChatScreen>
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              if (isRecording) _buildEqualizer(),
               Row(
                 children: [
                   Expanded(
@@ -859,6 +865,227 @@ class _ChatScreenState extends State<ChatScreen>
           ),
         ),
       ),
+    );
+  }
+}
+
+/// Ovoz yozish paytида ko'rinadigan modal overlay — jonli mic + ekvalayzer.
+/// Foydalanuvchi gapirib bo'lgach (avto-tugash) o'zi yopiladi; tashqariga yoki
+/// yashil tugmaga bosib ham yakunlash mumkin.
+class _VoiceListeningOverlay extends StatefulWidget {
+  final ValueNotifier<double> soundLevel;
+  final VoidCallback onStop;
+
+  const _VoiceListeningOverlay({
+    required this.soundLevel,
+    required this.onStop,
+  });
+
+  @override
+  State<_VoiceListeningOverlay> createState() => _VoiceListeningOverlayState();
+}
+
+class _VoiceListeningOverlayState extends State<_VoiceListeningOverlay>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _c;
+
+  @override
+  void initState() {
+    super.initState();
+    _c = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1400),
+    )..repeat();
+  }
+
+  @override
+  void dispose() {
+    _c.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Positioned.fill(
+      child: GestureDetector(
+        onTap: widget.onStop, // tashqariga bosish ham yakunlaydi
+        child: Material(
+          color: Colors.black.withValues(alpha: 0.62),
+          child: Center(
+            child: GestureDetector(
+              onTap: () {}, // kartaga bosish holatni o'zgartirmasin
+              child: Container(
+                margin: const EdgeInsets.symmetric(horizontal: 36),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 28, vertical: 34),
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [Color(0xFF241C57), Color(0xFF3B2F8F)],
+                  ),
+                  borderRadius: BorderRadius.circular(28),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFF6366F1).withValues(alpha: 0.45),
+                      blurRadius: 40,
+                      spreadRadius: 2,
+                    ),
+                  ],
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    _buildMic(),
+                    const SizedBox(height: 26),
+                    _buildBars(),
+                    const SizedBox(height: 24),
+                    Text(
+                      'Tinglayapman...'.tr,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 17,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      "So'zlang — tugagach o'zi yoziladi".tr,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Colors.white.withValues(alpha: 0.7),
+                        fontSize: 12.5,
+                      ),
+                    ),
+                    const SizedBox(height: 26),
+                    GestureDetector(
+                      onTap: widget.onStop,
+                      child: Container(
+                        width: 62,
+                        height: 62,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          gradient: const LinearGradient(
+                            colors: [Color(0xFF22C55E), Color(0xFF16A34A)],
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: const Color(0xFF22C55E)
+                                  .withValues(alpha: 0.5),
+                              blurRadius: 18,
+                            ),
+                          ],
+                        ),
+                        child: const Icon(LucideIcons.check,
+                            color: Colors.white, size: 28),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMic() {
+    return ValueListenableBuilder<double>(
+      valueListenable: widget.soundLevel,
+      builder: (context, level, _) {
+        final norm = (level.clamp(0.0, 10.0)) / 10.0;
+        return AnimatedBuilder(
+          animation: _c,
+          builder: (context, _) {
+            return SizedBox(
+              width: 150,
+              height: 150,
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  // Kengayuvchi halqalar
+                  ...List.generate(2, (r) {
+                    final p = (_c.value + r * 0.5) % 1.0;
+                    return Container(
+                      width: 80 + p * 62,
+                      height: 80 + p * 62,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: Colors.white.withValues(alpha: (1 - p) * 0.45),
+                          width: 2,
+                        ),
+                      ),
+                    );
+                  }),
+                  // Ovoz balandligiga qarab kattalashuvchi mic doirasi
+                  Container(
+                    width: 74 + norm * 16,
+                    height: 74 + norm * 16,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: const LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [Color(0xFF8B5CF6), Color(0xFF6366F1)],
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0xFF8B5CF6).withValues(alpha: 0.6),
+                          blurRadius: 22 + norm * 22,
+                          spreadRadius: norm * 4,
+                        ),
+                      ],
+                    ),
+                    child: const Icon(LucideIcons.mic,
+                        color: Colors.white, size: 32),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildBars() {
+    return ValueListenableBuilder<double>(
+      valueListenable: widget.soundLevel,
+      builder: (context, level, _) {
+        final norm = (level.clamp(0.0, 10.0)) / 10.0;
+        return AnimatedBuilder(
+          animation: _c,
+          builder: (context, _) {
+            final t = _c.value;
+            return Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: List.generate(21, (i) {
+                final dist = (i - 10).abs() / 10.0; // 0 markaz .. 1 chet
+                final center = 1 - dist; // markaz balandroq
+                final phase = i * 0.55;
+                final wave = 0.5 + 0.5 * math.sin(t * 2 * math.pi + phase);
+                final h = 5.0 + (10 + norm * 42) * wave * (0.35 + 0.65 * center);
+                return Container(
+                  width: 4,
+                  height: h,
+                  margin: const EdgeInsets.symmetric(horizontal: 2.5),
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [Color(0xFFC4B5FD), Color(0xFF60A5FA)],
+                    ),
+                    borderRadius: BorderRadius.circular(3),
+                  ),
+                );
+              }),
+            );
+          },
+        );
+      },
     );
   }
 }

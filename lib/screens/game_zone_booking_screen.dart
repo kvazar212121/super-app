@@ -30,6 +30,12 @@ class _GameZoneBookingScreenState extends State<GameZoneBookingScreen> {
     _recalc();
   }
 
+  @override
+  void dispose() {
+    _notesCtrl.dispose();
+    super.dispose();
+  }
+
   void _recalc() {
     double price = zone.basePricePerHour;
     for (int i in _selectedAmenities) {

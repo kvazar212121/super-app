@@ -986,52 +986,10 @@ class _MapSectionState extends State<_MapSection> {
           ),
         );
         break;
-      case ServiceHubKind.bozorchi:
-        markers.addAll(
-          data.masters.map(
-            (s) => Marker(
-              point: LatLng(s.latitude, s.longitude),
-              width: 120,
-              height: 55,
-              child: _MapPin(
-                icon: LucideIcons.shoppingCart,
-                color: accentColor,
-                label: s.name,
-                onTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) =>
-                        UniversalBookingScreen(kind: ServiceHubKind.bozorchi),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        );
-        break;
-      case ServiceHubKind.oshxona:
-        markers.addAll(
-          data.masters.map(
-            (s) => Marker(
-              point: LatLng(s.latitude, s.longitude),
-              width: 120,
-              height: 55,
-              child: _MapPin(
-                icon: LucideIcons.utensils,
-                color: accentColor,
-                label: s.name,
-                onTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) =>
-                        UniversalBookingScreen(kind: ServiceHubKind.oshxona),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        );
-        break;
+      // bozorchi / oshxona markerlari quyidagi umumiy case'da
+      // `data.genericProviders`дан chiziladi (backend shu yerга yuklaydi).
+      // Avval `data.masters`дан chizilib, u bo'sh bo'lgani uchun xaritada
+      // hech qanday marker ko'rinmayotgan edi.
       case ServiceHubKind.gameZona:
       case ServiceHubKind.sportMaydon:
       case ServiceHubKind.bozorchi:

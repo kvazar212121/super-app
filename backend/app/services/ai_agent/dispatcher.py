@@ -45,5 +45,15 @@ async def handle_tool_call(
             await db.rollback()
         except Exception:
             pass
-        logger.error(f"Tool execution failed: {e}")
-        return '{"status": "error", "message": "Amalni bajarishda xatolik yuz berdi."}', None
+        # Xato nomi + qisqa sababni model'ga qaytaramiz — u tuzatib qayta urinishi mumkin.
+        func_name = None
+        try:
+            func_name = tool_call["function"]["name"]
+        except Exception:
+            pass
+        logger.error(f"Tool execution failed ({func_name}): {e}")
+        return json.dumps({
+            "status": "error",
+            "tool": func_name,
+            "message": f"{type(e).__name__}: {e}",
+        }, ensure_ascii=False), None

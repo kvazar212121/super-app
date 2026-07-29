@@ -61,11 +61,13 @@ class _AlarmHomeScreenState extends State<AlarmHomeScreen> {
       for (final a in alarms) {
         await NotificationHelper().scheduleAlarm(a);
       }
+      if (!mounted) return;
       setState(() {
         _alarms = alarms;
         _loading = false;
       });
     } catch (e) {
+      if (!mounted) return;
       setState(() {
         _error = 'Yuklashda xatolik. Internetni tekshiring.'.tr;
         _loading = false;

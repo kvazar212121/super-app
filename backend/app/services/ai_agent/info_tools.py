@@ -5,16 +5,52 @@ import httpx
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
+# Qo'llab-quvvatlanadigan shaharlar: normalizatsiya kaliti → (ko'rsatiladigan nom, lat, lng).
+# So'ralган shahar shu yerда bo'lsagina o'sha shahar koordinatasi ishlatiladi —
+# Tashkent ma'lumotini boshqa shahar nomi bilan YORLIQLAMAYMIZ.
+_WEATHER_CITIES = {
+    "toshkent": ("Toshkent", 41.2995, 69.2401),
+    "tashkent": ("Toshkent", 41.2995, 69.2401),
+    "samarqand": ("Samarqand", 39.6270, 66.9750),
+    "samarkand": ("Samarqand", 39.6270, 66.9750),
+    "buxoro": ("Buxoro", 39.7680, 64.4210),
+    "bukhara": ("Buxoro", 39.7680, 64.4210),
+    "andijon": ("Andijon", 40.7830, 72.3440),
+    "andijan": ("Andijon", 40.7830, 72.3440),
+    "namangan": ("Namangan", 41.0011, 71.6725),
+    "farg'ona": ("Farg'ona", 40.3860, 71.7870),
+    "fargona": ("Farg'ona", 40.3860, 71.7870),
+    "fergana": ("Farg'ona", 40.3860, 71.7870),
+    "nukus": ("Nukus", 42.4600, 59.6170),
+    "qarshi": ("Qarshi", 38.8600, 65.7990),
+    "termiz": ("Termiz", 37.2240, 67.2780),
+}
+_WEATHER_SUPPORTED = [
+    "Toshkent", "Samarqand", "Buxoro", "Andijon",
+    "Namangan", "Farg'ona", "Nukus", "Qarshi", "Termiz",
+]
+
+
 async def get_weather(db: AsyncSession, user_id: int, args: dict, ctx: dict | None = None) -> tuple[str, dict | None]:
-    city = args.get("city") or "Tashkent"
+    raw = (args.get("city") or "Toshkent").strip()
+    key = raw.lower().replace("‘", "'").replace("’", "'")
+    entry = _WEATHER_CITIES.get(key)
+    if entry is None:
+        # Bilib turib noto'g'ri yorliq bermaymiz — shahar qo'llab-quvvatlanmasligini rostini aytamiz.
+        return json.dumps({
+            "status": "unsupported_city",
+            "message": f"'{raw}' shahri uchun ob-havo ma'lumoti hozircha mavjud emas.",
+            "supported_cities": _WEATHER_SUPPORTED,
+        }, ensure_ascii=False), None
+    label, lat, lng = entry
     try:
         async with httpx.AsyncClient(timeout=10.0) as client:
             resp = await client.get(
-                "https://api.open-meteo.com/v1/forecast?latitude=41.2995&longitude=69.2401&current_weather=true"
+                f"https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lng}&current_weather=true"
             )
             resp.raise_for_status()
             cur = resp.json().get("current_weather", {})
-            return json.dumps({"status": "success", "city": city,
+            return json.dumps({"status": "success", "city": label,
                 "temperature": cur.get("temperature"), "windspeed": cur.get("windspeed")},
                 ensure_ascii=False), None
     except Exception:

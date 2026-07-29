@@ -45,6 +45,9 @@ class CallService extends ChangeNotifier {
   bool _isConnecting = false;
   bool _isRinging = false;
   bool _wsConnected = false;
+  // Single-flight: WebSocket ulanishи bir vaqtда bir necha joydan (RootShell,
+  // MainScreen, AppProvider) chaqirilганда dublikat ochilmasligi uchun.
+  bool _wsConnecting = false;
 
   int? _remoteUserId;
   String? _remoteUserName;
@@ -168,10 +171,24 @@ class CallService extends ChangeNotifier {
   /// WebSocket ga ulanish (signaling uchun)
   Future<void> connectWebSocket() async {
     if (_wsConnected && _channel != null) return;
+    // Dublikat ulanishni oldini olamiz — guard'дан keyingi await'lar davomida
+    // boshqa chaqiruvlar kirib kelmasin (aks holda bir necha channel leak bo'ladi).
+    if (_wsConnecting) return;
+    _wsConnecting = true;
 
-    final token = await ApiService().getToken();
+    // getToken throw qilsa ham _wsConnecting doim tiklanishi shart — aks holda
+    // flag "true" qolib, boshqa ulanishlar butunlay bloklanadi (deadlock).
+    String? token;
+    try {
+      token = await ApiService().getToken();
+    } catch (e) {
+      debugPrint('WebSocket: token olishда xatolik: $e');
+      _wsConnecting = false;
+      return;
+    }
     if (token == null) {
       debugPrint('WebSocket: Token mavjud emas, ulanish bekor qilindi');
+      _wsConnecting = false;
       return;
     }
 
@@ -192,6 +209,7 @@ class CallService extends ChangeNotifier {
     try {
       _channel = WebSocketChannel.connect(uri);
       _wsConnected = true;
+      _wsConnecting = false;
       _reconnectAttempts = 0;
 
       _channel?.stream.listen(
@@ -234,6 +252,7 @@ class CallService extends ChangeNotifier {
     } catch (e) {
       debugPrint('WebSocket ulanish xatoligi: $e');
       _wsConnected = false;
+      _wsConnecting = false;
       _scheduleReconnect();
     }
   }

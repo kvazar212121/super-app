@@ -255,10 +255,9 @@ extension HubDataLoader on HubDataService {
         d.nurses = await getNurseServices();
       case ServiceHubKind.stomatologiya:
         d.dentalClinics = await getDentalClinics();
-      case ServiceHubKind.sportMaydon:
-        d.genericProviders = mockSportFacilities;
-      case ServiceHubKind.gameZona:
-        d.genericProviders = mockGameZones;
+      // sportMaydon / gameZona endi quyidagi umumiy case'да REAL backend'дан
+      // olinadi (fetchProviders) — avval bu yerда mock qiymat berilib, real
+      // ma'lumotга yetib bormayotgan edi.
       case ServiceHubKind.tadbirlar:
         d.genericProviders = mockEventVenues;
         d.events = await getEventPlanners();

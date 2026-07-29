@@ -131,6 +131,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
     setState(() => _isLoading = true);
     try {
       final data = await _api.getShoppingLists();
+      if (!mounted) return;
       setState(() {
         _lists = data
             .map((e) => ShoppingListModel.fromJson(e as Map<String, dynamic>))
@@ -139,7 +140,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
     } catch (e) {
       debugPrint("Error loading shopping lists: $e");
     } finally {
-      setState(() => _isLoading = false);
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
@@ -174,6 +175,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
       final calcItems = res['items'] as List;
       if (calcItems.isNotEmpty) {
         final item = calcItems[0] as Map<String, dynamic>;
+        if (!mounted) return;
         setState(() {
           _currentItems.add(ShoppingListItem.fromJson(item));
           _currentTotal += (item['estimated_price'] as num).toDouble();
@@ -192,7 +194,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
         );
       }
     } finally {
-      setState(() => _isCalculating = false);
+      if (mounted) setState(() => _isCalculating = false);
     }
   }
 
@@ -211,6 +213,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
     try {
       final itemsMap = _currentItems.map((e) => e.toJson()).toList();
       final res = await _api.createShoppingList(name, itemsMap);
+      if (!mounted) return;
       setState(() {
         _lists.insert(0, ShoppingListModel.fromJson(res));
         _currentItems.clear();
@@ -247,6 +250,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
         itemIndex,
         isBought: !item.isBought,
       );
+      if (!mounted) return;
       setState(() {
         _lists[listIndex] = ShoppingListModel.fromJson(updated);
       });
@@ -358,6 +362,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
           actualPrice: result,
           isBought: true,
         );
+        if (!mounted) return;
         setState(() {
           _lists[listIndex] = ShoppingListModel.fromJson(updated);
         });
@@ -371,6 +376,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
     final list = _lists[index];
     try {
       await _api.deleteShoppingList(list.id);
+      if (!mounted) return;
       setState(() => _lists.removeAt(index));
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

@@ -108,10 +108,10 @@ class AiService {
         desiredAccuracy: LocationAccuracy.low,
         timeLimit: const Duration(seconds: 4),
       );
-      if (pos != null) {
-        _cachedPos = pos;
-        _cachedPosAt = now;
-      }
+      // getCurrentPosition null qaytarmaydi (xatoda throw qiladi) — shuning uchun
+      // bu yerда pos doim mavjud.
+      _cachedPos = pos;
+      _cachedPosAt = now;
       return pos;
     } catch (_) {
       return null; // joylashuv bo'lmasa ham chat normal ishlaydi

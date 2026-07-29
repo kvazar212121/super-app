@@ -32,6 +32,12 @@ class _SportFacilityBookingScreenState
     _recalc();
   }
 
+  @override
+  void dispose() {
+    _notesCtrl.dispose();
+    super.dispose();
+  }
+
   void _recalc() {
     double price = field.basePricePerHour;
     for (int i in _selectedAmenities) {

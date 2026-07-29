@@ -152,6 +152,7 @@ class _FitnessHomeScreenState extends State<FitnessHomeScreen> {
         'reminder_time': timeStr,
         'reminder_weekdays': weekdays,
       });
+      if (!mounted) return;
       setState(() => _plan = updated);
       await syncWorkoutReminders(updated);
       if (mounted) {
@@ -171,6 +172,7 @@ class _FitnessHomeScreenState extends State<FitnessHomeScreen> {
       final updated = await _api.updateWorkoutPlan(plan['id'] as int, {
         'reminder_time': null,
       });
+      if (!mounted) return;
       setState(() => _plan = updated);
       await syncWorkoutReminders(updated);
     } catch (e) {

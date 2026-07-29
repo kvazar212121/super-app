@@ -53,19 +53,29 @@ class SimpleCallBookingScreen extends StatelessWidget {
     if (!context.mounted) return;
 
     // Provider'ga ZAKAZ qo'ng'irog'i — kelishuv oqimi ishlashi uchun order intent.
-    await CallService().startCall(
-      providerId,
-      providerName,
-      categoryKey: provider['category_key'] as String?,
-      toRole: 'provider',
-      intent: 'order',
-    );
+    try {
+      await CallService().startCall(
+        providerId,
+        providerName,
+        categoryKey: provider['category_key'] as String?,
+        toRole: 'provider',
+        intent: 'order',
+      );
 
-    if (!context.mounted) return;
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => const CallScreen(isIncoming: false)),
-    );
+      if (!context.mounted) return;
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const CallScreen(isIncoming: false)),
+      );
+    } catch (e) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Qo\'ng\'iroqni boshlab bo\'lmadi: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 
   @override

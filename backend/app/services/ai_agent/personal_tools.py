@@ -30,6 +30,31 @@ async def add_plan(db: AsyncSession, user_id: int, args: dict, ctx: dict | None 
     return '{"status": "success", "message": "Reja muvaffaqiyatli qo\'shildi."}', None
 
 
+async def add_todo(db: AsyncSession, user_id: int, args: dict, ctx: dict | None = None) -> tuple[str, dict | None]:
+    from app.models.todo import Todo
+    title = (args.get("title") or "").strip()
+    if not title:
+        return json.dumps({"status": "error",
+            "message": "Vazifa nomi (title) kiritilmagan."}, ensure_ascii=False), None
+    due_date = None
+    raw_due = args.get("due_date")
+    if raw_due:
+        try:
+            due_date = datetime.fromisoformat(str(raw_due).replace('Z', '+00:00'))
+        except Exception:
+            return json.dumps({"status": "error",
+                "message": "Muddat (due_date) formati noto'g'ri — ISO 8601 kutiladi."}, ensure_ascii=False), None
+    todo = Todo(
+        user_id=user_id,
+        title=title,
+        description=args.get("description", ""),
+        due_date=due_date,
+    )
+    db.add(todo)
+    await db.commit()
+    return '{"status": "success", "message": "Vazifa muvaffaqiyatli qo\'shildi."}', None
+
+
 async def add_finance_record(db: AsyncSession, user_id: int, args: dict, ctx: dict | None = None) -> tuple[str, dict | None]:
     record = FinanceRecord(
         user_id=user_id,
@@ -123,6 +148,7 @@ async def set_alarm(db: AsyncSession, user_id: int, args: dict, ctx: dict | None
 
 HANDLERS = {
     "add_plan": add_plan,
+    "add_todo": add_todo,
     "add_finance_record": add_finance_record,
     "add_shopping_item": add_shopping_item,
     "set_alarm": set_alarm,

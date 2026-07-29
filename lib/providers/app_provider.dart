@@ -227,8 +227,16 @@ class AppProvider extends ChangeNotifier {
       _orders.insert(0, newOrder);
       _knownOrderStatuses[newOrder.id] = newOrder.status;
 
-      final profile = await _api.getMe();
-      _user = UserProfile.fromJson(profile);
+      // Buyurtma allaqachon yaratildi. Profil yangilash (getMe) ALOHIDA try'да —
+      // u xato bersa ham amalni muvaffaqiyatsiz deb hisoblamaymiz (aks holda
+      // buyurtma yaratilgani holda ekranда soxta "xato" chiqib, foydalanuvchi
+      // qayta bosib ikki marta buyurtma bermasligi uchun).
+      try {
+        final profile = await _api.getMe();
+        _user = UserProfile.fromJson(profile);
+      } catch (e) {
+        debugPrint('addOrder: profil yangilashda xato (buyurtma yaratildi): $e');
+      }
       notifyListeners();
     } catch (e) {
       String errMsg = e.toString();

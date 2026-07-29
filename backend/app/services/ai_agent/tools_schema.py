@@ -23,6 +23,22 @@ TOOLS = [
     {
         "type": "function",
         "function": {
+            "name": "add_todo",
+            "description": "Foydalanuvchining SHAXSIY vazifalar (todo) ro'yxatiga yangi vazifa qo'shish (masalan 'kir yuvish', 'kitob o'qish', 'hisobotni yakunlash'). Sana/vaqt shart emas. DIQQAT: bu FAQAT o'zi uchun vazifa — biror USTA/XIZMATNI bron qilish EMAS (buning uchun search_providers→create_booking).",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "title": {"type": "string", "description": "Vazifa nomi yoki qisqacha tavsifi (masalan, 'Kir yuvish')"},
+                    "due_date": {"type": "string", "description": "Ixtiyoriy: ISO 8601 formatidagi muddat (masalan, '2026-06-19T10:00:00Z')"},
+                    "description": {"type": "string", "description": "Vazifa bo'yicha qo'shimcha izoh"}
+                },
+                "required": ["title"]
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
             "name": "add_finance_record",
             "description": "Foydalanuvchi uchun moliyaviy kirim (daromad) yoki chiqim (xarajat) qayd etish.",
             "parameters": {
@@ -94,7 +110,7 @@ TOOLS = [
         "type": "function",
         "function": {
             "name": "create_booking",
-            "description": "Tanlangan ustaga xizmat buyurtmasini (bron) rasmiylashtirish. search_providers'дан keyin, manzil va vaqt aniqlangач chaqiriladi.",
+            "description": "Tanlangan ustaga xizmat buyurtmasini (bron) rasmiylashtirish. search_providers'дан keyin, manzil va vaqt aniqlangач chaqiriladi. IKKI QADAMLI: avval confirm=false (yoki confirmsiz) chaqiring — tool bron xulosasini qaytaradi; foydalanuvchiga tafsilotlarni ko'rsatib tasdiq oling; SO'NGRA confirm=true bilan qayta chaqiring (aynan shundagina buyurtma yaratiladi).",
             "parameters": {
                 "type": "object",
                 "properties": {
@@ -102,7 +118,8 @@ TOOLS = [
                     "service_name": {"type": "string", "description": "Xizmat nomi (masalan 'Soch olish', 'Uy tozalash')"},
                     "date": {"type": "string", "description": "ISO 8601 sana va vaqt (masalan '2026-07-07T15:00:00Z')"},
                     "address": {"type": "string", "description": "Xizmat ko'rsatiladigan manzil"},
-                    "price": {"type": "number", "description": "Kelishilган narx (so'mda). Noma'lum bo'lsa search natijasidagi taxminiy narx."}
+                    "price": {"type": "number", "description": "Kelishilган narx (so'mda). Noma'lum bo'lsa search natijasidagi taxminiy narx."},
+                    "confirm": {"type": "boolean", "description": "Foydalanuvchi bron tafsilotlarini (usta, xizmat, sana, narx, manzil) ko'rib aniq tasdiqlaganда true. Aks holда false (yoki bermang) — tool tasdiq so'rash uchun xulosa qaytaradi."}
                 },
                 "required": ["provider_id", "service_name", "date", "address", "price"]
             }

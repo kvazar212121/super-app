@@ -415,7 +415,7 @@ class _MassageBookingScreenState extends State<MassageBookingScreen> {
               width: double.infinity,
               height: 56,
               child: ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
                   final hour =
                       int.tryParse(_selectedTimeSlot!.split(':')[0]) ?? 9;
                   final minute =
@@ -442,16 +442,29 @@ class _MassageBookingScreenState extends State<MassageBookingScreen> {
                     status: OrderStatus.pending,
                   );
 
-                  context.read<AppProvider>().addOrder(order);
-
-                  Navigator.pop(context);
-                  Navigator.pop(context);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Muvaffaqiyatli band qilindi!'.tr),
-                      backgroundColor: Colors.green,
-                    ),
-                  );
+                  try {
+                    await context.read<AppProvider>().addOrder(order);
+                    if (!context.mounted) return;
+                    Navigator.pop(context);
+                    Navigator.pop(context);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Muvaffaqiyatli band qilindi!'.tr),
+                        backgroundColor: Colors.green,
+                      ),
+                    );
+                  } catch (e) {
+                    if (!context.mounted) return;
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          '${'Buyurtma yuborib bo\'lmadi. Xato:'.tr} $e',
+                        ),
+                        duration: const Duration(seconds: 6),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                  }
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.green[700],

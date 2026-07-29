@@ -58,6 +58,7 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
   Future<void> _loadCustomCategories() async {
     try {
       final prefs = await SharedPreferences.getInstance();
+      if (!mounted) return;
       setState(() {
         _customExpenseCategories =
             prefs.getStringList('customExpenseCategories') ?? [];
@@ -81,6 +82,7 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
       final recordsData = await _api.getFinanceRecords(month: monthStr);
       final plannedData = await _api.getPlannedPayments();
 
+      if (!mounted) return;
       setState(() {
         _stats = FinanceStats.fromJson(statsData);
         _records = (recordsData)
@@ -93,7 +95,7 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
     } catch (e) {
       debugPrint("Error loading finance data: $e");
     } finally {
-      setState(() => _isLoading = false);
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 

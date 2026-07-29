@@ -126,6 +126,7 @@ class _AlarmEditScreenState extends State<AlarmEditScreen> {
       await NotificationHelper().scheduleAlarm(alarm);
       if (mounted) Navigator.of(context).pop(true);
     } catch (e) {
+      if (!mounted) return;
       setState(() => _saving = false);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

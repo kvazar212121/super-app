@@ -124,13 +124,14 @@ class _TodoScreenState extends State<TodoScreen> {
     setState(() => _isLoading = true);
     try {
       final data = await _api.getPlans(date: formatDateForApi(_selectedDate));
+      if (!mounted) return;
       setState(() {
         _plans = data.map((e) => PlanItem.fromJson(e)).toList();
       });
     } catch (e) {
       debugPrint("Error loading plans: $e");
     } finally {
-      setState(() => _isLoading = false);
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
@@ -405,6 +406,7 @@ class _TodoScreenState extends State<TodoScreen> {
                       final selectedDateStr = formatDateForApi(_selectedDate);
                       final newPlanDateStr = formatDateForApi(newPlan.dueDate);
                       if (selectedDateStr == newPlanDateStr) {
+                        if (!mounted) return;
                         setState(() {
                           _plans.add(newPlan);
                           _plans.sort((a, b) => a.dueDate.compareTo(b.dueDate));
@@ -585,7 +587,6 @@ class _TodoScreenState extends State<TodoScreen> {
         itemBuilder: (context, index) {
           final date = _calendarDays[index];
           final isSelected = _isSameDay(date, _selectedDate);
-          final isToday = _isSameDay(date, DateTime.now());
 
           return GestureDetector(
             onTap: () {

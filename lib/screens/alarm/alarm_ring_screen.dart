@@ -359,6 +359,7 @@ class _PhotoMissionState extends State<_PhotoMission> {
         source: ImageSource.camera,
         imageQuality: 80,
       );
+      if (!mounted) return;
       if (picked == null) {
         setState(() => _busy = false);
         return;
@@ -376,6 +377,7 @@ class _PhotoMissionState extends State<_PhotoMission> {
       final path = compressed?.path ?? picked.path;
 
       final result = await _api.verifyAlarmPhoto(path, _targetForAi);
+      if (!mounted) return;
       final matched = result['matched'] == true;
       if (matched) {
         widget.onSolved();
@@ -388,6 +390,7 @@ class _PhotoMissionState extends State<_PhotoMission> {
         });
       }
     } catch (e) {
+      if (!mounted) return;
       setState(() {
         _busy = false;
         _status = 'Xatolik: internetni tekshiring va qayta urinib ko\'ring'.tr;
@@ -517,6 +520,7 @@ class _SpeechMissionState extends State<_SpeechMission> {
           }
         }
       }
+      if (!mounted) return;
       setState(() {});
     } catch (_) {}
   }
