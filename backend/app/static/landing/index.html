@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="HubServis — barcha xizmatlar bir joyda. Sartarosh, usta, tozalash, avto-yordam va yana 19+ xizmat.">
-  <meta name="theme-color" content="#050505">
-  <title>HubServis — Premium Xizmatlar</title>
+  <meta name="theme-color" content="#0A0A0B">
+  <title>HubServis — Barcha xizmatlar bir ilovada</title>
   <link rel="canonical" href="https://hubservis.uz/">
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png">
   <link rel="apple-touch-icon" href="/favicon.png">
@@ -40,358 +40,262 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    /* ══════════════════════════════════════════════════════════════
+       DIZAYN TIZIMI
+       Ranglar — ATIGI 3 TA. Boshqa hamma narsa shu uchtasining
+       shaffofligi (alpha), yangi rang emas.
+         1. --ink     — fon (deyarli qora)
+         2. --paper   — matn (deyarli oq)
+         3. --accent  — yagona urg'u rangi (ilovaning ko'ki bilan bir xil)
+       Shrift o'lchami — ATIGI 4 TA (--fs-display / title / body / small).
+       Ierarxiya o'lcham bilan emas, QALINLIK va RANG bilan beriladi.
+       ══════════════════════════════════════════════════════════════ */
     :root {
-      --bg: #050505;
-      --bg-surface: #101012;
-      --bg-surface-hover: #17171b;
-      --text: #F3F4F6;
-      --text-muted: #9CA3AF;
-      --border: rgba(255, 255, 255, 0.1);
-      --border-hover: rgba(255, 255, 255, 0.28);
-      --metallic: linear-gradient(180deg, #FFFFFF 0%, #D4D4D8 40%, #71717A 100%);
-      --accent1: #6366F1;
-      --accent2: #22D3EE;
-      --accent3: #A855F7;
-      --accent-grad: linear-gradient(120deg, #6366F1, #22D3EE 55%, #A855F7);
-      --accent-glow: 0 0 24px rgba(99,102,241,0.35);
+      /* 1-2-3: uchta rang */
+      --ink: #0A0A0B;
+      --paper: #FAFAFA;
+      --accent: #3B82F6;
+
+      /* Shu uch rangning shaffof variantlari (yangi rang emas) */
+      --paper-70: rgba(250, 250, 250, 0.70);
+      --paper-45: rgba(250, 250, 250, 0.45);
+      --paper-12: rgba(250, 250, 250, 0.12);
+      --paper-06: rgba(250, 250, 250, 0.06);
+      --ink-90: rgba(10, 10, 11, 0.90);
+      --ink-55: rgba(10, 10, 11, 0.55);
+
+      /* To'rtta shrift o'lchami */
+      --fs-display: clamp(2.5rem, 6vw, 4.25rem);
+      --fs-title: clamp(1.5rem, 3vw, 2.125rem);
+      --fs-body: 1.0625rem;
+      --fs-small: 0.875rem;
+
+      /* Bo'shliq (4px qadam) va burchaklar */
+      --sp-1: 8px;  --sp-2: 16px; --sp-3: 24px;
+      --sp-4: 40px; --sp-5: 64px; --sp-6: 96px;
+      --radius: 12px;
+      --radius-pill: 100px;
+      --ease: cubic-bezier(0.16, 1, 0.3, 1);
     }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; color-scheme: dark; }
     body {
-      font-family: 'Inter', system-ui, sans-serif;
-      background-color: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: var(--ink);
+      color: var(--paper);
+      font-size: var(--fs-body);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
       overflow-x: hidden;
-      line-height: 1.5;
     }
+    ::selection { background: var(--accent); color: var(--paper); }
 
-    /* ── Scroll progress bar ── */
-    #progress {
-      position: fixed; top: 0; left: 0; height: 3px; width: 0%;
-      background: var(--accent-grad); z-index: 300;
-      box-shadow: 0 0 12px rgba(34,211,238,0.6);
-      transition: width 0.1s linear;
+    .wrap { max-width: 1120px; margin: 0 auto; padding: 0 var(--sp-3); }
+
+    /* ── Tipografika: har bir daraja aniq bitta o'lchamdan foydalanadi ── */
+    .t-display {
+      font-size: var(--fs-display);
+      font-weight: 700; line-height: 1.05; letter-spacing: -0.035em;
+      text-wrap: balance;
     }
-
-    /* ── Animated aurora background ── */
-    .aurora { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
-    .aurora span {
-      position: absolute; display: block; border-radius: 50%;
-      filter: blur(90px); opacity: 0.5; mix-blend-mode: screen;
+    .t-title {
+      font-size: var(--fs-title);
+      font-weight: 700; line-height: 1.2; letter-spacing: -0.02em;
+      text-wrap: balance;
     }
-    .aurora .a1 { width: 46vw; height: 46vw; left: -8vw; top: -6vw; background: radial-gradient(circle, var(--accent1), transparent 65%); animation: drift1 22s ease-in-out infinite; }
-    .aurora .a2 { width: 40vw; height: 40vw; right: -6vw; top: 8vw; background: radial-gradient(circle, var(--accent2), transparent 65%); animation: drift2 26s ease-in-out infinite; }
-    .aurora .a3 { width: 42vw; height: 42vw; left: 20vw; bottom: -12vw; background: radial-gradient(circle, var(--accent3), transparent 65%); animation: drift3 30s ease-in-out infinite; }
-    @keyframes drift1 { 0%,100%{transform:translate(0,0) scale(1)} 50%{transform:translate(6vw,4vw) scale(1.12)} }
-    @keyframes drift2 { 0%,100%{transform:translate(0,0) scale(1)} 50%{transform:translate(-5vw,6vw) scale(1.08)} }
-    @keyframes drift3 { 0%,100%{transform:translate(0,0) scale(1)} 50%{transform:translate(4vw,-5vw) scale(1.15)} }
+    .t-body { font-size: var(--fs-body); font-weight: 400; }
+    .t-small { font-size: var(--fs-small); font-weight: 500; }
+    .muted { color: var(--paper-70); }
+    .quiet { color: var(--paper-45); }
 
-    /* Background grid effect */
-    body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background-image:
-        linear-gradient(to right, rgba(255,255,255,0.035) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(255,255,255,0.035) 1px, transparent 1px);
-      background-size: 44px 44px;
-      pointer-events: none;
-      z-index: 1;
-      mask-image: radial-gradient(ellipse at center, black 35%, transparent 78%);
-      -webkit-mask-image: radial-gradient(ellipse at center, black 35%, transparent 78%);
-    }
-
-    /* ── Cursor glow ── */
-    .cursor-glow {
-      position: fixed; top: 0; left: 0; width: 420px; height: 420px;
-      margin: -210px 0 0 -210px; border-radius: 50%;
-      background: radial-gradient(circle, rgba(99,102,241,0.12), rgba(34,211,238,0.06) 40%, transparent 70%);
-      pointer-events: none; z-index: 2; transition: opacity 0.4s; opacity: 0;
-      will-change: transform;
-    }
-
-    .wrap { position: relative; z-index: 5; max-width: 1200px; margin: 0 auto; padding: 0 24px; }
-
-    /* Nav */
+    /* ── Navigatsiya ── */
     nav {
       position: sticky; top: 0; z-index: 100;
-      background: rgba(5, 5, 5, 0.55);
-      backdrop-filter: blur(24px);
-      -webkit-backdrop-filter: blur(24px);
+      background: var(--ink-90);
+      backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
       border-bottom: 1px solid transparent;
-      transition: background 0.4s, border-color 0.4s, height 0.4s;
+      transition: border-color 0.3s var(--ease);
     }
-    nav.scrolled { background: rgba(5,5,5,0.82); border-bottom-color: var(--border); }
+    nav.scrolled { border-bottom-color: var(--paper-12); }
     .nav-inner {
-      display: flex; align-items: center; justify-content: space-between;
-      height: 80px; max-width: 1200px; margin: 0 auto; padding: 0 24px;
-      transition: height 0.4s;
+      max-width: 1120px; margin: 0 auto; padding: 0 var(--sp-3);
+      height: 68px; display: flex; align-items: center; justify-content: space-between;
     }
-    nav.scrolled .nav-inner { height: 66px; }
-
-    .logo-container { position: relative; display: inline-block; text-decoration: none; user-select: none; }
-    .logo-text {
-      font-family: 'Sora', sans-serif;
-      font-size: 2.1rem; font-weight: 800; letter-spacing: -1px; text-transform: uppercase;
-      background: var(--metallic);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-      margin: 0; line-height: 1; position: relative; z-index: 2; display: inline-block;
-      filter: drop-shadow(0 4px 6px rgba(0,0,0,0.5));
+    .logo {
+      font-size: var(--fs-body); font-weight: 700;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--paper); text-decoration: none;
     }
-    .logo-arc { position: absolute; top: 50%; left: -5%; width: 110%; height: 150%; transform: translateY(-50%); pointer-events: none; z-index: 3; }
-    .logo-arc path { fill: none; stroke: url(#arcGradient); stroke-width: 3.5; stroke-linecap: round; }
-
-    .nav-links { display: flex; align-items: center; gap: 16px; }
-    .nav-links a { text-decoration: none; color: var(--text-muted); font-weight: 500; font-size: 0.95rem; transition: color 0.3s; }
-    .nav-links > a:not(.btn):hover { color: #FFF; }
-    .nav-links > a:not(.btn) { position: relative; }
-    .nav-links > a:not(.btn)::after {
-      content:''; position:absolute; left:0; bottom:-6px; height:2px; width:0; background: var(--accent-grad); transition: width 0.3s;
+    .nav-links { display: flex; align-items: center; gap: var(--sp-3); }
+    .nav-links a {
+      font-size: var(--fs-small); font-weight: 500;
+      color: var(--paper-70); text-decoration: none;
+      transition: color 0.2s var(--ease);
     }
-    .nav-links > a:not(.btn):hover::after { width:100%; }
+    .nav-links a:hover { color: var(--paper); }
 
+    /* ── Tugmalar ── */
     .btn {
       display: inline-flex; align-items: center; justify-content: center;
-      padding: 12px 24px; border-radius: 10px; font-weight: 600; font-size: 0.95rem;
-      text-decoration: none; cursor: pointer; position: relative; overflow: hidden;
-      transition: background 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease, border-color 0.3s ease;
+      padding: 12px 22px; border-radius: var(--radius);
+      font-size: var(--fs-small); font-weight: 700;
+      text-decoration: none; cursor: pointer; border: 1px solid transparent;
+      transition: background 0.2s var(--ease), border-color 0.2s var(--ease), color 0.2s var(--ease);
     }
-    /* Klaviatura fokusi (focus-visible) */
-    .btn:focus-visible, .nav-links a:focus-visible, .logo-container:focus-visible {
-      outline: 2px solid var(--accent2); outline-offset: 3px; border-radius: 10px;
+    .btn-primary { background: var(--accent); color: var(--paper); }
+    /* Hover — YANGI rang emas: urg'u rangi fon rangi bilan aralashtiriladi */
+    .btn-primary:hover { background: color-mix(in srgb, var(--accent) 86%, var(--ink)); }
+    .btn-ghost { border-color: var(--paper-12); color: var(--paper); }
+    .btn-ghost:hover { border-color: var(--paper-45); }
+    .btn:focus-visible, .nav-links a:focus-visible, .logo:focus-visible, .footer-links a:focus-visible {
+      outline: 2px solid var(--accent); outline-offset: 3px; border-radius: var(--radius);
     }
-    .btn-primary { background: #FFFFFF; color: #000000; box-shadow: var(--accent-glow); }
-    .btn-primary:hover { background: #fff; box-shadow: 0 0 34px rgba(99,102,241,0.55); transform: translateY(-2px); }
-    /* shine sweep */
-    .btn-primary::after {
-      content:''; position:absolute; top:0; left:-120%; width:60%; height:100%;
-      background: linear-gradient(120deg, transparent, rgba(255,255,255,0.7), transparent); transform: skewX(-20deg);
-      transition: left 0.6s;
-    }
-    .btn-primary:hover::after { left: 140%; }
-    .btn-ghost { background: rgba(255,255,255,0.02); color: #FFFFFF; border: 1px solid var(--border); }
-    .btn-ghost:hover { background: var(--bg-surface); border-color: var(--border-hover); transform: translateY(-2px); }
 
-    /* Hero */
-    .hero { padding: 128px 0 72px; text-align: center; position: relative; }
-    .badge {
-      display: inline-flex; align-items:center; gap:8px; padding: 7px 18px; border-radius: 100px;
-      font-size: 0.82rem; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 30px;
-      background: rgba(255,255,255,0.03); border: 1px solid var(--border); color: var(--text-muted);
-      backdrop-filter: blur(8px);
+    /* ── Hero ── */
+    .hero { padding: var(--sp-6) 0 var(--sp-5); text-align: center; }
+    .eyebrow {
+      display: inline-block; margin-bottom: var(--sp-3);
+      font-size: var(--fs-small); font-weight: 700;
+      letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent);
     }
-    .badge .dot { width:8px; height:8px; border-radius:50%; background: var(--accent2); box-shadow: 0 0 10px var(--accent2); animation: pulse 1.8s infinite; }
-    @keyframes pulse { 0%,100%{ transform:scale(1); opacity:1 } 50%{ transform:scale(1.5); opacity:0.5 } }
+    .hero h1 { margin-bottom: var(--sp-3); }
+    .hero h1 em { font-style: normal; color: var(--accent); }
+    .hero p { max-width: 34rem; margin: 0 auto var(--sp-4); }
+    .hero-cta { display: flex; flex-wrap: wrap; gap: var(--sp-2); justify-content: center; }
 
-    .hero h1 {
-      font-family: 'Sora', sans-serif;
-      font-size: clamp(3rem, 8vw, 5.4rem); font-weight: 800;
-      line-height: 1.02; letter-spacing: -0.04em; margin-bottom: 26px; position: relative;
-      background: var(--metallic);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-      text-shadow: 0 10px 40px rgba(0,0,0,0.5);
+    /* ── Xizmatlar lentasi ── */
+    .marquee {
+      margin-top: var(--sp-5); overflow: hidden;
+      -webkit-mask-image: linear-gradient(90deg, transparent, #000 15%, #000 85%, transparent);
+      mask-image: linear-gradient(90deg, transparent, #000 15%, #000 85%, transparent);
     }
-    /* shimmer sweep across headline */
-    .hero h1::after {
-      content: ''; position: absolute; inset: 0;
-      background: linear-gradient(110deg, transparent 30%, rgba(255,255,255,0.85) 50%, transparent 70%);
-      -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent;
-      background-size: 250% 100%; animation: shimmer 5.5s ease-in-out infinite; mix-blend-mode: screen;
-    }
-    @keyframes shimmer { 0% { background-position: 150% 0; } 60%,100% { background-position: -150% 0; } }
-
-    .hero .rotator { display:inline-block; background: var(--accent-grad); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
-    .hero p { font-size: 1.22rem; color: var(--text-muted); max-width: 620px; margin: 0 auto 44px; line-height: 1.6; }
-    .hero-cta { display: flex; flex-wrap: wrap; gap: 16px; justify-content: center; }
-
-    /* ── Marquee ticker ── */
-    .marquee { margin: 64px 0 0; -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent); mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent); overflow: hidden; }
-    .marquee-track { display: flex; gap: 14px; width: max-content; animation: scroll-x 32s linear infinite; }
+    .marquee-track { display: flex; gap: var(--sp-1); width: max-content; animation: scroll-x 45s linear infinite; }
     .marquee:hover .marquee-track { animation-play-state: paused; }
     .chip {
-      display: inline-flex; align-items:center; gap:8px; padding: 10px 18px; border-radius: 100px;
-      border: 1px solid var(--border); color: var(--text-muted); font-size: 0.92rem; font-weight: 500; white-space: nowrap;
-      background: rgba(255,255,255,0.02);
+      padding: 8px 16px; border-radius: var(--radius-pill);
+      border: 1px solid var(--paper-12); color: var(--paper-70);
+      font-size: var(--fs-small); font-weight: 500; white-space: nowrap;
     }
     @keyframes scroll-x { to { transform: translateX(-50%); } }
 
-    /* Stats */
+    /* ── Raqamlar ── */
     .stats {
-      display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 1px; background: var(--border); border: 1px solid var(--border);
-      border-radius: 20px; overflow: hidden; margin: 90px auto 0; max-width: 1000px;
-      box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: var(--sp-3); margin-top: var(--sp-6);
+      border-top: 1px solid var(--paper-12); padding-top: var(--sp-4);
     }
-    .stat-card { background: rgba(16,16,18,0.9); padding: 42px 24px; text-align: center; transition: background 0.3s; position: relative; }
-    .stat-card:hover { background: var(--bg-surface-hover); }
-    .stat-card strong {
-      display: block; font-family:'Sora',sans-serif; font-size: 2.6rem; font-weight: 800;
-      background: var(--metallic); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 8px;
+    .stat { text-align: center; }
+    .stat strong {
+      display: block; font-size: var(--fs-title); font-weight: 700;
+      letter-spacing: -0.02em; font-variant-numeric: tabular-nums; margin-bottom: 4px;
     }
-    .stat-card span { font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+    .stat span {
+      font-size: var(--fs-small); font-weight: 500; color: var(--paper-45);
+      letter-spacing: 0.06em; text-transform: uppercase;
+    }
 
-    /* Sections */
-    section { padding: 90px 0; }
-    .section-header { text-align: center; margin-bottom: 60px; }
-    .section-title { font-family:'Sora',sans-serif; font-size: clamp(2rem,4vw,2.6rem); font-weight: 800; letter-spacing: -0.03em; margin-bottom: 14px; color: #FFF; }
-    /* Web Interface Guidelines: sarlavhalar muvozanati + raqamlar tabular */
-    .hero h1, .section-title, .fp-inner h2, .cta-content h2 { text-wrap: balance; }
-    .stat-card strong { font-variant-numeric: tabular-nums; }
-    .section-sub { color: var(--text-muted); font-size: 1.1rem; }
+    /* ── Bo'limlar ── */
+    section { padding: var(--sp-6) 0; }
+    .section-head { max-width: 34rem; margin-bottom: var(--sp-4); }
+    .section-head h2 { margin-bottom: var(--sp-1); }
 
-    .services-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 22px; }
-    .service-card {
-      background: var(--bg-surface); border: 1px solid var(--border); border-radius: 18px;
-      padding: 30px 24px; transition: transform 0.35s cubic-bezier(.16,1,.3,1), border-color 0.35s, box-shadow 0.35s;
-      position: relative; overflow: hidden; display: flex; flex-direction: column; align-items: flex-start; cursor: pointer;
-      transform-style: preserve-3d;
+    /* ── Imkoniyatlar: to'liq ekranli sahifalar ── */
+    .feature {
+      position: relative; width: 100vw; margin-left: calc(-50vw + 50%);
+      min-height: 100vh; display: flex; align-items: center; overflow: hidden;
+      background-size: cover; background-position: center;
     }
-    .service-card::before {
+    .feature::before {
       content: ''; position: absolute; inset: 0;
-      background: radial-gradient(600px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(99,102,241,0.14), transparent 40%);
-      opacity: 0; transition: opacity 0.3s; pointer-events: none;
+      background: linear-gradient(90deg, var(--ink) 0%, var(--ink-90) 40%, var(--ink-55) 70%, transparent 100%);
     }
-    /* gradient border on hover */
-    .service-card::after {
-      content:''; position:absolute; inset:0; border-radius:18px; padding:1px;
-      background: linear-gradient(130deg, rgba(99,102,241,0.6), rgba(34,211,238,0.5), transparent 60%);
-      -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-      -webkit-mask-composite: xor; mask-composite: exclude; opacity:0; transition: opacity 0.35s;
+    .feature.right::before {
+      background: linear-gradient(270deg, var(--ink) 0%, var(--ink-90) 40%, var(--ink-55) 70%, transparent 100%);
     }
-    .service-card:hover { transform: translateY(-6px); box-shadow: 0 18px 50px rgba(0,0,0,0.55); }
-    .service-card:hover::before, .service-card:hover::after { opacity: 1; }
-    .service-icon {
-      font-size: 30px; margin-bottom: 22px; width: 58px; height: 58px; display:flex; align-items:center; justify-content:center;
-      border-radius: 14px; background: rgba(255,255,255,0.04); border: 1px solid var(--border);
-      transition: transform 0.35s;
+    .feature-inner {
+      position: relative; z-index: 1; max-width: 1120px; width: 100%;
+      margin: 0 auto; padding: 0 var(--sp-3);
     }
-    .service-card:hover .service-icon { transform: translateY(-3px) scale(1.06); }
-    .service-card h3 { font-size: 1.2rem; font-weight: 700; margin-bottom: 8px; color: #FFF; }
-    .service-card p { font-size: 0.9rem; color: var(--text-muted); line-height: 1.55; }
+    .feature-text { max-width: 32rem; }
+    .feature.right .feature-text { margin-left: auto; text-align: right; }
+    .feature-text .eyebrow { margin-bottom: var(--sp-2); }
+    .feature-text h2 { margin-bottom: var(--sp-2); }
 
-    /* Steps */
-    .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 22px; }
-    .step { background: rgba(16,16,18,0.5); border: 1px solid var(--border); border-left: 2px solid var(--border); border-radius: 16px; padding: 28px 30px; position: relative; transition: border-color 0.3s, transform 0.3s; overflow:hidden; }
-    .step:hover { border-color: var(--border-hover); border-left-color: var(--accent2); transform: translateY(-4px); }
-    .step-num {
-      font-family:'Sora',sans-serif; font-size: 4rem; font-weight: 800; line-height: 1;
-      color: transparent; -webkit-text-stroke: 1px var(--border-hover);
-      position: absolute; top: -6px; right: 18px; opacity: 0.35; transition: opacity 0.3s, -webkit-text-stroke 0.3s;
+    /* ── Xizmat kartalari ── */
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(248px, 1fr)); gap: var(--sp-2); }
+    .card {
+      border: 1px solid var(--paper-12); border-radius: var(--radius);
+      padding: var(--sp-3); background: var(--paper-06);
+      transition: border-color 0.25s var(--ease), transform 0.25s var(--ease);
     }
-    .step:hover .step-num { -webkit-text-stroke: 1px var(--accent2); opacity: 0.9; }
-    .step h3 { font-size: 1.4rem; margin-bottom: 10px; color: #FFF; }
-    .step p { color: var(--text-muted); font-size: 1rem; line-height: 1.6; }
-
-    /* CTA */
-    .cta-container { margin: 100px 0; background: var(--bg-surface); border: 1px solid var(--border); border-radius: 26px; padding: 84px 40px; text-align: center; position: relative; overflow: hidden; }
-    .cta-container::after {
-      content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
-      background: conic-gradient(from 0deg at 50% 50%, transparent 0%, rgba(99,102,241,0.10) 25%, rgba(34,211,238,0.08) 50%, transparent 75%);
-      animation: rotate 18s linear infinite; pointer-events: none; z-index: 0;
+    .card:hover { border-color: var(--paper-45); transform: translateY(-3px); }
+    .card-icon {
+      font-size: var(--fs-title); line-height: 1;
+      margin-bottom: var(--sp-2); display: block;
     }
-    @keyframes rotate { 100% { transform: rotate(360deg); } }
-    .cta-content { position: relative; z-index: 1; }
-    .cta-content h2 { font-family:'Sora',sans-serif; font-size: clamp(2rem,4vw,2.6rem); font-weight: 800; margin-bottom: 16px; color: #FFF; }
-    .cta-content p { font-size: 1.1rem; color: var(--text-muted); margin: 0 auto 38px; max-width: 520px; }
+    .card h3 { font-size: var(--fs-body); font-weight: 700; margin-bottom: 6px; }
+    .card p { font-size: var(--fs-small); font-weight: 400; color: var(--paper-70); line-height: 1.55; }
 
-    footer { border-top: 1px solid var(--border); padding: 48px 0; display: flex; flex-direction: column; align-items: center; gap: 22px; background: #000; position: relative; z-index: 5; }
-    .footer-logo { font-family:'Sora',sans-serif; font-size: 1.4rem; font-weight: 800; letter-spacing: -1px; color: #FFF; text-decoration: none; }
-    .footer-links { display: flex; gap: 24px; flex-wrap: wrap; justify-content: center; }
-    .footer-links a { color: var(--text-muted); text-decoration: none; font-size: 0.9rem; transition: color 0.3s; }
-    .footer-links a:hover { color: #FFF; }
-    .copyright { color: #52525B; font-size: 0.85rem; text-align:center; }
+    /* ── Qadamlar ── */
+    .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: var(--sp-4); }
+    .step { border-top: 2px solid var(--accent); padding-top: var(--sp-2); }
+    .step .num {
+      font-size: var(--fs-small); font-weight: 700; color: var(--accent);
+      letter-spacing: 0.1em; display: block; margin-bottom: var(--sp-1);
+    }
+    .step h3 { font-size: var(--fs-body); font-weight: 700; margin-bottom: 6px; }
+    .step p { font-size: var(--fs-small); font-weight: 400; color: var(--paper-70); line-height: 1.55; }
 
-    /* Reveal */
-    .reveal { opacity: 0; transform: translateY(34px); transition: opacity 0.8s cubic-bezier(0.16,1,0.3,1), transform 0.8s cubic-bezier(0.16,1,0.3,1); }
-    .reveal.active { opacity: 1; transform: translateY(0); }
+    /* ── Yakuniy chaqiriq ── */
+    .cta {
+      border: 1px solid var(--paper-12); border-radius: var(--radius);
+      padding: var(--sp-5) var(--sp-3); text-align: center; margin: var(--sp-6) 0;
+    }
+    .cta h2 { margin-bottom: var(--sp-1); }
+    .cta p { max-width: 30rem; margin: 0 auto var(--sp-4); }
+    .cta-buttons { display: flex; gap: var(--sp-2); justify-content: center; flex-wrap: wrap; }
+    .btn[aria-disabled="true"] { opacity: 0.45; cursor: not-allowed; }
+
+    /* ── Futer ── */
+    footer {
+      border-top: 1px solid var(--paper-12); padding: var(--sp-4) 0;
+      display: flex; flex-direction: column; align-items: center; gap: var(--sp-2);
+    }
+    .footer-links { display: flex; gap: var(--sp-3); flex-wrap: wrap; justify-content: center; }
+    .footer-links a {
+      font-size: var(--fs-small); font-weight: 500;
+      color: var(--paper-70); text-decoration: none; transition: color 0.2s var(--ease);
+    }
+    .footer-links a:hover { color: var(--paper); }
+
+    /* ── Ko'rinish animatsiyasi (yagona harakat effekti) ── */
+    .reveal { opacity: 0; transform: translateY(16px); transition: opacity 0.6s var(--ease), transform 0.6s var(--ease); }
+    .reveal.active { opacity: 1; transform: none; }
 
     @media (max-width: 768px) {
       .nav-links .hide-mobile { display: none; }
-      .hero { padding: 88px 0 56px; }
-      .stat-card strong { font-size: 2rem; }
-      .cta-container { padding: 48px 22px; }
-      .cursor-glow { display: none; }
+      .hero { padding: var(--sp-5) 0 var(--sp-4); }
+      .feature { min-height: 86vh; }
+      .feature::before, .feature.right::before {
+        background: linear-gradient(180deg, var(--ink-55) 0%, var(--ink-90) 55%, var(--ink) 100%);
+      }
+      .feature.right .feature-text { margin-left: 0; text-align: left; }
     }
     @media (prefers-reduced-motion: reduce) {
-      .aurora span, .hero h1::after, .marquee-track, .cta-container::after, .badge .dot { animation: none !important; }
-    }
-
-    /* ── Ilova imkoniyatlari: har biri to'liq ekranli sahifa (fon rasm) ── */
-    .feature-page {
-      position: relative;
-      width: 100vw; margin-left: calc(-50vw + 50%);   /* wrap ichida bo'lsa ham to'liq kenglik */
-      min-height: 100vh;
-      background-size: cover; background-position: center;
-      display: flex; align-items: center; overflow: hidden;
-    }
-    .fp-overlay {
-      position: absolute; inset: 0;
-      background: linear-gradient(90deg, rgba(5,5,5,0.92) 0%, rgba(5,5,5,0.75) 38%, rgba(5,5,5,0.35) 70%, rgba(5,5,5,0.15) 100%);
-    }
-    /* Juft sahifalarda matn o'ngда */
-    .feature-page.right .fp-overlay {
-      background: linear-gradient(270deg, rgba(5,5,5,0.92) 0%, rgba(5,5,5,0.75) 38%, rgba(5,5,5,0.35) 70%, rgba(5,5,5,0.15) 100%);
-    }
-    .feature-page.right .fp-inner { text-align: right; margin-left: auto; }
-    .fp-inner {
-      position: relative; z-index: 2; max-width: 1200px; width: 100%;
-      margin: 0 auto; padding: 0 clamp(24px, 6vw, 80px);
-    }
-    .fp-text { max-width: 620px; }
-    .feature-page.right .fp-text { margin-left: auto; }
-    .fp-emoji { font-size: clamp(56px, 8vw, 88px); margin-bottom: 20px; filter: drop-shadow(0 8px 20px rgba(0,0,0,.5)); }
-    .fp-badge {
-      display: inline-block; margin-bottom: 20px; padding: 8px 18px; border-radius: 100px;
-      font-size: 0.85rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
-      background: var(--accent-grad); color: #fff;
-    }
-    .fp-inner h2 {
-      font-family: 'Sora', sans-serif; font-weight: 800; line-height: 1.05;
-      font-size: clamp(2.4rem, 6vw, 4.4rem); letter-spacing: -0.03em; margin-bottom: 20px; color: #fff;
-      text-shadow: 0 8px 40px rgba(0,0,0,0.6);
-    }
-    .fp-inner p { font-size: clamp(1.05rem, 2vw, 1.4rem); color: #E5E7EB; line-height: 1.6; }
-    @media (max-width: 768px) {
-      .feature-page { min-height: 88vh; }
-      .fp-overlay, .feature-page.right .fp-overlay {
-        background: linear-gradient(180deg, rgba(5,5,5,0.3) 0%, rgba(5,5,5,0.55) 50%, rgba(5,5,5,0.92) 100%);
-      }
-      .feature-page.right .fp-inner, .feature-page.right .fp-text { text-align: left; margin-left: 0; }
-    }
-    .feat-badge {
-      display: inline-block; margin-bottom: 10px; padding: 4px 12px; border-radius: 100px;
-      font-size: 0.72rem; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase;
-      background: rgba(255,255,255,0.12); color: #fff; backdrop-filter: blur(6px);
+      .marquee-track { animation: none; }
+      .reveal { opacity: 1; transform: none; transition: none; }
+      html { scroll-behavior: auto; }
     }
   </style>
 </head>
 <body>
-  <div id="progress"></div>
-  <div class="aurora"><span class="a1"></span><span class="a2"></span><span class="a3"></span></div>
-  <div class="cursor-glow" id="cursorGlow"></div>
-
-  <!-- Navigation -->
   <nav id="nav">
     <div class="nav-inner">
-      <a href="/" class="logo-container" aria-label="HubServis — bosh sahifa">
-        <svg class="logo-arc" viewBox="0 0 300 100" preserveAspectRatio="none" aria-hidden="true" focusable="false">
-          <defs>
-            <linearGradient id="arcGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stop-color="#ffffff" stop-opacity="0" />
-              <stop offset="50%" stop-color="#ffffff" stop-opacity="1" />
-              <stop offset="100%" stop-color="#ffffff" stop-opacity="0" />
-            </linearGradient>
-          </defs>
-          <path d="M 0,90 Q 150,-10 300,50" />
-        </svg>
-        <span class="logo-text">HUBSERVIS</span>
-      </a>
-
+      <a href="/" class="logo" aria-label="HubServis — bosh sahifa">Hubservis</a>
       <div class="nav-links">
-        <a href="#imkoniyatlar" class="hide-mobile">Imkoniyatlar</a>
         <a href="#xizmatlar" class="hide-mobile">Xizmatlar</a>
         <a href="#qanday" class="hide-mobile">Qanday ishlaydi</a>
         <a href="#yuklab" class="btn btn-primary">Ilovani yuklash</a>
@@ -402,246 +306,203 @@
   <main class="wrap">
     <!-- Hero -->
     <section class="hero reveal">
-      <div class="badge"><span class="dot"></span> Eksklyuziv Xizmatlar Platformasi</div>
-      <h1>BARCHA XIZMATLAR<br><span class="rotator" id="rotator">BIR JOYDA</span></h1>
-      <p>Sartarosh, usta, tozalash, avto-yordam, kuryerlik va boshqa 19+ premium xizmatlarni bitta ilovadan osonlik bilan toping va buyurtma bering.</p>
+      <span class="eyebrow">Xizmatlar platformasi</span>
+      <h1 class="t-display">Barcha xizmatlar<br><em>bir ilovada</em></h1>
+      <p class="t-body muted">Sartarosh, usta, tozalash, avto-yordam, kuryerlik va boshqa 19+ xizmatni bitta ilovadan toping va buyurtma bering.</p>
       <div class="hero-cta">
-        <a href="#yuklab" class="btn btn-primary" data-magnetic>Xizmatlarni ko'rish</a>
-        <a href="/admin/login" class="btn btn-ghost" data-magnetic>Hamkor bo'lish</a>
+        <a href="#yuklab" class="btn btn-primary">Ilovani yuklash</a>
+        <a href="/admin/login" class="btn btn-ghost">Hamkor bo'lish</a>
       </div>
 
-      <!-- Marquee ticker -->
-      <div class="marquee">
+      <div class="marquee" aria-hidden="true">
         <div class="marquee-track" id="marqueeTrack"></div>
       </div>
+
+      <div class="stats">
+        <div class="stat"><strong data-count="19" data-suffix="+">0</strong><span>Kategoriya</span></div>
+        <div class="stat"><strong data-count="40" data-suffix="+">0</strong><span>Mutaxassis</span></div>
+        <div class="stat"><strong data-static="24/7">24/7</strong><span>Qo'llab-quvvatlash</span></div>
+        <div class="stat"><strong data-count="1" data-suffix="%">0</strong><span>Keshbek</span></div>
+      </div>
     </section>
 
-    <!-- Statistics -->
-    <div class="stats reveal">
-      <div class="stat-card"><strong data-count="19" data-suffix="+">0</strong><span>Kategoriyalar</span></div>
-      <div class="stat-card"><strong data-count="40" data-suffix="+">0</strong><span>Mutaxassislar</span></div>
-      <div class="stat-card"><strong data-static="24/7">24/7</strong><span>Qo'llab-quvvatlash</span></div>
-      <div class="stat-card"><strong data-count="1" data-suffix="%">0</strong><span>Keshbek</span></div>
-    </div>
-
-    <!-- Ilova imkoniyatlari — har biri to'liq ekranli sahifa (fon rasm) -->
-    <section class="feature-page" style="background-image:url('/static/landing/img/all_services.webp')">
-      <div class="fp-overlay"></div>
-      <div class="fp-inner"><div class="fp-text reveal">
-        <span class="fp-badge">26+ xizmat</span>
-        <h2>Barcha xizmatlar</h2>
-        <p>Sartarosh, usta, tozalash, avto-yordam, kuryerlik va boshqa 26+ xizmatni sanoqli soniyada toping va bron qiling.</p>
+    <!-- Imkoniyatlar -->
+    <section class="feature" style="background-image:url('/static/landing/img/all_services.webp')">
+      <div class="feature-inner"><div class="feature-text reveal">
+        <span class="eyebrow">26+ xizmat</span>
+        <h2 class="t-display">Barcha xizmatlar</h2>
+        <p class="t-body muted">Sartarosh, usta, tozalash, avto-yordam, kuryerlik va boshqa 26+ xizmatni sanoqli soniyada toping va bron qiling.</p>
       </div></div>
     </section>
 
-    <section class="feature-page right" style="background-image:url('/static/landing/img/smart_shopping.webp')">
-      <div class="fp-overlay"></div>
-      <div class="fp-inner"><div class="fp-text reveal">
-        <span class="fp-badge">Tejamkor xarid</span>
-        <h2>Aqlli savdo</h2>
-        <p>Bozorlik ro'yxatini tuzing — o'rtacha narxlar bilan xarajatni oldindan hisoblang va byudjetdan chiqib ketmang.</p>
+    <section class="feature right" style="background-image:url('/static/landing/img/smart_shopping.webp')">
+      <div class="feature-inner"><div class="feature-text reveal">
+        <span class="eyebrow">Tejamkor xarid</span>
+        <h2 class="t-display">Aqlli savdo</h2>
+        <p class="t-body muted">Bozorlik ro'yxatini tuzing — o'rtacha narxlar bilan xarajatni oldindan hisoblang va byudjetdan chiqib ketmang.</p>
       </div></div>
     </section>
 
-    <section class="feature-page" style="background-image:url('/static/landing/img/calorie_counter.webp')">
-      <div class="fp-overlay"></div>
-      <div class="fp-inner"><div class="fp-text reveal">
-        <span class="fp-badge">AI Vision</span>
-        <h2>Kaloriya hisoblagich</h2>
-        <p>Taom rasmini oling — sun'iy intellekt kaloriya, oqsil, yog' va uglevodni bir zumda hisoblab beradi.</p>
+    <section class="feature" style="background-image:url('/static/landing/img/calorie_counter.webp')">
+      <div class="feature-inner"><div class="feature-text reveal">
+        <span class="eyebrow">Sun'iy intellekt</span>
+        <h2 class="t-display">Kaloriya hisoblagich</h2>
+        <p class="t-body muted">Taom rasmini oling — sun'iy intellekt kaloriya, oqsil, yog' va uglevodni bir zumda hisoblab beradi.</p>
       </div></div>
     </section>
 
-    <section class="feature-page right" style="background-image:url('/static/landing/img/fitness_trainer.webp')">
-      <div class="fp-overlay"></div>
-      <div class="fp-inner"><div class="fp-text reveal">
-        <span class="fp-badge">1300+ mashq</span>
-        <h2>Fitnes trener</h2>
-        <p>Shaxsiy mashg'ulot rejasi va 1300+ mashqli kutubxona — maqsadingizga mos, bosqichma-bosqich dastur.</p>
+    <section class="feature right" style="background-image:url('/static/landing/img/fitness_trainer.webp')">
+      <div class="feature-inner"><div class="feature-text reveal">
+        <span class="eyebrow">1300+ mashq</span>
+        <h2 class="t-display">Fitnes trener</h2>
+        <p class="t-body muted">Shaxsiy mashg'ulot rejasi va 1300+ mashqli kutubxona — maqsadingizga mos, bosqichma-bosqich dastur.</p>
       </div></div>
     </section>
 
-    <section class="feature-page" style="background-image:url('/static/landing/img/my_finance.webp')">
-      <div class="fp-overlay"></div>
-      <div class="fp-inner"><div class="fp-text reveal">
-        <span class="fp-badge">Nazorat</span>
-        <h2>Mening moliyam</h2>
-        <p>Daromad va xarajatlarni kuzating, byudjetni boshqaring — AI sizga aqlli moliyaviy maslahat beradi.</p>
+    <section class="feature" style="background-image:url('/static/landing/img/my_finance.webp')">
+      <div class="feature-inner"><div class="feature-text reveal">
+        <span class="eyebrow">Nazorat</span>
+        <h2 class="t-display">Mening moliyam</h2>
+        <p class="t-body muted">Daromad va xarajatlarni kuzating, byudjetni boshqaring — sun'iy intellekt aqlli moliyaviy maslahat beradi.</p>
       </div></div>
     </section>
 
-    <section class="feature-page right" style="background-image:url('/static/landing/img/my_plans.webp')">
-      <div class="fp-overlay"></div>
-      <div class="fp-inner"><div class="fp-text reveal">
-        <span class="fp-badge">Eslatma</span>
-        <h2>Rejalarim</h2>
-        <p>Kunlik rejalar va vazifalar — muhim ishlarni belgilangan vaqtda eslatib, hech narsani unutmaysiz.</p>
+    <section class="feature right" style="background-image:url('/static/landing/img/my_plans.webp')">
+      <div class="feature-inner"><div class="feature-text reveal">
+        <span class="eyebrow">Eslatma</span>
+        <h2 class="t-display">Rejalarim</h2>
+        <p class="t-body muted">Kunlik rejalar va vazifalar — muhim ishlarni belgilangan vaqtda eslatib, hech narsani unutmaysiz.</p>
       </div></div>
     </section>
 
-    <section class="feature-page" style="background-image:url('/static/landing/img/alarm.webp')">
-      <div class="fp-overlay"></div>
-      <div class="fp-inner"><div class="fp-text reveal">
-        <span class="fp-badge">Uyg'onish</span>
-        <h2>Majburlovchi budilnik</h2>
-        <p>O'chirish uchun matematik misol yeching, biror narsani rasmga oling yoki matn o'qing — endi uyquni yenging!</p>
+    <section class="feature" style="background-image:url('/static/landing/img/alarm.webp')">
+      <div class="feature-inner"><div class="feature-text reveal">
+        <span class="eyebrow">Uyg'onish</span>
+        <h2 class="t-display">Majburlovchi budilnik</h2>
+        <p class="t-body muted">O'chirish uchun matematik misol yeching, biror narsani rasmga oling yoki matn o'qing — endi uyquni yenging.</p>
       </div></div>
     </section>
 
-    <section class="feature-page right" style="background-image:url('/static/landing/img/ai.webp')">
-      <div class="fp-overlay"></div>
-      <div class="fp-inner"><div class="fp-text reveal">
-        <span class="fp-badge">AI Agent</span>
-        <h2>AI Yordamchi</h2>
-        <p>Ovoz yoki matn bilan buyruq bering — reja qo'shadi, budilnik quradi, hatto xizmat bron qiladi.</p>
+    <section class="feature right" style="background-image:url('/static/landing/img/ai.webp')">
+      <div class="feature-inner"><div class="feature-text reveal">
+        <span class="eyebrow">AI agent</span>
+        <h2 class="t-display">AI yordamchi</h2>
+        <p class="t-body muted">Ovoz yoki matn bilan buyruq bering — reja qo'shadi, budilnik quradi, hatto xizmat bron qiladi.</p>
       </div></div>
     </section>
 
-    <!-- Services -->
+    <!-- Xizmatlar -->
     <section id="xizmatlar" class="reveal">
-      <div class="section-header">
-        <h2 class="section-title">PREMIUM XIZMATLAR</h2>
-        <p class="section-sub">O'zingizga kerakli soha ustalarini sanoqli soniyalarda toping.</p>
+      <div class="section-head">
+        <h2 class="t-title">Xizmatlar</h2>
+        <p class="t-body muted">O'zingizga kerakli soha ustalarini sanoqli soniyada toping.</p>
       </div>
-      <div class="services-grid" id="servicesGrid">
-        <div class="service-card"><div class="service-icon">✂️</div><h3>Sartarosh / Go'zallik</h3><p>Professional soch turmaklash va go'zallik salonlari xizmatlari sizning hududingizda.</p></div>
-        <div class="service-card"><div class="service-icon">⚡</div><h3>Elektrik</h3><p>Uyingizdagi nosozliklarni bartaraf etish uchun malakali elektr ustalarini chaqiring.</p></div>
-        <div class="service-card"><div class="service-icon">💧</div><h3>Santexnik</h3><p>Quvurlar, kranlar va isitish tizimlarini ta'mirlash uchun ishonchli ustalar.</p></div>
-        <div class="service-card"><div class="service-icon">🧹</div><h3>Klinik / Tozalash</h3><p>Xonadon, ofis va yirik obyektlarni mukammal tozalash bo'yicha mutaxassislar.</p></div>
-        <div class="service-card"><div class="service-icon">🚗</div><h3>Avto-yordam</h3><p>Yo'lda qolib ketdingizmi? Evakuator va tezkor texnik yordam xizmati.</p></div>
-        <div class="service-card"><div class="service-icon">📦</div><h3>Kuryerlik</h3><p>Pochta, sovg'a va boshqa jo'natmalarni xavfsiz hamda tezkor yetkazib berish.</p></div>
-        <div class="service-card"><div class="service-icon">🛒</div><h3>Bozorchi</h3><p>Bozor va do'konlardan kerakli mahsulotlarni siz uchun xarid qilib yetkazamiz.</p></div>
-        <div class="service-card"><div class="service-icon">📚</div><h3>Repetitor</h3><p>Turli fanlar va tillar bo'yicha malakali o'qituvchilar hamda o'quv markazlari.</p></div>
+      <div class="grid">
+        <div class="card"><span class="card-icon">✂️</span><h3>Sartarosh va go'zallik</h3><p>Professional soch turmaklash va go'zallik salonlari xizmatlari sizning hududingizda.</p></div>
+        <div class="card"><span class="card-icon">⚡</span><h3>Elektrik</h3><p>Uyingizdagi nosozliklarni bartaraf etish uchun malakali elektr ustalarini chaqiring.</p></div>
+        <div class="card"><span class="card-icon">💧</span><h3>Santexnik</h3><p>Quvurlar, kranlar va isitish tizimlarini ta'mirlash uchun ishonchli ustalar.</p></div>
+        <div class="card"><span class="card-icon">🧹</span><h3>Tozalash</h3><p>Xonadon, ofis va yirik obyektlarni mukammal tozalash bo'yicha mutaxassislar.</p></div>
+        <div class="card"><span class="card-icon">🚗</span><h3>Avto-yordam</h3><p>Yo'lda qolib ketdingizmi? Evakuator va tezkor texnik yordam xizmati.</p></div>
+        <div class="card"><span class="card-icon">📦</span><h3>Kuryerlik</h3><p>Pochta, sovg'a va boshqa jo'natmalarni xavfsiz hamda tezkor yetkazib berish.</p></div>
+        <div class="card"><span class="card-icon">🛒</span><h3>Bozorchi</h3><p>Bozor va do'konlardan kerakli mahsulotlarni siz uchun xarid qilib yetkazamiz.</p></div>
+        <div class="card"><span class="card-icon">📚</span><h3>Repetitor</h3><p>Turli fanlar va tillar bo'yicha malakali o'qituvchilar hamda o'quv markazlari.</p></div>
       </div>
     </section>
 
-    <!-- How it works -->
+    <!-- Qanday ishlaydi -->
     <section id="qanday" class="reveal">
-      <div class="section-header">
-        <h2 class="section-title">QANDAY ISHLAYDI?</h2>
-        <p class="section-sub">Foydalanish oson va qulay. 3 ta tezkor qadam.</p>
+      <div class="section-head">
+        <h2 class="t-title">Qanday ishlaydi</h2>
+        <p class="t-body muted">Uchta qadam — boshqa hech narsa talab qilinmaydi.</p>
       </div>
       <div class="steps">
-        <div class="step"><div class="step-num">01</div><h3>Tanlash</h3><p>Dasturga kiring va 19+ kategoriyadan o'zingizga kerakli xizmat turini belgilang.</p></div>
-        <div class="step"><div class="step-num">02</div><h3>Buyurtma</h3><p>Tafsilotlar va manzilingizni kiriting. Tizim avtomatik ravishda eng yaqin va mos ustani biriktiradi.</p></div>
-        <div class="step"><div class="step-num">03</div><h3>Natija & Baho</h3><p>Xizmat ko'rsatilgandan so'ng, ustani baholang va hisobingizga keshbek qabul qiling.</p></div>
+        <div class="step">
+          <span class="num">01</span>
+          <h3>Tanlash</h3>
+          <p>Ilovaga kiring va 19+ kategoriyadan o'zingizga kerakli xizmat turini belgilang.</p>
+        </div>
+        <div class="step">
+          <span class="num">02</span>
+          <h3>Buyurtma</h3>
+          <p>Tafsilotlar va manzilingizni kiriting. Tizim eng yaqin va mos ustani biriktiradi.</p>
+        </div>
+        <div class="step">
+          <span class="num">03</span>
+          <h3>Baho</h3>
+          <p>Xizmat ko'rsatilgach ustani baholang va hisobingizga keshbek qabul qiling.</p>
+        </div>
       </div>
     </section>
 
-    <!-- CTA -->
-    <div class="cta-container reveal" id="yuklab">
-      <div class="cta-content">
-        <h2>MOBIL ILOVANI YUKLAB OLING</h2>
-        <p>Rasmiy HubServis ilovasi tez orada iOS va Android platformalarida chiqadi. Chiqishi bilan xabar berish uchun quyida qoldiring.</p>
-        <div style="display:flex; gap:16px; justify-content:center; flex-wrap:wrap;">
-          <span class="btn btn-primary" aria-disabled="true" style="opacity:.6; cursor:not-allowed;">App Store — Tez orada</span>
-          <span class="btn btn-ghost" aria-disabled="true" style="opacity:.6; cursor:not-allowed;">Google Play — Tez orada</span>
-        </div>
+    <!-- Yuklab olish -->
+    <div class="cta reveal" id="yuklab">
+      <h2 class="t-title">Mobil ilovani yuklab oling</h2>
+      <p class="t-body muted">Rasmiy HubServis ilovasi tez orada iOS va Android platformalarida chiqadi.</p>
+      <div class="cta-buttons">
+        <span class="btn btn-primary" aria-disabled="true">App Store — tez orada</span>
+        <span class="btn btn-ghost" aria-disabled="true">Google Play — tez orada</span>
       </div>
     </div>
   </main>
 
   <footer>
-    <a href="/" class="footer-logo">HUBSERVIS</a>
+    <a href="/" class="logo">Hubservis</a>
     <div class="footer-links">
       <a href="#xizmatlar">Xizmatlar</a>
-      <a href="/admin/login">Hamkorlar (Admin)</a>
-      <a href="https://api.hubservis.uz/docs">API Dokumentatsiya</a>
+      <a href="/admin/login">Hamkorlar</a>
+      <a href="https://api.hubservis.uz/docs">API</a>
       <a href="/terms">Foydalanish shartlari</a>
       <a href="/privacy">Maxfiylik siyosati</a>
     </div>
-    <div class="copyright">© 2026 HUBSERVIS. Barcha huquqlar himoyalangan.</div>
+    <p class="t-small quiet">© 2026 HubServis. Barcha huquqlar himoyalangan.</p>
   </footer>
 
   <script>
-    // ── Scroll progress + nav shrink ──
+    // Navigatsiya chegarasi (scroll holatida)
     const nav = document.getElementById('nav');
-    const progress = document.getElementById('progress');
-    function onScroll() {
-      const h = document.documentElement;
-      const sc = h.scrollTop / (h.scrollHeight - h.clientHeight);
-      progress.style.width = (sc * 100) + '%';
-      nav.classList.toggle('scrolled', h.scrollTop > 20);
-    }
-    window.addEventListener('scroll', onScroll, { passive: true });
-    onScroll();
+    addEventListener('scroll', () => {
+      nav.classList.toggle('scrolled', scrollY > 12);
+    }, { passive: true });
 
-    // ── Reveal on scroll (IntersectionObserver, staggered) ──
+    // Ko'rinish animatsiyasi
     const io = new IntersectionObserver((entries) => {
-      entries.forEach((e, i) => {
-        if (e.isIntersecting) {
-          setTimeout(() => e.target.classList.add('active'), i * 80);
-          io.unobserve(e.target);
-        }
-      });
-    }, { threshold: 0.12 });
+      for (const e of entries) {
+        if (!e.isIntersecting) continue;
+        e.target.classList.add('active');
+        io.unobserve(e.target);
+      }
+    }, { threshold: 0.15 });
     document.querySelectorAll('.reveal').forEach(el => io.observe(el));
 
-    // ── Count-up stats ──
-    const countObs = new IntersectionObserver((entries) => {
-      entries.forEach(e => {
-        if (!e.isIntersecting) return;
+    // Raqamlarni sanash
+    const counter = new IntersectionObserver((entries) => {
+      for (const e of entries) {
+        if (!e.isIntersecting) continue;
         const el = e.target;
-        if (el.dataset.static) { countObs.unobserve(el); return; }
+        counter.unobserve(el);
+        if (el.dataset.static) continue;
         const target = parseInt(el.dataset.count, 10);
         const suffix = el.dataset.suffix || '';
         let cur = 0;
-        const step = Math.max(1, Math.round(target / 40));
-        const t = setInterval(() => {
-          cur += step;
-          if (cur >= target) { cur = target; clearInterval(t); }
+        const step = Math.max(1, Math.round(target / 30));
+        const timer = setInterval(() => {
+          cur = Math.min(cur + step, target);
           el.textContent = cur + suffix;
-        }, 28);
-        countObs.unobserve(el);
-      });
-    }, { threshold: 0.5 });
-    document.querySelectorAll('.stat-card strong').forEach(el => countObs.observe(el));
-
-    // ── Rotating hero word ──
-    const words = ['BIR JOYDA', 'BIR ILOVADA', 'BIR TUGMADA'];
-    let wi = 0;
-    const rotator = document.getElementById('rotator');
-    setInterval(() => {
-      wi = (wi + 1) % words.length;
-      rotator.style.transition = 'opacity 0.3s';
-      rotator.style.opacity = '0';
-      setTimeout(() => { rotator.textContent = words[wi]; rotator.style.opacity = '1'; }, 300);
-    }, 2800);
-
-    // ── Marquee content ──
-    const chips = ['✂️ Sartarosh','⚡ Elektrik','💧 Santexnik','🧹 Tozalash','🚗 Avto-yordam','📦 Kuryer','🛒 Bozorchi','📚 Repetitor','💅 Salon','🩺 Hamshira','🦷 Stomatolog','🎉 Tadbir','👶 Enaga','❄️ Konditsioner','🐜 Dezinfeksiya','💆 Massaj'];
-    const track = document.getElementById('marqueeTrack');
-    const buildChip = (t) => { const s = document.createElement('span'); s.className='chip'; s.textContent=t; return s; };
-    [...chips, ...chips].forEach(c => track.appendChild(buildChip(c)));
-
-    // ── Cursor glow ──
-    const glow = document.getElementById('cursorGlow');
-    window.addEventListener('pointermove', (e) => {
-      if (e.pointerType === 'touch') return;
-      glow.style.opacity = '1';
-      glow.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
-    });
-    window.addEventListener('pointerleave', () => glow.style.opacity = '0');
-
-    // ── Service card spotlight ──
-    document.getElementById('servicesGrid').addEventListener('pointermove', (e) => {
-      for (const card of document.querySelectorAll('.service-card')) {
-        const r = card.getBoundingClientRect();
-        card.style.setProperty('--mouse-x', (e.clientX - r.left) + 'px');
-        card.style.setProperty('--mouse-y', (e.clientY - r.top) + 'px');
+          if (cur === target) clearInterval(timer);
+        }, 32);
       }
-    });
+    }, { threshold: 0.6 });
+    document.querySelectorAll('.stat strong').forEach(el => counter.observe(el));
 
-    // ── Magnetic buttons ──
-    document.querySelectorAll('[data-magnetic]').forEach(btn => {
-      btn.addEventListener('pointermove', (e) => {
-        const r = btn.getBoundingClientRect();
-        const x = e.clientX - r.left - r.width / 2;
-        const y = e.clientY - r.top - r.height / 2;
-        btn.style.transform = `translate(${x * 0.25}px, ${y * 0.35}px)`;
-      });
-      btn.addEventListener('pointerleave', () => { btn.style.transform = ''; });
-    });
+    // Xizmatlar lentasi
+    const chips = ['Sartarosh','Elektrik','Santexnik','Tozalash','Avto-yordam','Kuryer','Bozorchi','Repetitor','Salon','Hamshira','Stomatolog','Tadbir','Enaga','Konditsioner','Dezinfeksiya','Massaj'];
+    const track = document.getElementById('marqueeTrack');
+    for (const text of [...chips, ...chips]) {
+      const el = document.createElement('span');
+      el.className = 'chip';
+      el.textContent = text;
+      track.appendChild(el);
+    }
   </script>
 </body>
 </html>
