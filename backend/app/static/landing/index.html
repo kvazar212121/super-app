@@ -134,12 +134,16 @@
       letter-spacing: -0.01em; color: var(--ink); text-decoration: none; line-height: 1;
     }
     .nav-links { display: flex; align-items: center; gap: var(--sp-3); }
-    .nav-links a {
+    /* :not(.btn) — MUHIM: bu qoida (0-1-1) .btn-primary'dan (0-1-0) kuchliroq,
+       shuning uchun tugmani chetlab o'tmasa uning matn rangini bosib ketadi
+       (qora fonda to'q kulrang matn = ko'rinmaydi). */
+    .nav-links a:not(.btn) {
       font-size: var(--fs-small); font-weight: 500;
       color: var(--ink-62); text-decoration: none;
       transition: color 0.2s var(--ease);
     }
-    .nav-links a:hover { color: var(--ink); }
+    .nav-links a:not(.btn):hover { color: var(--ink); }
+    .nav-links a.btn { text-decoration: none; }
 
     /* ── Tugmalar ── */
     .btn {
