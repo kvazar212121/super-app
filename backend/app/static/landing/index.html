@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="HubServis — barcha xizmatlar bir joyda. Sartarosh, usta, tozalash, avto-yordam va yana 19+ xizmat.">
-  <meta name="theme-color" content="#0A0A0B">
+  <meta name="theme-color" content="#FFFFFF">
   <title>HubServis — Barcha xizmatlar bir ilovada</title>
   <link rel="canonical" href="https://hubservis.uz/">
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png">
@@ -40,249 +40,255 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700&family=Playfair+Display:wght@500;600&display=swap" rel="stylesheet">
   <style>
     /* ══════════════════════════════════════════════════════════════
-       DIZAYN TIZIMI
-       Ranglar — ATIGI 3 TA. Boshqa hamma narsa shu uchtasining
+       DIZAYN TIZIMI — yorug', muharrirlik (editorial) uslub
+       Ranglar — ATIGI 3 TA. Qolgan hamma narsa shu uchtasining
        shaffofligi (alpha), yangi rang emas.
-         1. --ink     — fon (deyarli qora)
-         2. --paper   — matn (deyarli oq)
-         3. --accent  — yagona urg'u rangi (ilovaning ko'ki bilan bir xil)
-       Shrift o'lchami — ATIGI 4 TA (--fs-display / title / body / small).
-       Ierarxiya o'lcham bilan emas, QALINLIK va RANG bilan beriladi.
+         --ink    — matn va to'q yuzalar
+         --paper  — fon
+         --accent — yagona urg'u (chuqur yashil)
+       Shrift o'lchami — ATIGI 4 TA: display / title / body / small.
+       Sarlavhalar — Playfair Display (serif), matn — Manrope (sans).
        ══════════════════════════════════════════════════════════════ */
     :root {
-      /* 1-2-3: uchta rang */
-      --ink: #0A0A0B;
-      --paper: #FAFAFA;
-      --accent: #3B82F6;
+      --ink: #191919;
+      --paper: #FFFFFF;
+      --accent: #3A7E55;
 
-      /* Shu uch rangning shaffof variantlari (yangi rang emas) */
-      --paper-70: rgba(250, 250, 250, 0.70);
-      --paper-45: rgba(250, 250, 250, 0.45);
-      --paper-12: rgba(250, 250, 250, 0.12);
-      --paper-06: rgba(250, 250, 250, 0.06);
-      --ink-90: rgba(10, 10, 11, 0.90);
-      --ink-55: rgba(10, 10, 11, 0.55);
+      /* Shu uch rangdan hosil qilingan qatlamlar (yangi rang emas) */
+      --ink-62: rgba(25, 25, 25, 0.62);
+      --ink-40: rgba(25, 25, 25, 0.40);
+      --ink-12: rgba(25, 25, 25, 0.12);
+      --ink-06: rgba(25, 25, 25, 0.06);
+      --ink-035: rgba(25, 25, 25, 0.035);
 
       /* To'rtta shrift o'lchami */
-      --fs-display: clamp(2.5rem, 6vw, 4.25rem);
-      --fs-title: clamp(1.5rem, 3vw, 2.125rem);
+      --fs-display: clamp(2rem, 5vw, 3.5rem);
+      --fs-title: clamp(1.5rem, 2.6vw, 2rem);
       --fs-body: 1.0625rem;
       --fs-small: 0.875rem;
 
-      /* Bo'shliq (4px qadam) va burchaklar */
+      --serif: 'Playfair Display', Georgia, serif;
+      --sans: 'Manrope', system-ui, -apple-system, sans-serif;
+
       --sp-1: 8px;  --sp-2: 16px; --sp-3: 24px;
-      --sp-4: 40px; --sp-5: 64px; --sp-6: 96px;
-      --radius: 12px;
-      --radius-pill: 100px;
+      --sp-4: 40px; --sp-5: 72px; --sp-6: 120px;
+      --radius: 16px;
+      --radius-sm: 8px;
       --ease: cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scroll-behavior: smooth; color-scheme: dark; }
+    html { scroll-behavior: smooth; }
     body {
-      font-family: 'Inter', system-ui, -apple-system, sans-serif;
-      background: var(--ink);
-      color: var(--paper);
+      font-family: var(--sans);
+      background: var(--paper);
+      color: var(--ink);
       font-size: var(--fs-body);
-      line-height: 1.6;
+      line-height: 1.65;
       -webkit-font-smoothing: antialiased;
       overflow-x: hidden;
     }
     ::selection { background: var(--accent); color: var(--paper); }
+    img { display: block; max-width: 100%; }
 
-    .wrap { max-width: 1120px; margin: 0 auto; padding: 0 var(--sp-3); }
+    .wrap { max-width: 1140px; margin: 0 auto; padding: 0 var(--sp-3); }
 
-    /* ── Tipografika: har bir daraja aniq bitta o'lchamdan foydalanadi ── */
+    /* ── Tipografika ── */
     .t-display {
-      font-size: var(--fs-display);
-      font-weight: 700; line-height: 1.05; letter-spacing: -0.035em;
-      text-wrap: balance;
+      font-family: var(--serif); font-weight: 600;
+      font-size: var(--fs-display); line-height: 1.12;
+      letter-spacing: -0.02em; text-wrap: balance;
     }
     .t-title {
-      font-size: var(--fs-title);
-      font-weight: 700; line-height: 1.2; letter-spacing: -0.02em;
-      text-wrap: balance;
+      font-family: var(--serif); font-weight: 600;
+      font-size: var(--fs-title); line-height: 1.2;
+      letter-spacing: -0.015em; text-wrap: balance;
     }
     .t-body { font-size: var(--fs-body); font-weight: 400; }
     .t-small { font-size: var(--fs-small); font-weight: 500; }
-    .muted { color: var(--paper-70); }
-    .quiet { color: var(--paper-45); }
+    .muted { color: var(--ink-62); }
+
+    .eyebrow {
+      display: inline-block; font-size: var(--fs-small); font-weight: 700;
+      letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent);
+    }
 
     /* ── Navigatsiya ── */
     nav {
       position: sticky; top: 0; z-index: 100;
-      background: var(--ink-90);
-      backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+      background: rgba(255, 255, 255, 0.86);
+      backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
       border-bottom: 1px solid transparent;
       transition: border-color 0.3s var(--ease);
     }
-    nav.scrolled { border-bottom-color: var(--paper-12); }
+    nav.scrolled { border-bottom-color: var(--ink-12); }
     .nav-inner {
-      max-width: 1120px; margin: 0 auto; padding: 0 var(--sp-3);
-      height: 68px; display: flex; align-items: center; justify-content: space-between;
+      max-width: 1140px; margin: 0 auto; padding: 0 var(--sp-3);
+      height: 76px; display: flex; align-items: center; justify-content: space-between;
     }
     .logo {
-      font-size: var(--fs-body); font-weight: 700;
-      letter-spacing: 0.14em; text-transform: uppercase;
-      color: var(--paper); text-decoration: none;
+      font-family: var(--serif); font-weight: 600; font-size: var(--fs-title);
+      letter-spacing: -0.01em; color: var(--ink); text-decoration: none; line-height: 1;
     }
     .nav-links { display: flex; align-items: center; gap: var(--sp-3); }
     .nav-links a {
       font-size: var(--fs-small); font-weight: 500;
-      color: var(--paper-70); text-decoration: none;
+      color: var(--ink-62); text-decoration: none;
       transition: color 0.2s var(--ease);
     }
-    .nav-links a:hover { color: var(--paper); }
+    .nav-links a:hover { color: var(--ink); }
 
     /* ── Tugmalar ── */
     .btn {
       display: inline-flex; align-items: center; justify-content: center;
-      padding: 12px 22px; border-radius: var(--radius);
+      padding: 13px 24px; border-radius: var(--radius-sm);
       font-size: var(--fs-small); font-weight: 700;
       text-decoration: none; cursor: pointer; border: 1px solid transparent;
       transition: background 0.2s var(--ease), border-color 0.2s var(--ease), color 0.2s var(--ease);
     }
-    .btn-primary { background: var(--accent); color: var(--paper); }
-    /* Hover — YANGI rang emas: urg'u rangi fon rangi bilan aralashtiriladi */
-    .btn-primary:hover { background: color-mix(in srgb, var(--accent) 86%, var(--ink)); }
-    .btn-ghost { border-color: var(--paper-12); color: var(--paper); }
-    .btn-ghost:hover { border-color: var(--paper-45); }
-    .btn:focus-visible, .nav-links a:focus-visible, .logo:focus-visible, .footer-links a:focus-visible {
-      outline: 2px solid var(--accent); outline-offset: 3px; border-radius: var(--radius);
+    .btn-primary { background: var(--ink); color: var(--paper); }
+    .btn-primary:hover { background: var(--accent); }
+    .btn-ghost { border-color: var(--ink-12); color: var(--ink); }
+    .btn-ghost:hover { border-color: var(--ink); }
+    .btn:focus-visible, .nav-links a:focus-visible, .logo:focus-visible, footer a:focus-visible {
+      outline: 2px solid var(--accent); outline-offset: 3px; border-radius: var(--radius-sm);
     }
 
     /* ── Hero ── */
     .hero { padding: var(--sp-6) 0 var(--sp-5); text-align: center; }
-    .eyebrow {
-      display: inline-block; margin-bottom: var(--sp-3);
-      font-size: var(--fs-small); font-weight: 700;
-      letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent);
-    }
-    .hero h1 { margin-bottom: var(--sp-3); }
-    .hero h1 em { font-style: normal; color: var(--accent); }
-    .hero p { max-width: 34rem; margin: 0 auto var(--sp-4); }
-    .hero-cta { display: flex; flex-wrap: wrap; gap: var(--sp-2); justify-content: center; }
+    .hero .eyebrow { margin-bottom: var(--sp-3); }
+    .hero h1 { margin-bottom: var(--sp-3); max-width: 20ch; margin-inline: auto; }
+    .hero p { max-width: 36rem; margin: 0 auto var(--sp-4); }
+    .hero-cta { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
 
     /* ── Xizmatlar lentasi ── */
     .marquee {
       margin-top: var(--sp-5); overflow: hidden;
-      -webkit-mask-image: linear-gradient(90deg, transparent, #000 15%, #000 85%, transparent);
-      mask-image: linear-gradient(90deg, transparent, #000 15%, #000 85%, transparent);
+      -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+      mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
     }
-    .marquee-track { display: flex; gap: var(--sp-1); width: max-content; animation: scroll-x 45s linear infinite; }
+    .marquee-track { display: flex; gap: var(--sp-1); width: max-content; animation: scroll-x 48s linear infinite; }
     .marquee:hover .marquee-track { animation-play-state: paused; }
     .chip {
-      padding: 8px 16px; border-radius: var(--radius-pill);
-      border: 1px solid var(--paper-12); color: var(--paper-70);
+      padding: 9px 18px; border-radius: 100px;
+      border: 1px solid var(--ink-12); color: var(--ink-62);
       font-size: var(--fs-small); font-weight: 500; white-space: nowrap;
     }
     @keyframes scroll-x { to { transform: translateX(-50%); } }
 
     /* ── Raqamlar ── */
     .stats {
-      display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-      gap: var(--sp-3); margin-top: var(--sp-6);
-      border-top: 1px solid var(--paper-12); padding-top: var(--sp-4);
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: var(--sp-3); margin-top: var(--sp-5);
+      border-top: 1px solid var(--ink-12); padding-top: var(--sp-4);
     }
     .stat { text-align: center; }
     .stat strong {
-      display: block; font-size: var(--fs-title); font-weight: 700;
-      letter-spacing: -0.02em; font-variant-numeric: tabular-nums; margin-bottom: 4px;
+      display: block; font-family: var(--serif); font-weight: 600;
+      font-size: var(--fs-title); letter-spacing: -0.01em;
+      font-variant-numeric: tabular-nums; margin-bottom: 2px;
     }
     .stat span {
-      font-size: var(--fs-small); font-weight: 500; color: var(--paper-45);
+      font-size: var(--fs-small); font-weight: 500; color: var(--ink-40);
       letter-spacing: 0.06em; text-transform: uppercase;
     }
 
     /* ── Bo'limlar ── */
     section { padding: var(--sp-6) 0; }
-    .section-head { max-width: 34rem; margin-bottom: var(--sp-4); }
+    .section-head { max-width: 36rem; margin-bottom: var(--sp-4); }
+    .section-head .eyebrow { margin-bottom: var(--sp-1); }
     .section-head h2 { margin-bottom: var(--sp-1); }
 
-    /* ── Imkoniyatlar: to'liq ekranli sahifalar ── */
+    /* ── Imkoniyatlar: raqamlangan, almashinuvchi qatorlar ── */
+    .features { border-top: 1px solid var(--ink-12); }
     .feature {
-      position: relative; width: 100vw; margin-left: calc(-50vw + 50%);
-      min-height: 100vh; display: flex; align-items: center; overflow: hidden;
-      background-size: cover; background-position: center;
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: var(--sp-5); align-items: center;
+      padding: var(--sp-5) 0; border-bottom: 1px solid var(--ink-12);
     }
-    .feature::before {
-      content: ''; position: absolute; inset: 0;
-      background: linear-gradient(90deg, var(--ink) 0%, var(--ink-90) 40%, var(--ink-55) 70%, transparent 100%);
+    .feature.flip .feature-media { order: -1; }
+    .feature-num {
+      font-family: var(--serif); font-weight: 500; font-size: var(--fs-title);
+      color: var(--accent); line-height: 1; display: block; margin-bottom: var(--sp-2);
+      font-variant-numeric: tabular-nums;
     }
-    .feature.right::before {
-      background: linear-gradient(270deg, var(--ink) 0%, var(--ink-90) 40%, var(--ink-55) 70%, transparent 100%);
+    .feature-text h3 { margin-bottom: var(--sp-2); }
+    .feature-media img {
+      width: 100%; aspect-ratio: 4 / 3; object-fit: cover;
+      border-radius: var(--radius); background: var(--ink-035);
     }
-    .feature-inner {
-      position: relative; z-index: 1; max-width: 1120px; width: 100%;
-      margin: 0 auto; padding: 0 var(--sp-3);
-    }
-    .feature-text { max-width: 32rem; }
-    .feature.right .feature-text { margin-left: auto; text-align: right; }
-    .feature-text .eyebrow { margin-bottom: var(--sp-2); }
-    .feature-text h2 { margin-bottom: var(--sp-2); }
 
     /* ── Xizmat kartalari ── */
-    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(248px, 1fr)); gap: var(--sp-2); }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: var(--sp-2); }
     .card {
-      border: 1px solid var(--paper-12); border-radius: var(--radius);
-      padding: var(--sp-3); background: var(--paper-06);
-      transition: border-color 0.25s var(--ease), transform 0.25s var(--ease);
+      border: 1px solid var(--ink-12); border-radius: var(--radius);
+      padding: var(--sp-3); background: var(--paper);
+      transition: border-color 0.25s var(--ease), background 0.25s var(--ease);
     }
-    .card:hover { border-color: var(--paper-45); transform: translateY(-3px); }
-    .card-icon {
-      font-size: var(--fs-title); line-height: 1;
-      margin-bottom: var(--sp-2); display: block;
-    }
-    .card h3 { font-size: var(--fs-body); font-weight: 700; margin-bottom: 6px; }
-    .card p { font-size: var(--fs-small); font-weight: 400; color: var(--paper-70); line-height: 1.55; }
+    .card:hover { border-color: var(--ink-40); background: var(--ink-035); }
+    .card-icon { font-size: var(--fs-title); line-height: 1; display: block; margin-bottom: var(--sp-2); }
+    .card h3 { font-size: var(--fs-body); font-weight: 700; margin-bottom: 4px; }
+    .card p { font-size: var(--fs-small); font-weight: 400; color: var(--ink-62); line-height: 1.6; }
 
     /* ── Qadamlar ── */
     .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: var(--sp-4); }
     .step { border-top: 2px solid var(--accent); padding-top: var(--sp-2); }
     .step .num {
-      font-size: var(--fs-small); font-weight: 700; color: var(--accent);
-      letter-spacing: 0.1em; display: block; margin-bottom: var(--sp-1);
+      font-family: var(--serif); font-weight: 500; font-size: var(--fs-title);
+      color: var(--accent); line-height: 1; display: block; margin-bottom: var(--sp-1);
     }
-    .step h3 { font-size: var(--fs-body); font-weight: 700; margin-bottom: 6px; }
-    .step p { font-size: var(--fs-small); font-weight: 400; color: var(--paper-70); line-height: 1.55; }
+    .step h3 { font-size: var(--fs-body); font-weight: 700; margin-bottom: 4px; }
+    .step p { font-size: var(--fs-small); font-weight: 400; color: var(--ink-62); line-height: 1.6; }
 
-    /* ── Yakuniy chaqiriq ── */
+    /* ── Yakuniy chaqiriq (to'q yuza) ── */
     .cta {
-      border: 1px solid var(--paper-12); border-radius: var(--radius);
-      padding: var(--sp-5) var(--sp-3); text-align: center; margin: var(--sp-6) 0;
+      background: var(--ink); color: var(--paper);
+      border-radius: var(--radius); padding: var(--sp-5) var(--sp-3);
+      text-align: center; margin-bottom: var(--sp-6);
     }
     .cta h2 { margin-bottom: var(--sp-1); }
-    .cta p { max-width: 30rem; margin: 0 auto var(--sp-4); }
-    .cta-buttons { display: flex; gap: var(--sp-2); justify-content: center; flex-wrap: wrap; }
-    .btn[aria-disabled="true"] { opacity: 0.45; cursor: not-allowed; }
+    .cta p { max-width: 32rem; margin: 0 auto var(--sp-4); color: rgba(255, 255, 255, 0.7); }
+    .cta-buttons { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+    .cta .btn-primary { background: var(--paper); color: var(--ink); }
+    .cta .btn-primary:hover { background: var(--accent); color: var(--paper); }
+    .cta .btn-ghost { border-color: rgba(255, 255, 255, 0.25); color: var(--paper); }
+    .cta .btn-ghost:hover { border-color: var(--paper); }
+    .btn[aria-disabled="true"] { opacity: 0.5; cursor: not-allowed; }
 
-    /* ── Futer ── */
-    footer {
-      border-top: 1px solid var(--paper-12); padding: var(--sp-4) 0;
-      display: flex; flex-direction: column; align-items: center; gap: var(--sp-2);
+    /* ── Futer (ustunli) ── */
+    footer { border-top: 1px solid var(--ink-12); padding: var(--sp-5) 0 var(--sp-4); }
+    .footer-top {
+      display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: var(--sp-4);
+      margin-bottom: var(--sp-4);
     }
-    .footer-links { display: flex; gap: var(--sp-3); flex-wrap: wrap; justify-content: center; }
-    .footer-links a {
-      font-size: var(--fs-small); font-weight: 500;
-      color: var(--paper-70); text-decoration: none; transition: color 0.2s var(--ease);
+    .footer-brand p { color: var(--ink-62); font-size: var(--fs-small); max-width: 26rem; margin-top: var(--sp-1); }
+    .footer-col h4 {
+      font-size: var(--fs-small); font-weight: 700; margin-bottom: 12px;
+      letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-40);
     }
-    .footer-links a:hover { color: var(--paper); }
+    .footer-col a {
+      display: block; font-size: var(--fs-small); font-weight: 500; margin-bottom: 8px;
+      color: var(--ink-62); text-decoration: none; transition: color 0.2s var(--ease);
+    }
+    .footer-col a:hover { color: var(--ink); }
+    .footer-bottom { border-top: 1px solid var(--ink-12); padding-top: var(--sp-3); }
+    .footer-bottom p { font-size: var(--fs-small); font-weight: 500; color: var(--ink-40); }
 
     /* ── Ko'rinish animatsiyasi (yagona harakat effekti) ── */
-    .reveal { opacity: 0; transform: translateY(16px); transition: opacity 0.6s var(--ease), transform 0.6s var(--ease); }
+    .reveal { opacity: 0; transform: translateY(16px); transition: opacity 0.7s var(--ease), transform 0.7s var(--ease); }
     .reveal.active { opacity: 1; transform: none; }
 
+    @media (max-width: 860px) {
+      .feature { grid-template-columns: 1fr; gap: var(--sp-3); padding: var(--sp-4) 0; }
+      .feature.flip .feature-media { order: 0; }
+      .footer-top { grid-template-columns: 1fr; gap: var(--sp-3); }
+    }
     @media (max-width: 768px) {
       .nav-links .hide-mobile { display: none; }
       .hero { padding: var(--sp-5) 0 var(--sp-4); }
-      .feature { min-height: 86vh; }
-      .feature::before, .feature.right::before {
-        background: linear-gradient(180deg, var(--ink-55) 0%, var(--ink-90) 55%, var(--ink) 100%);
-      }
-      .feature.right .feature-text { margin-left: 0; text-align: left; }
     }
     @media (prefers-reduced-motion: reduce) {
       .marquee-track { animation: none; }
@@ -294,8 +300,9 @@
 <body>
   <nav id="nav">
     <div class="nav-inner">
-      <a href="/" class="logo" aria-label="HubServis — bosh sahifa">Hubservis</a>
+      <a href="/" class="logo" aria-label="HubServis — bosh sahifa">HubServis</a>
       <div class="nav-links">
+        <a href="#imkoniyatlar" class="hide-mobile">Imkoniyatlar</a>
         <a href="#xizmatlar" class="hide-mobile">Xizmatlar</a>
         <a href="#qanday" class="hide-mobile">Qanday ishlaydi</a>
         <a href="#yuklab" class="btn btn-primary">Ilovani yuklash</a>
@@ -307,7 +314,7 @@
     <!-- Hero -->
     <section class="hero reveal">
       <span class="eyebrow">Xizmatlar platformasi</span>
-      <h1 class="t-display">Barcha xizmatlar<br><em>bir ilovada</em></h1>
+      <h1 class="t-display">Barcha xizmatlar bir ilovada — toping, bron qiling, baholang</h1>
       <p class="t-body muted">Sartarosh, usta, tozalash, avto-yordam, kuryerlik va boshqa 19+ xizmatni bitta ilovadan toping va buyurtma bering.</p>
       <div class="hero-cta">
         <a href="#yuklab" class="btn btn-primary">Ilovani yuklash</a>
@@ -327,77 +334,111 @@
     </section>
 
     <!-- Imkoniyatlar -->
-    <section class="feature" style="background-image:url('/static/landing/img/all_services.webp')">
-      <div class="feature-inner"><div class="feature-text reveal">
-        <span class="eyebrow">26+ xizmat</span>
-        <h2 class="t-display">Barcha xizmatlar</h2>
-        <p class="t-body muted">Sartarosh, usta, tozalash, avto-yordam, kuryerlik va boshqa 26+ xizmatni sanoqli soniyada toping va bron qiling.</p>
-      </div></div>
-    </section>
+    <section id="imkoniyatlar">
+      <div class="section-head reveal">
+        <span class="eyebrow">Imkoniyatlar</span>
+        <h2 class="t-title">Bitta ilova — kunlik hayotingizning barcha ehtiyoji uchun</h2>
+      </div>
 
-    <section class="feature right" style="background-image:url('/static/landing/img/smart_shopping.webp')">
-      <div class="feature-inner"><div class="feature-text reveal">
-        <span class="eyebrow">Tejamkor xarid</span>
-        <h2 class="t-display">Aqlli savdo</h2>
-        <p class="t-body muted">Bozorlik ro'yxatini tuzing — o'rtacha narxlar bilan xarajatni oldindan hisoblang va byudjetdan chiqib ketmang.</p>
-      </div></div>
-    </section>
+      <div class="features">
+        <article class="feature reveal">
+          <div class="feature-text">
+            <span class="feature-num">01</span>
+            <h3 class="t-title">Barcha xizmatlar</h3>
+            <p class="t-body muted">Sartarosh, usta, tozalash, avto-yordam, kuryerlik va boshqa 26+ xizmatni sanoqli soniyada toping va bron qiling.</p>
+          </div>
+          <div class="feature-media">
+            <img src="/static/landing/img/all_services.webp" alt="Barcha xizmatlar bo'limi" loading="lazy" width="800" height="600">
+          </div>
+        </article>
 
-    <section class="feature" style="background-image:url('/static/landing/img/calorie_counter.webp')">
-      <div class="feature-inner"><div class="feature-text reveal">
-        <span class="eyebrow">Sun'iy intellekt</span>
-        <h2 class="t-display">Kaloriya hisoblagich</h2>
-        <p class="t-body muted">Taom rasmini oling — sun'iy intellekt kaloriya, oqsil, yog' va uglevodni bir zumda hisoblab beradi.</p>
-      </div></div>
-    </section>
+        <article class="feature flip reveal">
+          <div class="feature-text">
+            <span class="feature-num">02</span>
+            <h3 class="t-title">Aqlli savdo</h3>
+            <p class="t-body muted">Bozorlik ro'yxatini tuzing — o'rtacha narxlar bilan xarajatni oldindan hisoblang va byudjetdan chiqib ketmang.</p>
+          </div>
+          <div class="feature-media">
+            <img src="/static/landing/img/smart_shopping.webp" alt="Aqlli savdo bo'limi" loading="lazy" width="800" height="600">
+          </div>
+        </article>
 
-    <section class="feature right" style="background-image:url('/static/landing/img/fitness_trainer.webp')">
-      <div class="feature-inner"><div class="feature-text reveal">
-        <span class="eyebrow">1300+ mashq</span>
-        <h2 class="t-display">Fitnes trener</h2>
-        <p class="t-body muted">Shaxsiy mashg'ulot rejasi va 1300+ mashqli kutubxona — maqsadingizga mos, bosqichma-bosqich dastur.</p>
-      </div></div>
-    </section>
+        <article class="feature reveal">
+          <div class="feature-text">
+            <span class="feature-num">03</span>
+            <h3 class="t-title">Kaloriya hisoblagich</h3>
+            <p class="t-body muted">Taom rasmini oling — sun'iy intellekt kaloriya, oqsil, yog' va uglevodni bir zumda hisoblab beradi.</p>
+          </div>
+          <div class="feature-media">
+            <img src="/static/landing/img/calorie_counter.webp" alt="Kaloriya hisoblagich bo'limi" loading="lazy" width="800" height="600">
+          </div>
+        </article>
 
-    <section class="feature" style="background-image:url('/static/landing/img/my_finance.webp')">
-      <div class="feature-inner"><div class="feature-text reveal">
-        <span class="eyebrow">Nazorat</span>
-        <h2 class="t-display">Mening moliyam</h2>
-        <p class="t-body muted">Daromad va xarajatlarni kuzating, byudjetni boshqaring — sun'iy intellekt aqlli moliyaviy maslahat beradi.</p>
-      </div></div>
-    </section>
+        <article class="feature flip reveal">
+          <div class="feature-text">
+            <span class="feature-num">04</span>
+            <h3 class="t-title">Fitnes trener</h3>
+            <p class="t-body muted">Shaxsiy mashg'ulot rejasi va 1300+ mashqli kutubxona — maqsadingizga mos, bosqichma-bosqich dastur.</p>
+          </div>
+          <div class="feature-media">
+            <img src="/static/landing/img/fitness_trainer.webp" alt="Fitnes trener bo'limi" loading="lazy" width="800" height="600">
+          </div>
+        </article>
 
-    <section class="feature right" style="background-image:url('/static/landing/img/my_plans.webp')">
-      <div class="feature-inner"><div class="feature-text reveal">
-        <span class="eyebrow">Eslatma</span>
-        <h2 class="t-display">Rejalarim</h2>
-        <p class="t-body muted">Kunlik rejalar va vazifalar — muhim ishlarni belgilangan vaqtda eslatib, hech narsani unutmaysiz.</p>
-      </div></div>
-    </section>
+        <article class="feature reveal">
+          <div class="feature-text">
+            <span class="feature-num">05</span>
+            <h3 class="t-title">Mening moliyam</h3>
+            <p class="t-body muted">Daromad va xarajatlarni kuzating, byudjetni boshqaring — sun'iy intellekt aqlli moliyaviy maslahat beradi.</p>
+          </div>
+          <div class="feature-media">
+            <img src="/static/landing/img/my_finance.webp" alt="Moliya bo'limi" loading="lazy" width="800" height="600">
+          </div>
+        </article>
 
-    <section class="feature" style="background-image:url('/static/landing/img/alarm.webp')">
-      <div class="feature-inner"><div class="feature-text reveal">
-        <span class="eyebrow">Uyg'onish</span>
-        <h2 class="t-display">Majburlovchi budilnik</h2>
-        <p class="t-body muted">O'chirish uchun matematik misol yeching, biror narsani rasmga oling yoki matn o'qing — endi uyquni yenging.</p>
-      </div></div>
-    </section>
+        <article class="feature flip reveal">
+          <div class="feature-text">
+            <span class="feature-num">06</span>
+            <h3 class="t-title">Rejalarim</h3>
+            <p class="t-body muted">Kunlik rejalar va vazifalar — muhim ishlarni belgilangan vaqtda eslatib, hech narsani unutmaysiz.</p>
+          </div>
+          <div class="feature-media">
+            <img src="/static/landing/img/my_plans.webp" alt="Rejalar bo'limi" loading="lazy" width="800" height="600">
+          </div>
+        </article>
 
-    <section class="feature right" style="background-image:url('/static/landing/img/ai.webp')">
-      <div class="feature-inner"><div class="feature-text reveal">
-        <span class="eyebrow">AI agent</span>
-        <h2 class="t-display">AI yordamchi</h2>
-        <p class="t-body muted">Ovoz yoki matn bilan buyruq bering — reja qo'shadi, budilnik quradi, hatto xizmat bron qiladi.</p>
-      </div></div>
+        <article class="feature reveal">
+          <div class="feature-text">
+            <span class="feature-num">07</span>
+            <h3 class="t-title">Majburlovchi budilnik</h3>
+            <p class="t-body muted">O'chirish uchun matematik misol yeching, biror narsani rasmga oling yoki matn o'qing — endi uyquni yenging.</p>
+          </div>
+          <div class="feature-media">
+            <img src="/static/landing/img/alarm.webp" alt="Budilnik bo'limi" loading="lazy" width="800" height="600">
+          </div>
+        </article>
+
+        <article class="feature flip reveal">
+          <div class="feature-text">
+            <span class="feature-num">08</span>
+            <h3 class="t-title">AI yordamchi</h3>
+            <p class="t-body muted">Ovoz yoki matn bilan buyruq bering — reja qo'shadi, budilnik quradi, hatto xizmat bron qiladi.</p>
+          </div>
+          <div class="feature-media">
+            <img src="/static/landing/img/ai.webp" alt="AI yordamchi bo'limi" loading="lazy" width="800" height="600">
+          </div>
+        </article>
+      </div>
     </section>
 
     <!-- Xizmatlar -->
-    <section id="xizmatlar" class="reveal">
-      <div class="section-head">
+    <section id="xizmatlar">
+      <div class="section-head reveal">
+        <span class="eyebrow">Yo'nalishlar</span>
         <h2 class="t-title">Xizmatlar</h2>
         <p class="t-body muted">O'zingizga kerakli soha ustalarini sanoqli soniyada toping.</p>
       </div>
-      <div class="grid">
+      <div class="grid reveal">
         <div class="card"><span class="card-icon">✂️</span><h3>Sartarosh va go'zallik</h3><p>Professional soch turmaklash va go'zallik salonlari xizmatlari sizning hududingizda.</p></div>
         <div class="card"><span class="card-icon">⚡</span><h3>Elektrik</h3><p>Uyingizdagi nosozliklarni bartaraf etish uchun malakali elektr ustalarini chaqiring.</p></div>
         <div class="card"><span class="card-icon">💧</span><h3>Santexnik</h3><p>Quvurlar, kranlar va isitish tizimlarini ta'mirlash uchun ishonchli ustalar.</p></div>
@@ -410,12 +451,13 @@
     </section>
 
     <!-- Qanday ishlaydi -->
-    <section id="qanday" class="reveal">
-      <div class="section-head">
+    <section id="qanday">
+      <div class="section-head reveal">
+        <span class="eyebrow">Jarayon</span>
         <h2 class="t-title">Qanday ishlaydi</h2>
         <p class="t-body muted">Uchta qadam — boshqa hech narsa talab qilinmaydi.</p>
       </div>
-      <div class="steps">
+      <div class="steps reveal">
         <div class="step">
           <span class="num">01</span>
           <h3>Tanlash</h3>
@@ -437,7 +479,7 @@
     <!-- Yuklab olish -->
     <div class="cta reveal" id="yuklab">
       <h2 class="t-title">Mobil ilovani yuklab oling</h2>
-      <p class="t-body muted">Rasmiy HubServis ilovasi tez orada iOS va Android platformalarida chiqadi.</p>
+      <p class="t-body">Rasmiy HubServis ilovasi tez orada iOS va Android platformalarida chiqadi.</p>
       <div class="cta-buttons">
         <span class="btn btn-primary" aria-disabled="true">App Store — tez orada</span>
         <span class="btn btn-ghost" aria-disabled="true">Google Play — tez orada</span>
@@ -446,15 +488,30 @@
   </main>
 
   <footer>
-    <a href="/" class="logo">Hubservis</a>
-    <div class="footer-links">
-      <a href="#xizmatlar">Xizmatlar</a>
-      <a href="/admin/login">Hamkorlar</a>
-      <a href="https://api.hubservis.uz/docs">API</a>
-      <a href="/terms">Foydalanish shartlari</a>
-      <a href="/privacy">Maxfiylik siyosati</a>
+    <div class="wrap">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <a href="/" class="logo">HubServis</a>
+          <p>Barcha maishiy va professional xizmatlar bir ilovada — toping, bron qiling va baholang.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Platforma</h4>
+          <a href="#imkoniyatlar">Imkoniyatlar</a>
+          <a href="#xizmatlar">Xizmatlar</a>
+          <a href="#qanday">Qanday ishlaydi</a>
+        </div>
+        <div class="footer-col">
+          <h4>Hujjatlar</h4>
+          <a href="/admin/login">Hamkorlar</a>
+          <a href="https://api.hubservis.uz/docs">API</a>
+          <a href="/terms">Foydalanish shartlari</a>
+          <a href="/privacy">Maxfiylik siyosati</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2026 HubServis. Barcha huquqlar himoyalangan.</p>
+      </div>
     </div>
-    <p class="t-small quiet">© 2026 HubServis. Barcha huquqlar himoyalangan.</p>
   </footer>
 
   <script>
@@ -471,7 +528,7 @@
         e.target.classList.add('active');
         io.unobserve(e.target);
       }
-    }, { threshold: 0.15 });
+    }, { threshold: 0.12 });
     document.querySelectorAll('.reveal').forEach(el => io.observe(el));
 
     // Raqamlarni sanash
