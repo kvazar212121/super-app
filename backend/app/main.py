@@ -5,7 +5,7 @@ import traceback
 from contextlib import asynccontextmanager
 from pathlib import Path
 
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
@@ -293,6 +293,24 @@ def create_app() -> FastAPI:
                 "en": _settings_svc.get("legal_privacy_en", "") or _settings_svc.get_legal("privacy"),
             },
         ))
+
+    @app.get("/yuklash", include_in_schema=False)
+    async def download_apk():
+        """Android ilovasini (APK) to'g'ridan-to'g'ri yuklab olish.
+
+        Fayl `uploads` volumida yotadi — git'ga tushmaydi va konteyner qayta
+        qurilganda ham yo'qolmaydi. Yangi versiya chiqsa shu nom bilan ustiga
+        nusxalanadi, havola o'zgarmaydi.
+        """
+        from fastapi.responses import FileResponse
+        apk = Path(settings.upload_dir) / "hubservis.apk"
+        if not apk.is_file():
+            raise HTTPException(status_code=404, detail="Ilova fayli hozircha mavjud emas")
+        return FileResponse(
+            path=str(apk),
+            media_type="application/vnd.android.package-archive",
+            filename="HubServis.apk",
+        )
 
     @app.get("/delete-account", include_in_schema=False)
     async def delete_account_page():

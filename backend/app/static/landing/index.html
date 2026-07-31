@@ -256,6 +256,7 @@
     .cta h2 { margin-bottom: var(--sp-1); }
     .cta p { max-width: 32rem; margin: 0 auto var(--sp-4); color: rgba(255, 255, 255, 0.7); }
     .cta-buttons { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+    .cta-note { margin-top: var(--sp-2); color: rgba(255, 255, 255, 0.45); }
     .cta .btn-primary { background: var(--paper); color: var(--ink); }
     .cta .btn-primary:hover { background: var(--accent); color: var(--paper); }
     .cta .btn-ghost { border-color: rgba(255, 255, 255, 0.25); color: var(--paper); }
@@ -483,11 +484,12 @@
     <!-- Yuklab olish -->
     <div class="cta reveal" id="yuklab">
       <h2 class="t-title">Mobil ilovani yuklab oling</h2>
-      <p class="t-body">Rasmiy HubServis ilovasi tez orada iOS va Android platformalarida chiqadi.</p>
+      <p class="t-body">Android uchun ilovani hoziroq yuklab oling. Google Play va App Store versiyalari tez orada.</p>
       <div class="cta-buttons">
-        <span class="btn btn-primary" aria-disabled="true">App Store — tez orada</span>
-        <span class="btn btn-ghost" aria-disabled="true">Google Play — tez orada</span>
+        <a href="/yuklash" class="btn btn-primary" download>Android uchun yuklab olish</a>
+        <span class="btn btn-ghost" aria-disabled="true">App Store — tez orada</span>
       </div>
+      <p class="t-small cta-note">APK fayli · 49 MB · zamonaviy Android qurilmalar (64-bit)</p>
     </div>
   </main>
 
