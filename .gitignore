@@ -107,3 +107,7 @@ serviceAccountKey.json
 
 # LibreOffice lock fayllari
 .~lock.*#
+
+# Firebase client config (API key bor — oshkor qilinmaydi!)
+android/app/google-services.json
+ios/Runner/GoogleService-Info.plist

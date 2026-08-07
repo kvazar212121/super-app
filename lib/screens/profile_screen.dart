@@ -11,10 +11,12 @@ import '../widgets/provider_portal_entry.dart';
 import '../theme/glass_tokens.dart';
 import '../l10n/locale_controller.dart';
 import 'auth/auth_gate_screen.dart';
+import 'auth/pin_setup_screen.dart';
 import 'premium/premium_screen.dart';
 import 'orders_screen.dart';
 import 'support/support_center_screen.dart';
 import '../config/app_config.dart';
+import '../services/pin_service.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -134,6 +136,9 @@ class ProfileScreen extends StatelessWidget {
                   ],
                 ),
               ),
+              const SizedBox(height: 12),
+              // PIN himoya bo'limi
+              const _PinSection(),
               const SizedBox(height: 12),
               // Yordam markazi (AI yordamchi / operator)
               GlassSurface(
@@ -820,6 +825,159 @@ class ProfileScreen extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────
+// PIN himoya bo'limi — alohida StatefulWidget (o'z holati bor)
+// ─────────────────────────────────────────────────────────────
+
+class _PinSection extends StatefulWidget {
+  const _PinSection();
+  @override
+  State<_PinSection> createState() => _PinSectionState();
+}
+
+class _PinSectionState extends State<_PinSection> {
+  bool _pinEnabled = false;
+  bool _hasPin = false;
+  bool _loading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  Future<void> _load() async {
+    final enabled = await PinService().isEnabled;
+    final hasPin = await PinService().hasPin;
+    if (mounted) {
+      setState(() {
+        _pinEnabled = enabled;
+        _hasPin = hasPin;
+        _loading = false;
+      });
+    }
+  }
+
+  Future<void> _onToggle(bool value) async {
+    if (value) {
+      if (!_hasPin) {
+        // PIN o'rnatish ekranini ochish
+        if (!mounted) return;
+        final ok = await Navigator.of(context).push<bool>(
+          MaterialPageRoute(builder: (_) => const PinSetupScreen()),
+        );
+        if (ok != true) return; // Bekor qilindi
+        if (mounted) {
+          setState(() {
+            _pinEnabled = true;
+            _hasPin = true;
+          });
+        }
+      } else {
+        await PinService().setEnabled(true);
+        if (mounted) setState(() => _pinEnabled = true);
+      }
+    } else {
+      await PinService().setEnabled(false);
+      if (mounted) setState(() => _pinEnabled = false);
+    }
+  }
+
+  Future<void> _changePin() async {
+    if (!mounted) return;
+    final ok = await Navigator.of(context).push<bool>(
+      MaterialPageRoute(builder: (_) => const PinSetupScreen(isChange: true)),
+    );
+    if (ok == true && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('PIN muvaffaqiyatli o\'zgartirildi'.tr)),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_loading) {
+      return const SizedBox(height: 56, child: Center(child: CircularProgressIndicator(strokeWidth: 2)));
+    }
+    return Column(
+      children: [
+        // Asosiy toggle qator
+        GlassSurface(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          opacity: 0.55,
+          child: Row(
+            children: [
+              Icon(Icons.lock_outlined, color: GlassTokens.primaryText(context)),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'PIN himoya'.tr,
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        color: GlassTokens.primaryText(context),
+                      ),
+                    ),
+                    Text(
+                      _pinEnabled
+                          ? 'Ilova ochilganda PIN so\'raladi'.tr
+                          : 'Background\'dan qaytganda PIN so\'raladi'.tr,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: GlassTokens.secondaryText(context),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Switch(
+                value: _pinEnabled,
+                onChanged: _onToggle,
+                activeThumbColor: const Color(0xFF6366F1),
+              ),
+            ],
+          ),
+        ),
+        // "PIN o'zgartirish" tugmasi — faqat PIN o'rnatilgan bo'lsa
+        if (_hasPin) ...[          
+          const SizedBox(height: 8),
+          GlassSurface(
+            onTap: _changePin,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            opacity: 0.45,
+            child: Row(
+              children: [
+                Icon(
+                  Icons.edit_outlined,
+                  color: GlassTokens.secondaryText(context),
+                  size: 20,
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    'PIN o\'zgartirish'.tr,
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      color: GlassTokens.secondaryText(context),
+                    ),
+                  ),
+                ),
+                Icon(
+                  Icons.chevron_right,
+                  color: GlassTokens.secondaryText(context),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ],
     );
   }
 }

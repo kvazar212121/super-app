@@ -27,17 +27,12 @@ class _AuthGateScreenState extends State<AuthGateScreen> {
 
   final _name = TextEditingController();
   final _surname = TextEditingController();
-  final _password = TextEditingController();
-  final _passwordConfirm = TextEditingController();
-  bool _obscure = true;
   bool _agreedToTerms = false;
 
   @override
   void dispose() {
     _name.dispose();
     _surname.dispose();
-    _password.dispose();
-    _passwordConfirm.dispose();
     super.dispose();
   }
 
@@ -55,26 +50,22 @@ class _AuthGateScreenState extends State<AuthGateScreen> {
       _toast('Ism va familiyani kiriting'.tr);
       return;
     }
-    if (_password.text.length < 4) {
-      _toast('Parol kamida 4 belgi'.tr);
-      return;
-    }
-    if (_password.text != _passwordConfirm.text) {
-      _toast('Parollar mos emas'.tr);
-      return;
-    }
     if (!_agreedToTerms) {
       _toast('Davom etish uchun foydalanish shartlariga rozilik bering'.tr);
       return;
     }
     if (_verifiedPhone == null || _verificationToken == null) return;
 
+    // Foydalanuvchi ko'rmaydigan avtomatik parol — kirish faqat SMS OTP orqali
+    final autoPassword =
+        'Hs${DateTime.now().millisecondsSinceEpoch}${_verifiedPhone!.replaceAll(RegExp(r'[^0-9]'), '')}';
+
     final auth = context.read<AuthProvider>();
     final ok = await auth.register(
       name: _name.text.trim(),
       surname: _surname.text.trim(),
       phone: _verifiedPhone!,
-      password: _password.text,
+      password: autoPassword,
       verificationToken: _verificationToken!,
     );
     if (!mounted) return;
@@ -219,31 +210,7 @@ class _AuthGateScreenState extends State<AuthGateScreen> {
             prefixIcon: const Icon(LucideIcons.users, size: 20),
           ),
         ),
-        const SizedBox(height: 14),
-        TextFormField(
-          controller: _password,
-          obscureText: _obscure,
-          decoration: InputDecoration(
-            labelText: 'Parol'.tr,
-            prefixIcon: const Icon(LucideIcons.lock, size: 20),
-            suffixIcon: IconButton(
-              icon: Icon(
-                _obscure ? LucideIcons.eyeOff : LucideIcons.eye,
-                size: 20,
-              ),
-              onPressed: () => setState(() => _obscure = !_obscure),
-            ),
-          ),
-        ),
-        const SizedBox(height: 14),
-        TextFormField(
-          controller: _passwordConfirm,
-          obscureText: _obscure,
-          decoration: InputDecoration(
-            labelText: 'Parolni tasdiqlang'.tr,
-            prefixIcon: const Icon(LucideIcons.shieldCheck, size: 20),
-          ),
-        ),
+
         const SizedBox(height: 16),
         // Foydalanish shartlariga rozilik (majburiy)
         Row(

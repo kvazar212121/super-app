@@ -9,6 +9,8 @@ import '../services/call_service.dart';
 import '../services/firebase_service.dart';
 import '../services/callkit_service.dart';
 import '../services/connectivity_service.dart';
+import '../services/pin_service.dart';
+import 'auth/pin_lock_screen.dart';
 import 'main_screen.dart';
 import 'provider_side/unified_provider_dashboard_screen.dart';
 
@@ -33,6 +35,8 @@ class RootShell extends StatefulWidget {
 }
 
 class _RootShellState extends State<RootShell> with WidgetsBindingObserver {
+  // Ilova haqiqatan pauzaga ketganligini kuzatish uchun
+  bool _wasBackground = false;
   @override
   void initState() {
     super.initState();
@@ -98,17 +102,38 @@ class _RootShellState extends State<RootShell> with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    // Ilova qaytganda WS uzilib qolgan bo'lishi mumkin — qayta ulaymiz,
-    // shunda ochiq holatda chaqiruv doim keladi.
+    // Ilova background'ga ketsa belgilab qo'yamiz
+    if (state == AppLifecycleState.paused) {
+      _wasBackground = true;
+    }
+    // Ilova qaytganda WS uzilib qolgan bo'lishi mumkin — qayta ulaymiz
     if (state == AppLifecycleState.resumed) {
       if (mounted && context.read<AuthProvider>().isAuthenticated) {
         CallService().connectWebSocket();
-        // Push token'ni ham vaqti-vaqti bilan serverga tasdiqlaymiz — shunda
-        // token yo'qolib qolsa (server tozalagan, xato bilan o'chgan) o'zi
-        // tiklanadi va ilova YOPIQ holatda chaqiruv/bildirishnoma kelaveradi.
+        // Push token'ni ham vaqti-vaqti bilan serverga tasdiqlaymiz
         FirebaseService().syncTokenIfStale();
       }
+      // Faqat background'dan qaytganda PIN tekshiramiz
+      if (_wasBackground) {
+        _wasBackground = false;
+        _checkPinLock();
+      }
     }
+  }
+
+  /// PIN yoqilgan bo'lsa — qulflanish ekranini chiqaradi.
+  Future<void> _checkPinLock() async {
+    if (!mounted) return;
+    final isAuth = context.read<AuthProvider>().isAuthenticated;
+    if (!isAuth) return;
+    final pinEnabled = await PinService().isEnabled;
+    if (!pinEnabled || !mounted) return;
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        fullscreenDialog: true,
+        builder: (_) => const PinLockScreen(),
+      ),
+    );
   }
 
   @override
