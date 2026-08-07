@@ -57,6 +57,12 @@
     @keyframes drift2 { 0%,100%{transform:translate(0,0) scale(1)} 50%{transform:translate(-5vw,6vw) scale(1.08)} }
     @keyframes drift3 { 0%,100%{transform:translate(0,0) scale(1)} 50%{transform:translate(4vw,-5vw) scale(1.15)} }
 
+    /* ── Kosmik dengiz to'lqinlari (canvas) ── */
+    #ocean-waves {
+      position: fixed; inset: 0; width: 100%; height: 100%;
+      z-index: 0; pointer-events: none;
+    }
+
     /* Background grid effect */
     body::before {
       content: '';
@@ -338,6 +344,7 @@
 </head>
 <body>
   <div id="progress"></div>
+  <canvas id="ocean-waves"></canvas>
   <div class="aurora"><span class="a1"></span><span class="a2"></span><span class="a3"></span></div>
   <div class="cursor-glow" id="cursorGlow"></div>
 
@@ -610,6 +617,81 @@
       });
       btn.addEventListener('pointerleave', () => { btn.style.transform = ''; });
     });
+
+    // ── Kosmik dengiz to'lqinlari animatsiyasi ──
+    (function () {
+      const canvas = document.getElementById('ocean-waves');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      let W = 0, H = 0, dpr = 1;
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      function resize() {
+        dpr = Math.min(window.devicePixelRatio || 1, 2);
+        W = canvas.width = Math.floor(innerWidth * dpr);
+        H = canvas.height = Math.floor(innerHeight * dpr);
+        canvas.style.width = innerWidth + 'px';
+        canvas.style.height = innerHeight + 'px';
+      }
+      resize();
+      window.addEventListener('resize', resize, { passive: true });
+
+      const stars = [];
+      for (let i = 0; i < 90; i++) {
+        stars.push({
+          x: Math.random(), y: Math.random() * 0.58,
+          r: Math.random() * 1.2 + 0.3,
+          ph: Math.random() * Math.PI * 2,
+          sp: Math.random() * 0.9 + 0.3,
+        });
+      }
+
+      const layers = [
+        { amp: 22, len: 0.9, speed: 0.020, y: 0.60, col: 'rgba(99,102,241,0.34)' },
+        { amp: 30, len: 1.3, speed: -0.014, y: 0.70, col: 'rgba(34,211,238,0.28)' },
+        { amp: 26, len: 1.1, speed: 0.017, y: 0.80, col: 'rgba(168,85,247,0.26)' },
+        { amp: 38, len: 1.7, speed: -0.011, y: 0.90, col: 'rgba(30,58,138,0.42)' },
+      ];
+
+      let t = 0;
+      function draw() {
+        t += reduce ? 0 : 1;
+        ctx.clearRect(0, 0, W, H);
+
+        for (const s of stars) {
+          const a = 0.35 + 0.55 * Math.abs(Math.sin(t * 0.01 * s.sp + s.ph));
+          ctx.beginPath();
+          ctx.arc(s.x * W, s.y * H, s.r * dpr, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(205,225,255,' + (a * 0.6) + ')';
+          ctx.fill();
+        }
+
+        ctx.globalCompositeOperation = 'screen';
+        for (const L of layers) {
+          const baseY = L.y * H, amp = L.amp * dpr;
+          ctx.beginPath();
+          ctx.moveTo(0, H);
+          for (let x = 0; x <= W; x += 8 * dpr) {
+            const k = x / dpr;
+            const y = baseY
+              + Math.sin(k * 0.006 * L.len + t * L.speed) * amp
+              + Math.sin(k * 0.013 * L.len - t * L.speed * 1.6) * amp * 0.4;
+            ctx.lineTo(x, y);
+          }
+          ctx.lineTo(W, H);
+          ctx.closePath();
+          const g = ctx.createLinearGradient(0, baseY - amp, 0, H);
+          g.addColorStop(0, L.col);
+          g.addColorStop(1, 'rgba(5,5,10,0)');
+          ctx.fillStyle = g;
+          ctx.fill();
+        }
+        ctx.globalCompositeOperation = 'source-over';
+
+        requestAnimationFrame(draw);
+      }
+      draw();
+    })();
   </script>
 </body>
 </html>
