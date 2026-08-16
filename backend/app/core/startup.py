@@ -13,6 +13,8 @@ from app.db.base import Base
 from app.db.session import async_session, engine
 from app.models.user import User
 from app.models.promo import Promo
+from app.models.category import Category, CategoryVariant
+from app.categories_data import CATEGORIES_DATA
 
 logger = logging.getLogger(__name__)
 
@@ -27,6 +29,53 @@ async def _should_run_init() -> bool:
     except Exception:
         return True
     return True
+
+
+async def sync_categories() -> int:
+    """`CATEGORIES_DATA` dagi yetishmayotgan kategoriyalarni bazaga qo'shadi.
+
+    Nega kerak: ilgari kategoriyalar FAQAT `seed.py` da, FAQAT butunlay bo'sh
+    bazada yaratilardi. Shu sababli `CATEGORIES_DATA` ga qo'shilgan yangi
+    xizmat ishlab turgan serverga hech qachon tushmasdi va ilovada o'sha
+    bo'lim doim bo'sh ko'rinardi.
+
+    Mavjud kategoriyalar O'ZGARTIRILMAYDI — adminda qo'lda tahrirlangan
+    nom/rang saqlanadi. Takroriy chaqirilsa dublikat yaratmaydi.
+
+    Qaytaradi: qo'shilgan kategoriyalar soni.
+    """
+    async with async_session() as db:
+        existing_keys = set(
+            (await db.execute(select(Category.key))).scalars().all()
+        )
+
+        added = 0
+        for cat_info in CATEGORIES_DATA:
+            if cat_info["key"] in existing_keys:
+                continue
+            category = Category(
+                key=cat_info["key"],
+                title_uz=cat_info["title_uz"],
+                subtitle_uz=cat_info.get("subtitle_uz"),
+                icon=cat_info["icon"],
+                accent_color=cat_info["accent_color"],
+            )
+            db.add(category)
+            await db.flush()
+            for var_info in cat_info.get("variants", []):
+                db.add(
+                    CategoryVariant(
+                        category_id=category.id,
+                        label_uz=var_info["label_uz"],
+                        base_price=var_info["base_price"],
+                    )
+                )
+            added += 1
+
+        if added:
+            await db.commit()
+            logger.info("Yangi kategoriyalar qo'shildi: %d", added)
+        return added
 
 
 async def run_startup_init():
@@ -132,6 +181,9 @@ async def run_startup_init():
                 logger.info("Retention: %s ta eski bildirishnoma tozalandi (>30 kun)", deleted.rowcount)
         except Exception as e:
             logger.warning("Bildirishnoma retention xatosi: %s", e)
+
+    # Yangi xizmat kategoriyalarini bazaga qo'shamiz (deploy paytida).
+    await sync_categories()
 
     # Seed admin user & default promos
     async with async_session() as db:

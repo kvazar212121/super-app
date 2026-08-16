@@ -255,6 +255,58 @@ async def test_flutter_and_backend_keys_match():
     print(f"  ✓ Flutter {len(flutter_keys)} kaliti backendda mavjud")
 
 
+async def test_startup_syncs_categories():
+    """DEPLOY oqimi: konteyner qayta ishga tushganda yangi kategoriyalar
+    avtomatik qo'shilishi kerak.
+
+    Ilgari bu ishlamasdi: startup init kategoriyalarga umuman tegmasdi,
+    seed esa faqat bo'sh bazada ishlardi. Natijada CATEGORIES_DATA ga
+    qo'shilgan yangi xizmat serverga chiqmas va bo'lim bo'sh ko'rinardi.
+    """
+    from sqlalchemy import select as _select
+    from app.core.startup import sync_categories
+    import app.db.session as _sess
+
+    engine, Session = await _setup()
+
+    # `sync_categories` modul darajasidagi `async_session` ni ishlatadi —
+    # testda uni vaqtincha xotira bazasiga yo'naltiramiz.
+    orig = _sess.async_session
+    import app.core.startup as _startup
+    orig_startup = _startup.async_session
+    _sess.async_session = Session
+    _startup.async_session = Session
+    try:
+        async with Session() as db:
+            # "Serverdagi" holat: yangi 3 tasidan tashqari hammasi bor
+            for c in CATEGORIES_DATA:
+                if c["key"] in NEW_KEYS:
+                    continue
+                db.add(Category(
+                    key=c["key"], title_uz=c["title_uz"],
+                    subtitle_uz=c["subtitle_uz"], icon=c["icon"],
+                    accent_color=c["accent_color"],
+                ))
+            await db.commit()
+
+        added = await sync_categories()
+        assert added == len(NEW_KEYS), f"kutilgan {len(NEW_KEYS)}, qo'shildi {added}"
+
+        async with Session() as db:
+            keys = set((await db.execute(_select(Category.key))).scalars().all())
+            for k in NEW_KEYS:
+                assert k in keys, f"{k} qo'shilmadi"
+
+        # Takroriy restart dublikat yaratmasin
+        again = await sync_categories()
+        assert again == 0, f"takroriy chaqiruv {again} ta dublikat yaratdi"
+        print("  ✓ startup yangi kategoriyalarni qo'shadi, takrorlamaydi")
+    finally:
+        _sess.async_session = orig
+        _startup.async_session = orig_startup
+        await engine.dispose()
+
+
 async def main():
     tests = [
         ("sort=rating tartibi", test_sort_by_rating),
@@ -264,6 +316,7 @@ async def main():
         ("seed yangilarini qo'shadi", test_seed_adds_missing_categories),
         ("seed kalitlari haqiqiy", test_seed_data_keys_are_valid),
         ("Flutter<->backend kalitlari", test_flutter_and_backend_keys_match),
+        ("startup kategoriya sinxroni", test_startup_syncs_categories),
     ]
     failed = 0
     for name, fn in tests:
