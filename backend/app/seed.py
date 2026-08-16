@@ -72,32 +72,48 @@ async def seed():
     async_session = async_sessionmaker(engine, expire_on_commit=False)
 
     async with async_session() as db:
-        # Kategoriyalar bo'sh bo'lsa yuklash
-        cat_count = (await db.execute(select(func.count(Category.id)))).scalar() or 0
-        if cat_count == 0:
-            logger.info("Kategoriyalar yuklanmoqda...")
-            for cat_info in CATEGORIES_DATA:
-                category = Category(
-                    key=cat_info["key"],
-                    title_uz=cat_info["title_uz"],
-                    subtitle_uz=cat_info["subtitle_uz"],
-                    icon=cat_info["icon"],
-                    accent_color=cat_info["accent_color"],
-                )
-                db.add(category)
-                await db.flush()
-                for var_info in cat_info["variants"]:
-                    db.add(
-                        CategoryVariant(
-                            category_id=category.id,
-                            label_uz=var_info["label_uz"],
-                            base_price=var_info["base_price"],
-                        )
+        # Kategoriyalarni sinxronlash.
+        #
+        # MUHIM: ilgari bu blok FAQAT baza butunlay bo'sh bo'lganda ishlardi.
+        # Natijada `CATEGORIES_DATA` ga qo'shilgan YANGI kategoriya ishlab
+        # turgan bazaga hech qachon tushmasdi va ilovada bo'lim bo'sh
+        # ko'rinardi. Endi yetishmayotganlari qo'shiladi (mavjudlari
+        # o'zgarmaydi — qo'lda tahrirlangan matnlar saqlanadi).
+        existing = (await db.execute(select(Category))).scalars().all()
+        existing_keys = {c.key for c in existing}
+
+        added = 0
+        for cat_info in CATEGORIES_DATA:
+            if cat_info["key"] in existing_keys:
+                continue
+            category = Category(
+                key=cat_info["key"],
+                title_uz=cat_info["title_uz"],
+                subtitle_uz=cat_info["subtitle_uz"],
+                icon=cat_info["icon"],
+                accent_color=cat_info["accent_color"],
+            )
+            db.add(category)
+            await db.flush()
+            for var_info in cat_info["variants"]:
+                db.add(
+                    CategoryVariant(
+                        category_id=category.id,
+                        label_uz=var_info["label_uz"],
+                        base_price=var_info["base_price"],
                     )
+                )
+            added += 1
+
+        if added:
             await db.commit()
-            logger.info("Kategoriyalar yuklandi: %d", len(CATEGORIES_DATA))
+            logger.info(
+                "Yangi kategoriyalar qo'shildi: %d (jami %d)",
+                added,
+                len(existing_keys) + added,
+            )
         else:
-            logger.info("Kategoriyalar allaqachon mavjud: %d", cat_count)
+            logger.info("Kategoriyalar to'liq: %d", len(existing_keys))
 
         # Kategoriya map
         result = await db.execute(select(Category))

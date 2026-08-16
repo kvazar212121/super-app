@@ -271,6 +271,40 @@ CATEGORIES_DATA = [
         ],
     },
     {
+        "key": "game_zona",
+        "title_uz": "Game Zona",
+        "subtitle_uz": "PS5, PC va VR klublari",
+        "icon": "gamepad2",
+        "accent_color": "#673AB7",
+        "variants": [
+            {"label_uz": "PS5 xonasi (1 soat)", "base_price": 30000},
+            {"label_uz": "PC hududi (1 soat)", "base_price": 20000},
+            {"label_uz": "VR o'yinlar (30 daqiqa)", "base_price": 40000},
+        ],
+    },
+    {
+        "key": "sport_maydon",
+        "title_uz": "Sport maydonlari",
+        "subtitle_uz": "Tennis, basketbol va voleybol maydonlari",
+        "icon": "dumbbell",
+        "accent_color": "#4CAF50",
+        "variants": [
+            {"label_uz": "Tennis korti (1 soat)", "base_price": 100000},
+            {"label_uz": "Basketbol maydoni", "base_price": 80000},
+            {"label_uz": "Voleybol maydoni", "base_price": 80000},
+        ],
+    },
+    {
+        "key": "boshqa_xizmatlar",
+        "title_uz": "Boshqa xizmatlar",
+        "subtitle_uz": "Toifaga kirmaydigan boshqa xizmatlar",
+        "icon": "layoutGrid",
+        "accent_color": "#9E9E9E",
+        "variants": [
+            {"label_uz": "Xizmat haqi", "base_price": 100000},
+        ],
+    },
+    {
         "key": "telefonUsta",
         "title_uz": "Telefon ustasi",
         "subtitle_uz": "Ekran, batareya va telefon ta'miri",
