@@ -262,27 +262,32 @@ class _ActionList extends StatelessWidget {
       case ServiceHubKind.elektrik:
         return data.masters
             .map((e) => _masterEntry(
-                e, LucideIcons.zap, ServiceHubKind.elektrik, 100000, 'Uyga xizmat'))
+                e, LucideIcons.zap, ServiceHubKind.elektrik, 100000, 'Uyga xizmat',
+                idPrefix: 'electrician'))
             .toList();
       case ServiceHubKind.santexnik:
         return data.masters
             .map((e) => _masterEntry(e, LucideIcons.droplet,
-                ServiceHubKind.santexnik, 100000, 'Uyga xizmat'))
+                ServiceHubKind.santexnik, 100000, 'Uyga xizmat',
+                idPrefix: 'plumber'))
             .toList();
       case ServiceHubKind.konditsioner:
         return data.masters
             .map((e) => _masterEntry(e, LucideIcons.wind,
-                ServiceHubKind.konditsioner, 180000, 'Uyga xizmat'))
+                ServiceHubKind.konditsioner, 180000, 'Uyga xizmat',
+                idPrefix: 'ac'))
             .toList();
       case ServiceHubKind.tozalash:
         return data.masters
             .map((e) => _masterEntry(e, LucideIcons.sprayCan,
-                ServiceHubKind.tozalash, 200000, 'Tozalash'))
+                ServiceHubKind.tozalash, 200000, 'Tozalash',
+                idPrefix: 'cleaner'))
             .toList();
       case ServiceHubKind.usta:
         return data.masters
             .map((e) => _masterEntry(
-                e, LucideIcons.hammer, ServiceHubKind.usta, 100000, 'Usta'))
+                e, LucideIcons.hammer, ServiceHubKind.usta, 100000, 'Usta',
+                idPrefix: 'master'))
             .toList();
       case ServiceHubKind.sartarosh:
         return [
@@ -314,6 +319,9 @@ class _ActionList extends StatelessWidget {
       case ServiceHubKind.salon:
         return [
           ...data.salons.map((s) => CatalogEntry(
+                id: 'salon_${s.id}',
+                isOpen: s.isOpenNow(),
+                tags: s.services.take(4).toList(),
                 name: s.name,
                 subtitle: s.address,
                 rating: s.rating,
@@ -331,11 +339,15 @@ class _ActionList extends StatelessWidget {
                 ),
               )),
           ...data.mobileStylists.map((e) => _masterEntry(
-              e, LucideIcons.sparkles, ServiceHubKind.salon, 50000, 'Mutaxassis')),
+              e, LucideIcons.sparkles, ServiceHubKind.salon, 50000, 'Mutaxassis',
+              idPrefix: 'mobile_stylist')),
         ];
       case ServiceHubKind.futbol:
         return data.footballFields
             .map((f) => CatalogEntry(
+                  id: 'field_${f.id}',
+                  isOpen: f.isOpenNow(),
+                  tags: [f.sizeSurfaceLabel],
                   name: f.name,
                   subtitle: '${f.sizeSurfaceLabel} · ${f.address}',
                   rating: f.rating,
@@ -356,6 +368,8 @@ class _ActionList extends StatelessWidget {
       case ServiceHubKind.enaga:
         return data.nannies
             .map((n) => CatalogEntry(
+                  id: 'nanny_${n.id}',
+                  tags: n.services.take(4).toList(),
                   name: n.name,
                   subtitle: '${n.experienceYears} yil • ${n.ageGroupsLabel}',
                   rating: n.rating,
@@ -377,6 +391,8 @@ class _ActionList extends StatelessWidget {
       case ServiceHubKind.kuryerlik:
         return data.couriers
             .map((c) => CatalogEntry(
+                  id: 'courier_${c.id}',
+                  tags: c.prices.keys.take(4).toList(),
                   name: c.name,
                   subtitle: c.serviceArea ?? c.vehicleType.label,
                   rating: c.rating,
@@ -398,6 +414,8 @@ class _ActionList extends StatelessWidget {
       case ServiceHubKind.avtoYordam:
         return [
           ...data.autoMobile.map((u) => CatalogEntry(
+                id: 'automobile_${u.id}',
+                tags: u.services.take(4).toList(),
                 name: u.name,
                 subtitle: 'Mobil · ${u.serviceArea ?? u.vehicleType.label}',
                 rating: u.rating,
@@ -415,6 +433,8 @@ class _ActionList extends StatelessWidget {
                 ),
               )),
           ...data.workshops.map((w) => CatalogEntry(
+                id: 'workshop_${w.id}',
+                tags: w.specializations.take(4).toList(),
                 name: w.name,
                 subtitle: w.specializations.isEmpty
                     ? 'Ustaxona'
@@ -437,6 +457,8 @@ class _ActionList extends StatelessWidget {
       case ServiceHubKind.repetitor:
         return [
           ...data.tutors.map((t) => CatalogEntry(
+                id: 'tutor_${t.id}',
+                tags: t.subjects.take(4).toList(),
                 name: t.name,
                 subtitle: 'Repetitor · ${t.subjectsLabel}',
                 rating: t.rating,
@@ -454,6 +476,8 @@ class _ActionList extends StatelessWidget {
                 ),
               )),
           ...data.educationCenters.map((c) => CatalogEntry(
+                id: 'edu_${c.id}',
+                tags: c.courses.take(4).toList(),
                 name: c.name,
                 subtitle: c.courses.isEmpty
                     ? "O'quv markazi"
@@ -475,6 +499,8 @@ class _ActionList extends StatelessWidget {
       case ServiceHubKind.massajHijoma:
         return data.massage
             .map((s) => CatalogEntry(
+                  id: 'massage_${s.id}',
+                  tags: s.serviceTypes.take(4).map((t) => t.label).toList(),
                   name: s.name,
                   subtitle: s.serviceTypes.isNotEmpty
                       ? s.serviceTypes.first.label
@@ -501,6 +527,8 @@ class _ActionList extends StatelessWidget {
       case ServiceHubKind.hamshira:
         return data.nurses
             .map((n) => CatalogEntry(
+                  id: 'nurse_${n.id}',
+                  tags: n.prices.keys.take(4).toList(),
                   name: n.name,
                   subtitle: n.serviceArea ?? 'Hamshira xizmati',
                   rating: n.rating,
@@ -520,6 +548,8 @@ class _ActionList extends StatelessWidget {
       case ServiceHubKind.stomatologiya:
         return data.dentalClinics
             .map((c) => CatalogEntry(
+                  id: 'dental_${c.id}',
+                  tags: c.services.take(4).toList(),
                   name: c.name,
                   subtitle: c.subCategory ?? c.address,
                   rating: c.rating,
@@ -541,6 +571,8 @@ class _ActionList extends StatelessWidget {
       case ServiceHubKind.dezinfeksiya:
         return data.disinfection
             .map((s) => CatalogEntry(
+                  id: 'disinfection_${s.id}',
+                  tags: s.prices.keys.take(4).toList(),
                   name: s.name,
                   subtitle: s.serviceArea ?? 'Dezinfeksiya',
                   rating: s.rating,
@@ -560,6 +592,8 @@ class _ActionList extends StatelessWidget {
       case ServiceHubKind.texnikaUstasi:
         return data.appliance
             .map((s) => CatalogEntry(
+                  id: 'appliance_${s.id}',
+                  tags: s.brands.take(4).toList(),
                   name: s.name,
                   subtitle: s.subCategory ?? 'Texnika ustasi',
                   rating: s.rating,
@@ -579,6 +613,8 @@ class _ActionList extends StatelessWidget {
       case ServiceHubKind.ishchi:
         return data.workers
             .map((w) => CatalogEntry(
+                  id: 'worker_${w.id}',
+                  tags: [w.type],
                   name: w.name,
                   subtitle: w.type,
                   rating: w.rating,
@@ -601,6 +637,8 @@ class _ActionList extends StatelessWidget {
         return data.genericProviders
             .whereType<GameZone>()
             .map((z) => CatalogEntry(
+                  id: 'gamezone_${z.id}',
+                  tags: [z.zoneType],
                   name: z.name,
                   subtitle: z.zoneType,
                   rating: 0,
@@ -621,6 +659,8 @@ class _ActionList extends StatelessWidget {
         return data.genericProviders
             .whereType<SportFacility>()
             .map((f) => CatalogEntry(
+                  id: 'sport_${f.id}',
+                  tags: [f.sportType],
                   name: f.name,
                   subtitle: f.sportType,
                   rating: 0,
@@ -640,6 +680,8 @@ class _ActionList extends StatelessWidget {
       case ServiceHubKind.tadbirlar:
         return [
           ...data.genericProviders.whereType<EventVenue>().map((v) => CatalogEntry(
+                id: 'venue_${v.id}',
+                tags: [v.venueType],
                 name: v.name,
                 subtitle: 'Joy · ${v.venueType}',
                 rating: 0,
@@ -656,6 +698,8 @@ class _ActionList extends StatelessWidget {
                 ),
               )),
           ...data.events.map((s) => CatalogEntry(
+                id: 'eventteam_${s.id}',
+                tags: s.prices.keys.take(4).toList(),
                 name: s.name,
                 subtitle: 'Tashkilotchi',
                 rating: s.rating,
@@ -675,11 +719,14 @@ class _ActionList extends StatelessWidget {
       case ServiceHubKind.bozorchi:
         return data.masters
             .map((m) => _masterEntry(
-                m, LucideIcons.shoppingCart, ServiceHubKind.bozorchi, 0, 'Bozorchi'))
+                m, LucideIcons.shoppingCart, ServiceHubKind.bozorchi, 0, 'Bozorchi',
+                idPrefix: 'bozorchi'))
             .toList();
       case ServiceHubKind.oshxona:
         return data.masters
             .map((m) => CatalogEntry(
+                  id: 'oshxona_${m.id}',
+                  tags: m.prices.keys.take(4).toList(),
                   name: m.name,
                   subtitle: m.serviceArea ?? 'Oshxona',
                   rating: m.rating,

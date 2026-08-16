@@ -66,6 +66,28 @@ part 'service_hub/service_hub_action_list.dart';
 /// ko'rinishda (xarita + gorizontal kartalar) qoladi.
 const Set<ServiceHubKind> kNewHubDesignKinds = {
   ServiceHubKind.sartarosh,
+  ServiceHubKind.salon,
+  ServiceHubKind.futbol,
+  ServiceHubKind.ishchi,
+  ServiceHubKind.usta,
+  ServiceHubKind.elektrik,
+  ServiceHubKind.santexnik,
+  ServiceHubKind.tozalash,
+  ServiceHubKind.avtoYordam,
+  ServiceHubKind.konditsioner,
+  ServiceHubKind.enaga,
+  ServiceHubKind.repetitor,
+  ServiceHubKind.dezinfeksiya,
+  ServiceHubKind.texnikaUstasi,
+  ServiceHubKind.kuryerlik,
+  ServiceHubKind.massajHijoma,
+  ServiceHubKind.hamshira,
+  ServiceHubKind.stomatologiya,
+  ServiceHubKind.tadbirlar,
+  ServiceHubKind.bozorchi,
+  ServiceHubKind.oshxona,
+  ServiceHubKind.gameZona,
+  ServiceHubKind.sportMaydon,
 };
 
 class ServiceHubScreen extends StatefulWidget {
