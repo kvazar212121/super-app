@@ -307,6 +307,54 @@ async def test_startup_syncs_categories():
         await engine.dispose()
 
 
+async def test_every_category_has_providers():
+    """HAR BIR kategoriyada kamida bitta demo provayder bo'lsin.
+
+    Kategoriya bor, provayder yo'q bo'lsa foydalanuvchi bo'limni ochadi-yu
+    bo'sh ekran ko'radi. Yangi xizmat qo'shilganda demo ma'lumotni ham
+    qo'shishni unutmaslik uchun shu test qo'riqlaydi.
+    """
+    from collections import Counter
+    from app.seed_data import PROVIDERS
+
+    counts = Counter(p["category_key"] for p in PROVIDERS)
+    empty = [
+        f"{c['key']} ('{c['title_uz']}')"
+        for c in CATEGORIES_DATA
+        if counts.get(c["key"], 0) == 0
+    ]
+    assert not empty, (
+        "Quyidagi kategoriyalarda demo provayder yo'q — ilovada bo'lim "
+        f"BO'SH chiqadi: {empty}"
+    )
+    print(f"  ✓ {len(CATEGORIES_DATA)} kategoriyaning hammasida provayder bor")
+
+
+async def test_provider_metadata_is_valid():
+    """Demo provayderlarning majburiy maydonlari to'g'ri bo'lsin."""
+    from app.seed_data import PROVIDERS
+
+    problems = []
+    for p in PROVIDERS:
+        name = p.get("name", "?")
+        if not p.get("name"):
+            problems.append(f"{name}: nomi bo'sh")
+        if not (0 <= p.get("rating", -1) <= 5):
+            problems.append(f"{name}: reyting noto'g'ri ({p.get('rating')})")
+        # Toshkent taxminiy chegaralari
+        lat, lng = p.get("lat", 0), p.get("lng", 0)
+        if not (40.9 < lat < 41.6 and 68.9 < lng < 69.6):
+            problems.append(f"{name}: koordinata Toshkentdan tashqarida ({lat},{lng})")
+        meta = p.get("metadata") or {}
+        prices = meta.get("prices") or {}
+        for label, price in prices.items():
+            if not isinstance(price, (int, float)) or price <= 0:
+                problems.append(f"{name}: '{label}' narxi noto'g'ri ({price})")
+
+    assert not problems, "\n".join(problems)
+    print(f"  ✓ {len(PROVIDERS)} demo provayder ma'lumoti to'g'ri")
+
+
 async def main():
     tests = [
         ("sort=rating tartibi", test_sort_by_rating),
@@ -317,6 +365,8 @@ async def main():
         ("seed kalitlari haqiqiy", test_seed_data_keys_are_valid),
         ("Flutter<->backend kalitlari", test_flutter_and_backend_keys_match),
         ("startup kategoriya sinxroni", test_startup_syncs_categories),
+        ("har kategoriyada provayder", test_every_category_has_providers),
+        ("provayder ma'lumoti to'g'ri", test_provider_metadata_is_valid),
     ]
     failed = 0
     for name, fn in tests:
