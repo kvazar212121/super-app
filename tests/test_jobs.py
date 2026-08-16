@@ -90,9 +90,9 @@ async def main():
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as c:
 
-        async def login(phone):
+        async def login(phone, password="parol123"):
             r = await c.post("/api/v1/auth/login",
-                             json={"phone": phone, "password": "parol123"})
+                             json={"phone": phone, "password": password})
             assert r.status_code == 200, f"login {phone}: {r.status_code} {r.text[:200]}"
             return {"Authorization": f"Bearer {r.json()['access_token']}"}
 
@@ -355,6 +355,50 @@ async def main():
         check("usta taklifini qaytarib oldi",
               r.status_code == 200 and r.json()["status"] == "withdrawn",
               f"{r.status_code} {r.text[:150]}")
+
+        # ── ADMIN MONITORING (4-vazifa) ───────────────────────────────
+        # Admin panelda ilgari KO'RINMAYDIGAN ma'lumotlar
+        async with async_session() as db:
+            adm = User(name="Admin", surname="Test", phone="admin",
+                       hashed_password=hash_password("admin123"),
+                       is_admin=True, is_super_admin=True)
+            db.add(adm)
+            await db.commit()
+        adm_h = await login("admin", "admin123")
+
+        r = await c.get("/api/v1/admin/monitoring/jobs", headers=adm_h)
+        check("admin ish e'lonlarini ko'radi", r.status_code == 200,
+              f"{r.status_code} {r.text[:200]}")
+        if r.status_code == 200:
+            d = r.json()
+            check("monitoring: e'lonlar ro'yxati bor", "items" in d, f"{list(d)}")
+            check("monitoring: konversiya hisoblanadi",
+                  "conversion_percent" in d.get("summary", {}),
+                  f"{d.get('summary')}")
+
+        r = await c.get("/api/v1/admin/monitoring/fraud", headers=adm_h)
+        check("admin firibgarlik statistikasini ko'radi", r.status_code == 200,
+              f"{r.status_code} {r.text[:200]}")
+
+        r = await c.get("/api/v1/admin/monitoring/push-reach", headers=adm_h)
+        check("admin push qamrovini ko'radi", r.status_code == 200,
+              f"{r.status_code} {r.text[:200]}")
+        if r.status_code == 200:
+            d = r.json()
+            check("push qamrovi foizda hisoblanadi", "reach_percent" in d, f"{list(d)}")
+
+        r = await c.get("/api/v1/admin/monitoring/blocked-users", headers=adm_h)
+        check("admin bloklangan mijozlarni ko'radi", r.status_code == 200,
+              f"{r.status_code}")
+
+        r = await c.get("/api/v1/admin/monitoring/activity", headers=adm_h)
+        check("admin faollik statistikasini ko'radi", r.status_code == 200,
+              f"{r.status_code} {r.text[:150]}")
+
+        # Oddiy foydalanuvchi monitoringga kira olmaydi
+        r = await c.get("/api/v1/admin/monitoring/fraud", headers=client_h)
+        check("oddiy user monitoringni ko'ra olmaydi", r.status_code == 403,
+              f"{r.status_code}")
 
         # ── Autentifikatsiyasiz ───────────────────────────────────────
         r = await c.get("/api/v1/jobs/feed")

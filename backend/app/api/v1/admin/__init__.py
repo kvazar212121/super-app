@@ -10,6 +10,7 @@ from app.api.v1.admin import (
     settings,
     promos,
     campaigns,
+    monitoring,
     notifications,
     reports,
     products,
@@ -43,6 +44,8 @@ router.include_router(settings.router, dependencies=_g("settings"))
 router.include_router(promos.router, dependencies=_g("promos"))
 # Sovrinli sezonli reyting — "promos" ruxsati ostida (ikkalasi ham aksiya)
 router.include_router(campaigns.router, dependencies=_g("promos"))
+# Monitoring: firibgarlik, ish e'lonlari, push qamrovi, faollik
+router.include_router(monitoring.router, dependencies=_g("reports"))
 router.include_router(notifications.router, dependencies=_g("notifications"))
 router.include_router(reports.router, dependencies=_g("reports"))
 router.include_router(products.router, dependencies=_g("products"))
