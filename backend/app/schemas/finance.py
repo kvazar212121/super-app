@@ -1,12 +1,24 @@
 from datetime import datetime
-from pydantic import BaseModel
-from typing import Optional, List
+from pydantic import BaseModel, Field
+from typing import Literal, Optional, List
+
+# Faqat shu ikkitasi. Ilgari oddiy `str` edi va istalgan qiymat qabul
+# qilinardi -- masalan type="allaqanday" bo'lsa yozuv statistikaga
+# UMUMAN kirmaydi (finance.py:123 faqat income/expense ni sanaydi),
+# ya'ni foydalanuvchi puli "yo'qoladi".
+RecordType = Literal["income", "expense"]
+
+# Amaliy yuqori chegara: 1 trillion so'm. Bitta noto'g'ri kiritish
+# (masalan nol ortiqcha) butun statistikani buzmasligi uchun.
+MAX_AMOUNT = 1_000_000_000_000
 
 
 class FinanceRecordBase(BaseModel):
-    type: str  # "income" or "expense"
-    amount: float
-    category: str
+    type: RecordType
+    # Manfiy summa MANTIQAN NOTO'G'RI: "-100000 xarajat" aslida daromad
+    # bo'lib qoladi va balans noto'g'ri chiqadi.
+    amount: float = Field(..., gt=0, le=MAX_AMOUNT)
+    category: str = Field(..., min_length=1, max_length=100)
     description: Optional[str] = None
     date: datetime
 
@@ -16,9 +28,9 @@ class FinanceRecordCreate(FinanceRecordBase):
 
 
 class FinanceRecordUpdate(BaseModel):
-    type: Optional[str] = None
-    amount: Optional[float] = None
-    category: Optional[str] = None
+    type: Optional[RecordType] = None
+    amount: Optional[float] = Field(default=None, gt=0, le=MAX_AMOUNT)
+    category: Optional[str] = Field(default=None, min_length=1, max_length=100)
     description: Optional[str] = None
     date: Optional[datetime] = None
 

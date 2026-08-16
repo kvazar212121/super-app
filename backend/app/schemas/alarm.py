@@ -1,8 +1,44 @@
 from datetime import datetime
 from typing import Literal, Optional
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 MissionType = Literal["math", "photo", "speech"]
+
+
+def _validate_repeat_days(v: Optional[str]) -> Optional[str]:
+    """CSV ISO weekday: "1,2,3,4,5" (1=Dushanba ... 7=Yakshanba).
+
+    Ilgari tekshirilmasdi: "9,abc,-3" qabul qilinardi. Flutter bunday
+    qiymatlarni JIMGINA tashlab yuboradi (alarm.dart:repeatDayList) va
+    budilnik "bir martalik" bo'lib qoladi -- ya'ni foydalanuvchi har
+    kuni jiringlaydi deb o'ylaydi, aslida bir marta jiringlaydi yoki
+    umuman jiringlamaydi. Shuning uchun noto'g'ri qiymat DARHOL rad
+    etilishi kerak.
+    """
+    if v is None:
+        return v
+    raw = v.strip()
+    if not raw:
+        return ""
+    days = []
+    for part in raw.split(","):
+        part = part.strip()
+        if not part:
+            continue
+        if not part.isdigit():
+            raise ValueError(
+                f"Takror kunlari 1..7 oralig'idagi raqamlar bo'lishi kerak "
+                f"(xato: '{part}')"
+            )
+        d = int(part)
+        if d < 1 or d > 7:
+            raise ValueError(
+                f"Takror kuni 1 (Dushanba) dan 7 (Yakshanba) gacha bo'lishi "
+                f"kerak, kelgan: {d}"
+            )
+        days.append(d)
+    # Takrorlarni olib tashlab, tartiblab qaytaramiz
+    return ",".join(str(d) for d in sorted(set(days)))
 
 
 class AlarmBase(BaseModel):
@@ -16,6 +52,11 @@ class AlarmBase(BaseModel):
     snooze_enabled: bool = True
     snooze_minutes: int = Field(default=5, ge=1, le=60)
     is_enabled: bool = True
+
+    @field_validator("repeat_days")
+    @classmethod
+    def _check_repeat_days(cls, v):
+        return _validate_repeat_days(v)
 
 
 class AlarmCreate(AlarmBase):
@@ -33,6 +74,11 @@ class AlarmUpdate(BaseModel):
     snooze_enabled: Optional[bool] = None
     snooze_minutes: Optional[int] = Field(default=None, ge=1, le=60)
     is_enabled: Optional[bool] = None
+
+    @field_validator("repeat_days")
+    @classmethod
+    def _check_repeat_days(cls, v):
+        return _validate_repeat_days(v)
 
 
 class AlarmOut(AlarmBase):

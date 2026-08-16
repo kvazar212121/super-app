@@ -15,14 +15,23 @@ class FoodAnalyzeOut(BaseModel):
     photo_url: Optional[str] = None
 
 
+# Amaliy chegaralar: bitta ovqatda 20 000 kkal bo'lishi mumkin emas.
+# Ilgari cheklov yo'q edi -- manfiy kaloriya kunlik hisobni buzardi
+# ("yeganim -500" -> qolgan kaloriya oshib ketardi), 9 999 999 kkal esa
+# statistikani ma'nosiz qilardi.
+MAX_MEAL_CALORIES = 20_000
+MAX_MACRO_G = 5_000
+MAX_PORTION_G = 20_000
+
+
 class MealLogCreate(BaseModel):
     meal_type: Literal["breakfast", "lunch", "dinner", "snack"] = "snack"
-    dish_name: str
-    portion_grams: Optional[float] = None
-    calories: float = 0.0
-    protein_g: float = 0.0
-    fat_g: float = 0.0
-    carbs_g: float = 0.0
+    dish_name: str = Field(..., min_length=1, max_length=200)
+    portion_grams: Optional[float] = Field(default=None, ge=0, le=MAX_PORTION_G)
+    calories: float = Field(default=0.0, ge=0, le=MAX_MEAL_CALORIES)
+    protein_g: float = Field(default=0.0, ge=0, le=MAX_MACRO_G)
+    fat_g: float = Field(default=0.0, ge=0, le=MAX_MACRO_G)
+    carbs_g: float = Field(default=0.0, ge=0, le=MAX_MACRO_G)
     photo_url: Optional[str] = None
     ai_confidence: Optional[float] = None
     logged_at: Optional[datetime] = None
