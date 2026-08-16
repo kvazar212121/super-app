@@ -38,6 +38,7 @@ import { statusBadge, openModal, formatMoney, formatDate, closeModal, getInitial
                 categories: renderCategories,
                 products: renderProducts,
                 promos: renderPromos,
+                campaigns: renderCampaigns,
                 reviews: renderReviews,
                 finance: renderFinance,
                 settings: renderSettings,

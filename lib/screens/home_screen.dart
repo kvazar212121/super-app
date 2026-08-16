@@ -3,6 +3,7 @@ import '../widgets/active_order_banner.dart';
 import '../widgets/home_promo_section.dart';
 import '../widgets/home_header_widget.dart';
 import '../widgets/provider_portal_entry.dart';
+import '../widgets/campaign_banner.dart';
 
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../screens/todo_screen.dart';
@@ -35,6 +36,7 @@ class HomeScreen extends StatelessWidget {
             const SizedBox(height: 22),
             const HomePromoSection(),
             const SizedBox(height: 22),
+            const CampaignBanner(),
             _buildMainGrid(context),
             const SizedBox(height: 22),
             const ActiveOrderBanner(),
