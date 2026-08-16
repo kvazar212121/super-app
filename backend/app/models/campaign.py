@@ -61,6 +61,19 @@ class Campaign(Base):
     # vaqt [starts_at, ends_at] oralig'ida bo'lishi kerak.
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, index=True)
 
+    # SOXTA OVOZGA QARSHI: True bo'lsa faqat o'sha provayderda YAKUNLANGAN
+    # buyurtmasi bor foydalanuvchi ovoz bera oladi.
+    #
+    # Sovrin pul bo'lgani uchun bu jiddiy: aks holda soxta akkauntlar
+    # bilan ovoz yig'ish mumkin. Loyihaning sharh tizimi ham xuddi shu
+    # qoidani qo'llaydi (provider_service.add_review) va provider_fraud_stats
+    # modeli bor — demak soxta baho bu yerda tanilgan muammo.
+    #
+    # False qilish mumkin: masalan ochiq "xalq ovozi" tanlovi uchun.
+    require_completed_order: Mapped[bool] = mapped_column(
+        Boolean, default=True, server_default="true"
+    )
+
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
     )
@@ -97,6 +110,7 @@ class Campaign(Base):
             "ends_at": self.ends_at.isoformat() if self.ends_at else None,
             "prize": self.prize,
             "is_active": self.is_active,
+            "require_completed_order": self.require_completed_order,
             "status": self.status(now),
             "created_at": self.created_at.isoformat() if self.created_at else None,
         }

@@ -17,6 +17,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from app.models.campaign import Campaign, CampaignVote
+from app.models.order import Order, OrderStatus
 from app.models.provider import Provider
 
 
@@ -155,6 +156,27 @@ class CampaignService:
                 detail="Bu provayder aksiya kategoriyasiga kirmaydi",
             )
 
+        # SOXTA OVOZGA QARSHI: faqat haqiqiy mijoz ovoz bera oladi.
+        # Sovrin pul bo'lgani uchun bu shart -- aks holda soxta akkauntlar
+        # bilan ovoz yig'ish mumkin. Loyihaning sharh tizimi ham aynan shu
+        # qoidani qo'llaydi (provider_service.add_review).
+        if campaign.require_completed_order:
+            has_order = (await db.execute(
+                select(Order.id).where(
+                    Order.user_id == user_id,
+                    Order.provider_id == provider_id,
+                    Order.status == OrderStatus.completed,
+                ).limit(1)
+            )).scalar_one_or_none()
+            if not has_order:
+                raise HTTPException(
+                    status_code=403,
+                    detail=(
+                        "Ovoz berish uchun ushbu provayderda yakunlangan "
+                        "buyurtmangiz bo'lishi kerak"
+                    ),
+                )
+
         # Oldindan tekshiruv: foydalanuvchiga tushunarli xabar berish uchun.
         # Yakuniy kafolat esa DB'dagi UNIQUE cheklovda (pastdagi except).
         existing = await CampaignService.my_vote(db, campaign_id, user_id)
@@ -197,9 +219,18 @@ class CampaignService:
     @staticmethod
     async def update(db: AsyncSession, campaign_id: int, data: dict) -> Campaign:
         campaign = await CampaignService.get_by_id(db, campaign_id)
+        # DIQQAT: `if v is not None` DEMAYMIZ. Endpoint exclude_unset bilan
+        # chaqiradi, ya'ni bu yerga FAQAT yuborilgan maydonlar keladi.
+        # `is not None` tekshiruvi bo'lsa `is_active=False` yoki
+        # `require_completed_order=False` HECH QACHON saqlanmaydi --
+        # ya'ni aksiyani to'xtatib bo'lmaydi. Faqat majburiy (nullable
+        # bo'lmagan) maydonlarga None kelishidan himoyalanamiz.
+        NOT_NULLABLE = {"title", "starts_at", "ends_at", "is_active",
+                        "require_completed_order"}
         for k, v in data.items():
-            if v is not None:
-                setattr(campaign, k, v)
+            if v is None and k in NOT_NULLABLE:
+                continue
+            setattr(campaign, k, v)
         if campaign.ends_at <= campaign.starts_at:
             raise HTTPException(
                 status_code=400,

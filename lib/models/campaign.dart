@@ -38,6 +38,10 @@ class Campaign {
   final String? prize;
   final CampaignStatus status;
 
+  /// True bo'lsa faqat o'sha provayderda yakunlangan buyurtmasi bor
+  /// foydalanuvchi ovoz bera oladi (soxta ovozga qarshi).
+  final bool requireCompletedOrder;
+
   const Campaign({
     required this.id,
     required this.title,
@@ -47,6 +51,7 @@ class Campaign {
     this.description,
     this.categoryId,
     this.prize,
+    this.requireCompletedOrder = true,
   });
 
   bool get isRunning => status == CampaignStatus.running;
@@ -76,6 +81,8 @@ class Campaign {
         endsAt: DateTime.parse(json['ends_at'] as String),
         prize: json['prize'] as String?,
         status: campaignStatusFrom(json['status'] as String?),
+        requireCompletedOrder:
+            json['require_completed_order'] as bool? ?? true,
       );
 
   /// Ilova hali backendga ulanmagani uchun namuna aksiya.

@@ -15,6 +15,9 @@ class CampaignOut(BaseModel):
     ends_at: datetime
     prize: Optional[str] = None
     is_active: bool
+    # True: faqat o'sha provayderda yakunlangan buyurtmasi bor odam
+    # ovoz bera oladi (soxta ovozga qarshi)
+    require_completed_order: bool = True
     # upcoming | running | finished | disabled — modeldan hisoblanadi
     status: Optional[str] = None
     # Faqat admin ro'yxatida to'ldiriladi
@@ -32,6 +35,9 @@ class CampaignCreate(BaseModel):
     ends_at: datetime
     prize: Optional[str] = None
     is_active: bool = True
+    # Soxta ovozga qarshi himoya. Ochiq "xalq ovozi" tanlovi uchun
+    # False qilish mumkin, lekin sovrinli musobaqada True tavsiya etiladi.
+    require_completed_order: bool = True
 
 
 class CampaignUpdate(BaseModel):
@@ -42,6 +48,7 @@ class CampaignUpdate(BaseModel):
     ends_at: Optional[datetime] = None
     prize: Optional[str] = None
     is_active: Optional[bool] = None
+    require_completed_order: Optional[bool] = None
 
 
 class VoteCreate(BaseModel):

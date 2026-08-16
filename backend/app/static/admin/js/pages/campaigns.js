@@ -60,10 +60,10 @@ async function renderCampaigns() {
                     '<div class="table-container">' +
                         '<table class="data-table">' +
                             '<thead><tr><th>ID</th><th>Sarlavha</th><th>Kategoriya</th>' +
-                            '<th>Muddat</th><th>Holat</th><th>Ovozlar</th><th>Amallar</th></tr></thead>' +
+                            '<th>Muddat</th><th>Holat</th><th>Himoya</th><th>Ovozlar</th><th>Amallar</th></tr></thead>' +
                             '<tbody>' +
                             (campaigns.length === 0
-                                ? '<tr><td colspan="7" style="text-align:center;padding:24px;color:var(--gray-400);">Hali aksiya yo\'q</td></tr>'
+                                ? '<tr><td colspan="8" style="text-align:center;padding:24px;color:var(--gray-400);">Hali aksiya yo\'q</td></tr>'
                                 : campaigns.map(function (c) {
                                     var cat = c.category_id && catById[c.category_id]
                                         ? window.escapeHtml(catById[c.category_id].title_uz || '')
@@ -77,6 +77,9 @@ async function renderCampaigns() {
                                         '<td>' + campaignDate(c.starts_at) + '<br>' +
                                         '<small style="color:var(--gray-400)">' + campaignDate(c.ends_at) + '</small></td>' +
                                         '<td>' + campaignBadge(c.status) + '</td>' +
+                                        '<td>' + (c.require_completed_order
+                                            ? '<span class="badge-status active" title="Faqat yakunlangan buyurtmasi bor mijozlar">Mijozlar</span>'
+                                            : '<span class="badge-status pending" title="Har kim ovoz bera oladi">Ochiq</span>') + '</td>' +
                                         '<td><b>' + (c.vote_count || 0) + '</b></td>' +
                                         '<td>' +
                                             '<button class="btn btn-sm" onclick="showCampaignBoard(' + c.id + ')">Reyting</button> ' +
@@ -119,6 +122,15 @@ async function renderCampaigns() {
                             '<label class="form-label">Tavsif</label>' +
                             '<input type="text" class="form-input" id="cmDescription" placeholder="Aksiya haqida qisqacha">' +
                         '</div>' +
+                        '<div class="form-group">' +
+                            '<label style="display:flex;align-items:flex-start;gap:8px;cursor:pointer">' +
+                                '<input type="checkbox" id="cmRequireOrder" checked style="margin-top:3px">' +
+                                '<span><b>Faqat mijozlar ovoz bera olsin</b><br>' +
+                                '<small style="color:var(--gray-400)">Ovoz berish uchun o\'sha provayderda ' +
+                                'yakunlangan buyurtma bo\'lishi shart. Sovrinli musobaqada YOQIB QO\'YING — ' +
+                                'aks holda soxta akkauntlar bilan ovoz yig\'ish mumkin.</small></span>' +
+                            '</label>' +
+                        '</div>' +
                         '<button type="submit" class="btn btn-primary" style="width:100%">E\'lon qilish</button>' +
                     '</form>' +
                 '</div>' +
@@ -141,7 +153,8 @@ async function createCampaign() {
         starts_at: new Date(start).toISOString(),
         ends_at: new Date(end).toISOString(),
         prize: document.getElementById('cmPrize').value.trim() || null,
-        description: document.getElementById('cmDescription').value.trim() || null
+        description: document.getElementById('cmDescription').value.trim() || null,
+        require_completed_order: document.getElementById('cmRequireOrder').checked
     };
     var cat = document.getElementById('cmCategory').value;
     if (cat) body.category_id = parseInt(cat, 10);

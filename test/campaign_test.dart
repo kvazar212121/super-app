@@ -16,8 +16,10 @@ void main() {
       'ends_at': '2026-09-30T23:59:59+00:00',
       'prize': "1-o'rin: 5 000 000",
       'status': 'running',
+      'require_completed_order': true,
     });
     expect(c.id, 7);
+    expect(c.requireCompletedOrder, isTrue);
     expect(c.status, CampaignStatus.running);
     expect(c.isRunning, isTrue);
     expect(c.categoryId, 3);

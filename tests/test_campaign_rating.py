@@ -115,6 +115,9 @@ async def main():
             "starts_at": (now - timedelta(days=1)).isoformat(),
             "ends_at": (now + timedelta(days=29)).isoformat(),
             "prize": "1-o'rin: 5 000 000 so'm",
+            # Mavjud tekshiruvlar buyurtmasiz ishlashi uchun himoyani
+            # o'chiramiz; himoyaning O'ZI pastda alohida sinaladi.
+            "require_completed_order": False,
         })
         check("admin aksiya yaratdi", r.status_code == 201,
               f"{r.status_code} {r.text[:200]}")
@@ -270,6 +273,73 @@ async def main():
               r.status_code == 200 and r.json()["rating"] == 0.0
               and r.json()["review_count"] == 0,
               f"{r.json() if r.status_code==200 else r.status_code}")
+
+        # ── SOXTA OVOZGA QARSHI HIMOYA ────────────────────────────────
+        # Sovrin pul bo'lgani uchun eng muhim qism: faqat haqiqiy mijoz
+        # (o'sha provayderda yakunlangan buyurtmasi bor odam) ovoz bera
+        # olishi kerak.
+        r = await c.post("/api/v1/admin/campaigns", headers=admin_h, json={
+            "title": "Faqat mijozlar uchun aksiya",
+            "category_id": ids["barber"],
+            "starts_at": (now - timedelta(days=1)).isoformat(),
+            "ends_at": (now + timedelta(days=20)).isoformat(),
+            "require_completed_order": True,
+        })
+        strict_id = r.json()["id"]
+        check("himoyali aksiya yaratildi",
+              r.status_code == 201 and r.json().get("require_completed_order") is True,
+              f"{r.status_code} {str(r.json())[:200]}")
+
+        # u2 bu provayderda BUYURTMA BERMAGAN -> ovoz bera olmasligi kerak
+        r = await c.post(f"/api/v1/campaigns/{strict_id}/vote", headers=u2_h,
+                         json={"provider_id": ids["p1"]})
+        check("buyurtmasiz odam ovoz BERA OLMAYDI", r.status_code == 403,
+              f"{r.status_code} {r.text[:200]}")
+
+        # Endi u2 uchun YAKUNLANGAN buyurtma yaratamiz
+        async with async_session() as db:
+            from sqlalchemy import select
+            from app.models.order import Order, OrderStatus
+            u2row = (await db.execute(
+                select(User).where(User.phone == "+998904445566")
+            )).scalar_one()
+            db.add(Order(
+                user_id=u2row.id,
+                category_id=ids["barber"],
+                provider_id=ids["p1"],
+                service_name="Soch olish",
+                address="Toshkent, test",
+                date=datetime.now(),
+                price=50000,
+                status=OrderStatus.completed,
+            ))
+            await db.commit()
+
+        r = await c.post(f"/api/v1/campaigns/{strict_id}/vote", headers=u2_h,
+                         json={"provider_id": ids["p1"]})
+        check("yakunlangan buyurtmasi bor mijoz ovoz BERA OLADI",
+              r.status_code == 201, f"{r.status_code} {r.text[:200]}")
+
+        # Ammo BOSHQA provayderga baribir bera olmaydi (u yerda buyurtma yo'q).
+        # u2 allaqachon ovoz bergani uchun 409, u1 bilan sinaymiz.
+        r = await c.post(f"/api/v1/campaigns/{strict_id}/vote", headers=u1_h,
+                         json={"provider_id": ids["p2"]})
+        check("boshqa provayderga buyurtmasiz ovoz berib bo'lmaydi",
+              r.status_code == 403, f"{r.status_code}")
+
+        # ── update() False qiymatni SAQLAY oladimi ────────────────────
+        # (`if v is not None` xatosi bo'lsa aksiyani to'xtatib bo'lmasdi)
+        r = await c.patch(f"/api/v1/admin/campaigns/{strict_id}", headers=admin_h,
+                          json={"require_completed_order": False})
+        check("require_completed_order=False saqlanadi",
+              r.status_code == 200 and r.json().get("require_completed_order") is False,
+              f"{r.status_code} {str(r.json())[:200]}")
+
+        # endi u1 buyurtmasiz ham bera oladi
+        r = await c.post(f"/api/v1/campaigns/{strict_id}/vote", headers=u1_h,
+                         json={"provider_id": ids["p2"]})
+        check("himoya o'chirilgach buyurtmasiz ovoz beriladi",
+              r.status_code == 201, f"{r.status_code} {r.text[:150]}")
 
         # ── Admin panel sahifasi yuklanadimi ──────────────────────────
         r = await c.get("/admin")
