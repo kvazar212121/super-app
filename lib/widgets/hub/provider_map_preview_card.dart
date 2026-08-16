@@ -133,9 +133,14 @@ class ProviderMapPreviewCard extends StatelessWidget {
                             ),
                           ),
                           if (entry.reviewCount > 0)
-                            Text(
-                              ' (${entry.reviewCount})',
-                              style: TextStyle(fontSize: 11, color: secondary),
+                            Flexible(
+                              child: Text(
+                                ' (${entry.reviewCount})',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style:
+                                    TextStyle(fontSize: 11, color: secondary),
+                              ),
                             ),
                           if (entry.priceLabel.isNotEmpty) ...[
                             const SizedBox(width: 8),

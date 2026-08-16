@@ -157,7 +157,10 @@ class _Info extends StatelessWidget {
           style: TextStyle(fontSize: 11.5, color: secondary),
         ),
         const SizedBox(height: 6),
-        // Reyting · masofa · narx
+        // Reyting · masofa · narx.
+        // BITTA qatorda: uzun masofa ("11185.6 km") yoki uzun narx
+        // ("15000 — 25000 so'm") bo'lsa ham chetga chiqmasligi uchun
+        // matnli qismlar siqiluvchan (Flexible + ellipsis).
         Row(
           children: [
             const Icon(Icons.star_rounded, size: 14, color: Color(0xFFF59E0B)),
@@ -171,17 +174,25 @@ class _Info extends StatelessWidget {
               ),
             ),
             if (entry.reviewCount > 0)
-              Text(
-                ' (${entry.reviewCount})',
-                style: TextStyle(fontSize: 11, color: secondary),
+              Flexible(
+                child: Text(
+                  ' (${entry.reviewCount})',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(fontSize: 11, color: secondary),
+                ),
               ),
             if (distanceKmValue != null) ...[
               _dot(secondary),
               Icon(LucideIcons.mapPin, size: 12, color: secondary),
               const SizedBox(width: 3),
-              Text(
-                formatDistanceKm(distanceKmValue!),
-                style: TextStyle(fontSize: 11.5, color: secondary),
+              Flexible(
+                child: Text(
+                  formatDistanceKm(distanceKmValue!),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(fontSize: 11.5, color: secondary),
+                ),
               ),
             ],
             if (entry.priceLabel.isNotEmpty) ...[

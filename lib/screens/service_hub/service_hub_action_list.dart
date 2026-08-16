@@ -67,14 +67,6 @@ class _ActionList extends StatelessWidget {
             selectedCategory: selectedCategory,
             onCategorySelected: onCategorySelected,
           ),
-        if (kind == ServiceHubKind.konditsioner)
-          AcHubSection(
-            technicians: data.masters,
-            accentColor: accentColor,
-            categories: categories,
-            selectedCategory: selectedCategory,
-            onCategorySelected: onCategorySelected,
-          ),
         if (kind == ServiceHubKind.enaga)
           NannyHubSection(
             nannies: data.nannies,
@@ -276,12 +268,6 @@ class _ActionList extends StatelessWidget {
             .map((e) => _masterEntry(e, LucideIcons.droplet,
                 ServiceHubKind.santexnik, 100000, 'Uyga xizmat',
                 idPrefix: 'plumber'))
-            .toList();
-      case ServiceHubKind.konditsioner:
-        return data.masters
-            .map((e) => _masterEntry(e, LucideIcons.wind,
-                ServiceHubKind.konditsioner, 180000, 'Uyga xizmat',
-                idPrefix: 'ac'))
             .toList();
       case ServiceHubKind.tozalash:
         return data.masters
@@ -831,8 +817,20 @@ class _ActionList extends StatelessWidget {
                   ),
                 ))
             .toList();
-      default:
-        return const [];
+      // "Boshqa xizmatlar" — kompyuter/IT ustalari va boshqa toifaga
+      // kirmaydigan barcha provayderlar SHU YERDA ko'rinadi (ilgari bu
+      // bo'lim bo'sh chiqardi).
+      case ServiceHubKind.boshqa:
+        return data.masters
+            .map((m) => _masterEntry(
+                  m,
+                  LucideIcons.wrench,
+                  ServiceHubKind.boshqa,
+                  100000,
+                  'Xizmat ko\'rsatuvchi',
+                  idPrefix: 'boshqa',
+                ))
+            .toList();
     }
   }
 
@@ -1039,7 +1037,6 @@ class _ActionList extends StatelessWidget {
           ServiceHubKind.santexnik => <_HubActionSpec>[],
           ServiceHubKind.tozalash => <_HubActionSpec>[],
           ServiceHubKind.avtoYordam => <_HubActionSpec>[],
-          ServiceHubKind.konditsioner => <_HubActionSpec>[],
           ServiceHubKind.enaga => <_HubActionSpec>[],
           ServiceHubKind.repetitor => <_HubActionSpec>[],
           ServiceHubKind.ishchi => <_HubActionSpec>[],
@@ -1056,9 +1053,7 @@ class _ActionList extends StatelessWidget {
           ServiceHubKind.sportMaydon ||
           ServiceHubKind.bozorchi ||
           ServiceHubKind.oshxona ||
-          ServiceHubKind.kompUsta ||
           ServiceHubKind.boshqa => <_HubActionSpec>[],
-          _ => <_HubActionSpec>[],
         } +
         [
           if (_mobileSection() != null)

@@ -184,16 +184,11 @@ class _MapSectionState extends State<_MapSection> {
       case ServiceHubKind.elektrik:
       case ServiceHubKind.santexnik:
       case ServiceHubKind.tozalash:
-      case ServiceHubKind.konditsioner:
         final specialty = kind == ServiceHubKind.elektrik
             ? 'Elektrik'
             : (kind == ServiceHubKind.santexnik
                   ? 'Santexnik'
-                  : (kind == ServiceHubKind.tozalash
-                        ? 'Tozalash'
-                        : (kind == ServiceHubKind.konditsioner
-                              ? 'Konditsioner'
-                              : null)));
+                  : (kind == ServiceHubKind.tozalash ? 'Tozalash' : null));
         final filteredMasters = specialty != null
             ? data.masters.where((m) => m.specialty == specialty).toList()
             : data.masters;
@@ -491,7 +486,6 @@ class _MapSectionState extends State<_MapSection> {
         break;
       case ServiceHubKind.gameZona:
       case ServiceHubKind.sportMaydon:
-      case ServiceHubKind.kompUsta:
       case ServiceHubKind.boshqa:
         places.addAll(
           data.genericProviders.map((p) {
@@ -531,8 +525,6 @@ class _MapSectionState extends State<_MapSection> {
             );
           }),
         );
-        break;
-      default:
         break;
     }
     return places;
@@ -681,16 +673,11 @@ class _MapSectionState extends State<_MapSection> {
       case ServiceHubKind.elektrik:
       case ServiceHubKind.santexnik:
       case ServiceHubKind.tozalash:
-      case ServiceHubKind.konditsioner:
         final specialty = kind == ServiceHubKind.elektrik
             ? 'Elektrik'
             : (kind == ServiceHubKind.santexnik
                   ? 'Santexnik'
-                  : (kind == ServiceHubKind.tozalash
-                        ? 'Tozalash'
-                        : (kind == ServiceHubKind.konditsioner
-                              ? 'Konditsioner'
-                              : null)));
+                  : (kind == ServiceHubKind.tozalash ? 'Tozalash' : null));
         final filteredMasters = specialty != null
             ? data.masters.where((m) => m.specialty == specialty).toList()
             : data.masters;
@@ -710,9 +697,7 @@ class _MapSectionState extends State<_MapSection> {
                                 ? LucideIcons.zap
                                 : (kind == ServiceHubKind.santexnik
                                       ? LucideIcons.droplet
-                                      : (kind == ServiceHubKind.konditsioner
-                                            ? LucideIcons.wind
-                                            : LucideIcons.wrench)))),
+                                      : LucideIcons.wrench))),
                 color: accentColor,
                 label: master.name,
                 onTap: () => Navigator.push(
@@ -996,7 +981,6 @@ class _MapSectionState extends State<_MapSection> {
       case ServiceHubKind.sportMaydon:
       case ServiceHubKind.bozorchi:
       case ServiceHubKind.oshxona:
-      case ServiceHubKind.kompUsta:
       case ServiceHubKind.boshqa:
         markers.addAll(
           data.genericProviders.map((p) {
@@ -1040,8 +1024,6 @@ class _MapSectionState extends State<_MapSection> {
             );
           }),
         );
-        break;
-      default:
         break;
     }
     return markers;

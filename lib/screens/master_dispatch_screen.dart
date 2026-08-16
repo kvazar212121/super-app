@@ -114,7 +114,8 @@ class _MasterDispatchScreenState extends State<MasterDispatchScreen> {
     if (specialty.contains('avto') || specialty.contains('ko\'chir')) {
       return ServiceHubKind.avtoYordam;
     }
-    if (specialty.contains('kond')) return ServiceHubKind.konditsioner;
+    // Konditsioner endi alohida kategoriya emas — texnika ustasi ichida.
+    if (specialty.contains('kond')) return ServiceHubKind.texnikaUstasi;
     if (specialty.contains('enag')) return ServiceHubKind.enaga;
     if (specialty.contains('repa') || specialty.contains('repet')) {
       return ServiceHubKind.repetitor;

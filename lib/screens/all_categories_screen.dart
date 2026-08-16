@@ -46,7 +46,7 @@ class _AllCategoriesScreenState extends State<AllCategoriesScreen> {
       ServiceHubKind.ishchi,
       ServiceHubKind.elektrik,
       ServiceHubKind.santexnik,
-      ServiceHubKind.konditsioner,
+      // Konditsioner endi "Texnika ustasi" ichidagi xizmat turi.
       ServiceHubKind.texnikaUstasi,
     ]),
     _CategoryGroup('Tozalik va Sanitariya', [
@@ -71,11 +71,8 @@ class _AllCategoriesScreenState extends State<AllCategoriesScreen> {
       ServiceHubKind.gameZona,
       ServiceHubKind.tadbirlar,
     ]),
-    _CategoryGroup('IT va Kompyuter Xizmatlari', [ServiceHubKind.kompUsta]),
-    _CategoryGroup('Boshqa Xizmatlar', [
-      ServiceHubKind.boshqa,
-      ServiceHubKind.yana,
-    ]),
+    // Kompyuter/IT va qolgan barcha xizmatlar BITTA kartada birlashtirilgan.
+    _CategoryGroup('Boshqa xizmatlar', [ServiceHubKind.boshqa]),
   ];
 
   @override
@@ -152,9 +149,6 @@ class _AllCategoriesScreenState extends State<AllCategoriesScreen> {
                                     ),
                                 itemBuilder: (ctx, i) {
                                   final k = group.items[i];
-                                  final isDark =
-                                      Theme.of(context).brightness ==
-                                      Brightness.dark;
                                   final enabled = FeatureService()
                                       .isCategoryEnabled(k.key);
                                   return Opacity(

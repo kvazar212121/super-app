@@ -30,7 +30,6 @@ class ProviderCategoryConfig {
     education,
     builder,
     worker,
-    ac,
     nanny,
     tutor,
     disinfection,
@@ -48,15 +47,26 @@ class ProviderCategoryConfig {
     boshqa,
   ];
 
+  /// [all] — YANGI ro'yxatdan o'tish uchun ochiq kategoriyalar.
+  ///
+  /// [legacy] — endi taklif qilinmaydigan, ammo AVVAL shu kategoriyada
+  /// ro'yxatdan o'tgan provayderlar paneli ochilishi uchun zarur konfiguratsiya.
+  /// Konditsioner "Texnika ustasi" ichiga ko'chirilgan.
+  // ignore: deprecated_member_use_from_same_package
+  static const legacy = [ac];
+
+  /// Yangi + eskirgan kategoriyalar (qidiruv uchun).
+  static const allIncludingLegacy = [...all, ...legacy];
+
   static ProviderCategoryConfig? byRegistrationId(String id) {
-    for (final c in all) {
+    for (final c in allIncludingLegacy) {
       if (c.registrationId == id) return c;
     }
     return null;
   }
 
   static ProviderCategoryConfig? byCategoryKey(String key) {
-    for (final c in all) {
+    for (final c in allIncludingLegacy) {
       if (c.categoryKey == key) return c;
     }
     return null;
@@ -174,6 +184,11 @@ class ProviderCategoryConfig {
       'Qorovul',
     ],
   );
+  /// ESKIRGAN: Konditsioner endi "Texnika ustasi" ichidagi subkategoriya.
+  /// Yangi ro'yxatdan o'tish uchun ishlatilmaydi ([all] ro'yxatida yo'q),
+  /// ammo AVVAL shu kategoriyada ro'yxatdan o'tgan provayderlarning paneli
+  /// ochilishi uchun konfiguratsiya saqlab qolinadi.
+  @Deprecated('Konditsioner "Texnika ustasi" ichiga ko\'chirildi')
   static const ac = ProviderCategoryConfig(
     registrationId: 'ac',
     categoryKey: 'konditsioner',
@@ -212,7 +227,16 @@ class ProviderCategoryConfig {
     title: 'Texnika ustasi',
     icon: LucideIcons.refrigerator,
     accentColor: Color(0xFF64748B),
-    subCategories: ['Katta texnika', 'Mayda texnika', 'Oshxona texnikasi'],
+    // Konditsioner endi ALOHIDA kategoriya emas — shu yerning bir turi.
+    subCategories: [
+      'Katta texnika',
+      'Mayda texnika',
+      'Oshxona texnikasi',
+      'Konditsioner o\'rnatish',
+      'Konditsioner ta\'mirlash',
+      'Konditsioner tozalash',
+      'Freon quyish',
+    ],
   );
   static const courier = ProviderCategoryConfig(
     registrationId: 'courier',

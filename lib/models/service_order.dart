@@ -125,7 +125,7 @@ class ServiceOrder {
             catId <= ServiceHubKind.values.length) {
           return ServiceHubKind.values[catId - 1];
         }
-        return ServiceHubKind.yana;
+        return ServiceHubKind.boshqa;
       },
     );
 

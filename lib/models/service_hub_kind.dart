@@ -13,7 +13,6 @@ enum ServiceHubKind {
   santexnik,
   tozalash,
   avtoYordam,
-  konditsioner,
   enaga,
   repetitor,
   // 6 ta YANGI:
@@ -28,9 +27,7 @@ enum ServiceHubKind {
   oshxona,
   gameZona,
   sportMaydon,
-  kompUsta,
   boshqa,
-  yana,
 }
 
 extension ServiceHubKindX on ServiceHubKind {
@@ -38,7 +35,6 @@ extension ServiceHubKindX on ServiceHubKind {
   String get key => switch (this) {
     ServiceHubKind.gameZona => 'game_zona',
     ServiceHubKind.sportMaydon => 'sport_maydon',
-    ServiceHubKind.kompUsta => 'kompyuter_usta',
     ServiceHubKind.boshqa => 'boshqa_xizmatlar',
     _ => name,
   };
@@ -53,7 +49,6 @@ extension ServiceHubKindX on ServiceHubKind {
     ServiceHubKind.santexnik => 'Santexnik',
     ServiceHubKind.tozalash => 'Tozalash',
     ServiceHubKind.avtoYordam => 'Avto-yordam',
-    ServiceHubKind.konditsioner => 'Konditsioner',
     ServiceHubKind.enaga => 'Enaga',
     ServiceHubKind.repetitor => 'Repetitor',
     ServiceHubKind.dezinfeksiya => 'Dezinfeksiya',
@@ -67,9 +62,7 @@ extension ServiceHubKindX on ServiceHubKind {
     ServiceHubKind.oshxona => 'Oshxona',
     ServiceHubKind.gameZona => 'Game Zona',
     ServiceHubKind.sportMaydon => 'Sport maydonlari',
-    ServiceHubKind.kompUsta => 'Komp Usta',
-    ServiceHubKind.boshqa => 'Boshqa Xizmatlar',
-    ServiceHubKind.yana => 'Yana xizmatlar',
+    ServiceHubKind.boshqa => 'Boshqa xizmatlar',
   };
 
   String get hubSubtitle => switch (this) {
@@ -82,7 +75,6 @@ extension ServiceHubKindX on ServiceHubKind {
     ServiceHubKind.santexnik => 'Santexnik va suv oqimi',
     ServiceHubKind.tozalash => 'Uy yoki ofis tozalash xizmati',
     ServiceHubKind.avtoYordam => 'Evakuator, akkumulyator, yol yordami',
-    ServiceHubKind.konditsioner => 'Konditsioner montaj va profilaktika',
     ServiceHubKind.enaga => 'Bola qarovchi va enaga',
     ServiceHubKind.repetitor => 'Repetitor va oqituvchi xizmati',
     ServiceHubKind.dezinfeksiya => 'Uy, ofis va mashina dezinfeksiyasi',
@@ -96,9 +88,8 @@ extension ServiceHubKindX on ServiceHubKind {
     ServiceHubKind.oshxona => 'Restoranlar, kafelar va ovqatlanish joylari.',
     ServiceHubKind.gameZona => 'PS5, PC, VR klublari va o\'yin xonalari.',
     ServiceHubKind.sportMaydon => 'Futbol, tennis va boshqa sport maydonlari.',
-    ServiceHubKind.kompUsta => 'Kompyuter va IT xizmatlari.',
-    ServiceHubKind.boshqa => 'Aralash va boshqa turdagi xizmatlar.',
-    ServiceHubKind.yana => 'Tez kunda qo\'shimcha xizmatlar qo\'shiladi...',
+    ServiceHubKind.boshqa =>
+      'Kompyuter, IT va boshqa turdagi xizmatlar.',
   };
 
   IconData get icon => switch (this) {
@@ -111,7 +102,6 @@ extension ServiceHubKindX on ServiceHubKind {
     ServiceHubKind.santexnik => LucideIcons.droplets,
     ServiceHubKind.tozalash => LucideIcons.sprayCan,
     ServiceHubKind.avtoYordam => LucideIcons.car,
-    ServiceHubKind.konditsioner => LucideIcons.wind,
     ServiceHubKind.enaga => LucideIcons.baby,
     ServiceHubKind.repetitor => LucideIcons.bookOpen,
     ServiceHubKind.dezinfeksiya => LucideIcons.shieldCheck,
@@ -125,9 +115,7 @@ extension ServiceHubKindX on ServiceHubKind {
     ServiceHubKind.oshxona => LucideIcons.utensils,
     ServiceHubKind.gameZona => LucideIcons.gamepad2,
     ServiceHubKind.sportMaydon => Icons.sports_soccer,
-    ServiceHubKind.kompUsta => LucideIcons.monitor,
     ServiceHubKind.boshqa => LucideIcons.layoutGrid,
-    ServiceHubKind.yana => LucideIcons.moreHorizontal,
   };
 
   /// 3D icon rasm yo'li (3dicons.co). Bo'lmasa null → yuqoridagi [icon] ishlatiladi.
@@ -152,10 +140,7 @@ extension ServiceHubKindX on ServiceHubKind {
     ServiceHubKind.oshxona => 'assets/images/services3d/oshxona.jpg',
     ServiceHubKind.gameZona => 'assets/images/services3d/gameZona.jpg',
     ServiceHubKind.sportMaydon => 'assets/images/services3d/sportMaydon.jpg',
-    ServiceHubKind.kompUsta => 'assets/images/services3d/kompUsta.jpg',
     ServiceHubKind.boshqa => 'assets/images/services3d/boshqa.png',
-    ServiceHubKind.yana => 'assets/images/services3d/yana.png',
-    ServiceHubKind.konditsioner => 'assets/images/services3d/konditsioner.jpg',
     // Bepul 3D to'plamda quvur/tish iconi yo'q — aniq flat Lucide icon ishlatiladi
     ServiceHubKind.santexnik => 'assets/images/services3d/santexnik.jpg',
     ServiceHubKind.stomatologiya => 'assets/images/services3d/stamatolg.jpg',
@@ -220,12 +205,6 @@ extension ServiceHubKindX on ServiceHubKind {
       (label: 'Shinopola (1 gildirak)', basePrice: 70000),
       (label: 'Yol ustasi', basePrice: 150000),
     ],
-    ServiceHubKind.konditsioner => const [
-      (label: 'Montaj', basePrice: 600000),
-      (label: 'Demontaj', basePrice: 250000),
-      (label: 'Profilaktika tozalash', basePrice: 180000),
-      (label: 'Gaz toldirish', basePrice: 350000),
-    ],
     ServiceHubKind.enaga => const [
       (label: 'Soatlik (3 soat)', basePrice: 120000),
       (label: 'Yarim kun (5 soat)', basePrice: 200000),
@@ -249,6 +228,11 @@ extension ServiceHubKindX on ServiceHubKind {
       (label: 'Muzlatgich tamlash', basePrice: 180000),
       (label: 'Televizor tamlash', basePrice: 120000),
       (label: 'Mikroto`lqinli pech', basePrice: 80000),
+      // Konditsioner endi shu kategoriya ichida.
+      (label: 'Konditsioner montaj', basePrice: 600000),
+      (label: 'Konditsioner demontaj', basePrice: 250000),
+      (label: 'Konditsioner tozalash', basePrice: 180000),
+      (label: 'Freon (gaz) quyish', basePrice: 350000),
     ],
     ServiceHubKind.kuryerlik => const [
       (label: 'Hujjat yetkazish', basePrice: 30000),
@@ -300,12 +284,14 @@ extension ServiceHubKindX on ServiceHubKind {
       (label: 'Basketbol maydoni', basePrice: 80000),
       (label: 'Voleybol maydoni', basePrice: 80000),
     ],
-    ServiceHubKind.kompUsta => const [
+    // Kompyuter/IT xizmatlari endi "Boshqa xizmatlar" ichida.
+    ServiceHubKind.boshqa => const [
       (label: 'Windows o\'rnatish', basePrice: 70000),
       (label: 'Format qilish', basePrice: 50000),
       (label: 'PC terish', basePrice: 150000),
+      (label: 'Noutbuk ta\'miri', basePrice: 120000),
+      (label: 'Tarmoq sozlash', basePrice: 100000),
+      (label: 'Boshqa xizmat', basePrice: 100000),
     ],
-    ServiceHubKind.boshqa => const [(label: 'Xizmat haqi', basePrice: 100000)],
-    ServiceHubKind.yana => const [(label: 'Boshqa xizmat', basePrice: 100000)],
   };
 }

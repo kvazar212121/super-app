@@ -75,7 +75,6 @@ const Set<ServiceHubKind> kNewHubDesignKinds = {
   ServiceHubKind.santexnik,
   ServiceHubKind.tozalash,
   ServiceHubKind.avtoYordam,
-  ServiceHubKind.konditsioner,
   ServiceHubKind.enaga,
   ServiceHubKind.repetitor,
   ServiceHubKind.dezinfeksiya,
@@ -89,6 +88,8 @@ const Set<ServiceHubKind> kNewHubDesignKinds = {
   ServiceHubKind.oshxona,
   ServiceHubKind.gameZona,
   ServiceHubKind.sportMaydon,
+  // Kompyuter/IT va toifaga kirmaydigan barcha xizmatlar shu yerda.
+  ServiceHubKind.boshqa,
 };
 
 class ServiceHubScreen extends StatefulWidget {

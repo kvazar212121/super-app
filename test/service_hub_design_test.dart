@@ -496,6 +496,7 @@ void main() {
   _edgeCases();
   _bannerAspect();
   _previewBottomRow();
+  _realDeviceWidths();
 
   group('CatalogEntry banner manbai', () {
     test('coverUrl aniq berilsa o\'sha ishlatiladi', () {
@@ -893,6 +894,133 @@ void _previewBottomRow() {
     test('kun va soat', () {
       expect(formatDuration(5614), '3 kun 21 soat');
       expect(formatDuration(2880), '2 kun');
+    });
+  });
+}
+
+/// ─────────────────────────────────────────────────────────────
+/// Haqiqiy qurilma o'lchamlari — emulyatorda 411dp da 36px overflow
+/// aniqlangan edi (uzun masofa + ko'p sharh + uzun narx).
+/// ─────────────────────────────────────────────────────────────
+void _realDeviceWidths() {
+  group('Haqiqiy qurilma kengliklari', () {
+    /// Keng tarqalgan Android/iOS ekran kengliklari (dp).
+    const widths = <String, ({double px, double dpr})>{
+      'Pixel 7 (411dp)': (px: 1080, dpr: 420 / 160),
+      'Pixel 4a (393dp)': (px: 1080, dpr: 440 / 160),
+      'iPhone SE (320dp)': (px: 640, dpr: 2.0),
+      'Galaxy S8 (360dp)': (px: 1080, dpr: 3.0),
+    };
+
+    for (final e in widths.entries) {
+      testWidgets('${e.key} — uzun ma\'lumotda overflow yo\'q',
+          (tester) async {
+        tester.view.physicalSize = Size(e.value.px, 2400);
+        tester.view.devicePixelRatio = e.value.dpr;
+        addTearDown(tester.view.reset);
+
+        await tester.pumpWidget(MaterialApp(
+          home: Scaffold(
+            body: ProviderListRow(
+              entry: CatalogEntry(
+                id: 'a',
+                name: 'Santexnik Master',
+                subtitle: "Yunusobod, Mirzo Ulug'bek",
+                rating: 4.9,
+                reviewCount: 203,
+                // Eng yomon holat: uzun narx oralig'i
+                priceLabel: "15000 — 25000 so'm",
+                icon: LucideIcons.droplet,
+                latitude: 41.31,
+                longitude: 69.24,
+                tags: const [
+                  'Smesitel almashtirish',
+                  'Toshma/probka tozalash',
+                  'Shoshilinch chaqiruv',
+                ],
+                onOpen: (_) {},
+              ),
+              accent: _accent,
+              // Eng yomon holat: juda uzoq masofa
+              distanceKmValue: 11185.6,
+            ),
+          ),
+        ));
+        await tester.pump();
+
+        expect(tester.takeException(), isNull,
+            reason: '${e.key} da overflow bo\'lmasligi kerak');
+      });
+    }
+
+    testWidgets('Ochiq/Yopiq yorlig\'i har doim ekran ichida', (tester) async {
+      tester.view.physicalSize = const Size(1080, 2400);
+      tester.view.devicePixelRatio = 420 / 160;
+      addTearDown(tester.view.reset);
+
+      await tester.pumpWidget(MaterialApp(
+        home: Scaffold(
+          body: ProviderListRow(
+            entry: CatalogEntry(
+              id: 'a',
+              name: 'Juda uzun sartaroshxona nomi bu yerga sig\'maydi albatta',
+              subtitle: 'Manzil',
+              rating: 4.9,
+              reviewCount: 203,
+              priceLabel: '120k+',
+              icon: LucideIcons.droplet,
+              latitude: 41.31,
+              longitude: 69.24,
+              onOpen: (_) {},
+            ),
+            accent: _accent,
+            distanceKmValue: 11185.6,
+          ),
+        ),
+      ));
+      await tester.pump();
+
+      final row = tester.getRect(find.byType(ProviderListRow));
+      final label = tester.getRect(find.text('Ochiq'));
+      expect(label.right, lessThanOrEqualTo(row.right),
+          reason: 'holat yorlig\'i kesilmasligi kerak');
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('Preview karta 411dp da uzun ma\'lumotda buzilmaydi',
+        (tester) async {
+      tester.view.physicalSize = const Size(1080, 2400);
+      tester.view.devicePixelRatio = 420 / 160;
+      addTearDown(tester.view.reset);
+
+      await tester.pumpWidget(_wrap(
+        Scaffold(
+          body: ProviderMapPreviewCard(
+            entry: CatalogEntry(
+              id: 'a',
+              name: 'Santexnik Master',
+              subtitle: "Yunusobod, Mirzo Ulug'bek",
+              rating: 4.9,
+              reviewCount: 203,
+              priceLabel: "15000 — 25000 so'm",
+              icon: LucideIcons.droplet,
+              latitude: 41.31,
+              longitude: 69.24,
+              tags: const ['Smesitel almashtirish', 'Toshma/probka tozalash'],
+              onOpen: (_) {},
+            ),
+            accent: _accent,
+            distanceKmValue: 11185.6,
+            durationMin: 9999,
+            onClose: () {},
+            onOrder: () {},
+          ),
+        ),
+      ));
+      await tester.pump();
+
+      expect(tester.takeException(), isNull);
+      expect(find.text('Buyurtma berish'), findsOneWidget);
     });
   });
 }
