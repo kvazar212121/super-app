@@ -85,18 +85,6 @@ class Campaign {
             json['require_completed_order'] as bool? ?? true,
       );
 
-  /// Ilova hali backendga ulanmagani uchun namuna aksiya.
-  static Campaign get demo => Campaign(
-        id: 1,
-        title: 'Eng yaxshi sartarosh',
-        description:
-            'Sevimli sartaroshingizga ovoz bering. Har bir foydalanuvchi '
-            'faqat bitta ovoz bera oladi.',
-        startsAt: DateTime.now().subtract(const Duration(days: 6)),
-        endsAt: DateTime.now().add(const Duration(days: 24)),
-        prize: "1-o'rin: 5 000 000 so'm  ·  2-o'rin: 2 000 000 so'm",
-        status: CampaignStatus.running,
-      );
 }
 
 /// Reyting qatori: provayder + shu aksiyadagi ovozlar soni.
@@ -124,34 +112,4 @@ class CampaignRanking {
         position: json['position'] as int,
       );
 
-  static List<CampaignRanking> get demo => const [
-        CampaignRanking(
-          providerId: 1,
-          name: 'Style Barbershop',
-          address: "Amir Temur ko'chasi, 15",
-          votes: 142,
-          position: 1,
-        ),
-        CampaignRanking(
-          providerId: 2,
-          name: 'Premium Cut',
-          address: 'Chilonzor tumani, 5-mavze',
-          votes: 118,
-          position: 2,
-        ),
-        CampaignRanking(
-          providerId: 3,
-          name: 'Elite Barber',
-          address: 'Yunusobod, 12-kvartal',
-          votes: 76,
-          position: 3,
-        ),
-        CampaignRanking(
-          providerId: 4,
-          name: 'Klassik Sartaroshxona',
-          address: 'Mirobod, Oybek 44',
-          votes: 41,
-          position: 4,
-        ),
-      ];
 }

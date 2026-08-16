@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../models/campaign.dart';
+import '../services/api_service.dart';
 
 /// Sovrinli sezonli reyting ekrani.
 ///
@@ -8,9 +9,7 @@ import '../models/campaign.dart';
 /// Har bir foydalanuvchi butun aksiya davomida faqat BITTA provayderni
 /// tanlay oladi — tanlagach tugmalar bloklanadi.
 ///
-/// DIQQAT: ilova hozircha backendga ulanmagan (demo ma'lumot). Backend
-/// tayyor: /api/v1/campaigns/* endpointlari mavjud. Ulash uchun
-/// `_load()` ichidagi izohga qarang.
+/// Backend: /api/v1/campaigns/* endpointlari.
 class CampaignRatingScreen extends StatefulWidget {
   const CampaignRatingScreen({super.key});
 
@@ -19,11 +18,17 @@ class CampaignRatingScreen extends StatefulWidget {
 }
 
 class _CampaignRatingScreenState extends State<CampaignRatingScreen> {
-  late Campaign _campaign;
-  late List<CampaignRanking> _rankings;
+  final ApiService _api = ApiService();
+
+  Campaign? _campaign;
+  List<CampaignRanking> _rankings = [];
 
   /// Foydalanuvchi qaysi provayderga ovoz bergani (null = bermagan).
   int? _votedProviderId;
+
+  bool _loading = true;
+  String? _error;
+  bool _voting = false;
 
   @override
   void initState() {
@@ -31,17 +36,59 @@ class _CampaignRatingScreenState extends State<CampaignRatingScreen> {
     _load();
   }
 
-  void _load() {
-    // Backendga ulanganda shu joy quyidagicha bo'ladi:
-    //   final c = await api.get('/campaigns/active');
-    //   final board = await api.get('/campaigns/${c.id}/leaderboard');
-    //   final mine = await api.get('/campaigns/${c.id}/my-vote');
-    _campaign = Campaign.demo;
-    _rankings = List.of(CampaignRanking.demo);
+  Future<void> _load() async {
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
+    try {
+      final raw = await _api.getActiveCampaign();
+      if (raw == null) {
+        if (!mounted) return;
+        setState(() {
+          _campaign = null;
+          _rankings = [];
+          _loading = false;
+        });
+        return;
+      }
+      final campaign = Campaign.fromJson(raw);
+
+      final board = await _api.getCampaignLeaderboard(campaign.id);
+      final rankings = board
+          .map((e) => CampaignRanking.fromJson(e as Map<String, dynamic>))
+          .toList();
+
+      int? voted;
+      try {
+        final mine = await _api.getMyCampaignVote(campaign.id);
+        if (mine['has_voted'] == true) {
+          voted = mine['provider_id'] as int?;
+        }
+      } catch (_) {
+        // Tizimga kirmagan bo'lsa ovoz holati noma'lum — reyting baribir
+        // ko'rsatiladi.
+      }
+
+      if (!mounted) return;
+      setState(() {
+        _campaign = campaign;
+        _rankings = rankings;
+        _votedProviderId = voted;
+        _loading = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _error = 'Ma\'lumotni yuklab bo\'lmadi';
+        _loading = false;
+      });
+    }
   }
 
   Future<void> _vote(CampaignRanking item) async {
-    if (_votedProviderId != null) return;
+    final campaign = _campaign;
+    if (campaign == null || _votedProviderId != null || _voting) return;
 
     final confirmed = await showDialog<bool>(
       context: context,
@@ -66,72 +113,131 @@ class _CampaignRatingScreenState extends State<CampaignRatingScreen> {
     );
     if (confirmed != true || !mounted) return;
 
-    // Backend: POST /campaigns/{id}/vote  {provider_id: ...}
-    // Takroriy ovoz 409 qaytaradi — DB darajasida ham qo'riqlanadi.
-    setState(() {
-      _votedProviderId = item.providerId;
-      final i = _rankings.indexWhere((r) => r.providerId == item.providerId);
-      if (i != -1) {
-        final r = _rankings[i];
-        _rankings[i] = CampaignRanking(
-          providerId: r.providerId,
-          name: r.name,
-          address: r.address,
-          votes: r.votes + 1,
-          position: r.position,
-        );
-        _rankings.sort((a, b) => b.votes.compareTo(a.votes));
-        for (var k = 0; k < _rankings.length; k++) {
-          final r2 = _rankings[k];
-          _rankings[k] = CampaignRanking(
-            providerId: r2.providerId,
-            name: r2.name,
-            address: r2.address,
-            votes: r2.votes,
-            position: k + 1,
-          );
-        }
-      }
-    });
+    // Messenger'ni await'dan OLDIN olamiz (context eskirmasligi uchun).
+    final messenger = ScaffoldMessenger.of(context);
+    setState(() => _voting = true);
+    try {
+      await _api.voteInCampaign(campaign.id, item.providerId);
+      if (!mounted) return;
+      messenger.showSnackBar(
+        SnackBar(content: Text('Ovozingiz qabul qilindi: ${item.name}')),
+      );
+      await _load();
+    } catch (e) {
+      if (!mounted) return;
+      // Backend aniq sabab qaytaradi: allaqachon ovoz berilgan (409),
+      // buyurtma yo'q (403), aksiya tugagan (400).
+      messenger.showSnackBar(
+        SnackBar(content: Text(_voteErrorText(e))),
+      );
+    } finally {
+      if (mounted) setState(() => _voting = false);
+    }
+  }
 
-    if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Ovozingiz qabul qilindi: ${item.name}')),
-    );
+  String _voteErrorText(Object e) {
+    final s = e.toString();
+    if (s.contains('409')) return 'Siz bu aksiyada allaqachon ovoz bergansiz';
+    if (s.contains('403')) {
+      return 'Ovoz berish uchun bu provayderda yakunlangan buyurtmangiz '
+          'bo\'lishi kerak';
+    }
+    if (s.contains('400')) return 'Aksiya hozir ovoz qabul qilmayapti';
+    return 'Ovoz berib bo\'lmadi';
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final totalVotes =
-        _rankings.fold<int>(0, (sum, r) => sum + r.votes);
 
     return Scaffold(
       appBar: AppBar(title: const Text('Sovrinli reyting')),
-      body: ListView(
-        padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
-        children: [
-          _header(theme, totalVotes),
-          const SizedBox(height: 20),
-          Text(
-            'Reyting',
-            style: theme.textTheme.titleMedium
-                ?.copyWith(fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            'Yulduz emas, OVOZ sanaladi. Har bir foydalanuvchi 1 ta ovoz.',
-            style: theme.textTheme.bodySmall
-                ?.copyWith(color: theme.hintColor),
-          ),
-          const SizedBox(height: 12),
-          ..._rankings.map((r) => _rankTile(theme, r)),
-        ],
+      body: RefreshIndicator(
+        onRefresh: _load,
+        child: _buildBody(theme),
       ),
     );
   }
 
-  Widget _header(ThemeData theme, int totalVotes) {
+  Widget _buildBody(ThemeData theme) {
+    if (_loading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+    if (_error != null) {
+      return _messageView(theme, Icons.wifi_off, _error!, retry: true);
+    }
+    final campaign = _campaign;
+    if (campaign == null) {
+      return _messageView(
+        theme,
+        Icons.emoji_events_outlined,
+        'Hozircha faol aksiya yo\'q.\nTez orada e\'lon qilinadi.',
+      );
+    }
+
+    final totalVotes = _rankings.fold<int>(0, (sum, r) => sum + r.votes);
+
+    return ListView(
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
+      children: [
+        _header(theme, campaign, totalVotes),
+        const SizedBox(height: 20),
+        Text(
+          'Reyting',
+          style: theme.textTheme.titleMedium
+              ?.copyWith(fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          campaign.requireCompletedOrder
+              ? 'Yulduz emas, OVOZ sanaladi. Ovoz berish uchun o\'sha yerda '
+                  'yakunlangan buyurtmangiz bo\'lishi kerak.'
+              : 'Yulduz emas, OVOZ sanaladi. Har bir foydalanuvchi 1 ta ovoz.',
+          style: theme.textTheme.bodySmall?.copyWith(color: theme.hintColor),
+        ),
+        const SizedBox(height: 12),
+        if (_rankings.isEmpty)
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 32),
+            child: Text(
+              'Hali hech kim ovoz bermagan.\nBirinchi bo\'ling!',
+              textAlign: TextAlign.center,
+              style: theme.textTheme.bodyMedium
+                  ?.copyWith(color: theme.hintColor),
+            ),
+          )
+        else
+          ..._rankings.map((r) => _rankTile(theme, campaign, r)),
+      ],
+    );
+  }
+
+  Widget _messageView(ThemeData theme, IconData icon, String text,
+      {bool retry = false}) {
+    return ListView(
+      children: [
+        const SizedBox(height: 120),
+        Icon(icon, size: 56, color: theme.hintColor),
+        const SizedBox(height: 14),
+        Text(
+          text,
+          textAlign: TextAlign.center,
+          style: theme.textTheme.bodyLarge?.copyWith(color: theme.hintColor),
+        ),
+        if (retry) ...[
+          const SizedBox(height: 16),
+          Center(
+            child: FilledButton(
+              onPressed: _load,
+              child: const Text('Qayta urinish'),
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+
+  Widget _header(ThemeData theme, Campaign campaign, int totalVotes) {
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
@@ -151,7 +257,7 @@ class _CampaignRatingScreenState extends State<CampaignRatingScreen> {
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
-                  _campaign.title,
+                  campaign.title,
                   style: theme.textTheme.titleLarge?.copyWith(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
@@ -160,18 +266,17 @@ class _CampaignRatingScreenState extends State<CampaignRatingScreen> {
               ),
             ],
           ),
-          if (_campaign.description != null) ...[
+          if (campaign.description != null) ...[
             const SizedBox(height: 8),
             Text(
-              _campaign.description!,
+              campaign.description!,
               style: const TextStyle(color: Colors.white70, height: 1.35),
             ),
           ],
-          if (_campaign.prize != null) ...[
+          if (campaign.prize != null) ...[
             const SizedBox(height: 12),
             Container(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               decoration: BoxDecoration(
                 color: Colors.white.withValues(alpha: 0.18),
                 borderRadius: BorderRadius.circular(10),
@@ -183,7 +288,7 @@ class _CampaignRatingScreenState extends State<CampaignRatingScreen> {
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      _campaign.prize!,
+                      campaign.prize!,
                       style: const TextStyle(
                           color: Colors.white, fontWeight: FontWeight.w600),
                     ),
@@ -198,7 +303,7 @@ class _CampaignRatingScreenState extends State<CampaignRatingScreen> {
               const Icon(Icons.schedule, color: Colors.white70, size: 16),
               const SizedBox(width: 6),
               Text(
-                _campaign.remainingLabel,
+                campaign.remainingLabel,
                 style: const TextStyle(color: Colors.white70),
               ),
               const Spacer(),
@@ -215,9 +320,10 @@ class _CampaignRatingScreenState extends State<CampaignRatingScreen> {
     );
   }
 
-  Widget _rankTile(ThemeData theme, CampaignRanking r) {
+  Widget _rankTile(ThemeData theme, Campaign campaign, CampaignRanking r) {
     final isMine = _votedProviderId == r.providerId;
-    final canVote = _votedProviderId == null && _campaign.isRunning;
+    final canVote =
+        _votedProviderId == null && campaign.isRunning && !_voting;
 
     return Card(
       margin: const EdgeInsets.only(bottom: 10),
