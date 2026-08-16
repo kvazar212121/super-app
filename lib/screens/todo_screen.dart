@@ -393,6 +393,11 @@ class _TodoScreenState extends State<TodoScreen> {
 
                     Navigator.pop(context);
 
+                    // Messenger'ni await'dan OLDIN olamiz: dialog
+                    // yopilgandan keyin `context` eskirgan bo'lishi
+                    // mumkin (analizator ogohlantirishi).
+                    final messenger = ScaffoldMessenger.of(context);
+
                     try {
                       final res = await _api.createPlan(
                         title,
@@ -413,7 +418,7 @@ class _TodoScreenState extends State<TodoScreen> {
                         });
                       } else {
                         if (!mounted) return;
-                        ScaffoldMessenger.of(context).showSnackBar(
+                        messenger.showSnackBar(
                           SnackBar(
                             content: Text(
                               "${'Reja'.tr} ${newPlan.dueDate.day}-${_getMonthName(newPlan.dueDate.month).tr} ${"kuniga qo'shildi!".tr}",
@@ -432,7 +437,7 @@ class _TodoScreenState extends State<TodoScreen> {
                       }
                     } catch (e) {
                       if (!mounted) return;
-                      ScaffoldMessenger.of(context).showSnackBar(
+                      messenger.showSnackBar(
                         SnackBar(
                           content: Text("Reja yaratishda xatolik yuz berdi".tr),
                         ),

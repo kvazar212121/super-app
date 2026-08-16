@@ -199,26 +199,30 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                   ? null
                   : () async {
                       setState(() => submitting = true);
+                      // ScaffoldMessenger'ni async'dan OLDIN olamiz:
+                      // await'dan keyin `context` eskirgan bo'lishi
+                      // mumkin (dialog yopilgan bo'lsa), bu esa
+                      // ilovaning qulashiga olib keladi.
+                      final messenger = ScaffoldMessenger.of(context);
+                      final navigator = Navigator.of(ctx);
                       try {
                         await p.api.submitReview(
                           order.providerId!,
                           rating,
                           comment,
                         );
-                        if (mounted) {
-                          Navigator.pop(ctx);
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text('Baho yuborildi! Rahmat!'.tr),
-                            ),
-                          );
-                        }
+                        if (!mounted) return;
+                        navigator.pop();
+                        messenger.showSnackBar(
+                          SnackBar(
+                            content: Text('Baho yuborildi! Rahmat!'.tr),
+                          ),
+                        );
                       } catch (_) {
-                        if (mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Xatolik yuz berdi'.tr)),
-                          );
-                        }
+                        if (!mounted) return;
+                        messenger.showSnackBar(
+                          SnackBar(content: Text('Xatolik yuz berdi'.tr)),
+                        );
                       } finally {
                         if (mounted) setState(() => submitting = false);
                       }

@@ -364,6 +364,18 @@ class SalonService:
         if not member_req:
             raise HTTPException(status_code=404, detail="So'rov topilmadi")
 
+        # Ismni SO'ROVDAN olamiz. Ilgari bu yerda `display_name`
+        # ishlatilardi, lekin u faqat join_shop() parametri edi va bu
+        # funksiyaga umuman uzatilmasdi -> NameError, ya'ni xodim qabul
+        # qilish BUTUNLAY ishlamasdi (pyflakes bilan aniqlandi).
+        member_user_pre = await db.get(User, member_user_id)
+        display_name = (
+            member_req.get("name")
+            or (f"{member_user_pre.name} {member_user_pre.surname}".strip()
+                if member_user_pre else None)
+            or "Usta"
+        )
+
         pending = [m for m in pending if m.get("user_id") != member_user_id]
         meta["pending_members"] = pending
 

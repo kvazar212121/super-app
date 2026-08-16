@@ -489,8 +489,11 @@ class _ProviderCalendarWidgetState extends State<ProviderCalendarWidget> {
             return GestureDetector(
               onTap: () async {
                 if (_isCurrentDateBlocked || _isSuspended) return;
+                // Messenger'ni await'dan OLDIN olamiz: so'rovdan keyin
+                // `context` eskirgan bo'lishi mumkin.
+                final messenger = ScaffoldMessenger.of(context);
                 if (hasOrder) {
-                  ScaffoldMessenger.of(context).showSnackBar(
+                  messenger.showSnackBar(
                     SnackBar(content: Text('Bu vaqtda buyurtma bor'.tr)),
                   );
                   return;
@@ -543,7 +546,7 @@ class _ProviderCalendarWidgetState extends State<ProviderCalendarWidget> {
                   await _load();
                 } catch (e) {
                   if (mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
+                    messenger.showSnackBar(
                       SnackBar(content: Text('Xatolik yuz berdi: $e')),
                     );
                   }
