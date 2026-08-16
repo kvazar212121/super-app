@@ -4,9 +4,11 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:provider/provider.dart';
 
 import 'package:super_app/models/service_hub_kind.dart';
+import 'package:super_app/utils/geo_utils.dart';
 import 'package:super_app/providers/app_provider.dart';
 import 'package:super_app/screens/service_hub/service_catalog_screen.dart';
 import 'package:super_app/screens/service_hub/service_list_screen.dart';
+import 'package:super_app/widgets/hub/provider_banner.dart';
 import 'package:super_app/widgets/hub/provider_list_row.dart';
 import 'package:super_app/widgets/hub/provider_map_preview_card.dart';
 
@@ -465,7 +467,7 @@ void main() {
       await tester.pump();
 
       expect(find.text('8.7 km'), findsOneWidget);
-      expect(find.text('21 daqiqa'), findsOneWidget);
+      expect(find.text('21 daq'), findsOneWidget);
     });
 
     testWidgets('Preview kartani yopish tugmasi ishlaydi', (tester) async {
@@ -492,6 +494,8 @@ void main() {
   // CatalogEntry — ma'lumot modeli
   // ───────────────────────────────────────────────────────────
   _edgeCases();
+  _bannerAspect();
+  _previewBottomRow();
 
   group('CatalogEntry banner manbai', () {
     test('coverUrl aniq berilsa o\'sha ishlatiladi', () {
@@ -690,6 +694,205 @@ void _edgeCases() {
       final ids = entries.map((e) => e.id).toSet();
       expect(ids.length, entries.length,
           reason: 'ID lar noyob bo\'lishi kerak (xarita markerlari uchun)');
+    });
+  });
+}
+
+/// ─────────────────────────────────────────────────────────────
+/// Banner nisbati — provayder istalgan o'lchamdagi rasm yuklashi mumkin.
+/// Tavsiya 1.2:1, lekin boshqa nisbat ham ko'rinishni BUZMASLIGI kerak.
+/// ─────────────────────────────────────────────────────────────
+void _bannerAspect() {
+  group('Banner rasm nisbati', () {
+    testWidgets('TIK (vertikal) rasm qatorni cho\'zib yubormaydi',
+        (tester) async {
+      // Muammo: emulyatorda tik rasm yuklagan provayder qatori boshqalardan
+      // ~3 barobar baland chiqib, ro'yxatni buzib yuborardi.
+      await tester.pumpWidget(_listScreen([
+        _entry(id: 'a', name: 'Oddiy'),
+        // 9:16 tik rasm yuklagan provayder
+        CatalogEntry(
+          id: 'b',
+          name: 'Tik rasmli',
+          subtitle: 'Innavatsiyalar agentligi',
+          rating: 4.5,
+          reviewCount: 10,
+          priceLabel: '20k+',
+          icon: LucideIcons.scissors,
+          latitude: 41.31,
+          longitude: 69.24,
+          tags: const ['Erkaklar kesimi'],
+          coverUrl: 'https://example.invalid/vertical_9x16.jpg',
+          onOpen: (_) {},
+        ),
+        _entry(id: 'c', name: 'Yana oddiy'),
+      ]));
+      await tester.pump();
+
+      final rows = find.byType(ProviderListRow);
+      expect(rows, findsNWidgets(3));
+
+      final h0 = tester.getRect(rows.at(0)).height;
+      final h1 = tester.getRect(rows.at(1)).height;
+      final h2 = tester.getRect(rows.at(2)).height;
+
+      expect(h1, h0,
+          reason: 'rasmli qator balandligi boshqalar bilan BIR XIL bo\'lishi '
+              'kerak (banner balandlikni belgilamaydi)');
+      expect(h2, h0);
+    });
+
+    testWidgets('Qator balandligini faqat MATN belgilaydi', (tester) async {
+      // Rasmsiz va rasmli qator bir xil balandlikda bo'lishi kerak.
+      await tester.pumpWidget(_listScreen([
+        _entry(id: 'a', name: 'Rasmsiz'),
+        CatalogEntry(
+          id: 'b',
+          name: 'Rasmli',
+          subtitle: 'Chilonzor 12-mavze',
+          rating: 4.6,
+          reviewCount: 128,
+          priceLabel: "50k so'm",
+          icon: LucideIcons.scissors,
+          latitude: 41.31,
+          longitude: 69.24,
+          tags: const ['Erkaklar kesimi', 'Soqol olish'],
+          coverUrl: 'https://example.invalid/cover.jpg',
+          onOpen: (_) {},
+        ),
+      ]));
+      await tester.pump();
+
+      final h0 = tester.getRect(find.byType(ProviderListRow).at(0)).height;
+      final h1 = tester.getRect(find.byType(ProviderListRow).at(1)).height;
+      expect(h1, h0);
+      expect(h0, greaterThanOrEqualTo(ProviderListRow.minHeight),
+          reason: 'qator eng kam balandlikdan past bo\'lmaydi');
+      expect(h0, lessThan(ProviderListRow.minHeight + 20),
+          reason: 'qator ixcham qoladi — rasm uni cho\'zmaydi');
+    });
+
+    testWidgets('Tavsiya etilgan nisbat 1.2:1 deb e\'lon qilingan',
+        (tester) async {
+      expect(ProviderListRow.bannerAspectRatio, 1.2);
+      expect(ProviderBanner.recommendedAspectRatio, 1.2);
+    });
+
+    testWidgets('Xarita preview kartasi ham tik rasmdan cho\'zilmaydi',
+        (tester) async {
+      Future<double> heightFor(String? cover) async {
+        await tester.pumpWidget(_wrap(
+          Scaffold(
+            body: ProviderMapPreviewCard(
+              entry: CatalogEntry(
+                id: 'a',
+                name: 'Barber A',
+                subtitle: 'Chilonzor',
+                rating: 4.5,
+                reviewCount: 10,
+                priceLabel: '20k+',
+                icon: LucideIcons.scissors,
+                latitude: 41.31,
+                longitude: 69.24,
+                tags: const ['Erkaklar kesimi'],
+                coverUrl: cover,
+                onOpen: (_) {},
+              ),
+              accent: _accent,
+              distanceKmValue: 8.7,
+              onClose: () {},
+              onOrder: () {},
+            ),
+          ),
+        ));
+        await tester.pump();
+        return tester
+            .getRect(find.byType(ProviderMapPreviewCard))
+            .height;
+      }
+
+      final withoutImage = await heightFor(null);
+      final withVertical =
+          await heightFor('https://example.invalid/vertical_9x16.jpg');
+      expect(withVertical, withoutImage,
+          reason: 'preview karta balandligi rasmga bog\'liq bo\'lmasligi kerak');
+    });
+  });
+}
+
+/// ─────────────────────────────────────────────────────────────
+/// Preview kartaning pastki qatori — chiplar tugmani siqib chiqarmasligi.
+/// Emulyatorda "7989.2 km" + "5614 daqiqa" da 1px overflow bo'lgan edi.
+/// ─────────────────────────────────────────────────────────────
+void _previewBottomRow() {
+  group('Preview karta pastki qatori', () {
+    Future<void> pumpCard(
+      WidgetTester tester, {
+      required double? km,
+      required int? min,
+      double width = 360,
+    }) async {
+      await tester.pumpWidget(_wrap(
+        Scaffold(
+          body: Center(
+            child: SizedBox(
+              width: width,
+              child: ProviderMapPreviewCard(
+                entry: _entry(id: 'a', name: 'Aziz — mobil sartarosh'),
+                accent: _accent,
+                distanceKmValue: km,
+                durationMin: min,
+                onClose: () {},
+                onOrder: () {},
+              ),
+            ),
+          ),
+        ),
+      ));
+      await tester.pump();
+    }
+
+    testWidgets('Juda uzoq masofa va vaqtda overflow bo\'lmaydi',
+        (tester) async {
+      await pumpCard(tester, km: 7989.2, min: 5614);
+      expect(tester.takeException(), isNull);
+      expect(find.text('Buyurtma berish'), findsOneWidget);
+    });
+
+    testWidgets('Tor ekranda (320dp) ham overflow bo\'lmaydi', (tester) async {
+      await pumpCard(tester, km: 11188.1, min: 9999, width: 320);
+      expect(tester.takeException(), isNull);
+      expect(find.text('Buyurtma berish'), findsOneWidget);
+    });
+
+    testWidgets('Masofa/vaqt yo\'q bo\'lsa ham tugma joyida', (tester) async {
+      await pumpCard(tester, km: null, min: null);
+      expect(tester.takeException(), isNull);
+      expect(find.text('Buyurtma berish'), findsOneWidget);
+    });
+
+    testWidgets('Uzun davomiylik inson o\'qiydigan ko\'rinishda', (tester) async {
+      await pumpCard(tester, km: 7989.2, min: 5614);
+      // 5614 daqiqa = 93 soat 34 daqiqa = 3 kun 21 soat
+      expect(find.text('3 kun 21 soat'), findsOneWidget);
+      expect(find.textContaining('5614'), findsNothing);
+    });
+  });
+
+  group('formatDuration', () {
+    test('bir soatdan kam — daqiqa', () {
+      expect(formatDuration(45), '45 daq');
+      expect(formatDuration(1), '1 daq');
+    });
+
+    test('soat va daqiqa', () {
+      expect(formatDuration(135), '2 soat 15 daq');
+      expect(formatDuration(120), '2 soat');
+    });
+
+    test('kun va soat', () {
+      expect(formatDuration(5614), '3 kun 21 soat');
+      expect(formatDuration(2880), '2 kun');
     });
   });
 }

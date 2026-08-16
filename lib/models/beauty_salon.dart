@@ -1,4 +1,5 @@
 import 'dart:math' as math;
+import '../utils/working_hours.dart';
 
 import '../utils/geo_utils.dart';
 
@@ -136,8 +137,12 @@ class BeautySalon {
   double distanceKmFrom(double userLat, double userLng) =>
       distanceKm(userLat, userLng, latitude, longitude);
 
-  bool isOpenNow([DateTime? now]) {
-    final t = now ?? DateTime.now();
-    return t.hour >= 10 && t.hour < 20;
-  }
+  /// Hozir ochiqmi. Salon ish vaqtini kiritgan bo'lsa SHU ishlatiladi,
+  /// aks holda salonlar uchun odatiy 10:00–20:00.
+  bool isOpenNow([DateTime? now]) => isOpenAt(
+        hours: workingHoursFrom(rawJson),
+        defaultOpen: 10,
+        defaultClose: 20,
+        now: now,
+      );
 }

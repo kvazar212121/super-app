@@ -25,3 +25,21 @@ String formatDistanceKm(double km) {
   if (km < 1) return '${(km * 1000).round()} m';
   return '${km.toStringAsFixed(1)} km';
 }
+
+/// Marshrut davomiyligini inson o'qiydigan ko'rinishga o'giradi.
+///
+/// Xarita preview kartasida "5614 daqiqa" kabi tushunarsiz qiymat
+/// chiqmasligi uchun: 45 daqiqa · 2 soat 15 daq · 3 kun 21 soat.
+String formatDuration(int minutes) {
+  if (minutes < 60) return '$minutes daq';
+
+  final hours = minutes ~/ 60;
+  final mins = minutes % 60;
+  if (hours < 24) {
+    return mins == 0 ? '$hours soat' : '$hours soat $mins daq';
+  }
+
+  final days = hours ~/ 24;
+  final restHours = hours % 24;
+  return restHours == 0 ? '$days kun' : '$days kun $restHours soat';
+}

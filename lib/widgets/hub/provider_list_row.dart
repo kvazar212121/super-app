@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
-import '../../config/app_config.dart';
 import '../../screens/service_hub/service_catalog_screen.dart';
+import 'provider_banner.dart';
 import '../../theme/glass_tokens.dart';
 import '../../utils/geo_utils.dart';
 
@@ -43,11 +42,20 @@ class ProviderListRow extends StatelessWidget {
   });
 
   /// Qator eng kam balandligi. QAT'IY emas: foydalanuvchi tizimda shrift
-  /// o'lchamini kattalashtirsa qator o'sadi, kontent kesilmaydi.
+  /// o'lchamini kattalashtirsa qator MATN hisobiga o'sadi, kontent kesilmaydi.
+  ///
+  /// MUHIM: qator balandligini faqat MATN belgilaydi, banner rasm EMAS.
+  /// Shu sabab banner `Positioned` bilan joylashtirilgan — aks holda tik
+  /// (vertikal) rasm yuklagan provayder butun qatorni cho'zib yuborardi.
   static const double minHeight = 108;
 
-  /// Banner kengligi (gradient singish zonasi shu ichida).
+  /// Banner kengligi. Balandlik bilan nisbati [bannerAspectRatio] ga teng.
   static const double _bannerWidth = 132;
+
+  /// Banner uchun TAVSIYA ETILADIGAN nisbat — eni 1.2, bo'yi 1 (ya'ni 1.2:1).
+  /// Provayder boshqa nisbatda rasm yuklasa ham qator ko'rinishi buzilmaydi:
+  /// rasm markazidan qirqib olinadi ([BoxFit.cover] + markazga tekislash).
+  static const double bannerAspectRatio = 1.2;
 
   @override
   Widget build(BuildContext context) {
@@ -61,95 +69,39 @@ class ProviderListRow extends StatelessWidget {
         child: Container(
           constraints: const BoxConstraints(minHeight: minHeight),
           decoration: BoxDecoration(
-            color: selected ? accent.withValues(alpha: 0.07) : Colors.transparent,
+            color:
+                selected ? accent.withValues(alpha: 0.07) : Colors.transparent,
           ),
-          child: IntrinsicHeight(
-            child: Row(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+          // Stack o'lchamini faqat pastdagi (positioned bo'lmagan) matn
+          // belgilaydi; banner esa qolgan balandlikka cho'ziladi.
+          child: Stack(
             children: [
-              _Banner(
-                coverUrl: cover,
-                icon: entry.icon,
-                accent: accent,
-                surface: surface,
+              Positioned(
+                left: 0,
+                top: 0,
+                bottom: 0,
+                width: _bannerWidth,
+                child: ProviderBanner(
+                  coverUrl: cover,
+                  icon: entry.icon,
+                  accent: accent,
+                  surface: surface,
+                ),
               ),
-              Expanded(
-                child: Padding(
-                  // Chapda kichik padding — banner gradienti matn ostiga
-                  // ozgina kirib turadi, shuning uchun 4 yetarli.
-                  padding: const EdgeInsets.fromLTRB(4, 10, 14, 10),
-                  child: _Info(
-                    entry: entry,
-                    accent: accent,
-                    distanceKmValue: distanceKmValue,
-                  ),
+              Padding(
+                // Chapda banner kengligi + kichik bo'shliq: gradient matn
+                // ostiga ozgina kirib turadi.
+                padding: const EdgeInsets.fromLTRB(_bannerWidth + 4, 10, 14, 10),
+                child: _Info(
+                  entry: entry,
+                  accent: accent,
+                  distanceKmValue: distanceKmValue,
                 ),
               ),
             ],
-            ),
           ),
         ),
       ),
-    );
-  }
-}
-
-/// Chapdagi banner — rasm + o'ngga qarab fon rangiga singiydigan gradient.
-class _Banner extends StatelessWidget {
-  final String? coverUrl;
-  final IconData icon;
-  final Color accent;
-  final Color surface;
-
-  const _Banner({
-    required this.coverUrl,
-    required this.icon,
-    required this.accent,
-    required this.surface,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: ProviderListRow._bannerWidth,
-      child: Stack(
-        fit: StackFit.expand,
-        children: [
-          if (coverUrl != null && coverUrl!.isNotEmpty)
-            CachedNetworkImage(
-              imageUrl: AppConfig.formatImageUrl(coverUrl!),
-              fit: BoxFit.cover,
-              errorWidget: (_, _, _) => _fallback(),
-              placeholder: (_, _) => _fallback(),
-            )
-          else
-            _fallback(),
-          // Rasm o'ng chekkasida fon rangiga SINGIYDI (ozgina, ~40%).
-          // Shu tufayli rasm bilan matn orasida qattiq chegara ko'rinmaydi.
-          DecoratedBox(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.centerLeft,
-                end: Alignment.centerRight,
-                colors: [
-                  surface.withValues(alpha: 0),
-                  surface.withValues(alpha: 0),
-                  surface.withValues(alpha: 0.75),
-                  surface,
-                ],
-                stops: const [0, 0.55, 0.85, 1],
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _fallback() {
-    return ColoredBox(
-      color: accent.withValues(alpha: 0.16),
-      child: Center(child: Icon(icon, color: accent, size: 30)),
     );
   }
 }

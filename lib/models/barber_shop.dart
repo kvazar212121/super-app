@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import '../utils/geo_utils.dart';
+import '../utils/working_hours.dart';
 
 class Barber {
   final String id;
@@ -137,8 +138,12 @@ class BarberShop {
       distanceKm(userLat, userLng, latitude, longitude);
 
   /// metadata.open_hours bo'lmasa 09:00–21:00 deb hisoblanadi.
-  bool isOpenNow([DateTime? now]) {
-    final t = now ?? DateTime.now();
-    return t.hour >= 9 && t.hour < 21;
-  }
+  /// Hozir ochiqmi. Provayder ish vaqtini kiritgan bo'lsa (`metadata.hours`)
+  /// SHU ishlatiladi, aks holda sartaroshxonalar uchun odatiy 9:00–21:00.
+  bool isOpenNow([DateTime? now]) => isOpenAt(
+        hours: workingHoursFrom(rawJson),
+        defaultOpen: 9,
+        defaultClose: 21,
+        now: now,
+      );
 }

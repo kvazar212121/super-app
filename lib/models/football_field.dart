@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../utils/working_hours.dart';
 
 import '../utils/geo_utils.dart';
 
@@ -246,10 +247,14 @@ class FootballField {
   double distanceKmFrom(double userLat, double userLng) =>
       distanceKm(userLat, userLng, latitude, longitude);
 
-  bool isOpenNow([DateTime? now]) {
-    final t = now ?? DateTime.now();
-    return t.hour >= 8 && t.hour < 23;
-  }
+  /// Hozir ochiqmi. Maydon ish vaqtini kiritgan bo'lsa SHU ishlatiladi,
+  /// aks holda maydonlar uchun odatiy 8:00–23:00.
+  bool isOpenNow([DateTime? now]) => isOpenAt(
+        hours: workingHoursFrom(rawJson),
+        defaultOpen: 8,
+        defaultClose: 23,
+        now: now,
+      );
 
   String get priceLabel => '${basePricePerHour.round()} so\'m/soat';
 

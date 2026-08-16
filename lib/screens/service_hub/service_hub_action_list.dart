@@ -240,6 +240,12 @@ class _ActionList extends StatelessWidget {
       rawJson: m.rawJson,
       // Usta/mutaxassis narx ro'yxatidagi xizmat nomlari — teg sifatida.
       tags: m.prices.keys.take(4).toList(),
+      // Ish vaqti kiritilgan bo'lsa shunga qarab, aks holda 8:00–20:00.
+      isOpen: isOpenAt(
+        hours: workingHoursFrom(m.rawJson),
+        defaultOpen: 8,
+        defaultClose: 20,
+      ),
       onOpen: (ctx) => Navigator.push(
         ctx,
         MaterialPageRoute(
@@ -369,6 +375,11 @@ class _ActionList extends StatelessWidget {
         return data.nannies
             .map((n) => CatalogEntry(
                   id: 'nanny_${n.id}',
+                  isOpen: isOpenAt(
+                    hours: workingHoursFrom(n.rawJson),
+                    defaultOpen: 6,
+                    defaultClose: 22,
+                  ),
                   tags: n.services.take(4).toList(),
                   name: n.name,
                   subtitle: '${n.experienceYears} yil • ${n.ageGroupsLabel}',
@@ -392,6 +403,11 @@ class _ActionList extends StatelessWidget {
         return data.couriers
             .map((c) => CatalogEntry(
                   id: 'courier_${c.id}',
+                isOpen: isOpenAt(
+                  hours: workingHoursFrom(c.rawJson),
+                  defaultOpen: 6,
+                  defaultClose: 22,
+                ),
                   tags: c.prices.keys.take(4).toList(),
                   name: c.name,
                   subtitle: c.serviceArea ?? c.vehicleType.label,
@@ -415,6 +431,11 @@ class _ActionList extends StatelessWidget {
         return [
           ...data.autoMobile.map((u) => CatalogEntry(
                 id: 'automobile_${u.id}',
+                isOpen: isOpenAt(
+                  hours: workingHoursFrom(u.rawJson),
+                  defaultOpen: 0,
+                  defaultClose: 24,
+                ),
                 tags: u.services.take(4).toList(),
                 name: u.name,
                 subtitle: 'Mobil · ${u.serviceArea ?? u.vehicleType.label}',
@@ -434,6 +455,11 @@ class _ActionList extends StatelessWidget {
               )),
           ...data.workshops.map((w) => CatalogEntry(
                 id: 'workshop_${w.id}',
+                isOpen: isOpenAt(
+                  hours: workingHoursFrom(w.rawJson),
+                  defaultOpen: 8,
+                  defaultClose: 19,
+                ),
                 tags: w.specializations.take(4).toList(),
                 name: w.name,
                 subtitle: w.specializations.isEmpty
@@ -458,6 +484,11 @@ class _ActionList extends StatelessWidget {
         return [
           ...data.tutors.map((t) => CatalogEntry(
                 id: 'tutor_${t.id}',
+                isOpen: isOpenAt(
+                  hours: workingHoursFrom(t.rawJson),
+                  defaultOpen: 8,
+                  defaultClose: 21,
+                ),
                 tags: t.subjects.take(4).toList(),
                 name: t.name,
                 subtitle: 'Repetitor · ${t.subjectsLabel}',
@@ -477,6 +508,11 @@ class _ActionList extends StatelessWidget {
               )),
           ...data.educationCenters.map((c) => CatalogEntry(
                 id: 'edu_${c.id}',
+                isOpen: isOpenAt(
+                  hours: workingHoursFrom(c.rawJson),
+                  defaultOpen: 9,
+                  defaultClose: 19,
+                ),
                 tags: c.courses.take(4).toList(),
                 name: c.name,
                 subtitle: c.courses.isEmpty
@@ -500,6 +536,11 @@ class _ActionList extends StatelessWidget {
         return data.massage
             .map((s) => CatalogEntry(
                   id: 'massage_${s.id}',
+                  isOpen: isOpenAt(
+                    hours: workingHoursFrom(s.rawJson),
+                    defaultOpen: 9,
+                    defaultClose: 21,
+                  ),
                   tags: s.serviceTypes.take(4).map((t) => t.label).toList(),
                   name: s.name,
                   subtitle: s.serviceTypes.isNotEmpty
@@ -528,6 +569,11 @@ class _ActionList extends StatelessWidget {
         return data.nurses
             .map((n) => CatalogEntry(
                   id: 'nurse_${n.id}',
+                  isOpen: isOpenAt(
+                    hours: workingHoursFrom(n.rawJson),
+                    defaultOpen: 0,
+                    defaultClose: 24,
+                  ),
                   tags: n.prices.keys.take(4).toList(),
                   name: n.name,
                   subtitle: n.serviceArea ?? 'Hamshira xizmati',
@@ -549,6 +595,11 @@ class _ActionList extends StatelessWidget {
         return data.dentalClinics
             .map((c) => CatalogEntry(
                   id: 'dental_${c.id}',
+                  isOpen: isOpenAt(
+                    hours: workingHoursFrom(c.rawJson),
+                    defaultOpen: 9,
+                    defaultClose: 19,
+                  ),
                   tags: c.services.take(4).toList(),
                   name: c.name,
                   subtitle: c.subCategory ?? c.address,
@@ -572,6 +623,11 @@ class _ActionList extends StatelessWidget {
         return data.disinfection
             .map((s) => CatalogEntry(
                   id: 'disinfection_${s.id}',
+                  isOpen: isOpenAt(
+                    hours: workingHoursFrom(s.rawJson),
+                    defaultOpen: 8,
+                    defaultClose: 20,
+                  ),
                   tags: s.prices.keys.take(4).toList(),
                   name: s.name,
                   subtitle: s.serviceArea ?? 'Dezinfeksiya',
@@ -593,6 +649,11 @@ class _ActionList extends StatelessWidget {
         return data.appliance
             .map((s) => CatalogEntry(
                   id: 'appliance_${s.id}',
+                  isOpen: isOpenAt(
+                    hours: workingHoursFrom(s.rawJson),
+                    defaultOpen: 9,
+                    defaultClose: 19,
+                  ),
                   tags: s.brands.take(4).toList(),
                   name: s.name,
                   subtitle: s.subCategory ?? 'Texnika ustasi',
@@ -614,6 +675,10 @@ class _ActionList extends StatelessWidget {
         return data.workers
             .map((w) => CatalogEntry(
                   id: 'worker_${w.id}',
+                  isOpen: isOpenAt(
+                    defaultOpen: 7,
+                    defaultClose: 19,
+                  ),
                   tags: [w.type],
                   name: w.name,
                   subtitle: w.type,
@@ -638,6 +703,10 @@ class _ActionList extends StatelessWidget {
             .whereType<GameZone>()
             .map((z) => CatalogEntry(
                   id: 'gamezone_${z.id}',
+                  isOpen: isOpenAt(
+                    defaultOpen: 10,
+                    defaultClose: 24,
+                  ),
                   tags: [z.zoneType],
                   name: z.name,
                   subtitle: z.zoneType,
@@ -660,6 +729,10 @@ class _ActionList extends StatelessWidget {
             .whereType<SportFacility>()
             .map((f) => CatalogEntry(
                   id: 'sport_${f.id}',
+                  isOpen: isOpenAt(
+                    defaultOpen: 7,
+                    defaultClose: 23,
+                  ),
                   tags: [f.sportType],
                   name: f.name,
                   subtitle: f.sportType,
@@ -681,6 +754,10 @@ class _ActionList extends StatelessWidget {
         return [
           ...data.genericProviders.whereType<EventVenue>().map((v) => CatalogEntry(
                 id: 'venue_${v.id}',
+                isOpen: isOpenAt(
+                  defaultOpen: 9,
+                  defaultClose: 23,
+                ),
                 tags: [v.venueType],
                 name: v.name,
                 subtitle: 'Joy · ${v.venueType}',
@@ -699,6 +776,11 @@ class _ActionList extends StatelessWidget {
               )),
           ...data.events.map((s) => CatalogEntry(
                 id: 'eventteam_${s.id}',
+                isOpen: isOpenAt(
+                  hours: workingHoursFrom(s.rawJson),
+                  defaultOpen: 9,
+                  defaultClose: 21,
+                ),
                 tags: s.prices.keys.take(4).toList(),
                 name: s.name,
                 subtitle: 'Tashkilotchi',
@@ -726,6 +808,11 @@ class _ActionList extends StatelessWidget {
         return data.masters
             .map((m) => CatalogEntry(
                   id: 'oshxona_${m.id}',
+                  isOpen: isOpenAt(
+                    hours: workingHoursFrom(m.rawJson),
+                    defaultOpen: 9,
+                    defaultClose: 23,
+                  ),
                   tags: m.prices.keys.take(4).toList(),
                   name: m.name,
                   subtitle: m.serviceArea ?? 'Oshxona',

@@ -272,9 +272,15 @@ extension HubDataLoader on HubDataService {
         d.workshops = await getAutoWorkshops();
       case ServiceHubKind.gameZona:
       case ServiceHubKind.sportMaydon:
+        d.genericProviders = await fetchProviders(kind);
+      // Bozorchi va Oshxona ekranlari `masters` ro'yxatidan o'qiydi
+      // (_catalogEntries). Ilgari faqat `genericProviders` to'ldirilib,
+      // ro'yxat DOIM BO'SH chiqardi. `fetchProviders` keshlangani uchun
+      // ikkala maydonni to'ldirish qo'shimcha so'rov qilmaydi.
       case ServiceHubKind.bozorchi:
       case ServiceHubKind.oshxona:
         d.genericProviders = await fetchProviders(kind);
+        d.masters = await getMasters(kind);
       default:
         d.masters = await getMasters(kind);
     }
