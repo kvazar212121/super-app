@@ -42,8 +42,9 @@ class ProviderListRow extends StatelessWidget {
     this.selected = false,
   });
 
-  /// Qator balandligi — barcha xizmatlar uchun bir xil.
-  static const double height = 108;
+  /// Qator eng kam balandligi. QAT'IY emas: foydalanuvchi tizimda shrift
+  /// o'lchamini kattalashtirsa qator o'sadi, kontent kesilmaydi.
+  static const double minHeight = 108;
 
   /// Banner kengligi (gradient singish zonasi shu ichida).
   static const double _bannerWidth = 132;
@@ -58,11 +59,12 @@ class ProviderListRow extends StatelessWidget {
       child: InkWell(
         onTap: onTap ?? () => entry.onOpen(context),
         child: Container(
-          height: height,
+          constraints: const BoxConstraints(minHeight: minHeight),
           decoration: BoxDecoration(
             color: selected ? accent.withValues(alpha: 0.07) : Colors.transparent,
           ),
-          child: Row(
+          child: IntrinsicHeight(
+            child: Row(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               _Banner(
@@ -75,7 +77,7 @@ class ProviderListRow extends StatelessWidget {
                 child: Padding(
                   // Chapda kichik padding — banner gradienti matn ostiga
                   // ozgina kirib turadi, shuning uchun 4 yetarli.
-                  padding: const EdgeInsets.fromLTRB(4, 12, 14, 12),
+                  padding: const EdgeInsets.fromLTRB(4, 10, 14, 10),
                   child: _Info(
                     entry: entry,
                     accent: accent,
@@ -84,6 +86,7 @@ class ProviderListRow extends StatelessWidget {
                 ),
               ),
             ],
+            ),
           ),
         ),
       ),
@@ -171,6 +174,7 @@ class _Info extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisSize: MainAxisSize.min,
       children: [
         // Nom + ochiq/yopiq nuqtasi
         Row(

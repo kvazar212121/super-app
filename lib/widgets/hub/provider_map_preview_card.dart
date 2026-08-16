@@ -55,9 +55,11 @@ class ProviderMapPreviewCard extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           // Yuqori qism — banner (chapda) + ma'lumot (o'ngda), ro'yxatdagidek.
-          SizedBox(
-            height: 96,
-            child: Row(
+          // Qat'iy balandlik emas: katta shriftda kontent kesilmasligi uchun.
+          ConstrainedBox(
+            constraints: const BoxConstraints(minHeight: 96),
+            child: IntrinsicHeight(
+              child: Row(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 SizedBox(
@@ -99,6 +101,7 @@ class ProviderMapPreviewCard extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
                       children: [
                         Row(
                           children: [
@@ -207,6 +210,7 @@ class ProviderMapPreviewCard extends StatelessWidget {
                   ),
                 ),
               ],
+              ),
             ),
           ),
 

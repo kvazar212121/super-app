@@ -10,7 +10,7 @@ const Map<HubListFilter, String> kHubFilterLabels = {
   HubListFilter.all: 'Barchasi',
   HubListFilter.nearest: 'Eng yaqin',
   HubListFilter.topRated: 'Reyting',
-  HubListFilter.openNow: 'Ochiq',
+  HubListFilter.openNow: 'Hozir ochiq',
 };
 
 const Map<HubListFilter, IconData> _kHubFilterIcons = {
@@ -308,7 +308,7 @@ class HubFilterChips extends StatelessWidget {
     HubListFilter.all: 'Barchasi',
     HubListFilter.nearest: 'Eng yaqin',
     HubListFilter.topRated: 'Reyting',
-    HubListFilter.openNow: 'Ochiq',
+    HubListFilter.openNow: 'Hozir ochiq',
   };
 
   @override
