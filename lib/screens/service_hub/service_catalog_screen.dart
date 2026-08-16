@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
+import '../../config/app_config.dart';
 import '../../theme/glass_tokens.dart';
 import '../../utils/geo_utils.dart';
 import '../../widgets/glass/glass_scaffold.dart';
@@ -22,6 +23,18 @@ class CatalogEntry {
   final Map<String, dynamic>? rawJson;
   final void Function(BuildContext context) onOpen;
 
+  /// Hozir ochiqmi — ro'yxat/xaritada "Ochiq · Yopiq" belgisi uchun.
+  final bool isOpen;
+
+  /// Qisqa teglar (xizmat turlari) — nom ostida chip bo'lib chiqadi.
+  final List<String> tags;
+
+  /// Banner rasm manzili. Berilmasa [rawJson] dan topiladi.
+  final String? coverUrl;
+
+  /// Xarita markerini ro'yxat qatori bilan bog'lash uchun identifikator.
+  final String id;
+
   const CatalogEntry({
     required this.name,
     required this.subtitle,
@@ -33,7 +46,18 @@ class CatalogEntry {
     required this.longitude,
     required this.onOpen,
     this.rawJson,
+    this.isOpen = true,
+    this.tags = const [],
+    this.coverUrl,
+    this.id = '',
   });
+
+  /// Banner uchun yakuniy rasm manzili (aniq berilgan yoki rawJson'dan).
+  String? get resolvedCoverUrl {
+    final direct = coverUrl?.trim();
+    if (direct != null && direct.isNotEmpty) return direct;
+    return AppConfig.resolveCoverImage(rawJson);
+  }
 }
 
 /// Umumiy katalog ekrani — grid ko'rinishда BARCHA provayderlar.
@@ -88,7 +112,9 @@ class _ServiceCatalogScreenState extends State<ServiceCatalogScreen> {
         return;
       }
       final pos = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.medium,
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.medium,
+        ),
       );
       if (mounted) {
         setState(() {

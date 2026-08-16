@@ -223,10 +223,12 @@ class _ActionList extends StatelessWidget {
     IconData icon,
     ServiceHubKind category,
     double fallbackPrice,
-    String defaultSubtitle,
-  ) {
+    String defaultSubtitle, {
+    String idPrefix = 'master',
+  }) {
     final min = _minPrice(m.prices, fallbackPrice);
     return CatalogEntry(
+      id: '${idPrefix}_${m.id}',
       name: m.name,
       subtitle: m.serviceArea ?? defaultSubtitle,
       rating: m.rating,
@@ -236,6 +238,8 @@ class _ActionList extends StatelessWidget {
       latitude: m.latitude,
       longitude: m.longitude,
       rawJson: m.rawJson,
+      // Usta/mutaxassis narx ro'yxatidagi xizmat nomlari — teg sifatida.
+      tags: m.prices.keys.take(4).toList(),
       onOpen: (ctx) => Navigator.push(
         ctx,
         MaterialPageRoute(
@@ -247,6 +251,10 @@ class _ActionList extends StatelessWidget {
 
   /// Joriy xizmat turi uchun BARCHA provayderlarni katalog elementlariga
   /// o'giradi. Gorizontal kartalar bilan bir xil onTap/ma'lumot ishlatadi.
+  /// Tashqaridan (yangi dizayn ekrani) chaqirish uchun ochiq nom.
+  List<CatalogEntry> catalogEntries(BuildContext context) =>
+      _catalogEntries(context);
+
   List<CatalogEntry> _catalogEntries(BuildContext context) {
     // context parametri interfeys izchilligi uchun (ishlatilmaydi — onOpen
     // o'z BuildContext'ini oladi).
@@ -279,6 +287,7 @@ class _ActionList extends StatelessWidget {
       case ServiceHubKind.sartarosh:
         return [
           ...data.barberShops.map((s) => CatalogEntry(
+                id: 'barber_${s.id}',
                 name: s.name,
                 subtitle: s.address,
                 rating: s.rating,
@@ -288,6 +297,9 @@ class _ActionList extends StatelessWidget {
                 latitude: s.latitude,
                 longitude: s.longitude,
                 rawJson: s.rawJson,
+                isOpen: s.isOpenNow(),
+                // Teglar — sartaroshxona taklif qiladigan xizmatlar.
+                tags: s.services.take(4).toList(),
                 onOpen: (ctx) => Navigator.push(
                   ctx,
                   MaterialPageRoute(
@@ -296,7 +308,8 @@ class _ActionList extends StatelessWidget {
                 ),
               )),
           ...data.mobileBarbers.map((e) => _masterEntry(e,
-              LucideIcons.scissors, ServiceHubKind.sartarosh, 35000, 'Uyga xizmat')),
+              LucideIcons.scissors, ServiceHubKind.sartarosh, 35000, 'Uyga xizmat',
+              idPrefix: 'mobile_barber')),
         ];
       case ServiceHubKind.salon:
         return [

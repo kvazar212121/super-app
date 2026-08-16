@@ -40,6 +40,7 @@ import 'education_center_booking_screen.dart';
 import 'simple_call_booking_screen.dart';
 import 'service_hub/saved_places_screen.dart';
 import 'service_hub/service_catalog_screen.dart';
+import 'service_hub/service_list_screen.dart';
 import 'auto_mobile_dispatch_screen.dart';
 import 'auto_workshop_dispatch_screen.dart';
 import 'worker_profile_screen.dart';
@@ -58,6 +59,14 @@ import 'package:super_app/l10n/locale_controller.dart';
 
 part 'service_hub/service_hub_map_section.dart';
 part 'service_hub/service_hub_action_list.dart';
+
+/// Yangi dizayn (qidiruv + vertikal qatorlar + alohida xarita ekrani) YOQILGAN
+/// xizmat turlari. Sartaroshda sinovdan o'tkazilib, keyin qolganlariga
+/// bosqichma-bosqich tarqatiladi. Ro'yxatda bo'lmagan xizmatlar eski
+/// ko'rinishda (xarita + gorizontal kartalar) qoladi.
+const Set<ServiceHubKind> kNewHubDesignKinds = {
+  ServiceHubKind.sartarosh,
+};
 
 class ServiceHubScreen extends StatefulWidget {
   final ServiceHubKind kind;
@@ -151,6 +160,28 @@ class _ServiceHubScreenState extends State<ServiceHubScreen> {
               }
 
               final filteredData = _filterData(data);
+
+              // ── YANGI DIZAYN ──
+              // Qidiruv + "xaritadan" tugmasi + to'liq enli vertikal qatorlar,
+              // pastda "saqlanganlar"/"filtrlar". Xarita alohida ekranda.
+              if (kNewHubDesignKinds.contains(widget.kind)) {
+                final entries = _ActionList(
+                  kind: widget.kind,
+                  accentColor: widget.accentColor,
+                  data: filteredData,
+                ).catalogEntries(context);
+
+                return ServiceListScreen(
+                  kind: widget.kind,
+                  accent: widget.accentColor,
+                  entries: entries,
+                  categories: subCategories,
+                  selectedCategory: _selectedSubCategory,
+                  onCategorySelected: (val) =>
+                      setState(() => _selectedSubCategory = val),
+                  embedded: true,
+                );
+              }
 
               return Column(
                 children: [
