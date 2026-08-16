@@ -88,7 +88,10 @@ const Set<ServiceHubKind> kNewHubDesignKinds = {
   ServiceHubKind.oshxona,
   ServiceHubKind.gameZona,
   ServiceHubKind.sportMaydon,
-  // Kompyuter/IT va toifaga kirmaydigan barcha xizmatlar shu yerda.
+  ServiceHubKind.telefonUsta,
+  ServiceHubKind.kompyuterUsta,
+  ServiceHubKind.itXizmat,
+  // Toifaga kirmaydigan qolgan barcha xizmatlar shu yerda.
   ServiceHubKind.boshqa,
 };
 

@@ -3,6 +3,7 @@ import '../widgets/active_order_banner.dart';
 import '../widgets/home_promo_section.dart';
 import '../widgets/home_header_widget.dart';
 import '../widgets/provider_portal_entry.dart';
+import '../widgets/top_providers_section.dart';
 
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../screens/todo_screen.dart';
@@ -40,6 +41,10 @@ class HomeScreen extends StatelessWidget {
             const ActiveOrderBanner(),
             const SizedBox(height: 22),
             const ProviderPortalEntry(),
+            const SizedBox(height: 26),
+            // Sahifaning ENG PASTI — top reytingli provayderlar.
+            // Soha bo'yicha filtrlanadi, "Yana" bilan pastga davom etadi.
+            const TopProvidersSection(),
           ],
         ),
       ),

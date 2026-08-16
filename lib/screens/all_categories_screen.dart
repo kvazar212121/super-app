@@ -71,7 +71,11 @@ class _AllCategoriesScreenState extends State<AllCategoriesScreen> {
       ServiceHubKind.gameZona,
       ServiceHubKind.tadbirlar,
     ]),
-    // Kompyuter/IT va qolgan barcha xizmatlar BITTA kartada birlashtirilgan.
+    _CategoryGroup('Texnika va IT', [
+      ServiceHubKind.telefonUsta,
+      ServiceHubKind.kompyuterUsta,
+      ServiceHubKind.itXizmat,
+    ]),
     _CategoryGroup('Boshqa xizmatlar', [ServiceHubKind.boshqa]),
   ];
 

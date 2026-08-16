@@ -282,6 +282,9 @@ class ApiService {
     int perPage = 20,
     double? lat,
     double? lng,
+    /// 'rating' — reyting bo'yicha kamayish tartibida (bosh sahifadagi
+    /// "Top reytingli" ro'yxati uchun).
+    String? sort,
   }) async {
     final params = <String, dynamic>{'page': page, 'per_page': perPage};
     if (categoryId != null) params['category_id'] = categoryId;
@@ -289,6 +292,7 @@ class ApiService {
     if (search != null && search.isNotEmpty) params['search'] = search;
     if (lat != null) params['lat'] = lat;
     if (lng != null) params['lng'] = lng;
+    if (sort != null && sort.isNotEmpty) params['sort'] = sort;
 
     final response = await _dio.get('/providers', queryParameters: params);
     return response.data;

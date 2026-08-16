@@ -43,7 +43,9 @@ class ProviderCategoryConfig {
     oshxona,
     gameZona,
     sportMaydon,
-    kompUsta,
+    telefonUsta,
+    kompyuterUsta,
+    itXizmat,
     boshqa,
   ];
 
@@ -53,7 +55,7 @@ class ProviderCategoryConfig {
   /// ro'yxatdan o'tgan provayderlar paneli ochilishi uchun zarur konfiguratsiya.
   /// Konditsioner "Texnika ustasi" ichiga ko'chirilgan.
   // ignore: deprecated_member_use_from_same_package
-  static const legacy = [ac];
+  static const legacy = [ac, kompUsta];
 
   /// Yangi + eskirgan kategoriyalar (qidiruv uchun).
   static const allIncludingLegacy = [...all, ...legacy];
@@ -313,8 +315,12 @@ class ProviderCategoryConfig {
     icon: Icons.sports_soccer,
     accentColor: Color(0xFF4CAF50),
   );
+  /// ESKIRGAN: o'rniga [kompyuterUsta] (kategoriya kaliti 'kompyuterUsta').
+  /// Avval 'kompyuter_usta' kalitida ro'yxatdan o'tgan provayderlar paneli
+  /// ochilishi uchun saqlanadi.
+  @Deprecated('kompyuterUsta ishlatilsin')
   static const kompUsta = ProviderCategoryConfig(
-    registrationId: 'kompyuter_usta',
+    registrationId: 'kompyuter_usta_legacy',
     categoryKey: 'kompyuter_usta',
     title: 'Kompyuter Ustasi',
     icon: LucideIcons.monitor,
@@ -324,6 +330,45 @@ class ProviderCategoryConfig {
       'Qurilma ta\'miri',
       'Tarmoq',
       'Noutbuk ta\'miri',
+    ],
+  );
+  static const telefonUsta = ProviderCategoryConfig(
+    registrationId: 'telefon_usta',
+    categoryKey: 'telefonUsta',
+    title: 'Telefon ustasi',
+    icon: LucideIcons.smartphone,
+    accentColor: Color(0xFF0891B2),
+    subCategories: [
+      'Ekran ta\'miri',
+      'Batareya',
+      'Suvdan chiqarish',
+      'Dasturiy ta\'mir',
+    ],
+  );
+  static const kompyuterUsta = ProviderCategoryConfig(
+    registrationId: 'kompyuter_usta',
+    categoryKey: 'kompyuterUsta',
+    title: 'Kompyuter ustasi',
+    icon: LucideIcons.laptop,
+    accentColor: Color(0xFF7C3AED),
+    subCategories: [
+      'Noutbuk ta\'miri',
+      'PC yig\'ish',
+      'Dasturiy ta\'minot',
+      'Komplektuvchilar',
+    ],
+  );
+  static const itXizmat = ProviderCategoryConfig(
+    registrationId: 'it_xizmat',
+    categoryKey: 'itXizmat',
+    title: 'IT xizmatlari',
+    icon: LucideIcons.server,
+    accentColor: Color(0xFF2563EB),
+    subCategories: [
+      'Tarmoq va Wi-Fi',
+      'Videokuzatuv',
+      'Server va 1C',
+      'Sayt va dasturlar',
     ],
   );
   static const boshqa = ProviderCategoryConfig(

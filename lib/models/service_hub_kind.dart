@@ -27,6 +27,10 @@ enum ServiceHubKind {
   oshxona,
   gameZona,
   sportMaydon,
+  // Texnika/IT yo'nalishi:
+  telefonUsta,
+  kompyuterUsta,
+  itXizmat,
   boshqa,
 }
 
@@ -62,6 +66,9 @@ extension ServiceHubKindX on ServiceHubKind {
     ServiceHubKind.oshxona => 'Oshxona',
     ServiceHubKind.gameZona => 'Game Zona',
     ServiceHubKind.sportMaydon => 'Sport maydonlari',
+    ServiceHubKind.telefonUsta => 'Telefon ustasi',
+    ServiceHubKind.kompyuterUsta => 'Kompyuter ustasi',
+    ServiceHubKind.itXizmat => 'IT xizmatlari',
     ServiceHubKind.boshqa => 'Boshqa xizmatlar',
   };
 
@@ -88,8 +95,11 @@ extension ServiceHubKindX on ServiceHubKind {
     ServiceHubKind.oshxona => 'Restoranlar, kafelar va ovqatlanish joylari.',
     ServiceHubKind.gameZona => 'PS5, PC, VR klublari va o\'yin xonalari.',
     ServiceHubKind.sportMaydon => 'Futbol, tennis va boshqa sport maydonlari.',
-    ServiceHubKind.boshqa =>
-      'Kompyuter, IT va boshqa turdagi xizmatlar.',
+    ServiceHubKind.telefonUsta => 'Ekran, batareya va telefon ta\'miri',
+    ServiceHubKind.kompyuterUsta => 'Noutbuk va kompyuter ta\'miri',
+    ServiceHubKind.itXizmat =>
+      'Tarmoq, server, sayt va dasturiy yechimlar',
+    ServiceHubKind.boshqa => 'Boshqa turdagi xizmatlar.',
   };
 
   IconData get icon => switch (this) {
@@ -115,6 +125,9 @@ extension ServiceHubKindX on ServiceHubKind {
     ServiceHubKind.oshxona => LucideIcons.utensils,
     ServiceHubKind.gameZona => LucideIcons.gamepad2,
     ServiceHubKind.sportMaydon => Icons.sports_soccer,
+    ServiceHubKind.telefonUsta => LucideIcons.smartphone,
+    ServiceHubKind.kompyuterUsta => LucideIcons.laptop,
+    ServiceHubKind.itXizmat => LucideIcons.server,
     ServiceHubKind.boshqa => LucideIcons.layoutGrid,
   };
 
@@ -140,6 +153,10 @@ extension ServiceHubKindX on ServiceHubKind {
     ServiceHubKind.oshxona => 'assets/images/services3d/oshxona.jpg',
     ServiceHubKind.gameZona => 'assets/images/services3d/gameZona.jpg',
     ServiceHubKind.sportMaydon => 'assets/images/services3d/sportMaydon.jpg',
+    ServiceHubKind.kompyuterUsta => 'assets/images/services3d/kompUsta.jpg',
+    // Telefon va IT uchun maxsus rasm yo'q — ikonka + rang ishlatiladi.
+    ServiceHubKind.telefonUsta => null,
+    ServiceHubKind.itXizmat => null,
     ServiceHubKind.boshqa => 'assets/images/services3d/boshqa.png',
     // Bepul 3D to'plamda quvur/tish iconi yo'q — aniq flat Lucide icon ishlatiladi
     ServiceHubKind.santexnik => 'assets/images/services3d/santexnik.jpg',
@@ -284,13 +301,30 @@ extension ServiceHubKindX on ServiceHubKind {
       (label: 'Basketbol maydoni', basePrice: 80000),
       (label: 'Voleybol maydoni', basePrice: 80000),
     ],
-    // Kompyuter/IT xizmatlari endi "Boshqa xizmatlar" ichida.
-    ServiceHubKind.boshqa => const [
+    ServiceHubKind.telefonUsta => const [
+      (label: 'Ekran almashtirish', basePrice: 250000),
+      (label: 'Batareya almashtirish', basePrice: 150000),
+      (label: 'Suvdan chiqarish (tozalash)', basePrice: 120000),
+      (label: 'Razyom / quvvat porti', basePrice: 100000),
+      (label: 'Dasturiy ta\'mir (proshivka)', basePrice: 80000),
+    ],
+    ServiceHubKind.kompyuterUsta => const [
       (label: 'Windows o\'rnatish', basePrice: 70000),
-      (label: 'Format qilish', basePrice: 50000),
-      (label: 'PC terish', basePrice: 150000),
-      (label: 'Noutbuk ta\'miri', basePrice: 120000),
-      (label: 'Tarmoq sozlash', basePrice: 100000),
+      (label: 'Noutbuk tozalash (termopasta)', basePrice: 120000),
+      (label: 'Matritsa (ekran) almashtirish', basePrice: 450000),
+      (label: 'Klaviatura almashtirish', basePrice: 180000),
+      (label: 'SSD / RAM o\'rnatish', basePrice: 100000),
+      (label: 'PC yig\'ish', basePrice: 150000),
+    ],
+    ServiceHubKind.itXizmat => const [
+      (label: 'Tarmoq (LAN/Wi-Fi) sozlash', basePrice: 200000),
+      (label: 'Videokuzatuv o\'rnatish', basePrice: 500000),
+      (label: 'Server sozlash', basePrice: 800000),
+      (label: 'Sayt yaratish', basePrice: 2000000),
+      (label: '1C sozlash', basePrice: 600000),
+      (label: 'Ma\'lumot tiklash', basePrice: 300000),
+    ],
+    ServiceHubKind.boshqa => const [
       (label: 'Boshqa xizmat', basePrice: 100000),
     ],
   };

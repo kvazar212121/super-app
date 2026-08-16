@@ -184,6 +184,10 @@ class _MapSectionState extends State<_MapSection> {
       case ServiceHubKind.elektrik:
       case ServiceHubKind.santexnik:
       case ServiceHubKind.tozalash:
+      // Texnika/IT yo'nalishi ham `masters` ro'yxatidan ishlaydi.
+      case ServiceHubKind.telefonUsta:
+      case ServiceHubKind.kompyuterUsta:
+      case ServiceHubKind.itXizmat:
         final specialty = kind == ServiceHubKind.elektrik
             ? 'Elektrik'
             : (kind == ServiceHubKind.santexnik
@@ -673,6 +677,10 @@ class _MapSectionState extends State<_MapSection> {
       case ServiceHubKind.elektrik:
       case ServiceHubKind.santexnik:
       case ServiceHubKind.tozalash:
+      // Texnika/IT yo'nalishi ham `masters` ro'yxatidan ishlaydi.
+      case ServiceHubKind.telefonUsta:
+      case ServiceHubKind.kompyuterUsta:
+      case ServiceHubKind.itXizmat:
         final specialty = kind == ServiceHubKind.elektrik
             ? 'Elektrik'
             : (kind == ServiceHubKind.santexnik

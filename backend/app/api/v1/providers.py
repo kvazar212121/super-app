@@ -21,10 +21,14 @@ async def list_providers(
     per_page: int = Query(20, ge=1, le=100),
     lat: float | None = Query(None),
     lng: float | None = Query(None),
+    sort: str | None = Query(
+        None,
+        description="Saralash: 'rating' — reyting bo'yicha kamayish tartibida",
+    ),
     db: AsyncSession = Depends(get_db),
 ):
     items, total = await ProviderService.list_providers(
-        db, category_id, category_key, search, page, per_page, lat, lng
+        db, category_id, category_key, search, page, per_page, lat, lng, sort
     )
     pages = (total + per_page - 1) // per_page
     return PaginatedResponse(

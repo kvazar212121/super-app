@@ -29,6 +29,7 @@ class ProviderService:
         per_page: int = 20,
         lat: float | None = None,
         lng: float | None = None,
+        sort: str | None = None,
     ) -> tuple[list[Provider], int]:
         from sqlalchemy.orm import selectinload
 
@@ -57,6 +58,18 @@ class ProviderService:
             count_base = count_base.where(search_filter)
 
         total = (await db.execute(count_base)).scalar() or 0
+
+        # Saralash. `sort="rating"` — bosh sahifadagi "Top reytingli" ro'yxati
+        # uchun: avval yuqori reyting, teng bo'lsa ko'proq sharh olgani.
+        if sort == "rating":
+            base = base.order_by(
+                Provider.rating.desc(),
+                Provider.review_count.desc(),
+                Provider.id.asc(),
+            )
+        else:
+            # Barqaror tartib — sahifalashda takror/yo'qolish bo'lmasligi uchun.
+            base = base.order_by(Provider.id.asc())
 
         query = base.offset((page - 1) * per_page).limit(per_page)
         providers = (await db.execute(query)).scalars().all()

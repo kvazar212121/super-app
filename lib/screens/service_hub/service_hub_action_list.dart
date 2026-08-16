@@ -820,6 +820,39 @@ class _ActionList extends StatelessWidget {
       // "Boshqa xizmatlar" — kompyuter/IT ustalari va boshqa toifaga
       // kirmaydigan barcha provayderlar SHU YERDA ko'rinadi (ilgari bu
       // bo'lim bo'sh chiqardi).
+      case ServiceHubKind.telefonUsta:
+        return data.masters
+            .map((m) => _masterEntry(
+                  m,
+                  LucideIcons.smartphone,
+                  ServiceHubKind.telefonUsta,
+                  120000,
+                  'Telefon ustasi',
+                  idPrefix: 'phone_master',
+                ))
+            .toList();
+      case ServiceHubKind.kompyuterUsta:
+        return data.masters
+            .map((m) => _masterEntry(
+                  m,
+                  LucideIcons.laptop,
+                  ServiceHubKind.kompyuterUsta,
+                  100000,
+                  'Kompyuter ustasi',
+                  idPrefix: 'pc_master',
+                ))
+            .toList();
+      case ServiceHubKind.itXizmat:
+        return data.masters
+            .map((m) => _masterEntry(
+                  m,
+                  LucideIcons.server,
+                  ServiceHubKind.itXizmat,
+                  200000,
+                  'IT mutaxassisi',
+                  idPrefix: 'it_master',
+                ))
+            .toList();
       case ServiceHubKind.boshqa:
         return data.masters
             .map((m) => _masterEntry(
@@ -1053,6 +1086,9 @@ class _ActionList extends StatelessWidget {
           ServiceHubKind.sportMaydon ||
           ServiceHubKind.bozorchi ||
           ServiceHubKind.oshxona ||
+          ServiceHubKind.telefonUsta ||
+          ServiceHubKind.kompyuterUsta ||
+          ServiceHubKind.itXizmat ||
           ServiceHubKind.boshqa => <_HubActionSpec>[],
         } +
         [
