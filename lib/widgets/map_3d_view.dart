@@ -48,6 +48,9 @@ class Map3DView extends StatelessWidget {
 
     final angle = maxTiltAngle * tilt.clamp(0.0, 1.0);
 
+    // Egilish markazi ekranning pastida bo'lgani ma'qul: navigatsiyada
+    // foydalanuvchi pastda turadi va oldinga qaraydi. Shu bilan birga
+    // pastda bo'sh joy qolib ketmaydi.
     final matrix = Matrix4.identity()
       ..setEntry(3, 2, _perspective) // perspektiva
       ..rotateX(angle) // ekran ostiga egish = 3D hissi
@@ -55,12 +58,16 @@ class Map3DView extends StatelessWidget {
 
     return ClipRect(
       child: Transform(
-        alignment: Alignment.center,
+        // Pastroq nuqta atrofida egiladi — "men shu yerdaman, oldinga
+        // qarayapman" hissi kuchayadi.
+        alignment: const Alignment(0, 0.35),
         transform: matrix,
-        // Egilganda tepada bo'sh joy qolmasligi uchun xaritani
-        // kattalashtiramiz (egilish qancha kuchli — shuncha ko'p).
+        // Egilganda xarita vertikal qisqaradi (cos qonuni) va
+        // ekranning pastida/tepasida bo'sh joy qoladi. Buni
+        // 1/cos(burchak) masshtab bilan qoplaymiz. Qo'shimcha 8% —
+        // perspektiva chekkalarni yana biroz torttirgani uchun.
         child: Transform.scale(
-          scale: 1.0 + 0.45 * tilt,
+          scale: 1.08 / math.cos(angle),
           child: child,
         ),
       ),
