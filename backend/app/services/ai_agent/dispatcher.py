@@ -69,8 +69,16 @@ def _parse_args(raw) -> dict:
     #    To'liq bo'lmasa ham, bor ma'lumot yo'qolmaydi — handler
     #    yetishmaganini o'zi so'raydi.
     out: dict = {}
-    for m in re.finditer(r'"(\w+)"\s*:\s*"((?:[^"\\]|\\.)*)"', text):
-        out[m.group(1)] = m.group(2).replace('\\"', '"')
+    # Qiymat KEYINGI kalitgacha (yoki oxirigacha) olinadi. Oddiy
+    # `"..."` naqshi yetarli emas: matn ichida qo'shtirnoq bo'lsa
+    # (`"title":"Kompyuterga "sistema" qilish"`) qiymat yarmida
+    # kesilib qolardi va e'lon sarlavhasi chala chiqardi.
+    juft = re.compile(
+        r'"(\w+)"\s*:\s*"(.*?)"\s*(?=,\s*"\w+"\s*:|\}|$)',
+        re.S,
+    )
+    for m in juft.finditer(text):
+        out[m.group(1)] = m.group(2).replace('\\"', '"').strip()
     for m in re.finditer(r'"(\w+)"\s*:\s*(-?\d+(?:\.\d+)?)', text):
         out.setdefault(m.group(1), float(m.group(2)))
     if out:
