@@ -31,6 +31,9 @@ if not DB:
 os.environ["DATABASE_URL"] = DB
 os.environ["DATABASE_SYNC_URL"] = DB.replace("+asyncpg", "")
 os.environ["REQUIRE_OTP_AUTH"] = "false"
+# LLM chaqiruvi soxtalashtiriladi, lekin endpoint kalit YO'Q bo'lsa
+# umuman urinmay zaxira javobga o'tadi. Shuning uchun soxta kalit.
+os.environ.setdefault("GROQ_API_KEY", "test-kalit")
 
 ok, fail = [], []
 
