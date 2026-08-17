@@ -7,7 +7,6 @@
 // Kiritilayotgan JSON — backend'ning haqiqiy javob formati
 // (tests/test_jobs_flutter_contract.py da har bir kalit haqiqiy HTTP
 // javobi bilan solishtirilgan).
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:super_app/models/job.dart';
 
@@ -70,7 +69,6 @@ void main() {
       'job_id': 12,
       'provider_id': 7,
       'provider_name': 'Usta Aziz',
-      'provider_phone': '+998900000001',
       'provider_rating': 4.8,
       'provider_review_count': 15,
       'provider_owner_user_id': 42,
@@ -87,6 +85,20 @@ void main() {
     // Bu maydonsiz "Yozish" tugmasi jimgina ishlamay qoladi
     expect(o.providerOwnerUserId, 42,
         reason: 'Ustaga xabar yozish uchun uning user_id si kerak');
+
+    // Maxfiylik: ustaning haqiqiy raqami modelda umuman saqlanmaydi.
+    // Backend uni yubormaydi, model ham o'qimasligi kerak — aks holda
+    // kelajakda kimdir uni ekranga chiqarib qo'yishi mumkin.
+    final json = JobOffer.fromJson({
+      'id': 11,
+      'job_id': 12,
+      'provider_id': 7,
+      'provider_phone': '+998900000001',
+      'price': 100000.0,
+      'status': 'pending',
+    });
+    expect(json.toString().contains('998900000001'), isFalse,
+        reason: 'Ustaning haqiqiy raqami ilovaga tushmasligi kerak');
   });
 
   test('provider_owner_user_id yo\'q bo\'lsa null (qulamaydi)', () {

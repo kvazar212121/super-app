@@ -9,34 +9,46 @@ beradi. Har bir qadam nima uchun kerakligi izohlangan.
 
 | Bo'lim | Nima qo'shildi |
 |---|---|
-| Sovrinli sezonli reyting | `campaigns`, `campaign_votes` jadvallari, admin panel bo'limi, Flutter ekrani |
-| Ish e'lonlari | `job_posts`, `job_offers` jadvallari, 11 endpoint, mijoz va usta ekranlari |
-| Moliya | kelajakdagi sana rad etiladi, rejalashtirilgan to'lovda summa validatsiyasi |
-| Mini-ilovalar | 5 ta mantiqiy xato tuzatildi (tur, manfiy summa, budilnik `repeat_days`) |
-| Admin monitoring | firibgarlik statistikasi, push qamrovi, e'lonlar konversiyasi |
+| AI orqali e'lon berish | rasm + suhbatdan e'lon, tasdiq so'rash, ikki tillilik, adminkada premium tugmasi |
+| E'lon hududi | e'lon faqat shu hududdagi ustalarga ko'rinadi (50 km, sozlanadi) |
+| Chat | xabar e'longa bog'lanadi, real vaqtda keladi, usta reytingi ko'rinadi |
+| E'lon maxfiyligi | ustaning haqiqiy telefon raqami mijozga BERILMAYDI |
+| E'lon chegaralari | 3 ta ochiq / 5 kun (premium 20 / cheksiz) — AI va formaga bir xil |
+| Xarita | tile provayderi bitta joyda (`MapConfig`), MapTiler kaliti, litsenziya atributi |
+| Xizmat hub | yangi ro'yxat + xarita dizayni 25 xizmatga tarqatildi, top reytingli bo'limi |
+| Sovrinli sezonli reyting | `campaigns`, `campaign_votes` jadvallari, admin bo'limi, Flutter ekrani |
 
-Ilova versiyasi: **1.2.0+2025**.
+Ilova versiyasi: **1.3.0+2026**.
 
 ---
 
 ## 2. Bazaga o'zgarish (MUHIM)
 
-Yangi **4 ta jadval** qo'shildi: `campaigns`, `campaign_votes`,
-`job_posts`, `job_offers`.
+Ikki xil o'zgarish bor va ular **turlicha** qo'llanadi:
 
-Alembic migratsiyasi **yozilmagan**, chunki loyiha ishga tushishda
-`Base.metadata.create_all` chaqiradi (`app/core/startup.py`) va u
-yetishmayotgan jadvallarni o'zi yaratadi.
+**a) Yangi jadvallar** (`campaigns`, `campaign_votes`, `job_posts`,
+`job_offers`) — ishga tushishda `Base.metadata.create_all`
+(`app/core/startup.py`) ularni o'zi yaratadi.
 
-Bu ish holati **haqiqiy PostgreSQL 16 da sinab ko'rildi**: eski kod
-bilan baza yaratilib, ustiga yangi kod qo'yildi. Natija: 4 ta jadval
-ham, soxta ovozga qarshi `uq_campaign_vote_once` UNIQUE cheklovi ham
-to'g'ri yaratildi.
+**b) Mavjud jadvalga yangi ustun** — `create_all` buni **qila
+olmaydi**. Shuning uchun `startup.py` da aniq `ALTER TABLE` yoziladi.
+Bu chiqarishda:
 
-> Diqqat: `create_all` MAVJUD jadvalga yangi ustun qo'sha olmaydi.
-> Bu chiqarishda mavjud jadvallarga ustun qo'shilmagan, shuning uchun
-> muammo yo'q. Kelgusida ustun qo'shsangiz, `startup.py` dagi
-> `ALTER TABLE ... ADD COLUMN IF NOT EXISTS` uslubidan foydalaning.
+```sql
+ALTER TABLE direct_messages ADD COLUMN IF NOT EXISTS job_id INTEGER;
+CREATE INDEX IF NOT EXISTS ix_direct_messages_job_id ON direct_messages (job_id);
+```
+
+U `startup.py` da allaqachon bor, ya'ni konteyner qayta ishga
+tushganda o'zi bajariladi. Qo'lda hech narsa qilish shart emas,
+lekin ko'tarilgandan keyin tasdiqlang:
+
+```bash
+docker compose exec db psql -U postgres -d superapp \
+  -c "\d direct_messages" | grep job_id
+```
+
+Alembic migratsiyasi yozilmagan — loyiha shu uslubda ishlaydi.
 
 Zaxira nusxa (chiqarishdan oldin doim):
 
@@ -84,9 +96,26 @@ curl -s -o /dev/null -w "%{http_code}\n" https://hubservis.uz/api/v1/jobs/feed  
 ## 4. Ilova (APK)
 
 ```bash
-./build-apk.sh              # release APK, prod URL bilan
-./build-apk.sh --install    # qurib, ulangan telefonga o'rnatish
+MAPTILER_KEY=... ./build-apk.sh              # release APK, prod URL bilan
+MAPTILER_KEY=... ./build-apk.sh --install    # qurib, telefonga o'rnatish
 ```
+
+### ⚠️ XARITA KALITI (yangi, MAJBURIY)
+
+Xarita tile'lari endi `MapConfig` orqali keladi. Kalit **build paytida**
+beriladi, kodga yozilmaydi:
+
+```bash
+echo 'MAPTILER_KEY=sizning_kalitingiz' > .env.local   # git'ga tushmaydi
+./build-apk.sh
+```
+
+Kalitsiz qurilsa ilova OSM demo serverida ishlaydi. Bu ommaviy relizda
+**taqiqlangan** (OSM Tile Usage Policy): foydalanuvchi ko'paysa so'rovlar
+bloklanadi va xarita oq bo'lib qoladi. `build-apk.sh` kalit yo'qligida
+ogohlantiradi.
+
+Kalit olish: <https://cloud.maptiler.com> (oyiga 100 000 so'rov bepul).
 
 APK **debug kalit** bilan imzolanadi (telefonga to'g'ridan-to'g'ri
 o'rnatish uchun). Play Market'ga boradigan AAB esa release kalit bilan:
@@ -125,13 +154,18 @@ Chiqarishdan oldin ikkalasini ham qaytarishni unutmang.
 # Flutter
 flutter analyze && flutter test
 
-# Backend (haqiqiy PostgreSQL kerak)
+# Backend (integratsiya testlari uchun haqiqiy PostgreSQL kerak;
+# bazasiz ular yiqilmaydi, SKIP bo'ladi)
 export SUPERAPP_TEST_DB="postgresql+asyncpg://postgres@127.0.0.1:5435/superapp_test"
-for f in tests/test_*.py; do python "$f"; done
+PYTHON=backend/.venv/bin/python bash tests/run.sh
 ```
 
-Hozirgi holat: Flutter 10 test, `analyze` 0 error;
-backend 6 fayl, 165 tekshiruv.
+Hozirgi holat (2026-08-17): Flutter **159 test** o'tadi, `analyze` 0 error;
+`tests/` da **12 fayl**, bazasiz 12/12 o'tadi (integratsiya qismi SKIP).
+
+> Serverga chiqarishdan oldin testlarni **baza bilan** bir marta
+> ishlating: SKIP bo'lgan fayllar aynan e'lon oqimi, hudud filtri va
+> chat kabi eng muhim qismlarni tekshiradi.
 
 ---
 
