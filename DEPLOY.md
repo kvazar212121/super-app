@@ -154,9 +154,18 @@ Chiqarishdan oldin ikkalasini ham qaytarishni unutmang.
 # Flutter
 flutter analyze && flutter test
 
+# 3D xarita HAQIQATAN binolarni ko'taradimi (brauzerda RENDER qiladi)
+python3 scripts/check_3d_map.py
+
 # Backend (bazasiz integratsiya testlari yiqilmaydi, SKIP bo'ladi)
 PYTHON=backend/.venv/bin/python bash tests/run.sh
 ```
+
+> `check_3d_map.py` kod tekshiruvi emas, haqiqiy render. U xaritani
+> ilovadagi sozlamalar bilan chizadi va MapLibre'dan so'raydi: nechta
+> bino ko'rinmoqda, balandliklari qanday, kamera qanday egilgan.
+> Chrome kerak; bo'lmasa SKIP bo'ladi. Natija skrinshoti
+> `build/map3d_tekshiruv.png` ga saqlanadi.
 
 ### Integratsiya testlari — SERVERDA, konteyner ichida
 
