@@ -30,12 +30,16 @@ class MapConfig {
   /// Kalit sozlanganmi.
   static bool get hasKey => maptilerKey.isNotEmpty;
 
-  /// MapTiler uslubi. `streets-v2` — ko'chalar, do'konlar ko'rinadigan
-  /// klassik uslub. Boshqa variantlar: `basic-v2`, `bright-v2`, `outdoor-v2`.
-  static const String style = 'streets-v2';
+  /// MapTiler uslubi.
+  ///
+  /// `streets-v4` — eng yangi avlod: 160 qatlam (v2 da 90 ta),
+  /// binolar balandligi `height` maydonidan olinadi va 3D
+  /// ko'rinishda ancha aniq chiqadi. Vektor rejimda aynan shu
+  /// style 3D binolarni beradi.
+  static const String style = 'streets-v4';
 
   /// Qorong'i rejim uslubi.
-  static const String darkStyle = 'streets-v2-dark';
+  static const String darkStyle = 'streets-v4-dark';
 
   /// Ilova identifikatori — tile serverlari uchun (User-Agent).
   static const String userAgent = 'uz.hubservis.app';
@@ -59,6 +63,27 @@ class MapConfig {
     // Kalit yo'q (dev/debug): OSM. Production'da ishlatilmasin.
     return 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
   }
+
+  /// VEKTOR style manzili — HAQIQIY 3D uchun.
+  ///
+  /// Farqi: `tileUrl` rasm (raster) beradi, uni faqat qiyshaytirish
+  /// mumkin — bu soxta 3D. Vektor style esa binolar balandligini
+  /// (`fill-extrusion`) o'z ichiga oladi, shuning uchun kamera
+  /// egilganda binolar CHINAKAM ko'tariladi, xuddi Yandex/Google
+  /// xaritalaridagidek.
+  ///
+  /// MapTiler `streets-v2` style'ida "Building 3D" qatlami bor.
+  static String styleUrl({bool dark = false}) {
+    if (hasKey) {
+      final s = dark ? darkStyle : style;
+      return 'https://api.maptiler.com/maps/$s/style.json?key=$maptilerKey';
+    }
+    // Kalitsiz vektor xarita yo'q — chaqiruvchi 3D ni o'chirishi kerak.
+    return '';
+  }
+
+  /// 3D ko'rinish mumkinmi (vektor style uchun kalit kerak).
+  static bool get supports3D => hasKey;
 
   /// Asosiy manzil ishlamasa ishlatiladigan zaxira.
   static String get fallbackUrl =>

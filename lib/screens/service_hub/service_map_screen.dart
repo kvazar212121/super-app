@@ -14,7 +14,7 @@ import '../../widgets/hub/hub_filter_chips.dart';
 import '../../widgets/hub/provider_map_preview_card.dart';
 import 'service_catalog_screen.dart';
 import '../../config/map_config.dart';
-import '../../widgets/map_3d_view.dart';
+import '../navigation_3d_screen.dart';
 
 /// EKRAN 2 — to'liq ekranli xizmat xaritasi.
 ///
@@ -63,18 +63,6 @@ class _ServiceMapScreenState extends State<ServiceMapScreen>
   int? _routeMin;
   bool _routing = false;
 
-  /// Navigatsiya (3D) rejimi yoqilganmi.
-  ///
-  /// Foydalanuvchi joyni bosib "Boshlash" tugmasini bosganda yoqiladi:
-  /// xarita egiladi, marshrut yo'nalishiga buriladi va yaqinlashadi.
-  bool _navMode = false;
-
-  /// 2D <-> 3D silliq o'tish.
-  late final AnimationController _tiltCtrl;
-
-  /// Marshrut yo'nalishi (radian) — 3D da xarita shu tomonga buriladi.
-  double _bearing = 0;
-
   @override
   void initState() {
     super.initState();
@@ -82,47 +70,34 @@ class _ServiceMapScreenState extends State<ServiceMapScreen>
       vsync: this,
       duration: const Duration(milliseconds: 1600),
     )..repeat();
-    _tiltCtrl = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 550),
-    );
     _initLocation();
   }
 
   @override
   void dispose() {
     _pulse.dispose();
-    _tiltCtrl.dispose();
     super.dispose();
   }
 
-  /// Navigatsiya rejimini yoqadi: xarita 3D holatga o'tadi va
-  /// marshrut boshiga yaqinlashadi.
+  /// HAQIQIY 3D navigatsiyani ochadi (vektor xarita, ko'tarilgan binolar).
+  ///
+  /// Nega alohida ekran: bu ekran raster tile'da ishlaydi, uni
+  /// qiyshaytirish soxta 3D beradi. Haqiqiy 3D uchun vektor style
+  /// kerak, u MapLibre bilan alohida ekranda ochiladi.
   void _startNavigation() {
-    final user = _userPos;
-    if (user == null || _route.length < 2) return;
-
-    // Yo'nalish: foydalanuvchidan marshrutning keyingi nuqtasiga.
-    // Shu burchakka burilganda "oldinga qarab" ketamiz.
-    final keyingi = _route.length > 2 ? _route[2] : _route.last;
-    setState(() {
-      _navMode = true;
-      _bearing = -bearingBetween(
-        user.latitude, user.longitude,
-        keyingi.latitude, keyingi.longitude,
-      );
-    });
-    _tiltCtrl.forward();
-    // Boshlanish nuqtasiga yaqinlashamiz — ko'chalar ko'rinsin.
-    _map.move(user, 16.5);
-  }
-
-  /// 3D dan chiqib, odatdagi tekis ko'rinishga qaytadi.
-  void _stopNavigation() {
-    if (!_navMode) return;
-    setState(() => _navMode = false);
-    _tiltCtrl.reverse();
-    _fitAll();
+    if (_route.length < 2 || _selected == null) return;
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => Navigation3DScreen(
+          route: _route,
+          destinationName: _selected!.name,
+          accent: widget.accent,
+          distanceKm: _routeKm,
+          durationMin: _routeMin,
+        ),
+      ),
+    );
   }
 
   Future<void> _initLocation() async {
@@ -231,9 +206,6 @@ class _ServiceMapScreenState extends State<ServiceMapScreen>
 
   void _clearSelection() {
     if (_selected == null && _route.isEmpty) return;
-    // Navigatsiyada xaritani bosish tanlovni bekor qilmasin — aks
-    // holda foydalanuvchi tasodifan marshrutni yo'qotadi.
-    if (_navMode) return;
     setState(() {
       _selected = null;
       _route = [];
@@ -261,15 +233,7 @@ class _ServiceMapScreenState extends State<ServiceMapScreen>
       ),
       body: Stack(
         children: [
-          // Xarita 3D o'ramda: navigatsiya yoqilganda egiladi.
-          AnimatedBuilder(
-            animation: _tiltCtrl,
-            builder: (context, child) => Map3DView(
-              tilt: Curves.easeOutCubic.transform(_tiltCtrl.value),
-              bearing: _bearing * _tiltCtrl.value,
-              child: child!,
-            ),
-            child: FlutterMap(
+          FlutterMap(
             mapController: _map,
             options: MapOptions(
               initialCenter:
@@ -309,7 +273,6 @@ class _ServiceMapScreenState extends State<ServiceMapScreen>
               // Litsenziya talabi: xarita ma'lumoti manbasi.
               MapConfig.attribution(bottomInset: 96),
             ],
-            ),
           ),
 
           // TEPADA — tanlangan provayder preview kartasi (rasmdagidek).
@@ -339,18 +302,21 @@ class _ServiceMapScreenState extends State<ServiceMapScreen>
           ),
 
           // PASTDA — joy tanlanganda "Boshlash", aks holda "filtrlar".
+          //
+          // `bottom` da tizim navigatsiya paneli hisobga olinadi: aks
+          // holda tugma panel ostida qolib, yarmi ko'rinmaydi.
           if (_selected != null && _route.length >= 2)
             Positioned(
               left: 16,
               right: 96,
-              bottom: 20,
-              child: _navMode ? _stopNavButton() : _startNavButton(),
+              bottom: 20 + MediaQuery.paddingOf(context).bottom,
+              child: _startNavButton(),
             )
           else
           Positioned(
             left: 16,
             right: 96,
-            bottom: 20,
+            bottom: 20 + MediaQuery.paddingOf(context).bottom,
             child: _MapFilterButton(
               accent: widget.accent,
               categories: widget.categories,
@@ -424,37 +390,6 @@ class _ServiceMapScreenState extends State<ServiceMapScreen>
                   ),
                 ),
               ],
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  /// Navigatsiyadan chiqish (tekis ko'rinishga qaytish).
-  Widget _stopNavButton() {
-    return Material(
-      color: Colors.white,
-      borderRadius: BorderRadius.circular(28),
-      elevation: 6,
-      child: InkWell(
-        borderRadius: BorderRadius.circular(28),
-        onTap: _stopNavigation,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(LucideIcons.x, color: widget.accent, size: 20),
-              const SizedBox(width: 10),
-              Text(
-                'Yakunlash'.tr,
-                style: TextStyle(
-                  color: widget.accent,
-                  fontWeight: FontWeight.w700,
-                  fontSize: 16,
-                ),
-              ),
             ],
           ),
         ),

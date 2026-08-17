@@ -10,7 +10,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../l10n/locale_controller.dart';
 import '../utils/geo_utils.dart';
 import '../config/map_config.dart';
-import 'map_3d_view.dart';
+import '../screens/navigation_3d_screen.dart';
 
 /// Xaritada ko'rsatiladigan bitta joy (provayder/xizmat).
 class MapPlace {
@@ -75,11 +75,6 @@ class _EnhancedServiceMapState extends State<EnhancedServiceMap>
   int? _routeMin;
   bool _routing = false;
 
-  /// Navigatsiya (3D) rejimi — "Boshlash" bosilganda yoqiladi.
-  bool _navMode = false;
-  late final AnimationController _tiltCtrl;
-  double _bearing = 0;
-
   @override
   void initState() {
     super.initState();
@@ -87,42 +82,29 @@ class _EnhancedServiceMapState extends State<EnhancedServiceMap>
       vsync: this,
       duration: const Duration(milliseconds: 1600),
     )..repeat();
-    _tiltCtrl = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 550),
-    );
     _initLocation();
   }
 
   @override
   void dispose() {
     _pulse.dispose();
-    _tiltCtrl.dispose();
     super.dispose();
   }
 
-  /// 3D navigatsiyani yoqadi: xarita egiladi va marshrut tomonga buriladi.
+  /// HAQIQIY 3D navigatsiya ekranini ochadi (vektor xarita).
   void _startNavigation() {
-    final user = _userPos;
-    if (user == null || _route.length < 2) return;
-    final keyingi = _route.length > 2 ? _route[2] : _route.last;
-    setState(() {
-      _navMode = true;
-      _bearing = -bearingBetween(
-        user.latitude, user.longitude,
-        keyingi.latitude, keyingi.longitude,
-      );
-    });
-    _tiltCtrl.forward();
-    _map.move(user, 16.5);
-  }
-
-  /// Tekis (2D) ko'rinishga qaytadi.
-  void _stopNavigation() {
-    if (!_navMode) return;
-    setState(() => _navMode = false);
-    _tiltCtrl.reverse();
-    _fitAll();
+    if (_route.length < 2) return;
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => Navigation3DScreen(
+          route: _route,
+          destinationName: _selected?.name ?? widget.title,
+          distanceKm: _routeKm,
+          durationMin: _routeMin,
+        ),
+      ),
+    );
   }
 
   Future<void> _initLocation() async {
@@ -235,15 +217,7 @@ class _EnhancedServiceMapState extends State<EnhancedServiceMap>
       appBar: AppBar(title: Text(widget.title), elevation: 0),
       body: Stack(
         children: [
-          // Xarita 3D o'ramda: "Boshlash" bosilganda egiladi.
-          AnimatedBuilder(
-            animation: _tiltCtrl,
-            builder: (context, child) => Map3DView(
-              tilt: Curves.easeOutCubic.transform(_tiltCtrl.value),
-              bearing: _bearing * _tiltCtrl.value,
-              child: child!,
-            ),
-            child: FlutterMap(
+          FlutterMap(
             mapController: _map,
             options: MapOptions(
               initialCenter: _userPos ??
@@ -285,7 +259,6 @@ class _EnhancedServiceMapState extends State<EnhancedServiceMap>
               // Litsenziya talabi: xarita ma'lumoti manbasi.
               MapConfig.attribution(bottomInset: 20),
             ],
-            ),
           ),
 
           // Marshrut tayyor bo'lganda — "Boshlash" tugmasi.
@@ -293,37 +266,32 @@ class _EnhancedServiceMapState extends State<EnhancedServiceMap>
             Positioned(
               left: 16,
               right: 16,
-              bottom: 20,
+              // Tizim navigatsiya paneli ostida qolib ketmasin.
+              bottom: 20 + MediaQuery.paddingOf(context).bottom,
               child: Center(
                 child: Material(
-                  color: _navMode ? Colors.white : const Color(0xFF2563EB),
+                  color: const Color(0xFF2563EB),
                   borderRadius: BorderRadius.circular(28),
                   elevation: 6,
                   child: InkWell(
                     borderRadius: BorderRadius.circular(28),
-                    onTap: _navMode ? _stopNavigation : _startNavigation,
+                    onTap: _startNavigation,
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 22, vertical: 14),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(
-                            _navMode
-                                ? LucideIcons.x
-                                : LucideIcons.navigation,
-                            color: _navMode
-                                ? const Color(0xFF2563EB)
-                                : Colors.white,
+                          const Icon(
+                            LucideIcons.navigation,
+                            color: Colors.white,
                             size: 20,
                           ),
                           const SizedBox(width: 10),
                           Text(
-                            _navMode ? 'Yakunlash'.tr : 'Boshlash'.tr,
-                            style: TextStyle(
-                              color: _navMode
-                                  ? const Color(0xFF2563EB)
-                                  : Colors.white,
+                            'Boshlash'.tr,
+                            style: const TextStyle(
+                              color: Colors.white,
                               fontWeight: FontWeight.w700,
                               fontSize: 16,
                             ),
@@ -397,8 +365,6 @@ class _EnhancedServiceMapState extends State<EnhancedServiceMap>
   }
 
   void _clearRoute() {
-    // Navigatsiyada xaritani bosish marshrutni o'chirmasin.
-    if (_navMode) return;
     if (_route.isEmpty && _selected == null) return;
     setState(() {
       _route = [];

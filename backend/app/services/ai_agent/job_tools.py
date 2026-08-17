@@ -173,6 +173,14 @@ async def publish_job(
         await update_job_draft(db, user_id, args, ctx)
         draft = _get_draft(user_id)
 
+    # Joylashuv: tasdiq bosqichida ham qo'shilishi kerak.
+    # Ilgari u faqat update_job_draft ichida qo'shilardi, ya'ni
+    # foydalanuvchi "ha" deganda (boshqa maydonsiz) koordinata
+    # YO'QOLARDI va e'lon hudud filtriga tushmay, BUTUN respublika
+    # ustalariga ko'rinib ketardi.
+    if ctx and draft.lat is None and ctx.get("lat") is not None:
+        draft.merge(lat=ctx.get("lat"), lng=ctx.get("lng"))
+
     missing = missing_fields(draft)
     if missing:
         return json.dumps({

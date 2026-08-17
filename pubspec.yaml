@@ -68,6 +68,7 @@ dependencies:
   qr_flutter: ^4.1.0
   mobile_scanner: ^5.2.3
   connectivity_plus: ^6.1.0
+  maplibre: ^0.2.2
 
 dev_dependencies:
   flutter_test:
