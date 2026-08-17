@@ -331,9 +331,11 @@ void showAddTransactionSheet(
                         firstDate: DateTime.now().subtract(
                           const Duration(days: 365),
                         ),
-                        lastDate: DateTime.now().add(
-                          const Duration(days: 365),
-                        ),
+                        // Tranzaksiya — SODIR BO'LGAN daromad/xarajat,
+                        // shuning uchun kelajak sana tanlab bo'lmaydi
+                        // (backend ham 422 qaytaradi). Kelajakdagi to'lov
+                        // uchun "Rejalashtirilgan to'lovlar" bo'limi bor.
+                        lastDate: DateTime.now(),
                       );
                       if (picked != null) {
                         setSheetState(() => chosenDate = picked);

@@ -32,6 +32,8 @@ from app.models.daily_activity import DailyActivity
 from app.models.finance_group import FinanceGroup
 from app.models.device_token import DeviceToken
 from app.models.call_deal import CallDeal
+from app.models.campaign import Campaign, CampaignVote
+from app.models.job import JobPost, JobOffer
 
 __all__ = [
     "User",
@@ -74,4 +76,8 @@ __all__ = [
     "DailyActivity",
     "FinanceGroup",
     "CallDeal",
+    "Campaign",
+    "CampaignVote",
+    "JobPost",
+    "JobOffer",
 ]

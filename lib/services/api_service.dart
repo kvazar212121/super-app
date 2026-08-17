@@ -1959,11 +1959,19 @@ class ApiService {
 
   // ============ Foydalanuvchilararo xabarlar (SMS-uslub) ============
 
-  /// Abonentga xabar yuborish
-  Future<Map<String, dynamic>> sendDirectMessage(int recipientId, String text) async {
+  /// Abonentga xabar yuborish.
+  ///
+  /// [jobId] berilsa xabar ish e'loniga bog'lanadi va qabul
+  /// qiluvchida "Bu e'lon bo'yicha: <nomi>" deb ko'rinadi.
+  Future<Map<String, dynamic>> sendDirectMessage(
+    int recipientId,
+    String text, {
+    int? jobId,
+  }) async {
     final response = await _dio.post('/messages/send', data: {
       'recipient_id': recipientId,
       'text': text,
+      if (jobId != null) 'job_id': jobId,
     });
     return Map<String, dynamic>.from(response.data);
   }
@@ -2080,6 +2088,136 @@ class ApiService {
 
   Future<Map<String, dynamic>> getAlarmStats() async {
     final response = await _dio.get('/alarms/stats');
+    return response.data;
+  }
+
+  // ─────────────── SOVRINLI SEZONLI REYTING (AKSIYA) ───────────────
+
+  /// Hozir ketayotgan aksiya (yo'q bo'lsa null).
+  Future<Map<String, dynamic>?> getActiveCampaign() async {
+    final response = await _dio.get('/campaigns/active');
+    final data = response.data;
+    return data is Map<String, dynamic> ? data : null;
+  }
+
+  /// Aksiya reytingi: eng ko'p OVOZ olganlar (yulduz emas).
+  Future<List<dynamic>> getCampaignLeaderboard(int campaignId) async {
+    final response = await _dio.get('/campaigns/$campaignId/leaderboard');
+    return response.data;
+  }
+
+  /// Men ovoz berganmi (tugma holati uchun).
+  Future<Map<String, dynamic>> getMyCampaignVote(int campaignId) async {
+    final response = await _dio.get('/campaigns/$campaignId/my-vote');
+    return response.data;
+  }
+
+  /// Ovoz berish. Bir foydalanuvchi bitta aksiyada FAQAT BIR MARTA.
+  Future<Map<String, dynamic>> voteInCampaign(
+    int campaignId,
+    int providerId,
+  ) async {
+    final response = await _dio.post(
+      '/campaigns/$campaignId/vote',
+      data: {'provider_id': providerId},
+    );
+    return response.data;
+  }
+
+  // ─────────────────────── ISH E'LONLARI ───────────────────────────
+
+  /// Mijoz e'lon beradi (rasm, summa, qachon kerakligi).
+  Future<Map<String, dynamic>> createJob(Map<String, dynamic> data) async {
+    final response = await _dio.post('/jobs', data: data);
+    return response.data;
+  }
+
+  /// AI chatga ish joyi rasmini yuborish.
+  ///
+  /// Rasm saqlanadi VA vision model uni ko'rib tavsif beradi.
+  /// Qaytadi: {url, analysis: {detected, title, description, ...}, message}
+  Future<Map<String, dynamic>> sendJobPhotoToAi(String filePath) async {
+    final form = FormData.fromMap({
+      'file': await MultipartFile.fromFile(filePath),
+    });
+    final response = await _dio.post('/ai/job-photo', data: form);
+    return Map<String, dynamic>.from(response.data);
+  }
+
+  /// Ish joyi rasmini yuklash — URL qaytaradi.
+  Future<String> uploadJobPhoto(String filePath) async {
+    final form = FormData.fromMap({
+      'file': await MultipartFile.fromFile(filePath),
+    });
+    final response = await _dio.post('/jobs/photo', data: form);
+    return response.data['url'] as String;
+  }
+
+  /// Mijozning o'z e'lonlari.
+  Future<List<dynamic>> getMyJobs() async {
+    final response = await _dio.get('/jobs/my');
+    return response.data;
+  }
+
+  /// Ustalar ko'radigan ochiq e'lonlar.
+  /// Ustalar ko'radigan e'lonlar.
+  ///
+  /// [providerId] berilsa e'lonlar HUDUD bo'yicha filtrlanadi:
+  /// Buxorodagi usta Toshkentdagi e'lonni ko'rmaydi. Javobda
+  /// `distance_km` ham keladi.
+  Future<List<dynamic>> getJobsFeed({int? categoryId, int? providerId}) async {
+    final params = <String, dynamic>{};
+    if (categoryId != null) params['category_id'] = categoryId;
+    if (providerId != null) params['provider_id'] = providerId;
+    final response = await _dio.get(
+      '/jobs/feed',
+      queryParameters: params.isEmpty ? null : params,
+    );
+    return response.data;
+  }
+
+  /// E'longa kelgan takliflar (faqat e'lon egasi ko'radi).
+  Future<List<dynamic>> getJobOffers(int jobId) async {
+    final response = await _dio.get('/jobs/$jobId/offers');
+    return response.data;
+  }
+
+  /// Usta taklif beradi (o'z provayderi nomidan).
+  Future<Map<String, dynamic>> createJobOffer(
+    int jobId,
+    Map<String, dynamic> data,
+  ) async {
+    final response = await _dio.post('/jobs/$jobId/offers', data: data);
+    return response.data;
+  }
+
+  /// Ustaning bergan takliflari.
+  Future<List<dynamic>> getMyJobOffers() async {
+    final response = await _dio.get('/jobs/offers/my');
+    return response.data;
+  }
+
+  /// Mijoz ustani tanlaydi. Qolgan takliflar avtomatik rad etiladi.
+  Future<Map<String, dynamic>> acceptJobOffer(int jobId, int offerId) async {
+    final response = await _dio.post('/jobs/$jobId/offers/$offerId/accept');
+    return response.data;
+  }
+
+  /// Usta taklifini qaytarib oladi.
+  Future<Map<String, dynamic>> withdrawJobOffer(int offerId) async {
+    final response = await _dio.delete('/jobs/offers/$offerId');
+    return response.data;
+  }
+
+  /// Mijoz ishni yakunlaydi.
+  Future<Map<String, dynamic>> completeJob(int jobId) async {
+    final response = await _dio.post('/jobs/$jobId/complete');
+    return response.data;
+  }
+
+  /// Mijoz e'lonni bekor qiladi.
+  Future<Map<String, dynamic>> cancelJob(int jobId) async {
+    final response = await _dio.delete('/jobs/$jobId');
     return response.data;
   }
 }

@@ -146,6 +146,9 @@ class FeatureFlag(BaseModel):
     label: Optional[str] = None
     enabled: bool
     message: Optional[str] = None
+    # Bo'lim premium obuna talab qiladimi. Masalan ish e'lonlari
+    # bo'limini faqat premium foydalanuvchilarga ochish mumkin.
+    premium: Optional[bool] = None
 
 
 class FeatureFlagsUpdate(BaseModel):
@@ -167,6 +170,8 @@ async def update_feature_flags(data: FeatureFlagsUpdate, _admin: User = Depends(
         updates[f"feature_{f.key}_enabled"] = "true" if f.enabled else "false"
         if f.message is not None:
             updates[f"feature_{f.key}_msg"] = f.message.strip()
+        if f.premium is not None:
+            updates[f"feature_{f.key}_premium"] = "true" if f.premium else "false"
     if updates:
         settings_service.set_many(updates)
     return {"flags": settings_service.all_features()}

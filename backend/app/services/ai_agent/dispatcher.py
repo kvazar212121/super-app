@@ -14,10 +14,11 @@ from .read_tools import HANDLERS as _read
 from .manage_tools import HANDLERS as _manage
 from .info_tools import HANDLERS as _info
 from .nav_tools import HANDLERS as _nav
+from .job_tools import HANDLERS as _job
 
 logger = logging.getLogger(__name__)
 
-HANDLERS = {**_personal, **_provider, **_read, **_manage, **_info, **_nav}
+HANDLERS = {**_personal, **_provider, **_read, **_manage, **_info, **_nav, **_job}
 
 
 async def handle_tool_call(

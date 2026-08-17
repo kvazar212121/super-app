@@ -9,7 +9,7 @@ import logging
 from datetime import datetime, timezone
 
 import httpx
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, File, UploadFile
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.requests import Request
 
@@ -170,3 +170,54 @@ async def ai_chat(
     except Exception as e:
         logger.error(f"Unexpected error in ai_chat: {e}. Falling back to local parse.")
         return await fallback_local_parse(user_msg_clean, current_user.id, db)
+
+
+@router.post("/job-photo")
+@limiter.limit("10/minute")
+async def ai_job_photo(
+    request: Request,
+    file: UploadFile = File(...),
+    current_user: User = Depends(get_current_user),
+):
+    """Ish joyi rasmini AI chatga yuborish.
+
+    Foydalanuvchi talabi: "ai agent chat bo'limida rasmga olishni ham
+    qo'shimchasini qil va rasmga olib ... dep ai chatga yozadi".
+
+    Ikki ish bir vaqtda bajariladi:
+      1. Rasm saqlanadi (e'longa biriktirish uchun URL kerak)
+      2. Vision model rasmni ko'rib ish tavsifini beradi
+
+    AI shu tavsifni olib start_job_draft'ni chaqiradi, ya'ni
+    foydalanuvchi "buni tuzatish kerak" desa ham AI nima haqida
+    ketayotganini biladi.
+    """
+    from app.services.ai_job.vision import analyze_job_photo
+    from app.services.upload_service import UploadService
+
+    # Faylni bir marta o'qiymiz: birinchi vision'ga, keyin saqlashga.
+    contents = await file.read()
+    await file.seek(0)
+
+    # 1) Saqlash (rasm e'londa ko'rinishi kerak)
+    url = await UploadService.upload_job_photo(file)
+
+    # 2) Tahlil. Vision ishlamasa ham rasm SAQLANGAN bo'ladi —
+    # foydalanuvchi tavsifni o'zi yozib e'lon bera oladi.
+    analysis = None
+    try:
+        analysis = await analyze_job_photo(
+            contents, file.content_type or "image/jpeg"
+        )
+    except Exception as exc:
+        logger.warning(f"Rasm tahlili bajarilmadi: {exc}")
+
+    return {
+        "url": url,
+        "analysis": analysis,
+        "message": (
+            "Rasm yuklandi. Endi qachon va qayerga kerakligini yozing."
+            if analysis and analysis.get("detected")
+            else "Rasm yuklandi. Muammoni qisqacha yozing."
+        ),
+    }

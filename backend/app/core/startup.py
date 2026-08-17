@@ -102,6 +102,15 @@ async def run_startup_init():
         await conn.execute(text(
             "ALTER TABLE orders ADD COLUMN IF NOT EXISTS booking_mode VARCHAR(50) DEFAULT 'fixed'"
         ))
+        # Xabar qaysi ish e'loni bo'yicha yozilgani. create_all MAVJUD
+        # jadvalga ustun qo'sha olmaydi, shuning uchun ALTER kerak.
+        await conn.execute(text(
+            "ALTER TABLE direct_messages ADD COLUMN IF NOT EXISTS job_id INTEGER"
+        ))
+        await conn.execute(text(
+            "CREATE INDEX IF NOT EXISTS ix_direct_messages_job_id "
+            "ON direct_messages (job_id)"
+        ))
         # Shopping list new columns
         await conn.execute(text(
             "ALTER TABLE shopping_lists ADD COLUMN IF NOT EXISTS name VARCHAR(255) DEFAULT 'Bozorlik'"

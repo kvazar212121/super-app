@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:provider/provider.dart';
 import '../../providers/app_provider.dart';
+import '../jobs_feed_screen.dart';
 import '../../config/provider_category_config.dart';
 import '../../services/provider_portal_service.dart';
 import 'widgets/provider_calendar_widget.dart';
@@ -187,8 +188,10 @@ class _UnifiedProviderDashboardScreenState
 
   int get _calendarIndex => 1;
   int get _settingsIndex => 2;
-  int get _callsIndex => _hasVenueSettings ? 3 : 2;
-  int get _reportsIndex => _hasVenueSettings ? 4 : 3;
+  // Ish e'lonlari lentasi — mijozlar bergan e'lonlarni ko'rib taklif berish
+  int get _jobsIndex => _hasVenueSettings ? 3 : 2;
+  int get _callsIndex => _hasVenueSettings ? 4 : 3;
+  int get _reportsIndex => _hasVenueSettings ? 5 : 4;
 
   @override
   void initState() {
@@ -626,6 +629,25 @@ class _UnifiedProviderDashboardScreenState
             ),
           ],
         ],
+      );
+    }
+    if (_selectedIndex == _jobsIndex) {
+      // Mijozlar bergan ish e'lonlari — usta shu yerdan taklif beradi
+      final pid = _provider?['id'] as int?;
+      if (pid == null) {
+        return const Center(
+          child: Padding(
+            padding: EdgeInsets.all(32),
+            child: Text(
+              'E\'lonlarni ko\'rish uchun avval profilingizni to\'ldiring',
+              textAlign: TextAlign.center,
+            ),
+          ),
+        );
+      }
+      return JobsFeedScreen(
+        providerId: pid,
+        categoryId: _provider?['category_id'] as int?,
       );
     }
     if (_selectedIndex == _callsIndex) {
@@ -1105,6 +1127,10 @@ class _UnifiedProviderDashboardScreenState
           icon: Icon(LucideIcons.settings),
           label: 'Sozlamalar',
         ),
+      const NavigationDestination(
+        icon: Icon(LucideIcons.clipboardList),
+        label: 'E\'lonlar',
+      ),
       const NavigationDestination(
         icon: Icon(LucideIcons.phone),
         label: 'Muloqot',

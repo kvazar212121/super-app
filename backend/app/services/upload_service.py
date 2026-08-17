@@ -98,6 +98,11 @@ class UploadService:
         return await UploadService._save_compressed(file, "promos", "promo", 1280, 72)
 
     @staticmethod
+    async def upload_job_photo(file: UploadFile) -> str:
+        """Ish e'loni rasmini yuklash ("joyni rasmga olib"). URL qaytaradi."""
+        return await UploadService._save_compressed(file, "jobs", "job", 1280, 75)
+
+    @staticmethod
     async def upload_cover(file: UploadFile) -> str:
         """Provayder muqova rasmini yuklash. URL qaytaradi."""
         return await UploadService._save_compressed(file, "covers", "cover", 1280, 75)

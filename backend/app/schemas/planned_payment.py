@@ -1,12 +1,17 @@
 from datetime import datetime
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Optional
 
 
+# Moliya yozuvlaridagi kabi chegara: manfiy yoki nolinchi rejalashtirilgan
+# to'lov mantiqsiz va "qolgan to'lovlar" yig'indisini buzadi.
+MAX_AMOUNT = 1_000_000_000_000
+
+
 class PlannedPaymentBase(BaseModel):
-    title: str
-    amount: float
-    category: str
+    title: str = Field(..., min_length=1, max_length=200)
+    amount: float = Field(..., gt=0, le=MAX_AMOUNT)
+    category: str = Field(..., min_length=1, max_length=100)
     due_date: datetime
     is_recurring: bool = False
 
@@ -16,9 +21,9 @@ class PlannedPaymentCreate(PlannedPaymentBase):
 
 
 class PlannedPaymentUpdate(BaseModel):
-    title: Optional[str] = None
-    amount: Optional[float] = None
-    category: Optional[str] = None
+    title: Optional[str] = Field(default=None, min_length=1, max_length=200)
+    amount: Optional[float] = Field(default=None, gt=0, le=MAX_AMOUNT)
+    category: Optional[str] = Field(default=None, min_length=1, max_length=100)
     due_date: Optional[datetime] = None
     is_recurring: Optional[bool] = None
     is_paid: Optional[bool] = None

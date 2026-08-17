@@ -9,6 +9,8 @@ import './pages/categories.js';
 import './pages/reviews.js';
 import './pages/finance.js';
 import './pages/promos.js';
+import './pages/campaigns.js';
+import './pages/monitoring.js';
 import './pages/settings.js';
 import './pages/notifications.js';
 import './pages/reports.js';

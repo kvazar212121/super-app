@@ -22,6 +22,14 @@ class DirectMessage(Base):
         Integer, ForeignKey("users.id", ondelete="CASCADE"), index=True
     )
     text: Mapped[str] = mapped_column(Text)
+    # Xabar qaysi ish e'loni bo'yicha yozilgan (ixtiyoriy).
+    # Foydalanuvchi talabi: "narigi oddiy foydalanuvchi tomonida chat
+    # maydonida shu elon bilan kelgan dep chiqarib qo'yishi kerak".
+    # SET NULL: e'lon o'chsa ham yozishmalar saqlanadi.
+    job_id: Mapped[int | None] = mapped_column(
+        Integer, ForeignKey("job_posts.id", ondelete="SET NULL"),
+        nullable=True, index=True,
+    )
     is_read: Mapped[bool] = mapped_column(Boolean, default=False)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), index=True

@@ -111,3 +111,7 @@ serviceAccountKey.json
 # Firebase client config (API key bor — oshkor qilinmaydi!)
 android/app/google-services.json
 ios/Runner/GoogleService-Info.plist
+
+# Test va lokal ishga tushirishda yaratiladigan yuklamalar
+uploads/
+android/.kotlin/
