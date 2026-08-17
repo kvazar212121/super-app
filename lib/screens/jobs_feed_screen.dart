@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../config/app_config.dart';
 import '../models/job.dart';
 import '../services/api_service.dart';
 import 'calls/dm_chat_screen.dart';
@@ -234,6 +235,71 @@ class _JobsFeedScreenState extends State<JobsFeedScreen> {
     );
   }
 
+  /// E'lon rasmlari. Bosilganda to'liq ekranda ochiladi.
+  Widget _photoStrip(ThemeData theme, JobPost job) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: SizedBox(
+        height: 110,
+        child: ListView.separated(
+          scrollDirection: Axis.horizontal,
+          itemCount: job.photos.length,
+          separatorBuilder: (_, _) => const SizedBox(width: 8),
+          itemBuilder: (_, i) {
+            final url = AppConfig.formatImageUrl(job.photos[i]);
+            return GestureDetector(
+              onTap: () => _openPhoto(url),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: Image.network(
+                  url,
+                  width: 150,
+                  height: 110,
+                  fit: BoxFit.cover,
+                  // Rasm yuklanmasa karta buzilmasin.
+                  errorBuilder: (_, _, _) => Container(
+                    width: 150,
+                    height: 110,
+                    color: theme.dividerColor.withValues(alpha: 0.3),
+                    child: Icon(Icons.broken_image_outlined,
+                        color: theme.hintColor),
+                  ),
+                ),
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  void _openPhoto(String url) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => Scaffold(
+          backgroundColor: Colors.black,
+          appBar: AppBar(
+            backgroundColor: Colors.black,
+            foregroundColor: Colors.white,
+          ),
+          body: Center(
+            child: InteractiveViewer(
+              child: Image.network(
+                url,
+                errorBuilder: (_, _, _) => const Icon(
+                  Icons.broken_image_outlined,
+                  color: Colors.white54,
+                  size: 64,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _jobCard(ThemeData theme, JobPost job) {
     final alreadyOffered = _myOfferJobIds.contains(job.id);
 
@@ -245,6 +311,9 @@ class _JobsFeedScreenState extends State<JobsFeedScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Rasm — usta ish hajmini shundan baholaydi. Rasmsiz e'londa
+            // hech narsa ko'rsatilmaydi (bo'sh joy qolmaydi).
+            if (job.photos.isNotEmpty) _photoStrip(theme, job),
             Text(
               job.title,
               style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),

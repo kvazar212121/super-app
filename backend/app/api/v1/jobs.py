@@ -19,6 +19,8 @@ CHAT: mavjud /messages tizimi ishlatiladi. Taklif javobida
 RASM: /upload/job-photo orqali yuklanadi, qaytgan URL e'longa qo'shiladi.
 """
 
+from datetime import timezone
+
 from fastapi import APIRouter, Depends, File, Query, UploadFile
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -27,6 +29,7 @@ from app.db.session import get_db
 from app.models.user import User
 from app.schemas.common import UrlResponse
 from app.schemas.job import JobCreate, JobOut, MyOfferOut, OfferCreate, OfferOut
+from app.services.ai_job.limits import check_can_create_job, expires_at_for
 from app.services.job_service import JobService
 from app.services.upload_service import UploadService
 
@@ -51,7 +54,25 @@ async def create_job(
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    job = await JobService.create(db, current_user.id, data.model_dump())
+    # Chegaralar AI orqali berilgan e'longa ham, oddiy formaga ham
+    # BIR XIL qo'llanadi. Ilgari tekshiruv faqat AI tool'ida edi, ya'ni
+    # foydalanuvchi oddiy forma orqali cheklovni chetlab o'ta olardi.
+    await check_can_create_job(db, current_user)
+
+    payload = data.model_dump()
+    # Muddat: oddiy foydalanuvchiga 5 kun, premiumga cheksiz. Mijoz
+    # o'zi qisqaroq muddat bergan bo'lsa — uniki qoladi.
+    limit_expires = expires_at_for(current_user)
+    if limit_expires is not None:
+        given = payload.get("expires_at")
+        # Mijoz vaqt mintaqasiz sana yuborishi mumkin — solishtirishda
+        # TypeError bo'lmasligi uchun UTC deb qaraymiz.
+        if given is not None and given.tzinfo is None:
+            given = given.replace(tzinfo=timezone.utc)
+        if given is None or given > limit_expires:
+            payload["expires_at"] = limit_expires
+
+    job = await JobService.create(db, current_user.id, payload)
     return JobOut(**job.to_dict())
 
 

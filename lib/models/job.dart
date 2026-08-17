@@ -111,7 +111,6 @@ class JobOffer {
   final String? providerName;
   final double? providerRating;
   final int? providerReviewCount;
-  final String? providerPhone;
 
   /// Chat ochish uchun: mijoz shu foydalanuvchiga yozadi.
   final int? providerOwnerUserId;
@@ -131,7 +130,6 @@ class JobOffer {
     this.providerName,
     this.providerRating,
     this.providerReviewCount,
-    this.providerPhone,
     this.providerOwnerUserId,
     this.durationText,
     this.message,
@@ -149,7 +147,6 @@ class JobOffer {
         providerName: json['provider_name'] as String?,
         providerRating: (json['provider_rating'] as num?)?.toDouble(),
         providerReviewCount: json['provider_review_count'] as int?,
-        providerPhone: json['provider_phone'] as String?,
         providerOwnerUserId: json['provider_owner_user_id'] as int?,
         price: (json['price'] as num).toDouble(),
         durationText: json['duration_text'] as String?,

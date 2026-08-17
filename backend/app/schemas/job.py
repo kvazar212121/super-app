@@ -64,7 +64,6 @@ class OfferOut(BaseModel):
     provider_name: Optional[str] = None
     provider_rating: Optional[float] = None
     provider_review_count: Optional[int] = None
-    provider_phone: Optional[str] = None
     # Chat ochish uchun: mijoz shu foydalanuvchiga yozadi
     provider_owner_user_id: Optional[int] = None
     price: float

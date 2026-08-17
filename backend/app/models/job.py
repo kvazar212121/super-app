@@ -194,6 +194,14 @@ class JobOffer(Base):
     provider = relationship("Provider")
 
     def to_dict(self, provider: object | None = None) -> dict:
+        """Taklif ma'lumoti mijozga.
+
+        DIQQAT: ustaning HAQIQIY TELEFON RAQAMI bu yerda QAYTMAYDI.
+        Aloqa faqat ilova ichida: chat (DirectMessage) yoki WebRTC
+        qo'ng'irog'i. Sabab: raqam tarqalib ketsa biz o'rtadan chiqib
+        qolamiz (lead fee yo'qoladi) va foydalanuvchi himoyasiz qoladi.
+        Raqam kerak bo'lsa uni bu yerga QAYTA QO'SHMANG.
+        """
         p = provider if provider is not None else self.provider
         return {
             "id": self.id,
@@ -202,7 +210,6 @@ class JobOffer(Base):
             "provider_name": getattr(p, "name", None),
             "provider_rating": getattr(p, "rating", None),
             "provider_review_count": getattr(p, "review_count", None),
-            "provider_phone": getattr(p, "phone", None),
             "provider_owner_user_id": getattr(p, "owner_user_id", None),
             "price": self.price,
             "duration_text": self.duration_text,
