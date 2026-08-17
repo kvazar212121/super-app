@@ -36,6 +36,10 @@ if DB:
 os.environ["REQUIRE_OTP_AUTH"] = "false"
 
 ROOT = os.path.dirname(BACKEND)
+
+# Ustaning haqiqiy raqami — javobda uchramasligi kerak
+MASTER_PHONE = "+998911112233"
+
 ok, fail = [], []
 
 
@@ -126,22 +130,26 @@ async def live_checks():
     from app.models.provider import Provider
     from app.models.user import User
 
+    from sqlalchemy import text
+    # drop_all ishlamaydi: users <-> finance_groups orasida aylanma FK bor
+    # (SQLAlchemy jadval tartibini hisoblay olmaydi). Loyihaning boshqa
+    # testlari ham shu sababli DROP SCHEMA ishlatadi.
     async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.drop_all)
+        await conn.execute(text("DROP SCHEMA public CASCADE"))
+        await conn.execute(text("CREATE SCHEMA public"))
         await conn.run_sync(Base.metadata.create_all)
 
     async with async_session() as db:
-        cat = Category(name="Elektrik", slug="limit-elektrik")
-        db.add(cat)
-        await db.flush()
-        client = User(phone="+998900000101", full_name="Mijoz",
-                      hashed_password=hash_password("x"))
-        master = User(phone="+998900000102", full_name="Usta",
-                      hashed_password=hash_password("x"))
-        db.add_all([client, master])
+        cat = Category(key="electrician", title_uz="Elektrik", icon="zap")
+        client = User(name="Mijoz", surname="Test", phone="+998900000101",
+                      hashed_password=hash_password("parol123"))
+        master = User(name="Usta", surname="Ali", phone="+998900000102",
+                      hashed_password=hash_password("parol123"))
+        db.add_all([cat, client, master])
         await db.flush()
         prov = Provider(name="Usta Ali", category_id=cat.id,
-                        owner_user_id=master.id, phone="+998911112233",
+                        address="Toshkent, Chilonzor",
+                        owner_user_id=master.id, phone=MASTER_PHONE,
                         lat=41.2995, lng=69.2401)
         db.add(prov)
         await db.commit()
@@ -153,9 +161,9 @@ async def live_checks():
                            base_url="http://test") as c:
         async def login(phone):
             r = await c.post("/api/v1/auth/login",
-                             json={"phone": phone, "password": "x"})
-            tok = r.json().get("access_token")
-            return {"Authorization": f"Bearer {tok}"}
+                             json={"phone": phone, "password": "parol123"})
+            assert r.status_code == 200, f"login {phone}: {r.text[:200]}"
+            return {"Authorization": f"Bearer {r.json()['access_token']}"}
 
         h_client = await login("+998900000101")
         h_master = await login("+998900000102")
@@ -203,7 +211,7 @@ async def live_checks():
         offers = rl.json() if rl.status_code == 200 else []
         check("mijoz taklifni ko'rdi", len(offers) == 1, f"{len(offers)} ta")
         check("javobda ustaning HAQIQIY RAQAMI yo'q",
-              "+998911112233" not in body and "provider_phone" not in body,
+              MASTER_PHONE not in body and "provider_phone" not in body,
               "raqam tarqaldi!")
         if offers:
             o = offers[0]
