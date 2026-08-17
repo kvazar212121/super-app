@@ -10,7 +10,11 @@ import 'job_offers_screen.dart';
 /// Foydalanuvchi talabi: "ish qilinadigan joyni rasmga olib, summani
 /// yozib, qachon qilinish kerakligini yozib e'lon berib qo'yilishi kerak".
 class MyJobsScreen extends StatefulWidget {
-  const MyJobsScreen({super.key});
+  /// [embedded] — "Buyurtmalarim" ekrani ichidagi tab sifatida ochilgan
+  /// (o'z AppBar'i kerak emas, fon tashqi ekrandan keladi).
+  final bool embedded;
+
+  const MyJobsScreen({super.key, this.embedded = false});
 
   @override
   State<MyJobsScreen> createState() => _MyJobsScreenState();
@@ -54,7 +58,10 @@ class _MyJobsScreenState extends State<MyJobsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Mening e\'lonlarim')),
+      backgroundColor: widget.embedded ? Colors.transparent : null,
+      appBar: widget.embedded
+          ? null
+          : AppBar(title: const Text('Mening e\'lonlarim')),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _openCreate,
         icon: const Icon(Icons.add),
