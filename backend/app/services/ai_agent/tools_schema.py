@@ -350,5 +350,73 @@ TOOLS = [
                 "city": {"type": "string", "description": "Shahar nomi (default: Tashkent)"}
             }}
         }
+    },
+
+    # ── ISH E'LONI (AI orqali) — TASDIQ MAJBURIY ────────────────────
+    # Bron qilishdan FARQI: bronda mijoz aniq ustani tanlaydi. E'londa
+    # esa mijoz muammosini aytadi, USTALAR o'zlari taklif beradi.
+    # "kimdir kelib qilib bersa bo'ldi" holati uchun.
+    {
+        "type": "function",
+        "function": {
+            "name": "start_job_draft",
+            "description": (
+                "Ish E'LONI berishni boshlash. Foydalanuvchi muammosini "
+                "aytganda ('kranim oqyapti', 'shu joyni tamirlash kerak', "
+                "rasm yuborib 'buni tuzatish kerak') chaqiring. "
+                "Aniq ustaga bron qilish EMAS — bu e'lon, ustalar o'zlari "
+                "taklif beradi. Bilgan ma'lumotingizni darhol bering, "
+                "qolganini tool aytadi."
+            ),
+            "parameters": {"type": "object", "properties": {
+                "category": {"type": "string", "description": "Soha kaliti yoki nomi: electrician, plumber, cleaning, repair..."},
+                "title": {"type": "string", "description": "Ish nomi, 3-200 belgi. Masalan: 'Rozetka almashtirish'"},
+                "description": {"type": "string", "description": "Muammo tavsifi, kamida 5 belgi"},
+                "address": {"type": "string", "description": "Manzil, kamida 3 belgi"},
+                "budget": {"type": "number", "description": "Mijoz aytgan summa (so'm). Aytmasa bermang — 'narxni ustalar aytadi'"},
+                "needed_at": {"type": "string", "description": "Qachon kerak, ISO sana. 'ertaga' desa hisoblab bering"},
+                "photos": {"type": "array", "items": {"type": "string"}, "description": "Yuklangan rasm URL'lari"},
+                "lang": {"type": "string", "description": "Foydalanuvchi tili: uz yoki ru"}
+            }}
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "update_job_draft",
+            "description": (
+                "E'lon qoralamasiga YANGI ma'lumot qo'shish. Tool "
+                "'ask_user' savolini bergandan keyin foydalanuvchi javob "
+                "bersa shuni chaqiring. Faqat YANGI maydonni yuboring — "
+                "oldingilar saqlanadi."
+            ),
+            "parameters": {"type": "object", "properties": {
+                "category": {"type": "string"},
+                "title": {"type": "string"},
+                "description": {"type": "string"},
+                "address": {"type": "string"},
+                "budget": {"type": "number"},
+                "needed_at": {"type": "string"},
+                "photos": {"type": "array", "items": {"type": "string"}},
+                "lang": {"type": "string"}
+            }}
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "publish_job",
+            "description": (
+                "E'lonni CHOP ETISH. IKKI QADAMLI: avval confirm=false "
+                "chaqiring — tool xulosa qaytaradi; xulosani "
+                "foydalanuvchiga ko'rsatib «E'lon berilsinmi?» deb "
+                "SO'RANG; u aniq 'ha' degandagina confirm=true bilan "
+                "qayta chaqiring. Tasdiqsiz e'lon YARATILMAYDI."
+            ),
+            "parameters": {"type": "object", "properties": {
+                "confirm": {"type": "boolean", "description": "Foydalanuvchi xulosani ko'rib aniq tasdiqlaganda true"},
+                "lang": {"type": "string"}
+            }}
+        }
     }
 ]
