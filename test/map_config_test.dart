@@ -16,6 +16,39 @@ void main() {
       expect(MapConfig.tileUrl(), contains('tile.openstreetmap.org'));
     });
 
+    test('Kalit BERILGANDA MapTiler ishlatiladi (production yo\'li)', () {
+      // Bu eng muhim holat: relizda aynan shu tarmoq ishlaydi. Kalit
+      // compile-time konstanta bo'lgani uchun uni testda bevosita
+      // o'zgartirib bo'lmaydi, shuning uchun sof `tileUrlFor` sinaladi.
+      const key = 'TEST_KEY_123';
+      final url = MapConfig.tileUrlFor(key);
+      expect(url, contains('api.maptiler.com'));
+      expect(url, contains('key=$key'));
+      expect(url, contains(MapConfig.style));
+      expect(url, startsWith('https://'));
+      for (final t in ['{z}', '{x}', '{y}']) {
+        expect(url, contains(t));
+      }
+    });
+
+    test('Kalit bilan qorong\'i uslub ham to\'g\'ri', () {
+      final dark = MapConfig.tileUrlFor('K', dark: true);
+      expect(dark, contains(MapConfig.darkStyle));
+      expect(dark, isNot(MapConfig.tileUrlFor('K')));
+    });
+
+    test('Bo\'sh kalit — OSM zaxirasi (dev holati)', () {
+      expect(MapConfig.tileUrlFor(''), contains('tile.openstreetmap.org'));
+    });
+
+    test('tileUrl() va tileUrlFor() bir xil natija beradi', () {
+      // Ikkisi ajralib ketmasligi kerak: aks holda test bir yo'lni,
+      // ilova boshqa yo'lni ishlatgan bo'lardi.
+      expect(MapConfig.tileUrl(), MapConfig.tileUrlFor(MapConfig.maptilerKey));
+      expect(MapConfig.tileUrl(dark: true),
+          MapConfig.tileUrlFor(MapConfig.maptilerKey, dark: true));
+    });
+
     test('Manzil {z}/{x}/{y} shablonini saqlaydi', () {
       for (final url in [MapConfig.tileUrl(), MapConfig.fallbackUrl]) {
         expect(url, contains('{z}'));

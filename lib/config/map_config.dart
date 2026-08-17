@@ -43,10 +43,18 @@ class MapConfig {
   /// Asosiy tile manzili.
   ///
   /// [dark] — qorong'i uslub kerak bo'lsa.
-  static String tileUrl({bool dark = false}) {
-    if (hasKey) {
+  static String tileUrl({bool dark = false}) => tileUrlFor(maptilerKey, dark: dark);
+
+  /// [tileUrl] ning sof (toza) ko'rinishi — kalit tashqaridan beriladi.
+  ///
+  /// Nega alohida: `maptilerKey` compile-time konstanta, ya'ni testda uni
+  /// o'zgartirib bo'lmaydi. Shu sababli kalitli tarmoq faqat haqiqiy
+  /// relizda ishga tushardi va test bilan qoplanmagan edi. Endi ikkala
+  /// holat ham sinaladi.
+  static String tileUrlFor(String key, {bool dark = false}) {
+    if (key.isNotEmpty) {
       final s = dark ? darkStyle : style;
-      return 'https://api.maptiler.com/maps/$s/{z}/{x}/{y}.png?key=$maptilerKey';
+      return 'https://api.maptiler.com/maps/$s/{z}/{x}/{y}.png?key=$key';
     }
     // Kalit yo'q (dev/debug): OSM. Production'da ishlatilmasin.
     return 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
