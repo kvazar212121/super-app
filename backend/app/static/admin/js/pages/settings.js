@@ -18,6 +18,9 @@ async function renderSettings() {
     try { const r = await window.api(window.API_BASE + '/settings'); if (r && r.ok) f = await r.json(); } catch(e) {}
     try { const r = await window.api(window.API_BASE + '/ai-config'); if (r && r.ok) ai = await r.json(); } catch(e) {}
     try { const r = await window.api(window.API_BASE + '/feature-flags'); if (r && r.ok) { const d = await r.json(); flags = d.flags || []; } } catch(e) {}
+    // Saqlash funksiyasi alohida (global) bo'lgani uchun kalitlarni
+    // shu yerda saqlab qo'yamiz — aks holda u ro'yxatni ko'rmaydi.
+    window.__featureFlagKeys = flags.map(function(f) { return f.key; });
     try { const r = await window.api(window.API_BASE + '/category-flags'); if (r && r.ok) { const d = await r.json(); cats = d.categories || []; } } catch(e) {}
     window.__catKeys = cats.map(function(c){ return c.key; });
     var legal = [];
@@ -226,11 +229,21 @@ function saveAiConfig() {
 
 function saveFeatureFlags() {
     var flagsList = [];
-    ['plans','finance','shopping','services','calorie','fitness','alarm','ai_chat'].forEach(function(key) {
+    // DIQQAT: ro'yxat backenddan kelgan flags'дан olinadi. Ilgari
+    // qo'lda yozilgan edi va yangi bo'lim qo'shilganda (masalan
+    // "jobs") u SAQLANMAY qolardi — admin tugmani bosardi, lekin
+    // hech narsa o'zgarmasdi.
+    (window.__featureFlagKeys || []).forEach(function(key) {
         var cb = document.getElementById('flag_' + key + '_enabled');
         var msgEl = document.getElementById('flag_' + key + '_msg');
+        var premEl = document.getElementById('flag_' + key + '_premium');
         if (cb) {
-            flagsList.push({ key: key, enabled: cb.checked, message: msgEl ? msgEl.value : '' });
+            flagsList.push({
+                key: key,
+                enabled: cb.checked,
+                message: msgEl ? msgEl.value : '',
+                premium: premEl ? premEl.checked : false
+            });
         }
     });
     window.api(window.API_BASE + '/feature-flags', { method: 'PUT', body: JSON.stringify({ flags: flagsList }) })

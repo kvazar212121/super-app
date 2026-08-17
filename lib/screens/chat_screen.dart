@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'dart:async';
 import 'dart:math' as math;
@@ -318,6 +319,91 @@ class _ChatScreenState extends State<ChatScreen>
         curve: Curves.easeOut,
       );
     });
+  }
+
+  /// Ish joyi rasmini AI ga yuborish.
+  ///
+  /// Foydalanuvchi muammoli joyni rasmga oladi, AI uni ko'rib nima
+  /// kerakligini tushunadi va e'lon berishni taklif qiladi.
+  Future<void> _sendJobPhoto(ImageSource source) async {
+    final picker = ImagePicker();
+    final XFile? picked = await picker.pickImage(
+      source: source,
+      // Vision modelga 3MB chegara bor, oldindan kichraytiramiz
+      maxWidth: 1600,
+      imageQuality: 80,
+    );
+    if (picked == null || !mounted) return;
+
+    setState(() {
+      _chatHistory.add({'role': 'user', 'content': '📷 Rasm yuborildi'.tr});
+      _isTyping = true;
+    });
+    _scrollToBottom();
+
+    try {
+      final res = await ApiService().sendJobPhotoToAi(picked.path);
+      if (!mounted) return;
+
+      final analysis = res['analysis'] as Map<String, dynamic>?;
+      final url = res['url'] as String?;
+
+      // AI rasmni tushungan bo'lsa — tavsifni suhbatga qo'shamiz,
+      // shunda model e'lon berishni o'zi taklif qiladi.
+      final buf = StringBuffer();
+      if (analysis != null && analysis['detected'] == true) {
+        buf.writeln('Rasmda: ${analysis['description'] ?? ''}');
+        if ((analysis['title'] as String?)?.isNotEmpty ?? false) {
+          buf.writeln('Ish: ${analysis['title']}');
+        }
+      }
+      if (url != null) buf.writeln('Rasm: $url');
+      buf.write(res['message'] ?? '');
+
+      setState(() => _isTyping = false);
+      // Matnni AI ga yuboramiz — u savol berib e'lon tayyorlaydi
+      await _sendMessage(text: buf.toString().trim());
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _isTyping = false;
+        _chatHistory.add({
+          'role': 'assistant',
+          'content': 'Rasmni yuborib bo\'lmadi. Qaytadan urinib ko\'ring.'.tr,
+        });
+      });
+    }
+  }
+
+  /// Kamera yoki galereya tanlash oynasi.
+  void _pickPhotoSource() {
+    showModalBottomSheet(
+      context: context,
+      builder: (ctx) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.camera_alt_outlined),
+              title: Text('Rasmga olish'.tr),
+              subtitle: Text('Muammoli joyni suratga oling'.tr),
+              onTap: () {
+                Navigator.pop(ctx);
+                _sendJobPhoto(ImageSource.camera);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.photo_library_outlined),
+              title: Text('Galereyadan tanlash'.tr),
+              onTap: () {
+                Navigator.pop(ctx);
+                _sendJobPhoto(ImageSource.gallery);
+              },
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   Future<void> _sendMessage({String? text, bool isVoice = false}) async {
@@ -749,6 +835,13 @@ class _ChatScreenState extends State<ChatScreen>
             children: [
               Row(
                 children: [
+                  // Rasm yuborish: "shu joyni tamirlash kerak" oqimi
+                  IconButton(
+                    onPressed: isRecording ? null : _pickPhotoSource,
+                    icon: const Icon(Icons.add_a_photo_outlined),
+                    tooltip: 'Ish joyi rasmini yuborish'.tr,
+                    color: GlassTokens.secondaryText(context),
+                  ),
                   Expanded(
                 child: Container(
                   decoration: BoxDecoration(

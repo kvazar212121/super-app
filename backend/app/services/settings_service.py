@@ -31,6 +31,10 @@ FEATURE_DEFS = [
     ("fitness", "Fitnes trener"),
     ("alarm", "Majburlovchi budilnik"),
     ("ai_chat", "AI Yordamchi"),
+    # Ish e'lonlari: mijoz e'lon beradi, ustalar taklif beradi.
+    # Adminkada yoqish/o'chirish VA premium talab qilish tugmalari
+    # avtomatik chiqadi (features_public shu ro'yxatdan quriladi).
+    ("jobs", "Ish e'lonlari"),
 ]
 AI_FEATURES = ["vision", "chat", "translate"]
 DEFAULT_COMING_SOON = "Bu bo'lim tez orada ishga tushadi ⏳"
@@ -157,6 +161,8 @@ def all_features() -> list[dict]:
             "label": label,
             "enabled": feature_enabled(k),
             "message": feature_message(k),
+            # Bo'lim premium obuna talab qiladimi (adminkadan yoqiladi)
+            "premium": feature_premium(k),
         }
         for k, label in FEATURE_DEFS
     ]

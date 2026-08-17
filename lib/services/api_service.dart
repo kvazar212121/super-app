@@ -2128,6 +2128,18 @@ class ApiService {
     return response.data;
   }
 
+  /// AI chatga ish joyi rasmini yuborish.
+  ///
+  /// Rasm saqlanadi VA vision model uni ko'rib tavsif beradi.
+  /// Qaytadi: {url, analysis: {detected, title, description, ...}, message}
+  Future<Map<String, dynamic>> sendJobPhotoToAi(String filePath) async {
+    final form = FormData.fromMap({
+      'file': await MultipartFile.fromFile(filePath),
+    });
+    final response = await _dio.post('/ai/job-photo', data: form);
+    return Map<String, dynamic>.from(response.data);
+  }
+
   /// Ish joyi rasmini yuklash — URL qaytaradi.
   Future<String> uploadJobPhoto(String filePath) async {
     final form = FormData.fromMap({
