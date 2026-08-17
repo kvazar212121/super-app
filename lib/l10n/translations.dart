@@ -2,6 +2,13 @@
 /// Kalit = ilovadagi o'zbekcha matn (aynan). Topilmagan matn o'zbekcha qoladi.
 /// Yangi ekran tarjima qilinganда shu yerga qo'shiladi.
 const Map<String, String> kTranslationsRu = {
+  // ── Xarita: 3D navigatsiya ──
+  'Boshlash': 'Начать',
+  'Yakunlash': 'Завершить',
+  // ── Chat: rasm yuborish ──
+  'Rasm tayyor': 'Фото готово',
+  'Muammoni yozing va yuboring': 'Опишите проблему и отправьте',
+
   // ── Til / Sozlamalar ──
   'Sozlamalar': 'Настройки',
   'Til': 'Язык',
