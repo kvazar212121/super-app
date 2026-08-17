@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'dart:async';
+import 'dart:io';
 import 'dart:math' as math;
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:permission_handler/permission_handler.dart';
@@ -44,6 +45,16 @@ class _ChatScreenState extends State<ChatScreen>
   final List<Map<String, dynamic>> _chatHistory = [];
   bool _isTyping = false;
   bool _hasText = false;
+
+  /// Tanlangan, LEKIN hali yuborilmagan rasm.
+  ///
+  /// Foydalanuvchi talabi: rasm tanlanishi bilan darhol ketmasin —
+  /// avval tagiga matn yozish imkoni bo'lsin. Rasm faqat "yuborish"
+  /// bosilganda (yoki matn bilan birga) jo'natiladi.
+  XFile? _pendingPhoto;
+
+  /// Rasm serverga yuklanayotgan payt (ikki marta bosilmasin).
+  bool _photoUploading = false;
 
   // Speech to Text variables
   _VoiceState _voiceState = _VoiceState.idle;
@@ -321,11 +332,12 @@ class _ChatScreenState extends State<ChatScreen>
     });
   }
 
-  /// Ish joyi rasmini AI ga yuborish.
+  /// Rasmni TANLAYDI (yubormaydi).
   ///
-  /// Foydalanuvchi muammoli joyni rasmga oladi, AI uni ko'rib nima
-  /// kerakligini tushunadi va e'lon berishni taklif qiladi.
-  Future<void> _sendJobPhoto(ImageSource source) async {
+  /// Ilgari rasm tanlanishi bilan darhol AI ga ketardi va foydalanuvchi
+  /// tushuntirish yozishga ulgurmasdi. Endi rasm "kutish"da turadi,
+  /// tagiga matn yozish mumkin, yuborish esa alohida qadam.
+  Future<void> _pickJobPhoto(ImageSource source) async {
     final picker = ImagePicker();
     final XFile? picked = await picker.pickImage(
       source: source,
@@ -334,15 +346,37 @@ class _ChatScreenState extends State<ChatScreen>
       imageQuality: 80,
     );
     if (picked == null || !mounted) return;
+    setState(() => _pendingPhoto = picked);
+  }
+
+  /// Kutayotgan rasmni bekor qilish.
+  void _clearPendingPhoto() {
+    setState(() => _pendingPhoto = null);
+  }
+
+  /// Kutayotgan rasmni (va yozilgan matnni) AI ga yuboradi.
+  Future<void> _sendPendingPhoto() async {
+    final photo = _pendingPhoto;
+    if (photo == null || _photoUploading) return;
+
+    // Foydalanuvchi rasm tagiga yozgan izoh (bo'lishi shart emas).
+    final izoh = _textController.text.trim();
 
     setState(() {
-      _chatHistory.add({'role': 'user', 'content': '📷 Rasm yuborildi'.tr});
+      _photoUploading = true;
+      _pendingPhoto = null;
+      _chatHistory.add({
+        'role': 'user',
+        'content': izoh.isEmpty ? '📷 Rasm yuborildi'.tr : '📷 $izoh',
+        'localPhoto': photo.path,
+      });
       _isTyping = true;
     });
+    _textController.clear();
     _scrollToBottom();
 
     try {
-      final res = await ApiService().sendJobPhotoToAi(picked.path);
+      final res = await ApiService().sendJobPhotoToAi(photo.path);
       if (!mounted) return;
 
       final analysis = res['analysis'] as Map<String, dynamic>?;
@@ -358,21 +392,99 @@ class _ChatScreenState extends State<ChatScreen>
         }
       }
       if (url != null) buf.writeln('Rasm: $url');
-      buf.write(res['message'] ?? '');
+      // Foydalanuvchining o'z izohi eng muhim — oxirida turadi.
+      if (izoh.isNotEmpty) {
+        buf.writeln('Foydalanuvchi izohi: $izoh');
+      } else {
+        buf.write(res['message'] ?? '');
+      }
 
-      setState(() => _isTyping = false);
-      // Matnni AI ga yuboramiz — u savol berib e'lon tayyorlaydi
-      await _sendMessage(text: buf.toString().trim());
+      setState(() {
+        _isTyping = false;
+        _photoUploading = false;
+      });
+      // Matnni AI ga yuboramiz — u savol berib e'lon tayyorlaydi.
+      // `silent` — bu texnik matn chatda ko'rinmaydi, foydalanuvchi
+      // allaqachon o'z rasmini va izohini ko'rgan.
+      await _sendMessage(text: buf.toString().trim(), silent: true);
     } catch (e) {
       if (!mounted) return;
       setState(() {
         _isTyping = false;
+        _photoUploading = false;
         _chatHistory.add({
           'role': 'assistant',
           'content': 'Rasmni yuborib bo\'lmadi. Qaytadan urinib ko\'ring.'.tr,
         });
       });
     }
+  }
+
+  /// Yuborilishni kutayotgan rasm paneli.
+  ///
+  /// Ko'rinadi: kichik rasm, tushuntirish va bekor qilish tugmasi.
+  /// Foydalanuvchi shu paytda tagiga izoh yozishi mumkin.
+  Widget _pendingPhotoPreview(bool isDark) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        color: isDark ? Colors.black26 : Colors.grey.shade100,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: GlassTokens.glassBorder(context)),
+      ),
+      child: Row(
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(10),
+            child: Image.file(
+              File(_pendingPhoto!.path),
+              width: 56,
+              height: 56,
+              fit: BoxFit.cover,
+              // Rasm o'qilmasa panel buzilmasin.
+              errorBuilder: (_, _, _) => Container(
+                width: 56,
+                height: 56,
+                color: Colors.grey.shade300,
+                child: const Icon(Icons.broken_image_outlined, size: 22),
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Rasm tayyor'.tr,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    color: GlassTokens.primaryText(context),
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  'Muammoni yozing va yuboring'.tr,
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: GlassTokens.secondaryText(context),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          IconButton(
+            onPressed: _photoUploading ? null : _clearPendingPhoto,
+            icon: const Icon(Icons.close),
+            iconSize: 20,
+            tooltip: 'Bekor qilish'.tr,
+            color: GlassTokens.secondaryText(context),
+          ),
+        ],
+      ),
+    );
   }
 
   /// Kamera yoki galereya tanlash oynasi.
@@ -389,7 +501,7 @@ class _ChatScreenState extends State<ChatScreen>
               subtitle: Text('Muammoli joyni suratga oling'.tr),
               onTap: () {
                 Navigator.pop(ctx);
-                _sendJobPhoto(ImageSource.camera);
+                _pickJobPhoto(ImageSource.camera);
               },
             ),
             ListTile(
@@ -397,7 +509,7 @@ class _ChatScreenState extends State<ChatScreen>
               title: Text('Galereyadan tanlash'.tr),
               onTap: () {
                 Navigator.pop(ctx);
-                _sendJobPhoto(ImageSource.gallery);
+                _pickJobPhoto(ImageSource.gallery);
               },
             ),
           ],
@@ -406,15 +518,25 @@ class _ChatScreenState extends State<ChatScreen>
     );
   }
 
-  Future<void> _sendMessage({String? text, bool isVoice = false}) async {
+  /// [silent] — foydalanuvchi xabari chatda KO'RSATILMAYDI.
+  /// Rasm oqimida kerak: u yerda texnik matn (rasm URL'i, vision
+  /// tahlili) yuboriladi, foydalanuvchi esa o'z rasmini va izohini
+  /// allaqachon ko'rgan.
+  Future<void> _sendMessage({
+    String? text,
+    bool isVoice = false,
+    bool silent = false,
+  }) async {
     final messageText = text ?? _textController.text.trim();
     if (messageText.isEmpty) return;
 
     setState(() {
-      _chatHistory.add({
-        'role': 'user',
-        'content': isVoice ? '🎤 $messageText' : messageText,
-      });
+      if (!silent) {
+        _chatHistory.add({
+          'role': 'user',
+          'content': isVoice ? '🎤 $messageText' : messageText,
+        });
+      }
       _isTyping = true;
     });
     _textController.clear();
@@ -479,6 +601,7 @@ class _ChatScreenState extends State<ChatScreen>
                   isUser: message['role'] == 'user',
                   actions: (message['actions'] as List?)
                       ?.cast<Map<String, dynamic>>(),
+                  localPhoto: message['localPhoto'] as String?,
                 );
               },
             ),
@@ -493,6 +616,9 @@ class _ChatScreenState extends State<ChatScreen>
     required String content,
     required bool isUser,
     List<Map<String, dynamic>>? actions,
+    // Foydalanuvchi yuborgan rasm (telefondagi yo'l). Chatda ko'rinadi,
+    // shunda u nima yuborganini eslab qoladi.
+    String? localPhoto,
   }) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final actionButtons = isUser ? const <Widget>[] : _actionButtons(actions);
@@ -523,15 +649,33 @@ class _ChatScreenState extends State<ChatScreen>
                 color: isUser ? Colors.blue : GlassTokens.glassBorder(context),
               ),
             ),
-            child: Text(
-              content,
-              style: TextStyle(
-                color: isUser
-                    ? Colors.white
-                    : (isDark ? Colors.white : Colors.black87),
-                fontSize: 15,
-                height: 1.4,
-              ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (localPhoto != null) ...[
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: Image.file(
+                      File(localPhoto),
+                      width: 200,
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, _, _) => const SizedBox.shrink(),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                ],
+                Text(
+                  content,
+                  style: TextStyle(
+                    color: isUser
+                        ? Colors.white
+                        : (isDark ? Colors.white : Colors.black87),
+                    fontSize: 15,
+                    height: 1.4,
+                  ),
+                ),
+              ],
             ),
           ),
           if (actionButtons.isNotEmpty)
@@ -833,6 +977,9 @@ class _ChatScreenState extends State<ChatScreen>
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
+              // Tanlangan, hali yuborilmagan rasm. Foydalanuvchi tagiga
+              // izoh yozib, keyin yuborishi mumkin.
+              if (_pendingPhoto != null) _pendingPhotoPreview(isDark),
               Row(
                 children: [
                   // Rasm yuborish: "shu joyni tamirlash kerak" oqimi
@@ -868,7 +1015,14 @@ class _ChatScreenState extends State<ChatScreen>
                     minLines: 1,
                     textInputAction: TextInputAction.send,
                     onSubmitted: (_) {
-                      if (!isRecording) _sendMessage();
+                      if (isRecording) return;
+                      // Rasm kutayotgan bo'lsa yozilgan matn uning
+                      // izohi bo'ladi, alohida xabar emas.
+                      if (_pendingPhoto != null) {
+                        _sendPendingPhoto();
+                      } else {
+                        _sendMessage();
+                      }
                     },
                     readOnly: isRecording,
                     decoration: InputDecoration(
@@ -892,10 +1046,13 @@ class _ChatScreenState extends State<ChatScreen>
               const SizedBox(width: 12),
               GestureDetector(
                 onTap: () {
-                  if (_hasText && !isRecording) {
-                    if (!_isTyping) _sendMessage();
-                  } else if (isRecording) {
+                  if (isRecording) {
                     _stopRecordingAndSend();
+                  } else if (_pendingPhoto != null) {
+                    // Rasm kutyapti: matn bo'lsa u izoh sifatida ketadi
+                    if (!_isTyping) _sendPendingPhoto();
+                  } else if (_hasText) {
+                    if (!_isTyping) _sendMessage();
                   } else {
                     _startRecording();
                   }
@@ -915,7 +1072,7 @@ class _ChatScreenState extends State<ChatScreen>
                                     const Color(0xFFEF4444),
                                     const Color(0xFFDC2626),
                                   ]
-                                : _hasText
+                                : (_hasText || _pendingPhoto != null)
                                 ? [
                                     const Color(0xFF8B5CF6),
                                     const Color(0xFF3B82F6),
@@ -930,7 +1087,7 @@ class _ChatScreenState extends State<ChatScreen>
                             BoxShadow(
                               color: isRecording
                                   ? Colors.redAccent.withValues(alpha: 0.5)
-                                  : (_hasText
+                                  : ((_hasText || _pendingPhoto != null)
                                             ? const Color(0xFF3B82F6)
                                             : const Color(0xFF10B981))
                                         .withValues(alpha: 0.5),
@@ -943,7 +1100,9 @@ class _ChatScreenState extends State<ChatScreen>
                           isRecording
                               ? LucideIcons
                                     .square // Stop icon
-                              : (_hasText ? LucideIcons.send : LucideIcons.mic),
+                              : ((_hasText || _pendingPhoto != null)
+                                    ? LucideIcons.send
+                                    : LucideIcons.mic),
                           color: Colors.white,
                           size: 20,
                         ),
