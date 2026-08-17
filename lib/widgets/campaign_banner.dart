@@ -9,7 +9,11 @@ import '../services/api_service.dart';
 /// Doimiy reytingdan alohida: bu VAQT BILAN CHEGARALANGAN musobaqa.
 /// Faol aksiya bo'lmasa banner UMUMAN ko'rsatilmaydi (joy ham egallamaydi).
 class CampaignBanner extends StatefulWidget {
-  const CampaignBanner({super.key});
+  /// Tayyor aksiya berilsa tarmoqqa chiqilmaydi. Testda foydalanuvchi
+  /// ekranda AYNAN nima ko'rishini tekshirish uchun kerak.
+  final Campaign? initialCampaign;
+
+  const CampaignBanner({super.key, this.initialCampaign});
 
   @override
   State<CampaignBanner> createState() => _CampaignBannerState();
@@ -21,6 +25,12 @@ class _CampaignBannerState extends State<CampaignBanner> {
   @override
   void initState() {
     super.initState();
+    if (widget.initialCampaign != null) {
+      _campaign = widget.initialCampaign!.isRunning
+          ? widget.initialCampaign
+          : null;
+      return;
+    }
     _load();
   }
 
