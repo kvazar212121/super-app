@@ -12,7 +12,17 @@ class DmChatScreen extends StatefulWidget {
   final int peerId;
   final String peerName;
 
-  const DmChatScreen({super.key, required this.peerId, required this.peerName});
+  /// Qaysi ish e'loni bo'yicha yozishma. Berilsa yuborilgan xabarlar
+  /// shu e'longa bog'lanadi va suhbatdoshda "Bu e'lon bo'yicha"
+  /// ko'rsatkichi chiqadi.
+  final int? jobId;
+
+  const DmChatScreen({
+    super.key,
+    required this.peerId,
+    required this.peerName,
+    this.jobId,
+  });
 
   @override
   State<DmChatScreen> createState() => _DmChatScreenState();
@@ -24,6 +34,9 @@ class _DmChatScreenState extends State<DmChatScreen> {
   final ScrollController _scroll = ScrollController();
 
   List<Map<String, dynamic>> _messages = [];
+  /// Suhbatdoshning usta profili (bo'lsa): reyting, sharhlar soni.
+  /// Mijoz kim bilan gaplashayotganini bilishi kerak.
+  Map<String, dynamic>? _peerProvider;
   bool _loading = true;
   bool _sending = false;
   Timer? _pollTimer;
@@ -54,6 +67,9 @@ class _DmChatScreenState extends State<DmChatScreen> {
         final hadNew = msgs.length != _messages.length;
         setState(() {
           _messages = msgs;
+          _peerProvider = res['peer_provider'] == null
+              ? null
+              : Map<String, dynamic>.from(res['peer_provider'] as Map);
           _loading = false;
         });
         if (hadNew) _scrollToEnd();
@@ -85,7 +101,7 @@ class _DmChatScreenState extends State<DmChatScreen> {
     });
     _scrollToEnd();
     try {
-      await _api.sendDirectMessage(widget.peerId, text);
+      await _api.sendDirectMessage(widget.peerId, text, jobId: widget.jobId);
       await _load(silent: true);
     } catch (_) {
       if (mounted) {
@@ -105,6 +121,7 @@ class _DmChatScreenState extends State<DmChatScreen> {
       title: widget.peerName,
       body: Column(
         children: [
+          _providerHeader(),
           Expanded(
             child: _loading
                 ? const Center(child: CircularProgressIndicator())
@@ -167,6 +184,9 @@ class _DmChatScreenState extends State<DmChatScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
+            // "Bu e'lon bo'yicha" — mijozda bir vaqtda bir necha e'lon
+            // bo'lishi mumkin, qaysi biri haqida ekani ko'rinishi kerak
+            if (m['job'] != null) _jobTag(m['job'] as Map, textColor),
             Text(m['text'] as String? ?? '', style: TextStyle(color: textColor, fontSize: 15)),
             if (pending)
               Padding(
@@ -178,6 +198,79 @@ class _DmChatScreenState extends State<DmChatScreen> {
               ),
           ],
         ),
+      ),
+    );
+  }
+
+  /// Xabar qaysi e'lon bo'yicha kelgani.
+  Widget _jobTag(Map job, Color textColor) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: textColor.withValues(alpha: 0.15),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.assignment_outlined, size: 13, color: textColor),
+          const SizedBox(width: 5),
+          Flexible(
+            child: Text(
+              '${'Bu e\'lon bo\'yicha'.tr}: ${job['title'] ?? ''}',
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w600,
+                color: textColor,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Suhbatdosh usta bo'lsa — reytingi va sharhlar soni.
+  Widget _providerHeader() {
+    final p = _peerProvider;
+    if (p == null) return const SizedBox.shrink();
+    final rating = (p['rating'] as num?)?.toDouble() ?? 0.0;
+    final reviews = (p['review_count'] as int?) ?? 0;
+    return Container(
+      margin: const EdgeInsets.fromLTRB(12, 8, 12, 0),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      decoration: BoxDecoration(
+        color: GlassTokens.glassFill(context),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: GlassTokens.glassBorder(context)),
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.verified_user_outlined, size: 18),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              p['name'] as String? ?? '',
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(fontWeight: FontWeight.w600),
+            ),
+          ),
+          const Icon(Icons.star, size: 16, color: Color(0xFFFFC107)),
+          const SizedBox(width: 3),
+          Text(
+            rating > 0 ? rating.toStringAsFixed(1) : '—',
+            style: const TextStyle(fontWeight: FontWeight.w600),
+          ),
+          const SizedBox(width: 6),
+          Text(
+            '($reviews)',
+            style: TextStyle(color: GlassTokens.secondaryText(context)),
+          ),
+        ],
       ),
     );
   }

@@ -1955,11 +1955,19 @@ class ApiService {
 
   // ============ Foydalanuvchilararo xabarlar (SMS-uslub) ============
 
-  /// Abonentga xabar yuborish
-  Future<Map<String, dynamic>> sendDirectMessage(int recipientId, String text) async {
+  /// Abonentga xabar yuborish.
+  ///
+  /// [jobId] berilsa xabar ish e'loniga bog'lanadi va qabul
+  /// qiluvchida "Bu e'lon bo'yicha: <nomi>" deb ko'rinadi.
+  Future<Map<String, dynamic>> sendDirectMessage(
+    int recipientId,
+    String text, {
+    int? jobId,
+  }) async {
     final response = await _dio.post('/messages/send', data: {
       'recipient_id': recipientId,
       'text': text,
+      if (jobId != null) 'job_id': jobId,
     });
     return Map<String, dynamic>.from(response.data);
   }

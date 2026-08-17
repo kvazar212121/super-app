@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../models/job.dart';
 import '../services/api_service.dart';
+import 'calls/dm_chat_screen.dart';
 
 /// Usta paneli: ochiq e'lonlar lentasi + taklif berish.
 ///
@@ -328,6 +329,27 @@ class _JobsFeedScreenState extends State<JobsFeedScreen> {
                       onPressed: () => _offer(job),
                       child: const Text('Taklif berish'),
                     ),
+            ),
+            const SizedBox(height: 8),
+            // Mijoz bilan aniqlashtirish uchun: usta e'lon egasiga
+            // to'g'ridan-to'g'ri yoza oladi. Xabar shu e'longa
+            // bog'lanadi, mijozda "Bu e'lon bo'yicha" deb ko'rinadi.
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => DmChatScreen(
+                      peerId: job.userId,
+                      peerName: 'Mijoz',
+                      jobId: job.id,
+                    ),
+                  ),
+                ),
+                icon: const Icon(Icons.chat_bubble_outline, size: 18),
+                label: const Text('Mijozga yozish'),
+              ),
             ),
           ],
         ),

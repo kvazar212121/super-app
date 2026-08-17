@@ -126,6 +126,8 @@ class _JobOffersScreenState extends State<JobOffersScreen> {
         builder: (_) => DmChatScreen(
           peerId: peerId,
           peerName: offer.providerName ?? 'Usta',
+          // Xabar shu e'longa bog'lanadi
+          jobId: widget.job.id,
         ),
       ),
     );
