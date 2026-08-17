@@ -105,7 +105,10 @@ class AiService {
       Position? pos = await Geolocator.getLastKnownPosition();
       // Bo'lmasa — qisqa muddatli aniqlash (chat kutib qolmasligi uchun 4s limit)
       pos ??= await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.low,
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.low,
+          timeLimit: Duration(seconds: 8),
+        ),
         timeLimit: const Duration(seconds: 4),
       );
       // getCurrentPosition null qaytarmaydi (xatoda throw qiladi) — shuning uchun

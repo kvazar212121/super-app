@@ -9,6 +9,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../l10n/locale_controller.dart';
 import '../utils/geo_utils.dart';
+import '../config/map_config.dart';
 
 /// Xaritada ko'rsatiladigan bitta joy (provayder/xizmat).
 class MapPlace {
@@ -100,7 +101,10 @@ class _EnhancedServiceMapState extends State<EnhancedServiceMap>
         if (perm == LocationPermission.always ||
             perm == LocationPermission.whileInUse) {
           final p = await Geolocator.getCurrentPosition(
-            desiredAccuracy: LocationAccuracy.high,
+            locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.high,
+          timeLimit: Duration(seconds: 8),
+        ),
           ).timeout(const Duration(seconds: 8));
           pos = LatLng(p.latitude, p.longitude);
         }
@@ -192,10 +196,6 @@ class _EnhancedServiceMapState extends State<EnhancedServiceMap>
 
   @override
   Widget build(BuildContext context) {
-    // Har doim rangli (voyager) — dark rejimda ham xarita qop-qora chiqmaydi.
-    const tileUrl =
-        'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png';
-
     return Scaffold(
       appBar: AppBar(title: Text(widget.title), elevation: 0),
       body: Stack(
@@ -209,13 +209,7 @@ class _EnhancedServiceMapState extends State<EnhancedServiceMap>
               onTap: (_, _) => _clearRoute(),
             ),
             children: [
-              TileLayer(
-                urlTemplate: tileUrl,
-                subdomains: const ['a', 'b', 'c', 'd'],
-                userAgentPackageName: 'com.example.super_app',
-                fallbackUrl:
-                    'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-              ),
+              MapConfig.tileLayer(),
               // Marshrut chizig'i
               if (_route.length >= 2)
                 PolylineLayer(
@@ -245,6 +239,8 @@ class _EnhancedServiceMapState extends State<EnhancedServiceMap>
                   ],
                 ),
               MarkerLayer(markers: _buildMarkers()),
+              // Litsenziya talabi: xarita ma'lumoti manbasi.
+              MapConfig.attribution(bottomInset: 20),
             ],
           ),
           // Marshrut yuklanmoqda indikatori

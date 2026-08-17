@@ -6,6 +6,7 @@ import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:super_app/l10n/locale_controller.dart';
+import '../config/map_config.dart';
 
 /// Xaritadan manzil tanlash ekrani.
 /// Foydalanuvchi xaritani siljitib belgi qo'yadi,
@@ -129,7 +130,10 @@ class _MapAddressPickerScreenState extends State<MapAddressPickerScreen> {
         return;
       }
       final pos = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high,
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.high,
+          timeLimit: Duration(seconds: 8),
+        ),
       );
       final myPos = LatLng(pos.latitude, pos.longitude);
       _mapController.move(myPos, 16);
@@ -179,10 +183,9 @@ class _MapAddressPickerScreenState extends State<MapAddressPickerScreen> {
               },
             ),
             children: [
-              TileLayer(
-                urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                userAgentPackageName: 'uz.hubservis.app',
-              ),
+              MapConfig.tileLayer(),
+              // Litsenziya talabi: xarita ma'lumoti manbasi.
+              MapConfig.attribution(),
             ],
           ),
 

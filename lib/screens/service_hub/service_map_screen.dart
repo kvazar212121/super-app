@@ -13,6 +13,7 @@ import '../../utils/geo_utils.dart';
 import '../../widgets/hub/hub_filter_chips.dart';
 import '../../widgets/hub/provider_map_preview_card.dart';
 import 'service_catalog_screen.dart';
+import '../../config/map_config.dart';
 
 /// EKRAN 2 — to'liq ekranli xizmat xaritasi.
 ///
@@ -199,10 +200,6 @@ class _ServiceMapScreenState extends State<ServiceMapScreen>
 
   @override
   Widget build(BuildContext context) {
-    // Har doim rangli (voyager) — dark rejimda ham xarita qop-qora chiqmaydi.
-    const tileUrl =
-        'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png';
-
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
@@ -223,12 +220,7 @@ class _ServiceMapScreenState extends State<ServiceMapScreen>
               onTap: (_, _) => _clearSelection(),
             ),
             children: [
-              TileLayer(
-                urlTemplate: tileUrl,
-                subdomains: const ['a', 'b', 'c', 'd'],
-                userAgentPackageName: 'com.example.super_app',
-                fallbackUrl: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-              ),
+              MapConfig.tileLayer(),
               if (_route.length >= 2)
                 PolylineLayer(
                   polylines: [
@@ -256,6 +248,8 @@ class _ServiceMapScreenState extends State<ServiceMapScreen>
                   ],
                 ),
               MarkerLayer(markers: _buildMarkers()),
+              // Litsenziya talabi: xarita ma'lumoti manbasi.
+              MapConfig.attribution(bottomInset: 96),
             ],
           ),
 

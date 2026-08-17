@@ -6,6 +6,7 @@ import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:super_app/l10n/locale_controller.dart';
+import '../config/map_config.dart';
 
 class LocationPickerScreen extends StatefulWidget {
   final double initialLat;
@@ -124,7 +125,10 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
     ).showSnackBar(SnackBar(content: Text('Joylashuv aniqlanmoqda...'.tr)));
 
     final pos = await Geolocator.getCurrentPosition(
-      desiredAccuracy: LocationAccuracy.high,
+      locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.high,
+          timeLimit: Duration(seconds: 8),
+        ),
     );
     final newLatLng = LatLng(pos.latitude, pos.longitude);
     _mapController.move(newLatLng, 16);
@@ -155,10 +159,9 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
               },
             ),
             children: [
-              TileLayer(
-                urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                userAgentPackageName: 'com.example.super_app',
-              ),
+              MapConfig.tileLayer(),
+              // Litsenziya talabi: xarita ma'lumoti manbasi.
+              MapConfig.attribution(),
             ],
           ),
           // Center Marker

@@ -6,6 +6,7 @@ import 'dart:ui';
 import '../theme/glass_tokens.dart';
 import '../widgets/glass/glass_scaffold.dart';
 import 'package:super_app/l10n/locale_controller.dart';
+import '../config/map_config.dart';
 
 class PromotionMapScreen extends StatefulWidget {
   final String title;
@@ -58,10 +59,7 @@ class _PromotionMapScreenState extends State<PromotionMapScreen> {
         ),
       ),
       children: [
-        TileLayer(
-          urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-          userAgentPackageName: 'com.hubservis.app',
-        ),
+        MapConfig.tileLayer(),
         MarkerLayer(
           markers: _promoLocations.map((loc) {
             return Marker(
@@ -102,6 +100,8 @@ class _PromotionMapScreenState extends State<PromotionMapScreen> {
             );
           }).toList(),
         ),
+        // Litsenziya talabi: xarita ma'lumoti manbasi.
+        MapConfig.attribution(),
       ],
     );
   }

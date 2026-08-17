@@ -6,7 +6,12 @@ backend testi ham buni ushlamaydi. Shuning uchun haqiqiy javob
 kalitlarini Dart modeli kutayotgan kalitlar bilan solishtiramiz.
 """
 import asyncio, os, re, sys
-DB = os.environ["SUPERAPP_TEST_DB"]
+DB = os.environ.get("SUPERAPP_TEST_DB")
+if not DB:
+    # Boshqa integratsiya testlari bilan bir xil xulq: baza berilmasa
+    # test yiqilmaydi, o'tkazib yuboriladi.
+    print("SKIP: SUPERAPP_TEST_DB berilmagan (haqiqiy PostgreSQL kerak)")
+    raise SystemExit(0)
 
 PROJ = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(PROJ, "backend"))
