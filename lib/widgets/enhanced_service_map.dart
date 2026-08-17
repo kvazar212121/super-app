@@ -262,7 +262,9 @@ class _EnhancedServiceMapState extends State<EnhancedServiceMap>
           ),
 
           // Marshrut tayyor bo'lganda — "Boshlash" tugmasi.
-          if (_route.length >= 2)
+          // 3D vektor style kalitsiz ishlamaydi — tugmani ham
+          // ko'rsatmaymiz (bo'sh ekran ochilib qolmasin).
+          if (_route.length >= 2 && MapConfig.supports3D)
             Positioned(
               left: 16,
               right: 16,

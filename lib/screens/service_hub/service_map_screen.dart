@@ -305,7 +305,12 @@ class _ServiceMapScreenState extends State<ServiceMapScreen>
           //
           // `bottom` da tizim navigatsiya paneli hisobga olinadi: aks
           // holda tugma panel ostida qolib, yarmi ko'rinmaydi.
-          if (_selected != null && _route.length >= 2)
+          // 3D uchun vektor style kerak, u esa MapTiler kalitisiz
+          // ishlamaydi. Kalitsiz build'da tugma ko'rsatilmaydi —
+          // aks holda foydalanuvchi bo'sh ekran ochib qolardi.
+          if (_selected != null &&
+              _route.length >= 2 &&
+              MapConfig.supports3D)
             Positioned(
               left: 16,
               right: 96,

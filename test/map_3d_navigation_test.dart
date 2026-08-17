@@ -145,6 +145,31 @@ void main() {
       }
     });
 
+    test('Kalitsiz build\'da 3D tugmasi KO\'RSATILMAYDI', () {
+      // Vektor style kalitsiz ishlamaydi. Tugma baribir chiqsa,
+      // foydalanuvchi bo'sh (oq) ekran ochib qolardi.
+      for (final f in [
+        'lib/screens/service_hub/service_map_screen.dart',
+        'lib/widgets/enhanced_service_map.dart',
+      ]) {
+        final s = File(f).readAsStringSync();
+        expect(s, contains('MapConfig.supports3D'),
+            reason: '$f da kalit tekshirilmayapti');
+      }
+    });
+
+    test('Navigatsiya zoom\'i binolar ko\'rinadigan darajada', () {
+      // MapTiler "Building 3D" qatlami minzoom=15. Kamera undan
+      // pastda tursa binolar UMUMAN chiqmaydi va 3D bilinmaydi.
+      final s = File('lib/screens/navigation_3d_screen.dart')
+          .readAsStringSync();
+      final m = RegExp(r'initZoom:\s*([\d.]+)').firstMatch(s);
+      expect(m, isNotNull, reason: 'initZoom topilmadi');
+      final zoom = double.parse(m!.group(1)!);
+      expect(zoom, greaterThanOrEqualTo(15.0),
+          reason: 'zoom < 15 da 3D binolar ko\'rinmaydi');
+    });
+
     test('Pastdagi tugmalar tizim paneli ostida qolmaydi', () {
       // Foydalanuvchi skrinshotida filtr tugmasi yarim ko'rinardi.
       for (final f in [
