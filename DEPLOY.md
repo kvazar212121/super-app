@@ -154,18 +154,40 @@ Chiqarishdan oldin ikkalasini ham qaytarishni unutmang.
 # Flutter
 flutter analyze && flutter test
 
-# Backend (integratsiya testlari uchun haqiqiy PostgreSQL kerak;
-# bazasiz ular yiqilmaydi, SKIP bo'ladi)
-export SUPERAPP_TEST_DB="postgresql+asyncpg://postgres@127.0.0.1:5435/superapp_test"
+# Backend (bazasiz integratsiya testlari yiqilmaydi, SKIP bo'ladi)
 PYTHON=backend/.venv/bin/python bash tests/run.sh
 ```
 
-Hozirgi holat (2026-08-17): Flutter **159 test** o'tadi, `analyze` 0 error;
-`tests/` da **12 fayl**, bazasiz 12/12 o'tadi (integratsiya qismi SKIP).
+### Integratsiya testlari — SERVERDA, konteyner ichida
 
-> Serverga chiqarishdan oldin testlarni **baza bilan** bir marta
-> ishlating: SKIP bo'lgan fayllar aynan e'lon oqimi, hudud filtri va
-> chat kabi eng muhim qismlarni tekshiradi.
+Server hostida Python kutubxonalari yo'q, shuning uchun testlar backend
+image'i bilan ishlatiladi. Test bazasi **alohida** (`superapp_test`),
+ishchi bazaga tegilmaydi:
+
+```bash
+# Bir marta: test bazasini yaratish
+cd ~/super-app/backend
+docker compose exec -T db psql -U postgres -c "CREATE DATABASE superapp_test"
+
+# Testlar
+cd ~/super-app
+docker run --rm --network backend_default \
+  -v ~/super-app/tests:/work/tests:ro \
+  -v ~/super-app/backend:/work/backend:ro \
+  -e SUPERAPP_TEST_DB="postgresql+asyncpg://postgres:postgres@db:5432/superapp_test" \
+  -w /work backend-backend \
+  bash -c 'for t in tests/test_*.py; do echo "== $t"; python "$t" | tail -3; done'
+```
+
+> Testlar sxemani tozalab qayta quradi. `SUPERAPP_TEST_DB` ga ishchi
+> bazani (`superapp`) hech qachon ko'rsatmang.
+
+Hozirgi holat (2026-08-17, serverda amalda tekshirilgan): Flutter
+**163 test**, `analyze` 0 error; `tests/` da **13 fayl** — haqiqiy
+PostgreSQL bilan **10 tasi o'tadi**, 3 tasi shu muhitga aloqasiz (SKIP).
+
+> Bu qadamni tashlab ketmang: aynan shu tartib bugun ikkita haqiqiy
+> xatoni topdi, ular bazasiz ko'rinmasdi.
 
 ---
 
