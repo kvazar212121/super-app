@@ -243,6 +243,54 @@ async def main():
         })
         check("noto'g'ri tur rad etiladi", r.status_code == 422, f"{r.status_code}")
 
+        # Kelajakdagi sana. FinanceRecord — sodir bo'lgan fakt; kelajakdagi
+        # to'lov uchun alohida "Rejalashtirilgan to'lovlar" bo'limi bor.
+        # Kelajak sanali yozuv joriy oy statistikasiga kirmay "yo'qoladi".
+        r = await c.post("/api/v1/finance/", headers=h1, json={
+            "type": "expense", "amount": 5000, "category": "Kelajak",
+            "date": (datetime.now(timezone.utc) + timedelta(days=30)).isoformat(),
+        })
+        check("kelajakdagi sana rad etiladi", r.status_code == 422, f"{r.status_code}")
+
+        # Bugungi sana esa qabul qilinishi shart (chegara holati)
+        r = await c.post("/api/v1/finance/", headers=h1, json={
+            "type": "expense", "amount": 5000, "category": "Bugun",
+            "date": datetime.now(timezone.utc).isoformat(),
+        })
+        check("bugungi sana qabul qilinadi", r.status_code == 201, f"{r.status_code}")
+        today_rec_id = r.json().get("id") if r.status_code == 201 else None
+
+        # O'tgan sana ham qabul qilinadi (eski xarajatni keyin kiritish)
+        r = await c.post("/api/v1/finance/", headers=h1, json={
+            "type": "income", "amount": 7000, "category": "O'tgan",
+            "date": (datetime.now(timezone.utc) - timedelta(days=400)).isoformat(),
+        })
+        check("o'tgan sana qabul qilinadi", r.status_code == 201, f"{r.status_code}")
+
+        # Tahrirlashda ham kelajakka surib bo'lmaydi (PATCH teshigi)
+        if today_rec_id:
+            r = await c.patch(f"/api/v1/finance/{today_rec_id}", headers=h1, json={
+                "date": (datetime.now(timezone.utc) + timedelta(days=30)).isoformat(),
+            })
+            check("tahrirda kelajak sana rad etiladi", r.status_code == 422,
+                  f"{r.status_code}")
+
+        # Rejalashtirilgan to'lov: kelajak sana AYNAN shu yerda o'rinli
+        r = await c.post("/api/v1/finance/planned", headers=h1, json={
+            "title": "Ijara", "amount": 1500000, "category": "Uy",
+            "due_date": (datetime.now(timezone.utc) + timedelta(days=10)).isoformat(),
+        })
+        check("rejalashtirilgan to'lovda kelajak sana o'rinli",
+              r.status_code in (200, 201), f"{r.status_code}")
+
+        # Lekin manfiy summa u yerda ham mantiqsiz
+        r = await c.post("/api/v1/finance/planned", headers=h1, json={
+            "title": "Xato", "amount": -5000, "category": "Uy",
+            "due_date": (datetime.now(timezone.utc) + timedelta(days=10)).isoformat(),
+        })
+        check("rejalashtirilgan to'lovda manfiy summa rad etiladi",
+              r.status_code == 422, f"{r.status_code}")
+
         # Kelajakdagi sana
         r = await c.post("/api/v1/finance/", headers=h1, json={
             "type": "expense", "amount": 1000, "category": "Kelajak",
