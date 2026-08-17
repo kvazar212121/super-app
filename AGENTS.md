@@ -25,7 +25,7 @@ HubServis (`super_app`) — O'zbekiston uchun xizmatlar super-app'i.
 ## 3. Tekshiruv (ishni tugatgach MAJBURIY)
 
 ```bash
-flutter analyze && flutter test          # 159 test, 0 error bo'lishi kerak
+flutter analyze && flutter test          # 203 test, 0 error bo'lishi kerak
 PYTHON=backend/.venv/bin/python bash tests/run.sh
 ```
 
@@ -53,3 +53,18 @@ export SUPERAPP_TEST_DB="postgresql+asyncpg://postgres@127.0.0.1:5435/superapp_t
 - **Xarita:** tile manzilini hech qayerga qo'lda yozmang, faqat
   `lib/config/map_config.dart`. Buni test qo'riqlaydi.
 - Har mazmunli o'zgarishdan keyin commit qiling, izoh o'zbekcha.
+
+## 5. AI agent (`backend/app/services/ai_agent/`)
+
+37 ta tool bor. Yangi tool qo'shish = `tools_schema.py` ga sxema +
+mos modulga handler + `dispatcher.py` ga ulash. Sxema va handler soni
+MOS bo'lishi kerak, buni test tekshiradi.
+
+- **O'zgartiruvchi har amal `confirm` darvozasidan o'tadi**: avval
+  xulosa qaytariladi, foydalanuvchi tasdiqlagach bajariladi. AI xato
+  tushunsa, haqiqiy bronni buzib qo'ymasin.
+- **Har amal faqat so'rovchining o'z ma'lumotiga tegadi**
+  (`user_id` bo'yicha filtr majburiy). Buni test qo'riqlaydi.
+- LLM ba'zan buzuq JSON qaytaradi — `dispatcher._parse_args` uni
+  tiklaydi. Bu joyni soddalashtirmang, u haqiqiy 500 xatosini
+  tuzatgan.
