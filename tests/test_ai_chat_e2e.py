@@ -136,8 +136,8 @@ async def main():
                 matn="E'lon tayyor, tasdiqlaysizmi?")))
 
             r = await c.post("/api/v1/ai/chat", headers=h, json={
-                "message": "Kompyuterga sistema qilish kerak",
-                "history": [],
+                "messages": [{"role": "user",
+                              "content": "Kompyuterga sistema qilish kerak"}],
             })
             check("BUZUQ JSON da ham 500 EMAS (asosiy shikoyat)",
                   r.status_code == 200, f"status {r.status_code}: {r.text[:200]}")
@@ -167,8 +167,12 @@ async def main():
             navbat.append(_SoxtaJavob(_llm_javobi(matn="E'lon berildi!")))
 
             r = await c.post("/api/v1/ai/chat", headers=h, json={
-                "message": "ha",
-                "history": [],
+                "messages": [
+                    {"role": "user",
+                     "content": "Kompyuterga sistema qilish kerak"},
+                    {"role": "assistant", "content": "Tasdiqlaysizmi?"},
+                    {"role": "user", "content": "ha"},
+                ],
                 "lat": 41.3266, "lng": 69.2264,
             })
             check("'ha' deganda 500 EMAS (foydalanuvchi skrinshoti)",
@@ -206,8 +210,8 @@ async def main():
             h = {"Authorization": f"Bearer {r.json()['access_token']}"}
 
             navbat.append(_SoxtaJavob({"xato": "buzuq javob"}, status=500))
-            r = await c.post("/api/v1/ai/chat", headers=h,
-                             json={"message": "salom", "history": []})
+            r = await c.post("/api/v1/ai/chat", headers=h, json={
+                "messages": [{"role": "user", "content": "salom"}]})
             check("LLM yiqilsa ham 500 EMAS (zaxira javob)",
                   r.status_code == 200,
                   f"status {r.status_code}: {r.text[:200]}")
