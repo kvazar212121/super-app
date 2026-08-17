@@ -125,6 +125,97 @@ async def main():
                   r.json().get("assigned_provider_id") == pid,
                   f"{r.json().get('assigned_provider_id')}")
 
+        # ── Dart'da bor, lekin sinalmagan 4 metod ──────────────────────
+        # api_service.dart: completeJob, cancelJob, withdrawJobOffer,
+        # uploadJobPhoto. Ular ham JobPost/JobOffer qaytaradi, ya'ni
+        # javob shakli buzilsa ekranda jimgina null chiqadi.
+
+        r = await c.post(f"/api/v1/jobs/{jid}/complete", headers=h)
+        check("completeJob ishlaydi", r.status_code == 200,
+              f"{r.status_code} {r.text[:150]}")
+        if r.status_code == 200:
+            miss = dart_keys("JobPost") - set(r.json().keys())
+            check("completeJob javobi Dart modeliga mos",
+                  not miss, f"yetishmaydi: {sorted(miss)}")
+            check("yakunlangach status 'completed'",
+                  r.json().get("status") == "completed",
+                  f"{r.json().get('status')}")
+
+        # withdrawJobOffer uchun yangi e'lon + taklif
+        r = await c.post("/api/v1/jobs", headers=h, json={
+            "category_id": cid, "title": "Lampa almashtirish",
+            "description": "Yotoqxonada lampa yonmayapti",
+            "address": "Toshkent, Yunusobod 12",
+        })
+        jid2 = r.json().get("id") if r.status_code == 201 else None
+        check("ikkinchi e'lon yaratildi", jid2 is not None, f"{r.status_code}")
+
+        if jid2:
+            r = await c.post(f"/api/v1/jobs/{jid2}/offers", headers=ph_, json={
+                "provider_id": pid, "price": 50000,
+            })
+            oid2 = r.json().get("id") if r.status_code == 201 else None
+            check("ikkinchi taklif berildi", oid2 is not None, f"{r.status_code}")
+
+            # Taklif berilgach sanoq 1 bo'lishi kerak
+            r = await c.get("/api/v1/jobs/my", headers=h)
+            j2 = [x for x in r.json() if x["id"] == jid2]
+            check("taklif berilgach offers_count=1",
+                  j2 and j2[0]["offers_count"] == 1,
+                  f"{j2[0]['offers_count'] if j2 else '?'}")
+
+            if oid2:
+                r = await c.delete(f"/api/v1/jobs/offers/{oid2}", headers=ph_)
+                check("withdrawJobOffer ishlaydi", r.status_code == 200,
+                      f"{r.status_code} {r.text[:150]}")
+                if r.status_code == 200:
+                    miss = dart_keys("JobOffer") - set(r.json().keys())
+                    check("withdrawJobOffer javobi Dart modeliga mos",
+                          not miss, f"yetishmaydi: {sorted(miss)}")
+
+                # Qaytarib olingach mijoz uni KO'RMASLIGI kerak
+                r = await c.get(f"/api/v1/jobs/{jid2}/offers", headers=h)
+                check("qaytarib olingan taklif ro'yxatdan chiqadi",
+                      r.status_code == 200 and len(r.json()) == 0,
+                      f"{r.status_code} {len(r.json()) if r.status_code==200 else '?'}")
+
+                # Sanoq ham kamayishi kerak, aks holda mijoz "1 taklif"
+                # ko'rib ochganda bo'sh ro'yxat topadi
+                r = await c.get("/api/v1/jobs/my", headers=h)
+                j2 = [x for x in r.json() if x["id"] == jid2]
+                check("qaytarib olingach offers_count=0",
+                      j2 and j2[0]["offers_count"] == 0,
+                      f"{j2[0]['offers_count'] if j2 else '?'}")
+
+            r = await c.delete(f"/api/v1/jobs/{jid2}", headers=h)
+            check("cancelJob ishlaydi", r.status_code == 200,
+                  f"{r.status_code} {r.text[:150]}")
+            if r.status_code == 200:
+                miss = dart_keys("JobPost") - set(r.json().keys())
+                check("cancelJob javobi Dart modeliga mos",
+                      not miss, f"yetishmaydi: {sorted(miss)}")
+
+            r = await c.get(f"/api/v1/jobs/feed?category_id={cid}", headers=ph_)
+            check("bekor qilingan e'lon lentadan yo'qoladi",
+                  r.status_code == 200
+                  and all(x["id"] != jid2 for x in r.json()),
+                  "hali ko'rinyapti")
+
+        # uploadJobPhoto — Dart response.data['url'] ni o'qiydi
+        import io
+        from PIL import Image
+        buf = io.BytesIO()
+        Image.new("RGB", (64, 48), (200, 120, 60)).save(buf, "PNG")
+        buf.seek(0)
+        r = await c.post("/api/v1/jobs/photo", headers=h,
+                         files={"file": ("test.png", buf, "image/png")})
+        check("uploadJobPhoto ishlaydi", r.status_code == 200,
+              f"{r.status_code} {r.text[:150]}")
+        if r.status_code == 200:
+            check("uploadJobPhoto 'url' kalitini qaytaradi (Dart shuni o'qiydi)",
+                  isinstance(r.json().get("url"), str) and r.json()["url"],
+                  f"{r.json()}")
+
     print()
     for x in ok: print("  ✓", x)
     if fail:

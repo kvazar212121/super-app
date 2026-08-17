@@ -84,7 +84,13 @@ class JobService:
         """Mijozning o'z e'lonlari + har biriga nechta taklif kelgani."""
         rows = (await db.execute(
             select(JobPost, func.count(JobOffer.id))
-            .outerjoin(JobOffer, JobOffer.job_id == JobPost.id)
+            # Qaytarib olingan taklif SANALMAYDI: aks holda mijoz
+            # "3 taklif" ko'rib, ochganda 2 tasini topadi.
+            .outerjoin(
+                JobOffer,
+                (JobOffer.job_id == JobPost.id)
+                & (JobOffer.status != OfferStatus.withdrawn),
+            )
             .where(JobPost.user_id == user_id)
             .group_by(JobPost.id)
             .order_by(JobPost.created_at.desc())
@@ -101,7 +107,12 @@ class JobService:
         now = _now()
         q = (
             select(JobPost, func.count(JobOffer.id))
-            .outerjoin(JobOffer, JobOffer.job_id == JobPost.id)
+            # Usta lentasida ham haqiqiy raqib soni ko'rinsin
+            .outerjoin(
+                JobOffer,
+                (JobOffer.job_id == JobPost.id)
+                & (JobOffer.status != OfferStatus.withdrawn),
+            )
             .where(JobPost.status == JobStatus.open)
             .where((JobPost.expires_at.is_(None)) | (JobPost.expires_at >= now))
             .group_by(JobPost.id)
@@ -247,10 +258,16 @@ class JobService:
         if job.user_id != user_id:
             raise HTTPException(status_code=403, detail="Bu e'lon sizniki emas")
 
+        # Usta qaytarib olgan taklif mijozga KO'RSATILMAYDI: aks holda
+        # mijoz voz kechilgan taklifni tanlashga urinadi va 400 oladi
+        # ("Taklif qaytarib olingan"), ya'ni ishonchsiz his qiladi.
         rows = (await db.execute(
             select(JobOffer, Provider)
             .join(Provider, Provider.id == JobOffer.provider_id)
-            .where(JobOffer.job_id == job_id)
+            .where(
+                JobOffer.job_id == job_id,
+                JobOffer.status != OfferStatus.withdrawn,
+            )
             .order_by(JobOffer.created_at.asc())
         )).all()
         return [offer.to_dict(provider=p) for offer, p in rows]
