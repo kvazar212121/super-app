@@ -95,6 +95,15 @@ async def main():
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as c:
 
+        async def make_user(phone, name):
+            """Qo'shimcha mijoz yaratadi. Register endpointi OTP talab
+            qilishi mumkin, shuning uchun to'g'ridan-to'g'ri bazaga."""
+            async with async_session() as db:
+                db.add(User(name=name, surname="Test", phone=phone,
+                            hashed_password=hash_password("parol123")))
+                await db.commit()
+            return await login(phone, "parol123")
+
         async def login(phone, password):
             r = await c.post("/api/v1/auth/login",
                              json={"phone": phone, "password": password})
@@ -266,6 +275,84 @@ async def main():
         check("admin ro'yxatida vote_count=2",
               cur and cur[0].get("vote_count") == 2,
               f"{cur[0] if cur else 'yo`q'}")
+
+        # ── TALAB: "sovrinlar bo'ladi" — sovrin matni saqlanib, mijozga
+        # ko'rinadigan ochiq endpointda ham qaytishi kerak, aks holda
+        # foydalanuvchi nima uchun ovoz berayotganini bilmaydi ──────────
+        r = await c.get("/api/v1/campaigns/active")
+        cur_pub = r.json() if r.status_code == 200 else None
+        check("ochiq /active aynan shu faol aksiyani qaytaradi",
+              isinstance(cur_pub, dict) and cur_pub.get("id") == cid,
+              f"{str(cur_pub)[:150]}")
+        check("ochiq javobda sovrin matni ko'rinadi",
+              isinstance(cur_pub, dict)
+              and cur_pub.get("prize") == "1-o'rin: 5 000 000 so'm",
+              f"{cur_pub.get('prize') if isinstance(cur_pub, dict) else cur_pub}")
+        check("ochiq javobda muddat (ends_at) ko'rinadi",
+              isinstance(cur_pub, dict) and cur_pub.get("ends_at"),
+              "ends_at yo'q")
+
+        # ── TALAB: "eng ko'p ovoz to'plagan g'olib bo'ladi" ────────────
+        # Teng ovozda tartib BARQAROR bo'lishi shart: pul sovrinli
+        # musobaqada har so'rovda g'olib almashsa nizo kelib chiqadi.
+        # p1 da 2 ovoz bor; p2 ga 2 ovoz beramiz (yangi 2 mijoz).
+        tie_hs = []
+        for i, phone in enumerate(["+998911112201", "+998911112202"]):
+            tie_hs.append(await make_user(phone, f"Teng {i}"))
+        for h in tie_hs:
+            r = await c.post(f"/api/v1/campaigns/{cid}/vote", headers=h,
+                             json={"provider_id": ids["p2"]})
+            check(f"teng-ovoz uchun ovoz berildi", r.status_code == 201,
+                  f"{r.status_code} {r.text[:150]}")
+
+        boards = []
+        for _ in range(3):
+            r = await c.get(f"/api/v1/campaigns/{cid}/leaderboard")
+            boards.append([(x["id"], x["votes"]) for x in r.json()])
+        check("teng ovozda ikkala provayder 2 tadan",
+              boards[0] and sorted(v for _, v in boards[0]) == [2, 2],
+              f"{boards[0]}")
+        check("teng ovozda tartib barqaror (g'olib almashmaydi)",
+              boards[0] == boards[1] == boards[2],
+              f"{boards}")
+        check("teng ovozda oldin ro'yxatdan o'tgan (kichik id) yuqorida",
+              boards[0] and boards[0][0][0] == min(ids["p1"], ids["p2"]),
+              f"{boards[0]}")
+
+        # ── Ovoz sanog'i haqiqiy: uchinchi provayderga 1 ovoz ──────────
+        h3 = await make_user("+998911112203", "Uch")
+        r = await c.post(f"/api/v1/campaigns/{cid}/vote", headers=h3,
+                         json={"provider_id": ids["p1"]})
+        r = await c.get(f"/api/v1/campaigns/{cid}/leaderboard")
+        top = r.json()[0] if r.status_code == 200 and r.json() else {}
+        check("ko'proq ovoz olgan 1-o'ringa chiqadi",
+              top.get("id") == ids["p1"] and top.get("votes") == 3,
+              f"{top.get('id')}/{top.get('votes')}")
+
+        # ── TALAB: "bir kishi bitta ovoz" — PARALLEL so'rovlarda ham ───
+        # 409 tekshiruvi ketma-ket so'rovni sinaydi; haqiqiy hujum esa
+        # bir vaqtda yuboriladi. UNIQUE(campaign_id, user_id) cheklovi
+        # shu holatni ushlashi kerak (aks holda pul sovrini o'g'irlanadi).
+        race_h = await make_user("+998911112204", "Poyga")
+        results = await asyncio.gather(*[
+            c.post(f"/api/v1/campaigns/{cid}/vote", headers=race_h,
+                   json={"provider_id": ids["p1"]})
+            for _ in range(5)
+        ], return_exceptions=True)
+        codes = [getattr(x, "status_code", type(x).__name__) for x in results]
+        check("parallel 5 ta ovozdan faqat BITTASI o'tadi",
+              codes.count(201) == 1, f"{codes}")
+        check("parallel qolganlari 500 emas (toza xato)",
+              all(x == 201 or x == 409 for x in codes), f"{codes}")
+
+        # Admin ro'yxatidagi vote_count yangi ovozlar bilan yangilanadimi:
+        # yuqorida 2 edi, keyin 4 ta ovoz qo'shildi (p2 ga 2, p1 ga 2).
+        r = await c.get("/api/v1/admin/campaigns", headers=admin_h)
+        rows2 = r.json() if r.status_code == 200 else []
+        cur2 = [x for x in rows2 if x["id"] == cid]
+        check("admin vote_count yangi ovozlarni hisobga oladi (6)",
+              cur2 and cur2[0].get("vote_count") == 6,
+              f"{cur2[0].get('vote_count') if cur2 else 'yo`q'}")
 
         # ── DOIMIY reyting o'zgarmaganini tasdiqlash ──────────────────
         r = await c.get(f"/api/v1/providers/{ids['p1']}")
