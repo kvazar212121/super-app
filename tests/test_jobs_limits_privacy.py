@@ -40,11 +40,19 @@ ROOT = os.path.dirname(BACKEND)
 # Ustaning haqiqiy raqami — javobda uchramasligi kerak
 MASTER_PHONE = "+998911112233"
 
-ok, fail = [], []
+ok, fail, skipped = [], [], []
 
 
 def check(name, cond, detail=""):
     (ok if cond else fail).append(f"{name}{'' if cond else ': ' + detail}")
+
+
+def _read_lib(rel):
+    """Flutter faylini o'qiydi. Yo'q bo'lsa None (konteyner muhiti)."""
+    path = os.path.join(ROOT, rel)
+    if not os.path.exists(path):
+        return None
+    return open(path).read()
 
 
 # ── 1-qism: bazasiz ──────────────────────────────────────────────────
@@ -66,17 +74,22 @@ def static_checks():
           "provider_owner_user_id" in OfferOut.model_fields,
           "chatni ochish uchun kerak")
 
-    dart = open(os.path.join(ROOT, "lib/models/job.dart")).read()
-    check("Flutter modeli ham raqamni o'qimaydi",
-          "provider_phone" not in dart and "providerPhone" not in dart,
-          "Dart modelida qolgan")
+    # Flutter tomoni. Backend konteynerida `lib/` yo'q, shuning uchun
+    # fayl topilmasa TEKSHIRUV O'TKAZIB YUBORILADI (jimgina yiqilmaydi).
+    dart = _read_lib("lib/models/job.dart")
+    if dart is None:
+        skipped.append("Flutter tekshiruvlari (lib/ ulanmagan)")
+    else:
+        check("Flutter modeli ham raqamni o'qimaydi",
+              "provider_phone" not in dart and "providerPhone" not in dart,
+              "Dart modelida qolgan")
 
-    feed = open(os.path.join(ROOT, "lib/screens/jobs_feed_screen.dart")).read()
-    check("usta e'lon kartasida RASMNI ko'radi",
-          "job.photos" in feed and "Image.network" in feed,
-          "usta ish hajmini rasmsiz baholay olmaydi")
-    check("rasm yuklanmasa karta buzilmaydi",
-          "errorBuilder" in feed, "errorBuilder yo'q")
+        feed = _read_lib("lib/screens/jobs_feed_screen.dart") or ""
+        check("usta e'lon kartasida RASMNI ko'radi",
+              "job.photos" in feed and "Image.network" in feed,
+              "usta ish hajmini rasmsiz baholay olmaydi")
+        check("rasm yuklanmasa karta buzilmaydi",
+              "errorBuilder" in feed, "errorBuilder yo'q")
 
     create_src = inspect.getsource(jobs_api.create_job)
     check("oddiy POST /jobs chegarani tekshiradi",
@@ -235,6 +248,8 @@ def main():
     print()
     for x in ok:
         print("  ✓", x)
+    for x in skipped:
+        print("  ~ o'tkazildi:", x)
     if fail:
         print(f"\nYIQILDI ({len(fail)}):")
         for x in fail:
