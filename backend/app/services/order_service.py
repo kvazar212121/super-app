@@ -284,7 +284,11 @@ class OrderService:
         now = datetime.now(timezone.utc).replace(tzinfo=None)
 
         # 1. 2 soat o'tgan bo'lsa eslatish (faqat in_progress yoki confirmed)
-        q_remind = select(Order).where(
+        # `order.provider` lazy bog'lanish: uni OLDINDAN yuklamasak, async
+        # scheduler kontekstida o'qishga urinish MissingGreenlet xatosini
+        # beradi ("greenlet_spawn has not been called") va butun tekshiruv
+        # to'xtaydi -- ya'ni buyurtmalar avtomatik yakunlanmay qoladi.
+        q_remind = select(Order).options(selectinload(Order.provider)).where(
             Order.status.in_([OrderStatus.confirmed, OrderStatus.in_progress]),
             Order.date <= now - timedelta(hours=2)
         )
