@@ -53,6 +53,10 @@ class JobPost {
   final JobStatus status;
   final int? assignedProviderId;
   final int offersCount;
+
+  /// E'lon ustadan qancha uzoqda (km). Faqat usta lentasida keladi
+  /// va ikkala tomonda koordinata bo'lgandagina hisoblanadi.
+  final double? distanceKm;
   final DateTime? createdAt;
 
   const JobPost({
@@ -69,6 +73,7 @@ class JobPost {
     this.expiresAt,
     this.assignedProviderId,
     this.offersCount = 0,
+    this.distanceKm,
     this.createdAt,
   });
 
@@ -92,6 +97,7 @@ class JobPost {
         status: jobStatusFrom(json['status'] as String?),
         assignedProviderId: json['assigned_provider_id'] as int?,
         offersCount: (json['offers_count'] as int?) ?? 0,
+        distanceKm: (json['distance_km'] as num?)?.toDouble(),
         createdAt: json['created_at'] != null
             ? DateTime.tryParse(json['created_at'] as String)
             : null,

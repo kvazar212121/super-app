@@ -42,6 +42,9 @@ class JobOut(BaseModel):
     completed_at: Optional[datetime] = None
     created_at: Optional[datetime] = None
     offers_count: Optional[int] = None
+    # Usta lentasida: e'lon undan qancha uzoqda (km). Faqat ikkala
+    # tomonda koordinata bo'lganda hisoblanadi.
+    distance_km: Optional[float] = None
 
 
 class OfferCreate(BaseModel):

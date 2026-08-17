@@ -2136,10 +2136,18 @@ class ApiService {
   }
 
   /// Ustalar ko'radigan ochiq e'lonlar.
-  Future<List<dynamic>> getJobsFeed({int? categoryId}) async {
+  /// Ustalar ko'radigan e'lonlar.
+  ///
+  /// [providerId] berilsa e'lonlar HUDUD bo'yicha filtrlanadi:
+  /// Buxorodagi usta Toshkentdagi e'lonni ko'rmaydi. Javobda
+  /// `distance_km` ham keladi.
+  Future<List<dynamic>> getJobsFeed({int? categoryId, int? providerId}) async {
+    final params = <String, dynamic>{};
+    if (categoryId != null) params['category_id'] = categoryId;
+    if (providerId != null) params['provider_id'] = providerId;
     final response = await _dio.get(
       '/jobs/feed',
-      queryParameters: categoryId != null ? {'category_id': categoryId} : null,
+      queryParameters: params.isEmpty ? null : params,
     );
     return response.data;
   }

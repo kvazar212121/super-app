@@ -69,12 +69,34 @@ async def my_jobs(
 @router.get("/feed", response_model=list[JobOut])
 async def jobs_feed(
     category_id: int | None = Query(None, description="Soha bo'yicha filtr"),
+    provider_id: int | None = Query(
+        None,
+        description=(
+            "Usta provayderi. Berilsa e'lonlar HUDUD bo'yicha "
+            "filtrlanadi — boshqa shahardagi e'lon ko'rinmaydi."
+        ),
+    ),
     limit: int = Query(50, ge=1, le=200),
     _user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    """Ustalar ko'radigan ochiq e'lonlar."""
-    return await JobService.list_for_providers(db, category_id, limit)
+    """Ustalar ko'radigan ochiq e'lonlar.
+
+    `provider_id` berilsa faqat SHU HUDUDDAGI e'lonlar qaytadi:
+    Buxorodagi usta Toshkentdagi e'lonni ko'rib, bekorga taklif
+    bermasligi uchun.
+    """
+    jobs = await JobService.list_for_providers(db, category_id, limit)
+    if provider_id is None:
+        return jobs
+
+    from app.models.provider import Provider
+    from app.services.ai_job.geo import filter_jobs_for_provider
+
+    provider = await db.get(Provider, provider_id)
+    if provider is None:
+        return jobs
+    return filter_jobs_for_provider(jobs, provider)
 
 
 @router.get("/offers/my", response_model=list[MyOfferOut])

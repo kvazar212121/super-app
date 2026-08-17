@@ -44,7 +44,11 @@ class _JobsFeedScreenState extends State<JobsFeedScreen> {
       _error = null;
     });
     try {
-      final raw = await _api.getJobsFeed(categoryId: widget.categoryId);
+      final raw = await _api.getJobsFeed(
+        categoryId: widget.categoryId,
+        // Hudud filtri: boshqa shahardagi e'lon ko'rinmasin
+        providerId: widget.providerId,
+      );
       // Qaysi e'longa allaqachon taklif berganimni bilish uchun
       Set<int> mine = {};
       try {
@@ -261,6 +265,24 @@ class _JobsFeedScreenState extends State<JobsFeedScreen> {
                   child: Text(job.address,
                       maxLines: 1, overflow: TextOverflow.ellipsis),
                 ),
+                // Masofa — usta kelish-kelmaslikni shu bo'yicha hal qiladi
+                if (job.distanceKm != null)
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 8, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.primary.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Text(
+                      '${job.distanceKm!.toStringAsFixed(1)} km',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: theme.colorScheme.primary,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
               ],
             ),
             const SizedBox(height: 6),
