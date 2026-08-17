@@ -166,10 +166,37 @@ async def ai_chat(
 
     except (httpx.TimeoutException, httpx.HTTPError) as e:
         logger.error(f"Groq API communication error ({type(e).__name__}): {e}. Falling back to local parse.")
-        return await fallback_local_parse(user_msg_clean, current_user.id, db)
+        return await _safe_fallback(user_msg_clean, current_user.id, db)
     except Exception as e:
         logger.error(f"Unexpected error in ai_chat: {e}. Falling back to local parse.")
-        return await fallback_local_parse(user_msg_clean, current_user.id, db)
+        return await _safe_fallback(user_msg_clean, current_user.id, db)
+
+
+async def _safe_fallback(user_msg: str, user_id: int, db: AsyncSession) -> ChatResponse:
+    """Zaxira javob. HECH QACHON 500 bermaydi.
+
+    Nega kerak: asosiy oqim yiqilganda sessiya allaqachon rollback
+    qilingan bo'lishi mumkin. Ilgari fallback o'sha sessiyada ishlashga
+    urinardi va MissingGreenlet bilan yiqilardi — foydalanuvchi
+    chatda xom Dio xatosini ("status code of 500") ko'rardi.
+
+    Endi fallback ham yiqilsa, tushunarli o'zbekcha javob qaytadi.
+    """
+    try:
+        await db.rollback()
+    except Exception:
+        pass
+    try:
+        return await fallback_local_parse(user_msg, user_id, db)
+    except Exception as exc:
+        logger.error(f"Fallback ham yiqildi: {type(exc).__name__}: {exc}")
+        return ChatResponse(
+            reply=(
+                "Kechirasiz, so'rovni bajara olmadim 😔\n"
+                "Iltimos qaytadan yozing yoki biroz keyinroq urinib ko'ring."
+            ),
+            actions=[],
+        )
 
 
 @router.post("/job-photo")

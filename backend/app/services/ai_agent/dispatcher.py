@@ -5,6 +5,7 @@ Yangi tool qo'shish = tools_schema.py'ga sxema + mos modulга handler.
 """
 import json
 import logging
+import re
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -15,10 +16,68 @@ from .manage_tools import HANDLERS as _manage
 from .info_tools import HANDLERS as _info
 from .nav_tools import HANDLERS as _nav
 from .job_tools import HANDLERS as _job
+from .booking_tools import HANDLERS as _booking
 
 logger = logging.getLogger(__name__)
 
-HANDLERS = {**_personal, **_provider, **_read, **_manage, **_info, **_nav, **_job}
+HANDLERS = {**_personal, **_provider, **_read, **_manage, **_info,
+            **_nav, **_job, **_booking}
+
+
+def _parse_args(raw) -> dict:
+    """Model bergan argumentlarni lug'atga aylantiradi.
+
+    Nega alohida: LLM ba'zan BUZUQ JSON qaytaradi — ayniqsa uzun matnli
+    maydonlarda (tavsif ichidagi qo'shtirnoq, yakunlanmagan qavs).
+    Ilgari bu `json.loads` ni yiqitardi va butun tool chaqiruvi
+    "Expecting ',' delimiter" xatosi bilan barbod bo'lardi. Foydalanuvchi
+    tomondan bu "e'lon berilmadi" bo'lib ko'rinardi.
+
+    Shuning uchun bir necha bosqichli tiklash qilinadi.
+    """
+    if isinstance(raw, dict):
+        return raw
+    if raw is None or raw == "":
+        return {}
+    text = str(raw)
+    try:
+        parsed = json.loads(text)
+        return parsed if isinstance(parsed, dict) else {"value": parsed}
+    except json.JSONDecodeError:
+        pass
+
+    # 1) Ba'zan JSON ikki marta kodlangan ("{\"a\": 1}")
+    try:
+        once = json.loads(json.dumps(text))
+        parsed = json.loads(once)
+        if isinstance(parsed, dict):
+            return parsed
+    except Exception:
+        pass
+
+    # 2) Matn oxiri kesilgan bo'lsa: oxirgi to'liq } gacha qirqamiz
+    end = text.rfind("}")
+    if end > 0:
+        try:
+            parsed = json.loads(text[: end + 1])
+            if isinstance(parsed, dict):
+                return parsed
+        except Exception:
+            pass
+
+    # 3) Oxirgi chora: "kalit": "qiymat" juftliklarini qo'lda yig'amiz.
+    #    To'liq bo'lmasa ham, bor ma'lumot yo'qolmaydi — handler
+    #    yetishmaganini o'zi so'raydi.
+    out: dict = {}
+    for m in re.finditer(r'"(\w+)"\s*:\s*"((?:[^"\\]|\\.)*)"', text):
+        out[m.group(1)] = m.group(2).replace('\\"', '"')
+    for m in re.finditer(r'"(\w+)"\s*:\s*(-?\d+(?:\.\d+)?)', text):
+        out.setdefault(m.group(1), float(m.group(2)))
+    if out:
+        logger.warning("Buzuq JSON qisman tiklandi: %s", list(out))
+        return out
+
+    raise ValueError("Argumentlarni o'qib bo'lmadi")
 
 
 async def handle_tool_call(
@@ -34,7 +93,7 @@ async def handle_tool_call(
     """
     try:
         func_name = tool_call["function"]["name"]
-        args = json.loads(tool_call["function"]["arguments"])
+        args = _parse_args(tool_call["function"]["arguments"])
 
         handler = HANDLERS.get(func_name)
         if handler is None:

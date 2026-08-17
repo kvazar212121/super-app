@@ -418,5 +418,97 @@ TOOLS = [
                 "lang": {"type": "string"}
             }}
         }
+    },
+    # ── BRON BOSHQARUVI (agentning "qo'li") ──────────────────────────
+    {
+        "type": "function",
+        "function": {
+            "name": "next_booking",
+            "description": (
+                "Foydalanuvchining ENG YAQIN kelayotgan broni. "
+                "«Keyingi bronim qachon?», «Ertaga nima bor?», "
+                "«Sartaroshga qachon boraman?» kabi savollarda ishlating."
+            ),
+            "parameters": {"type": "object", "properties": {}}
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "get_booking_details",
+            "description": (
+                "Bitta bronning TO'LIQ ma'lumoti: usta, vaqt, manzil, "
+                "narx, holat. Avval list_orders yoki next_booking bilan "
+                "order_id ni toping."
+            ),
+            "parameters": {"type": "object", "properties": {
+                "order_id": {"type": "integer", "description": "Buyurtma raqami"}
+            }, "required": ["order_id"]}
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "check_availability",
+            "description": (
+                "Ustaning ma'lum kundagi BO'SH vaqtlari. Bronni "
+                "ko'chirishdan yoki yangi bron qilishdan OLDIN shuni "
+                "chaqiring — aks holda band vaqtni taklif qilib qo'yasiz."
+            ),
+            "parameters": {"type": "object", "properties": {
+                "provider_id": {"type": "integer", "description": "Usta ID si"},
+                "date": {"type": "string", "description": "Kun, YYYY-MM-DD (bo'sh bo'lsa bugun)"}
+            }, "required": ["provider_id"]}
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "reschedule_booking",
+            "description": (
+                "Mavjud bron VAQTINI o'zgartirish (ko'chirish). "
+                "IKKI QADAMLI: avval confirm=false — tool eski va yangi "
+                "vaqtni qaytaradi; foydalanuvchiga ko'rsatib tasdiq "
+                "so'rang; u 'ha' degandagina confirm=true bilan qayta "
+                "chaqiring. Yangi vaqt band bo'lsa tool bo'sh vaqtlarni "
+                "aytadi — o'shalardan tanlashni taklif qiling."
+            ),
+            "parameters": {"type": "object", "properties": {
+                "order_id": {"type": "integer", "description": "Buyurtma raqami"},
+                "new_date": {"type": "string", "description": "Yangi sana/vaqt, ISO 8601 (masalan '2026-08-20T15:00:00')"},
+                "confirm": {"type": "boolean", "description": "Foydalanuvchi aniq tasdiqlaganda true"}
+            }, "required": ["order_id", "new_date"]}
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "update_booking",
+            "description": (
+                "Bron MANZILI yoki izohini o'zgartirish (vaqtdan "
+                "tashqari). Vaqt uchun reschedule_booking ishlating. "
+                "IKKI QADAMLI: confirm=false → tasdiq so'rang → confirm=true."
+            ),
+            "parameters": {"type": "object", "properties": {
+                "order_id": {"type": "integer", "description": "Buyurtma raqami"},
+                "address": {"type": "string", "description": "Yangi manzil"},
+                "notes": {"type": "string", "description": "Ustaga izoh"},
+                "confirm": {"type": "boolean", "description": "Tasdiqlanganda true"}
+            }, "required": ["order_id"]}
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "get_provider_info",
+            "description": (
+                "Usta/xizmat haqida ma'lumot: reyting, manzil, ish "
+                "vaqtlari, xizmatlar. Foydalanuvchi «bu usta qanaqa?», "
+                "«reytingi qancha?» deb so'raganda."
+            ),
+            "parameters": {"type": "object", "properties": {
+                "provider_id": {"type": "integer", "description": "Usta ID si"}
+            }, "required": ["provider_id"]}
+        }
     }
 ]
