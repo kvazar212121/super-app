@@ -114,3 +114,4 @@ ios/Runner/GoogleService-Info.plist
 
 # Test va lokal ishga tushirishda yaratiladigan yuklamalar
 uploads/
+android/.kotlin/
