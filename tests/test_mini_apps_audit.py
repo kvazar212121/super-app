@@ -275,6 +275,34 @@ async def main():
             check("tahrirda kelajak sana rad etiladi", r.status_code == 422,
                   f"{r.status_code}")
 
+        # Chegara: qurilma soati bir necha soat oldinda bo'lishi mumkin,
+        # 1 kunlik yon berish ichidagi sana RAD ETILMASLIGI kerak
+        # (aks holda haqiqiy xarajat yozilmay qoladi).
+        r = await c.post("/api/v1/finance/", headers=h1, json={
+            "type": "expense", "amount": 1000, "category": "Yon berish",
+            "date": (datetime.now(timezone.utc) + timedelta(hours=6)).isoformat(),
+        })
+        check("yon berish ichidagi sana qabul qilinadi (soat mintaqasi)",
+              r.status_code == 201, f"{r.status_code}")
+
+        # Naive sana (soat mintaqasisiz) — mobil ilova shunday yuborishi
+        # mumkin. Taqqoslashda TypeError bermay, UTC deb qaralishi kerak.
+        r = await c.post("/api/v1/finance/", headers=h1, json={
+            "type": "expense", "amount": 1000, "category": "Naive",
+            "date": (datetime.now(timezone.utc) - timedelta(days=2))
+                    .replace(tzinfo=None).isoformat(),
+        })
+        check("naive (mintaqasiz) o'tgan sana qabul qilinadi",
+              r.status_code == 201, f"{r.status_code} {r.text[:150]}")
+
+        r = await c.post("/api/v1/finance/", headers=h1, json={
+            "type": "expense", "amount": 1000, "category": "Naive kelajak",
+            "date": (datetime.now(timezone.utc) + timedelta(days=10))
+                    .replace(tzinfo=None).isoformat(),
+        })
+        check("naive kelajak sana ham rad etiladi (500 emas)",
+              r.status_code == 422, f"{r.status_code}")
+
         # Rejalashtirilgan to'lov: kelajak sana AYNAN shu yerda o'rinli
         r = await c.post("/api/v1/finance/planned", headers=h1, json={
             "title": "Ijara", "amount": 1500000, "category": "Uy",
