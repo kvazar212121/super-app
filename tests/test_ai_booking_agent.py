@@ -24,6 +24,9 @@ BACKEND = os.path.join(
 )
 sys.path.insert(0, BACKEND)
 
+
+DB = os.environ.get("SUPERAPP_TEST_DB")
+
 # ⚠️ ISHCHI BAZAGA TEGMASLIK QO'RIQCHISI.
 # Bu test `DROP SCHEMA public CASCADE` qiladi. Xato baza
 # ko'rsatilsa butun ishchi ma'lumot o'chib ketardi (bu bir
@@ -32,7 +35,6 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from db_guard import guard as _db_guard  # noqa: E402
 _db_guard(DB)
 
-DB = os.environ.get("SUPERAPP_TEST_DB")
 if not DB:
     print("SKIP: SUPERAPP_TEST_DB berilmagan (haqiqiy PostgreSQL kerak)")
     sys.exit(0)

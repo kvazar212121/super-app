@@ -21,8 +21,18 @@ from __future__ import annotations
 
 import argparse
 import asyncio
+import os
 import random
 import sys
+
+# Skript `python -m scripts.seed_demo` yoki to'g'ridan-to'g'ri
+# (`python /app/seed_demo.py`) ishga tushirilishi mumkin. Ikkala
+# holatda ham `app` paketi topilishi kerak.
+_ILDIZ = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if _ILDIZ not in sys.path:
+    sys.path.insert(0, _ILDIZ)
+if "/app" not in sys.path and os.path.isdir("/app/app"):
+    sys.path.insert(0, "/app")
 
 from sqlalchemy import func, select
 
@@ -169,6 +179,137 @@ TOIFA_XIZMATLARI: dict[str, dict] = {
         ],
         "banner": "futbol",
     },
+
+    "tadbirlar": {
+        "xizmatlar": [
+            ("To'y tashkil qilish", 3000000, 8000000),
+            ("Boshlovchi (ovoz)", 1500000, 4000000),
+            ("Fotograf", 800000, 2500000),
+            ("Videograf", 1200000, 3500000),
+            ("Bezash va gullar", 700000, 2000000),
+        ],
+        "banner": "tadbirlar",
+    },
+    "konditsioner": {
+        "xizmatlar": [
+            ("Konditsioner o'rnatish", 300000, 700000),
+            ("Tozalash va profilaktika", 120000, 250000),
+            ("Freon to'ldirish", 150000, 300000),
+            ("Ta'mirlash", 200000, 500000),
+            ("Ko'chirib o'rnatish", 350000, 800000),
+        ],
+        "banner": "konditsioner",
+    },
+    "texnikaUstasi": {
+        "xizmatlar": [
+            ("Kir yuvish mashinasi ta'miri", 150000, 400000),
+            ("Muzlatgich ta'miri", 200000, 500000),
+            ("Mikroto'lqinli pech", 100000, 250000),
+            ("Televizor ta'miri", 150000, 400000),
+            ("Uyga chiqib diagnostika", 50000, 100000),
+        ],
+        "banner": "texnikaUstasi",
+    },
+    "ishchi": {
+        "xizmatlar": [
+            ("Yuk tashish (1 ishchi/soat)", 40000, 80000),
+            ("Ko'chish yordami", 200000, 500000),
+            ("Qurilish yordamchisi (kunlik)", 200000, 400000),
+            ("Hovli tozalash", 100000, 250000),
+            ("Yuk ortish/tushirish", 80000, 200000),
+        ],
+        "banner": "ishchi",
+    },
+    "bozorchi": {
+        "xizmatlar": [
+            ("Bozordan xarid (ro'yxat bo'yicha)", 30000, 70000),
+            ("Sabzavot-meva yetkazish", 25000, 60000),
+            ("Go'sht xaridi", 30000, 70000),
+            ("Katta xarid (haftalik)", 60000, 150000),
+            ("Tezkor yetkazish", 40000, 90000),
+        ],
+        "banner": "bozorchi",
+    },
+    "oshxona": {
+        "xizmatlar": [
+            ("Osh (1 porsiya)", 30000, 60000),
+            ("To'y oshi (100 kishi)", 2500000, 6000000),
+            ("Uyga taom yetkazish", 40000, 100000),
+            ("Kunlik ovqat (obuna)", 500000, 1200000),
+            ("Sho'rva va lagmon", 25000, 55000),
+        ],
+        "banner": "oshxona",
+    },
+    "kompyuterUsta": {
+        "xizmatlar": [
+            ("Windows o'rnatish", 80000, 150000),
+            ("Chang tozalash + termopasta", 100000, 200000),
+            ("Virus tozalash", 70000, 150000),
+            ("SSD/RAM o'rnatish", 80000, 180000),
+            ("Uyga chiqib xizmat", 60000, 120000),
+        ],
+        "banner": "kompUsta",
+    },
+    "telefonUsta": {
+        "xizmatlar": [
+            ("Ekran almashtirish", 200000, 900000),
+            ("Batareya almashtirish", 150000, 400000),
+            ("Suvdan tozalash", 150000, 350000),
+            ("Dasturiy ta'minot (proshivka)", 100000, 250000),
+            ("Razyom almashtirish", 120000, 300000),
+        ],
+        "banner": "texnikaUstasi",
+    },
+    "itXizmat": {
+        "xizmatlar": [
+            ("Sayt yaratish (vizitka)", 2000000, 6000000),
+            ("Internet-do'kon", 5000000, 15000000),
+            ("Logotip va brending", 800000, 2500000),
+            ("SMM boshqaruvi (oylik)", 1500000, 4000000),
+            ("Texnik qo'llab-quvvatlash (oylik)", 700000, 2000000),
+        ],
+        "banner": "kompUsta",
+    },
+    "game_zona": {
+        "xizmatlar": [
+            ("PlayStation 5 (1 soat)", 20000, 40000),
+            ("VR o'yin (30 daqiqa)", 30000, 60000),
+            ("Bilyard (1 soat)", 25000, 50000),
+            ("Kompyuter klub (1 soat)", 15000, 30000),
+            ("Tug'ilgan kun paketi", 300000, 800000),
+        ],
+        "banner": "gameZona",
+    },
+    "sport_maydon": {
+        "xizmatlar": [
+            ("Tennis korti (1 soat)", 80000, 150000),
+            ("Basketbol maydoni (1 soat)", 70000, 140000),
+            ("Voleybol maydoni (1 soat)", 60000, 120000),
+            ("Yopiq zal (1 soat)", 100000, 200000),
+            ("Trenajyor zali (1 kirish)", 25000, 50000),
+        ],
+        "banner": "sportMaydon",
+    },
+    "kompyuter_usta": {
+        "xizmatlar": [
+            ("Windows o'rnatish", 80000, 150000),
+            ("Chang tozalash", 100000, 200000),
+            ("Virus tozalash", 70000, 150000),
+            ("Qism almashtirish", 80000, 180000),
+            ("Uyga chiqish", 60000, 120000),
+        ],
+        "banner": "kompUsta",
+    },
+    "boshqa_xizmatlar": {
+        "xizmatlar": [
+            ("Konsultatsiya", 50000, 150000),
+            ("Tezkor xizmat", 100000, 250000),
+            ("Kompleks xizmat", 200000, 500000),
+            ("Uyga chiqish", 50000, 120000),
+            ("Qo'shimcha ish", 80000, 200000),
+        ],
+        "banner": "yana",
+    },
     "kuryerlik": {
         "xizmatlar": [
             ("Shahar ichida yetkazish", 25000, 50000),
@@ -225,6 +366,87 @@ def banner_url(toifa_kaliti: str, shablon_nomi: str) -> str:
     return f"{BANNER_BAZASI}/{fayl}.{kengaytma}"
 
 
+# Har toifada KAMIDA shuncha provayder bo'lsin. Bo'sh toifa ilovada
+# "xizmat yo'q" bo'lib ko'rinadi va foydalanuvchi ketib qoladi.
+MIN_PROVAYDER = 4
+
+# Demo provayder nomlari (toifaga qarab tanlanadi).
+NOM_QOLIPLARI = {
+    "sartarosh": ["Barber House", "Elite Cut", "Men's Style", "Fresh Look",
+                  "Zamon Barber"],
+    "salon": ["Beauty Line", "Glamour Studio", "Nafisa Salon", "Style Room",
+              "Zebo Beauty"],
+    "tozalash": ["Toza Uy", "CleanPro", "Oq Bulut", "Servis Tozalash",
+                 "Ideal Clean"],
+    "usta": ["Mohir Usta", "Uy Ustasi", "Master Servis", "Aka Usta",
+             "Tez Usta"],
+    "elektrik": ["Elektro Servis", "Yorug'lik", "Volt Usta", "Elektrik Aka",
+                 "Tok Servis"],
+    "santexnik": ["Suv Servis", "Akva Usta", "Santex Pro", "Quvur Ustasi",
+                  "Tez Santexnik"],
+    "avtoYordam": ["Avto Yordam 24", "Yo'l Servis", "Tez Evakuator",
+                   "Avto Nur", "Mobil Usta"],
+    "repetitor": ["Bilim Markazi", "Ustoz Repetitor", "Smart School",
+                  "Ilm Yo'li", "Zamon Ta'lim"],
+    "enaga": ["Mehribon Enaga", "Bolajon Servis", "Oila Yordam",
+              "Nazokat Enaga", "Kichkintoy"],
+    "hamshira": ["Sog'lom Hayot", "Hamshira Servis", "Med Yordam",
+                 "Shifo Hamshira", "Tez Med"],
+    "stomatologiya": ["Dental Plus", "Oq Tish", "Smile Clinic",
+                      "Stomatolog Servis", "Dentakor"],
+    "massajHijoma": ["Shifo Massaj", "Salomatlik", "Relax Studio",
+                     "Hijoma Markaz", "Tan Sog'lig'i"],
+    "dezinfeksiya": ["Toza Havo", "Dezinfeksiya Pro", "Sanitar Servis",
+                     "Eko Dezinfeksiya", "Himoya"],
+    "futbol": ["Chempion Maydon", "Gol Arena", "Sport Maydon",
+               "Yashil Maydon", "Futbol Klub"],
+    "kuryerlik": ["Tez Kuryer", "Express Delivery", "Yetkazib Berish",
+                  "Shahar Kuryer", "Chaqqon"],
+    "tadbirlar": ["To'y Servis", "Bayram Studio", "Event Master",
+                  "Shodiyona", "Prazdnik Plus"],
+    "konditsioner": ["Salqin Havo", "Klimat Servis", "Konditsioner Pro",
+                     "Sovuq Shamol", "Havo Servis"],
+    "texnikaUstasi": ["Texnika Servis", "Master Texnik", "Uy Texnikasi",
+                      "Remont Pro", "Tez Ta'mir"],
+    "ishchi": ["Ishchi Yordam", "Yuk Servis", "Ko'chish Xizmati",
+               "Mardikor Servis", "Kuch Ishchi"],
+    "bozorchi": ["Bozor Yordam", "Xarid Servis", "Tez Bozorchi",
+                 "Oila Bozor", "Mahsulot Servis"],
+    "oshxona": ["Milliy Taomlar", "Osh Markaz", "Uy Taomi",
+                "Choyxona Servis", "Mazza"],
+    "kompyuterUsta": ["Komp Servis", "IT Master", "PC Doctor",
+                      "Kompyuter Yordam", "Tez Komp"],
+    "kompyuter_usta": ["Komp Servis Plus", "PC Master", "Kompyuter Pro",
+                       "IT Yordam", "Servis Komp"],
+    "telefonUsta": ["Telefon Servis", "Mobil Master", "Smart Fix",
+                    "Telefon Klinika", "Ekran Servis"],
+    "itXizmat": ["Web Studio", "Digital Agency", "IT Solutions",
+                 "Raqamli Servis", "Tech Group"],
+    "game_zona": ["Game Zone", "PlayStation Club", "VR Arena",
+                  "Kiber Klub", "Play Time"],
+    "sport_maydon": ["Sport Kompleks", "Arena Sport", "Olimp Maydon",
+                     "Faol Sport", "Sport Hub"],
+    "boshqa_xizmatlar": ["Universal Servis", "Har Xizmat", "Yordam Markaz",
+                         "Servis Plus", "Kompleks Xizmat"],
+    "yana": ["Qo'shimcha Servis", "Boshqa Xizmat", "Umumiy Servis",
+             "Yordam Plus", "Servis Markaz"],
+}
+
+# Toshkent tumanlari — manzil va koordinata uchun.
+TUMANLAR = [
+    ("Chilonzor tumani", 41.2756, 69.2035),
+    ("Yunusobod tumani", 41.3651, 69.2896),
+    ("Mirzo Ulug'bek tumani", 41.3253, 69.3345),
+    ("Yashnobod tumani", 41.2894, 69.3216),
+    ("Shayxontohur tumani", 41.3213, 69.2264),
+    ("Olmazor tumani", 41.3542, 69.2103),
+    ("Uchtepa tumani", 41.2891, 69.1815),
+    ("Sergeli tumani", 41.2216, 69.2201),
+    ("Mirobod tumani", 41.2926, 69.2761),
+    ("Bektemir tumani", 41.2181, 69.3389),
+]
+
+
 VAQTLAR = ["09:00", "10:00", "11:00", "12:00", "14:00",
            "15:00", "16:00", "17:00", "18:00"]
 
@@ -264,6 +486,72 @@ async def main(force_banner: bool = False, force_meta: bool = False,
     yangilangan_banner = 0
     yaratilgan_ega = 0
     yaratilgan_sharh = 0
+
+    yaratilgan_provayder = 0
+
+    # ── 0. HAR TOIFADA kamida MIN_PROVAYDER ta bo'lsin ───────────────
+    # Foydalanuvchi talabi: "sartaroshlar qolmagan hamma providerlarda
+    # bo'lishi kerak, har bir providerni tekshir, bo'lmasa demo
+    # ma'lumot qo'sh". Bo'sh toifa ilovada "xizmat yo'q" bo'lib
+    # ko'rinadi va odam ketib qoladi.
+    async with async_session() as db:
+        toifalar = (await db.execute(select(Category))).scalars().all()
+        for cat in toifalar:
+            bor = (await db.execute(
+                select(func.count(Provider.id))
+                .where(Provider.category_id == cat.id)
+            )).scalar() or 0
+            if bor >= MIN_PROVAYDER:
+                continue
+
+            shablon = TOIFA_XIZMATLARI.get(cat.key, STANDART)
+            nomlar = NOM_QOLIPLARI.get(
+                cat.key, [f"{cat.title_uz} Servis {i}" for i in range(1, 6)]
+            )
+            for i in range(bor, MIN_PROVAYDER):
+                nom = nomlar[i % len(nomlar)]
+                # Nom takrorlanmasin (turli toifada bir xil nom bo'lishi
+                # mumkin, lekin bitta toifada yo'q).
+                mavjud_nom = (await db.execute(
+                    select(func.count(Provider.id)).where(
+                        Provider.category_id == cat.id, Provider.name == nom
+                    )
+                )).scalar() or 0
+                if mavjud_nom:
+                    nom = f"{nom} {i + 1}"
+
+                tuman, lat, lng = TUMANLAR[(cat.id + i) % len(TUMANLAR)]
+                # Telefon: demo diapazoni, takrorlanmaydi.
+                tel = f"+9989{(70 + cat.id % 20):02d}{(100000 + cat.id * 100 + i):06d}"[:13]
+
+                xizmatlar = [x[0] for x in shablon["xizmatlar"]][:5]
+                narxlar = {x[0]: _narx(x[1], x[2])
+                           for x in shablon["xizmatlar"][:5]}
+
+                db.add(Provider(
+                    category_id=cat.id,
+                    name=nom,
+                    address=f"Toshkent, {tuman}",
+                    phone=tel,
+                    lat=lat + random.uniform(-0.01, 0.01),
+                    lng=lng + random.uniform(-0.01, 0.01),
+                    rating=round(random.uniform(4.3, 5.0), 1),
+                    review_count=random.randint(8, 60),
+                    cover_image=banner_url(cat.key, shablon["banner"]),
+                    metadata_json={
+                        "services": xizmatlar,
+                        "prices": narxlar,
+                        "time_slots": VAQTLAR,
+                        "about": f"{nom} — {cat.title_uz} yo'nalishida "
+                                 "ishonchli xizmat, tajribali mutaxassislar "
+                                 "va qulay narxlar.",
+                        "is_demo": True,
+                    },
+                    is_active=True,
+                    is_verified=True,
+                ))
+                yaratilgan_provayder += 1
+        await db.commit()
 
     async with async_session() as db:
         cats = {c.id: c.key for c in
@@ -405,6 +693,7 @@ async def main(force_banner: bool = False, force_meta: bool = False,
         print(f"  demo admin             : {DEMO_ADMIN_LOGIN} / {DEMO_ADMIN_PAROL}")
 
     print("Demo ma'lumot to'ldirildi:")
+    print(f"  yangi provayder        : {yaratilgan_provayder} ta")
     print(f"  xizmat/narx yangilandi : {yangilangan_meta} provayder")
     print(f"  banner qo'yildi        : {yangilangan_banner} provayder")
     print(f"  kirish hisobi yaratildi: {yaratilgan_ega} ta (parol: {DEMO_PAROL})")
