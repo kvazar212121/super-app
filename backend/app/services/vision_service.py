@@ -74,10 +74,6 @@ async def analyze_food(image_bytes: bytes, content_type: str) -> dict:
 
     VISION_PROVIDER sozlamasiga qarab provayder tanlanadi. Normallashgan dict qaytaradi.
     """
-    api_url, api_key, model = _resolve_provider()
-    if not api_key:
-        raise HTTPException(status_code=503, detail="AI xizmati hozircha sozlanmagan")
-
     if len(image_bytes) > MAX_IMAGE_BYTES:
         raise HTTPException(
             status_code=400,
@@ -87,43 +83,44 @@ async def analyze_food(image_bytes: bytes, content_type: str) -> dict:
     b64 = base64.b64encode(image_bytes).decode()
     data_url = f"data:{content_type};base64,{b64}"
 
-    async with httpx.AsyncClient(timeout=60.0) as client:
-        try:
-            response = await client.post(
-                api_url,
-                headers={
-                    "Content-Type": "application/json",
-                    "Authorization": f"Bearer {api_key}",
-                },
-                json={
-                    "model": model,
-                    "messages": [
-                        {
-                            "role": "user",
-                            "content": [
-                                {"type": "text", "text": VISION_SYSTEM_PROMPT},
-                                {"type": "image_url", "image_url": {"url": data_url}},
-                            ],
-                        }
+    def payload(model: str) -> dict:
+        return {
+            "model": model,
+            "messages": [
+                {
+                    "role": "user",
+                    "content": [
+                        {"type": "text", "text": VISION_SYSTEM_PROMPT},
+                        {"type": "image_url", "image_url": {"url": data_url}},
                     ],
-                    "response_format": {"type": "json_object"},
-                    "temperature": 0.2,
-                    "max_tokens": 1500,  # Gemini "thinking" modeli uchun zaxira token
-                },
-            )
-        except httpx.HTTPError as exc:
-            logger.error(f"Vision ({model}) so'rovi muvaffaqiyatsiz: {exc}")
-            raise HTTPException(status_code=502, detail="AI xizmatiga ulanib bo'lmadi")
+                }
+            ],
+            "response_format": {"type": "json_object"},
+            "temperature": 0.2,
+            "max_tokens": 1500,  # Gemini "thinking" modeli uchun zaxira token
+        }
 
-    if response.status_code != 200:
-        logger.error(f"Vision ({model}) status {response.status_code}: {response.text[:300]}")
-        raise HTTPException(status_code=502, detail="AI xizmati vaqtincha ishlamayapti")
+    # ZAXIRA ZANJIRI: bitta provayder band bo'lsa (Gemini 503 "high
+    # demand") keyingisi ishlaydi. Ilgari bunda kaloriya hisoblagich
+    # butunlay to'xtardi va foydalanuvchi "ishlamayapti" derdi.
+    from app.services.ai_providers import call_with_fallback
 
     try:
-        content = response.json()["choices"][0]["message"]["content"]
+        javob, provider, model = await call_with_fallback(
+            "vision", payload, timeout=60.0
+        )
+    except RuntimeError as exc:
+        logger.error("Vision: %s", exc)
+        raise HTTPException(
+            status_code=503,
+            detail="AI xizmati hozircha band. Biroz keyinroq urinib ko'ring.",
+        )
+
+    try:
+        content = javob["choices"][0]["message"]["content"]
         parsed = json.loads(content)
     except (KeyError, IndexError, json.JSONDecodeError) as exc:
-        logger.error(f"Vision ({model}) javobini o'qib bo'lmadi: {exc}")
+        logger.error(f"Vision ({provider}/{model}) javobini o'qib bo'lmadi: {exc}")
         raise HTTPException(status_code=502, detail="AI javobini o'qib bo'lmadi")
 
     if not parsed.get("is_food"):
@@ -167,46 +164,42 @@ async def analyze_food_text(description: str) -> dict:
     Rasmga olib bo'lmagan holatda ishlatiladi — foydalanuvchi nima yeganini yozadi,
     AI kaloriyani taxminlaydi (keyin foydalanuvchi qo'lda to'g'rilay oladi).
     """
-    api_url, api_key, model = _resolve_provider()
-    if not api_key:
-        raise HTTPException(status_code=503, detail="AI xizmati hozircha sozlanmagan")
-
     text = (description or "").strip()
     if not text:
         raise HTTPException(status_code=400, detail="Ovqat ta'rifi bo'sh")
 
-    async with httpx.AsyncClient(timeout=60.0) as client:
-        try:
-            response = await client.post(
-                api_url,
-                headers={
-                    "Content-Type": "application/json",
-                    "Authorization": f"Bearer {api_key}",
-                },
-                json={
-                    "model": model,
-                    "messages": [
-                        {"role": "system", "content": FOOD_TEXT_SYSTEM_PROMPT},
-                        {"role": "user", "content": text},
-                    ],
-                    "response_format": {"type": "json_object"},
-                    "temperature": 0.2,
-                    "max_tokens": 1500,  # Gemini "thinking" modeli uchun zaxira token
-                },
-            )
-        except httpx.HTTPError as exc:
-            logger.error(f"Food-text ({model}) so'rovi muvaffaqiyatsiz: {exc}")
-            raise HTTPException(status_code=502, detail="AI xizmatiga ulanib bo'lmadi")
+    def payload(model: str) -> dict:
+        return {
+            "model": model,
+            "messages": [
+                {"role": "system", "content": FOOD_TEXT_SYSTEM_PROMPT},
+                {"role": "user", "content": text},
+            ],
+            "response_format": {"type": "json_object"},
+            "temperature": 0.2,
+            "max_tokens": 1500,  # Gemini "thinking" modeli uchun zaxira token
+        }
 
-    if response.status_code != 200:
-        logger.error(f"Food-text ({model}) status {response.status_code}: {response.text[:300]}")
-        raise HTTPException(status_code=502, detail="AI xizmati vaqtincha ishlamayapti")
+    # Matn uchun `chat` zanjiri: bu yerda rasm yo'q, shuning uchun
+    # DeepSeek kabi vision'siz provayder ham ishlatilaveradi.
+    from app.services.ai_providers import call_with_fallback
 
     try:
-        content = response.json()["choices"][0]["message"]["content"]
+        javob, provider, model = await call_with_fallback(
+            "chat", payload, timeout=60.0
+        )
+    except RuntimeError as exc:
+        logger.error("Food-text: %s", exc)
+        raise HTTPException(
+            status_code=503,
+            detail="AI xizmati hozircha band. Biroz keyinroq urinib ko'ring.",
+        )
+
+    try:
+        content = javob["choices"][0]["message"]["content"]
         parsed = json.loads(content)
     except (KeyError, IndexError, json.JSONDecodeError) as exc:
-        logger.error(f"Food-text ({model}) javobini o'qib bo'lmadi: {exc}")
+        logger.error(f"Food-text ({provider}/{model}) javobini o'qib bo'lmadi: {exc}")
         raise HTTPException(status_code=502, detail="AI javobini o'qib bo'lmadi")
 
     if not parsed.get("is_food"):

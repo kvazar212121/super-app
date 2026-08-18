@@ -75,12 +75,7 @@ async def analyze_job_photo(image_bytes: bytes, content_type: str) -> dict:
 
     Qaytaradi: {detected, title, description, category_hint, confidence}
     """
-    api_url, api_key, model = _resolve_provider()
-    if not api_key:
-        raise HTTPException(
-            status_code=503, detail="AI xizmati hozircha sozlanmagan"
-        )
-
+    # Provayder tanlash `call_with_fallback` ichida (zaxira bilan).
     if len(image_bytes) > MAX_IMAGE_BYTES:
         raise HTTPException(
             status_code=400,
@@ -90,53 +85,43 @@ async def analyze_job_photo(image_bytes: bytes, content_type: str) -> dict:
     b64 = base64.b64encode(image_bytes).decode()
     data_url = f"data:{content_type};base64,{b64}"
 
-    # 60s juda uzun edi: vision provayderi 503 bersa foydalanuvchi
-    # BIR DAQIQA kutib qolardi va "rasm yuborilmayapti" deb o'ylardi.
-    # Rasm baribir SAQLANGAN bo'ladi — tahlil ixtiyoriy qulaylik.
-    async with httpx.AsyncClient(timeout=20.0) as client:
-        try:
-            response = await client.post(
-                api_url,
-                headers={
-                    "Content-Type": "application/json",
-                    "Authorization": f"Bearer {api_key}",
-                },
-                json={
-                    "model": model,
-                    "messages": [
-                        {
-                            "role": "user",
-                            "content": [
-                                {"type": "text", "text": ANALYZE_PROMPT},
-                                {
-                                    "type": "image_url",
-                                    "image_url": {"url": data_url},
-                                },
-                            ],
-                        }
+    def payload(model: str) -> dict:
+        return {
+            "model": model,
+            "messages": [
+                {
+                    "role": "user",
+                    "content": [
+                        {"type": "text", "text": ANALYZE_PROMPT},
+                        {"type": "image_url", "image_url": {"url": data_url}},
                     ],
-                    "response_format": {"type": "json_object"},
-                    "temperature": 0.0,
-                    "max_tokens": 1500,
-                },
-            )
-        except httpx.HTTPError as exc:
-            logger.error(f"Job vision ({model}) so'rovi muvaffaqiyatsiz: {exc}")
-            raise HTTPException(
-                status_code=502, detail="AI xizmatiga ulanib bo'lmadi"
-            )
+                }
+            ],
+            "response_format": {"type": "json_object"},
+            "temperature": 0.0,
+            "max_tokens": 1500,
+        }
 
-    if response.status_code != 200:
-        logger.error(
-            f"Job vision ({model}) status {response.status_code}: "
-            f"{response.text[:300]}"
+    # ZAXIRA ZANJIRI + qisqa kutish.
+    #
+    # 60s juda uzun edi: provayder 503 bersa foydalanuvchi BIR DAQIQA
+    # kutib qolardi va "rasm yuborilmayapti" deb o'ylardi. Endi 20s
+    # kutiladi va band bo'lsa keyingi provayderga o'tiladi.
+    # Rasm baribir SAQLANGAN bo'ladi — tahlil ixtiyoriy qulaylik.
+    from app.services.ai_providers import call_with_fallback
+
+    try:
+        javob, provider, model = await call_with_fallback(
+            "vision", payload, timeout=20.0
         )
+    except RuntimeError as exc:
+        logger.error("Job vision: %s", exc)
         raise HTTPException(
-            status_code=502, detail="AI xizmati vaqtincha ishlamayapti"
+            status_code=503, detail="AI xizmati hozircha band"
         )
 
     try:
-        content = response.json()["choices"][0]["message"]["content"]
+        content = javob["choices"][0]["message"]["content"]
         parsed = json.loads(content)
     except (KeyError, IndexError, json.JSONDecodeError) as exc:
         logger.error(f"Job vision javobini o'qib bo'lmadi: {exc}")

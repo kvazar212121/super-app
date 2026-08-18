@@ -5,7 +5,7 @@ kod yoki .env o'zgartirmasдан kuchга kiradi.
 """
 import json
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from typing import Optional
 from sqlalchemy import select
@@ -305,3 +305,141 @@ async def update_marketplace_settings(
     if updates:
         settings_service.set_many(updates)
     return _market_payload()
+
+
+# ── AI provayderlar: kalit, zaxira tartibi, holat ────────────────────────────
+#
+# NEGA: kalitlar `.env` da qotib qolgan edi va ularni almashtirish uchun
+# serverga kirib konteynerni qayta ishga tushirish kerak edi. Endi
+# hammasi shu yerdan boshqariladi va ~2 soniyada kuchga kiradi.
+# Bu ko'p obunachili muhitda majburiy: bitta provayder limitga urilsa
+# yoki qimmatlashsa, boshqasiga darhol o'tish kerak.
+
+class AiKeyUpdate(BaseModel):
+    """Provayder kaliti. Bo'sh satr — o'chirish (env'dagisi ishlatiladi)."""
+
+    provider: str
+    api_key: str = ""
+
+
+class AiProviderUpdate(BaseModel):
+    feature: str                      # vision | chat | translate
+    primary: Optional[str] = None     # asosiy provayder
+    order: Optional[list[str]] = None  # zaxira tartibi
+    models: Optional[dict[str, str]] = None  # {provayder: model}
+
+
+@router.get("/ai-providers")
+async def get_ai_providers(_admin: User = Depends(require_admin)):
+    """Har funksiya uchun provayder holati (kalitlar YASHIRILGAN)."""
+    from app.services import ai_providers
+
+    return {
+        "features": [ai_providers.admin_view(f)
+                     for f in ("vision", "chat", "translate")],
+        "labels": ai_providers.PROVIDER_LABELS,
+        "vision_capable": list(ai_providers.VISION_PROVIDERS),
+    }
+
+
+@router.put("/ai-providers")
+async def update_ai_providers(
+    data: AiProviderUpdate, _admin: User = Depends(require_admin)
+):
+    """Asosiy provayder, zaxira tartibi va modellarni saqlaydi."""
+    from app.services import ai_providers
+
+    feature = (data.feature or "").strip().lower()
+    if feature not in ("vision", "chat", "translate"):
+        raise HTTPException(status_code=400, detail="Noma'lum funksiya")
+
+    updates: dict[str, str] = {}
+
+    if data.primary:
+        p = data.primary.strip().lower()
+        if p not in ai_providers.PROVIDER_URLS:
+            raise HTTPException(status_code=400, detail="Noma'lum provayder")
+        updates[f"ai_{feature}_provider"] = p
+
+    if data.order is not None:
+        toza = [x.strip().lower() for x in data.order
+                if x.strip().lower() in ai_providers.PROVIDER_URLS]
+        updates[f"ai_{feature}_order"] = ",".join(toza)
+
+    for prov, model in (data.models or {}).items():
+        prov = prov.strip().lower()
+        if prov in ai_providers.PROVIDER_URLS:
+            updates[f"ai_{feature}_{prov}_model"] = (model or "").strip()
+
+    if updates:
+        settings_service.set_many(updates)
+    return await get_ai_providers(_admin)
+
+
+@router.put("/ai-key")
+async def update_ai_key(
+    data: AiKeyUpdate, _admin: User = Depends(require_admin)
+):
+    """Provayder API kalitini saqlaydi.
+
+    Kalit DB'da saqlanadi va `.env` dagisidan USTUN turadi. Bo'sh
+    yuborilsa o'chiriladi va yana `.env` ishlaydi.
+    """
+    from app.services import ai_providers
+
+    prov = (data.provider or "").strip().lower()
+    if prov not in ai_providers.PROVIDER_URLS:
+        raise HTTPException(status_code=400, detail="Noma'lum provayder")
+
+    settings_service.set_value(f"ai_key_{prov}", (data.api_key or "").strip())
+    return await get_ai_providers(_admin)
+
+
+@router.post("/ai-test")
+async def test_ai_provider(
+    data: AiKeyUpdate, _admin: User = Depends(require_admin)
+):
+    """Provayder HAQIQATAN ishlayaptimi — jonli tekshiruv.
+
+    Admin kalitni kiritgach "ishladimi?" degan savolga darhol javob
+    bo'lishi kerak, aks holda nosozlik faqat foydalanuvchida chiqadi.
+    """
+    import httpx
+
+    from app.services import ai_providers
+
+    prov = (data.provider or "").strip().lower()
+    if prov not in ai_providers.PROVIDER_URLS:
+        raise HTTPException(status_code=400, detail="Noma'lum provayder")
+
+    kalit = (data.api_key or "").strip() or ai_providers.api_key(prov)
+    if not kalit:
+        return {"ok": False, "message": "Kalit kiritilmagan"}
+
+    model = ai_providers.model_for("chat", prov)
+    try:
+        async with httpx.AsyncClient(timeout=20.0) as client:
+            r = await client.post(
+                ai_providers.PROVIDER_URLS[prov],
+                headers={
+                    "Content-Type": "application/json",
+                    "Authorization": f"Bearer {kalit}",
+                },
+                json={
+                    "model": model,
+                    "messages": [{"role": "user", "content": "salom"}],
+                    "max_tokens": 5,
+                },
+            )
+    except Exception as exc:
+        return {"ok": False, "message": f"Ulanib bo'lmadi: {type(exc).__name__}"}
+
+    if r.status_code == 200:
+        return {"ok": True, "message": f"Ishlaydi ✅ ({model})", "model": model}
+    if r.status_code == 401:
+        return {"ok": False, "message": "Kalit noto'g'ri (401)"}
+    if r.status_code == 429:
+        return {"ok": False, "message": "Limit tugagan (429)"}
+    if r.status_code == 503:
+        return {"ok": False, "message": "Model band (503) — zaxira ishlaydi"}
+    return {"ok": False, "message": f"HTTP {r.status_code}: {r.text[:120]}"}

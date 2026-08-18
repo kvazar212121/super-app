@@ -72,6 +72,8 @@ class Settings(BaseSettings):
     groq_max_tokens: int = 1024
     groq_vision_model: str = "meta-llama/llama-4-scout-17b-16e-instruct"
     groq_translate_model: str = "llama-3.3-70b-versatile"
+    # AI chat/agent uchun (zaxira provayder sifatida ishlatiladi).
+    groq_chat_model: str = "llama-3.3-70b-versatile"
 
     # OpenAI API (aqlliroq vision — taom rasmidan kaloriya hisoblash uchun)
     # vision_provider = "openai" bo'lsa, kaloriya tahlili OpenAI orqali ishlaydi.
@@ -87,6 +89,7 @@ class Settings(BaseSettings):
     # Google Gemini (OpenAI-mos API) — BEPUL vision (rasm/kaloriya) uchun.
     gemini_api_key: str = ""
     gemini_vision_model: str = "gemini-flash-latest"
+    gemini_chat_model: str = "gemini-flash-latest"
     vision_provider: str = "groq"  # "groq" yoki "openai"
     translate_provider: str = "groq"  # "groq" yoki "openai" (mashq tarjimasi uchun)
     chat_provider: str = "groq"  # "groq" yoki "openai" (AI chat/agent uchun)

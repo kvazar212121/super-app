@@ -200,10 +200,15 @@ async def main():
     vision = open(
         os.path.join(PROJ, "backend/app/services/ai_job/vision.py")
     ).read()
-    kutish = re.search(r"AsyncClient\(timeout=([\d.]+)\)", vision)
+    # Kutish vaqti endi `call_with_fallback(timeout=...)` ga beriladi.
+    kutish = re.search(r"call_with_fallback\([^)]*timeout=([\d.]+)", vision,
+                       re.S)
     check("vision kutish vaqti 30s dan kam (chat qotib qolmasin)",
           kutish is not None and float(kutish.group(1)) <= 30,
           f"{kutish.group(1) if kutish else 'topilmadi'}")
+    check("vision ZAXIRA provayderga o'ta oladi",
+          "call_with_fallback" in vision,
+          "bitta provayderga bog'lanib qolgan")
 
     # ── 6b. Qoralama KO'P WORKER orasida yo'qolmaydi ─────────────────
     # Prodda bir necha worker ishlaydi: foydalanuvchi ma'lumotni bir

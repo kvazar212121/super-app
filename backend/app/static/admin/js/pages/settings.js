@@ -30,8 +30,78 @@ async function renderSettings() {
     try { const r = await window.api(window.API_BASE + '/marketplace-settings'); if (r && r.ok) { const d = await r.json(); market = d.settings || []; } } catch(e) {}
     window.__marketKeys = market.map(function(m){ return m.key; });
 
+    // AI provayderlar holati: kalit bor-yo'qligi, zaxira tartibi.
+    var aiProv = null;
+    try { const r = await window.api(window.API_BASE + '/ai-providers'); if (r && r.ok) aiProv = await r.json(); } catch(e) {}
+
     var legal = [];
     try { const r = await window.api(window.API_BASE + '/legal'); if (r && r.ok) { const d = await r.json(); legal = d.docs || []; } } catch(e) {}
+
+    // ── AI provayderlar (kalit + zaxira) ──
+    var aiProvHtml = '';
+    if (aiProv) {
+        var labels = aiProv.labels || {};
+        var visionOk = aiProv.vision_capable || [];
+        // Kalitlar (provayder bo'yicha, funksiyadan mustaqil)
+        var kalitlar = {};
+        (aiProv.features || []).forEach(function(f) {
+            (f.providers || []).forEach(function(p) { kalitlar[p.key] = p; });
+        });
+        var keyRows = '';
+        Object.keys(kalitlar).forEach(function(k) {
+            var p = kalitlar[k];
+            var holat = p.has_key
+                ? '<span style="color:#16a34a;font-weight:700;">✓ ' + window.escapeHtml(p.key_preview || '') + '</span>'
+                : '<span style="color:#dc2626;font-weight:700;">kalit yo\'q</span>';
+            keyRows +=
+                '<div class="setting-row">' +
+                    '<div class="setting-info">' +
+                        '<div class="setting-label">' + window.escapeHtml(labels[k] || k) + '</div>' +
+                        '<div class="setting-description">' + holat +
+                            (visionOk.indexOf(k) >= 0 ? ' · rasmni ko\'radi 🖼' : ' · faqat matn') +
+                        '</div>' +
+                    '</div>' +
+                    '<div class="setting-control" style="display:flex;gap:6px;">' +
+                        '<input type="password" class="form-input" id="aikey_' + k + '" placeholder="yangi kalit" style="width:210px;">' +
+                        '<button class="btn btn-primary" onclick="saveAiKey(\'' + k + '\')">💾</button>' +
+                        '<button class="btn" onclick="testAiKey(\'' + k + '\')">🔍 Test</button>' +
+                    '</div>' +
+                '</div>' +
+                '<div id="aitest_' + k + '" style="font-size:12px;padding:0 0 8px 4px;"></div>';
+        });
+
+        // Zaxira tartibi (funksiya bo'yicha)
+        var orderRows = '';
+        (aiProv.features || []).forEach(function(f) {
+            var mavjud = (f.order || []).join(', ');
+            orderRows +=
+                '<div class="setting-row">' +
+                    '<div class="setting-info">' +
+                        '<div class="setting-label">' + f.feature + ' — urinish tartibi</div>' +
+                        '<div class="setting-description">Birinchisi ishlamasa keyingisiga o\'tadi. Hozir: <b>' +
+                            window.escapeHtml(mavjud || 'kalit yo\'q') + '</b></div>' +
+                    '</div>' +
+                    '<div class="setting-control" style="display:flex;gap:6px;">' +
+                        '<input type="text" class="form-input" id="aiorder_' + f.feature + '" value="' + window.escapeHtml(mavjud) + '" placeholder="gemini, openai, groq" style="width:240px;">' +
+                        '<button class="btn btn-primary" onclick="saveAiOrder(\'' + f.feature + '\')">💾</button>' +
+                    '</div>' +
+                '</div>';
+        });
+
+        aiProvHtml =
+            '<div class="card">' +
+                '<div class="card-body">' +
+                    '<div class="settings-section">' +
+                        '<h3 class="settings-section-title">🔑 AI kalitlari va zaxira provayderlar</h3>' +
+                        '<p class="setting-description" style="margin-bottom:12px;">Kalit shu yerdan kiritiladi va <b>server qayta ishga tushirilmasdan</b> ~2 soniyada kuchga kiradi. Kiritilgan kalit <code>.env</code> dagisidan ustun turadi. Bo\'sh saqlansa yana <code>.env</code> ishlaydi.</p>' +
+                        keyRows +
+                        '<h3 class="settings-section-title" style="margin-top:18px;">🔁 Zaxira tartibi</h3>' +
+                        '<p class="setting-description" style="margin-bottom:12px;">Provayder band bo\'lsa (masalan Gemini <code>503 high demand</code>) tizim avtomatik keyingisiga o\'tadi. Vergul bilan yozing. Rasm tahlilida faqat rasmni ko\'radigan provayderlar ishlatiladi.</p>' +
+                        orderRows +
+                    '</div>' +
+                '</div>' +
+            '</div>';
+    }
 
     var marketRows = '';
     market.forEach(function(m) {
@@ -136,6 +206,8 @@ async function renderSettings() {
                 '</div>' +
             '</div>' +
         '</div>' +
+
+        aiProvHtml +
 
         // ── Ilova bo'limlari (feature flags) ──
         '<div class="card">' +
@@ -287,6 +359,49 @@ function saveFeatureFlags() {
         });
 }
 
+function saveAiKey(provider) {
+    var el = document.getElementById('aikey_' + provider);
+    if (!el) return;
+    window.api(window.API_BASE + '/ai-key', {
+        method: 'PUT',
+        body: JSON.stringify({ provider: provider, api_key: el.value })
+    }).then(function(r) {
+        window.showToast(r && r.ok ? 'Kalit saqlandi ✅' : 'Saqlab bo\'lmadi',
+                         r && r.ok ? 'success' : 'error');
+        if (r && r.ok) { el.value = ''; window.renderSettings(); }
+    });
+}
+
+function testAiKey(provider) {
+    var el = document.getElementById('aikey_' + provider);
+    var out = document.getElementById('aitest_' + provider);
+    if (out) out.innerHTML = '<span style="color:#64748b;">Tekshirilmoqda…</span>';
+    window.api(window.API_BASE + '/ai-test', {
+        method: 'POST',
+        body: JSON.stringify({ provider: provider, api_key: el ? el.value : '' })
+    }).then(function(r) { return r.json(); }).then(function(d) {
+        if (!out) return;
+        out.innerHTML = '<span style="color:' + (d.ok ? '#16a34a' : '#dc2626') + ';">' +
+                        window.escapeHtml(d.message || '') + '</span>';
+    }).catch(function() {
+        if (out) out.innerHTML = '<span style="color:#dc2626;">Tekshirib bo\'lmadi</span>';
+    });
+}
+
+function saveAiOrder(feature) {
+    var el = document.getElementById('aiorder_' + feature);
+    if (!el) return;
+    var order = el.value.split(',').map(function(x) { return x.trim(); })
+                        .filter(function(x) { return x; });
+    window.api(window.API_BASE + '/ai-providers', {
+        method: 'PUT',
+        body: JSON.stringify({ feature: feature, order: order })
+    }).then(function(r) {
+        window.showToast(r && r.ok ? 'Tartib saqlandi ✅' : 'Saqlab bo\'lmadi',
+                         r && r.ok ? 'success' : 'error');
+    });
+}
+
 function saveMarketplaceSettings() {
     var values = {};
     (window.__marketKeys || []).forEach(function(key) {
@@ -350,13 +465,16 @@ function saveSettings() {
 }
 
 // Exports for ES6 modules
-export { saveSettings, saveAiConfig, saveFeatureFlags, saveCategoryFlags, saveMarketplaceSettings, saveLegal, updToggle, renderSettings };
+export { saveSettings, saveAiConfig, saveFeatureFlags, saveCategoryFlags, saveMarketplaceSettings, saveAiKey, testAiKey, saveAiOrder, saveLegal, updToggle, renderSettings };
 // Expose to window for inline onclick handlers
 window.saveSettings = saveSettings;
 window.saveAiConfig = saveAiConfig;
 window.saveFeatureFlags = saveFeatureFlags;
 window.saveCategoryFlags = saveCategoryFlags;
 window.saveMarketplaceSettings = saveMarketplaceSettings;
+window.saveAiKey = saveAiKey;
+window.testAiKey = testAiKey;
+window.saveAiOrder = saveAiOrder;
 window.saveLegal = saveLegal;
 window.updToggle = updToggle;
 window.renderSettings = renderSettings;

@@ -71,21 +71,12 @@ async def ai_chat(
     # Chat provayderi — admin panelдан (DB) tanlanadi, aks holda env (CHAT_PROVIDER).
     # settings_service DB'ga murojaat qiladi — xato bo'lsa 500 emas, lokal fallback.
     from app.services import settings_service
+    from app.services.ai_providers import candidates as ai_candidates
     try:
-        _chat_url, _chat_key, _chat_model = settings_service.resolve_ai(
-            feature="chat",
-            env_provider=settings.chat_provider,
-            keys={
-                "openai": settings.openai_api_key,
-                "groq": settings.groq_api_key,
-                "deepseek": settings.deepseek_api_key,
-            },
-            default_models={
-                "openai": settings.openai_chat_model,
-                "groq": settings.groq_model,
-                "deepseek": settings.deepseek_chat_model,
-            },
-        )
+        # Provayderlar ro'yxati: asosiy + ZAXIRALAR. Bittasi band
+        # bo'lsa (Gemini "high demand" 503) keyingisi ishlaydi —
+        # ilgari chat butunlay lokal fallback'ga tushib ketardi.
+        _chat_nomzodlar = ai_candidates("chat")
         # Admin paneldan tahrirlangan prompt bo'lsa o'shani, aks holda standart
         custom_prompt = (settings_service.get("ai_chat_prompt", "") or "").strip()
     except Exception as e:
@@ -94,7 +85,7 @@ async def ai_chat(
         )
         return await fallback_local_parse(user_msg_clean, user_id, db)
 
-    if not _chat_key:
+    if not _chat_nomzodlar:
         return await fallback_local_parse(user_msg_clean, user_id, db)
 
     current_time_str = datetime.now(timezone.utc).isoformat()
@@ -112,23 +103,64 @@ async def ai_chat(
     # Clean the last user message from emoji
     groq_messages.append({"role": "user", "content": user_msg_clean})
 
+    class _BoshJavob:
+        """Hech bir provayder javob bermaganda (chaqiruvchi 200 emasligini ko'radi)."""
+
+        status_code = 503
+
+        @staticmethod
+        def json():
+            return {}
+
     async def call_groq(messages):
-        async with httpx.AsyncClient(timeout=30.0) as client:
-            return await client.post(
-                _chat_url,
-                headers={
-                    "Content-Type": "application/json",
-                    "Authorization": f"Bearer {_chat_key}",
-                },
-                json={
-                    "model": _chat_model,
-                    "messages": messages,
-                    "tools": TOOLS,
-                    "tool_choice": "auto",
-                    "temperature": 0.7,
-                    "max_tokens": settings.groq_max_tokens,
-                },
-            )
+        """AI ga so'rov. Provayder band bo'lsa ZAXIRAGA o'tadi.
+
+        Javob `httpx.Response` ga o'xshash oddiy obyekt: chaqiruvchi
+        kod `status_code` va `.json()` ni kutadi.
+        """
+        from app.services.ai_providers import mark_failed
+
+        oxirgi = None
+        for provider, url, key, model in _chat_nomzodlar:
+            try:
+                async with httpx.AsyncClient(timeout=30.0) as client:
+                    javob = await client.post(
+                        url,
+                        headers={
+                            "Content-Type": "application/json",
+                            "Authorization": f"Bearer {key}",
+                        },
+                        json={
+                            "model": model,
+                            "messages": messages,
+                            "tools": TOOLS,
+                            "tool_choice": "auto",
+                            "temperature": 0.7,
+                            "max_tokens": settings.groq_max_tokens,
+                        },
+                    )
+            except Exception as exc:
+                logger.warning("AI chat (%s/%s) ulanmadi: %s",
+                               provider, model, exc)
+                mark_failed(provider)
+                continue
+
+            if javob.status_code == 200:
+                if provider != _chat_nomzodlar[0][0]:
+                    logger.info("AI chat zaxira provayderi: %s/%s",
+                                provider, model)
+                return javob
+
+            logger.warning("AI chat (%s/%s) status %s: %s", provider, model,
+                           javob.status_code, javob.text[:200])
+            if javob.status_code in (401, 429, 500, 502, 503, 504):
+                mark_failed(provider)
+            oxirgi = javob
+
+        # Hammasi ishlamadi — oxirgi javobni qaytaramiz, chaqiruvchi
+        # kod uni ko'rib lokal fallback'ga o'tadi.
+        return oxirgi or _BoshJavob()
+
 
     # Tool konteksti — foydalanuvchi joylashuvi (ilova yuborsa) "eng yaqin"
     # qidiruvида ishlatiladi.
