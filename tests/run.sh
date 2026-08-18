@@ -19,8 +19,16 @@ pass=0
 fail=0
 failed=""
 
+# Har test o'z Redis bazasida ishlaydi: aks holda oldingi test
+# to'ldirgan rate-limit chegarasi keyingisini 429/500 ga olib keladi.
+# (Bu haqiqiy xatoni yashirmaydi — chegaraning o'zi
+#  tests/test_rate_limit.py da alohida sinaladi.)
+redis_db=1
+
 for t in "$ROOT"/tests/test_*.py; do
     name="$(basename "$t")"
+    redis_db=$(( (redis_db % 14) + 1 ))
+    export REDIS_URL="${REDIS_BASE_URL:-redis://localhost:6379}/$redis_db"
     printf '── %-36s ' "$name"
     if out="$("$PYTHON" "$t" 2>&1)"; then
         if echo "$out" | grep -q '^SKIP:'; then
