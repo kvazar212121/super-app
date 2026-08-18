@@ -263,15 +263,31 @@ async def publish_job(
     # Foydalanuvchi: "ha tasdiq so'rasin". AI xato tushunsa, ustalar
     # noto'g'ri e'longa taklif berib vaqt yo'qotadi.
     if not args.get("confirm"):
+        # ⚠️ E'lon HALI BERILMADI. "E'lon tayyor ✅" kabi sarlavha
+        # foydalanuvchini chalg'itadi: u ish tugadi deb o'ylab,
+        # pastdagi savolni o'qimay ketib qoladi (haqiqiy shikoyat).
         return json.dumps({
             "status": "needs_confirmation",
             "summary": summary,
             "message": (
-                "Покажите сводку и спросите: «Publikovat?»"
+                "ВАЖНО: заявка ЕЩЁ НЕ опубликована. Начните ответ со слов "
+                "«Проверьте заявку» (НЕ пишите «готово») и в конце "
+                "спросите: «Подтверждаете?»"
                 if lang == "ru"
-                else "Xulosani ko'rsatib «E'lon berilsinmi?» deb so'rang."
+                else "MUHIM: e'lon HALI BERILMADI. Javobingizni "
+                     "«E'loningizni tekshiring» deb boshlang («tayyor» deb "
+                     "YOZMANG) va oxirida «Shu e'lonni tasdiqlaysizmi?» "
+                     "deb so'rang. Tugmalarni ilova o'zi chiqaradi."
             ),
-        }, ensure_ascii=False), None
+        }, ensure_ascii=False), {
+            "type": "confirm_request",
+            "kind": "job",
+            "summary": summary,
+            "question": ("Подтверждаете?" if lang == "ru"
+                         else "Shu e'lonni tasdiqlaysizmi?"),
+            "yes_text": "Ha, e'lon bering" if lang != "ru" else "Да, опубликовать",
+            "no_text": "Yo'q, tuzataman" if lang != "ru" else "Нет, исправлю",
+        }
 
     user = await db.get(User, user_id)
     if user is None:
@@ -313,7 +329,70 @@ async def publish_job(
     }, ensure_ascii=False), {"type": "jobs_changed", "job_id": job.id}
 
 
+async def my_jobs(
+    db: AsyncSession, user_id: int, args: dict, ctx: dict | None = None
+) -> tuple[str, dict | None]:
+    """«Mening ish e'lonlarim» — bergan e'lonlari va takliflar soni.
+
+    NEGA KERAK: savdoda `my_listings` bor edi, ish e'lonida yo'q.
+    Foydalanuvchi e'lon bergач "topib ber" desa, AI uni SAVDO
+    qidiruvida izlab topa olmasdi va e'lon "yo'qolgandek" ko'rinardi.
+    """
+    lang = _lang_of(args)
+    from app.models.job import JobPost
+
+    rows = (await db.execute(
+        select(JobPost)
+        .where(JobPost.user_id == user_id)
+        .order_by(JobPost.created_at.desc())
+        .limit(20)
+    )).scalars().all()
+
+    if not rows:
+        return json.dumps({
+            "status": "empty",
+            "message": ("У вас пока нет заявок. Опишите проблему — "
+                        "и я оформлю заявку."
+                        if lang == "ru" else
+                        "Hozircha ish e'loningiz yo'q. Muammoni yozing — "
+                        "e'lon qilib beraman."),
+        }, ensure_ascii=False), None
+
+    from sqlalchemy import func as sqlfunc
+
+    from app.models.job import JobOffer
+
+    items = []
+    for j in rows:
+        cat = await db.get(Category, j.category_id) if j.category_id else None
+        # Takliflar soni — mijoz uchun eng muhim ma'lumot
+        # ("ustalar javob berdimi?").
+        takliflar = (await db.execute(
+            select(sqlfunc.count(JobOffer.id))
+            .where(JobOffer.job_id == j.id)
+        )).scalar() or 0
+        items.append({
+            "id": j.id,
+            "title": j.title,
+            "category": cat.title_uz if cat else None,
+            "address": j.address,
+            "status": j.status.value if j.status else None,
+            "offers_count": int(takliflar),
+            "created_at": (j.created_at.isoformat() if j.created_at else None),
+        })
+
+    return json.dumps({
+        "status": "success",
+        "count": len(items),
+        "jobs": items,
+        "message": ("Кратко перечислите заявки и статус."
+                    if lang == "ru" else
+                    "E'lonlarni qisqa sanab, holatini ayting."),
+    }, ensure_ascii=False), {"type": "jobs_changed"}
+
+
 HANDLERS = {
+    "my_jobs": my_jobs,
     "start_job_draft": start_job_draft,
     "update_job_draft": update_job_draft,
     "publish_job": publish_job,

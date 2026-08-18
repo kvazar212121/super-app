@@ -173,8 +173,16 @@ async def main():
         res = json.loads(raw)
         check("confirm'siz e'lon yaratilmaydi",
               res["status"] == "needs_confirmation", f"{res}")
-        check("tasdiqsiz chaqiruv client action bermaydi",
-              action is None, f"{action}")
+        # Tasdiqsiz chaqiruv E'LON YARATMAYDI, lekin ilovaga KATTA
+        # «Ha/Yo'q» tugmalarini chiqarish uchun amal yuboradi.
+        # (Ilgari bu yerda `action is None` kutilardi; foydalanuvchi
+        # xulosani ko'rib «tayyor» deb o'ylab ketib qolgani uchun
+        # tugmalar qo'shildi.)
+        check("tasdiqsiz chaqiruv tugma amalini yuboradi",
+              action is not None
+              and action.get("type") == "confirm_request"
+              and action.get("kind") == "listing",
+              f"{action}")
 
     async with async_session() as db:
         cnt = (await db.execute(select(sqlfunc.count(Listing.id)))).scalar()

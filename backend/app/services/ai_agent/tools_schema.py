@@ -383,6 +383,22 @@ TOOLS = [
     {
         "type": "function",
         "function": {
+            "name": "my_jobs",
+            "description": (
+                "Foydalanuvchining O'Z ISH e'lonlari: holati va nechta "
+                "usta taklif bergani. «E'lonim qani?», «e'lonimni topib "
+                "ber», «ustalar javob berdimi?» kabi savollarda. "
+                "DIQQAT: bu ISH e'lonlari (usta qidiriladi). Buyum "
+                "savdosi uchun `my_listings` ishlating."
+            ),
+            "parameters": {"type": "object", "properties": {
+                "lang": {"type": "string"}
+            }}
+        }
+    },
+    {
+        "type": "function",
+        "function": {
             "name": "update_job_draft",
             "description": (
                 "E'lon qoralamasiga YANGI ma'lumot qo'shish. Tool "

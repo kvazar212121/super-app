@@ -700,6 +700,10 @@ class _ChatScreenState extends State<ChatScreen>
     final actionButtons = isUser ? const <Widget>[] : _actionButtons(actions);
     // Savdo qidiruvi natijasi: tugma emas, KARTALAR gridi ko'rinadi.
     final listings = isUser ? const <Listing>[] : _listingsOf(actions);
+    // Tasdiq so'rovi: katta «Ha / Yo'q» tugmalari. Ilgari faqat matn
+    // bor edi va foydalanuvchi «E'lon tayyor» degan sarlavhani ko'rib
+    // pastdagi savolni o'qimay ketib qolardi — e'lon berilmay qolardi.
+    final confirm = isUser ? null : _confirmOf(actions);
 
     return Align(
       alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
@@ -772,6 +776,7 @@ class _ChatScreenState extends State<ChatScreen>
                 child: ListingGrid(listings: listings),
               ),
             ),
+          if (confirm != null) _confirmButtons(confirm),
           if (actionButtons.isNotEmpty)
             Padding(
               padding: const EdgeInsets.only(bottom: 16, left: 4),
@@ -901,6 +906,100 @@ class _ChatScreenState extends State<ChatScreen>
         (m['content'] ?? '').toString(),
       );
     }
+  }
+
+  /// Tasdiq so'rovi amalini topadi (`confirm_request`).
+  Map<String, dynamic>? _confirmOf(List<Map<String, dynamic>>? actions) {
+    if (actions == null) return null;
+    for (final a in actions) {
+      if (a['type'] == 'confirm_request') return a;
+    }
+    return null;
+  }
+
+  /// Katta «Ha / Yo'q» tugmalari.
+  ///
+  /// Nega katta: bu oxirgi qadam va uni o'tkazib yuborish e'lon
+  /// berilmasligiga olib keladi. Tugma bosilganda oddiy xabar
+  /// yuboriladi — model uni tasdiq deb tushunadi.
+  Widget _confirmButtons(Map<String, dynamic> confirm) {
+    final savol = (confirm['question'] as String?) ?? 'Tasdiqlaysizmi?';
+    final ha = (confirm['yes_text'] as String?) ?? 'Ha';
+    final yoq = (confirm['no_text'] as String?) ?? 'Yo\'q';
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16, right: 8),
+      padding: const EdgeInsets.all(14),
+      width: MediaQuery.of(context).size.width * 0.86,
+      decoration: BoxDecoration(
+        color: Colors.orange.withValues(alpha: isDark ? 0.16 : 0.10),
+        borderRadius: BorderRadius.circular(GlassTokens.radiusMd),
+        border: Border.all(color: Colors.orange.withValues(alpha: 0.45)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Row(
+            children: [
+              const Icon(LucideIcons.circleAlert,
+                  size: 18, color: Colors.orange),
+              const SizedBox(width: 6),
+              Expanded(
+                child: Text(
+                  savol,
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                    color: isDark ? Colors.white : Colors.black87,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Expanded(
+                child: SizedBox(
+                  height: 52,
+                  child: FilledButton.icon(
+                    style: FilledButton.styleFrom(
+                      backgroundColor: Colors.green,
+                      textStyle: const TextStyle(
+                          fontSize: 16, fontWeight: FontWeight.w700),
+                    ),
+                    onPressed: _isTyping ? null : () => _sendMessage(text: ha),
+                    icon: const Icon(LucideIcons.check, size: 20),
+                    label: Text(ha, maxLines: 1,
+                        overflow: TextOverflow.ellipsis),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: SizedBox(
+                  height: 52,
+                  child: OutlinedButton.icon(
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: Colors.red,
+                      side: const BorderSide(color: Colors.red),
+                      textStyle: const TextStyle(
+                          fontSize: 16, fontWeight: FontWeight.w700),
+                    ),
+                    onPressed: _isTyping ? null : () => _sendMessage(text: yoq),
+                    icon: const Icon(LucideIcons.x, size: 20),
+                    label: Text(yoq, maxLines: 1,
+                        overflow: TextOverflow.ellipsis),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
   }
 
   /// AI qaytargan amallardan savdo e'lonlarini ajratib oladi.

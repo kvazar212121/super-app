@@ -292,13 +292,36 @@ async def publish_listing(
         }, ensure_ascii=False), None
 
     if not args.get("confirm"):
+        # ⚠️ Bu HALI E'LON EMAS — faqat tasdiq so'ralmoqda.
+        # Foydalanuvchilar "E'lon tayyor ✅" degan sarlavhani ko'rib
+        # e'lon joylashdi deb o'ylab, pastdagi savolni o'qimay ketib
+        # qolishdi. Shuning uchun modelga aniq ko'rsatma beramiz va
+        # ilovaga «Ha/Yo'q» tugmalarini chiqaradigan amal yuboramiz.
         return json.dumps({
             "status": "needs_confirmation",
             "summary": draft.summary(lang),
-            "message": ("Покажите сводку и спросите: «Публикуем?»"
-                        if lang == "ru" else
-                        "Xulosani ko'rsatib «E'lon berilsinmi?» deb so'rang."),
-        }, ensure_ascii=False), None
+            "message": (
+                "ВАЖНО: объявление ЕЩЁ НЕ опубликовано. Начните ответ со "
+                "слов «Проверьте объявление» (НЕ пишите «готово»), "
+                "покажите сводку и в конце спросите: "
+                "«Подтверждаете публикацию?»"
+                if lang == "ru" else
+                "MUHIM: e'lon HALI JOYLANMADI. Javobingizni «E'loningizni "
+                "tekshiring» deb boshlang («tayyor» deb YOZMANG), xulosani "
+                "ko'rsating va oxirida «Shu e'lonni tasdiqlaysizmi?» deb "
+                "so'rang. Tugmalarni ilova o'zi chiqaradi."
+            ),
+        }, ensure_ascii=False), {
+            # Ilova shu amalni ko'rib katta «Ha / Yo'q» tugmalarini
+            # chiqaradi — odam savolni o'qimay ketib qolmaydi.
+            "type": "confirm_request",
+            "kind": "listing",
+            "summary": draft.summary(lang),
+            "question": ("Подтверждаете публикацию?" if lang == "ru"
+                         else "Shu e'lonni tasdiqlaysizmi?"),
+            "yes_text": "Ha, e'lon bering" if lang != "ru" else "Да, опубликовать",
+            "no_text": "Yo'q, tuzataman" if lang != "ru" else "Нет, исправлю",
+        }
 
     user = await db.get(User, user_id)
     if user is None:

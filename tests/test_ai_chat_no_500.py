@@ -105,8 +105,14 @@ async def main():
         await db.commit()
         uid = u.id
 
+    # Qoralama endi Redis'da ham saqlanadi (ko'p worker uchun).
+    # Oldingi yurishdan qolgan qoralama shu testni chalg'itardi:
+    # `start_listing_draft` toza boshlanishi kerak.
+    clear_draft(uid)
+
     # ── 2. Buzuq argumentli TOOL CHAQIRUVI ham 500 bermaydi ──────────
     async with async_session() as db:
+        clear_draft(uid)  # toza qoralama: eski ma'lumot aralashmasin
         raw, _ = await handle_tool_call(db, uid, {
             "id": "1",
             "function": {"name": "update_listing_draft",
@@ -257,6 +263,56 @@ async def main():
     check("tool bajarilгач bo'sh javob o'rniga xabar yoziladi",
           "E'lon joylandi" in src and "turlar = {" in src,
           "bo'sh javob foydalanuvchiga xatolik bo'lib ko'rinadi")
+
+    # ── 6d. TASDIQ so'ralganda ilovaga tugma amali yuboriladi ───────
+    # Haqiqiy shikoyat: AI «E'lon tayyor ✅» deb boshlagan, odam ish
+    # tugadi deb o'ylab pastdagi savolni o'qimagan va e'lon berilmay
+    # qolgan. Endi ilova katta «Ha/Yo'q» tugmalarini chiqaradi.
+    async with async_session() as db:
+        clear_draft(uid)
+        await handle_tool_call(db, uid, {
+            "id": "1",
+            "function": {"name": "start_listing_draft", "arguments": json.dumps({
+                "category": "telefon", "title": "Samsung S23",
+                "price": 3000000, "condition": "yaxshi",
+                "address": "Toshkent",
+                "attributes": {"model": "S23", "xotira": "128GB"},
+                "photos": RASMLAR,
+            })},
+        })
+        raw, action = await handle_tool_call(db, uid, {
+            "id": "2",
+            "function": {"name": "publish_listing", "arguments": "{}"},
+        })
+        res3 = json.loads(raw)
+        check("tasdiqsiz e'lon yaratilmaydi",
+              res3.get("status") == "needs_confirmation", f"{res3}")
+        check("ilovaga tasdiq tugmasi amali yuboriladi",
+              action and action.get("type") == "confirm_request", f"{action}")
+        check("tugma matnlari beriladi",
+              action and action.get("yes_text") and action.get("no_text"),
+              f"{action}")
+        check("savol matni aniq",
+              action and "tasdiq" in (action.get("question") or "").lower(),
+              f"{action}")
+        # Model «tayyor» deb yozmasligi uchun ko'rsatma bo'lishi kerak.
+        check("modelga «tayyor» demaslik aytiladi",
+              "YOZMANG" in (res3.get("message") or ""), f"{res3.get('message')}")
+
+    # Prompt darajasida ham qo'riqlanadi.
+    prompt_src = open(
+        os.path.join(PROJ, "backend/app/services/ai_agent/prompt.py")
+    ).read()
+    check("promptda «tayyor» deb yozish taqiqlangan",
+          "TAYYOR» DEB YOZMANG" in prompt_src, "qoida yo'q")
+
+    # Ish e'loni uchun ham xuddi shunday.
+    from app.services.ai_agent.job_tools import clear_draft as job_clear
+    job_src = open(
+        os.path.join(PROJ, "backend/app/services/ai_agent/job_tools.py")
+    ).read()
+    check("ish e'loni ham tasdiq tugmasini yuboradi",
+          '"type": "confirm_request"' in job_src, "topilmadi")
 
     # ── 7. Tavsif bo'sh qolmaydi ─────────────────────────────────────
     async with async_session() as db:
