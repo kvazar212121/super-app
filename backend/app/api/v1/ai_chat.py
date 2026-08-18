@@ -173,6 +173,24 @@ async def ai_chat(
         # Mobil ilova markdown'ni render qilmaydi — jadval/qalin belgilarni
         # kafolatli tozalaymiz (model promptga har doim ham amal qilavermaydi).
         final_reply = clean_for_mobile(final_reply)
+
+        # Model ba'zan tool bajarilgach BO'SH matn qaytaradi (ayniqsa
+        # oxirgi turda). Ilova bo'sh javobni "xatolik" deb ko'rsatardi,
+        # holbuki amal BAJARILGAN edi. Shuning uchun amalga qarab
+        # tushunarli xabar yozamiz.
+        if not final_reply:
+            turlar = {a.get("type") for a in actions}
+            if "listings_changed" in turlar:
+                final_reply = "E'lon joylandi ✅"
+            elif "jobs_changed" in turlar:
+                final_reply = "E'lon berildi ✅"
+            elif turlar & {"booking_created", "orders_changed"}:
+                final_reply = "Buyurtma rasmiylashtirildi ✅"
+            elif "listing_grid" in turlar:
+                final_reply = "Mana topilgan e'lonlar 👇"
+            else:
+                final_reply = "So'rovingiz bajarildi ✅"
+
         return ChatResponse(reply=final_reply, actions=actions)
 
     except (httpx.TimeoutException, httpx.HTTPError) as e:

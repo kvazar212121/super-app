@@ -38,19 +38,80 @@ logger = logging.getLogger(__name__)
 # Jarayon xotirasida — bir suhbat davomida yashaydi. Server qayta
 # ishga tushsa yo'qoladi, bu qabul qilinadi: foydalanuvchi qaytadan
 # aytadi, e'lon esa hech qachon yarim holatda saqlanmaydi.
+#
+# Savdo qoralamasi kabi, bu ham Redis'da dublikatlanadi: prodda bir
+# necha worker ishlaydi va foydalanuvchi ma'lumotni bir workerga
+# yozib, tasdiqni boshqasiga yuborishi mumkin.
 _DRAFTS: dict[int, JobDraft] = {}
+_REDIS_KEY = "ai_draft:job:{}"
+_REDIS_TTL = 7200
 
 
 def _get_draft(user_id: int) -> JobDraft:
     draft = _DRAFTS.get(user_id)
-    if draft is None:
-        draft = JobDraft()
-        _DRAFTS[user_id] = draft
+    if draft is not None:
+        return draft
+    try:
+        from app.core.redis_client import get_redis
+
+        raw = get_redis().get(_REDIS_KEY.format(user_id))
+        if raw:
+            data = json.loads(raw)
+            draft = JobDraft(
+                category_id=data.get("category_id"),
+                title=data.get("title"),
+                description=data.get("description"),
+                address=data.get("address"),
+                photos=list(data.get("photos") or []),
+                budget=data.get("budget"),
+                needed_at=_parse_datetime(data.get("needed_at")),
+                lat=data.get("lat"),
+                lng=data.get("lng"),
+            )
+            _DRAFTS[user_id] = draft
+            return draft
+    except Exception as exc:
+        logger.warning("Ish qoralamasini Redis'dan o'qib bo'lmadi: %s", exc)
+
+    draft = JobDraft()
+    _DRAFTS[user_id] = draft
     return draft
+
+
+def _save_draft(user_id: int, draft: JobDraft) -> None:
+    _DRAFTS[user_id] = draft
+    try:
+        from app.core.redis_client import get_redis
+
+        data = {
+            "category_id": draft.category_id,
+            "title": draft.title,
+            "description": draft.description,
+            "address": draft.address,
+            "photos": draft.photos,
+            "budget": draft.budget,
+            "needed_at": (draft.needed_at.isoformat()
+                          if draft.needed_at else None),
+            "lat": draft.lat,
+            "lng": draft.lng,
+        }
+        get_redis().set(
+            _REDIS_KEY.format(user_id),
+            json.dumps(data, ensure_ascii=False),
+            ex=_REDIS_TTL,
+        )
+    except Exception as exc:
+        logger.warning("Ish qoralamasini Redis'ga yozib bo'lmadi: %s", exc)
 
 
 def clear_draft(user_id: int) -> None:
     _DRAFTS.pop(user_id, None)
+    try:
+        from app.core.redis_client import get_redis
+
+        get_redis().delete(_REDIS_KEY.format(user_id))
+    except Exception:
+        pass
 
 
 async def _resolve_category(db: AsyncSession, hint: str | None) -> Category | None:
@@ -100,7 +161,8 @@ async def start_job_draft(
     db: AsyncSession, user_id: int, args: dict, ctx: dict | None = None
 ) -> tuple[str, dict | None]:
     """Yangi e'lon qoralamasini boshlaydi (eskisini o'chiradi)."""
-    _DRAFTS[user_id] = JobDraft()
+    _DRAFTS.pop(user_id, None)
+    _save_draft(user_id, JobDraft())
     return await update_job_draft(db, user_id, args, ctx)
 
 
@@ -130,6 +192,8 @@ async def update_job_draft(
     # filtri uchun MUHIM: koordinatasiz e'lon hamma ustaga ko'rinadi.
     if ctx and draft.lat is None and ctx.get("lat") is not None:
         draft.merge(lat=ctx.get("lat"), lng=ctx.get("lng"))
+
+    _save_draft(user_id, draft)
 
     missing = missing_fields(draft)
     if missing:

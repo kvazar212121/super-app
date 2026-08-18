@@ -42,21 +42,92 @@ from app.services.marketplace.validator import ask_text, missing_fields
 
 logger = logging.getLogger(__name__)
 
-# Suhbat qoralamalari: {user_id: ListingDraft}. Bazaga YOZILMAYDI —
-# yarim e'lon xaridorlar qidiruviga chiqmasligi kerak.
+# Suhbat qoralamalari. Bazaga YOZILMAYDI — yarim e'lon xaridorlar
+# qidiruviga chiqmasligi kerak.
+#
+# Ikki qatlam: jarayon xotirasi + Redis (2 soat).
+# NEGA REDIS: prodda bir necha worker ishlaydi (WEB_CONCURRENCY).
+# Foydalanuvchi ma'lumotni bir workerga yozib, "ha" ni boshqasiga
+# yuborishi mumkin — o'shanda qoralama BO'SH bo'lib chiqardi va
+# e'lon berilmasdi. Bu haqiqiy chiqarishda uchradi.
 _DRAFTS: dict[int, ListingDraft] = {}
+_REDIS_KEY = "ai_draft:market:{}"
+_REDIS_TTL = 7200  # 2 soat — suhbat shuncha davom etmaydi
 
 
 def _get_draft(user_id: int) -> ListingDraft:
     draft = _DRAFTS.get(user_id)
-    if draft is None:
-        draft = ListingDraft()
-        _DRAFTS[user_id] = draft
+    if draft is not None:
+        return draft
+    try:
+        from app.core.redis_client import get_redis
+
+        raw = get_redis().get(_REDIS_KEY.format(user_id))
+        if raw:
+            data = json.loads(raw)
+            draft = ListingDraft(
+                category_key=data.get("category_key"),
+                title=data.get("title"),
+                description=data.get("description"),
+                price=data.get("price"),
+                currency=data.get("currency") or "UZS",
+                is_negotiable=bool(data.get("is_negotiable")),
+                condition=parse_condition(data.get("condition")),
+                address=data.get("address"),
+                lat=data.get("lat"),
+                lng=data.get("lng"),
+                attributes=data.get("attributes") or {},
+                photos=list(data.get("photos") or []),
+            )
+            _DRAFTS[user_id] = draft
+            return draft
+    except Exception as exc:
+        # Redis yo'q bo'lsa ham savdo ISHLASHDA DAVOM ETADI —
+        # bitta worker doirasida qoralama xotirada saqlanadi.
+        logger.warning("Qoralamani Redis'dan o'qib bo'lmadi: %s", exc)
+
+    draft = ListingDraft()
+    _DRAFTS[user_id] = draft
     return draft
+
+
+def _save_draft(user_id: int, draft: ListingDraft) -> None:
+    """Qoralamani xotiraga va Redis'ga yozadi."""
+    _DRAFTS[user_id] = draft
+    try:
+        from app.core.redis_client import get_redis
+
+        data = {
+            "category_key": draft.category_key,
+            "title": draft.title,
+            "description": draft.description,
+            "price": draft.price,
+            "currency": draft.currency,
+            "is_negotiable": draft.is_negotiable,
+            "condition": draft.condition.value if draft.condition else None,
+            "address": draft.address,
+            "lat": draft.lat,
+            "lng": draft.lng,
+            "attributes": draft.attributes,
+            "photos": draft.photos,
+        }
+        get_redis().set(
+            _REDIS_KEY.format(user_id),
+            json.dumps(data, ensure_ascii=False),
+            ex=_REDIS_TTL,
+        )
+    except Exception as exc:
+        logger.warning("Qoralamani Redis'ga yozib bo'lmadi: %s", exc)
 
 
 def clear_draft(user_id: int) -> None:
     _DRAFTS.pop(user_id, None)
+    try:
+        from app.core.redis_client import get_redis
+
+        get_redis().delete(_REDIS_KEY.format(user_id))
+    except Exception:
+        pass
 
 
 def _lang(args: dict) -> str:
@@ -127,11 +198,12 @@ async def start_listing_draft(
     if not marketplace_enabled():
         return _off_response(lang)
 
-    _DRAFTS[user_id] = ListingDraft()
-    draft = _get_draft(user_id)
+    _DRAFTS.pop(user_id, None)
+    draft = ListingDraft()
     _apply(draft, args, ctx)
     if draft.category_key is None:
         draft.category_key = resolve_category(args.get("description"))
+    _save_draft(user_id, draft)
 
     cat = category_of(draft.category_key)
     return json.dumps({
@@ -161,6 +233,7 @@ async def update_listing_draft(
 
     draft = _get_draft(user_id)
     _apply(draft, args, ctx)
+    _save_draft(user_id, draft)
     holat = _draft_state(draft, lang)
     return json.dumps({
         "status": "ready" if not holat["missing"] else "collecting",
@@ -178,6 +251,7 @@ async def add_listing_photos(
 
     draft = _get_draft(user_id)
     draft.merge(photos=normalize(args.get("photos")))
+    _save_draft(user_id, draft)
     xato = photos_check(draft.photos, None, lang)
     return json.dumps({
         "status": "need_photos" if xato else "photos_ok",
@@ -200,6 +274,7 @@ async def publish_listing(
     draft = _get_draft(user_id)
     # Oxirgi daqiqada kelgan ma'lumot ham hisobga olinsin.
     _apply(draft, args, ctx)
+    _save_draft(user_id, draft)
 
     missing = missing_fields(draft)
     if missing:

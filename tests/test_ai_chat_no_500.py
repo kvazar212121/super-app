@@ -189,6 +189,65 @@ async def main():
           kutish is not None and float(kutish.group(1)) <= 30,
           f"{kutish.group(1) if kutish else 'topilmadi'}")
 
+    # ── 6b. Qoralama KO'P WORKER orasida yo'qolmaydi ─────────────────
+    # Prodda bir necha worker ishlaydi: foydalanuvchi ma'lumotni bir
+    # workerga yozib, "ha" ni boshqasiga yuborishi mumkin. Ilgari
+    # qoralama faqat jarayon xotirasida edi va BO'SH bo'lib chiqardi.
+    mt = open(
+        os.path.join(PROJ, "backend/app/services/ai_agent/market_tools.py")
+    ).read()
+    check("savdo qoralamasi Redis'da ham saqlanadi",
+          "_save_draft" in mt and "ai_draft:market" in mt, "topilmadi")
+    jt = open(
+        os.path.join(PROJ, "backend/app/services/ai_agent/job_tools.py")
+    ).read()
+    check("ish qoralamasi ham Redis'da",
+          "ai_draft:job" in jt, "topilmadi")
+
+    # Xotira keshi tozalangach Redis'dan tiklanishini SINAB ko'ramiz.
+    from app.services.ai_agent import market_tools
+
+    async with async_session() as db:
+        clear_draft(uid)
+        await handle_tool_call(db, uid, {
+            "id": "1",
+            "function": {"name": "start_listing_draft", "arguments": json.dumps({
+                "category": "mebel", "title": "Yumshoq divan",
+                "condition": "yaxshi", "address": "Toshkent",
+            })},
+        })
+        # "Boshqa worker" ni taqlid qilamiz: xotira keshini tozalaymiz.
+        market_tools._DRAFTS.clear()
+        raw, _ = await handle_tool_call(db, uid, {
+            "id": "2",
+            "function": {"name": "update_listing_draft",
+                         "arguments": '{"price": 2000000}'},
+        })
+        res2 = json.loads(raw)
+        # Qoralama tiklanganini TOIFA bo'yicha tekshiramiz: `summary`
+        # faqat hamma maydon to'lgandagina bo'ladi, bu yerda esa
+        # `tur` ataylab berilmagan. Muhimi — oldin yozilgan ma'lumot
+        # yo'qolmagani.
+        tiklandi = (res2.get("category") == "mebel"
+                    and "title" not in (res2.get("missing") or [])
+                    and "condition" not in (res2.get("missing") or []))
+        # Redis bo'lmasa bu tekshiruv o'tkazib yuboriladi (lokal muhit).
+        try:
+            from app.core.redis_client import get_redis
+            get_redis().ping()
+            redis_bor = True
+        except Exception:
+            redis_bor = False
+        if redis_bor:
+            check("boshqa workerda qoralama tiklanadi", tiklandi, f"{res2}")
+        else:
+            check("Redis yo'q — qoralama xotirada ishlaydi (o'tkazildi)", True)
+
+    # ── 6c. Bo'sh javob "xatolik" bo'lib ko'rinmaydi ─────────────────
+    check("tool bajarilгач bo'sh javob o'rniga xabar yoziladi",
+          "E'lon joylandi" in src and "turlar = {" in src,
+          "bo'sh javob foydalanuvchiga xatolik bo'lib ko'rinadi")
+
     # ── 7. Tavsif bo'sh qolmaydi ─────────────────────────────────────
     async with async_session() as db:
         item = (await db.get(Listing, res.get("listing_id")))
