@@ -286,7 +286,11 @@ async def call_with_fallback(
     payload_builder,
     *,
     timeout: float = 45.0,
-    retry_statuses: tuple[int, ...] = (429, 500, 502, 503, 504),
+    # 404 — model mavjud emas (provayder eskisini olib tashlagan yoki
+    # adminkada xato yozilgan). 400 — parametr/model nomi xato.
+    # Ikkalasida ham KEYINGI provayder ishlashi mumkin, shuning uchun
+    # ular ham qayta urinish ro'yxatida.
+    retry_statuses: tuple[int, ...] = (400, 404, 429, 500, 502, 503, 504),
 ) -> tuple[dict, str, str]:
     """Provayderlarni NAVBAT bilan sinab, birinchi muvaffaqiyatlisini qaytaradi.
 
@@ -335,10 +339,9 @@ async def call_with_fallback(
         oxirgi_xato = f"{provider}: HTTP {javob.status_code}"
         logger.warning("AI (%s/%s) status %s: %s", provider, model,
                        javob.status_code, javob.text[:200])
-        # Vaqtinchalik xatolarda keyingi provayderga o'tamiz.
-        # 400/401 esa BIZNING xato (noto'g'ri kalit yoki so'rov) —
-        # boshqa provayderda ham takrorlanadi, lekin baribir
-        # urinib ko'ramiz: kalit faqat bittasida buzuq bo'lishi mumkin.
+        # Har qanday muvaffaqiyatsiz javobda KEYINGI provayderga
+        # o'tamiz: xato bitta provayderga xos bo'lishi mumkin
+        # (model olib tashlangan, kalit tugagan, model band).
         if javob.status_code in retry_statuses or javob.status_code == 401:
             mark_failed(provider)
         continue

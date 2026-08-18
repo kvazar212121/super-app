@@ -117,6 +117,11 @@ async def main():
             return "gemini"
         if kalit == "ai_vision_order":
             return "gemini,openai"
+        # Prod bazasida `ai_vision_model` saqlangan bo'lishi mumkin;
+        # test har provayder O'Z modelini olishini tekshiradi,
+        # shuning uchun umumiy sozlamani bo'sh qilamiz.
+        if kalit == "ai_vision_model":
+            return ""
         return _asl_get(kalit, standart)
 
     _ss.get = _tartib_get
@@ -167,6 +172,39 @@ async def main():
             "vision", lambda m: {"model": m}
         )
         check("tarmoq xatosida ham zaxiraga o'tiladi", provider == "openai",
+              f"{provider}")
+
+        # ── 4b. MODEL YO'Q (404) bo'lsa ham zaxiraga o'tadi ─────────
+        # Haqiqiy holat: adminkada `gpt-5.6-luna` yozilgan, keyin
+        # noto'g'ri nom kiritilsa 404 keladi. Ilgari bu holatda
+        # zaxira ishlamay, foydalanuvchi xato xabarini ko'rardi.
+        tozala()
+        SoxtaMijoz.javoblar = {
+            "generativelanguage.googleapis.com": SoxtaJavob(
+                200, {"choices": [{"message": {"content": "ok"}}]}
+            ),
+            "api.openai.com": SoxtaJavob(
+                404, text='{"error":{"message":"model does not exist"}}'
+            ),
+        }
+        _, provider, _ = await ap.call_with_fallback(
+            "vision", lambda m: {"model": m}
+        )
+        check("model topilmasa (404) zaxiraga o'tadi", provider == "gemini",
+              f"{provider}")
+
+        # 400 (parametr xato) da ham keyingisiga o'tiladi.
+        tozala()
+        SoxtaMijoz.javoblar = {
+            "generativelanguage.googleapis.com": SoxtaJavob(
+                200, {"choices": [{"message": {"content": "ok"}}]}
+            ),
+            "api.openai.com": SoxtaJavob(400, text='{"error":{}}'),
+        }
+        _, provider, _ = await ap.call_with_fallback(
+            "vision", lambda m: {"model": m}
+        )
+        check("400 xatosida ham zaxiraga o'tiladi", provider == "gemini",
               f"{provider}")
 
         # ── 5. HAMMASI ishlamasa tushunarli xato ─────────────────────
