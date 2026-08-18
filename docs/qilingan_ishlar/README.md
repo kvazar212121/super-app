@@ -102,8 +102,14 @@ Qabul qilingan qarorlar (foydalanuvchi tasdiqlagan):
   50 e'lon / 10 rasm. Hammasi adminkadan sozlanadi.
 
 Tekshiruv: `tests/test_marketplace_flow.py` (39), `_search.py` (27),
-`_limits.py` (45), `_contract.py` (52) + Flutter `marketplace_grid_test.dart`
-va `marketplace_modal_test.dart` (14). Jami Flutter testi 205 → 219.
+`_limits.py` (45), `_contract.py` (52), `_api.py` (44 — HTTP darajasida:
+marshrut, ruxsat, 404/402/403, adminka o'chirilishi) + Flutter
+`marketplace_grid_test.dart`, `marketplace_modal_test.dart` va
+`marketplace_chat_grid_test.dart` (19). Jami Flutter testi 205 → 224.
+
+Sinalmagani (bilib turib): haqiqiy LLM tool-calling (model javobi),
+qurilmada ochilgan ilova va brauzerda ochilgan admin paneli. Bular
+uchun ishlaydigan server/telefon kerak.
 
 > Eslatma: savdo testlari PostgreSQL bo'lmasa SKIP bo'lmaydi —
 > vaqtincha SQLite faylida ishlaydi, chunki bu mantiq Postgres'ga xos
