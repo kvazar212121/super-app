@@ -19,8 +19,18 @@ class Category(Base):
         "CategoryVariant", back_populates="category", lazy="selectin",
         cascade="all, delete-orphan"
     )
+    # DIQQAT: `lazy="selectin"` EMAS.
+    #
+    # Ilgari shunday edi va har `/categories` so'rovida BARCHA
+    # provayderlar RAM'ga tortilardi. 29 toifa × yuzlab provayder =
+    # bir necha megabayt, har so'rovda. Yuklama testida bu eng
+    # sekin joylardan biri edi.
+    #
+    # Bu bog'lanish kodda hech qayerda ishlatilmaydi (provayderlar
+    # `/providers` orqali, sahifalab olinadi). Kerak bo'lsa
+    # `selectinload(Category.providers)` bilan ANIQ so'raladi.
     providers = relationship(
-        "Provider", back_populates="category", lazy="selectin"
+        "Provider", back_populates="category", lazy="raise"
     )
 
     def to_dict(self) -> dict:

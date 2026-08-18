@@ -5,7 +5,42 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: superapp
-    command: ["postgres", "-c", "max_connections=200"]
+    # PostgreSQL sozlamalari.
+    #
+    # Standart konfiguratsiya 1990-yillardagi serverga mo'ljallangan:
+    # `shared_buffers` atigi 128 MB edi va baza deyarli hamma narsani
+    # diskdan o'qirdi. Quyidagilar 8 GB RAM li server uchun.
+    # RAM ko'paytirilsa `shared_buffers` ni RAM/4 ga oshiring.
+    command:
+      - "postgres"
+      - "-c"
+      - "max_connections=200"
+      # RAM ning ~25% i — eng ko'p ta'sir qiladigan parametr.
+      - "-c"
+      - "shared_buffers=2GB"
+      # Rejalashtiruvchiga OS keshini ham hisobga olishni aytadi
+      # (RAM ning ~75%). Indeksdan foydalanishni oshiradi.
+      - "-c"
+      - "effective_cache_size=5GB"
+      # Saralash/JOIN uchun har so'rovga. Juda katta qilish xavfli:
+      # 200 ulanish × work_mem = eng yomon holat.
+      - "-c"
+      - "work_mem=16MB"
+      - "-c"
+      - "maintenance_work_mem=512MB"
+      # SSD uchun: tasodifiy o'qish qimmat emas.
+      - "-c"
+      - "random_page_cost=1.1"
+      - "-c"
+      - "effective_io_concurrency=200"
+      # Yozuvni tekislaydi (checkpoint paytida to'xtab qolmaslik).
+      - "-c"
+      - "checkpoint_completion_target=0.9"
+      - "-c"
+      - "wal_buffers=16MB"
+      # Sekin so'rovlarni logga yozadi — muammoni topish uchun.
+      - "-c"
+      - "log_min_duration_statement=1000"
     ports:
       - "5435:5432"
     volumes:
@@ -37,6 +72,17 @@ services:
     environment:
       # Web worker soni (2 yadro uchun 3 maqbul). Bittasi scheduler-leader bo'ladi.
       WEB_CONCURRENCY: 3
+    # Fayl deskriptorlari chegarasi.
+    #
+    # NEGA MUHIM: har WebSocket ulanishi bitta deskriptor egallaydi.
+    # Standart 1024 edi va yuklama testi ANIQ shu yerda to'xtadi:
+    # 1018 ulanishdan keyin `OSError` (32% xato). Bu ~1000 ta bir
+    # vaqtdagi onlayn foydalanuvchi degani — o'sib borayotgan ilova
+    # uchun kam.
+    ulimits:
+      nofile:
+        soft: 65535
+        hard: 65535
     depends_on:
       db:
         condition: service_healthy
@@ -62,6 +108,12 @@ services:
       - "8080:80"
     volumes:
       - ../deploy/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    # Nginx ham har ulanish uchun deskriptor sarflaydi (mijoz +
+    # backend tomoni = 2 ta). WebSocket uzoq ushlanadi.
+    ulimits:
+      nofile:
+        soft: 65535
+        hard: 65535
     depends_on:
       - backend
     restart: unless-stopped
