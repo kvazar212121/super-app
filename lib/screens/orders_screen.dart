@@ -5,6 +5,7 @@ import '../widgets/orders_filter_widget.dart';
 import '../widgets/orders_list_widget.dart';
 import '../widgets/glass/glass_scaffold.dart';
 import '../providers/auth_provider.dart';
+import '../services/feature_service.dart';
 import '../widgets/guest_blocker_widget.dart';
 import '../l10n/locale_controller.dart';
 import 'marketplace/my_listings_screen.dart';
@@ -29,6 +30,9 @@ class _OrdersScreenState extends State<OrdersScreen> {
   Widget build(BuildContext context) {
     final provider = context.read<AppProvider>();
     final auth = context.watch<AuthProvider>();
+    // Savdo bo'limi adminkadan o'chirilsa tab ham ko'rinmaydi:
+    // ochiq tab bosilganda bo'sh ekran chiqmasin.
+    final savdoOchiq = FeatureService().isEnabled('marketplace');
 
     return GlassScaffold(
       // Tab ichida — embeddedInShell (fon MainScreen'dan). Alohida route
@@ -43,7 +47,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
           // (buyum sotish). Savdo alohida tab: muddati va uzaytirish
           // qoidalari ish e'lonidan butunlay boshqa.
           ? DefaultTabController(
-              length: 3,
+              length: savdoOchiq ? 3 : 2,
               child: Column(
                 children: [
                   TabBar(
@@ -52,7 +56,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                     tabs: [
                       Tab(text: 'Buyurtmalar'.tr),
                       Tab(text: 'E\'lonlarim'.tr),
-                      Tab(text: 'Savdo'.tr),
+                      if (savdoOchiq) Tab(text: 'Savdo'.tr),
                     ],
                   ),
                   Expanded(
@@ -79,7 +83,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                           ],
                         ),
                         const MyJobsScreen(embedded: true),
-                        const MyListingsScreen(embedded: true),
+                        if (savdoOchiq) const MyListingsScreen(embedded: true),
                       ],
                     ),
                   ),
