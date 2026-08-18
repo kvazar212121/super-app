@@ -115,3 +115,7 @@ ios/Runner/GoogleService-Info.plist
 # Test va lokal ishga tushirishda yaratiladigan yuklamalar
 uploads/
 android/.kotlin/
+
+# Demo provayder raqamlari — seed_demo.py serverda yozadi.
+# Git'ga tushmaydi: har muhitda o'z demo ma'lumoti bo'ladi.
+backend/app/services/demo_phones.txt

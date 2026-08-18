@@ -349,6 +349,28 @@ async def main(force_banner: bool = False, force_meta: bool = False) -> None:
                     yaratilgan_sharh += 1
             await db.commit()
 
+    # ── 6. OTP'siz kirish uchun raqamlar ro'yxati ────────────────────
+    # Prodda SMS OTP majburiy. Demo provayder kabinetiga kirib
+    # ko'rish uchun ularning raqamlari whitelist'ga yoziladi
+    # (`otp_whitelist.py` shu faylni o'qiydi). Kod: 111111.
+    try:
+        import os
+
+        yol = os.path.join(
+            os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+            "app", "services", "demo_phones.txt",
+        )
+        raqamlar = sorted({(p.phone or "").strip()
+                           for p in provayderlar if (p.phone or "").strip()})
+        with open(yol, "w", encoding="utf-8") as f:
+            f.write("# Demo provayder raqamlari — OTP'siz kiradi (kod: 111111).\n")
+            f.write("# `scripts/seed_demo.py` avtomatik yozadi.\n")
+            for r in raqamlar:
+                f.write(r + "\n")
+        print(f"  OTP whitelist          : {len(raqamlar)} raqam -> {yol}")
+    except Exception as exc:
+        print(f"  ⚠️ whitelist yozilmadi: {exc}")
+
     print("Demo ma'lumot to'ldirildi:")
     print(f"  xizmat/narx yangilandi : {yangilangan_meta} provayder")
     print(f"  banner qo'yildi        : {yangilangan_banner} provayder")
