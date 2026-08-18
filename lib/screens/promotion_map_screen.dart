@@ -44,6 +44,9 @@ class _PromotionMapScreenState extends State<PromotionMapScreen> {
     return GlassScaffold(
       showBackButton: true,
       title: 'Aksiya Xaritasi',
+      // Xarita butun ekranni egallashi kerak: pastdagi bo'sh chiziq
+      // xaritani kesib qo'yadi. Bu yerda bosiladigan tugma yo'q.
+      safeAreaBottom: false,
       body: Stack(children: [_buildMap(), _buildTopBanner(context)]),
     );
   }

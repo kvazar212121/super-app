@@ -170,6 +170,50 @@ void main() {
           reason: 'zoom < 15 da 3D binolar ko\'rinmaydi');
     });
 
+    test('Navigator KURSORI (uchli strelka) ko\'rsatiladi', () {
+      // Foydalanuvchi shikoyati: "3D ko'rinish boshlaganda navigator
+      // kursori ko'rsatilmayapti, uchli kursor bo'lardi". Ilgari
+      // xaritada faqat marshrut chizig'i bor edi va odam o'zining
+      // qayerdaligini ko'rmasdi.
+      final s = File('lib/screens/navigation_3d_screen.dart')
+          .readAsStringSync();
+      expect(s, contains('WidgetLayer'),
+          reason: 'xarita ustiga belgi qo\'yiladigan qatlam yo\'q');
+      expect(s, contains('_NavigatorKursori'),
+          reason: 'kursor widgeti yo\'q');
+      // Kursor xarita bilan birga burilishi kerak, aks holda u
+      // yo'nalishni ko'rsatmaydi.
+      expect(s, contains('rotate: true'),
+          reason: 'kursor xarita bilan burilmaydi');
+      expect(s, contains('flat: true'),
+          reason: 'kursor 3D ko\'rinishda tik turib qoladi');
+      // Uchli shakl: strelka chiziladi.
+      expect(s, contains('ui.Path()'),
+          reason: 'uchli strelka chizilmagan');
+      // Manzil ham ko'rinishi kerak.
+      expect(s, contains('_ManzilBelgisi'),
+          reason: 'marshrut oxiri belgilanmagan');
+    });
+
+    test('Google va Yandex xaritada ochish ishlaydi', () {
+      // Bizning 3D ko'rinish ovozli yo'riqnoma bermaydi, shuning
+      // uchun haydovchi tashqi navigatorga o'tishi kerak.
+      final s = File('lib/screens/navigation_3d_screen.dart')
+          .readAsStringSync();
+      expect(s, contains('google.navigation:'),
+          reason: 'Google Maps ilovasi ochilmaydi');
+      expect(s, contains('yandexnavi://'),
+          reason: 'Yandex Navigator ilovasi ochilmaydi');
+      // Ilova o'rnatilmagan bo'lsa brauzer versiyasi ochilsin —
+      // aks holda tugma jim ishlamay qoladi.
+      expect(s, contains('https://www.google.com/maps/dir/'),
+          reason: 'Google uchun brauzer zaxirasi yo\'q');
+      expect(s, contains('https://yandex.uz/maps/'),
+          reason: 'Yandex uchun brauzer zaxirasi yo\'q');
+      expect(s, contains('LaunchMode.externalApplication'),
+          reason: 'tashqi ilovada ochilmaydi');
+    });
+
     test('Pastdagi tugmalar tizim paneli ostida qolmaydi', () {
       // Foydalanuvchi skrinshotida filtr tugmasi yarim ko'rinardi.
       for (final f in [
@@ -180,6 +224,19 @@ void main() {
         expect(s, contains('MediaQuery.paddingOf(context).bottom'),
             reason: '$f da tugma navigatsiya paneli ostida qoladi');
       }
+    });
+
+    test('GlassScaffold pastki tizim paneli uchun joy qoldiradi', () {
+      // Haqiqiy shikoyat: kaloriya "Taom tahlili" ekranida "Saqlash"
+      // tugmasi Android'ning uch tugmasi ostida qolib kesilgan.
+      // Skaffold 44 ta ekranda ishlatiladi, shuning uchun tuzatish
+      // shu yerda — bittada.
+      final s = File('lib/widgets/glass/glass_scaffold.dart')
+          .readAsStringSync();
+      expect(s, contains('this.safeAreaBottom = true'),
+          reason: 'standart holatda pastki joy ajratilmayapti');
+      expect(s, isNot(contains('SafeArea(bottom: false, child: body)')),
+          reason: 'eski qattiq `bottom: false` qolgan');
     });
   });
 }

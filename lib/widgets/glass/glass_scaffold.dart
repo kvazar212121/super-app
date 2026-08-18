@@ -21,6 +21,16 @@ class GlassScaffold extends StatelessWidget {
   /// dark tema). Dark uchun ishlangan "mini-ilova" ekranlari uchun.
   final bool forceDark;
 
+  /// Pastdagi tizim paneli (Android uch tugmasi / iPhone chizig'i) uchun
+  /// joy qoldirilsinmi.
+  ///
+  /// DIQQAT: standart `true`. Ilgari `SafeArea(bottom: false)` edi va
+  /// ekran oxiridagi tugmalar (masalan kaloriya "Saqlash") tizim
+  /// paneli ostida qolib KESILIB ketardi — foydalanuvchi ularni bosa
+  /// olmasdi. Xarita kabi butun ekranni egallashi kerak bo'lgan
+  /// ekranlarda `false` qilinadi.
+  final bool safeAreaBottom;
+
   const GlassScaffold({
     super.key,
     this.title,
@@ -32,6 +42,7 @@ class GlassScaffold extends StatelessWidget {
     this.embeddedInShell = false,
     this.resizeToAvoidBottomInset,
     this.forceDark = false,
+    this.safeAreaBottom = true,
   });
 
   @override
@@ -43,7 +54,7 @@ class GlassScaffold extends StatelessWidget {
         floatingActionButton: floatingActionButton,
         floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
         body: SafeArea(
-          bottom: false,
+          bottom: safeAreaBottom,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -99,7 +110,7 @@ class GlassScaffold extends StatelessWidget {
                   actions: actions,
                   bottom: bottom,
                 ),
-          body: SafeArea(bottom: false, child: body),
+          body: SafeArea(bottom: safeAreaBottom, child: body),
           floatingActionButton: floatingActionButton,
         ),
       ],
