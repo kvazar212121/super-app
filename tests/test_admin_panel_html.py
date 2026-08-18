@@ -110,6 +110,34 @@ if os.path.exists(camp_path):
     for ep in ["/admin/campaigns"]:
         check(f"campaigns.js '{ep}' endpointini ishlatadi", ep in camp)
 
+# ── Endpoint manzillari to'g'rimi ────────────────────────────────────
+# Admin panel `API_BASE = /api/v1/admin` bilan ishlaydi. Umumiy
+# (admin bo'lmagan) endpointga shu prefiks qo'shilsa 404 chiqadi —
+# bu haqiqatan sodir bo'ldi: ob-havo va valyuta vidjetlari
+# `/api/v1/admin/utilities/...` ni so'rab 404 olardi.
+import glob as _glob
+
+UMUMIY_YOLLAR = ["utilities/", "config/", "auth/"]
+xato_yollar = []
+for _p in _glob.glob(os.path.join(JS, "**", "*.js"), recursive=True):
+    _src = open(_p, encoding="utf-8").read()
+    for _y in UMUMIY_YOLLAR:
+        if f"API_BASE + '/{_y}" in _src or f'API_BASE + "/{_y}' in _src:
+            xato_yollar.append(f"{os.path.basename(_p)}: {_y}")
+check("umumiy endpointlar API_BASE'siz chaqiriladi", not xato_yollar,
+      " | ".join(xato_yollar[:3]))
+
+# Ruxsat bo'limlari: panel so'raydigan har bo'lim backendда ro'yxatda
+# bo'lishi kerak, aks holda admin 403 oladi va sabab ko'rinmaydi.
+PERM_FAYL = os.path.join(ROOT, "backend", "app", "api", "v1",
+                         "admin", "permissions.py")
+if os.path.exists(PERM_FAYL):
+    _perm = open(PERM_FAYL, encoding="utf-8").read()
+    bolimlar = set(re.findall(r'\(\s*"([a-z_]+)"\s*,\s*"', _perm))
+    for kerak in ("dashboard", "support", "admins", "settings", "premium"):
+        check(f"ruxsat bo'limi '{kerak}' mavjud", kerak in bolimlar,
+              f"{sorted(bolimlar)}")
+
 print(f"O'TDI ({len(ok)}):")
 for o in ok:
     print(f"  {o}")

@@ -49,7 +49,7 @@ import { navigateTo, renderPage } from '../router.js';
 
             var weatherHtml = '<div class="widget-desc">Yuklanmoqda...</div>';
             try {
-                const wr = await window.api(window.API_BASE + '/utilities/weather?city=Tashkent');
+                const wr = await window.api('/api/v1/utilities/weather?city=Tashkent');
                 if (wr && wr.ok) {
                     var w = await wr.json();
                     weatherHtml = '<div class="widget-value">' + w.temperature_celsius + '°C, ' + w.condition + '</div>' +
@@ -59,7 +59,7 @@ import { navigateTo, renderPage } from '../router.js';
 
             var currencyHtml = '<div class="widget-desc">Yuklanmoqda...</div>';
             try {
-                const cr = await window.api(window.API_BASE + '/utilities/currency');
+                const cr = await window.api('/api/v1/utilities/currency');
                 if (cr && cr.ok) {
                     var c = await cr.json();
                     if (c.rates && c.rates.length > 0) {
