@@ -251,6 +251,36 @@ def admin_view(feature: str) -> dict:
     }
 
 
+def adapt_payload(provider: str, model: str, payload: dict) -> dict:
+    """So'rov tanasini provayder/model talabiga moslashtiradi.
+
+    NEGA KERAK: OpenAI'ning yangi avlod modellari (gpt-5*, o1*, o3*)
+    eski parametrlarni RAD ETADI:
+      • `max_tokens` → `max_completion_tokens` bo'lishi kerak
+      • `temperature` umuman qo'llab-quvvatlanmaydi (faqat standart)
+    Bu 400 xatoga olib keladi va foydalanuvchi "taomni aniqlashda
+    xatolik" degan xabarni ko'radi. Model nomini adminkadan
+    o'zgartirish mumkin bo'lgani uchun bu holat kutilishi shart.
+    """
+    tana = dict(payload)
+    tana["model"] = model
+    nom = (model or "").lower()
+
+    yangi_avlod = (
+        provider == "openai"
+        and (nom.startswith("gpt-5") or nom.startswith("o1")
+             or nom.startswith("o3") or nom.startswith("o4"))
+    )
+    if yangi_avlod:
+        if "max_tokens" in tana:
+            tana["max_completion_tokens"] = tana.pop("max_tokens")
+        # Faqat standart (1.0) qabul qilinadi — o'zgartirilganini
+        # yuborsak 400 qaytadi.
+        tana.pop("temperature", None)
+
+    return tana
+
+
 async def call_with_fallback(
     feature: str,
     payload_builder,
@@ -288,7 +318,7 @@ async def call_with_fallback(
                         "Content-Type": "application/json",
                         "Authorization": f"Bearer {key}",
                     },
-                    json=payload_builder(model),
+                    json=adapt_payload(provider, model, payload_builder(model)),
                 )
         except Exception as exc:
             oxirgi_xato = f"{provider}: {type(exc).__name__}"

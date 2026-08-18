@@ -251,6 +251,33 @@ async def main():
         check(f"'{prov}' uchun vision modeli belgilangan",
               bool(ap.model_for("vision", prov)), "model yo'q")
 
+    # ── 7c. Yangi OpenAI modellari uchun parametrlarni moslash ──────
+    # HAQIQIY XATO: admin `gpt-5.6-luna` ni tanladi va rasm tahlili
+    # 400 berdi ("taomni aniqlashda xatolik"). Sabab: gpt-5 avlodi
+    # `max_tokens` va `temperature` ni RAD ETADI.
+    xom = {"max_tokens": 100, "temperature": 0.2, "messages": []}
+
+    eski = ap.adapt_payload("openai", "gpt-4o", xom)
+    check("eski OpenAI modeli max_tokens ni saqlaydi",
+          "max_tokens" in eski and "temperature" in eski, f"{sorted(eski)}")
+
+    for yangi_model in ("gpt-5.6-luna", "gpt-5-mini", "o1-preview", "o3-mini"):
+        yangi = ap.adapt_payload("openai", yangi_model, xom)
+        check(f"'{yangi_model}': max_completion_tokens ishlatiladi",
+              "max_completion_tokens" in yangi and "max_tokens" not in yangi,
+              f"{sorted(yangi)}")
+        check(f"'{yangi_model}': temperature olib tashlanadi",
+              "temperature" not in yangi, f"{sorted(yangi)}")
+
+    boshqa = ap.adapt_payload("gemini", "gemini-flash-latest", xom)
+    check("boshqa provayderlarga tegilmaydi",
+          "max_tokens" in boshqa and "temperature" in boshqa,
+          f"{sorted(boshqa)}")
+    check("model nomi doim qo'yiladi",
+          ap.adapt_payload("groq", "x-model", {})["model"] == "x-model")
+    check("asl payload O'ZGARMAYDI (nusxa qaytadi)",
+          "max_tokens" in xom and "temperature" in xom, f"{sorted(xom)}")
+
     # ── 8. Kod hech qayerda provayderni QOTIRIB yozmagan ─────────────
     for yol, nom in [
         ("backend/app/services/vision_service.py", "kaloriya vision"),
@@ -260,6 +287,12 @@ async def main():
         src = open(os.path.join(PROJ, yol)).read()
         check(f"{nom} zaxira zanjiridan foydalanadi",
               "ai_providers" in src, "eski usul qolgan")
+
+    # AI chat ham parametrlarni moslashtirishi kerak: u `max_tokens`
+    # ni to'g'ridan-to'g'ri yuborardi va gpt-5 da 400 olardi.
+    chat_src = open(os.path.join(PROJ, "backend/app/api/v1/ai_chat.py")).read()
+    check("AI chat parametrlarni moslashtiradi",
+          "adapt_payload" in chat_src, "gpt-5 modellarida 400 beradi")
 
     print()
     for x in ok:

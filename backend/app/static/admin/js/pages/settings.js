@@ -64,7 +64,10 @@ async function renderSettings() {
                     '<div class="setting-control" style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;">' +
                         '<input type="password" class="form-input" id="aikey_' + k + '" placeholder="yangi kalit" style="width:200px;">' +
                         '<button class="btn btn-primary" onclick="saveAiKey(\'' + k + '\')">💾</button>' +
-                        '<button class="btn" onclick="testAiKey(\'' + k + '\')">🔍 Test</button>' +
+                        '<button class="btn" onclick="testAiKey(\'' + k + '\',\'chat\')">🔍 Matn</button>' +
+                        (visionOk.indexOf(k) >= 0
+                            ? '<button class="btn" onclick="testAiKey(\'' + k + '\',\'vision\')">🖼 Rasm</button>'
+                            : '') +
                         '<button class="btn" onclick="loadAiModels(\'' + k + '\')">📋 Modellar</button>' +
                     '</div>' +
                 '</div>' +
@@ -374,13 +377,19 @@ function saveAiKey(provider) {
     });
 }
 
-function testAiKey(provider) {
+function testAiKey(provider, feature) {
     var el = document.getElementById('aikey_' + provider);
     var out = document.getElementById('aitest_' + provider);
     if (out) out.innerHTML = '<span style="color:#64748b;">Tekshirilmoqda…</span>';
+    // `vision` bo'lsa HAQIQIY rasm yuboriladi: model matnni uddalasa
+    // ham rasmni ko'rmasligi mumkin.
     window.api(window.API_BASE + '/ai-test', {
         method: 'POST',
-        body: JSON.stringify({ provider: provider, api_key: el ? el.value : '' })
+        body: JSON.stringify({
+            provider: provider,
+            api_key: el ? el.value : '',
+            feature: feature || 'chat'
+        })
     }).then(function(r) { return r.json(); }).then(function(d) {
         if (!out) return;
         out.innerHTML = '<span style="color:' + (d.ok ? '#16a34a' : '#dc2626') + ';">' +

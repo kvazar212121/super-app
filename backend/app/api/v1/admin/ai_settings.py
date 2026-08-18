@@ -329,6 +329,10 @@ class AiKeyUpdate(BaseModel):
 
     provider: str
     api_key: str = ""
+    # `vision` bo'lsa RASM bilan sinaladi: model matnni uddalasa ham
+    # rasmni ko'rmasligi mumkin (aynan shu holat chiqarishda bo'ldi —
+    # "taomni aniqlashda xatolik").
+    feature: str = "chat"
 
 
 class AiProviderUpdate(BaseModel):
@@ -425,33 +429,74 @@ async def test_ai_provider(
     if not kalit:
         return {"ok": False, "message": "Kalit kiritilmagan"}
 
-    model = ai_providers.model_for("chat", prov)
+    feature = (data.feature or "chat").strip().lower()
+    if feature not in ("vision", "chat", "translate"):
+        feature = "chat"
+    model = ai_providers.model_for(feature, prov)
+    if not model:
+        return {"ok": False,
+                "message": f"'{feature}' uchun model belgilanmagan"}
+
+    if feature == "vision":
+        # Kichik test rasmi (8x8 PNG) — model RASMNI ko'ra oladimi.
+        import base64 as _b64
+        import struct as _st
+        import zlib as _zl
+
+        def _bolak(t, d):
+            return (_st.pack(">I", len(d)) + t + d
+                    + _st.pack(">I", _zl.crc32(t + d) & 0xffffffff))
+
+        xom = b"".join(b"\x00" + bytes((240, 180, 60)) * 8 for _ in range(8))
+        rasm = (b"\x89PNG\r\n\x1a\n"
+                + _bolak(b"IHDR", _st.pack(">IIBBBBB", 8, 8, 8, 2, 0, 0, 0))
+                + _bolak(b"IDAT", _zl.compress(xom))
+                + _bolak(b"IEND", b""))
+        data_url = "data:image/png;base64," + _b64.b64encode(rasm).decode()
+        xabarlar = [{
+            "role": "user",
+            "content": [
+                {"type": "text", "text": "Bu rasmda nima rang bor?"},
+                {"type": "image_url", "image_url": {"url": data_url}},
+            ],
+        }]
+    else:
+        xabarlar = [{"role": "user", "content": "salom"}]
+
     try:
-        async with httpx.AsyncClient(timeout=20.0) as client:
+        async with httpx.AsyncClient(timeout=30.0) as client:
             r = await client.post(
                 ai_providers.PROVIDER_URLS[prov],
                 headers={
                     "Content-Type": "application/json",
                     "Authorization": f"Bearer {kalit}",
                 },
-                json={
-                    "model": model,
-                    "messages": [{"role": "user", "content": "salom"}],
-                    "max_tokens": 5,
-                },
+                json=ai_providers.adapt_payload(prov, model, {
+                    "messages": xabarlar,
+                    "max_tokens": 32,
+                }),
             )
     except Exception as exc:
         return {"ok": False, "message": f"Ulanib bo'lmadi: {type(exc).__name__}"}
 
     if r.status_code == 200:
-        return {"ok": True, "message": f"Ishlaydi ✅ ({model})", "model": model}
+        qism = "rasm bilan" if feature == "vision" else "matn"
+        return {"ok": True,
+                "message": f"Ishlaydi ✅ {qism}: {model}",
+                "model": model}
     if r.status_code == 401:
         return {"ok": False, "message": "Kalit noto'g'ri (401)"}
     if r.status_code == 429:
         return {"ok": False, "message": "Limit tugagan (429)"}
     if r.status_code == 503:
         return {"ok": False, "message": "Model band (503) — zaxira ishlaydi"}
-    return {"ok": False, "message": f"HTTP {r.status_code}: {r.text[:120]}"}
+    # 400 — odatda model nomi yoki parametr xato. Aniq sababni
+    # ko'rsatamiz, aks holda admin nima qilishni bilmaydi.
+    try:
+        sabab = r.json().get("error", {}).get("message", "")[:160]
+    except Exception:
+        sabab = r.text[:160]
+    return {"ok": False, "message": f"HTTP {r.status_code}: {sabab}"}
 
 
 @router.get("/ai-models/{provider}")

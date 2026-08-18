@@ -118,7 +118,7 @@ async def ai_chat(
         Javob `httpx.Response` ga o'xshash oddiy obyekt: chaqiruvchi
         kod `status_code` va `.json()` ni kutadi.
         """
-        from app.services.ai_providers import mark_failed
+        from app.services.ai_providers import adapt_payload, mark_failed
 
         oxirgi = None
         for provider, url, key, model in _chat_nomzodlar:
@@ -130,14 +130,15 @@ async def ai_chat(
                             "Content-Type": "application/json",
                             "Authorization": f"Bearer {key}",
                         },
-                        json={
-                            "model": model,
+                        # Yangi OpenAI modellari `max_tokens` va
+                        # `temperature` ni rad etadi — moslashtiramiz.
+                        json=adapt_payload(provider, model, {
                             "messages": messages,
                             "tools": TOOLS,
                             "tool_choice": "auto",
                             "temperature": 0.7,
                             "max_tokens": settings.groq_max_tokens,
-                        },
+                        }),
                     )
             except Exception as exc:
                 logger.warning("AI chat (%s/%s) ulanmadi: %s",
