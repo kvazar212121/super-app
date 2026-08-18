@@ -13,6 +13,21 @@ engine = create_async_engine(
     max_overflow=settings.db_max_overflow, # env: DB_MAX_OVERFLOW
     pool_pre_ping=True,   # bog'lanish tirikligini tekshiradi (stale connection xatolarini oldini oladi)
     pool_recycle=1800,    # 30 daqiqada bog'lanishni yangilaydi
+    connect_args={
+        # asyncpg so'rov REJASINI (prepared statement) keshlaydi. Yangi
+        # jadval qo'shilгач (masalan `listings`) eski reja yaroqsiz
+        # bo'lib qoladi va `InvalidCachedStatementError` bilan tasodifiy
+        # 500 beradi — konteyner qayta ishga tushmaguncha. Bu haqiqiy
+        # chiqarishda uchradi va foydalanuvchiga "javob olishda xatolik"
+        # bo'lib ko'rindi.
+        #
+        # `statement_cache_size=0` keshni butunlay o'chiradi: har so'rov
+        # yangi reja bilan bajariladi. Tezlikka ta'siri sezilarsiz
+        # (bizda so'rovlar oddiy), lekin chiqarishdan keyingi tasodifiy
+        # 500 lar butunlay yo'qoladi.
+        "statement_cache_size": 0,
+        "prepared_statement_cache_size": 0,
+    } if settings.database_url.startswith("postgresql+asyncpg") else {},
 )
 async_session = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 

@@ -2136,9 +2136,19 @@ class ApiService {
   ///
   /// Rasm saqlanadi VA vision model uni ko'rib tavsif beradi.
   /// Qaytadi: {url, analysis: {detected, title, description, ...}, message}
-  Future<Map<String, dynamic>> sendJobPhotoToAi(String filePath) async {
+  /// Rasmni AI chatga yuborish.
+  ///
+  /// [kind] — qaysi e'lon uchun: `job` (ish e'loni, buzilgan joy) yoki
+  /// `market` (savdo, sotiladigan buyum). Savdo rasmi alohida papkaga
+  /// tushadi va tahlil qilinmaydi — buyumni foydalanuvchi o'zi
+  /// tasvirlaydi.
+  Future<Map<String, dynamic>> sendJobPhotoToAi(
+    String filePath, {
+    String kind = 'job',
+  }) async {
     final form = FormData.fromMap({
       'file': await MultipartFile.fromFile(filePath),
+      'kind': kind,
     });
     final response = await _dio.post('/ai/job-photo', data: form);
     return Map<String, dynamic>.from(response.data);

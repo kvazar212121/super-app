@@ -86,7 +86,20 @@ def _parse_args(raw) -> dict:
         logger.warning("Buzuq JSON qisman tiklandi: %s", list(out))
         return out
 
-    raise ValueError("Argumentlarni o'qib bo'lmadi")
+    # Hech narsa tiklanmadi. XATO BERMAYMIZ, bo'sh lug'at qaytaramiz.
+    #
+    # Nega: ilgari bu yerda ValueError ko'tarilardi, dispatcher esa
+    # xatoda `db.rollback()` qilardi. Rollback SQLAlchemy obyektlarini
+    # EXPIRED qiladi (`expire_on_commit=False` bunga ta'sir qilmaydi),
+    # shundan keyin endpointdagi `current_user.id` bazaga yashirin
+    # so'rov yuborib "greenlet_spawn has not been called" bilan butun
+    # chatni 500 ga olib borardi. Foydalanuvchi buni "javob olishda
+    # xatolik" deb ko'rardi.
+    #
+    # Bo'sh lug'at zararsiz: handler o'zi nima yetishmayotganini
+    # aytadi va AI qayta so'raydi.
+    logger.warning("Tool argumentlari o'qilmadi, bo'sh deb qaraldi: %r", text[:200])
+    return {}
 
 
 async def handle_tool_call(

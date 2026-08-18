@@ -113,6 +113,41 @@ class ListingDraft:
             birlik = "сум"
         return f"{self.price:,.0f} {birlik}".replace(",", " ")
 
+    def auto_description(self) -> str:
+        """Tavsif yozilmagan bo'lsa, yig'ilgan ma'lumotdan tuzadi.
+
+        Nega kerak: AI ba'zan `description` ni tashlab ketadi va
+        e'lon xaridorga quruq nom bo'lib ko'rinadi. Bu yerda YANGI
+        ma'lumot O'YLAB TOPILMAYDI — faqat foydalanuvchi aytganlari
+        tabiiy jumlaga yig'iladi.
+        """
+        holatlar = {
+            ListingCondition.new: "yangi",
+            ListingCondition.like_new: "ideal holatda",
+            ListingCondition.good: "yaxshi holatda",
+            ListingCondition.used: "ishlatilgan",
+            ListingCondition.parts: "ehtiyot qismga",
+        }
+        bolaklar: list[str] = []
+        nom = (self.title or "").strip()
+        holat = holatlar.get(self.condition) if self.condition else None
+        if nom and holat:
+            bolaklar.append(f"{nom}, {holat}.")
+        elif nom:
+            bolaklar.append(f"{nom}.")
+
+        # Toifaga xos maydonlar: "Xotira: 256GB, Model: iPhone 13 Pro"
+        xos = [f"{k}: {v}" for k, v in (self.attributes or {}).items() if v]
+        if xos:
+            bolaklar.append(", ".join(xos) + ".")
+
+        if self.is_negotiable:
+            bolaklar.append("Narx kelishiladi.")
+        if (self.address or "").strip():
+            bolaklar.append(f"Manzil: {self.address.strip()}.")
+
+        return " ".join(bolaklar).strip()
+
     def summary(self, lang: str = "uz") -> str:
         """Tasdiq oldidan ko'rsatiladigan xulosa."""
         cat = category_of(self.category_key)

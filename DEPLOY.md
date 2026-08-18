@@ -9,6 +9,7 @@ beradi. Har bir qadam nima uchun kerakligi izohlangan.
 
 | Bo'lim | Nima qo'shildi |
 |---|---|
+| **Savdo (marketplace)** | AI chat orqali OLX uslubidagi buyum savdosi: 10 toifa, 3-6 rasm, chatда 2 ustunli kartalar (grid), modal oyna, "Mening e'lonlarim" + muddatni uzaytirish, firibgarlikdan ogohlantirish va shikoyat. AI tool 37 → **45**. |
 | AI orqali e'lon berish | rasm + suhbatdan e'lon, tasdiq so'rash, ikki tillilik, adminkada premium tugmasi |
 | E'lon hududi | e'lon faqat shu hududdagi ustalarga ko'rinadi (50 km, sozlanadi) |
 | Chat | xabar e'longa bog'lanadi, real vaqtda keladi, usta reytingi ko'rinadi |
@@ -26,8 +27,8 @@ Ilova versiyasi: **1.3.0+2026**.
 
 Ikki xil o'zgarish bor va ular **turlicha** qo'llanadi:
 
-**a) Yangi jadvallar** (`campaigns`, `campaign_votes`, `job_posts`,
-`job_offers`) — ishga tushishda `Base.metadata.create_all`
+**a) Yangi jadvallar** (`listings`, `listing_photos`, `campaigns`,
+`campaign_votes`, `job_posts`, `job_offers`) — ishga tushishda `Base.metadata.create_all`
 (`app/core/startup.py`) ularni o'zi yaratadi.
 
 **b) Mavjud jadvalga yangi ustun** — `create_all` buni **qila
@@ -69,7 +70,23 @@ docker compose build backend      # requirements o'zgargan bo'lsa
 docker compose up -d backend nginx
 
 # Jadvallar yaratilganini tasdiqlash
-docker compose exec db psql -U postgres -d superapp -c "\dt" | grep -E 'campaign|job_'
+docker compose exec db psql -U postgres -d superapp -c "\dt" | grep -E 'campaign|job_|listing'
+```
+
+Savdo bo'limi uchun (2026-08-18 chiqarishi):
+
+```bash
+# Jadvallar
+docker compose exec db psql -U postgres -d superapp -c "\dt" | grep listing
+# Endpointlar (401 = token kerak, normal)
+curl -s -o /dev/null -w "%{http_code}\n" https://hubservis.uz/api/v1/marketplace/categories  # 200
+curl -s -o /dev/null -w "%{http_code}\n" https://hubservis.uz/api/v1/marketplace/search      # 401
+# Bo'lim adminkada yoqilganmi
+curl -s https://hubservis.uz/api/v1/config/features | grep -o '"marketplace":{[^}]*}'
+# Muddat scheduleri
+docker compose logs backend | grep "Listing expiry scheduler"
+# AI tool soni 45 bo'lishi kerak
+docker compose exec backend python -c "from app.services.ai_agent import TOOLS; print(len(TOOLS))"
 ```
 
 `app/` katalogi volume orqali ulangani uchun Python kodi rebuild'siz
@@ -156,6 +173,11 @@ flutter analyze && flutter test
 
 # 3D xarita HAQIQATAN binolarni ko'taradimi (brauzerda RENDER qiladi)
 python3 scripts/check_3d_map.py
+
+# Savdo bo'limi — HAQIQIY server ustida uchdan-uchgacha (35 tekshiruv).
+# PostgreSQL o'zi ko'tariladi (pgserver), ishchi bazaga tegmaydi.
+backend/.venv/bin/python -m pip install pgserver   # bir marta
+bash tests/e2e_marketplace.sh
 
 # Backend (bazasiz integratsiya testlari yiqilmaydi, SKIP bo'ladi)
 PYTHON=backend/.venv/bin/python bash tests/run.sh

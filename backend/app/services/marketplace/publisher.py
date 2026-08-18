@@ -47,7 +47,11 @@ async def create_listing(db: AsyncSession, user: User,
         user_id=user.id,
         category_key=draft.category_key or "boshqa",
         title=(draft.title or "").strip()[:200],
-        description=(draft.description or draft.title or "").strip(),
+        # Tavsif bo'sh bo'lsa yig'ilgan ma'lumotdan tuziladi: quruq
+        # nomli e'lon xaridorga ishonch bermaydi.
+        description=((draft.description or "").strip()
+                     or draft.auto_description()
+                     or (draft.title or "").strip()),
         price=draft.price,
         currency=(draft.currency or "UZS").upper()[:3],
         is_negotiable=bool(draft.is_negotiable or draft.price is None),

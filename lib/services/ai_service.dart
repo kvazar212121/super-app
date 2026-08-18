@@ -277,6 +277,43 @@ class AiService {
     _loaded = false;
   }
 
+  /// Oxirgi juftlikni (foydalanuvchi savoli + AI javobi) o'chiradi.
+  ///
+  /// Foydalanuvchi xabarni QAYTA YUBORMOQCHI bo'lganda kerak: eski
+  /// savol kontekstda qolsa, model o'zini takrorlab, ikki marta
+  /// javob bergandek ko'rinadi.
+  ///
+  /// [keepUserText] — o'chirilgan foydalanuvchi matnini qaytaradi
+  /// (tahrirlash uchun maydonga qaytadan qo'yiladi).
+  Future<String?> removeLastExchange() async {
+    String? userText;
+    // Oxiridan boshlab: avval assistant javobi, keyin user savoli.
+    if (_messages.isNotEmpty && _messages.last['role'] == 'assistant') {
+      _messages.removeLast();
+    }
+    if (_messages.isNotEmpty && _messages.last['role'] == 'user') {
+      userText = (_messages.removeLast()['content'] ?? '').toString();
+    }
+    lastActions = const [];
+    await _persist();
+    return userText;
+  }
+
+  /// Bitta xabarni matni bo'yicha o'chiradi (chatda uzun bosilganda).
+  ///
+  /// Indeks emas, matn bo'yicha: chat ekranidagi ro'yxatда salomlashish
+  /// xabari ham bor, u esa `_messages` da yo'q — indekslar siljiydi.
+  Future<void> removeMessage(String role, String content) async {
+    for (var i = _messages.length - 1; i >= 0; i--) {
+      final m = _messages[i];
+      if ((m['role'] ?? '') == role && (m['content'] ?? '') == content) {
+        _messages.removeAt(i);
+        break;
+      }
+    }
+    await _persist();
+  }
+
   /// Chat tarixini tozalaydi (xotira + disk).
   Future<void> clearHistory() async {
     _messages.clear();

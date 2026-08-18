@@ -9,7 +9,7 @@ import logging
 from datetime import datetime, timezone
 
 import httpx
-from fastapi import APIRouter, Depends, File, UploadFile
+from fastapi import APIRouter, Depends, File, Form, UploadFile
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.requests import Request
 
@@ -44,6 +44,17 @@ async def ai_chat(
     AI Agent Proxy — Groq API orqali foydalanuvchi so'rovlarini qabul qiladi
     va kerak bo'lganda avtomatik ravishda bazaga ma'lumot kiritish (tools) ni amalga oshiradi.
     """
+    # Foydalanuvchi ID sini DARHOL o'qib olamiz.
+    #
+    # Nega: tool ichida `db.commit()` bo'lsa (masalan e'lon yaratilganda)
+    # SQLAlchemy `current_user` obyektini EXPIRED qiladi. Keyin
+    # `current_user.id` ga murojaat qilish bazaga yashirin so'rov
+    # yuborishga urinadi va `greenlet_spawn has not been called`
+    # xatosi bilan butun chat 500 qaytaradi. Foydalanuvchi buni
+    # "javob olishda xatolik" deb ko'radi — e'lon esa allaqachon
+    # yaratilgan bo'ladi.
+    user_id = current_user.id
+
     user_msg = body.messages[-1].content
     
     # Emojilarni va mikrofon belgilarini tozalash (masalan, 🎤, 💸)
@@ -81,10 +92,10 @@ async def ai_chat(
         logger.error(
             f"ai_chat settings/provider resolve error: {e}. Falling back to local parse."
         )
-        return await fallback_local_parse(user_msg_clean, current_user.id, db)
+        return await fallback_local_parse(user_msg_clean, user_id, db)
 
     if not _chat_key:
-        return await fallback_local_parse(user_msg_clean, current_user.id, db)
+        return await fallback_local_parse(user_msg_clean, user_id, db)
 
     current_time_str = datetime.now(timezone.utc).isoformat()
     # (custom yoki standart) prompt + DB'dagi DINAMIK kategoriyalar ro'yxati —
@@ -132,7 +143,7 @@ async def ai_chat(
             response = await call_groq(groq_messages)
             if response.status_code != 200:
                 logger.warning(f"AI API status {response.status_code}. Falling back to local parse.")
-                return await fallback_local_parse(user_msg_clean, current_user.id, db)
+                return await fallback_local_parse(user_msg_clean, user_id, db)
 
             message = response.json()["choices"][0]["message"]
 
@@ -144,7 +155,7 @@ async def ai_chat(
             groq_messages.append(message)
             for tool_call in message["tool_calls"]:
                 tool_result_str, action = await handle_tool_call(
-                    db, current_user.id, tool_call, ctx=tool_ctx
+                    db, user_id, tool_call, ctx=tool_ctx
                 )
                 if action:
                     actions.append(action)
@@ -166,10 +177,10 @@ async def ai_chat(
 
     except (httpx.TimeoutException, httpx.HTTPError) as e:
         logger.error(f"Groq API communication error ({type(e).__name__}): {e}. Falling back to local parse.")
-        return await _safe_fallback(user_msg_clean, current_user.id, db)
+        return await _safe_fallback(user_msg_clean, user_id, db)
     except Exception as e:
         logger.error(f"Unexpected error in ai_chat: {e}. Falling back to local parse.")
-        return await _safe_fallback(user_msg_clean, current_user.id, db)
+        return await _safe_fallback(user_msg_clean, user_id, db)
 
 
 async def _safe_fallback(user_msg: str, user_id: int, db: AsyncSession) -> ChatResponse:
@@ -204,9 +215,16 @@ async def _safe_fallback(user_msg: str, user_id: int, db: AsyncSession) -> ChatR
 async def ai_job_photo(
     request: Request,
     file: UploadFile = File(...),
+    # Ikki xil e'lon bor va rasm ikkalasiga ham kerak:
+    #   kind="job"    — ISH e'loni (buzilgan joyni rasmga oladi)
+    #   kind="market" — SAVDO e'loni (sotiladigan buyum)
+    # Savdo rasmi alohida papkaga tushadi va tahlil qilinmaydi:
+    # buyumni foydalanuvchi o'zi tasvirlaydi, vision esa "ta'mirlash
+    # kerak" degan ish tavsifini qaytarib AI ni chalg'itardi.
+    kind: str = Form("job"),
     current_user: User = Depends(get_current_user),
 ):
-    """Ish joyi rasmini AI chatga yuborish.
+    """Rasmni AI chatga yuborish (ish e'loni yoki savdo).
 
     Foydalanuvchi talabi: "ai agent chat bo'limida rasmga olishni ham
     qo'shimchasini qil va rasmga olib ... dep ai chatga yozadi".
@@ -222,29 +240,41 @@ async def ai_job_photo(
     from app.services.ai_job.vision import analyze_job_photo
     from app.services.upload_service import UploadService
 
+    savdo = str(kind or "job").lower().startswith("market")
+
     # Faylni bir marta o'qiymiz: birinchi vision'ga, keyin saqlashga.
     contents = await file.read()
     await file.seek(0)
 
-    # 1) Saqlash (rasm e'londa ko'rinishi kerak)
-    url = await UploadService.upload_job_photo(file)
+    # 1) SAQLASH — eng muhimi. Tahlil bo'lmasa ham rasm e'longa
+    # biriktiriladi, shuning uchun u birinchi bajariladi.
+    if savdo:
+        url = await UploadService.upload_listing_photo(file)
+    else:
+        url = await UploadService.upload_job_photo(file)
 
-    # 2) Tahlil. Vision ishlamasa ham rasm SAQLANGAN bo'ladi —
-    # foydalanuvchi tavsifni o'zi yozib e'lon bera oladi.
+    # 2) Tahlil FAQAT ish e'loni uchun. Savdoda buyumni foydalanuvchi
+    # o'zi tasvirlaydi; bundan tashqari vision provayderi sekin
+    # javob bersa savdo suhbati bekorga to'xtab qolardi.
     analysis = None
-    try:
-        analysis = await analyze_job_photo(
-            contents, file.content_type or "image/jpeg"
-        )
-    except Exception as exc:
-        logger.warning(f"Rasm tahlili bajarilmadi: {exc}")
+    if not savdo:
+        try:
+            analysis = await analyze_job_photo(
+                contents, file.content_type or "image/jpeg"
+            )
+        except Exception as exc:
+            logger.warning(f"Rasm tahlili bajarilmadi: {exc}")
+
+    if savdo:
+        message = "Rasm yuklandi. Yana rasm yuboring yoki «tayyor» deng."
+    elif analysis and analysis.get("detected"):
+        message = "Rasm yuklandi. Endi qachon va qayerga kerakligini yozing."
+    else:
+        message = "Rasm yuklandi. Muammoni qisqacha yozing."
 
     return {
         "url": url,
         "analysis": analysis,
-        "message": (
-            "Rasm yuklandi. Endi qachon va qayerga kerakligini yozing."
-            if analysis and analysis.get("detected")
-            else "Rasm yuklandi. Muammoni qisqacha yozing."
-        ),
+        "kind": "market" if savdo else "job",
+        "message": message,
     }

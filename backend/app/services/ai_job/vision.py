@@ -90,7 +90,10 @@ async def analyze_job_photo(image_bytes: bytes, content_type: str) -> dict:
     b64 = base64.b64encode(image_bytes).decode()
     data_url = f"data:{content_type};base64,{b64}"
 
-    async with httpx.AsyncClient(timeout=60.0) as client:
+    # 60s juda uzun edi: vision provayderi 503 bersa foydalanuvchi
+    # BIR DAQIQA kutib qolardi va "rasm yuborilmayapti" deb o'ylardi.
+    # Rasm baribir SAQLANGAN bo'ladi — tahlil ixtiyoriy qulaylik.
+    async with httpx.AsyncClient(timeout=20.0) as client:
         try:
             response = await client.post(
                 api_url,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'dart:async';
@@ -396,7 +397,15 @@ class _ChatScreenState extends State<ChatScreen>
     _scrollToBottom();
 
     try {
-      final res = await ApiService().sendJobPhotoToAi(photo.path);
+      // Savdo suhbatimi? Shunda rasm SAVDO papkasiga tushadi va
+      // vision tahlili o'tkazib yuboriladi (buyumni foydalanuvchi
+      // o'zi tasvirlaydi). Aks holda vision "ta'mirlash kerak" degan
+      // ish tavsifini qaytarib, savdo suhbatini chalg'itardi.
+      final savdo = _isSellingConversation();
+      final res = await ApiService().sendJobPhotoToAi(
+        photo.path,
+        kind: savdo ? 'market' : 'job',
+      );
       if (!mounted) return;
 
       final analysis = res['analysis'] as Map<String, dynamic>?;
@@ -411,7 +420,17 @@ class _ChatScreenState extends State<ChatScreen>
           buf.writeln('Ish: ${analysis['title']}');
         }
       }
-      if (url != null) buf.writeln('Rasm: $url');
+      if (url != null) {
+        // URL ni ANIQ ko'rsatamiz: model uni add_listing_photos yoki
+        // publish_job ga aynan shu ko'rinishda uzatishi kerak.
+        buf.writeln('Rasm: $url');
+        if (savdo) {
+          buf.writeln(
+            'Bu SAVDO e\'loni rasmi. add_listing_photos tool\'iga '
+            'aynan shu URL ni bering.',
+          );
+        }
+      }
       // Foydalanuvchining o'z izohi eng muhim — oxirida turadi.
       if (izoh.isNotEmpty) {
         buf.writeln('Foydalanuvchi izohi: $izoh');
@@ -438,6 +457,43 @@ class _ChatScreenState extends State<ChatScreen>
         });
       });
     }
+  }
+
+  /// Suhbat SAVDO (buyum sotish) haqidami.
+  ///
+  /// Ikki xil e'lon bor va rasm ikkalasiga ham kerak:
+  ///   • ISH e'loni — buzilgan joyni rasmga oladi, vision tahlil qiladi
+  ///   • SAVDO e'loni — sotiladigan buyum, tahlil kerak emas
+  /// Farqni bilmasak, savdo suhbatida vision "ta'mirlash kerak" deb
+  /// javob berib, AI ni ish e'loniga burib yuboradi.
+  bool _isSellingConversation() {
+    // Oxirgi bir necha xabarga qaraymiz: suhbat mavzusi o'zgargan
+    // bo'lishi mumkin, butun tarixni tekshirish xato beradi.
+    final oxirgi = _chatHistory.length <= 6
+        ? _chatHistory
+        : _chatHistory.sublist(_chatHistory.length - 6);
+    for (final m in oxirgi.reversed) {
+      final matn = (m['content'] as String? ?? '').toLowerCase();
+      if (matn.isEmpty) continue;
+      // Savdo belgilari (AI ham, foydalanuvchi ham ishlatadi).
+      if (matn.contains('sotmoqchi') ||
+          matn.contains('sotaman') ||
+          matn.contains('sotiladi') ||
+          matn.contains('e\'loningizni berish') ||
+          matn.contains('kamida 3 ta rasm') ||
+          matn.contains('продать') ||
+          matn.contains('продаю')) {
+        return true;
+      }
+      // Ish e'loni belgilari — savdo emas.
+      if (matn.contains('usta') ||
+          matn.contains('tamirla') ||
+          matn.contains('ta\'mirla') ||
+          matn.contains('buzilgan')) {
+        return false;
+      }
+    }
+    return false;
   }
 
   /// Yuborilishni kutayotgan rasm paneli.
@@ -651,7 +707,12 @@ class _ChatScreenState extends State<ChatScreen>
         crossAxisAlignment:
             isUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
         children: [
-          Container(
+          // Uzun bosilganda: nusxalash / tahrirlash / qayta yuborish /
+          // o'chirish. Foydalanuvchi xato yozsa butun chatni tozalashi
+          // shart emas.
+          GestureDetector(
+            onLongPress: () => _showMessageMenu(content, isUser),
+            child: Container(
             margin: EdgeInsets.only(bottom: actionButtons.isEmpty ? 16 : 8),
             constraints: BoxConstraints(
               maxWidth: MediaQuery.of(context).size.width * 0.75,
@@ -700,6 +761,7 @@ class _ChatScreenState extends State<ChatScreen>
               ],
             ),
           ),
+          ),
           // Grid pufakdan KENGROQ bo'ladi (0.75 emas, deyarli to'liq
           // en): 2 ustunli kartalar tor joyda o'qilmaydi.
           if (listings.isNotEmpty)
@@ -718,6 +780,127 @@ class _ChatScreenState extends State<ChatScreen>
         ],
       ),
     );
+  }
+
+  /// Xabar ustida uzun bosilganda chiqadigan menyu.
+  ///
+  /// Foydalanuvchi talabi: "agent bilan yuborgan smslarni replace
+  /// qilib qayta yuborish va o'chirish". Ilgari faqat BUTUN chatni
+  /// tozalash bor edi — bitta xato yozuv uchun hamma narsa yo'qolardi.
+  Future<void> _showMessageMenu(String content, bool isUser) async {
+    // Salomlashish xabari — o'chirib bo'lmaydi (u tarixda ham yo'q).
+    final index = _chatHistory.indexWhere(
+      (m) => m['content'] == content && (m['role'] == 'user') == isUser,
+    );
+    if (index <= 0 && !isUser) {
+      await Clipboard.setData(ClipboardData(text: content));
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Nusxalandi'.tr)));
+      return;
+    }
+
+    final tanlov = await showModalBottomSheet<String>(
+      context: context,
+      showDragHandle: true,
+      builder: (ctx) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(LucideIcons.copy),
+              title: Text('Nusxalash'.tr),
+              onTap: () => Navigator.of(ctx).pop('copy'),
+            ),
+            if (isUser)
+              ListTile(
+                leading: const Icon(LucideIcons.pencil),
+                title: Text('Tahrirlash va qayta yuborish'.tr),
+                onTap: () => Navigator.of(ctx).pop('edit'),
+              ),
+            if (isUser)
+              ListTile(
+                leading: const Icon(LucideIcons.refreshCw),
+                title: Text('Qayta yuborish'.tr),
+                onTap: () => Navigator.of(ctx).pop('resend'),
+              ),
+            ListTile(
+              leading: const Icon(LucideIcons.trash2, color: Colors.red),
+              title: Text(
+                'O\'chirish'.tr,
+                style: const TextStyle(color: Colors.red),
+              ),
+              onTap: () => Navigator.of(ctx).pop('delete'),
+            ),
+          ],
+        ),
+      ),
+    );
+    if (tanlov == null || !mounted) return;
+
+    switch (tanlov) {
+      case 'copy':
+        await Clipboard.setData(ClipboardData(text: content));
+        if (!mounted) return;
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Nusxalandi'.tr)));
+
+      case 'edit':
+      case 'resend':
+        // Xabar va undan keyingi AI javobi olib tashlanadi: eski savol
+        // kontekstda qolsa model o'zini takrorlaydi.
+        final matn = _stripVoicePrefix(content);
+        await _dropFrom(index);
+        if (!mounted) return;
+        if (tanlov == 'edit') {
+          // Tahrirlash: matn maydonga qaytadi, foydalanuvchi tuzatadi.
+          _textController.text = matn;
+          _textController.selection = TextSelection.fromPosition(
+            TextPosition(offset: matn.length),
+          );
+          setState(() {});
+        } else {
+          await _sendMessage(text: matn);
+        }
+
+      case 'delete':
+        await _dropFrom(index, onlyOne: !isUser);
+    }
+  }
+
+  /// "🎤 " kabi ko'rinish uchun qo'shilgan prefiksni olib tashlaydi.
+  String _stripVoicePrefix(String text) {
+    for (final p in ['🎤 ', '📷 ']) {
+      if (text.startsWith(p)) return text.substring(p.length);
+    }
+    return text;
+  }
+
+  /// [index] dan boshlab xabarlarni o'chiradi (ekrandan ham, tarixdan ham).
+  ///
+  /// [onlyOne] — faqat bittasini (AI javobi o'chirilganda).
+  Future<void> _dropFrom(int index, {bool onlyOne = false}) async {
+    if (index < 0 || index >= _chatHistory.length) return;
+    final ochiriladi = onlyOne
+        ? [_chatHistory[index]]
+        : _chatHistory.sublist(index);
+    setState(() {
+      if (onlyOne) {
+        _chatHistory.removeAt(index);
+      } else {
+        _chatHistory.removeRange(index, _chatHistory.length);
+      }
+    });
+    // AiService tarixidan ham olib tashlaymiz, aks holda keyingi
+    // so'rovda o'chirilgan xabar yana modelga ketadi.
+    for (final m in ochiriladi) {
+      await _aiService.removeMessage(
+        (m['role'] ?? 'user').toString(),
+        (m['content'] ?? '').toString(),
+      );
+    }
   }
 
   /// AI qaytargan amallardan savdo e'lonlarini ajratib oladi.
