@@ -73,9 +73,11 @@ def listing_limit(user: User) -> int:
 def expires_at_for(user: User, *, start: datetime | None = None) -> datetime:
     """E'lon qachon tugaydi. Uzaytirishda `start` mavjud muddat bo'ladi."""
     now = datetime.now(timezone.utc)
+    # Bazadan vaqt mintaqasiz kelishi mumkin — solishtirishdan OLDIN
+    # UTC deb qaraymiz, aks holda uzaytirish TypeError bilan yiqiladi.
+    if start is not None and start.tzinfo is None:
+        start = start.replace(tzinfo=timezone.utc)
     base = start if (start and start > now) else now
-    if base.tzinfo is None:
-        base = base.replace(tzinfo=timezone.utc)
     return base + timedelta(days=listing_days(user))
 
 

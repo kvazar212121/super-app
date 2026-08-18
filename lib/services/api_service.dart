@@ -2153,6 +2153,79 @@ class ApiService {
     return response.data['url'] as String;
   }
 
+  // ─────────────── SAVDO (marketplace) ───────────────
+  // DIQQAT: bu javoblarda sotuvchining telefon raqami YO'Q — aloqa
+  // faqat ilova ichida (chat/qo'ng'iroq). Backend ham yubormaydi.
+
+  /// Buyum e'lonlari qidiruvi. Narxlar `price_uzs` — doim so'mda.
+  Future<List<dynamic>> searchListings(Map<String, dynamic> query) async {
+    final response = await _dio.get(
+      '/marketplace/search',
+      queryParameters: query,
+    );
+    return response.data as List<dynamic>;
+  }
+
+  /// Bitta e'lon (modal oyna uchun). Ko'rishlar soni oshadi.
+  Future<Map<String, dynamic>> getListing(int listingId) async {
+    final response = await _dio.get('/marketplace/$listingId');
+    return Map<String, dynamic>.from(response.data);
+  }
+
+  /// Toifalar va har toifada so'raladigan maydonlar.
+  Future<Map<String, dynamic>> getListingCategories() async {
+    final response = await _dio.get('/marketplace/categories');
+    return Map<String, dynamic>.from(response.data);
+  }
+
+  /// «Mening e'lonlarim» + uzaytirish narxi.
+  Future<Map<String, dynamic>> getMyListings() async {
+    final response = await _dio.get('/marketplace/my/list');
+    return Map<String, dynamic>.from(response.data);
+  }
+
+  /// E'lon rasmini yuklash — URL qaytaradi.
+  Future<String> uploadListingPhoto(String filePath) async {
+    final form = FormData.fromMap({
+      'file': await MultipartFile.fromFile(filePath),
+    });
+    final response = await _dio.post('/marketplace/photo', data: form);
+    return response.data['url'] as String;
+  }
+
+  /// E'lon berish (oddiy forma orqali; AI oqimi tool'lar bilan ishlaydi).
+  Future<Map<String, dynamic>> createListing(Map<String, dynamic> data) async {
+    final response = await _dio.post('/marketplace', data: data);
+    return Map<String, dynamic>.from(response.data);
+  }
+
+  /// E'lon holatini o'zgartirish: sold | hide | reopen | extend.
+  Future<Map<String, dynamic>> listingAction(
+    int listingId,
+    String action,
+  ) async {
+    final response = await _dio.post('/marketplace/$listingId/$action');
+    return Map<String, dynamic>.from(response.data);
+  }
+
+  /// Aloqadan OLDIN ko'rsatiladigan firibgarlik ogohlantirishi.
+  Future<Map<String, dynamic>> getListingSafety(int listingId) async {
+    final response = await _dio.get('/marketplace/$listingId/safety');
+    return Map<String, dynamic>.from(response.data);
+  }
+
+  /// E'lon ustidan shikoyat — support (operator) qutisiga tushadi.
+  Future<Map<String, dynamic>> reportListing(
+    int listingId,
+    String reason,
+  ) async {
+    final response = await _dio.post(
+      '/marketplace/$listingId/report',
+      data: {'reason': reason},
+    );
+    return Map<String, dynamic>.from(response.data);
+  }
+
   /// Mijozning o'z e'lonlari.
   Future<List<dynamic>> getMyJobs() async {
     final response = await _dio.get('/jobs/my');

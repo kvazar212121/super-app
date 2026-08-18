@@ -7,6 +7,7 @@ import '../widgets/glass/glass_scaffold.dart';
 import '../providers/auth_provider.dart';
 import '../widgets/guest_blocker_widget.dart';
 import '../l10n/locale_controller.dart';
+import 'marketplace/my_listings_screen.dart';
 import 'my_jobs_screen.dart';
 
 class OrdersScreen extends StatefulWidget {
@@ -38,8 +39,11 @@ class _OrdersScreenState extends State<OrdersScreen> {
       body: auth.isAuthenticated
           // Ikki bo'lim: oddiy buyurtmalar va o'zi bergan ish e'lonlari
           // (e'longa ustalar taklif beradi, mijoz birini tanlaydi).
+          // Uch bo'lim: buyurtmalar, ish e'lonlari va SAVDO e'lonlari
+          // (buyum sotish). Savdo alohida tab: muddati va uzaytirish
+          // qoidalari ish e'lonidan butunlay boshqa.
           ? DefaultTabController(
-              length: 2,
+              length: 3,
               child: Column(
                 children: [
                   TabBar(
@@ -48,6 +52,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                     tabs: [
                       Tab(text: 'Buyurtmalar'.tr),
                       Tab(text: 'E\'lonlarim'.tr),
+                      Tab(text: 'Savdo'.tr),
                     ],
                   ),
                   Expanded(
@@ -74,6 +79,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                           ],
                         ),
                         const MyJobsScreen(embedded: true),
+                        const MyListingsScreen(embedded: true),
                       ],
                     ),
                   ),

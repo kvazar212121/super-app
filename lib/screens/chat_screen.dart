@@ -25,6 +25,9 @@ import '../models/service_hub_kind.dart';
 import '../widgets/glass/glass_scaffold.dart';
 import '../theme/glass_tokens.dart';
 import '../l10n/locale_controller.dart';
+import '../models/marketplace/listing.dart';
+import '../widgets/marketplace/listing_grid.dart';
+import '../widgets/marketplace/listing_modal.dart';
 
 enum _VoiceState { idle, recording, processing }
 
@@ -639,6 +642,8 @@ class _ChatScreenState extends State<ChatScreen>
   }) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final actionButtons = isUser ? const <Widget>[] : _actionButtons(actions);
+    // Savdo qidiruvi natijasi: tugma emas, KARTALAR gridi ko'rinadi.
+    final listings = isUser ? const <Listing>[] : _listingsOf(actions);
 
     return Align(
       alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
@@ -695,6 +700,16 @@ class _ChatScreenState extends State<ChatScreen>
               ],
             ),
           ),
+          // Grid pufakdan KENGROQ bo'ladi (0.75 emas, deyarli to'liq
+          // en): 2 ustunli kartalar tor joyda o'qilmaydi.
+          if (listings.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 16, right: 8),
+              child: SizedBox(
+                width: MediaQuery.of(context).size.width * 0.92,
+                child: ListingGrid(listings: listings),
+              ),
+            ),
           if (actionButtons.isNotEmpty)
             Padding(
               padding: const EdgeInsets.only(bottom: 16, left: 4),
@@ -703,6 +718,23 @@ class _ChatScreenState extends State<ChatScreen>
         ],
       ),
     );
+  }
+
+  /// AI qaytargan amallardan savdo e'lonlarini ajratib oladi.
+  ///
+  /// Backend `{"type": "listing_grid", "listings": [...]}` yuboradi —
+  /// bu yagona joy: karta ko'rinishi widgetlarda, bu yerda faqat
+  /// ma'lumot o'qiladi.
+  List<Listing> _listingsOf(List<Map<String, dynamic>>? actions) {
+    if (actions == null || actions.isEmpty) return const [];
+    final out = <Listing>[];
+    for (final a in actions) {
+      if (a['type'] != 'listing_grid') continue;
+      for (final raw in (a['listings'] as List?) ?? const []) {
+        out.add(Listing.fromJson(Map<String, dynamic>.from(raw as Map)));
+      }
+    }
+    return out;
   }
 
   /// AI amallaridan chatда bosiladigan tugma yasaydi. Masalan bron yaratilса —
@@ -742,6 +774,23 @@ class _ChatScreenState extends State<ChatScreen>
             icon: LucideIcons.calendarPlus,
             label: label,
             onTap: () => _openProviderBooking(id, pKey),
+          ));
+        }
+      } else if (type == 'listings_changed' || type == 'my_listings') {
+        // E'lon berildi/o'zgardi — "Mening e'lonlarim" ga o'tish.
+        buttons.add(_chatActionButton(
+          icon: LucideIcons.tag,
+          label: 'Mening e\'lonlarim'.tr,
+          onTap: () => _openBookings(),
+        ));
+      } else if (type == 'listing_detail') {
+        final m = Map<String, dynamic>.from((a['listing'] as Map?) ?? const {});
+        if (m.isNotEmpty) {
+          final listing = Listing.fromJson(m);
+          buttons.add(_chatActionButton(
+            icon: LucideIcons.package,
+            label: listing.title,
+            onTap: () => showListingModal(context, listing),
           ));
         }
       } else if (type == 'orders_changed') {
