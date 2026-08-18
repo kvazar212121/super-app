@@ -265,10 +265,25 @@ class AiService {
     }
   }
 
+  /// Diskdan qayta o'qishga majbur qiladi.
+  ///
+  /// `AiService` — singleton va tarix bir marta o'qilгач keshda qoladi.
+  /// Testlarda (va tarix tashqaridan almashtirilganda) bu kesh eski
+  /// ma'lumotni ko'rsatib qo'yadi.
+  @visibleForTesting
+  void resetHistoryCache() {
+    _messages.clear();
+    lastActions = const [];
+    _loaded = false;
+  }
+
   /// Chat tarixini tozalaydi (xotira + disk).
   Future<void> clearHistory() async {
     _messages.clear();
     lastActions = const [];
+    // Keshni ham ochamiz: aks holda keyingi loadHistory eski
+    // (allaqachon o'chirilgan) ro'yxatni qaytarardi.
+    _loaded = false;
     try {
       final prefs = await SharedPreferences.getInstance();
       await prefs.remove(_historyKey);
