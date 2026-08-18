@@ -287,6 +287,29 @@ async def retention_scheduler():
             await asyncio.sleep(60 * 60)  # xato bo'lsa 1 soat kutib qayta urinadi
 
 
+async def listing_expiry_scheduler():
+    """Muddati tugagan savdo e'lonlarini `expired` qiladi.
+
+    E'lon O'CHIRILMAYDI: egasi "Mening e'lonlarim" dan uzaytirishi
+    kerak. Qidiruv baribir muddatni tekshiradi — bu scheduler faqat
+    holatni to'g'rilaydi ("Mening e'lonlarim" da kulrang ko'rinsin).
+    """
+    logger.info("Listing expiry scheduler starting...")
+    while True:
+        try:
+            await asyncio.sleep(60 * 30)  # har yarim soatda
+            async with async_session() as db:
+                from app.services.marketplace import expire_old
+                soni = await expire_old(db)
+                if soni:
+                    logger.info("Savdo: %d e'lon muddati tugadi", soni)
+        except asyncio.CancelledError:
+            logger.info("Listing expiry scheduler cancelled.")
+            break
+        except Exception as e:
+            logger.error(f"Error in listing expiry scheduler: {e}")
+
+
 def _start_scheduler_children():
     """Barcha fon schedulerlarини ishga tushiradi va tasklar ro'yxatini qaytaradi."""
     return [
@@ -296,6 +319,7 @@ def _start_scheduler_children():
         asyncio.create_task(order_completion_scheduler()),
         asyncio.create_task(market_scraper_scheduler()),
         asyncio.create_task(retention_scheduler()),
+        asyncio.create_task(listing_expiry_scheduler()),
     ]
 
 

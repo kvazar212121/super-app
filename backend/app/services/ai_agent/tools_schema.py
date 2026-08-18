@@ -510,5 +510,158 @@ TOOLS = [
                 "provider_id": {"type": "integer", "description": "Usta ID si"}
             }, "required": ["provider_id"]}
         }
+    },
+    # ── SAVDO (marketplace): buyum sotish va sotib olish ──────────────
+    {
+        "type": "function",
+        "function": {
+            "name": "start_listing_draft",
+            "description": (
+                "BUYUM SOTISHNI boshlash. 'telefonimni sotmoqchiman', "
+                "'mashinamni sotaman', 'divan sotiladi' kabi gaplarda "
+                "chaqiring. Tool KERAKLI MAYDONLAR ro'yxatini qaytaradi "
+                "— uni BITTA xabarda ko'rsating. Bu ish e'loni EMAS "
+                "(usta qidirilmayapti), balki buyum savdosi."
+            ),
+            "parameters": {"type": "object", "properties": {
+                "category": {"type": "string", "description": "Toifa: telefon, kompyuter, elektronika, maishiy, avto, qurilish, kiyim, hayvon, mebel, boshqa"},
+                "title": {"type": "string", "description": "Buyum nomi, masalan 'iPhone 13 Pro 256GB'"},
+                "description": {"type": "string"},
+                "price": {"type": "number", "description": "Narx. 'kelishamiz' bo'lsa bermang, is_negotiable=true qiling"},
+                "currency": {"type": "string", "description": "UZS yoki USD"},
+                "is_negotiable": {"type": "boolean", "description": "Narx kelishiladi"},
+                "condition": {"type": "string", "description": "yangi / ideal / yaxshi / ishlatilgan / ehtiyot qismga"},
+                "address": {"type": "string"},
+                "attributes": {"type": "object", "description": "Toifaga xos maydonlar: {'model': 'iPhone 13', 'xotira': '256GB'}"},
+                "photos": {"type": "array", "items": {"type": "string"}},
+                "lang": {"type": "string"}
+            }}
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "update_listing_draft",
+            "description": (
+                "Sotuv qoralamasiga YANGI ma'lumot qo'shish. Foydalanuvchi "
+                "so'ralgan maydonlarni yozgach chaqiring. Faqat yangisini "
+                "yuboring — oldingilar saqlanadi. Tool qolgan "
+                "yetishmaganlarni aytadi."
+            ),
+            "parameters": {"type": "object", "properties": {
+                "category": {"type": "string"},
+                "title": {"type": "string"},
+                "description": {"type": "string"},
+                "price": {"type": "number"},
+                "currency": {"type": "string"},
+                "is_negotiable": {"type": "boolean"},
+                "condition": {"type": "string"},
+                "address": {"type": "string"},
+                "attributes": {"type": "object"},
+                "photos": {"type": "array", "items": {"type": "string"}},
+                "lang": {"type": "string"}
+            }}
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "add_listing_photos",
+            "description": (
+                "E'longa rasm qo'shish. Foydalanuvchi rasm yuborganda "
+                "URL'larini shu tool'ga bering. Kamida 3 ta rasm kerak — "
+                "tool yana nechta kerakligini aytadi."
+            ),
+            "parameters": {"type": "object", "properties": {
+                "photos": {"type": "array", "items": {"type": "string"}, "description": "Yuklangan rasm URL'lari"},
+                "lang": {"type": "string"}
+            }, "required": ["photos"]}
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "publish_listing",
+            "description": (
+                "E'lonni CHOP ETISH. IKKI QADAMLI: avval confirm=false — "
+                "tool xulosa qaytaradi; xulosani ko'rsatib «E'lon "
+                "berilsinmi?» deb SO'RANG; foydalanuvchi 'ha' degandagina "
+                "confirm=true bilan qayta chaqiring."
+            ),
+            "parameters": {"type": "object", "properties": {
+                "confirm": {"type": "boolean"},
+                "lang": {"type": "string"}
+            }}
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "search_listings",
+            "description": (
+                "Sotuvdagi buyumlarni qidirish. 'telefon olmoqchiman', "
+                "'arzon divan bormi', 'mashina qidiryapman' kabi gaplarda. "
+                "Avval model/narx/holat kabi shartlarni SO'RANG, keyin "
+                "qidiring. Natija chatда KARTALAR bo'lib ko'rinadi — "
+                "siz faqat nechta topilganini qisqa ayting."
+            ),
+            "parameters": {"type": "object", "properties": {
+                "query": {"type": "string", "description": "Matn bo'yicha qidiruv, masalan 'iPhone 13'"},
+                "category": {"type": "string", "description": "Toifa kaliti"},
+                "price_min": {"type": "number", "description": "Eng kam narx (SO'MDA)"},
+                "price_max": {"type": "number", "description": "Eng ko'p narx (SO'MDA)"},
+                "condition": {"type": "string", "description": "new / like_new / good / used / parts"},
+                "sort": {"type": "string", "description": "relevant (standart), price_asc, price_desc, new"},
+                "lang": {"type": "string"}
+            }}
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "get_listing",
+            "description": (
+                "Bitta e'lonning to'liq ma'lumoti. Foydalanuvchi "
+                "«birinchisi haqida batafsil ayt» desa chaqiring. "
+                "Sotuvchi telefon raqami YO'Q va so'ralmaydi ham — "
+                "aloqa faqat ilova ichida."
+            ),
+            "parameters": {"type": "object", "properties": {
+                "listing_id": {"type": "integer"},
+                "lang": {"type": "string"}
+            }, "required": ["listing_id"]}
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "my_listings",
+            "description": (
+                "Foydalanuvchining O'Z e'lonlari: holati, ko'rilgan soni, "
+                "muddati. «E'lonlarim qalay?», «nechta e'lonim bor?» "
+                "savollarida."
+            ),
+            "parameters": {"type": "object", "properties": {
+                "lang": {"type": "string"}
+            }}
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "close_listing",
+            "description": (
+                "E'lonni «sotildi» deb belgilash yoki yashirish. "
+                "IKKI QADAMLI: confirm=false → tasdiq so'rang → "
+                "confirm=true. listing_id ni bilmasangiz avval "
+                "my_listings chaqiring."
+            ),
+            "parameters": {"type": "object", "properties": {
+                "listing_id": {"type": "integer"},
+                "sold": {"type": "boolean", "description": "true — sotildi, false — yashirish"},
+                "confirm": {"type": "boolean"},
+                "lang": {"type": "string"}
+            }, "required": ["listing_id"]}
+        }
     }
 ]

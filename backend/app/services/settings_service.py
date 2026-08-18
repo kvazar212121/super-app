@@ -35,6 +35,9 @@ FEATURE_DEFS = [
     # Adminkada yoqish/o'chirish VA premium talab qilish tugmalari
     # avtomatik chiqadi (features_public shu ro'yxatdan quriladi).
     ("jobs", "Ish e'lonlari"),
+    # Savdo: buyum e'lonlari (OLX uslubi). Adminkada yoqish/o'chirish
+    # va premium talab qilish tugmalari avtomatik chiqadi.
+    ("marketplace", "Savdo (e'lonlar)"),
 ]
 AI_FEATURES = ["vision", "chat", "translate"]
 DEFAULT_COMING_SOON = "Bu bo'lim tez orada ishga tushadi ⏳"
