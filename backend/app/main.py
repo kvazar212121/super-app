@@ -9,6 +9,24 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
+
+
+class _NoCacheStatic(StaticFiles):
+    """Admin panel fayllarini brauzer KESHLAMAYDI.
+
+    Nega: panel ES6 modullardan iborat va brauzer eski nusxani
+    ushlab qolsa, yangi qo'shilgan bo'lim umuman ko'rinmaydi.
+    Admin esa "ishlamayapti" deb o'ylaydi. Fayllar kichik
+    (bir necha KB), shuning uchun tekshirish arzon.
+    """
+
+    def is_not_modified(self, response_headers, request_headers) -> bool:
+        return False
+
+    async def get_response(self, path: str, scope):
+        response = await super().get_response(path, scope)
+        response.headers["Cache-Control"] = "no-cache, must-revalidate"
+        return response
 from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
@@ -474,7 +492,11 @@ def create_app() -> FastAPI:
     admin_static_dir = Path(__file__).resolve().parent / "static" / "admin"
     app.mount(
         "/admin-assets",
-        StaticFiles(directory=str(admin_static_dir)),
+        # `check_dir` bilan bir qatorda KESH boshqaruvi ham kerak:
+        # brauzer eski JS ni ushlab qolsa admin yangi bo'limlarni
+        # ko'rmaydi (haqiqiy holat: AI kalitlari bo'limi chiqmadi).
+        # Statik fayllar kichik, shuning uchun har safar tekshiriladi.
+        _NoCacheStatic(directory=str(admin_static_dir)),
         name="admin_static",
     )
 
