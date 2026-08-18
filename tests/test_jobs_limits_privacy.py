@@ -25,6 +25,14 @@ BACKEND = os.path.join(
 )
 sys.path.insert(0, BACKEND)
 
+# ⚠️ ISHCHI BAZAGA TEGMASLIK QO'RIQCHISI.
+# Bu test `DROP SCHEMA public CASCADE` qiladi. Xato baza
+# ko'rsatilsa butun ishchi ma'lumot o'chib ketardi (bu bir
+# marta haqiqatan sodir bo'lgan).
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from db_guard import guard as _db_guard  # noqa: E402
+_db_guard(DB)
+
 DB = os.environ.get("SUPERAPP_TEST_DB")
 # Bazasiz ham import qilinishi kerak (statik tekshiruvlar uchun).
 # Haqiqiy ulanish ochilmaydi, faqat URL to'g'ri shaklda bo'lsin.
