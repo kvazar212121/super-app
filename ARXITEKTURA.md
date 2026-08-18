@@ -37,12 +37,27 @@ sartarosh, salon, santexnik, elektrik, tozalash, avto-yordam, futbol maydon, ta'
 
 **Biznes modeli:** provayder o'z hisobiga pul soladi → biz unga mijoz topib beramiz → ish yakunlanganda **lead fee** (komissiya) yechamiz. Mijoz-provayder o'rtasidagi to'lovga aralashmaymiz.
 
+### A2) Buyum savdosi (`marketplace` moduli, OLX uslubi)
+Foydalanuvchilar bir-biriga BUYUM sotadi: telefon, kompyuter,
+elektronika, maishiy texnika, avto, qurilish mollari, kiyim, hayvon,
+mebel. Butun oqim AI chatда: AI kerakli maydonlarni ro'yxat qilib
+so'raydi, 3-6 rasm oladi, tasdiqdan keyin e'lon chiqadi; xaridorga
+esa chatда 2 ustunli kartalar (grid) ko'rsatiladi.
+
+Xizmatlar marketplace'idan farqi: bu yerda provayder, lead fee va bron
+YO'Q. Kod `backend/app/services/marketplace/` va
+`lib/*/marketplace/` da, `jobs` (ish e'lonlari) dan mustaqil.
+
+Monetizatsiya: e'lon muddatini uzaytirish (premium bepul) va
+adminkadan yoqiladigan "e'lon berish premium bilan" rejimi.
+
 ### B) Shaxsiy productivity modullari
 Har bir foydalanuvchi uchun: 💰 Moliya menejeri (oilaviy byudjet), 📋 Rejalar/planner, 🛒 Aqlli xarid ro'yxati, 🥗 Kaloriya hisoblagich (AI vision), 💪 Fitnes trener (qadam hisoblagich), ⏰ Majburlovchi budilnik, 🤖 AI yordamchi (chat + tool-calling).
 
 ### Monetizatsiya
 - **Lead fee** — provayderdan (marketplace)
 - **Premium obuna** — oddiy foydalanuvchidan (productivity modullarining to'liq funksiyasi uchun)
+- **E'lon uzaytirish** — buyum savdosida muddat tugagach (premium bepul uzaytiradi)
 
 ---
 

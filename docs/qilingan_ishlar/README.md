@@ -24,6 +24,7 @@ ko'chirildi.
 | Fayl | Nima edi | Holati |
 |---|---|---|
 | `REJA_AI_ELON.md` | AI chat orqali ish e'loni berish (8 bosqich) | ✅ **BAJARILDI** |
+| `REJA_SAVDO_AI.md` | AI chat orqali OLX uslubidagi savdo (12 bosqich) | ✅ **BAJARILDI** |
 | `super_app_plan.md` | Loyihaning dastlabki umumiy rejasi (2026-05-19) | ✅ Tarixiy, bajarilgan |
 | `clean_translation_report.md` | Tarjima kalitlari hisoboti | ✅ Ishlatilgan, arxiv |
 
@@ -64,6 +65,49 @@ aslida to'liq bajarilmagani aniqlandi (commit `c609c9d7`):
    lentasi qo'shildi, bosilganda to'liq ekranda ochiladi.
 
 Tekshiruv: `tests/test_jobs_limits_privacy.py` (14 ta tekshiruv).
+
+---
+
+## REJA_SAVDO_AI.md — bandma-band hisobot
+
+Buyum savdosi (marketplace). `jobs` (ish e'lonlari) dan BUTUNLAY
+alohida: u yerda xizmat, bu yerda narsa sotiladi.
+
+| # | Bosqich | Holat | Qayerda |
+|---|---|---|---|
+| 1 | Baza + modellar | ✅ | `models/marketplace/listing.py`, `listing_photo.py` |
+| 2 | Maydonlar + validator | ✅ | `services/marketplace/fields.py`, `validator.py` |
+| 3 | Sotuvchi tool'lari | ✅ | `ai_agent/market_tools.py` (8 tool, jami 45) |
+| 4 | Rasmlar (3-6 ta) | ✅ | `marketplace/photos.py`, `POST /marketplace/photo` |
+| 5 | Chegaralar + adminka | ✅ | `marketplace/limits.py`, `FEATURE_DEFS` + `/admin/marketplace-settings` |
+| 6 | Qidiruv | ✅ | `marketplace/search.py` (RAG YO'Q — foydalanuvchi qarori) |
+| 7 | Chatda GRID (20 ta) | ✅ | `lib/widgets/marketplace/listing_grid.dart`, `chat_screen.dart` |
+| 8 | Modal oyna | ✅ | `lib/widgets/marketplace/listing_modal.dart` |
+| 9 | Xavfsizlik (begona e'lon) | ✅ | `marketplace/publisher.py` `own_listing()` + test |
+| 10 | Valyuta (doim so'mda) | ✅ | `marketplace/currency.py` |
+| 11 | Mening e'lonlarim + uzaytirish | ✅ | `marketplace/extend.py`, `lib/screens/marketplace/my_listings_screen.dart` |
+| 12 | Firibgarlik ogohlantirishi + shikoyat | ✅ | `marketplace/safety.py`, `safety_warning_dialog.dart` |
+
+Qabul qilingan qarorlar (foydalanuvchi tasdiqlagan):
+
+- **Telefon raqami hech qachon berilmaydi** — `to_dict()` da ham,
+  API javobida ham. Test bilan qo'riqlanadi.
+- **Narx doim so'mda ko'rsatiladi.** Dollarda saqlansa ham xaridor
+  so'mda ko'radi, asli qavsda: `4 410 000 so'm (350 $)`.
+- **"Kelishamiz"** — narxsiz e'lon ham bo'ladi.
+- **Muddat tugagach e'lon o'chmaydi**, "Mening e'lonlarim" da
+  uzaytiriladi (premium bepul, boshqasi balansdan).
+- **RAG ishlatilmadi** — filtrlar aniq, SQL tezroq va arzonroq.
+- **Chegaralar:** oddiy 7 kun / 5 e'lon / 6 rasm, premium 30 kun /
+  50 e'lon / 10 rasm. Hammasi adminkadan sozlanadi.
+
+Tekshiruv: `tests/test_marketplace_flow.py` (39), `_search.py` (27),
+`_limits.py` (45), `_contract.py` (52) + Flutter `marketplace_grid_test.dart`
+va `marketplace_modal_test.dart` (14). Jami Flutter testi 205 → 219.
+
+> Eslatma: savdo testlari PostgreSQL bo'lmasa SKIP bo'lmaydi —
+> vaqtincha SQLite faylida ishlaydi, chunki bu mantiq Postgres'ga xos
+> narsa ishlatmaydi. Baza berilsa (`SUPERAPP_TEST_DB`) o'shanda ishlaydi.
 
 ---
 

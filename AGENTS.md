@@ -53,7 +53,10 @@ export SUPERAPP_TEST_DB="postgresql+asyncpg://postgres@127.0.0.1:5435/superapp_t
 - **Baza:** Alembic ishlatilmaydi. Yangi jadval `create_all` bilan
   o'zi yaratiladi; mavjud jadvalga ustun qo'shish uchun
   `app/core/startup.py` dagi `ALTER TABLE ... IF NOT EXISTS` uslubi.
-- **Ustaning haqiqiy telefon raqami mijozga BERILMAYDI.** Aloqa faqat
+- **Savdo (`marketplace`) va ish e'loni (`jobs`) — BOSHQA narsa.**
+  `jobs` da xizmat qidiriladi, `marketplace` da buyum sotiladi.
+  Ikkalasini birlashtirmang, alohida papkada turadi.
+- **Ustaning yoki sotuvchining haqiqiy telefon raqami BERILMAYDI.** Aloqa faqat
   ilova ichida (chat / WebRTC). Buni buzmang, biznes modeli shunga
   bog'liq.
 - **Xarita:** tile manzilini hech qayerga qo'lda yozmang, faqat
@@ -67,7 +70,7 @@ export SUPERAPP_TEST_DB="postgresql+asyncpg://postgres@127.0.0.1:5435/superapp_t
 
 ## 5. AI agent (`backend/app/services/ai_agent/`)
 
-37 ta tool bor. Yangi tool qo'shish = `tools_schema.py` ga sxema +
+45 ta tool bor. Yangi tool qo'shish = `tools_schema.py` ga sxema +
 mos modulga handler + `dispatcher.py` ga ulash. Sxema va handler soni
 MOS bo'lishi kerak, buni test tekshiradi.
 

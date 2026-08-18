@@ -1,6 +1,10 @@
 # Reja: AI chat orqali OLX uslubidagi savdo (bozor)
 
-> **Holat:** tasdiqlash uchun. Kod yozilmagan, faqat reja.
+> ✅ **BAJARILDI (2026-08-18).** Bu hujjat ARXIV — qaytadan qilmang.
+> Bandma-band hisobot: `docs/qilingan_ishlar/README.md`.
+> Kod: `backend/app/services/marketplace/`, `ai_agent/market_tools.py`,
+> `lib/{models,screens,widgets}/marketplace/`.
+>
 > **Sana:** 2026-08-18
 
 ---
