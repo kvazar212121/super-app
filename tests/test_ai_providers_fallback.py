@@ -214,8 +214,9 @@ async def main():
 
     # ── 7. Admin ko'rinishi: kalit YASHIRILADI ───────────────────────
     korinish = ap.admin_view("vision")
-    check("admin ko'rinishida provayderlar bor",
-          len(korinish["providers"]) == 4, f"{korinish}")
+    check("admin ko'rinishida BARCHA provayderlar bor",
+          len(korinish["providers"]) == len(ap.PROVIDER_URLS),
+          f"{len(korinish['providers'])} != {len(ap.PROVIDER_URLS)}")
     for p in korinish["providers"]:
         check(f"'{p['key']}' kaliti to'liq ko'rsatilmaydi",
               "test-" not in (p.get("key_preview") or ""),
@@ -223,6 +224,32 @@ async def main():
     check("qaysi provayder rasmni ko'rishi belgilangan",
           any(p["supports_vision"] for p in korinish["providers"]),
           "belgilanmagan")
+
+    # ── 7b. Adminka ro'yxati YAGONA manbadan ─────────────────────────
+    # Ilgari `ai_settings.py` da provayderlar qo'lda yozilgan edi va
+    # Gemini qo'shilganda tanlov ro'yxatida KO'RINMAY qoldi.
+    from app.api.v1.admin.ai_settings import _provider_options
+
+    admin_royxat = set(_provider_options())
+    check("adminka ro'yxati kod bilan bir xil",
+          admin_royxat == set(ap.PROVIDER_URLS),
+          f"farq: {admin_royxat ^ set(ap.PROVIDER_URLS)}")
+    check("har provayderda odam o'qiydigan nom bor",
+          all(p in ap.PROVIDER_LABELS for p in ap.PROVIDER_URLS),
+          f"{set(ap.PROVIDER_URLS) - set(ap.PROVIDER_LABELS)}")
+    check("ChatGPT (openai) rasm tahlilida ishlatilishi mumkin",
+          "openai" in ap.VISION_PROVIDERS, "yo'q")
+    check("kamida 5 ta provayder tanlovi bor",
+          len(ap.PROVIDER_URLS) >= 5, f"{len(ap.PROVIDER_URLS)}")
+
+    # Har provayder uchun standart model bo'lishi kerak, aks holda
+    # kalit qo'yilsa ham ishlamaydi.
+    for prov in ap.PROVIDER_URLS:
+        check(f"'{prov}' uchun chat modeli belgilangan",
+              bool(ap.model_for("chat", prov)), "model yo'q")
+    for prov in ap.VISION_PROVIDERS:
+        check(f"'{prov}' uchun vision modeli belgilangan",
+              bool(ap.model_for("vision", prov)), "model yo'q")
 
     # ── 8. Kod hech qayerda provayderni QOTIRIB yozmagan ─────────────
     for yol, nom in [

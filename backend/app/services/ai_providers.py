@@ -25,17 +25,28 @@ logger = logging.getLogger(__name__)
 # foydalanadi, shuning uchun kod bitta.
 PROVIDER_URLS: dict[str, str] = {
     "openai": "https://api.openai.com/v1/chat/completions",
+    "gemini": "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
     "groq": "https://api.groq.com/openai/v1/chat/completions",
     "deepseek": "https://api.deepseek.com/v1/chat/completions",
-    "gemini": "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+    # Quyidagilar ham OpenAI-mos: kalit qo'yilsa darhol ishlaydi.
+    "openrouter": "https://openrouter.ai/api/v1/chat/completions",
+    "mistral": "https://api.mistral.ai/v1/chat/completions",
+    "together": "https://api.together.xyz/v1/chat/completions",
+    "xai": "https://api.x.ai/v1/chat/completions",
+    "anthropic": "https://api.anthropic.com/v1/chat/completions",
 }
 
 # Provayder odam o'qiydigan nom (admin panelida ko'rinadi).
 PROVIDER_LABELS: dict[str, str] = {
     "openai": "OpenAI (ChatGPT)",
+    "gemini": "Google Gemini",
     "groq": "Groq",
     "deepseek": "DeepSeek",
-    "gemini": "Google Gemini",
+    "openrouter": "OpenRouter (ko'p model)",
+    "mistral": "Mistral AI",
+    "together": "Together AI",
+    "xai": "xAI (Grok)",
+    "anthropic": "Anthropic (Claude)",
 }
 
 # RASMNI ko'ra oladigan provayderlar.
@@ -43,14 +54,15 @@ PROVIDER_LABELS: dict[str, str] = {
 # DeepSeek'ning ommaviy chat modeli rasmni QABUL QILMAYDI — uni
 # vision uchun tanlash "invalid request" beradi. Shuning uchun u
 # rasm tahlilidan chetlab o'tiladi.
-VISION_PROVIDERS = ("gemini", "openai", "groq")
+VISION_PROVIDERS = ("openai", "gemini", "openrouter", "xai", "anthropic",
+                    "together", "mistral")
 
 # Zaxira tartibi (standart). Admin buni o'zgartirishi mumkin.
 #
 # Gemini birinchi: rasm tahlili uchun bepul limiti katta. U band
 # bo'lsa (503) OpenAI, keyin Groq ishlaydi.
-DEFAULT_VISION_ORDER = ("gemini", "openai", "groq")
-DEFAULT_CHAT_ORDER = ("gemini", "groq", "openai", "deepseek")
+DEFAULT_VISION_ORDER = ("openai", "gemini", "openrouter", "xai")
+DEFAULT_CHAT_ORDER = ("openai", "gemini", "deepseek", "groq", "openrouter")
 
 # Provayder ishlamay qolganda shu vaqtga chetlab o'tiladi (soniya).
 # Har so'rovda qayta urinish sekinlik va bekorga xarajat.
@@ -82,6 +94,8 @@ def api_key(provider: str) -> str:
     if admin_kalit:
         return admin_kalit
 
+    # `.env` da faqat asosiy to'rttasi bor; qolganlari FAQAT
+    # adminkadan kiritiladi (kod o'zgartirish shart emas).
     return {
         "openai": settings.openai_api_key,
         "groq": settings.groq_api_key,
@@ -109,7 +123,7 @@ def model_for(feature: str, provider: str) -> str:
 
     # 3) `.env` dagi standart
     vision = feature == "vision"
-    return {
+    standart = {
         "openai": (settings.openai_vision_model if vision
                    else settings.openai_chat_model),
         "groq": (settings.groq_vision_model if vision
@@ -117,7 +131,17 @@ def model_for(feature: str, provider: str) -> str:
         "gemini": (settings.gemini_vision_model if vision
                    else settings.gemini_chat_model),
         "deepseek": settings.deepseek_chat_model,
-    }.get(provider, "")
+        # Qo'shimcha provayderlar uchun keng tarqalgan modellar.
+        # Boshqasini xohlasangiz adminkadan yozasiz.
+        "openrouter": ("openai/gpt-4o-mini" if vision
+                       else "openai/gpt-4o-mini"),
+        "mistral": ("pixtral-12b-2409" if vision else "mistral-small-latest"),
+        "together": ("meta-llama/Llama-Vision-Free" if vision
+                     else "meta-llama/Llama-3.3-70B-Instruct-Turbo-Free"),
+        "xai": ("grok-2-vision-1212" if vision else "grok-2-1212"),
+        "anthropic": "claude-3-5-sonnet-20241022",
+    }
+    return standart.get(provider, "")
 
 
 def primary_provider(feature: str) -> str:

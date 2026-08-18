@@ -87,7 +87,16 @@ async def update_notif_templates(data: NotifTemplatesUpdate, _admin: User = Depe
                                description="Bildirishnoma shablonlari")
     return {"templates": items}
 
-PROVIDER_OPTIONS = ["openai", "groq", "deepseek"]
+# Provayderlar ro'yxati YAGONA manbadan (`ai_providers`) olinadi.
+# Ilgari bu yerda qo'lda yozilgan edi va yangi provayder qo'shilganda
+# (Gemini) tanlov ro'yxatida ko'rinmay qolardi.
+def _provider_options() -> list[str]:
+    from app.services.ai_providers import PROVIDER_URLS
+
+    return list(PROVIDER_URLS)
+
+
+PROVIDER_OPTIONS = _provider_options()
 
 
 class AiFeatureConf(BaseModel):
@@ -117,7 +126,7 @@ def _feature_conf(feature: str, env_provider: str, groq_model: str, openai_model
 @router.get("/ai-config", response_model=AiConfigOut)
 async def get_ai_config(_admin: User = Depends(require_admin)):
     return AiConfigOut(
-        provider_options=PROVIDER_OPTIONS,
+        provider_options=_provider_options(),
         vision=_feature_conf("vision", settings.vision_provider, settings.groq_vision_model, settings.openai_vision_model),
         chat=_feature_conf("chat", settings.chat_provider, settings.groq_model, settings.openai_chat_model),
         translate=_feature_conf("translate", settings.translate_provider, settings.groq_translate_model, settings.openai_translate_model),
@@ -131,7 +140,7 @@ async def update_ai_config(data: AiConfigUpdate, _admin: User = Depends(require_
         conf = getattr(data, feature)
         if conf is not None:
             prov = (conf.provider or "").strip().lower()
-            if prov in PROVIDER_OPTIONS:
+            if prov in _provider_options():
                 updates[f"ai_{feature}_provider"] = prov
             updates[f"ai_{feature}_model"] = conf.model.strip()
     if updates:
