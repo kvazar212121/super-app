@@ -23,8 +23,29 @@ async function renderSettings() {
     window.__featureFlagKeys = flags.map(function(f) { return f.key; });
     try { const r = await window.api(window.API_BASE + '/category-flags'); if (r && r.ok) { const d = await r.json(); cats = d.categories || []; } } catch(e) {}
     window.__catKeys = cats.map(function(c){ return c.key; });
+    // Savdo (marketplace) raqamli sozlamalari: muddat, e'lon soni,
+    // rasm chegarasi, uzaytirish narxi. Yoqish/o'chirish esa yuqoridagi
+    // "Ilova bo'limlari" ro'yxatida (marketplace kaliti).
+    var market = [];
+    try { const r = await window.api(window.API_BASE + '/marketplace-settings'); if (r && r.ok) { const d = await r.json(); market = d.settings || []; } } catch(e) {}
+    window.__marketKeys = market.map(function(m){ return m.key; });
+
     var legal = [];
     try { const r = await window.api(window.API_BASE + '/legal'); if (r && r.ok) { const d = await r.json(); legal = d.docs || []; } } catch(e) {}
+
+    var marketRows = '';
+    market.forEach(function(m) {
+        marketRows +=
+            '<div class="setting-row">' +
+                '<div class="setting-info">' +
+                    '<div class="setting-label">' + window.escapeHtml(m.label || m.key) + '</div>' +
+                    '<div class="setting-description">Standart: ' + m.default + '</div>' +
+                '</div>' +
+                '<div class="setting-control">' +
+                    '<input type="number" class="form-input" id="market_' + m.key + '" value="' + m.value + '" min="0" style="width:120px;">' +
+                '</div>' +
+            '</div>';
+    });
 
     var providerOptions = (ai && ai.provider_options) ? ai.provider_options : ['openai', 'groq'];
 
@@ -144,6 +165,20 @@ async function renderSettings() {
             '</div>' +
         '</div>' +
 
+        // ── Savdo (marketplace) ──
+        '<div class="card">' +
+            '<div class="card-body">' +
+                '<div class="settings-section">' +
+                    '<h3 class="settings-section-title">🛒 Savdo (e\'lonlar) sozlamalari</h3>' +
+                    '<p class="setting-description" style="margin-bottom:12px;">Bo\'limni butunlay yoqish/o\'chirish va premium talab qilish yuqoridagi <b>Ilova bo\'limlari</b> ro\'yxatida («Savdo (e\'lonlar)»). Bu yerda muddat, e\'lon soni, rasm chegarasi va uzaytirish narxi.</p>' +
+                    marketRows +
+                    '<div style="padding-top:12px;">' +
+                        '<button class="btn btn-primary" onclick="saveMarketplaceSettings()">💾 Savdo sozlamalarini saqlash</button>' +
+                    '</div>' +
+                '</div>' +
+            '</div>' +
+        '</div>' +
+
         // ── Huquqiy hujjatlar (CMS) ──
         '<div class="card">' +
             '<div class="card-body">' +
@@ -252,6 +287,22 @@ function saveFeatureFlags() {
         });
 }
 
+function saveMarketplaceSettings() {
+    var values = {};
+    (window.__marketKeys || []).forEach(function(key) {
+        var el = document.getElementById('market_' + key);
+        if (!el) return;
+        var n = parseInt(el.value, 10);
+        // Bo'sh yoki noto'g'ri qiymat YUBORILMAYDI: backend standartни
+        // ishlatadi va savdo to'xtab qolmaydi.
+        if (!isNaN(n) && n >= 0) values[key] = n;
+    });
+    window.api(window.API_BASE + '/marketplace-settings', { method: 'PUT', body: JSON.stringify({ values: values }) })
+        .then(function(r) {
+            window.showToast(r && r.ok ? 'Savdo sozlamalari saqlandi ✅' : 'Saqlab bo\'lmadi', r && r.ok ? 'success' : 'error');
+        });
+}
+
 function saveLegal() {
     var payload = {};
     ['terms', 'privacy', 'faq'].forEach(function(k) {
@@ -299,12 +350,13 @@ function saveSettings() {
 }
 
 // Exports for ES6 modules
-export { saveSettings, saveAiConfig, saveFeatureFlags, saveCategoryFlags, saveLegal, updToggle, renderSettings };
+export { saveSettings, saveAiConfig, saveFeatureFlags, saveCategoryFlags, saveMarketplaceSettings, saveLegal, updToggle, renderSettings };
 // Expose to window for inline onclick handlers
 window.saveSettings = saveSettings;
 window.saveAiConfig = saveAiConfig;
 window.saveFeatureFlags = saveFeatureFlags;
 window.saveCategoryFlags = saveCategoryFlags;
+window.saveMarketplaceSettings = saveMarketplaceSettings;
 window.saveLegal = saveLegal;
 window.updToggle = updToggle;
 window.renderSettings = renderSettings;

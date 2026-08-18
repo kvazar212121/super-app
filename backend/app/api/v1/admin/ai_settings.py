@@ -245,3 +245,63 @@ async def update_legal_docs(data: LegalUpdate, _admin: User = Depends(require_ad
     return {
         "docs": [{"key": k, "label": lbl, "content": settings_service.get_legal(k)} for k, lbl in settings_service.LEGAL_DOCS]
     }
+
+
+# ── Savdo (marketplace) sozlamalari ──────────────────────────────────────────
+# Bo'limni yoqish/o'chirish va premium talab qilish `feature-flags` orqali
+# (marketplace kaliti). Bu yerda RAQAMLI sozlamalar: muddat, e'lon soni,
+# rasm chegarasi va uzaytirish narxi.
+
+MARKET_SETTINGS = [
+    ("market_free_days", "Oddiy e'lon muddati (kun)", 7),
+    ("market_premium_days", "Premium e'lon muddati (kun)", 30),
+    ("market_free_limit", "Oddiy: bir vaqtda e'lon", 5),
+    ("market_premium_limit", "Premium: bir vaqtda e'lon", 50),
+    ("market_min_photos", "Kamida rasm", 3),
+    ("market_max_photos", "Ko'pi bilan rasm", 6),
+    ("market_premium_max_photos", "Premium: ko'pi bilan rasm", 10),
+    ("market_extend_price", "Uzaytirish narxi (so'm)", 5000),
+]
+
+
+class MarketSettingsUpdate(BaseModel):
+    values: dict[str, int]
+
+
+def _market_payload() -> dict:
+    return {
+        "settings": [
+            {
+                "key": k,
+                "label": label,
+                "default": default,
+                "value": int(settings_service.get(k, "") or default),
+            }
+            for k, label, default in MARKET_SETTINGS
+        ]
+    }
+
+
+@router.get("/marketplace-settings")
+async def get_marketplace_settings(_admin: User = Depends(require_admin)):
+    return _market_payload()
+
+
+@router.put("/marketplace-settings")
+async def update_marketplace_settings(
+    data: MarketSettingsUpdate, _admin: User = Depends(require_admin)
+):
+    """Raqamli sozlamalarni yangilaydi.
+
+    Manfiy yoki juda katta qiymat qabul qilinmaydi: admin xato yozsa
+    e'lon berish butunlay to'xtab qolmasligi kerak.
+    """
+    ruxsat = {k for k, _l, _d in MARKET_SETTINGS}
+    updates: dict[str, str] = {}
+    for key, value in (data.values or {}).items():
+        if key not in ruxsat:
+            continue
+        updates[key] = str(max(0, min(int(value), 1_000_000)))
+    if updates:
+        settings_service.set_many(updates)
+    return _market_payload()
