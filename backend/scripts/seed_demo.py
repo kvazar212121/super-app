@@ -239,13 +239,18 @@ SHARHLAR = [
 
 DEMO_PAROL = "demo1234"
 
+# Admin panelini ko'rib chiqish uchun (mavjud adminlarga TEGILMAYDI).
+DEMO_ADMIN_LOGIN = "demoadmin"
+DEMO_ADMIN_PAROL = "Demo2026!"
+
 
 def _narx(min_n: int, max_n: int) -> int:
     """Chiroyli yumaloq narx (5 mingga karrali)."""
     return round(random.randint(min_n, max_n) / 5000) * 5000
 
 
-async def main(force_banner: bool = False, force_meta: bool = False) -> None:
+async def main(force_banner: bool = False, force_meta: bool = False,
+               demo_admin: bool = True) -> None:
     from app.core.security import hash_password
     from app.db.session import async_session
     from app.models.category import Category
@@ -376,6 +381,29 @@ async def main(force_banner: bool = False, force_meta: bool = False) -> None:
     except Exception as exc:
         print(f"  ⚠️ whitelist yozilmadi: {exc}")
 
+    # ── 7. DEMO ADMIN (admin paneliga kirish uchun) ─────────────────
+    # Mavjud adminlarning paroli tegilmaydi. Ko'rib chiqish uchun
+    # alohida demo admin yaratiladi/yangilanadi.
+    if demo_admin:
+        async with async_session() as db:
+            mavjud = (await db.execute(
+                select(User).where(User.phone == DEMO_ADMIN_LOGIN)
+            )).scalars().first()
+            if mavjud is None:
+                mavjud = User(
+                    name="Demo", surname="Admin",
+                    phone=DEMO_ADMIN_LOGIN,
+                    hashed_password=hash_password(DEMO_ADMIN_PAROL),
+                )
+                db.add(mavjud)
+            else:
+                mavjud.hashed_password = hash_password(DEMO_ADMIN_PAROL)
+            mavjud.is_admin = True
+            mavjud.is_super_admin = True
+            mavjud.is_active = True
+            await db.commit()
+        print(f"  demo admin             : {DEMO_ADMIN_LOGIN} / {DEMO_ADMIN_PAROL}")
+
     print("Demo ma'lumot to'ldirildi:")
     print(f"  xizmat/narx yangilandi : {yangilangan_meta} provayder")
     print(f"  banner qo'yildi        : {yangilangan_banner} provayder")
@@ -389,5 +417,8 @@ if __name__ == "__main__":
                         help="Banneri borlarni ham almashtirish")
     parser.add_argument("--force-meta", action="store_true",
                         help="Xizmat ro'yxatini majburan to'ldirish")
+    parser.add_argument("--no-admin", action="store_true",
+                        help="Demo admin yaratilmasin")
     args = parser.parse_args()
-    asyncio.run(main(args.force_banner, args.force_meta))
+    asyncio.run(main(args.force_banner, args.force_meta,
+                     demo_admin=not args.no_admin))
