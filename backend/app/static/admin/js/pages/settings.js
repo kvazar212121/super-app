@@ -61,13 +61,15 @@ async function renderSettings() {
                             (visionOk.indexOf(k) >= 0 ? ' · rasmni ko\'radi 🖼' : ' · faqat matn') +
                         '</div>' +
                     '</div>' +
-                    '<div class="setting-control" style="display:flex;gap:6px;">' +
-                        '<input type="password" class="form-input" id="aikey_' + k + '" placeholder="yangi kalit" style="width:210px;">' +
+                    '<div class="setting-control" style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;">' +
+                        '<input type="password" class="form-input" id="aikey_' + k + '" placeholder="yangi kalit" style="width:200px;">' +
                         '<button class="btn btn-primary" onclick="saveAiKey(\'' + k + '\')">💾</button>' +
                         '<button class="btn" onclick="testAiKey(\'' + k + '\')">🔍 Test</button>' +
+                        '<button class="btn" onclick="loadAiModels(\'' + k + '\')">📋 Modellar</button>' +
                     '</div>' +
                 '</div>' +
-                '<div id="aitest_' + k + '" style="font-size:12px;padding:0 0 8px 4px;"></div>';
+                '<div id="aitest_' + k + '" style="font-size:12px;padding:0 0 8px 4px;"></div>' +
+                '<div id="aimodels_' + k + '" style="font-size:12px;padding:0 0 10px 4px;"></div>';
         });
 
         // Zaxira tartibi (funksiya bo'yicha)
@@ -388,6 +390,53 @@ function testAiKey(provider) {
     });
 }
 
+function loadAiModels(provider) {
+    var out = document.getElementById('aimodels_' + provider);
+    if (out) out.innerHTML = '<span style="color:#64748b;">Yuklanmoqda…</span>';
+    window.api(window.API_BASE + '/ai-models/' + provider)
+        .then(function(r) { return r.json(); })
+        .then(function(d) {
+            if (!out) return;
+            var ms = d.models || [];
+            if (!ms.length) {
+                out.innerHTML = '<span style="color:#dc2626;">' +
+                    window.escapeHtml(d.message || 'Model topilmadi') + '</span>';
+                return;
+            }
+            // Modellarni bosiladigan qilib beramiz: bosilganda mos
+            // funksiyaning model maydoniga qo'yiladi.
+            out.innerHTML = '<b>' + ms.length + ' ta model:</b> ' +
+                ms.map(function(m) {
+                    return '<code style="cursor:pointer;background:#eef2ff;padding:2px 6px;' +
+                           'border-radius:6px;margin:2px;display:inline-block;" ' +
+                           'onclick="pickAiModel(\'' + provider + '\',\'' + m + '\')">' +
+                           window.escapeHtml(m) + '</code>';
+                }).join(' ');
+        })
+        .catch(function() {
+            if (out) out.innerHTML = '<span style="color:#dc2626;">Yuklab bo\'lmadi</span>';
+        });
+}
+
+function pickAiModel(provider, model) {
+    // Qaysi funksiya uchun ekanini so'raymiz: bitta provayder chat
+    // va vision uchun boshqa modelga ega bo'lishi mumkin.
+    var feature = window.prompt(
+        'Qaysi qism uchun? (vision / chat / translate)', 'chat');
+    if (!feature) return;
+    feature = feature.trim().toLowerCase();
+    var models = {};
+    models[provider] = model;
+    window.api(window.API_BASE + '/ai-providers', {
+        method: 'PUT',
+        body: JSON.stringify({ feature: feature, models: models })
+    }).then(function(r) {
+        window.showToast(r && r.ok ? 'Model saqlandi ✅' : 'Saqlab bo\'lmadi',
+                         r && r.ok ? 'success' : 'error');
+        if (r && r.ok) window.renderSettings();
+    });
+}
+
 function saveAiOrder(feature) {
     var el = document.getElementById('aiorder_' + feature);
     if (!el) return;
@@ -465,7 +514,7 @@ function saveSettings() {
 }
 
 // Exports for ES6 modules
-export { saveSettings, saveAiConfig, saveFeatureFlags, saveCategoryFlags, saveMarketplaceSettings, saveAiKey, testAiKey, saveAiOrder, saveLegal, updToggle, renderSettings };
+export { saveSettings, saveAiConfig, saveFeatureFlags, saveCategoryFlags, saveMarketplaceSettings, saveAiKey, testAiKey, saveAiOrder, loadAiModels, pickAiModel, saveLegal, updToggle, renderSettings };
 // Expose to window for inline onclick handlers
 window.saveSettings = saveSettings;
 window.saveAiConfig = saveAiConfig;
@@ -475,6 +524,8 @@ window.saveMarketplaceSettings = saveMarketplaceSettings;
 window.saveAiKey = saveAiKey;
 window.testAiKey = testAiKey;
 window.saveAiOrder = saveAiOrder;
+window.loadAiModels = loadAiModels;
+window.pickAiModel = pickAiModel;
 window.saveLegal = saveLegal;
 window.updToggle = updToggle;
 window.renderSettings = renderSettings;

@@ -68,12 +68,17 @@ class Settings(BaseSettings):
 
     # Groq AI API (kalit faqat serverda saqlanadi)
     groq_api_key: str = ""
-    groq_model: str = "llama3-70b-8192"
+    # DIQQAT: Groq modellar ro'yxatini tez-tez yangilaydi va eskilari
+    # 404 beradi. Model nomini adminkadan o'zgartirish mumkin
+    # (Sozlamalar → AI kalitlari), kodga qaytib kelish shart emas.
+    groq_model: str = "openai/gpt-oss-120b"
     groq_max_tokens: int = 1024
-    groq_vision_model: str = "meta-llama/llama-4-scout-17b-16e-instruct"
-    groq_translate_model: str = "llama-3.3-70b-versatile"
+    # Groq hozir VISION modelini bermaydi — rasm tahlili Gemini yoki
+    # OpenAI orqali ketadi (`ai_providers.VISION_PROVIDERS`).
+    groq_vision_model: str = ""
+    groq_translate_model: str = "openai/gpt-oss-120b"
     # AI chat/agent uchun (zaxira provayder sifatida ishlatiladi).
-    groq_chat_model: str = "llama-3.3-70b-versatile"
+    groq_chat_model: str = "openai/gpt-oss-120b"
 
     # OpenAI API (aqlliroq vision — taom rasmidan kaloriya hisoblash uchun)
     # vision_provider = "openai" bo'lsa, kaloriya tahlili OpenAI orqali ishlaydi.

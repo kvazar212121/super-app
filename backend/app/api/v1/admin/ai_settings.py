@@ -443,3 +443,55 @@ async def test_ai_provider(
     if r.status_code == 503:
         return {"ok": False, "message": "Model band (503) — zaxira ishlaydi"}
     return {"ok": False, "message": f"HTTP {r.status_code}: {r.text[:120]}"}
+
+
+@router.get("/ai-models/{provider}")
+async def list_provider_models(
+    provider: str, _admin: User = Depends(require_admin)
+):
+    """Provayderда HOZIR mavjud modellar ro'yxati.
+
+    NEGA: provayderlar model nomlarini o'zgartiradi va eskisi 404
+    beradi (Groq `llama-3.3-70b-versatile` ni olib tashladi va AI
+    chat ishlamay qoldi). Admin ro'yxatdan tanlasa, xato model
+    yozib qo'yish imkoni yo'qoladi.
+    """
+    import httpx
+
+    from app.services import ai_providers
+
+    prov = (provider or "").strip().lower()
+    if prov not in ai_providers.PROVIDER_URLS:
+        raise HTTPException(status_code=400, detail="Noma'lum provayder")
+
+    kalit = ai_providers.api_key(prov)
+    if not kalit:
+        return {"provider": prov, "models": [], "message": "Kalit yo'q"}
+
+    # Modellar ro'yxati `/models` da (chat/completions emas).
+    baza = ai_providers.PROVIDER_URLS[prov].rsplit("/chat/completions", 1)[0]
+    try:
+        async with httpx.AsyncClient(timeout=15.0) as client:
+            r = await client.get(
+                f"{baza}/models",
+                headers={"Authorization": f"Bearer {kalit}"},
+            )
+    except Exception as exc:
+        return {"provider": prov, "models": [],
+                "message": f"Ulanib bo'lmadi: {type(exc).__name__}"}
+
+    if r.status_code != 200:
+        return {"provider": prov, "models": [],
+                "message": f"HTTP {r.status_code}"}
+
+    try:
+        nomlar = sorted(m["id"] for m in r.json().get("data", []))
+    except Exception:
+        nomlar = []
+
+    return {
+        "provider": prov,
+        "models": nomlar,
+        "current": ai_providers.model_for("chat", prov),
+        "message": f"{len(nomlar)} ta model",
+    }
