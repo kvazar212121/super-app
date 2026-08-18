@@ -158,7 +158,7 @@ class _Navigation3DScreenState extends State<Navigation3DScreen> {
                 markers: [
                   Marker(
                     point: _start,
-                    size: const Size(52, 52),
+                    size: const Size(72, 72),
                     // `flat` — kursor xarita bilan birga yotadi
                     // (3D ko'rinishda tik turmaydi).
                     flat: true,
@@ -329,8 +329,8 @@ class _NavigatorKursori extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 52,
-      height: 52,
+      width: 72,
+      height: 72,
       child: CustomPaint(painter: _KursorChizuvchi(rang)),
     );
   }
@@ -358,12 +358,13 @@ class _KursorChizuvchi extends CustomPainter {
       nur,
     );
 
-    // 2) Uchli strelka.
+    // 2) Uchli strelka. Telefonda yaxshi ko'rinishi uchun
+    // yetarlicha katta (kichik strelka 3D fon ustida yo'qoladi).
     final ucli = ui.Path()
-      ..moveTo(markaz.dx, markaz.dy - 15)          // uchi (oldinga)
-      ..lineTo(markaz.dx - 10, markaz.dy + 11)     // chap orqa
-      ..lineTo(markaz.dx, markaz.dy + 5)           // o'rta o'yiq
-      ..lineTo(markaz.dx + 10, markaz.dy + 11)     // o'ng orqa
+      ..moveTo(markaz.dx, markaz.dy - 22)          // uchi (oldinga)
+      ..lineTo(markaz.dx - 15, markaz.dy + 17)     // chap orqa
+      ..lineTo(markaz.dx, markaz.dy + 8)           // o'rta o'yiq
+      ..lineTo(markaz.dx + 15, markaz.dy + 17)     // o'ng orqa
       ..close();
 
     // Oq hoshiya — har qanday xarita rangida ko'rinsin.
@@ -372,7 +373,7 @@ class _KursorChizuvchi extends CustomPainter {
       Paint()
         ..color = Colors.white
         ..style = PaintingStyle.stroke
-        ..strokeWidth = 4
+        ..strokeWidth = 5
         ..strokeJoin = StrokeJoin.round,
     );
     canvas.drawPath(ucli, Paint()..color = rang);
