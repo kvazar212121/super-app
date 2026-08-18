@@ -46,7 +46,11 @@ async def _rate_limit_exceeded_handler(request: Request, exc: RateLimitExceeded)
             "detail": "Rate-limit oshib ketdi. Biroz kuting va qayta urinib ko'ring.",
         },
         headers={
-            "Retry-After": str(exc.retry_after) if exc.retry_after else "60",
+            # `retry_after` slowapi'ning hamma versiyasida yo'q.
+            # Ilgari u to'g'ridan-to'g'ri o'qilardi va AttributeError
+            # bergan: natijada foydalanuvchi 429 o'rniga 500 olardi,
+            # ya'ni chegara ishga tushishi XATOGA aylanardi.
+            "Retry-After": str(getattr(exc, "retry_after", None) or 60),
         },
     )
 
