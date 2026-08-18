@@ -233,3 +233,69 @@ cd backend && docker compose up -d --build backend
 Jadvallar qo'shilishi **buzuvchi emas**: eski kod yangi jadvallarni
 shunchaki ko'rmaydi, mavjud ma'lumotga tegilmaydi. Shuning uchun
 orqaga qaytarish uchun bazani tiklash shart emas.
+
+---
+
+## 7. Demo ma'lumot (provayderlar, banner, kirish)
+
+`backend/scripts/seed_demo.py` bazani "tirik" ko'rinishga keltiradi.
+**Hech narsani o'chirmaydi** — faqat bo'sh joyni to'ldiradi, shuning
+uchun ishchi bazada ham xavfsiz.
+
+Nima qiladi:
+
+| Ish | Tafsilot |
+|---|---|
+| Bo'sh toifaga provayder | Har toifada kamida **4 ta** (aks holda ilovada "xizmat yo'q" ko'rinadi) |
+| Xizmat va narx | Har provayderga 4-5 ta xizmat, 2026-yil Toshkent narxlari |
+| Banner | `assets/images/services3d/` dagi tayyor rasmlar |
+| Kirish hisobi | Provayder telefoni + parol `demo1234`, OTP kodi `111111` |
+| Reyting va sharh | Bo'sh bo'lsa 4.3-5.0 va 2-4 ta sharh |
+| Demo admin | `demoadmin` / `Demo2026!` (mavjud adminlarga tegilmaydi) |
+
+```bash
+# 1) Banner rasmlarini serverga yuklash (bir marta)
+bash backend/scripts/upload_demo_banners.sh devops@SERVER
+
+# 2) Demo ma'lumotni to'ldirish
+cd ~/super-app/backend
+CID=$(docker compose ps -q backend | head -1)
+docker cp scripts/seed_demo.py "$CID":/app/seed_demo.py
+docker exec "$CID" python /app/seed_demo.py
+docker compose restart backend     # whitelist qayta o'qilishi uchun
+
+# Tekshirish: bo'sh toifa qolmaganini ko'rish
+docker compose exec db psql -U postgres -d superapp -c "
+SELECT c.key, count(p.id) FROM categories c
+LEFT JOIN providers p ON p.category_id=c.id
+GROUP BY c.key ORDER BY 2;"
+```
+
+Bayroqlar: `--force-banner` (bannerni almashtirish),
+`--force-meta` (xizmatlarni qayta yozish), `--no-admin`.
+
+---
+
+## 8. ⚠️ Testlar ishchi bazaga TEGMASLIGI
+
+Integratsiya testlari `DROP SCHEMA public CASCADE` qiladi.
+2026-08-18 da ular ishchi bazada yurgizilib, **61 provayder va 102
+buyurtma yo'qoldi** (zaxiradan tiklandi).
+
+Endi `tests/db_guard.py` buni to'sadi: baza nomi `superapp`,
+`postgres`, `prod` bo'lsa test SKIP bo'ladi. Ruxsat etilgan nom
+`test_` bilan boshlanadi yoki `_test` bilan tugaydi.
+
+```bash
+# To'g'ri
+export SUPERAPP_TEST_DB="postgresql+asyncpg://postgres@localhost:5432/superapp_test"
+
+# Bu RAD ETILADI (va shunday bo'lishi kerak)
+export SUPERAPP_TEST_DB="postgresql+asyncpg://postgres@localhost:5432/superapp"
+```
+
+**Chiqarishdan oldin doim zaxira oling:**
+
+```bash
+docker compose exec db pg_dump -U postgres superapp > ~/superapp_$(date +%F_%H%M).sql
+```
