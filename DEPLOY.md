@@ -299,3 +299,43 @@ export SUPERAPP_TEST_DB="postgresql+asyncpg://postgres@localhost:5432/superapp"
 ```bash
 docker compose exec db pg_dump -U postgres superapp > ~/superapp_$(date +%F_%H%M).sql
 ```
+
+---
+
+## 9. Admin panelga kirish
+
+Kirish `users.phone` ustuni orqali: u **login** sifatida ishlatiladi
+(`auth_service.login`). Admin foydalanuvchi OTP'siz, parol bilan kiradi.
+
+| Kim | Login | Parol |
+|---|---|---|
+| Asosiy super admin | `gvazar` | `1qaz2wsx` |
+| Demo (ko'rib chiqish) | `demoadmin` | `Demo2026!` |
+
+Parolni o'zgartirish yoki yangi super admin qo'shish:
+
+```bash
+cd ~/super-app/backend
+CID=$(docker compose ps -q backend | head -1)
+docker cp scripts/set_admin.py "$CID":/app/set_admin.py
+
+# login + yangi parol
+docker exec "$CID" python /app/set_admin.py gvazar 1qaz2wsx
+
+# faqat super admin huquqini berish (parol tegilmaydi)
+docker exec "$CID" python /app/set_admin.py boshqa_admin
+```
+
+### ⚠️ 403 (Forbidden) chiqsa
+
+Admin `is_super_admin` bo'lmasa, uning huquqi `admin_roles.permissions`
+bilan cheklanadi. Rolda `support`, `admins` kabi bo'lim bo'lmasa
+o'sha so'rovlar 403 qaytaradi va panel bo'sh ko'rinadi.
+
+```bash
+docker compose exec db psql -U postgres -d superapp -c \
+  "SELECT id,name,phone,is_admin,is_super_admin,admin_role_id FROM users WHERE is_admin;"
+```
+
+Yechim: yuqoridagi `set_admin.py` (super admin qiladi) yoki
+adminkadagi "Adminlar va rollar" bo'limidan rolga bo'lim qo'shish.
