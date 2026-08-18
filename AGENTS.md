@@ -25,7 +25,13 @@ HubServis (`super_app`) — O'zbekiston uchun xizmatlar super-app'i.
 ## 3. Tekshiruv (ishni tugatgach MAJBURIY)
 
 ```bash
-flutter analyze && flutter test          # 203 test, 0 error bo'lishi kerak
+flutter analyze && flutter test          # 201 test, 0 error bo'lishi kerak
+
+# Xarita 3D ni tekshirish (Chrome kerak, bo'lmasa SKIP)
+python3 scripts/check_3d_map.py
+
+# Telefon ulangan bo'lsa — 3D native render:
+# flutter test integration_test/ -d <qurilma> --dart-define=MAPTILER_KEY=...
 PYTHON=backend/.venv/bin/python bash tests/run.sh
 ```
 
@@ -52,6 +58,11 @@ export SUPERAPP_TEST_DB="postgresql+asyncpg://postgres@127.0.0.1:5435/superapp_t
   bog'liq.
 - **Xarita:** tile manzilini hech qayerga qo'lda yozmang, faqat
   `lib/config/map_config.dart`. Buni test qo'riqlaydi.
+- **3D xarita — soxta 3D QILMANG.** Rasterni `Matrix4` bilan
+  qiyshaytirish 3D emas: binolar tekis qoladi. Haqiqiy 3D vektor
+  style (`streets-v4`) + MapLibre `pitch` bilan bo'ladi
+  (`lib/screens/navigation_3d_screen.dart`). Bu bir marta noto'g'ri
+  qilingan va rad etilgan.
 - Har mazmunli o'zgarishdan keyin commit qiling, izoh o'zbekcha.
 
 ## 5. AI agent (`backend/app/services/ai_agent/`)
