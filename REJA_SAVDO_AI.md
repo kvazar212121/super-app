@@ -344,16 +344,113 @@ Har bosqichdan keyin test yozib, commit qilaman.
 
 ---
 
-## 12. Sizdan so'raladigan qaror
+## 12. Sizning javoblaringiz (TASDIQLANDI)
 
-Kod yozishdan oldin javob bering:
+| # | Savol | Javobingiz |
+|---|---|---|
+| 1 | Toifalar | **Kengroq ro'yxat** (pastda) |
+| 2 | Valyuta | **Ko'rsatish faqat so'mda.** E'lon berishda so'm yoki dollar tanlash mumkin, lekin xaridorga **so'mda konvertatsiya** qilib ko'rsatiladi — chalg'itmasin |
+| 3 | "Kelishamiz" | **Ha, bo'lsin** |
+| 4 | Muddat tugagach | E'lon qolaveradi. **"Buyurtmalarim" ichida "Mening e'lonlarim"** sahifasi bo'ladi, u yerdan muddatni **uzaytirish (to'lov bilan)**. Premium bepul uzaytiradi |
+| 5 | RAG | **Kerak emas.** AI o'zi tushunib, yaxshi filtrlangan so'rov tuzsin |
+| 6 | Aloqa | **Haqiqiy raqam YO'Q.** Ilova ichida: WebSocket chat va qo'ng'iroq. E'lon bo'yicha chat ham WebSocket'da |
 
-1. **Toifalar:** telefon, mashina, mebel, kiyim, texnika, boshqa —
-   shu yetarlimi yoki qo'shamizmi?
-2. **Valyuta:** so'm va dollar ikkalasi kerakmi, yoki faqat so'm?
-3. **Narx kelishuvi:** "Kelishamiz" varianti bo'lsinmi (narxsiz e'lon)?
-4. **Muddat tugagach:** e'lon o'chsinmi yoki "muddati tugagan" bo'lib
-   tursinmi (uzaytirish tugmasi bilan)?
-5. **RAG:** hozir kerakmi yoki keyinroq?
-6. **Sotuvchi bilan aloqa:** faqat chat, yoki qo'ng'iroq ham
-   (ilova ichida, WebRTC allaqachon bor)?
+### 12.1 Toifalar (yakuniy)
+
+| Kalit | Nomi | Maxsus maydonlar |
+|---|---|---|
+| `telefon` | Telefonlar | model, xotira, holat |
+| `kompyuter` | Kompyuter va noutbuk | model, protsessor, RAM, xotira |
+| `elektronika` | Elektron jihozlar | tur, model, holat |
+| `maishiy` | Maishiy texnika | tur, brend, holat |
+| `avto` | Avtomobillar | model, yil, probeg, karobka, yoqilg'i |
+| `qurilish` | Qurilish mollari | tur, hajm/o'lcham |
+| `kiyim` | Kiyim-kechak | tur, o'lcham, brend |
+| `hayvon` | Hayvonlar | turi, yoshi, zoti |
+| `mebel` | Mebel | tur, material, o'lcham |
+| `boshqa` | Boshqa | — |
+
+Har toifada **umumiy** maydonlar ham bor: nomi, narx, holat, manzil.
+
+### 12.2 Valyuta va konvertatsiya
+
+- E'lon **so'm yoki dollarda** saqlanadi (`price` + `currency`)
+- Xaridorga **doim so'mda** ko'rsatiladi
+- Dollar bo'lsa: `4 500 000 so'm (350 $)` — asli qavsda
+- Kurs mavjud `get_currency` tool'idan olinadi (allaqachon bor),
+  kunlik keshlanadi
+
+### 12.3 "Mening e'lonlarim" sahifasi
+
+Joylashuv: **Buyurtmalarim → "Mening e'lonlarim"** tugmasi.
+
+| Holat | Ko'rinishi | Tugma |
+|---|---|---|
+| Faol | Yashil, qolgan kun soni | "Sotildi", "O'chirish" |
+| Muddati tugagan | Kulrang | **"Uzaytirish"** |
+| Sotilgan | Belgilangan | "Qayta e'lon" |
+
+**Uzaytirish:** oddiy foydalanuvchi to'laydi (mavjud `payments`
+tizimi), premium bepul bosadi.
+
+### 12.4 ⚠️ Firibgarlikdan ogohlantirish (MAJBURIY)
+
+Siz aniq talab qildingiz. Sotuvchi bilan **aloqa boshlanishidan
+oldin** ogohlantirish ko'rsatiladi:
+
+> ⚠️ **Ehtiyot bo'ling**
+>
+> Maklerlar va firibgarlardan saqlaning. Oldindan pul o'tkazmang.
+>
+> Agar sotuvchi e'londa yozilganidan **boshqa gap aytsa** yoki
+> shubhali taklif qilsa — **darhol AI yordamchiga murojaat qiling**.
+>
+> [Tushunarli] [Shikoyat qilish]
+
+- Chat yoki qo'ng'iroqdan oldin **bir marta** chiqadi
+- "Shikoyat qilish" → AI chatga e'lon havolasi bilan o'tadi
+- AI shikoyatni qabul qilib, adminkaga yuboradi (mavjud `support`
+  tizimi ishlatiladi)
+
+### 12.5 Aloqa — faqat ilova ichida
+
+| Usul | Texnologiya | Holat |
+|---|---|---|
+| Chat | WebSocket (`DirectMessage` + `call_manager`) | ✅ Bor, e'longa bog'lanadi |
+| Qo'ng'iroq | WebRTC (`/calls/ws`) | ✅ Bor |
+| SMS/xabar qoldirish | O'sha chat, oflayn bo'lsa push | ✅ Bor |
+
+**Telefon raqami hech qachon berilmaydi** — `to_dict()` da ham,
+API javobida ham.
+
+---
+
+## 13. Yangilangan fayllar tuzilishi
+
+Yuqoridagi javoblarga ko'ra qo'shiladi:
+
+```
+backend/app/services/marketplace/
+├── currency.py          ← YANGI: so'mga konvertatsiya
+├── extend.py            ← YANGI: muddatni uzaytirish + to'lov
+└── safety.py            ← YANGI: ogohlantirish matni + shikoyat
+
+lib/screens/marketplace/
+└── my_listings_screen.dart   # "Mening e'lonlarim" + uzaytirish
+
+lib/widgets/marketplace/
+└── safety_warning_dialog.dart ← YANGI: firibgarlik ogohlantirishi
+```
+
+---
+
+## 14. Boshlash
+
+Javoblar olindi, savol qolmadi. Bosqichlar 10-bo'limda, ularga
+qo'shimcha:
+
+| # | Bosqich |
+|---|---|
+| 10 | Valyuta konvertatsiyasi (so'mda ko'rsatish) |
+| 11 | "Mening e'lonlarim" + muddatni uzaytirish (to'lov bilan) |
+| 12 | Firibgarlikdan ogohlantirish + shikoyat oqimi |
