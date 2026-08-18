@@ -30,7 +30,23 @@ enum _VoiceState { idle, recording, processing }
 
 class ChatScreen extends StatefulWidget {
   final bool startVoice;
-  const ChatScreen({super.key, this.startVoice = false});
+
+  /// TEST uchun: rasm allaqachon tanlangan holatni tiklaydi.
+  ///
+  /// Kamera/galereya test muhitida ishlamaydi, shuning uchun "rasm
+  /// kutyapti" holatini boshqa yo'l bilan yaratib bo'lmaydi. Bu
+  /// maydonsiz eng muhim xatti-harakat (rasm bor -> yuborish tugmasi)
+  /// haqiqiy widget bilan sinalmay qolardi.
+  ///
+  /// Ishlab turgan ilovada hech qachon berilmaydi.
+  @visibleForTesting
+  final XFile? initialPhoto;
+
+  const ChatScreen({
+    super.key,
+    this.startVoice = false,
+    this.initialPhoto,
+  });
 
   @override
   State<ChatScreen> createState() => _ChatScreenState();
@@ -75,6 +91,7 @@ class _ChatScreenState extends State<ChatScreen>
   @override
   void initState() {
     super.initState();
+    _pendingPhoto = widget.initialPhoto;
     _textController.addListener(() {
       setState(() {
         _hasText = _textController.text.trim().isNotEmpty;
