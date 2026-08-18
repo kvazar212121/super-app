@@ -34,6 +34,10 @@ from app.models.device_token import DeviceToken
 from app.models.call_deal import CallDeal
 from app.models.campaign import Campaign, CampaignVote
 from app.models.job import JobPost, JobOffer
+# Savdo (marketplace) — alohida papkada, `jobs` dan mustaqil.
+from app.models.marketplace import (
+    Listing, ListingCondition, ListingPhoto, ListingStatus,
+)
 
 __all__ = [
     "User",
@@ -80,4 +84,8 @@ __all__ = [
     "CampaignVote",
     "JobPost",
     "JobOffer",
+    "Listing",
+    "ListingCondition",
+    "ListingPhoto",
+    "ListingStatus",
 ]
