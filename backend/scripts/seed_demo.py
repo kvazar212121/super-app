@@ -356,10 +356,12 @@ async def main(force_banner: bool = False, force_meta: bool = False) -> None:
     try:
         import os
 
-        yol = os.path.join(
-            os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-            "app", "services", "demo_phones.txt",
-        )
+        # Yo'lni `app.services` paketining O'ZIDAN olamiz: skript
+        # konteynerga alohida nusxalanganda `__file__` ga nisbatan
+        # hisoblash xato katalogni ko'rsatardi.
+        import app.services as _svc
+
+        yol = os.path.join(os.path.dirname(_svc.__file__), "demo_phones.txt")
         raqamlar = sorted({(p.phone or "").strip()
                            for p in provayderlar if (p.phone or "").strip()})
         with open(yol, "w", encoding="utf-8") as f:
