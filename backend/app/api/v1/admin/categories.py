@@ -3,13 +3,25 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, and_
 from sqlalchemy.orm import selectinload
 
+from app.core.cache import invalidate
 from app.db.session import get_db
 from app.models.user import User
 from app.models.category import Category, CategoryVariant
 from app.schemas.category import CategoryCreate, CategoryOut, VariantCreate, VariantOut
 from app.api.v1.admin.dependencies import require_admin
+from app.api.v1.categories import CACHE_KEY_ALL
 
 router = APIRouter()
+
+
+def _drop_cache() -> None:
+    """Ommaviy kategoriya keshini tozalaydi.
+
+    Admin kategoriya qo'shsa/o'zgartirsa/o'chirsa, `/categories` va
+    `/config/categories` keshda 60 soniyagacha ESKI ro'yxatni ko'rsatardi.
+    Har o'zgarishdan keyin shu chaqiriladi — o'zgarish darhol ko'rinadi.
+    """
+    invalidate(CACHE_KEY_ALL)
 
 
 @router.get("/categories", response_model=list[CategoryOut])
@@ -31,6 +43,7 @@ async def create_category(
     db.add(cat)
     await db.flush()
     await db.refresh(cat)
+    _drop_cache()
     return cat
 
 
@@ -51,6 +64,7 @@ async def update_category(
 
     await db.flush()
     await db.refresh(cat)
+    _drop_cache()
     return cat
 
 
@@ -65,6 +79,7 @@ async def delete_category(
     if not cat:
         raise HTTPException(status_code=404, detail="Kategoriya topilmadi")
     await db.delete(cat)
+    _drop_cache()
 
 
 @router.post("/categories/{category_id}/variants", response_model=VariantOut, status_code=201)

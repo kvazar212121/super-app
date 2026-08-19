@@ -4,11 +4,9 @@ Mobil ilova bu endpointни o'qib, qaysi bo'limlar yopiqligini biladi va yopiq b
 foydalanuvchiga "tez orada ishga tushadi" xabarini ko'rsatadi.
 """
 from fastapi import APIRouter, Depends
-from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.session import get_db
-from app.models.category import Category
 from app.services import settings_service
 
 router = APIRouter(prefix="/config", tags=["config"])
@@ -34,13 +32,19 @@ async def get_support():
 
 @router.get("/categories")
 async def get_category_flags_public(db: AsyncSession = Depends(get_db)):
-    """{cat_key: {enabled, message}} — 26 xizmat holati (auth talab qilinmaydi)."""
-    cats = (await db.execute(select(Category))).scalars().all()
+    """{cat_key: {enabled, message}} — 26 xizmat holati (auth talab qilinmaydi).
+
+    Kategoriya ro'yxati keshdan olinadi (`categories.load_categories`),
+    holat esa har so'rovda yangi o'qiladi — admin o'zgarishi darhol ko'rinadi.
+    """
+    from app.api.v1.categories import load_categories
+
+    cats = await load_categories(db)
     return {
         "categories": {
-            c.key: {
-                "enabled": settings_service.category_enabled(c.key),
-                "message": settings_service.category_message(c.key),
+            c["key"]: {
+                "enabled": settings_service.category_enabled(c["key"]),
+                "message": settings_service.category_message(c["key"]),
             }
             for c in cats
         }
