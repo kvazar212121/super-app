@@ -20,6 +20,13 @@ const Map<String, String> kTranslationsRu = {
   // ── Bosh sahifa kartalari ──
   'Aqlli savdo': 'Умные покупки',
   'Barcha xizmatlar': 'Все услуги',
+  'Usta, tozalash, salon va boshqalar': 'Мастера, уборка, салоны и другое',
+  'Kundalik': 'Каждый день',
+  // 3 ustunli tartibda joy tor — qisqa nomlar ishlatiladi.
+  // Uzun variantlari quyida saqlanadi (boshqa ekranlarda kerak).
+  // ('Kaloriya' pastda "Kaloriya / Fitnes" bo'limida tarjima qilingan)
+  'Fitnes': 'Фитнес',
+  'Moliyam': 'Финансы',
   'Kaloriya hisoblagich': 'Счётчик калорий',
   'Fitnes trener': 'Фитнес-тренер',
   'Majburlovchi budilnik': 'Строгий будильник',
