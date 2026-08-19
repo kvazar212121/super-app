@@ -171,8 +171,6 @@ class HomeScreen extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildServicesButton(context),
-        const SizedBox(height: 22),
         _SectionTitle(title: 'Kundalik'.tr),
         const SizedBox(height: 12),
         // Har 3 tadan qatorga bo'lamiz. Kartalar soni o'zgarsa
@@ -193,6 +191,11 @@ class HomeScreen extends StatelessWidget {
             ],
           ),
         ],
+        // "Barcha xizmatlar" kartalardan KEYIN (foydalanuvchi so'roviga ko'ra).
+        // Mantiqan ham to'g'ri: avval tez-tez ishlatiladigan kundalik
+        // bo'limlar, keyin "hammasini ko'rish" havolasi.
+        const SizedBox(height: 18),
+        _buildServicesButton(context),
       ],
     );
   }
@@ -372,9 +375,11 @@ class _DailyBtn extends StatelessWidget {
       onTap: onTap,
       borderRadius: BorderRadius.circular(18),
       child: Container(
-        // 3 ustunda karta eni ~110px. 1:1.12 nisbat kvadratga yaqin,
-        // ko'zga muvozanatli ko'rinadi.
-        height: 124,
+        // 3 ustunda karta eni ~110px. Balandlik 138 — rasm uchun
+        // ~100px joy qoladi (tasma 30, chekka 8). BoxFit.contain
+        // ishlatilgani uchun rasm balandligi yetarli bo'lishi kerak,
+        // aks holda rasm kichrayib qoladi.
+        height: 138,
         decoration: BoxDecoration(
           color: isDark ? const Color(0xFF1E293B) : Colors.white,
           borderRadius: BorderRadius.circular(18),
@@ -397,9 +402,24 @@ class _DailyBtn extends StatelessWidget {
         child: Stack(
           fit: StackFit.expand,
           children: [
-            // 1-qatlam: rasm butun kartani to'ldiradi
+            // 1-qatlam: rasm.
+            //
+            // BoxFit.contain (cover EMAS): cover rasmni kartaga to'ldirish
+            // uchun kattalashtirib, chetlarini QIRQIB tashlaydi — 3D
+            // rasmlarning yarmi ko'rinmay qolardi. contain butun rasmni
+            // sig'diradi, hech narsa kesilmaydi.
+            //
+            // Ostiga och fon qo'yiladi, chunki contain'da chetlarda bo'sh
+            // joy qoladi va u kartaning oq foniga qo'shilib ketishi kerak.
             if (bgImage != null)
-              Image.asset(bgImage!, fit: BoxFit.cover)
+              Container(
+                color: isDark ? const Color(0xFF0F172A) : Colors.white,
+                // Pastdagi nom tasmasi ostida qolmasligi uchun pastdan
+                // ko'proq joy qoldiriladi. Yon chekkalar kichik —
+                // rasm iloji boricha katta ko'rinsin.
+                padding: const EdgeInsets.fromLTRB(3, 4, 3, 30),
+                child: Image.asset(bgImage!, fit: BoxFit.contain),
+              )
             else
               Container(
                 color: color.withValues(alpha: 0.12),
