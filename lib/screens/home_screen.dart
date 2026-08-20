@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import '../widgets/active_order_banner.dart';
 import '../widgets/home_promo_section.dart';
@@ -200,97 +202,186 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  /// "Barcha xizmatlar" — ekranning ASOSIY harakati, shuning uchun
-  /// eng ko'zga tashlanadigan element: to'yingan gradient, rangli soya,
-  /// yarim tiniq belgi doirasi va o'ngda yo'naltiruvchi strelka.
+  /// "Barcha xizmatlar" — ekranning ASOSIY harakati.
+  /// Interaktiv: gradient jonli suriladi, o'q chizig'i ishora qiladi,
+  /// bosilganda karta bosilib qaytadi (`_ServicesButton` ga qarang).
   Widget _buildServicesButton(BuildContext context) {
-    return InkWell(
+    return _ServicesButton(
       onTap: () => _openFeature(
         context,
         'services',
         () => const AllCategoriesScreen(showBackButton: true),
         needAuth: false,
       ),
-      borderRadius: BorderRadius.circular(20),
-      child: Container(
-        height: 66,
-        width: double.infinity,
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
-          gradient: const LinearGradient(
-            colors: [Color(0xFF4F46E5), Color(0xFF7C3AED), Color(0xFF2563EB)],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-          boxShadow: [
-            // Rangli soya — tugma fondan "suzib" turgandek ko'rinadi.
-            BoxShadow(
-              color: const Color(0xFF6366F1).withValues(alpha: 0.42),
-              blurRadius: 22,
-              offset: const Offset(0, 10),
-            ),
-          ],
-        ),
-        child: Row(
-          children: [
-            // Belgi uchun yarim tiniq oq doira — gradient ustida ajralib turadi
-            Container(
-              width: 40,
-              height: 40,
+    );
+  }
+}
+
+/// "Barcha xizmatlar" tugmasi — JONLI (interaktiv).
+///
+/// Uch xil harakat bir vaqtda ishlaydi:
+///  1. **Gradient suriladi** — ranglar chapdan o'ngga sekin oqadi (6s).
+///     Tugma "tirik" ko'rinadi, lekin ko'zni charchatmaydi.
+///  2. **O'q chizig'i** — o'ngdagi strelka doimo chapga-o'ngga ishora
+///     qiladi (1.4s), ya'ni "bu yerni bosing" degan ishora.
+///  3. **Bosish javobi** — barmoq tekkanda tugma 4% kichrayadi va
+///     soyasi susayadi, qo'yib yuborilganda joyiga qaytadi. Bu
+///     foydalanuvchiga bosish HISOBGA OLINGANINI darhol bildiradi.
+///
+/// Animatsiyalar `dispose` da to'g'ri to'xtatiladi (xotira oqmasligi uchun).
+class _ServicesButton extends StatefulWidget {
+  final VoidCallback onTap;
+  const _ServicesButton({required this.onTap});
+
+  @override
+  State<_ServicesButton> createState() => _ServicesButtonState();
+}
+
+class _ServicesButtonState extends State<_ServicesButton>
+    with TickerProviderStateMixin {
+  late final AnimationController _oqim; // gradient oqimi
+  late final AnimationController _ishora; // strelka ishorasi
+  bool _bosilgan = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _oqim = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 6),
+    )..repeat();
+    _ishora = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1400),
+    )..repeat(reverse: true);
+  }
+
+  @override
+  void dispose() {
+    _oqim.dispose();
+    _ishora.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTapDown: (_) => setState(() => _bosilgan = true),
+      onTapUp: (_) => setState(() => _bosilgan = false),
+      onTapCancel: () => setState(() => _bosilgan = false),
+      onTap: widget.onTap,
+      child: AnimatedScale(
+        // Bosilganda 4% kichrayadi — sezilarli, lekin bezovta qilmaydi.
+        scale: _bosilgan ? 0.96 : 1.0,
+        duration: const Duration(milliseconds: 110),
+        curve: Curves.easeOut,
+        child: AnimatedBuilder(
+          animation: _oqim,
+          builder: (context, child) {
+            // Gradient boshlanish nuqtasi doira bo'ylab suriladi.
+            final t = _oqim.value * 2 * math.pi;
+            return Container(
+              height: 66,
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(horizontal: 16),
               decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.20),
-                borderRadius: BorderRadius.circular(13),
-              ),
-              child: const Icon(
-                LucideIcons.layoutGrid,
-                color: Colors.white,
-                size: 21,
-              ),
-            ),
-            const SizedBox(width: 13),
-            Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Barcha xizmatlar'.tr,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w800,
-                      fontSize: 16.5,
-                      letterSpacing: -0.3,
+                borderRadius: BorderRadius.circular(20),
+                gradient: LinearGradient(
+                  colors: const [
+                    Color(0xFF4F46E5),
+                    Color(0xFF7C3AED),
+                    Color(0xFF2563EB),
+                    Color(0xFF4F46E5),
+                  ],
+                  begin: Alignment(math.cos(t), math.sin(t)),
+                  end: Alignment(-math.cos(t), -math.sin(t)),
+                ),
+                boxShadow: [
+                  // Bosilganda soya susayadi — tugma "pastga bosilgandek".
+                  BoxShadow(
+                    color: const Color(0xFF6366F1).withValues(
+                      alpha: _bosilgan ? 0.22 : 0.42,
                     ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    // Foydalanuvchiga tugma ortida NIMA borligini aytadi.
-                    'Usta, tozalash, salon va boshqalar'.tr,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      color: Colors.white.withValues(alpha: 0.80),
-                      fontWeight: FontWeight.w500,
-                      fontSize: 11.5,
-                    ),
+                    blurRadius: _bosilgan ? 12 : 22,
+                    offset: Offset(0, _bosilgan ? 4 : 10),
                   ),
                 ],
               ),
-            ),
-            Container(
-              padding: const EdgeInsets.all(6),
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.18),
-                shape: BoxShape.circle,
+              child: child,
+            );
+          },
+          // child — animatsiyada O'ZGARMAYDIGAN qism. Bir marta quriladi
+          // va har kadrda qayta ishlatiladi (tejamkorlik uchun muhim).
+          child: Row(
+            children: [
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.20),
+                  borderRadius: BorderRadius.circular(13),
+                ),
+                child: const Icon(
+                  LucideIcons.layoutGrid,
+                  color: Colors.white,
+                  size: 21,
+                ),
               ),
-              child: const Icon(
-                LucideIcons.chevronRight,
-                color: Colors.white,
-                size: 17,
+              const SizedBox(width: 13),
+              Expanded(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Barcha xizmatlar'.tr,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w800,
+                        fontSize: 16.5,
+                        letterSpacing: -0.3,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      // Foydalanuvchiga tugma ortida NIMA borligini aytadi.
+                      'Usta, tozalash, salon va boshqalar'.tr,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: Colors.white.withValues(alpha: 0.80),
+                        fontWeight: FontWeight.w500,
+                        fontSize: 11.5,
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
+              // Strelka o'ngga-chapga ishora qiladi
+              AnimatedBuilder(
+                animation: _ishora,
+                builder: (context, ikon) => Transform.translate(
+                  offset: Offset(
+                    Curves.easeInOut.transform(_ishora.value) * 5,
+                    0,
+                  ),
+                  child: ikon,
+                ),
+                child: Container(
+                  padding: const EdgeInsets.all(6),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.18),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    LucideIcons.chevronRight,
+                    color: Colors.white,
+                    size: 17,
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

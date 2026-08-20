@@ -146,10 +146,16 @@ class _AllCategoriesScreenState extends State<AllCategoriesScreen> {
                                 itemCount: group.items.length,
                                 gridDelegate:
                                     const SliverGridDelegateWithFixedCrossAxisCount(
-                                      crossAxisCount: 2,
-                                      crossAxisSpacing: 12,
-                                      mainAxisSpacing: 12,
-                                      childAspectRatio: 1.0,
+                                      // 3 ustun (oldin 2 edi) — bir ekranda
+                                      // ko'proq xizmat ko'rinadi va bosh
+                                      // sahifadagi kartalar bilan bir xil
+                                      // tartibda bo'ladi.
+                                      crossAxisCount: 3,
+                                      crossAxisSpacing: 10,
+                                      mainAxisSpacing: 10,
+                                      // 0.92 — kvadratdan bir oz baland,
+                                      // pastdagi yozuv tasmasi uchun joy.
+                                      childAspectRatio: 0.92,
                                     ),
                                 itemBuilder: (ctx, i) {
                                   final k = group.items[i];
@@ -217,10 +223,10 @@ class _AllCategoriesScreenState extends State<AllCategoriesScreen> {
                                               child: Container(
                                                 padding:
                                                     const EdgeInsets.fromLTRB(
-                                                  10,
-                                                  22,
-                                                  10,
-                                                  9,
+                                                  7,
+                                                  16,
+                                                  7,
+                                                  7,
                                                 ),
                                                 decoration: BoxDecoration(
                                                   gradient: LinearGradient(
@@ -241,8 +247,11 @@ class _AllCategoriesScreenState extends State<AllCategoriesScreen> {
                                                       TextOverflow.ellipsis,
                                                   style: const TextStyle(
                                                     fontWeight: FontWeight.w800,
-                                                    fontSize: 14,
-                                                    height: 1.1,
+                                                    // 3 ustunda joy tor —
+                                                    // 14 dan 11.5 ga tushirildi.
+                                                    fontSize: 11.5,
+                                                    height: 1.12,
+                                                    letterSpacing: -0.2,
                                                     color: Colors.white,
                                                     shadows: [
                                                       Shadow(
@@ -278,7 +287,7 @@ class _AllCategoriesScreenState extends State<AllCategoriesScreen> {
     return Container(
       color: k.accent,
       child: Center(
-        child: Icon(k.icon, color: Colors.white, size: 46),
+        child: Icon(k.icon, color: Colors.white, size: 34),
       ),
     );
   }
