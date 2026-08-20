@@ -120,7 +120,7 @@ class HomeScreen extends StatelessWidget {
         icon: LucideIcons.flame,
         label: 'Kaloriya'.tr,
         color: const Color(0xFFEF4444),
-        bgImage: 'assets/images/calorie_counter.jpg',
+        bgImage: 'assets/images/calorie_counter_shaffof.png',
         onTap: () =>
             _openFeature(context, 'calorie', () => const CalorieHomeScreen()),
       ),
@@ -128,7 +128,7 @@ class HomeScreen extends StatelessWidget {
         icon: LucideIcons.dumbbell,
         label: 'Fitnes'.tr,
         color: const Color(0xFF14B8A6),
-        bgImage: 'assets/images/fitness_trainer.jpg',
+        bgImage: 'assets/images/fitness_trainer_shaffof.png',
         onTap: () =>
             _openFeature(context, 'fitness', () => const FitnessHomeScreen()),
       ),
@@ -136,14 +136,14 @@ class HomeScreen extends StatelessWidget {
         icon: LucideIcons.calendarCheck,
         label: 'Rejalarim'.tr,
         color: const Color(0xFF3B82F6),
-        bgImage: 'assets/images/my_plans.jpg',
+        bgImage: 'assets/images/my_plans_shaffof.png',
         onTap: () => _openFeature(context, 'plans', () => const TodoScreen()),
       ),
       _DailyBtn(
         icon: LucideIcons.wallet,
         label: 'Moliyam'.tr,
         color: const Color(0xFF22C55E),
-        bgImage: 'assets/images/my_finance.jpg',
+        bgImage: 'assets/images/my_finance_shaffof.png',
         onTap: () => _openFeature(
           context,
           'finance',
@@ -154,7 +154,7 @@ class HomeScreen extends StatelessWidget {
         icon: LucideIcons.shoppingBag,
         label: 'Aqlli savdo'.tr,
         color: const Color(0xFFF97316),
-        bgImage: 'assets/images/smart_shopping.jpg',
+        bgImage: 'assets/images/smart_shopping_shaffof.png',
         onTap: () =>
             _openFeature(context, 'shopping', () => const ShoppingListScreen()),
       ),
@@ -162,7 +162,7 @@ class HomeScreen extends StatelessWidget {
         icon: LucideIcons.alarmClock,
         label: 'Budilnik'.tr,
         color: const Color(0xFF6366F1),
-        bgImage: 'assets/images/majburolovchi.jpg',
+        bgImage: 'assets/images/majburolovchi_shaffof.png',
         onTap: () =>
             _openFeature(context, 'alarm', () => const AlarmHomeScreen()),
       ),
@@ -381,7 +381,10 @@ class _DailyBtn extends StatelessWidget {
         // aks holda rasm kichrayib qoladi.
         height: 138,
         decoration: BoxDecoration(
-          color: isDark ? const Color(0xFF1E293B) : Colors.white,
+          // Rasmlar shaffof fonli va to'q rangli (3D render), shuning
+          // uchun qorong'i rejimda ham ochroq fon beriladi — aks holda
+          // qora predmet qora fonda ko'rinmay qoladi.
+          color: isDark ? const Color(0xFF334155) : Colors.white,
           borderRadius: BorderRadius.circular(18),
           boxShadow: [
             // Ikki qavatli soya: yumshoq keng + aniq yaqin.
@@ -404,20 +407,19 @@ class _DailyBtn extends StatelessWidget {
           children: [
             // 1-qatlam: rasm.
             //
-            // BoxFit.contain (cover EMAS): cover rasmni kartaga to'ldirish
-            // uchun kattalashtirib, chetlarini QIRQIB tashlaydi — 3D
-            // rasmlarning yarmi ko'rinmay qolardi. contain butun rasmni
-            // sig'diradi, hech narsa kesilmaydi.
+            // Rasmlar SHAFFOF fonli PNG (`scripts/rasm_fonini_tozalash.py`
+            // bilan tayyorlangan). Avval JPG edi va har birining foni
+            // turlicha (oq, kulrang, kulrang-ko'k) bo'lgani uchun kartada
+            // to'rtburchak "dog'" bo'lib ko'rinardi. Endi faqat tasvirning
+            // o'zi qoladi, fon kartaning o'z rangi bilan yaxlitlashadi.
             //
-            // Ostiga och fon qo'yiladi, chunki contain'da chetlarda bo'sh
-            // joy qoladi va u kartaning oq foniga qo'shilib ketishi kerak.
+            // BoxFit.contain (cover EMAS): cover rasmni kattalashtirib
+            // chetlarini QIRQIB tashlaydi.
             if (bgImage != null)
-              Container(
-                color: isDark ? const Color(0xFF0F172A) : Colors.white,
+              Padding(
                 // Pastdagi nom tasmasi ostida qolmasligi uchun pastdan
-                // ko'proq joy qoldiriladi. Yon chekkalar kichik —
-                // rasm iloji boricha katta ko'rinsin.
-                padding: const EdgeInsets.fromLTRB(3, 4, 3, 30),
+                // ko'proq joy qoldiriladi.
+                padding: const EdgeInsets.fromLTRB(6, 7, 6, 33),
                 child: Image.asset(bgImage!, fit: BoxFit.contain),
               )
             else
