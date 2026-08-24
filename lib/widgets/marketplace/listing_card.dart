@@ -102,10 +102,16 @@ class ListingCard extends StatelessWidget {
   Widget _photo(BuildContext context) {
     final url = listing.mainPhoto;
     if (url == null || url.isEmpty) return _fallback(context);
+    // Tezlik uchun: RAM keshiga karta o'lchamida yuklaymiz (600px kifoya
+    // grid karta uchun). Original 2000+px rasmlar tejaladi.
+    final dpr = MediaQuery.of(context).devicePixelRatio;
     return CachedNetworkImage(
       imageUrl: AppConfig.formatImageUrl(url),
       fit: BoxFit.cover,
       width: double.infinity,
+      memCacheWidth: (600 * dpr).round(),
+      maxWidthDiskCache: 800,
+      fadeInDuration: const Duration(milliseconds: 120),
       errorWidget: (_, _, _) => _fallback(context),
       placeholder: (_, _) => _fallback(context),
     );

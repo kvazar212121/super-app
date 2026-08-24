@@ -7,6 +7,7 @@ import '../models/service_order.dart';
 import '../providers/app_provider.dart';
 import '../utils/call_helper.dart';
 import '../theme/glass_tokens.dart';
+import '../widgets/friendly_error.dart';
 import '../widgets/glass/glass_scaffold.dart';
 import '../widgets/glass/glass_surface.dart';
 import '../widgets/order_status_timeline.dart';
@@ -138,9 +139,9 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
       await p.fetchOrders();
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('${'Xatolik'.tr}: $e')));
+        // FriendlyError: "Xatolik: DioError [500]" o'rniga foydalanuvchi
+        // tushunadigan xabar ("Xizmat vaqtincha ishlamayapti" + Qayta tugma).
+        showFriendlyErrorSnack(context, e);
       }
     } finally {
       if (mounted) setState(() => _cancelling = false);

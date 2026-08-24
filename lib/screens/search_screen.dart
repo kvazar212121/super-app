@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import '../widgets/search_input_widget.dart';
 import '../widgets/recent_searches_widget.dart';
@@ -15,6 +16,25 @@ class _SearchScreenState extends State<SearchScreen> {
   final _controller = TextEditingController();
   final List<String> _recentSearches = [];
 
+  // Debounce: har harfda emas, foydalanuvchi to'xtaganda qidiramiz.
+  // Bu ilova sekin internetda ham silliq ishlashi uchun juda muhim.
+  Timer? _debounce;
+  String _debouncedQuery = '';
+
+  void _onChanged() {
+    // Bo'sh matn — darhol yangilaymiz (recent'ni ko'rsatish uchun).
+    if (_controller.text.isEmpty) {
+      _debounce?.cancel();
+      setState(() => _debouncedQuery = '');
+      return;
+    }
+    _debounce?.cancel();
+    _debounce = Timer(const Duration(milliseconds: 300), () {
+      if (!mounted) return;
+      setState(() => _debouncedQuery = _controller.text);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return GlassScaffold(
@@ -25,14 +45,15 @@ class _SearchScreenState extends State<SearchScreen> {
           children: [
             SearchInputWidget(
               controller: _controller,
-              onChanged: () => setState(() {}),
+              onChanged: _onChanged,
               onClear: () {
                 _controller.clear();
-                setState(() {});
+                _debounce?.cancel();
+                setState(() => _debouncedQuery = '');
               },
             ),
             const SizedBox(height: 20),
-            if (_controller.text.isEmpty) ...[
+            if (_debouncedQuery.isEmpty) ...[
               RecentSearchesWidget(
                 searches: _recentSearches,
                 onClear: () => setState(() => _recentSearches.clear()),
@@ -41,7 +62,7 @@ class _SearchScreenState extends State<SearchScreen> {
               const SizedBox(height: 20),
               const Expanded(child: SearchResultsWidget(query: '')),
             ] else
-              Expanded(child: SearchResultsWidget(query: _controller.text)),
+              Expanded(child: SearchResultsWidget(query: _debouncedQuery)),
           ],
         ),
       ),
@@ -50,6 +71,7 @@ class _SearchScreenState extends State<SearchScreen> {
 
   @override
   void dispose() {
+    _debounce?.cancel();
     _controller.dispose();
     super.dispose();
   }

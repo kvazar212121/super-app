@@ -254,8 +254,17 @@ class _ChatScreenState extends State<ChatScreen>
       await _speech.listen(
         onResult: (result) {
           if (!mounted) return;
+          // MUHIM: recording tugaganidan keyin ham speech engine bir necha
+          // millisekund davomida qo'shimcha onResult (partial va final) yuborishi
+          // mumkin. Bu paytda `_textController.text = ...` bo'lsa, xabar
+          // yuborilgach ham matn maydonda qolib qoladi (dublikat ko'rinadi).
+          // Faqat AKTIV yozish paytida controllerga yozamiz.
+          if (_voiceState != _VoiceState.recording) return;
           setState(() {
             _textController.text = result.recognizedWords;
+            _textController.selection = TextSelection.fromPosition(
+              TextPosition(offset: _textController.text.length),
+            );
           });
           // Ovoz avtomatik tugaganда (yakuniy natija) — tugmani qayta bosmasdan
           // matnni o'zi yuboramiz.
@@ -286,10 +295,18 @@ class _ChatScreenState extends State<ChatScreen>
     // Bir vaqtда bir necha marta chaqirilishi mumkin (onResult final + onStatus
     // notListening + tugma). Faqat "recording" holatдан bir marta o'tamiz.
     if (_voiceState != _VoiceState.recording) return;
+    // MUHIM: bu qatordan keyin `onResult` guard'i controllerga yozmaydi.
     setState(() => _voiceState = _VoiceState.processing);
     _hideVoiceOverlay();
     _pulseController.stop();
     _pulseController.reset();
+
+    // Matnni DARHOL olib, controllerni tozalaymiz. Aks holda:
+    //  - _speech.stop() async (bir necha ms)
+    //  - shu vaqt ichida _sendMessage async chaqirilishidan oldin ekranda
+    //    matn ko'rinib turadi va foydalanuvchi "yozilib qoldi" deb tushunadi.
+    final text = _textController.text.trim();
+    _textController.clear();
 
     try {
       await _speech.stop();
@@ -299,7 +316,6 @@ class _ChatScreenState extends State<ChatScreen>
 
     if (!mounted) return;
 
-    final text = _textController.text.trim();
     if (text.isEmpty) {
       _resetVoiceState();
       return;

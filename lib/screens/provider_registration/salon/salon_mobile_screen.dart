@@ -6,6 +6,7 @@ import '../../../utils/phone_utils.dart';
 import '../../provider_side/provider_theme.dart';
 import '../provider_success_screen.dart';
 import 'package:super_app/l10n/locale_controller.dart';
+import '../../../widgets/friendly_error.dart';
 
 class SalonMobileScreen extends StatefulWidget {
   const SalonMobileScreen({super.key});
@@ -66,9 +67,7 @@ class _SalonMobileScreenState extends State<SalonMobileScreen> {
       );
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Xatolik: $e')));
+        showFriendlyErrorSnack(context, e);
       }
     } finally {
       if (mounted) setState(() => _submitting = false);

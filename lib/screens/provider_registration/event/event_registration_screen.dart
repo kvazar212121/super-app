@@ -8,6 +8,7 @@ import '../../../utils/phone_utils.dart';
 import '../../provider_side/provider_theme.dart';
 import '../../provider_side/unified_provider_dashboard_screen.dart';
 import 'package:super_app/l10n/locale_controller.dart';
+import '../../../widgets/friendly_error.dart';
 
 class EventRegistrationScreen extends StatefulWidget {
   const EventRegistrationScreen({super.key});
@@ -93,9 +94,7 @@ class _EventRegistrationScreenState extends State<EventRegistrationScreen> {
       );
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Xatolik: $e')));
+        showFriendlyErrorSnack(context, e);
       }
     } finally {
       if (mounted) setState(() => _submitting = false);

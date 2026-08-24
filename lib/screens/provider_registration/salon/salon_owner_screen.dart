@@ -9,6 +9,7 @@ import '../../location_picker_screen.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../services/hub_data_service.dart';
 import 'package:super_app/l10n/locale_controller.dart';
+import '../../../widgets/friendly_error.dart';
 
 class SalonOwnerScreen extends StatefulWidget {
   const SalonOwnerScreen({super.key});
@@ -94,9 +95,7 @@ class _SalonOwnerScreenState extends State<SalonOwnerScreen> {
       );
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Xatolik: $e')));
+        showFriendlyErrorSnack(context, e);
       }
     } finally {
       if (mounted) setState(() => _submitting = false);

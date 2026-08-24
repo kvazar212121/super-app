@@ -10,6 +10,7 @@ import 'massage_pending_screen.dart';
 import '../../location_picker_screen.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:super_app/l10n/locale_controller.dart';
+import '../../../widgets/friendly_error.dart';
 
 /// Massaj va hijoma — uyga chiqish va/yoki salonda.
 class MassageRegistrationScreen extends StatefulWidget {
@@ -124,9 +125,7 @@ class _MassageRegistrationScreenState extends State<MassageRegistrationScreen> {
       );
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Xatolik: $e')));
+        showFriendlyErrorSnack(context, e);
       }
     } finally {
       if (mounted) setState(() => _submitting = false);

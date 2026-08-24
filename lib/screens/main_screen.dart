@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:provider/provider.dart';
 import '../providers/app_provider.dart';
@@ -87,7 +88,14 @@ class _MainScreenState extends State<MainScreen> {
         MeshBackground(isDark: isDark),
         Scaffold(
           backgroundColor: Colors.transparent,
-          body: _screens[_selectedIndex],
+          // IndexedStack: tab almashganda ekran QAYTA yaratilmaydi, holati
+          // saqlanadi (masalan xizmatlar ro'yxatida foydalanuvchi qayerda
+          // to'xtagan bo'lsa — o'sha joydan davom etadi). Bu qulaylik va
+          // tezlik uchun juda muhim.
+          body: IndexedStack(
+            index: _selectedIndex,
+            children: _screens,
+          ),
         ),
         Positioned(
           left: 0,
@@ -101,6 +109,10 @@ class _MainScreenState extends State<MainScreen> {
             child: GlassBottomBar(
               currentIndex: _selectedIndex,
               onTap: (i) {
+                // Bosilganini his qildiradi (haptic) — bu foydalanuvchi
+                // tugma "bosildi" degan ishonchni beradi, ayniqsa yupqa
+                // shishasimon tugmalarda.
+                HapticFeedback.selectionClick();
                 // AiHub markaziy orbi — chatni TO'LIQ EKRAN sifatida ochadi
                 // (tab emas). Aks holda chat matn maydoni pastki menyu ostida
                 // qolib ko'rinmaydi.

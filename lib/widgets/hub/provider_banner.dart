@@ -56,6 +56,10 @@ class ProviderBanner extends StatelessWidget {
               // Qanday nisbatda yuklangan bo'lsa ham — markazidan qirqiladi.
               fit: BoxFit.cover,
               alignment: Alignment.center,
+              // Banner odatda ekran kengligida — 720px kifoya, RAM tejaymiz.
+              memCacheWidth: 720,
+              maxWidthDiskCache: 960,
+              fadeInDuration: const Duration(milliseconds: 120),
               errorWidget: (_, _, _) => _fallback(),
               placeholder: (_, _) => _fallback(),
             )

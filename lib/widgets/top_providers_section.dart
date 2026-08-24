@@ -430,6 +430,11 @@ class _Avatar extends StatelessWidget {
             ? CachedNetworkImage(
                 imageUrl: AppConfig.formatImageUrl(url),
                 fit: BoxFit.cover,
+                // 46x46 dp avatar — 128px kifoya, RAM tejaymiz.
+                memCacheWidth: 128,
+                memCacheHeight: 128,
+                maxWidthDiskCache: 256,
+                fadeInDuration: const Duration(milliseconds: 120),
                 errorWidget: (_, _, _) => _fallback(),
                 placeholder: (_, _) => _fallback(),
               )

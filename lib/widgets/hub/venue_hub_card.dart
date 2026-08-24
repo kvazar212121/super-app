@@ -228,6 +228,10 @@ class VenueHubCard extends StatelessWidget {
                             fit: BoxFit.cover,
                             width: double.infinity,
                             height: 88,
+                            // 88dp balandlik — 300px kifoya, RAM tejash.
+                            memCacheHeight: 300,
+                            maxWidthDiskCache: 720,
+                            fadeInDuration: const Duration(milliseconds: 120),
                             errorWidget: (_, _, _) =>
                                 Center(child: Icon(icon, color: Colors.white, size: 32)),
                             placeholder: (_, _) => Center(

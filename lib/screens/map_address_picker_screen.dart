@@ -6,6 +6,7 @@ import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:super_app/l10n/locale_controller.dart';
+import '../widgets/friendly_error.dart';
 import '../config/map_config.dart';
 
 /// Xaritadan manzil tanlash ekrani.
@@ -144,9 +145,8 @@ class _MapAddressPickerScreenState extends State<MapAddressPickerScreen> {
       await _reverseGeocode(myPos);
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Xato: $e')));
+        // "Xato: Exception..." o'rniga tushunarli xabar.
+        showFriendlyErrorSnack(context, e);
       }
     } finally {
       if (mounted) setState(() => _locating = false);

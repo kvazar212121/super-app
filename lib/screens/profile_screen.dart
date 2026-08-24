@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:provider/provider.dart';
 import '../models/user_profile.dart';
 import '../providers/app_provider.dart';
@@ -526,9 +527,15 @@ class ProfileScreen extends StatelessWidget {
             ),
             child: isLoggedIn && user.avatarUrl != null
                 ? ClipOval(
-                    child: Image.network(
-                      AppConfig.formatImageUrl(user.avatarUrl),
+                    // Avatar keshlansin (Image.network keshlamaydi — har rebuild
+                    // qayta yuklanardi). memCacheWidth avatar o'lchamiga.
+                    child: CachedNetworkImage(
+                      imageUrl: AppConfig.formatImageUrl(user.avatarUrl),
                       fit: BoxFit.cover,
+                      memCacheWidth: 240,
+                      memCacheHeight: 240,
+                      maxWidthDiskCache: 480,
+                      fadeInDuration: const Duration(milliseconds: 120),
                     ),
                   )
                 : Center(

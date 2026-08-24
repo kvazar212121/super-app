@@ -246,6 +246,11 @@ class _HomePromoSectionState extends State<HomePromoSection>
                             CachedNetworkImage(
                               imageUrl: p.imageUrl!,
                               fit: BoxFit.cover,
+                              // Karusel banner — ekran kengligiga sig'adi.
+                              memCacheWidth: 720,
+                              maxWidthDiskCache: 960,
+                              fadeInDuration:
+                                  const Duration(milliseconds: 120),
                               errorWidget: (_, _, _) =>
                                   const SizedBox.shrink(),
                             ),

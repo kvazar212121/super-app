@@ -6,6 +6,7 @@ import '../../../services/salon_portal_service.dart';
 import '../../provider_side/provider_theme.dart';
 import 'salon_pending_screen.dart';
 import 'package:super_app/l10n/locale_controller.dart';
+import '../../../widgets/friendly_error.dart';
 
 class SalonEmployeeJoinScreen extends StatefulWidget {
   const SalonEmployeeJoinScreen({super.key});
@@ -101,9 +102,7 @@ class _SalonEmployeeJoinScreenState extends State<SalonEmployeeJoinScreen>
       );
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Xatolik: $e')));
+        showFriendlyErrorSnack(context, e);
       }
     } finally {
       if (mounted) setState(() => _submitting = false);

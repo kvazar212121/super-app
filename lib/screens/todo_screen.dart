@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../models/daily_models.dart';
 import '../services/api_service.dart';
+import '../widgets/friendly_error.dart';
 import '../widgets/glass/glass_scaffold.dart';
 import '../theme/glass_tokens.dart';
 import '../l10n/locale_controller.dart';
@@ -158,9 +159,7 @@ class _TodoScreenState extends State<TodoScreen> {
       setState(() {
         _plans[index] = item;
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Xatolik yuz berdi. Iltimos qayta urining.'.tr)),
-      );
+      showFriendlyErrorSnack(context, e);
     }
   }
 
@@ -174,9 +173,7 @@ class _TodoScreenState extends State<TodoScreen> {
     } catch (e) {
       if (!mounted) return;
       setState(() => _plans = prev);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("O'chirishda xatolik yuz berdi".tr)),
-      );
+      showFriendlyErrorSnack(context, e);
     }
   }
 

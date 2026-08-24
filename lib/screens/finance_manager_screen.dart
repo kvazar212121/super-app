@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../models/finance_models.dart';
 import '../services/api_service.dart';
+import '../widgets/friendly_error.dart';
 import '../widgets/glass/glass_scaffold.dart';
 import '../l10n/locale_controller.dart';
 import 'family_finance_screen.dart';
@@ -127,9 +128,8 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
       _loadData();
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Tranzaksiya kiritishda xatolik yuz berdi".tr)),
-      );
+      // FriendlyError: internet/server xatolarini konkret ko'rsatadi.
+      showFriendlyErrorSnack(context, e);
     }
   }
 
@@ -146,9 +146,7 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
       setState(() {
         _records = prevRecords;
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("O'chirishda xatolik yuz berdi".tr)),
-      );
+      showFriendlyErrorSnack(context, e);
     }
   }
 
@@ -170,11 +168,7 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
       _loadData();
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("Rejalashtirilgan to'lov qo'shishda xatolik".tr),
-        ),
-      );
+      showFriendlyErrorSnack(context, e);
     }
   }
 
@@ -195,9 +189,7 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
       _loadData();
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("Xatolik yuz berdi".tr)));
+      showFriendlyErrorSnack(context, e);
     }
   }
 
@@ -207,9 +199,7 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
       _loadData();
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("Xatolik yuz berdi".tr)));
+      showFriendlyErrorSnack(context, e);
     }
   }
 

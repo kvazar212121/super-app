@@ -39,7 +39,9 @@ class HomeScreen extends StatelessWidget {
           children: [
             const HomeHeaderWidget(),
             const SizedBox(height: 18),
-            const HomePromoSection(),
+            // Karusel doim aylanadi (autoplay) — RepaintBoundary bilan bosh
+            // sahifaning qolgan qismi qayta chizilmaydi.
+            const RepaintBoundary(child: HomePromoSection()),
             const SizedBox(height: 18),
             const CampaignBanner(),
             _buildMainGrid(context),
@@ -206,12 +208,16 @@ class HomeScreen extends StatelessWidget {
   /// Interaktiv: gradient jonli suriladi, o'q chizig'i ishora qiladi,
   /// bosilganda karta bosilib qaytadi (`_ServicesButton` ga qarang).
   Widget _buildServicesButton(BuildContext context) {
-    return _ServicesButton(
-      onTap: () => _openFeature(
-        context,
-        'services',
-        () => const AllCategoriesScreen(showBackButton: true),
-        needAuth: false,
+    // RepaintBoundary: animatsiya (gradient/strelka) shu tugma ichida qoladi,
+    // butun sahifa qayta chizilmaydi. FPS ni saqlaydi.
+    return RepaintBoundary(
+      child: _ServicesButton(
+        onTap: () => _openFeature(
+          context,
+          'services',
+          () => const AllCategoriesScreen(showBackButton: true),
+          needAuth: false,
+        ),
       ),
     );
   }

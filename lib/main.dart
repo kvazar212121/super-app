@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -41,8 +42,12 @@ void main() async {
     ),
   );
 
-  await NotificationHelper().init();
-  await CallHistoryService().init();
+  // Splash tezligi uchun: bir-birini kutmaydigan init'larni parallel qilamiz.
+  // NotificationHelper va CallHistoryService bir-biriga bog'liq emas.
+  await Future.wait([
+    NotificationHelper().init(),
+    CallHistoryService().init(),
+  ]);
 
   // Budilnik jiringlaganda (bildirishnoma bosilганда yoki to'liq-ekranda) jiringlash ekranini ochamiz
   void openAlarmRing(String jsonPayload) {
@@ -94,15 +99,15 @@ void main() async {
   // Ovqat eslatmalarini (yoqiq bo'lsa) rejalaymiz.
   MealReminderService().init();
 
-  // CallKit tizim darajasidagi qo'ng'iroq UI ni ishga tushirish
-  await CallKitService().init();
-
-  // Firebase Orqa fon qo'ng'iroqlarini boshqarishni ishga tushirish
-  try {
-    await FirebaseService().init();
-  } catch (e) {
-    debugPrint("Firebase init failed: $e");
-  }
+  // CallKit + Firebase parallel ishga tushiriladi (bir-biriga bog'liq emas).
+  // Firebase juda sekin bo'lishi mumkin — splash'ni kutib qolmasligi uchun
+  // xatoni ushlab, bir vaqtda boshlaymiz.
+  await Future.wait([
+    CallKitService().init(),
+    FirebaseService().init().catchError((e) {
+      debugPrint("Firebase init failed: $e");
+    }),
+  ]);
 
   // Sovuq startda (ilova yopiq edi) RootShell hali tayyor bo'lmasa — qo'ng'iroq
   // ma'lumotini shu yerda saqlab turamiz va tayyor bo'lgach ko'rsatamiz.
@@ -262,18 +267,17 @@ void main() async {
     maybeForceProviderMode();
   };
 
-  // Ob-havo ma'lumotlarini orqa fonda avtomatik yuklashni boshlash (App ochilishini kutib turmasligi uchun await qilinmaydi)
-  WeatherService().prefetchWeather();
+  // Ob-havo va feature holatlari — splash'ni kutib turmasin.
+  unawaited(WeatherService().prefetchWeather());
+  unawaited(FeatureService().load());
 
-  // Bo'lim (feature) holatlarini orqa fonda yuklash (admin yopgan bo'limlar uchun)
-  FeatureService().load();
-
-  // Ilova tilini (uz/ru) yuklash
-  await LocaleController.instance.load();
-
-  initializeDateFormatting('uz_UZ', null).then((_) {
-    runApp(const MyApp());
-  });
+  // Til tanlovi va sana formatlash — parallel. Til KERAK (MaterialApp locale),
+  // date formatting ham uz_UZ boshlashi uchun kerak, lekin ikkalasi mustaqil.
+  await Future.wait([
+    LocaleController.instance.load(),
+    initializeDateFormatting('uz_UZ', null),
+  ]);
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {

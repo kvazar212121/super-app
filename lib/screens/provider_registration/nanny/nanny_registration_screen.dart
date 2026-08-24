@@ -8,6 +8,7 @@ import '../../provider_side/provider_theme.dart';
 import 'nanny_pending_screen.dart';
 import '../../../widgets/document_upload_tile.dart';
 import 'package:super_app/l10n/locale_controller.dart';
+import '../../../widgets/friendly_error.dart';
 
 /// Enaga — hujjatlar va admin tasdiqlash bilan ro'yxatdan o'tish.
 class NannyRegistrationScreen extends StatefulWidget {
@@ -131,9 +132,7 @@ class _NannyRegistrationScreenState extends State<NannyRegistrationScreen> {
       );
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Xatolik: $e')));
+        showFriendlyErrorSnack(context, e);
       }
     } finally {
       if (mounted) setState(() => _submitting = false);

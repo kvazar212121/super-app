@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 import '../config/app_config.dart';
 import '../models/job.dart';
@@ -251,13 +252,19 @@ class _JobsFeedScreenState extends State<JobsFeedScreen> {
               onTap: () => _openPhoto(url),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(10),
-                child: Image.network(
-                  url,
+                // Thumbnail — 150x110dp. RAM keshiga 300px kifoya, katta
+                // rasmni to'liq RAM ga yuklab qo'ymaymiz.
+                child: CachedNetworkImage(
+                  imageUrl: url,
                   width: 150,
                   height: 110,
                   fit: BoxFit.cover,
+                  memCacheWidth: 300,
+                  memCacheHeight: 220,
+                  maxWidthDiskCache: 480,
+                  fadeInDuration: const Duration(milliseconds: 120),
                   // Rasm yuklanmasa karta buzilmasin.
-                  errorBuilder: (_, _, _) => Container(
+                  errorWidget: (_, _, _) => Container(
                     width: 150,
                     height: 110,
                     color: theme.dividerColor.withValues(alpha: 0.3),
@@ -285,9 +292,11 @@ class _JobsFeedScreenState extends State<JobsFeedScreen> {
           ),
           body: Center(
             child: InteractiveViewer(
-              child: Image.network(
-                url,
-                errorBuilder: (_, _, _) => const Icon(
+              // To'liq ekran rasm — CachedNetworkImage kesh + fadeIn.
+              child: CachedNetworkImage(
+                imageUrl: url,
+                fadeInDuration: const Duration(milliseconds: 150),
+                errorWidget: (_, _, _) => const Icon(
                   Icons.broken_image_outlined,
                   color: Colors.white54,
                   size: 64,

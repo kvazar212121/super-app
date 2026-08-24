@@ -217,21 +217,34 @@ class AiService {
         return "Sizning so'rovingiz qabul qilindi! Men SuperApp AI yordamchisiman, qanday yordam bera olaman?";
       }
       if (e.response?.statusCode == 504) {
-        return "AI javob berishda vaqt tugadi. Qayta urinib ko'ring.";
+        // Foydalanuvchi uchun tushunarli: "500", "504" raqamlar yozilmaydi.
+        return "😕 Sekin internet. Server javob berishga ulgurmadi. "
+            "Aloqa yaxshilangach qayta urinib ko'ring.";
       }
       if (e.response?.statusCode == 429) {
-        return "Juda ko'p so'rov yubordingiz. Biroz kuting va qayta urinib ko'ring.";
+        return "⏳ Juda ko'p so'rov yubordingiz. "
+            "Bir daqiqadan so'ng qayta urinib ko'ring.";
       }
       if (e.response?.statusCode == 401) {
-        return "Iltimos, qayta tizimga kiring.";
+        return "🔑 Sessiya tugagan. Iltimos, qayta tizimga kiring.";
       }
-      return "Internet muammosi: ${e.message} ${e.response?.statusCode ?? ''}";
+      final code = e.response?.statusCode ?? 0;
+      if (code >= 500 && code < 600) {
+        // 5xx — bizning muammo.
+        return "😕 Xizmat vaqtincha ishlamayapti. "
+            "1-2 daqiqadan keyin qayta urinib ko'ring.";
+      }
+      // Tarmoq xatosi (SocketException, timeout, DNS...) — status yo'q.
+      return "🌐 Internet muammosi. Wi-Fi yoki mobil aloqani "
+          "tekshirib qayta urinib ko'ring.";
     } catch (e) {
       debugPrint("AI Service Error: $e");
       if (_messages.isNotEmpty && _messages.last['role'] == 'user') {
         _messages.removeLast();
       }
-      return "Kutilmagan xatolik: $e";
+      // Kod ichida "Kutilmagan xatolik: $e" yozmaymiz — foydalanuvchi
+      // texnik matnni ko'rmasin. Faqat tushunarli xabar.
+      return "😕 Kutilmagan xatolik yuz berdi. Qayta urinib ko'ring.";
     }
   }
 

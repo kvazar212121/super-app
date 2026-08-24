@@ -1321,4 +1321,32 @@ const Map<String, String> kTranslationsRu = {
   'Turi': 'Тип',
   "Yo'l kira": 'Проезд',
   'Yosh guruhi': 'Возрастная группа',
+
+  // ── FriendlyError: xatolarni tushunarli qilib ko'rsatish ──
+  'Internet yo\'q': 'Нет интернета',
+  'Wi-Fi yoki mobil aloqani tekshirib qayta urinib ko\'ring.':
+      'Проверьте Wi-Fi или мобильную сеть и попробуйте снова.',
+  'Ilova serverga ulana olmadi. Aloqani tekshirib qayta urining.':
+      'Приложение не смогло подключиться. Проверьте связь и повторите.',
+  'Sekin internet': 'Медленный интернет',
+  'Server juda uzoq javob bermayapti. Qayta urinib ko\'ring.':
+      'Сервер слишком долго не отвечает. Попробуйте снова.',
+  'Server javob berishga ulgurmadi. Aloqa yaxshilangach qayta urining.':
+      'Сервер не успел ответить. Повторите, когда связь улучшится.',
+  'Xizmat vaqtincha ishlamayapti': 'Сервис временно недоступен',
+  '1-2 daqiqadan keyin qayta urinib ko\'ring. Muammo bizda.':
+      'Попробуйте через 1-2 минуты. Проблема на нашей стороне.',
+  'Kirish kerak': 'Требуется вход',
+  'Sessiya tugadi. Qayta kiring.': 'Сессия истекла. Войдите заново.',
+  'Topilmadi': 'Не найдено',
+  'So\'ralgan ma\'lumot topilmadi.': 'Запрошенные данные не найдены.',
+  'Biroz kuting': 'Немного подождите',
+  'Juda ko\'p so\'rov yuborildi. Bir daqiqadan so\'ng urining.':
+      'Слишком много запросов. Повторите через минуту.',
+  'So\'rovda muammo': 'Проблема с запросом',
+  'Kiritilgan ma\'lumotni tekshirib qayta urining.':
+      'Проверьте введённые данные и попробуйте снова.',
+  'Kutilmagan xatolik': 'Непредвиденная ошибка',
+  'Qayta urinib ko\'ring. Muammo davom etsa yordam so\'rang.':
+      'Попробуйте снова. Если проблема остаётся — обратитесь в поддержку.',
 };

@@ -12,6 +12,7 @@ import '../../provider_side/provider_theme.dart';
 import '../../map_address_picker_screen.dart';
 import 'nurse_pending_screen.dart';
 import 'package:super_app/l10n/locale_controller.dart';
+import '../../../widgets/friendly_error.dart';
 
 class NurseRegistrationScreen extends StatefulWidget {
   const NurseRegistrationScreen({super.key});
@@ -199,9 +200,7 @@ class _NurseRegistrationScreenState extends State<NurseRegistrationScreen> {
       );
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Xatolik: $e')));
+        showFriendlyErrorSnack(context, e);
       }
     } finally {
       if (mounted) setState(() => _submitting = false);

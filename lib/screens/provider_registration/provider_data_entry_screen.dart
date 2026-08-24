@@ -8,6 +8,7 @@ import '../../utils/phone_utils.dart';
 import '../provider_side/provider_theme.dart';
 import 'provider_success_screen.dart';
 import 'package:super_app/l10n/locale_controller.dart';
+import '../../../widgets/friendly_error.dart';
 
 class ProviderDataEntryScreen extends StatefulWidget {
   final String categoryId;
@@ -100,9 +101,7 @@ class _ProviderDataEntryScreenState extends State<ProviderDataEntryScreen> {
         );
       } catch (e) {
         if (mounted) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text('Xatolik: $e')));
+          showFriendlyErrorSnack(context, e);
         }
       }
     }
