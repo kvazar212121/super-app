@@ -6,6 +6,7 @@ import '../../../services/provider_portal_service.dart';
 import '../../../services/hub_data_service.dart';
 import '../../../services/settings_save_controller.dart';
 import 'package:super_app/l10n/locale_controller.dart';
+import '../../../widgets/friendly_error.dart';
 
 /// Sartarosh / salon — xizmatlar, narxlar, ustalar.
 class ProviderVenueSettingsWidget extends StatefulWidget {
@@ -209,11 +210,11 @@ class _ProviderVenueSettingsWidgetState
         ).showSnackBar(SnackBar(content: Text('Sozlamalar saqlandi'.tr)));
       }
       await _load();
-    } catch (_) {
+    } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Saqlashda xatolik'.tr)));
+        // FriendlyError: 'Saqlashda xatolik' o'rniga aniq sabab
+        // (Internet yo'q / Sekin / Server) + Qayta tugma.
+        showFriendlyErrorSnack(context, e);
       }
     } finally {
       if (mounted) setState(() => _saving = false);

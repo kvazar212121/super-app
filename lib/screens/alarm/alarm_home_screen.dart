@@ -4,6 +4,7 @@ import '../../l10n/locale_controller.dart';
 import '../../models/alarm.dart';
 import '../../services/api_service.dart';
 import '../../services/notification_helper.dart';
+import '../../widgets/friendly_error.dart';
 import 'alarm_edit_screen.dart';
 import 'alarm_ring_screen.dart';
 
@@ -93,11 +94,9 @@ class _AlarmHomeScreenState extends State<AlarmHomeScreen> {
         await NotificationHelper().cancelAlarm(updated.id);
       }
       _load();
-    } catch (_) {
+    } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('O\'zgartirishda xatolik'.tr)));
+        showFriendlyErrorSnack(context, e);
       }
     }
   }
