@@ -511,10 +511,14 @@ class _DailyBtn extends StatelessWidget {
             // chetlarini QIRQIB tashlaydi.
             if (bgImage != null)
               Padding(
-                // Pastdagi nom tasmasi ostida qolmasligi uchun pastdan
-                // ko'proq joy qoldiriladi.
-                padding: const EdgeInsets.fromLTRB(6, 7, 6, 33),
-                child: Image.asset(bgImage!, fit: BoxFit.contain),
+                // Nom tasmasi va karta chetlariga moslangan optimallashtirilgan padding:
+                // rasm kartani maksimal to'ldiradi va ortiqcha bo'shliqlar yo'qoladi.
+                padding: const EdgeInsets.fromLTRB(4, 10, 4, 30),
+                child: Image.asset(
+                  bgImage!,
+                  fit: BoxFit.contain,
+                  alignment: Alignment.center,
+                ),
               )
             else
               Container(

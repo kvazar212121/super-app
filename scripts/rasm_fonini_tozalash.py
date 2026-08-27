@@ -146,6 +146,16 @@ def fonni_ajrat(yol: Path, bagrilik: int = BAGRILIK) -> tuple[Path, float]:
 
     im.putalpha(alpha)
 
+    # Predmet atrofidagi bo'sh shaffof joylarni qirqib tashlash (bo'shliq holatining oldini olish)
+    bbox = im.getbbox()
+    if bbox:
+        margin = 12
+        left = max(0, bbox[0] - margin)
+        top = max(0, bbox[1] - margin)
+        right = min(im.width, bbox[2] + margin)
+        bottom = min(im.height, bbox[3] + margin)
+        im = im.crop((left, top, right, bottom))
+
     natija = yol.with_name(yol.stem + "_shaffof.png")
     im.save(natija, "PNG", optimize=True)
     return natija, fon_soni / (w * h) * 100
