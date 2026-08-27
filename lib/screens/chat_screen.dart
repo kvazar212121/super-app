@@ -734,54 +734,90 @@ class _ChatScreenState extends State<ChatScreen>
           GestureDetector(
             onLongPress: () => _showMessageMenu(content, isUser),
             child: Container(
-            margin: EdgeInsets.only(bottom: actionButtons.isEmpty ? 16 : 8),
-            constraints: BoxConstraints(
-              maxWidth: MediaQuery.of(context).size.width * 0.75,
-            ),
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            decoration: BoxDecoration(
-              color: isUser
-                  ? Colors.blue
-                  : (isDark ? const Color(0xFF334155) : Colors.white),
-              borderRadius: BorderRadius.only(
-                topLeft: const Radius.circular(20),
-                topRight: const Radius.circular(20),
-                bottomLeft: Radius.circular(isUser ? 20 : 0),
-                bottomRight: Radius.circular(isUser ? 0 : 20),
+              margin: EdgeInsets.only(bottom: actionButtons.isEmpty && providerListAction == null ? 16 : 8),
+              constraints: BoxConstraints(
+                maxWidth: MediaQuery.of(context).size.width * (providerListAction != null ? 0.90 : 0.75),
               ),
-              border: Border.all(
-                color: isUser ? Colors.blue : GlassTokens.glassBorder(context),
-              ),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if (localPhoto != null) ...[
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
-                    child: Image.file(
-                      File(localPhoto),
-                      width: 200,
-                      fit: BoxFit.cover,
-                      errorBuilder: (_, _, _) => const SizedBox.shrink(),
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                ],
-                Text(
-                  content,
-                  style: TextStyle(
-                    color: isUser
-                        ? Colors.white
-                        : (isDark ? Colors.white : Colors.black87),
-                    fontSize: 15,
-                    height: 1.4,
-                  ),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              decoration: BoxDecoration(
+                color: isUser
+                    ? Colors.blue
+                    : (isDark ? const Color(0xFF334155) : Colors.white),
+                borderRadius: BorderRadius.only(
+                  topLeft: const Radius.circular(20),
+                  topRight: const Radius.circular(20),
+                  bottomLeft: Radius.circular(isUser ? 20 : 0),
+                  bottomRight: Radius.circular(isUser ? 0 : 20),
                 ),
-              ],
+                border: Border.all(
+                  color: isUser ? Colors.blue : GlassTokens.glassBorder(context),
+                ),
+              ),
+              child: Builder(builder: (context) {
+                if (providerListAction != null) {
+                  final (headerText, footerText) = _splitContentForProviderList(content);
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (headerText.isNotEmpty) ...[
+                        Text(
+                          headerText,
+                          style: TextStyle(
+                            color: isDark ? Colors.white : Colors.black87,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                            height: 1.4,
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                      ],
+                      _buildProviderListWidget(providerListAction),
+                      if (footerText.isNotEmpty) ...[
+                        const SizedBox(height: 10),
+                        Text(
+                          footerText,
+                          style: TextStyle(
+                            color: isDark ? Colors.white70 : Colors.black87,
+                            fontSize: 14,
+                            height: 1.4,
+                          ),
+                        ),
+                      ],
+                    ],
+                  );
+                }
+
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (localPhoto != null) ...[
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: Image.file(
+                          File(localPhoto),
+                          width: 200,
+                          fit: BoxFit.cover,
+                          errorBuilder: (_, _, _) => const SizedBox.shrink(),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                    ],
+                    Text(
+                      content,
+                      style: TextStyle(
+                        color: isUser
+                            ? Colors.white
+                            : (isDark ? Colors.white : Colors.black87),
+                        fontSize: 15,
+                        height: 1.4,
+                      ),
+                    ),
+                  ],
+                );
+              }),
             ),
-          ),
           ),
           // Grid pufakdan KENGROQ bo'ladi (0.75 emas, deyarli to'liq
           // en): 2 ustunli kartalar tor joyda o'qilmaydi.
@@ -791,14 +827,6 @@ class _ChatScreenState extends State<ChatScreen>
               child: SizedBox(
                 width: MediaQuery.of(context).size.width * 0.92,
                 child: ListingGrid(listings: listings),
-              ),
-            ),
-          if (providerListAction != null)
-            Padding(
-              padding: const EdgeInsets.only(bottom: 16, right: 8),
-              child: SizedBox(
-                width: MediaQuery.of(context).size.width * 0.92,
-                child: _buildProviderListWidget(providerListAction),
               ),
             ),
           if (confirm != null) _confirmButtons(confirm),
@@ -1042,6 +1070,43 @@ class _ChatScreenState extends State<ChatScreen>
       }
     }
     return out;
+  }
+
+  (String, String) _splitContentForProviderList(String content) {
+    final lines = content.split('\n');
+    final headerLines = <String>[];
+    final footerLines = <String>[];
+    bool pastList = false;
+
+    for (int i = 0; i < lines.length; i++) {
+      final line = lines[i].trim();
+      final isListItem = RegExp(r'^\d+[\.\)]').hasMatch(line);
+      final isSubDetail = line.startsWith('⭐') ||
+          line.startsWith('📍') ||
+          line.startsWith('📏') ||
+          line.startsWith('•');
+
+      if (isListItem || (isSubDetail && !pastList)) {
+        pastList = true;
+        continue;
+      }
+
+      if (pastList) {
+        if (line.contains('Quyidagi tugmalar') ||
+            line.contains('tugmalar orqali')) {
+          continue;
+        }
+        if (line.isNotEmpty) {
+          footerLines.add(lines[i]);
+        }
+      } else {
+        headerLines.add(lines[i]);
+      }
+    }
+
+    final header = headerLines.join('\n').trim();
+    final footer = footerLines.join('\n').trim();
+    return (header, footer);
   }
 
   Map<String, dynamic>? _providerListOf(List<Map<String, dynamic>>? actions) {

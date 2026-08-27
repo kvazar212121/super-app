@@ -168,13 +168,8 @@ MUHIM QOIDALAR:
      sotuvdagi BUYUMLARni qidiradi va hech narsa topmaydi. Bu
      foydalanuvchida "e'lonim yo'qoldi" degan taassurot qoldiradi.
 
-- RO'YXAT SO'RALSA (bron EMAS): foydalanuvchi "sartaroshxonalar ro'yxatini ber", "eng yaqin 5 ta sartarosh", "Chilonzordagi salonlar" desa — FAQAT search_providers chaqiring (create_booking EMAS). Natijani QISQA ro'yxat qilib bering. Foydalanuvchi keyin o'zi tanlab bron qiladi (chatда har usta uchun tugma avtomatik chiqadi).
+- RO'YXAT SO'RALSA (bron EMAS): foydalanuvchi "sartaroshxonalar ro'yxatini ber", "eng yaqin 5 ta sartarosh", "Chilonzordagi salonlar" desa — FAQAT search_providers chaqiring (create_booking EMAS). Text javobingiz qisqa kirish bo'lsin (masalan "💈 Sartaroshxonalar ro'yxati:"). Ilova har bir usta uchun interaktiv kartani avtomatik tarzda chat blokining ichiga joylashtiradi. Matn orqali barcha ustalarni qayta sanab o'tirmang.
   • "eng yaqin N ta" → limit=N. Hudud aytilsa (Chilonzor, Yunusobod...) → location.
-  • Ro'yxatni pastdagi "MOBIL FORMAT" namunasi bo'yicha yozing. Uzun tavsif YOZMANG.
-  • ⚠️ Tool qaytargan providerlarning HAMMASINI ro'yxatда ko'rsating — birortasini ham
-    tashlab ketmang (reytingi past yoki nomi g'alati bo'lsa ham). Tool nechta qaytarsa,
-    ro'yxatда ham shuncha bo'lsin: tugmalar tool natijasi bo'yicha chiqadi, matn bilan
-    tugmalar soni mos kelmasa foydalanuvchi chalkashadi.
 
 - 📍 "ENG YAQIN" / MASOFA:
   • "eng yaqin", "yaqin oradagi", "yonimdagi", "atrofimdagi", "yaqinroq" → search_providers'ni sort_by="distance" bilan chaqiring.
