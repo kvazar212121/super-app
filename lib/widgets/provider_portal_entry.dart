@@ -3,8 +3,10 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:provider/provider.dart';
 
 import '../config/provider_category_config.dart';
+import '../models/service_order.dart';
 import '../providers/auth_provider.dart';
 import '../providers/app_provider.dart';
+import '../screens/order_detail_screen.dart';
 import '../screens/auth/auth_gate_screen.dart';
 import '../screens/provider_registration/provider_onboarding_screen.dart';
 import '../screens/provider_registration/barber/barber_pending_screen.dart';
@@ -312,12 +314,113 @@ class _ProviderPortalEntryState extends State<ProviderPortalEntry> {
               fontSize: 14,
             ),
           ),
+          // Provider-ga tegishli alert buyurtmalar (Kelmadi, Nizo)
+          if (hasProvider) ..._buildProviderAlerts(context),
           const SizedBox(height: 20),
           SizedBox(
             width: double.infinity,
             child: FilledButton(onPressed: _onTap, child: Text(buttonLabel)),
           ),
         ],
+      ),
+    );
+  }
+
+  List<Widget> _buildProviderAlerts(BuildContext context) {
+    final alerts = context.watch<AppProvider>().providerAlertOrders;
+    if (alerts.isEmpty) return [];
+    return [
+      const SizedBox(height: 14),
+      ...alerts.map((order) => _ProviderAlertTile(order: order)),
+    ];
+  }
+}
+
+/// Ixcham alert tile — "Kelmadi" / "Nizo" statusli buyurtmalar uchun.
+class _ProviderAlertTile extends StatelessWidget {
+  final ServiceOrder order;
+  const _ProviderAlertTile({required this.order});
+
+  @override
+  Widget build(BuildContext context) {
+    final statusLabel = order.statusText;
+    final statusColor = switch (order.status) {
+      OrderStatus.pending => const Color(0xFFF59E0B),
+      OrderStatus.accepted => const Color(0xFF3B82F6),
+      OrderStatus.onTheWay => const Color(0xFF0EA5E9),
+      OrderStatus.arrived => const Color(0xFF8B5CF6),
+      OrderStatus.preparing => const Color(0xFFF59E0B),
+      OrderStatus.inProgress => const Color(0xFFA855F7),
+      OrderStatus.noShow => const Color(0xFF6B7280),
+      OrderStatus.disputed => const Color(0xFFDC2626),
+      _ => const Color(0xFF6B7280),
+    };
+
+    String two(int n) => n.toString().padLeft(2, '0');
+    final dateStr =
+        '${two(order.date.day)}.${two(order.date.month)} ${two(order.date.hour)}:${two(order.date.minute)}';
+
+    return GestureDetector(
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => OrderDetailScreen(orderId: order.id),
+        ),
+      ),
+      child: Container(
+        margin: const EdgeInsets.only(top: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        decoration: BoxDecoration(
+          color: statusColor.withValues(alpha: 0.08),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: statusColor.withValues(alpha: 0.2)),
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+              decoration: BoxDecoration(
+                color: statusColor,
+                borderRadius: BorderRadius.circular(6),
+              ),
+              child: Text(
+                statusLabel,
+                style: const TextStyle(
+                  fontSize: 10,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                '${order.serviceName} — ${order.price.toStringAsFixed(0)} ${'so\'m'.tr}',
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  color: GlassTokens.primaryText(context),
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            const SizedBox(width: 6),
+            Text(
+              dateStr,
+              style: TextStyle(
+                fontSize: 11,
+                color: GlassTokens.secondaryText(context),
+              ),
+            ),
+            const SizedBox(width: 4),
+            Icon(
+              Icons.chevron_right,
+              size: 16,
+              color: GlassTokens.secondaryText(context),
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -51,6 +51,17 @@ class AppProvider extends ChangeNotifier {
       .where(
         (o) =>
             o.status != OrderStatus.completed &&
+            o.status != OrderStatus.cancelled &&
+            o.status != OrderStatus.noShow &&
+            o.status != OrderStatus.disputed,
+      )
+      .toList();
+
+  /// Provider paneliga tegishli statuslar (kelmadi, nizo).
+  List<ServiceOrder> get providerAlertOrders => _orders
+      .where(
+        (o) =>
+            o.status != OrderStatus.completed &&
             o.status != OrderStatus.cancelled,
       )
       .toList();

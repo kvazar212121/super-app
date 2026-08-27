@@ -1,7 +1,6 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
-import '../widgets/active_order_banner.dart';
 import '../widgets/home_promo_section.dart';
 import '../widgets/home_header_widget.dart';
 import '../widgets/provider_portal_entry.dart';
@@ -45,8 +44,6 @@ class HomeScreen extends StatelessWidget {
             const SizedBox(height: 18),
             const CampaignBanner(),
             _buildMainGrid(context),
-            const SizedBox(height: 24),
-            const ActiveOrderBanner(),
             const SizedBox(height: 24),
             const ProviderPortalEntry(),
             const SizedBox(height: 28),
