@@ -305,15 +305,17 @@ class _ProviderPortalEntryState extends State<ProviderPortalEntry> {
               color: GlassTokens.primaryText(context),
             ),
           ),
-          const SizedBox(height: 14),
-          Text(
-            subtitle,
-            style: TextStyle(
-              color: GlassTokens.secondaryText(context),
-              height: 1.45,
-              fontSize: 14,
+          if (!hasProvider) ...[
+            const SizedBox(height: 10),
+            Text(
+              subtitle,
+              style: TextStyle(
+                color: GlassTokens.secondaryText(context),
+                height: 1.45,
+                fontSize: 14,
+              ),
             ),
-          ),
+          ],
           // Provider-ga tegishli alert buyurtmalar (Kelmadi, Nizo)
           if (hasProvider) ..._buildProviderAlerts(context),
           const SizedBox(height: 20),
