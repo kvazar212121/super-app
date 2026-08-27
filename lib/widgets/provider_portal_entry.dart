@@ -106,7 +106,11 @@ class _ProviderPortalEntryState extends State<ProviderPortalEntry> {
     }
     // Push emas — aktiv rejimni "provider"ga o'tkazamiz. RootShell qayta quriladi
     // va soha egasi panelini ko'rsatadi (rejim saqlanadi, qayta ochilganda tiklanadi).
+    final nav = Navigator.of(context);
     context.read<AppProvider>().switchToProvider(config.categoryKey);
+    if (nav.canPop()) {
+      nav.popUntil((route) => route.isFirst);
+    }
   }
 
   void _openOnboarding() {
