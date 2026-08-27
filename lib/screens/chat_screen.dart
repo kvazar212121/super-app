@@ -1076,31 +1076,33 @@ class _ChatScreenState extends State<ChatScreen>
     final lines = content.split('\n');
     final headerLines = <String>[];
     final footerLines = <String>[];
-    bool pastList = false;
+    bool inList = false;
 
-    for (int i = 0; i < lines.length; i++) {
-      final line = lines[i].trim();
+    for (final rawLine in lines) {
+      final line = rawLine.trim();
+      if (line.isEmpty) continue;
+
       final isListItem = RegExp(r'^\d+[\.\)]').hasMatch(line);
       final isSubDetail = line.startsWith('⭐') ||
           line.startsWith('📍') ||
           line.startsWith('📏') ||
           line.startsWith('•');
 
-      if (isListItem || (isSubDetail && !pastList)) {
-        pastList = true;
+      if (isListItem || isSubDetail) {
+        inList = true;
         continue;
       }
 
-      if (pastList) {
-        if (line.contains('Quyidagi tugmalar') ||
-            line.contains('tugmalar orqali')) {
-          continue;
-        }
-        if (line.isNotEmpty) {
-          footerLines.add(lines[i]);
-        }
+      if (line.contains('Quyidagi tugmalar') ||
+          line.contains('tugmalar orqali') ||
+          line.contains('Birortasiga bron')) {
+        continue;
+      }
+
+      if (inList) {
+        footerLines.add(rawLine);
       } else {
-        headerLines.add(lines[i]);
+        headerLines.add(rawLine);
       }
     }
 
@@ -1129,7 +1131,7 @@ class _ChatScreenState extends State<ChatScreen>
       children: [
         for (final p in provs) ...[
           _buildProviderCard(Map<String, dynamic>.from(p as Map), catKey, isDark),
-          const SizedBox(height: 10),
+          const SizedBox(height: 6),
         ]
       ],
     );
@@ -1146,112 +1148,86 @@ class _ChatScreenState extends State<ChatScreen>
 
     if (id == null) return const SizedBox.shrink();
 
+    final details = <String>[];
+    details.add('⭐ ${rating.toStringAsFixed(1)}');
+    if (address.isNotEmpty) details.add('📍 $address');
+    if (dist != null) details.add('📏 ${dist.toStringAsFixed(1)} km');
+
     return Container(
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF1E293B) : Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: GlassTokens.glassBorder(context)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(isDark ? 0.2 : 0.05),
-            blurRadius: 8,
-            offset: const Offset(0, 3),
-          ),
-        ],
+        color: isDark ? const Color(0xFF1E293B) : const Color(0xFFF8FAFC),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0),
+        ),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Row(
         children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: Colors.blue.withOpacity(0.12),
-                  shape: BoxShape.circle,
+          Container(
+            width: 32,
+            height: 32,
+            decoration: BoxDecoration(
+              color: Colors.blue.withValues(alpha: 0.12),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(LucideIcons.store, color: Colors.blue, size: 16),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  name,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 13.5,
+                    fontWeight: FontWeight.w700,
+                    color: GlassTokens.primaryText(context),
+                  ),
                 ),
-                child:
-                    const Icon(LucideIcons.store, color: Colors.blue, size: 20),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                const SizedBox(height: 2),
+                Text(
+                  details.join('  •  '),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w500,
+                    color: GlassTokens.secondaryText(context),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 8),
+          Material(
+            color: Colors.blue,
+            borderRadius: BorderRadius.circular(9),
+            child: InkWell(
+              onTap: () => _openProviderBooking(id, pKey),
+              borderRadius: BorderRadius.circular(9),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
+                    const Icon(LucideIcons.calendarPlus, color: Colors.white, size: 13),
+                    const SizedBox(width: 4),
                     Text(
-                      name,
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: GlassTokens.primaryText(context),
+                      'Bron'.tr,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 11.5,
+                        fontWeight: FontWeight.w700,
                       ),
                     ),
-                    const SizedBox(height: 4),
-                    Row(
-                      children: [
-                        const Icon(Icons.star, color: Colors.amber, size: 16),
-                        const SizedBox(width: 4),
-                        Text(
-                          rating.toStringAsFixed(1),
-                          style: const TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.amber,
-                          ),
-                        ),
-                        if (address.isNotEmpty) ...[
-                          Expanded(
-                            child: Text(
-                              '  •  📍 $address',
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                fontSize: 13,
-                                color: GlassTokens.secondaryText(context),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ],
-                    ),
-                    if (dist != null) ...[
-                      const SizedBox(height: 2),
-                      Text(
-                        '📏 ${dist.toStringAsFixed(1)} km masofada',
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
-                          color: Colors.blue.shade600,
-                        ),
-                      ),
-                    ],
                   ],
                 ),
               ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton.icon(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue,
-                foregroundColor: Colors.white,
-                elevation: 0,
-                padding: const EdgeInsets.symmetric(vertical: 10),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-              icon: const Icon(LucideIcons.calendarPlus, size: 16),
-              label: Text(
-                'Bron qilish / Sahifasiga o\'tish'.tr,
-                style:
-                    const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
-              ),
-              onPressed: () => _openProviderBooking(id, pKey),
             ),
           ),
         ],
