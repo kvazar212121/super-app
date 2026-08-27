@@ -716,6 +716,7 @@ class _ChatScreenState extends State<ChatScreen>
     final actionButtons = isUser ? const <Widget>[] : _actionButtons(actions);
     // Savdo qidiruvi natijasi: tugma emas, KARTALAR gridi ko'rinadi.
     final listings = isUser ? const <Listing>[] : _listingsOf(actions);
+    final providerListAction = isUser ? null : _providerListOf(actions);
     // Tasdiq so'rovi: katta «Ha / Yo'q» tugmalari. Ilgari faqat matn
     // bor edi va foydalanuvchi «E'lon tayyor» degan sarlavhani ko'rib
     // pastdagi savolni o'qimay ketib qolardi — e'lon berilmay qolardi.
@@ -790,6 +791,14 @@ class _ChatScreenState extends State<ChatScreen>
               child: SizedBox(
                 width: MediaQuery.of(context).size.width * 0.92,
                 child: ListingGrid(listings: listings),
+              ),
+            ),
+          if (providerListAction != null)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 16, right: 8),
+              child: SizedBox(
+                width: MediaQuery.of(context).size.width * 0.92,
+                child: _buildProviderListWidget(providerListAction),
               ),
             ),
           if (confirm != null) _confirmButtons(confirm),
@@ -1035,7 +1044,157 @@ class _ChatScreenState extends State<ChatScreen>
     return out;
   }
 
-  /// AI amallaridan chatда bosiladigan tugma yasaydi. Masalan bron yaratilса —
+  Map<String, dynamic>? _providerListOf(List<Map<String, dynamic>>? actions) {
+    if (actions == null || actions.isEmpty) return null;
+    for (final a in actions) {
+      if (a['type'] == 'provider_list') return a;
+    }
+    return null;
+  }
+
+  Widget _buildProviderListWidget(Map<String, dynamic> action) {
+    final catKey = action['category_key'] as String?;
+    final provs = (action['providers'] as List?) ?? const [];
+    if (provs.isEmpty) return const SizedBox.shrink();
+
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        for (final p in provs) ...[
+          _buildProviderCard(Map<String, dynamic>.from(p as Map), catKey, isDark),
+          const SizedBox(height: 10),
+        ]
+      ],
+    );
+  }
+
+  Widget _buildProviderCard(
+      Map<String, dynamic> pm, String? defaultCatKey, bool isDark) {
+    final id = (pm['id'] as num?)?.toInt();
+    final name = pm['name'] as String? ?? 'Usta / Xizmat ko\'rsatuvchi';
+    final rating = (pm['rating'] as num?)?.toDouble() ?? 5.0;
+    final address = pm['address'] as String? ?? '';
+    final dist = (pm['distance_km'] as num?)?.toDouble();
+    final pKey = pm['category_key'] as String? ?? defaultCatKey;
+
+    if (id == null) return const SizedBox.shrink();
+
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: isDark ? const Color(0xFF1E293B) : Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: GlassTokens.glassBorder(context)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(isDark ? 0.2 : 0.05),
+            blurRadius: 8,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: Colors.blue.withOpacity(0.12),
+                  shape: BoxShape.circle,
+                ),
+                child:
+                    const Icon(LucideIcons.store, color: Colors.blue, size: 20),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      name,
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: GlassTokens.primaryText(context),
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        const Icon(Icons.star, color: Colors.amber, size: 16),
+                        const SizedBox(width: 4),
+                        Text(
+                          rating.toStringAsFixed(1),
+                          style: const TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.amber,
+                          ),
+                        ),
+                        if (address.isNotEmpty) ...[
+                          Expanded(
+                            child: Text(
+                              '  •  📍 $address',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: GlassTokens.secondaryText(context),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                    if (dist != null) ...[
+                      const SizedBox(height: 2),
+                      Text(
+                        '📏 ${dist.toStringAsFixed(1)} km masofada',
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.blue.shade600,
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton.icon(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blue,
+                foregroundColor: Colors.white,
+                elevation: 0,
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              icon: const Icon(LucideIcons.calendarPlus, size: 16),
+              label: Text(
+                'Bron qilish / Sahifasiga o\'tish'.tr,
+                style:
+                    const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+              ),
+              onPressed: () => _openProviderBooking(id, pKey),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// AI amallaridan chatда bosiladigan tugma yasaydi. Masalan bron yaratilsa —
   /// "Buyurtmani ko'rish" tugmasi (Buyurtmalar bo'limiga o'tadi).
   List<Widget> _actionButtons(List<Map<String, dynamic>>? actions) {
     if (actions == null || actions.isEmpty) return const [];
@@ -1051,29 +1210,6 @@ class _ChatScreenState extends State<ChatScreen>
               : 'Buyurtmani ko\'rish'.tr,
           onTap: () => _openBookings(),
         ));
-      } else if (type == 'provider_list') {
-        // Har provayder uchun ALOHIDA tugma — bosilса o'sha provayderning
-        // bron/profil sahifasi ochiladi.
-        final key = a['category_key'] as String?;
-        final provs = (a['providers'] as List?) ?? const [];
-        for (final p in provs) {
-          final pm = Map<String, dynamic>.from(p as Map);
-          final id = (pm['id'] as num?)?.toInt();
-          final name = pm['name'] as String? ?? '';
-          if (id == null) continue;
-          // "Eng yaqin" qidiruvида masofa ham ko'rsatiladi: "goo · 4.0 km"
-          final dist = (pm['distance_km'] as num?)?.toDouble();
-          final label = name.isEmpty
-              ? 'Bron qilish'.tr
-              : (dist != null ? '$name · ${dist.toStringAsFixed(1)} km' : name);
-          // Har provayder o'z kategoriyasi bilan ochiladi (bo'lmasa umumiy kalit)
-          final pKey = pm['category_key'] as String? ?? key;
-          buttons.add(_chatActionButton(
-            icon: LucideIcons.calendarPlus,
-            label: label,
-            onTap: () => _openProviderBooking(id, pKey),
-          ));
-        }
       } else if (type == 'listings_changed' || type == 'my_listings') {
         // E'lon berildi/o'zgardi — "Mening e'lonlarim" ga o'tish.
         buttons.add(_chatActionButton(
