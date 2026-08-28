@@ -63,7 +63,7 @@ class _CallHistoryScreenState extends State<CallHistoryScreen>
         isScrollable: false,
         tabs: [
           Tab(text: "Qo'ng'iroqlar".tr),
-          Tab(text: "SMS".tr),
+          Tab(text: "Habarlar".tr),
           Tab(text: "Bloklangan".tr),
         ],
       ),
