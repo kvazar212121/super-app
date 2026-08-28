@@ -6,6 +6,7 @@ import '../widgets/home_header_widget.dart';
 import '../widgets/provider_portal_entry.dart';
 import '../widgets/top_providers_section.dart';
 import '../widgets/campaign_banner.dart';
+import '../theme/lux_tokens.dart';
 
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../screens/todo_screen.dart';
@@ -29,10 +30,18 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     // Oraliqlar bir maromda: bo'limlar orasi 24, ichkarisi 10-12.
     // Yon chekka 18 (oldin 20) — kartalar biroz kengroq nafas oladi.
-    return SafeArea(
-      bottom: false,
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(18, 12, 18, 100),
+    // Yagona yuqa ko'k-zangori orqa fon — sahifa bir xil ko'rinadi.
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    // Dark rejimda fon LuxTokens.bg — MeshBackground bilan bir xil, shuning
+    // uchun ekranlar orasida rang "sakramaydi".
+    final bgColor = isDark ? LuxTokens.bg : const Color(0xFFF0F4FF);
+
+    return ColoredBox(
+      color: bgColor,
+      child: SafeArea(
+        bottom: false,
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.fromLTRB(18, 12, 18, 100),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -52,6 +61,7 @@ class HomeScreen extends StatelessWidget {
             const TopProvidersSection(),
           ],
         ),
+      ),
       ),
     );
   }
@@ -116,12 +126,20 @@ class HomeScreen extends StatelessWidget {
     //
     // NEGA GridView emas: bu ekran allaqachon SingleChildScrollView ichida.
     // Ichma-ich skroll murakkablik tug'diradi, Row esa oddiy va tez.
+    // DIQQAT: quyidagi `stat`/`value`/`caption` qiymatlari hozircha
+    // NAMUNA (dizaynni ko'rish uchun). Keyingi bosqichda har biri o'z
+    // servisidan olinadi: kaloriya kunlik yig'indi, fitnes rejadagi mashq,
+    // rejalar keyingi vaqti, moliya oylik xarajat, savdo ro'yxati qoldig'i,
+    // budilnik keyingi signal vaqti.
     final kartalar = <Widget>[
       _DailyBtn(
         icon: LucideIcons.flame,
         label: 'Kaloriya'.tr,
         color: const Color(0xFFEF4444),
         bgImage: 'assets/images/calorie_counter_shaffof.png',
+        stat: '68%',
+        value: '1425',
+        caption: '/ 2100 kcal',
         onTap: () =>
             _openFeature(context, 'calorie', () => const CalorieHomeScreen()),
       ),
@@ -130,6 +148,9 @@ class HomeScreen extends StatelessWidget {
         label: 'Fitnes'.tr,
         color: const Color(0xFF14B8A6),
         bgImage: 'assets/images/fitness_trainer_shaffof.png',
+        stat: '2/5',
+        value: 'Ko\'krak',
+        caption: '5 mashq',
         onTap: () =>
             _openFeature(context, 'fitness', () => const FitnessHomeScreen()),
       ),
@@ -138,6 +159,9 @@ class HomeScreen extends StatelessWidget {
         label: 'Rejalarim'.tr,
         color: const Color(0xFF3B82F6),
         bgImage: 'assets/images/my_plans_shaffof.png',
+        stat: '1/5',
+        value: '14:30',
+        caption: 'keyingi',
         onTap: () => _openFeature(context, 'plans', () => const TodoScreen()),
       ),
       _DailyBtn(
@@ -145,6 +169,9 @@ class HomeScreen extends StatelessWidget {
         label: 'Moliyam'.tr,
         color: const Color(0xFF22C55E),
         bgImage: 'assets/images/my_finance_shaffof.png',
+        stat: 'UZS',
+        value: '1,105 ming',
+        caption: 'xarajat',
         onTap: () => _openFeature(
           context,
           'finance',
@@ -156,6 +183,9 @@ class HomeScreen extends StatelessWidget {
         label: 'Aqlli savdo'.tr,
         color: const Color(0xFFF97316),
         bgImage: 'assets/images/smart_shopping_shaffof.png',
+        stat: '2/5',
+        value: '3 ta qoldi',
+        caption: 'savdo ro\'yxati',
         onTap: () =>
             _openFeature(context, 'shopping', () => const ShoppingListScreen()),
       ),
@@ -164,6 +194,10 @@ class HomeScreen extends StatelessWidget {
         label: 'Budilnik'.tr,
         color: const Color(0xFF6366F1),
         bgImage: 'assets/images/majburolovchi_shaffof.png',
+        stat: 'Faol',
+        statAccent: true,
+        value: '06:30',
+        caption: 'uyg\'onish',
         onTap: () =>
             _openFeature(context, 'alarm', () => const AlarmHomeScreen()),
       ),
@@ -268,6 +302,134 @@ class _ServicesButtonState extends State<_ServicesButton>
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    if (isDark) return _buildLux(context);
+    return _buildLight(context);
+  }
+
+  /// PREMIUM: gradient o'rniga tinch qora karta + oltin ikon + "40+" chipi.
+  /// Rangli gradient qora-oltin palitrada begona ko'rinadi, shuning uchun
+  /// urg'u faqat ikon va chip orqali beriladi.
+  Widget _buildLux(BuildContext context) {
+    return GestureDetector(
+      onTapDown: (_) => setState(() => _bosilgan = true),
+      onTapUp: (_) => setState(() => _bosilgan = false),
+      onTapCancel: () => setState(() => _bosilgan = false),
+      onTap: widget.onTap,
+      child: AnimatedScale(
+        scale: _bosilgan ? 0.98 : 1.0,
+        duration: const Duration(milliseconds: 110),
+        curve: Curves.easeOut,
+        child: Container(
+          height: 68,
+          padding: const EdgeInsets.symmetric(horizontal: 14),
+          decoration: BoxDecoration(
+            color: LuxTokens.surface,
+            borderRadius: BorderRadius.circular(LuxTokens.radiusMd),
+            border: Border.all(color: LuxTokens.border),
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 42,
+                height: 42,
+                decoration: BoxDecoration(
+                  color: LuxTokens.gold.withValues(alpha: 0.10),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: LuxTokens.gold.withValues(alpha: 0.32),
+                  ),
+                ),
+                child: const Icon(
+                  LucideIcons.layoutGrid,
+                  color: LuxTokens.goldSoft,
+                  size: 19,
+                ),
+              ),
+              const SizedBox(width: 13),
+              Expanded(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Flexible(
+                          child: Text(
+                            'Barcha xizmatlar'.tr,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              fontFamily: LuxTokens.body,
+                              color: LuxTokens.text,
+                              fontWeight: FontWeight.w500,
+                              fontSize: 15,
+                              letterSpacing: -0.1,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 2,
+                          ),
+                          decoration: LuxTokens.chip(accent: true),
+                          child: Text(
+                            '40+',
+                            // Raqamli chip — `value` uslubi (tekis raqamlar).
+                            style: LuxTokens.value(size: 10.5),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 3),
+                    Text(
+                      'Usta, tozalash, salon va boshqalar'.tr,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontFamily: LuxTokens.body,
+                        color: LuxTokens.textMuted,
+                        fontWeight: FontWeight.w400,
+                        fontSize: 10.5,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 8),
+              AnimatedBuilder(
+                animation: _ishora,
+                builder: (context, ikon) => Transform.translate(
+                  offset: Offset(
+                    Curves.easeInOut.transform(_ishora.value) * 4,
+                    0,
+                  ),
+                  child: ikon,
+                ),
+                child: Container(
+                  width: 30,
+                  height: 30,
+                  decoration: const BoxDecoration(
+                    color: Color(0xFF1F1F22),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    LucideIcons.chevronRight,
+                    color: LuxTokens.text,
+                    size: 15,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLight(BuildContext context) {
     return GestureDetector(
       onTapDown: (_) => setState(() => _bosilgan = true),
       onTapUp: (_) => setState(() => _bosilgan = false),
@@ -400,6 +562,30 @@ class _SectionTitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    if (isDark) {
+      // PREMIUM: oltin chiziq + katta harfli, keng oraliqli sarlavha.
+      // Yonida xira "VOSITALAR" — bu bo'lim nima ekanini izohlaydi va
+      // tipografik muvozanat beradi (yakka so'z yolg'iz qolmaydi).
+      return Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Container(
+            width: 3,
+            height: 14,
+            decoration: BoxDecoration(
+              gradient: LuxTokens.goldGradient,
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+          const SizedBox(width: 10),
+          Text(title.toUpperCase(), style: LuxTokens.sectionTitle),
+          const SizedBox(width: 10),
+          Container(width: 1, height: 12, color: LuxTokens.border),
+          const SizedBox(width: 10),
+          Text('VOSITALAR'.tr, style: LuxTokens.sectionTitleMuted),
+        ],
+      );
+    }
     return Row(
       children: [
         Container(
@@ -417,11 +603,11 @@ class _SectionTitle extends StatelessWidget {
         const SizedBox(width: 9),
         Text(
           title,
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 17,
             fontWeight: FontWeight.w800,
             letterSpacing: -0.3,
-            color: isDark ? Colors.white : const Color(0xFF0F172A),
+            color: Color(0xFF0F172A),
           ),
         ),
       ],
@@ -447,49 +633,173 @@ class _DailyBtn extends StatelessWidget {
   final VoidCallback onTap;
   final String? bgImage;
 
+  /// PREMIUM ko'rinish uchun qo'shimcha ma'lumot (dark rejimda ishlatiladi).
+  /// [stat] — o'ng-yuqoridagi kichik yorliq (masalan "68%", "2/5").
+  /// [value] — kartaning markazidagi ASOSIY son (oltin rangda).
+  /// [caption] — [value] ostidagi izoh (masalan "/ 2100 KCAL").
+  /// Berilmasa, o'sha element chizilmaydi — karta baribir to'g'ri ko'rinadi.
+  final String? stat;
+  final String? value;
+  final String? caption;
+  final bool statAccent;
+
   const _DailyBtn({
     required this.icon,
     required this.label,
     required this.color,
     required this.onTap,
     this.bgImage,
+    this.stat,
+    this.value,
+    this.caption,
+    this.statAccent = false,
   });
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    // Bo'lim rangini to'qlashtiramiz — oq matn ustida kontrast yetarli bo'lsin.
-    final hsl = HSLColor.fromColor(color);
-    final tasmaRang = hsl
-        .withLightness((hsl.lightness * 0.55).clamp(0.18, 0.34))
-        .withSaturation((hsl.saturation * 0.85).clamp(0.0, 0.75))
-        .toColor();
+    if (isDark) return _buildLux(context);
+    return _buildLight(context);
+  }
+
+  /// PREMIUM karta: rasm YO'Q, faqat tipografiya va bitta ikon.
+  ///
+  /// NEGA rasmsiz: 3D render rasmlar rangli va "o'yinchoqdek" ko'rinadi,
+  /// qora+oltin qat'iy uslubga zid. Bu yerda ma'lumot (son) asosiy —
+  /// foydalanuvchi bir qarashda holatini ko'radi, keyin bosadi.
+  Widget _buildLux(BuildContext context) {
+    return Material(
+      color: LuxTokens.surface,
+      borderRadius: BorderRadius.circular(LuxTokens.radiusMd),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(LuxTokens.radiusMd),
+        child: Ink(
+          // 142: ichkarida ikon(28) + son(22, serif) + izoh + ajratgich +
+          // nom(11.5) va oraliqlar joylashadi. Kamroq bo'lsa overflow bo'ladi.
+          height: 142,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(LuxTokens.radiusMd),
+            border: Border.all(color: LuxTokens.border),
+          ),
+          padding: const EdgeInsets.all(11),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  // Ikon — oltin ramkali kvadrat, kartaning "shaxsiyati".
+                  Container(
+                    width: 28,
+                    height: 28,
+                    decoration: BoxDecoration(
+                      color: LuxTokens.gold.withValues(alpha: 0.10),
+                      borderRadius: BorderRadius.circular(9),
+                      border: Border.all(
+                        color: LuxTokens.gold.withValues(alpha: 0.32),
+                      ),
+                    ),
+                    child: Icon(icon, color: LuxTokens.goldSoft, size: 14),
+                  ),
+                  const Spacer(),
+                  if (stat != null)
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 7,
+                        vertical: 3,
+                      ),
+                      decoration: LuxTokens.chip(accent: statAccent),
+                      child: Text(
+                        stat!,
+                        style: LuxTokens.label(
+                          color: statAccent
+                              ? LuxTokens.goldSoft
+                              : LuxTokens.textMuted,
+                          size: 8.5,
+                          weight: FontWeight.w600,
+                          spacing: 0.6,
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+              const Spacer(),
+              if (value != null)
+                // FittedBox: uzun qiymat ("1,105 ming") qirqilmasin, balki
+                // karta eniga sig'adigan darajada kichraysin. Ellipsis
+                // ma'lumotni yo'qotardi, bu esa saqlaydi.
+                FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    value!,
+                    maxLines: 1,
+                    style: LuxTokens.value(size: 22),
+                  ),
+                ),
+              if (caption != null) ...[
+                const SizedBox(height: 3),
+                Text(
+                  caption!.toUpperCase(),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: LuxTokens.label(size: 7.5, spacing: 1.3),
+                ),
+              ],
+              const SizedBox(height: 9),
+              // Ajratuvchi chiziq — nom qismini ma'lumotdan ajratadi.
+              Container(height: 1, color: LuxTokens.border),
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      label,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontFamily: LuxTokens.body,
+                        color: LuxTokens.text,
+                        fontSize: 11.5,
+                        fontWeight: FontWeight.w500,
+                        letterSpacing: -0.1,
+                      ),
+                    ),
+                  ),
+                  const Icon(
+                    LucideIcons.chevronRight,
+                    size: 13,
+                    color: LuxTokens.textFaint,
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLight(BuildContext context) {
+    // YAGONA rang — barcha kartalar pastki tasmasi BIR XIL ko'k-zangori.
+    const tasmaRang = Color(0xFF1E40AF);
 
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(18),
       child: Container(
-        // 3 ustunda karta eni ~110px. Balandlik 138 — rasm uchun
-        // ~100px joy qoladi (tasma 30, chekka 8). BoxFit.contain
-        // ishlatilgani uchun rasm balandligi yetarli bo'lishi kerak,
-        // aks holda rasm kichrayib qoladi.
         height: 138,
         decoration: BoxDecoration(
-          // Rasmlar shaffof fonli va to'q rangli (3D render), shuning
-          // uchun qorong'i rejimda ham ochroq fon beriladi — aks holda
-          // qora predmet qora fonda ko'rinmay qoladi.
-          color: isDark ? const Color(0xFF334155) : Colors.white,
+          color: Colors.white,
           borderRadius: BorderRadius.circular(18),
           boxShadow: [
-            // Ikki qavatli soya: yumshoq keng + aniq yaqin.
-            // Kartani fondan "ko'tarib" turadi.
             BoxShadow(
-              color: Colors.black.withValues(alpha: isDark ? 0.45 : 0.13),
+              color: Colors.black.withValues(alpha: 0.13),
               blurRadius: 18,
               offset: const Offset(0, 8),
             ),
             BoxShadow(
-              color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.05),
+              color: Colors.black.withValues(alpha: 0.05),
               blurRadius: 3,
               offset: const Offset(0, 1),
             ),
@@ -499,20 +809,8 @@ class _DailyBtn extends StatelessWidget {
         child: Stack(
           fit: StackFit.expand,
           children: [
-            // 1-qatlam: rasm.
-            //
-            // Rasmlar SHAFFOF fonli PNG (`scripts/rasm_fonini_tozalash.py`
-            // bilan tayyorlangan). Avval JPG edi va har birining foni
-            // turlicha (oq, kulrang, kulrang-ko'k) bo'lgani uchun kartada
-            // to'rtburchak "dog'" bo'lib ko'rinardi. Endi faqat tasvirning
-            // o'zi qoladi, fon kartaning o'z rangi bilan yaxlitlashadi.
-            //
-            // BoxFit.contain (cover EMAS): cover rasmni kattalashtirib
-            // chetlarini QIRQIB tashlaydi.
             if (bgImage != null)
               Padding(
-                // Nom tasmasi va karta chetlariga moslangan optimallashtirilgan padding:
-                // rasm kartani maksimal to'ldiradi va ortiqcha bo'shliqlar yo'qoladi.
                 padding: const EdgeInsets.fromLTRB(4, 10, 4, 30),
                 child: Image.asset(
                   bgImage!,
@@ -525,8 +823,6 @@ class _DailyBtn extends StatelessWidget {
                 color: color.withValues(alpha: 0.12),
                 child: Center(child: Icon(icon, color: color, size: 32)),
               ),
-
-            // 2-qatlam: yuqori chapda rangli ikon nishoni
             Positioned(
               top: 7,
               left: 7,
@@ -546,24 +842,13 @@ class _DailyBtn extends StatelessWidget {
                 child: Icon(icon, color: Colors.white, size: 13),
               ),
             ),
-
-            // 3-qatlam: pastda to'q rangli tasma + nomi
             Positioned(
               left: 0,
               right: 0,
               bottom: 0,
               child: Container(
                 padding: const EdgeInsets.fromLTRB(9, 7, 9, 8),
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      tasmaRang.withValues(alpha: 0.90),
-                      tasmaRang,
-                    ],
-                  ),
-                ),
+                decoration: const BoxDecoration(color: tasmaRang),
                 child: Text(
                   label,
                   maxLines: 1,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'lux_tokens.dart';
 
 /// iOS-style frosted glass dizayn tokenlari.
 abstract final class GlassTokens {
@@ -16,10 +17,10 @@ abstract final class GlassTokens {
 
   static List<Color> meshColorsLight(bool isDark) => isDark
       ? const [
-          Color(0xFF0B0B1A),
-          Color(0xFF151530),
-          Color(0xFF1E1040),
-          Color(0xFF0D2847),
+          LuxTokens.bg,
+          Color(0xFF101012),
+          Color(0xFF161614),
+          Color(0xFF0D0D0E),
         ]
       : const [
           Color(0xFFEEF2FF),
@@ -30,10 +31,10 @@ abstract final class GlassTokens {
 
   static List<Color> orbColorsLight(bool isDark) => isDark
       ? [
-          const Color(0xFF6366F1),
-          const Color(0xFFA855F7),
-          const Color(0xFF06B6D4),
-          const Color(0xFFEC4899),
+          LuxTokens.gold,
+          LuxTokens.goldSoft,
+          LuxTokens.goldDim,
+          const Color(0xFF8A6E1A),
         ]
       : [
           const Color(0xFF6366F1),
@@ -48,12 +49,12 @@ abstract final class GlassTokens {
   }) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     // Solid fill for panels instead of glass
-    return isDark ? const Color(0xFF1E293B) : const Color(0xFFFFFFFF);
+    return isDark ? LuxTokens.surface : const Color(0xFFFFFFFF);
   }
 
   static Color glassBorder(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    return isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0);
+    return isDark ? LuxTokens.border : const Color(0xFFE2E8F0);
   }
 
   static Color glassHighlight(BuildContext context) {
@@ -63,13 +64,13 @@ abstract final class GlassTokens {
   static Color primaryText(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     // Light rejimda — TIM QORA (maksimal o'qilishi uchun)
-    return isDark ? const Color(0xFFF8FAFC) : const Color(0xFF000000);
+    return isDark ? LuxTokens.text : const Color(0xFF000000);
   }
 
   static Color secondaryText(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     // Light rejimda — qora-ga yaqin to'q kulrang (grey emas)
-    return isDark ? const Color(0xFFCBD5E1) : const Color(0xFF2A2A2A);
+    return isDark ? LuxTokens.textMuted : const Color(0xFF2A2A2A);
   }
 
   static List<BoxShadow> glassShadow(BuildContext context) => [

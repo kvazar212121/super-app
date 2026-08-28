@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../theme/lux_tokens.dart';
 
 /// Orqa fonda rangli "orb"lar — glass effekt uchun asos (yengil versiya).
 class MeshBackground extends StatelessWidget {
@@ -12,16 +13,17 @@ class MeshBackground extends StatelessWidget {
     if (!isDark) {
       return const ColoredBox(color: Colors.white);
     }
-    // Dark rejim — qorong'i gradient (rasm ishlatilmaydi).
+    // Dark rejim — deyarli tekis qora. Premium ko'rinishda fon "jim"
+    // turishi kerak, e'tibor kartalarga va oltin urg'ularga qaratiladi.
     return const DecoratedBox(
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
           colors: [
-            Color(0xFF0B0B1A),
-            Color(0xFF151530),
-            Color(0xFF0D2847),
+            Color(0xFF0C0C0D),
+            LuxTokens.bg,
+            Color(0xFF08080A),
           ],
         ),
       ),

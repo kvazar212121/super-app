@@ -304,7 +304,8 @@ class MyApp extends StatelessWidget {
               locale: LocaleController.instance.locale,
               theme: AppTheme.lightTheme,
               darkTheme: AppTheme.darkTheme,
-              themeMode: ThemeMode.light,
+              // Yangi "qora + oltin" premium ko'rinish — doim dark rejim.
+              themeMode: ThemeMode.dark,
               home: const SplashScreen(),
             );
           },

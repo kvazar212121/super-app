@@ -80,7 +80,9 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = context.watch<AppProvider>().isDarkMode;
+    // Fon TEMADAN (AppProvider.isDarkMode emas) — main.dart da tema
+    // majburan dark, bayroq esa false bo'lib qolishi mumkin.
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Stack(
       fit: StackFit.expand,

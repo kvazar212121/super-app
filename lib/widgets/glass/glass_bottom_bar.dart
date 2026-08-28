@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../theme/glass_tokens.dart';
+import '../../theme/lux_tokens.dart';
 
 class GlassBottomBar extends StatelessWidget {
   final int currentIndex;
@@ -166,9 +167,10 @@ class _AiOrbState extends State<_AiOrb> with SingleTickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    const c1 = Color(0xFF6366F1); // indigo
-    const c2 = Color(0xFF22D3EE); // cyan — "AI" ohangi
-    const accent = Color(0xFF3B82F6);
+    const c1 = Color(0xFFC9A227); // oltin
+    const c2 = Color(0xFFE3C766); // ochiq oltin — porlash
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final accent = isDark ? LuxTokens.goldSoft : const Color(0xFF3B82F6);
     final inactive = GlassTokens.secondaryText(context);
 
     return Material(
@@ -232,10 +234,11 @@ class _AiOrbState extends State<_AiOrb> with SingleTickerProviderStateMixin {
               child: Text(
                 widget.item.label,
                 style: TextStyle(
-                  fontSize: 10.5,
+                  fontFamily: isDark ? LuxTokens.body : null,
+                  fontSize: 10,
                   fontWeight: widget.selected
-                      ? FontWeight.w700
-                      : FontWeight.w600,
+                      ? FontWeight.w600
+                      : FontWeight.w500,
                   color: widget.selected ? accent : inactive,
                 ),
               ),
@@ -260,9 +263,15 @@ class _NavButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Tanlangan element — tema asosiy KO'KI (binafsha emas), tugmalar bilan bir xil
-    const accent = Color(0xFF3B82F6);
-    final activeColor = accent.withValues(alpha: 0.12);
+    // Tanlangan element: dark rejimda OLTIN, light rejimda eski ko'k.
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final accent = isDark ? LuxTokens.goldSoft : const Color(0xFF3B82F6);
+    // Dark (premium) rejimda tanlanganlik FAQAT rang bilan ko'rsatiladi —
+    // orqa fon kapsulasi yo'q. Qora fonda rangli plashka og'ir ko'rinadi va
+    // panelning tekis, tinch ko'rinishini buzadi.
+    final activeColor = isDark
+        ? Colors.transparent
+        : accent.withValues(alpha: 0.12);
     final inactive = GlassTokens.secondaryText(context);
 
     return Material(
@@ -292,8 +301,9 @@ class _NavButton extends StatelessWidget {
                 child: Text(
                   item.label,
                   style: TextStyle(
-                    fontSize: 10.5,
-                    fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+                    fontFamily: isDark ? LuxTokens.body : null,
+                    fontSize: 10,
+                    fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
                     color: selected ? accent : inactive,
                   ),
                 ),

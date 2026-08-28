@@ -3,10 +3,12 @@ import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../config/app_config.dart';
 import '../services/api_service.dart';
 import '../theme/glass_tokens.dart';
+import '../theme/lux_tokens.dart';
 import '../screens/promotion_map_screen.dart';
 import '../l10n/locale_controller.dart';
 
@@ -175,14 +177,21 @@ class _HomePromoSectionState extends State<HomePromoSection>
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     if (_isLoading) {
-      return const SizedBox(
-        height: 130,
-        child: Center(child: CircularProgressIndicator()),
+      return SizedBox(
+        height: isDark ? 190 : 130,
+        child: const Center(child: CircularProgressIndicator()),
       );
     }
 
     if (_promos.isEmpty) return const SizedBox.shrink();
+
+    // PREMIUM (dark): bitta katta "hero" karta — ekran eniga to'liq,
+    // ichida kategoriya chipi, chegirma nishoni va KO'RISH tugmasi.
+    if (isDark) {
+      return _LuxPromoCarousel(promos: _promos);
+    }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -333,6 +342,260 @@ class _HomePromoSectionState extends State<HomePromoSection>
           }).toList(),
         ),
       ],
+    );
+  }
+}
+
+/// PREMIUM (qora+oltin) aksiya karuseli.
+///
+/// Farqi eski karuseldan: karta EKRAN ENIGA to'liq (viewportFraction 1.0),
+/// balandroq (180) va pastida nuqtali indikator turadi. Bu "hero" bloki —
+/// bosh sahifadagi eng katta vizual urg'u, shuning uchun yagona va katta
+/// bo'lishi kerak, yonma-yon qirqilgan kartalar emas.
+class _LuxPromoCarousel extends StatefulWidget {
+  final List<_PromoItem> promos;
+  const _LuxPromoCarousel({required this.promos});
+
+  @override
+  State<_LuxPromoCarousel> createState() => _LuxPromoCarouselState();
+}
+
+class _LuxPromoCarouselState extends State<_LuxPromoCarousel> {
+  int _index = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        CarouselSlider(
+          options: CarouselOptions(
+            height: 180,
+            viewportFraction: 1.0,
+            enlargeCenterPage: false,
+            autoPlay: widget.promos.length > 1,
+            autoPlayInterval: const Duration(seconds: 5),
+            autoPlayAnimationDuration: const Duration(milliseconds: 700),
+            onPageChanged: (i, _) => setState(() => _index = i),
+          ),
+          items: widget.promos
+              .map((p) => _LuxPromoCard(promo: p))
+              .toList(),
+        ),
+        if (widget.promos.length > 1) ...[
+          const SizedBox(height: 10),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: List.generate(widget.promos.length, (i) {
+              final active = i == _index;
+              return AnimatedContainer(
+                duration: const Duration(milliseconds: 250),
+                margin: const EdgeInsets.symmetric(horizontal: 3),
+                width: active ? 18 : 6,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: active ? LuxTokens.gold : LuxTokens.border,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              );
+            }),
+          ),
+        ],
+      ],
+    );
+  }
+}
+
+class _LuxPromoCard extends StatelessWidget {
+  final _PromoItem promo;
+  const _LuxPromoCard({required this.promo});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => PromotionMapScreen(
+            title: promo.title.tr,
+            subtitle: promo.subtitle.tr,
+            badge: promo.badge.tr,
+            colors: promo.colors,
+          ),
+        ),
+      ),
+      child: Container(
+        width: double.infinity,
+        decoration: BoxDecoration(
+          color: LuxTokens.surface,
+          borderRadius: BorderRadius.circular(LuxTokens.radiusLg),
+          border: Border.all(color: LuxTokens.border),
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            if (promo.imageUrl != null)
+              CachedNetworkImage(
+                imageUrl: promo.imageUrl!,
+                fit: BoxFit.cover,
+                memCacheWidth: 900,
+                maxWidthDiskCache: 1200,
+                fadeInDuration: const Duration(milliseconds: 150),
+                errorWidget: (_, _, _) => const SizedBox.shrink(),
+              )
+            else
+              DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [promo.colors[0], promo.colors[1]],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                ),
+              ),
+            // Pastdan yuqoriga qorayuvchi parda — matn HAR QANDAY rasm
+            // ustida o'qiladi. Yon tomonlarga tegmaydi, shuning uchun
+            // rasm o'zi ham ko'rinib turadi.
+            const DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.bottomCenter,
+                  end: Alignment.topCenter,
+                  colors: [
+                    Color(0xE60A0A0B),
+                    Color(0x800A0A0B),
+                    Color(0x1A0A0A0B),
+                  ],
+                  stops: [0.0, 0.55, 1.0],
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      // Kategoriya chipi (chapda) — nimaga oid aksiya ekani.
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 5,
+                        ),
+                        decoration: LuxTokens.chip(),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(
+                              LucideIcons.sparkles,
+                              size: 11,
+                              color: LuxTokens.goldSoft,
+                            ),
+                            const SizedBox(width: 5),
+                            Flexible(
+                              child: Text(
+                                promo.title.tr.toUpperCase(),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: LuxTokens.label(
+                                  color: LuxTokens.text,
+                                  size: 8.5,
+                                  weight: FontWeight.w600,
+                                  spacing: 1.8,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const Spacer(),
+                      // Chegirma nishoni (o'ngda) — oltin, eng ko'zga tashlanadigan.
+                      if (promo.badge.trim().isNotEmpty)
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 6,
+                          ),
+                          decoration: BoxDecoration(
+                            gradient: LuxTokens.goldGradient,
+                            borderRadius: BorderRadius.circular(999),
+                          ),
+                          child: Text(
+                            promo.badge.tr,
+                            // Chegirma raqami — tekis raqamli uslub.
+                            style: LuxTokens.value(
+                              color: const Color(0xFF14100A),
+                              size: 13,
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                  const Spacer(),
+                  Text(
+                    'MAXSUS TAKLIF'.tr,
+                    style: LuxTokens.label(
+                      color: LuxTokens.textMuted,
+                      size: 8.5,
+                      spacing: 2.6,
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+                  Text(
+                    promo.title.tr,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    // Cormorant Garamond — nafis serif sarlavha.
+                    style: LuxTokens.heading(size: 27),
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          promo.subtitle.tr,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            fontFamily: LuxTokens.body,
+                            color: LuxTokens.textMuted,
+                            fontSize: 10.5,
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      // KO'RISH — oq kapsula. Qora fonda eng yuqori kontrast,
+                      // shuning uchun asosiy harakat sifatida ishlatiladi.
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 18,
+                          vertical: 9,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(999),
+                        ),
+                        child: Text(
+                          'KO\'RISH'.tr,
+                          style: LuxTokens.label(
+                            color: const Color(0xFF0A0A0B),
+                            size: 10,
+                            weight: FontWeight.w700,
+                            spacing: 1.4,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

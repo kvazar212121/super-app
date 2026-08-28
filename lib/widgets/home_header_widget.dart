@@ -5,6 +5,7 @@ import '../providers/app_provider.dart';
 import '../screens/notifications_screen.dart';
 import '../screens/profile_screen.dart';
 import '../theme/glass_tokens.dart';
+import '../theme/lux_tokens.dart';
 import 'glass/glass_surface.dart';
 import 'daily_utilities_widget.dart';
 
@@ -58,6 +59,62 @@ class _GlassIconButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    if (!isDark) return _buildLight(context);
+
+    // PREMIUM (dark): qora fon, oltin ramka, 46px kvadrat kapsula.
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        SizedBox(
+          width: 46,
+          height: 46,
+          child: Material(
+            color: LuxTokens.surface,
+            borderRadius: BorderRadius.circular(14),
+            child: InkWell(
+              onTap: onTap,
+              borderRadius: BorderRadius.circular(14),
+              child: Ink(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: LuxTokens.border),
+                ),
+                child: Icon(icon, color: LuxTokens.text, size: 19),
+              ),
+            ),
+          ),
+        ),
+        if (badgeCount > 0)
+          Positioned(
+            right: -3,
+            top: -3,
+            child: Container(
+              padding: const EdgeInsets.all(3),
+              decoration: BoxDecoration(
+                // Premium palitrada qizil o'rniga OLTIN nishon —
+                // qora fonda ogohlantirishdek emas, urg'udek ko'rinadi.
+                gradient: LuxTokens.goldGradient,
+                shape: BoxShape.circle,
+                border: Border.all(color: LuxTokens.bg, width: 1.5),
+              ),
+              constraints: const BoxConstraints(minWidth: 17, minHeight: 17),
+              child: Text(
+                badgeCount > 9 ? '9+' : badgeCount.toString(),
+                style: const TextStyle(
+                  color: Color(0xFF14100A),
+                  fontSize: 9,
+                  fontWeight: FontWeight.w800,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildLight(BuildContext context) {
     return Stack(
       clipBehavior: Clip.none,
       children: [

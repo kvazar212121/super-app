@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../../providers/app_provider.dart';
 import '../../theme/glass_tokens.dart';
 import '../../theme/app_theme.dart';
 import 'mesh_background.dart';
@@ -72,7 +70,14 @@ class GlassScaffold extends StatelessWidget {
       );
     }
 
-    final isDark = forceDark || context.watch<AppProvider>().isDarkMode;
+    // Fon rangi TEMADAN olinadi (AppProvider.isDarkMode dan emas).
+    //
+    // NEGA: ilova temasi `main.dart` da ThemeMode.dark bilan majburan
+    // qorong'i qilingan, lekin `isDarkMode` bayrog'i false qolgan edi.
+    // Natijada matn oq (temadan), fon esa OQ (bayroqdan) bo'lib, ekran
+    // o'qib bo'lmas holga kelardi. Tema yagona haqiqat manbai bo'lishi kerak.
+    final isDark =
+        forceDark || Theme.of(context).brightness == Brightness.dark;
 
     final scaffold = Stack(
       fit: StackFit.expand,

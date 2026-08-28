@@ -4,6 +4,7 @@ import '../models/service_hub_kind.dart';
 import '../services/feature_service.dart';
 import '../l10n/locale_controller.dart';
 import '../theme/glass_tokens.dart';
+import '../theme/lux_tokens.dart';
 import '../widgets/glass/glass_scaffold.dart';
 import 'service_hub_screen.dart';
 
@@ -87,10 +88,11 @@ class _AllCategoriesScreenState extends State<AllCategoriesScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return GlassScaffold(
       showBackButton: widget.showBackButton,
       body: Container(
-        decoration: BoxDecoration(color: Colors.transparent),
+        decoration: const BoxDecoration(color: Colors.transparent),
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
           child: Column(
@@ -118,10 +120,15 @@ class _AllCategoriesScreenState extends State<AllCategoriesScreen> {
                         padding: const EdgeInsets.fromLTRB(16, 8, 16, 90),
                         itemCount: _groups.length,
                         separatorBuilder: (context, index) => Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 24),
+                          padding: const EdgeInsets.symmetric(vertical: 20),
                           child: Divider(
-                            color: GlassTokens.primaryText(context),
+                            // Premium rejimda ajratgich NOZIK bo'ladi: qora
+                            // fonda oq qalin chiziq ko'zni charchatadi.
+                            color: isDark
+                                ? LuxTokens.border
+                                : GlassTokens.primaryText(context),
                             thickness: 1,
+                            height: 1,
                           ),
                         ),
                         itemBuilder: (context, index) {
@@ -129,16 +136,40 @@ class _AllCategoriesScreenState extends State<AllCategoriesScreen> {
                           return Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
-                                group.title.tr,
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w900,
-                                  color: GlassTokens.primaryText(context),
-                                  letterSpacing: -0.3,
+                              // Bo'lim sarlavhasi: premium rejimda katta
+                              // harfli, keng oraliqli (Syne) — bosh
+                              // sahifadagi "KUNDALIK" bilan bir xil uslub.
+                              if (isDark)
+                                Row(
+                                  children: [
+                                    Container(
+                                      width: 3,
+                                      height: 13,
+                                      decoration: BoxDecoration(
+                                        gradient: LuxTokens.goldGradient,
+                                        borderRadius: BorderRadius.circular(2),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 10),
+                                    Expanded(
+                                      child: Text(
+                                        group.title.tr.toUpperCase(),
+                                        style: LuxTokens.sectionTitle,
+                                      ),
+                                    ),
+                                  ],
+                                )
+                              else
+                                Text(
+                                  group.title.tr,
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w900,
+                                    color: GlassTokens.primaryText(context),
+                                    letterSpacing: -0.3,
+                                  ),
                                 ),
-                              ),
-                              const SizedBox(height: 16),
+                              const SizedBox(height: 14),
                               GridView.builder(
                                 shrinkWrap: true,
                                 physics: const NeverScrollableScrollPhysics(),
@@ -200,10 +231,26 @@ class _AllCategoriesScreenState extends State<AllCategoriesScreen> {
                                       ),
                                       // Rasm butun kartani to'ldiradi, yozuv
                                       // pastda gradient ustida (poster uslubi).
-                                      child: ClipRRect(
-                                        borderRadius: BorderRadius.circular(
-                                          GlassTokens.radiusMd,
+                                      child: Container(
+                                        // DIQQAT: `clipBehavior` ishlatilganda
+                                        // `decoration` NULL bo'lmasligi kerak
+                                        // (Flutter assert). Shuning uchun light
+                                        // rejimda ham decoration beriladi,
+                                        // faqat chegarasiz.
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(
+                                            GlassTokens.radiusMd,
+                                          ),
+                                          // Premium rejimda karta nozik chegara
+                                          // oladi: rasmlarning oq foni qora
+                                          // sahifa bilan "qo'shilib" ketmasin.
+                                          border: isDark
+                                              ? Border.all(
+                                                  color: LuxTokens.border,
+                                                )
+                                              : null,
                                         ),
+                                        clipBehavior: Clip.antiAlias,
                                         child: Stack(
                                           fit: StackFit.expand,
                                           children: [

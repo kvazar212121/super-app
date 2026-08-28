@@ -4,6 +4,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../services/api_service.dart';
 import '../theme/glass_tokens.dart';
 import 'weather_currency_modals.dart';
+import '../theme/lux_tokens.dart';
 import '../l10n/locale_controller.dart';
 
 class DailyUtilitiesWidget extends StatefulWidget {
@@ -63,10 +64,26 @@ class _DailyUtilitiesWidgetState extends State<DailyUtilitiesWidget> {
     return Row(
       children: [
         Expanded(child: _buildWeatherCard()),
-        const SizedBox(width: 6),
+        const SizedBox(width: 8),
         Expanded(child: _buildCurrencyCard()),
       ],
     );
+  }
+
+  /// Qiymat matni uslubi — dark (premium) rejimda oq va yirikroq.
+  TextStyle _valueStyle(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return isDark
+        ? const TextStyle(
+            fontFamily: LuxTokens.body,
+            color: LuxTokens.text,
+            fontSize: 10.5,
+            fontWeight: FontWeight.w600,
+          )
+        : TextStyle(
+            color: GlassTokens.secondaryText(context),
+            fontSize: 10,
+          );
   }
 
   Widget _buildWeatherCard() {
@@ -92,10 +109,7 @@ class _DailyUtilitiesWidgetState extends State<DailyUtilitiesWidget> {
         title: 'Ob-havo'.tr,
         customSubtitle: Text(
           txt,
-          style: TextStyle(
-            color: GlassTokens.secondaryText(context),
-            fontSize: 10,
-          ),
+          style: _valueStyle(context),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),
@@ -124,11 +138,21 @@ class _DailyUtilitiesWidgetState extends State<DailyUtilitiesWidget> {
       child: _BaseCard(
         icon: LucideIcons.circleDollarSign,
         color: Colors.greenAccent,
-        title: 'Valyuta kurslari'.tr,
+        title: 'Valyuta kursi'.tr,
         customSubtitle: AnimatedSwitcher(
           duration: const Duration(milliseconds: 500),
           switchInCurve: Curves.easeOut,
           switchOutCurve: Curves.easeIn,
+          // layoutBuilder: eski va yangi matn almashinuvda USTMA-UST
+          // tushmasin. Standart layout ikkalasini markazda joylashtiradi va
+          // qisqa lahzada matn "ikkilanib" ko'rinadi.
+          layoutBuilder: (current, previous) => Stack(
+            alignment: Alignment.centerLeft,
+            children: [
+              ...previous,
+              if (current != null) current,
+            ],
+          ),
           transitionBuilder: (Widget child, Animation<double> animation) {
             return FadeTransition(
               opacity: animation,
@@ -144,10 +168,7 @@ class _DailyUtilitiesWidgetState extends State<DailyUtilitiesWidget> {
           child: Text(
             txt,
             key: ValueKey<int>(_currentCurrencyIndex),
-            style: TextStyle(
-              color: GlassTokens.secondaryText(context),
-              fontSize: 10,
-            ),
+            style: _valueStyle(context),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
@@ -221,16 +242,70 @@ class _BaseCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    if (!isDark) return _buildLight(context);
+    // PREMIUM (dark): chapda oltin ramkali ikon, o'ngda mayda katta harfli
+    // sarlavha + qiymat. Kapsula shakli — yuqoridagi tugmalar bilan bir xil.
+    return Container(
+      height: 46,
+      padding: const EdgeInsets.symmetric(horizontal: 10),
+      decoration: BoxDecoration(
+        color: LuxTokens.surface,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: LuxTokens.border),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 24,
+            height: 24,
+            decoration: BoxDecoration(
+              color: LuxTokens.gold.withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(7),
+              border: Border.all(color: LuxTokens.gold.withValues(alpha: 0.35)),
+            ),
+            child: Icon(icon, color: LuxTokens.goldSoft, size: 13),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  title.toUpperCase(),
+                  style: LuxTokens.label(size: 7.5, spacing: 1.5),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 1),
+                DefaultTextStyle.merge(
+                  style: const TextStyle(
+                    fontFamily: LuxTokens.body,
+                    color: LuxTokens.text,
+                    fontSize: 10.5,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  child: customSubtitle,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Eski light ko'rinish — o'zgarishsiz saqlanadi.
+  Widget _buildLight(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 7),
       decoration: BoxDecoration(
-        color: isDark
-            ? Color.lerp(const Color(0xFF1E293B), color, 0.15)
-            : Color.lerp(Colors.white, color, 0.1),
+        color: Color.lerp(Colors.white, color, 0.1),
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: isDark ? 0.35 : 0.30),
+            color: Colors.black.withValues(alpha: 0.30),
             blurRadius: 16,
             offset: const Offset(0, 6),
           ),
@@ -238,17 +313,6 @@ class _BaseCard extends StatelessWidget {
       ),
       child: Row(
         children: [
-          /* Icon removed to save space
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: color,
-              shape: BoxShape.circle,
-            ),
-            child: Icon(icon, color: color, size: 18),
-          ),
-          const SizedBox(width: 8),
-          */
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,

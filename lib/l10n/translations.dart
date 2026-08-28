@@ -20,6 +20,16 @@ const Map<String, String> kTranslationsRu = {
   // ── Bosh sahifa kartalari ──
   'Aqlli savdo': 'Умные покупки',
   'Barcha xizmatlar': 'Все услуги',
+  // ── Premium (qora+oltin) bosh sahifa ──
+  'VOSITALAR': 'ИНСТРУМЕНТЫ',
+  'MAXSUS TAKLIF': 'СПЕЦПРЕДЛОЖЕНИЕ',
+  "KO'RISH": 'СМОТРЕТЬ',
+  'Valyuta kursi': 'Курс валют',
+  'keyingi': 'следующий',
+  'xarajat': 'расход',
+  'uyg\'onish': 'подъём',
+  'savdo ro\'yxati': 'список покупок',
+  '5 mashq': '5 упражнений',
   'Usta, tozalash, salon va boshqalar': 'Мастера, уборка, салоны и другое',
   'Kundalik': 'Каждый день',
   // 3 ustunli tartibda joy tor — qisqa nomlar ishlatiladi.
