@@ -16,8 +16,10 @@ class WeatherService {
   bool isLoading = false;
   bool hasData = false;
 
-  Future<void> prefetchWeather() async {
-    if (isLoading || hasData) return;
+  /// [force] — yangilash tugmasi bosilganda true beriladi.
+  Future<void> prefetchWeather({bool force = false}) async {
+    if (isLoading) return;
+    if (hasData && !force) return;
     isLoading = true;
     try {
       final api = ApiService();

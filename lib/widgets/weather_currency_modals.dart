@@ -26,7 +26,7 @@ class _WeatherModalState extends State<WeatherModal> {
 
   Future<void> _fetchData() async {
     setState(() => _isRefreshing = true);
-    await _weatherService.prefetchWeather();
+    await _weatherService.prefetchWeather(force: true);
     if (mounted) {
       setState(() => _isRefreshing = false);
     }
