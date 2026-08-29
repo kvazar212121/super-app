@@ -1,12 +1,8 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
-
-import '../theme/glass_tokens.dart';
 import '../theme/lux_tokens.dart';
 
-/// HubServis brend logotipi va nomi — splash, login va boshqa joylarda.
-class HubServisBrand extends StatelessWidget {
+/// HubServis brend logotipi ("HS" 3D Oltin Monogram) va nomi — kirishda va login ekranida.
+class HubServisBrand extends StatefulWidget {
   final double logoSize;
   final double titleSize;
   final bool showTagline;
@@ -20,94 +16,167 @@ class HubServisBrand extends StatelessWidget {
     this.compact = false,
   });
 
-  static const _primary = Color(0xFFC9A227);
-  static const _accent = Color(0xFFE3C766);
-  static const _violet = Color(0xFFE3C766);
+  @override
+  State<HubServisBrand> createState() => _HubServisBrandState();
+}
+
+class _HubServisBrandState extends State<HubServisBrand>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _shimmerController;
+
+  @override
+  void initState() {
+    super.initState();
+    _shimmerController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 2200),
+    )..repeat();
+  }
+
+  @override
+  void dispose() {
+    _shimmerController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final radius = logoSize * 0.32;
+    final radius = widget.logoSize * 0.32;
 
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        ClipRRect(
-          borderRadius: BorderRadius.circular(radius),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-            child: Container(
-              width: logoSize,
-              height: logoSize,
+        // 1. "HS" REAL 3D OLTIN LOGO NISHONI (JONLI YALTIRASH BILAN)
+        AnimatedBuilder(
+          animation: _shimmerController,
+          builder: (context, child) {
+            final t = _shimmerController.value;
+            return Container(
+              width: widget.logoSize,
+              height: widget.logoSize,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(radius),
                 gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    _primary.withValues(alpha: isDark ? 0.35 : 0.18),
-                    _violet.withValues(alpha: isDark ? 0.25 : 0.12),
+                  begin: Alignment(-1.5 + (t * 3.0), -1.0),
+                  end: Alignment(-0.5 + (t * 3.0), 1.0),
+                  colors: const [
+                    Color(0xFFFFFBEB),
+                    Color(0xFFFDE68A),
+                    Color(0xFFB8921F),
+                    Color(0xFFFFFBEB),
                   ],
+                  stops: const [0.0, 0.45, 0.55, 1.0],
                 ),
                 border: Border.all(
-                  color: Colors.white.withValues(alpha: isDark ? 0.2 : 0.55),
-                  width: 1.5,
+                  color: LuxTokens.gold,
+                  width: 2.0,
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: _primary.withValues(alpha: isDark ? 0.35 : 0.22),
-                    blurRadius: 28,
-                    offset: const Offset(0, 10),
+                    color: LuxTokens.gold.withValues(alpha: 0.35),
+                    blurRadius: 24,
+                    offset: const Offset(0, 8),
                   ),
                 ],
               ),
               child: Center(
-                child: ShaderMask(
-                  shaderCallback: (bounds) => const LinearGradient(
-                    colors: [_primary, _accent, _violet],
-                  ).createShader(bounds),
-                  child: Text(
-                    '◆',
-                    style: TextStyle(
-                      fontSize: logoSize * 0.42,
-                      color: Colors.white,
-                      height: 1,
+                child: Container(
+                  width: widget.logoSize * 0.76,
+                  height: widget.logoSize * 0.76,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF140D02),
+                    borderRadius: BorderRadius.circular(radius * 0.75),
+                    border: Border.all(
+                      color: LuxTokens.gold.withValues(alpha: 0.8),
+                      width: 1.5,
+                    ),
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Colors.black45,
+                        blurRadius: 6,
+                        offset: Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: Center(
+                    child: ShaderMask(
+                      shaderCallback: (bounds) => LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: const [
+                          Color(0xFFFFFBEB),
+                          Color(0xFFFDE68A),
+                          Color(0xFFD9B036),
+                          Color(0xFF8A5D0B),
+                        ],
+                      ).createShader(bounds),
+                      child: Text(
+                        'HS',
+                        style: TextStyle(
+                          fontFamily: LuxTokens.display,
+                          fontSize: widget.logoSize * 0.42,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: -1.0,
+                          color: Colors.white,
+                          height: 1.0,
+                        ),
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-          ),
+            );
+          },
         ),
-        SizedBox(height: compact ? 14 : 24),
-        ShaderMask(
-          shaderCallback: (bounds) => LinearGradient(
-            colors: isDark
-                ? [Colors.white, _accent, _violet]
-                : [const Color(0xFF1E1B4B), _primary, _violet],
-          ).createShader(bounds),
-          child: Text(
-            'HubServis',
-            style: TextStyle(
-              fontFamily: LuxTokens.body,
-              fontSize: titleSize,
-              fontWeight: FontWeight.w900,
-              letterSpacing: -1.2,
-              color: Colors.white,
-              height: 1.05,
-            ),
-          ),
+        SizedBox(height: widget.compact ? 14 : 22),
+
+        // 2. "HubServis" SARLAVHASI (100% TO'LIQ VA ANIQ KORINADIGAN OLTIN JILO BILAN)
+        AnimatedBuilder(
+          animation: _shimmerController,
+          builder: (context, child) {
+            final t = _shimmerController.value;
+            return ShaderMask(
+              shaderCallback: (bounds) => LinearGradient(
+                begin: Alignment(-1.5 + (t * 3.0), 0.0),
+                end: Alignment(-0.5 + (t * 3.0), 0.0),
+                colors: isDark
+                    ? const [
+                        Color(0xFFFFFFFF),
+                        Color(0xFFFDE68A),
+                        Color(0xFFFFFFFF),
+                      ]
+                    : const [
+                        Color(0xFF8A5D0B),
+                        Color(0xFFFDE68A),
+                        Color(0xFF8A5D0B),
+                      ],
+                stops: const [0.0, 0.5, 1.0],
+              ).createShader(bounds),
+              child: Text(
+                'HubServis',
+                style: TextStyle(
+                  fontFamily: LuxTokens.display,
+                  fontSize: widget.titleSize,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: -0.8,
+                  color: Colors.white,
+                  height: 1.05,
+                ),
+              ),
+            );
+          },
         ),
-        if (showTagline) ...[
-          SizedBox(height: compact ? 4 : 8),
+        if (widget.showTagline) ...[
+          SizedBox(height: widget.compact ? 4 : 8),
           Text(
             'Barcha xizmatlar bir joyda',
             style: TextStyle(
               fontFamily: LuxTokens.body,
-              fontSize: compact ? 14 : 16,
-              fontWeight: FontWeight.w500,
-              color: GlassTokens.secondaryText(context),
-              letterSpacing: 0.1,
+              fontSize: widget.compact ? 14 : 15,
+              fontWeight: FontWeight.w700,
+              color: isDark ? const Color(0xFFCBD5E1) : const Color(0xFF475569),
+              letterSpacing: 0.2,
             ),
           ),
         ],
