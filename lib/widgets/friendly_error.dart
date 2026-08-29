@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../l10n/locale_controller.dart';
+import '../theme/lux_tokens.dart';
 
 /// Xato turlari — texnik xato kodini foydalanuvchi tushunadigan ma'noga
 /// aylantiramiz. Kod hech qanday joyda 500/404 raqamini ko'rsatmaydi.
@@ -98,7 +99,7 @@ class FriendlyError {
             title: 'Kirish kerak',
             message: 'Sessiya tugadi. Qayta kiring.',
             icon: LucideIcons.keyRound,
-            color: Color(0xFF6366F1),
+            color: Color(0xFFC9A227),
             showRetry: false,
           );
         }
@@ -108,7 +109,7 @@ class FriendlyError {
             title: 'Topilmadi',
             message: 'So\'ralgan ma\'lumot topilmadi.',
             icon: LucideIcons.searchX,
-            color: Color(0xFF6B7280),
+            color: Color(0xFF6B6B68),
             showRetry: false,
           );
         }
@@ -155,7 +156,7 @@ class FriendlyError {
       title: 'Kutilmagan xatolik',
       message: 'Qayta urinib ko\'ring. Muammo davom etsa yordam so\'rang.',
       icon: LucideIcons.circleAlert,
-      color: Color(0xFF6B7280),
+      color: Color(0xFF6B6B68),
     );
   }
 
@@ -277,7 +278,7 @@ class FriendlyErrorView extends StatelessWidget {
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.w800,
-              color: isDark ? Colors.white : Colors.black87,
+              color: isDark ? Colors.white : LuxTokens.text,
             ),
           ),
           const SizedBox(height: 8),
@@ -287,7 +288,7 @@ class FriendlyErrorView extends StatelessWidget {
             style: TextStyle(
               fontSize: 15,
               height: 1.35,
-              color: isDark ? Colors.white70 : Colors.black54,
+              color: isDark ? Colors.white70 : LuxTokens.textMuted,
             ),
           ),
           if (fe.showRetry && onRetry != null) ...[

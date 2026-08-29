@@ -7,6 +7,7 @@ import '../screens/order_detail_screen.dart';
 import '../widgets/glass/glass_scaffold.dart';
 import '../theme/glass_tokens.dart';
 import '../l10n/locale_controller.dart';
+import '../theme/lux_tokens.dart';
 
 class NotificationsScreen extends StatelessWidget {
   const NotificationsScreen({super.key});
@@ -26,8 +27,9 @@ class NotificationsScreen extends StatelessWidget {
             child: Text(
               "Hammasini o'qish".tr,
               style: const TextStyle(
-                color: Color(0xFF6366F1),
-                fontWeight: FontWeight.bold,
+                color: Color(0xFF8A5D0B),
+                fontWeight: FontWeight.w900,
+                fontSize: 13.5,
               ),
             ),
           ),
@@ -40,7 +42,7 @@ class NotificationsScreen extends StatelessWidget {
       ],
       body: RefreshIndicator(
         onRefresh: () => provider.fetchNotifications(),
-        color: const Color(0xFF6366F1),
+        color: LuxTokens.gold,
         child: notifications.isEmpty
             ? _buildEmptyState(context)
             : ListView.separated(
@@ -73,92 +75,93 @@ class NotificationsScreen extends StatelessWidget {
                       child: const Icon(LucideIcons.trash2, color: Colors.white),
                     ),
                     child: GestureDetector(
-                    onTap: () {
-                      if (!isRead) {
-                        provider.markNotificationRead(notif['id']);
-                      }
-                      _openNotification(context, notif);
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: isRead ? Colors.white : const Color(0xFFEEF2FF),
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(
-                          color: isRead
-                              ? Colors.grey[200]!
-                              : const Color(0xFFC7D2FE),
-                          width: 1,
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black,
-                            blurRadius: 8,
-                            offset: const Offset(0, 4),
+                      onTap: () {
+                        if (!isRead) {
+                          provider.markNotificationRead(notif['id']);
+                        }
+                        _openNotification(context, notif);
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: isRead ? const Color(0xFFF8FAFC) : Colors.white,
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                            color: isRead
+                                ? const Color(0xFFE2E8F0)
+                                : LuxTokens.gold,
+                            width: isRead ? 1.0 : 1.5,
                           ),
-                        ],
-                      ),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          _buildIconContainer(notif['type']),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Expanded(
-                                      child: Text(
-                                        notif['title'] ?? 'Xabar'.tr,
-                                        style: TextStyle(
-                                          fontWeight: isRead
-                                              ? FontWeight.bold
-                                              : FontWeight.w900,
-                                          fontSize: 15,
-                                          color: isRead
-                                              ? Colors.black87
-                                              : const Color(0xFF312E81),
-                                        ),
-                                      ),
-                                    ),
-                                    if (!isRead)
-                                      Container(
-                                        width: 8,
-                                        height: 8,
-                                        decoration: const BoxDecoration(
-                                          color: Color(0xFF6366F1),
-                                          shape: BoxShape.circle,
-                                        ),
-                                      ),
-                                  ],
-                                ),
-                                const SizedBox(height: 6),
-                                Text(
-                                  notif['message'] ?? '',
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: Colors.grey[700],
-                                    height: 1.4,
-                                  ),
-                                ),
-                                const SizedBox(height: 10),
-                                Text(
-                                  timeFormatted,
-                                  style: TextStyle(
-                                    fontSize: 11,
-                                    color: Colors.grey[500],
-                                  ),
-                                ),
-                              ],
+                          boxShadow: [
+                            BoxShadow(
+                              color: isRead
+                                  ? Colors.black.withValues(alpha: 0.02)
+                                  : LuxTokens.gold.withValues(alpha: 0.12),
+                              blurRadius: 10,
+                              offset: const Offset(0, 3),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _buildIconContainer(notif['type']),
+                            const SizedBox(width: 14),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Expanded(
+                                        child: Text(
+                                          notif['title'] ?? 'Xabar'.tr,
+                                          style: TextStyle(
+                                            fontWeight: isRead
+                                                ? FontWeight.w700
+                                                : FontWeight.w900,
+                                            fontSize: 15,
+                                            color: const Color(0xFF0F172A),
+                                          ),
+                                        ),
+                                      ),
+                                      if (!isRead)
+                                        Container(
+                                          width: 9,
+                                          height: 9,
+                                          decoration: const BoxDecoration(
+                                            color: LuxTokens.gold,
+                                            shape: BoxShape.circle,
+                                          ),
+                                        ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 6),
+                                  Text(
+                                    notif['message'] ?? '',
+                                    style: const TextStyle(
+                                      fontSize: 13.5,
+                                      color: Color(0xFF475569),
+                                      height: 1.4,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 10),
+                                  Text(
+                                    timeFormatted,
+                                    style: const TextStyle(
+                                      fontSize: 11.5,
+                                      color: Color(0xFF94A3B8),
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
                     ),
                   );
                 },
@@ -171,20 +174,40 @@ class NotificationsScreen extends StatelessWidget {
     final ok = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text("Hammasini tozalash".tr),
+        backgroundColor: Colors.white,
+        surfaceTintColor: Colors.transparent,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+          side: BorderSide(
+            color: LuxTokens.gold.withValues(alpha: 0.35),
+            width: 1.5,
+          ),
+        ),
+        title: Text(
+          "Hammasini tozalash".tr,
+          style: const TextStyle(
+            color: Color(0xFF0F172A),
+            fontWeight: FontWeight.w900,
+            fontSize: 18,
+          ),
+        ),
         content: Text(
           "Barcha bildirishnomalar o'chiriladi. Davom etasizmi?".tr,
+          style: const TextStyle(color: Color(0xFF475569)),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: Text("Bekor qilish".tr),
+            child: Text(
+              "Bekor qilish".tr,
+              style: const TextStyle(color: Color(0xFF64748B), fontWeight: FontWeight.w700),
+            ),
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
             child: Text(
               "Tozalash".tr,
-              style: const TextStyle(color: Color(0xFFEF4444)),
+              style: const TextStyle(color: Color(0xFFEF4444), fontWeight: FontWeight.w900),
             ),
           ),
         ],
@@ -210,67 +233,66 @@ class NotificationsScreen extends StatelessWidget {
 
   Widget _buildIconContainer(String? type) {
     IconData iconData = LucideIcons.bell;
-    Color iconColor = const Color(0xFF6366F1);
-    Color bgColor = const Color(0xFFEEF2FF);
-
     if (type == 'order_status_changed') {
       iconData = LucideIcons.packageCheck;
-      iconColor = const Color(0xFF10B981);
-      bgColor = const Color(0xFFECFDF5);
     } else if (type == 'new_order') {
       iconData = LucideIcons.plusCircle;
-      iconColor = const Color(0xFFF59E0B);
-      bgColor = const Color(0xFFFEF3C7);
     }
 
     return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(color: bgColor, shape: BoxShape.circle),
-      child: Icon(iconData, color: iconColor, size: 22),
+      width: 44,
+      height: 44,
+      decoration: LuxTokens.goldBoxDecoration(isCircle: true),
+      child: Icon(iconData, color: const Color(0xFF140D02), size: 20),
     );
   }
 
   Widget _buildEmptyState(BuildContext context) {
     return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                shape: BoxShape.circle,
-                boxShadow: [BoxShadow(color: Colors.black, blurRadius: 20)],
+      child: SingleChildScrollView(
+        child: GlassSurface(
+          margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+          padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 30),
+          borderRadius: GlassTokens.radiusLg,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: LuxTokens.gold.withValues(alpha: 0.14),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  LucideIcons.bellOff,
+                  size: 40,
+                  color: Color(0xFF140D02),
+                ),
               ),
-              child: const Icon(
-                LucideIcons.bellOff,
-                size: 64,
-                color: Colors.grey,
+              const SizedBox(height: 16),
+              Text(
+                "Bildirishnomalar yo'q".tr,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  color: Color(0xFF140D02),
+                  fontSize: 16,
+                  fontWeight: FontWeight.w800,
+                ),
               ),
-            ),
-            const SizedBox(height: 24),
-            Text(
-              "Bildirishnomalar yo'q".tr,
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: GlassTokens.primaryText(context),
+              const SizedBox(height: 8),
+              Text(
+                "Sizda hozircha hech qanday bildirishnomalar mavjud emas. Yangi xabarlar shu yerda paydo bo'ladi."
+                    .tr,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  color: Color(0xFF332205),
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  height: 1.4,
+                ),
               ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              "Sizda hozircha hech qanday bildirishnomalar mavjud emas. Yangi xabarlar shu yerda paydo bo'ladi."
-                  .tr,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 14,
-                color: GlassTokens.secondaryText(context),
-                height: 1.4,
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

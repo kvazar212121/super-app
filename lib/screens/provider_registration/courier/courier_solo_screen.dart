@@ -8,6 +8,7 @@ import '../../provider_side/provider_theme.dart';
 import 'courier_pending_screen.dart';
 import 'package:super_app/l10n/locale_controller.dart';
 import '../../../widgets/friendly_error.dart';
+import '../../../theme/lux_tokens.dart';
 
 /// Kuryer — faqat yakka kuryer.
 class CourierSoloScreen extends StatefulWidget {
@@ -85,7 +86,7 @@ class _CourierSoloScreenState extends State<CourierSoloScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text('Yakka kuryer sifatida hujjat, paket va boshqa yuklarni A nuqtadan B nuqtaga yetkazasiz.'.tr,
-                style: TextStyle(color: Colors.grey[700], height: 1.4),
+                style: TextStyle(color: LuxTokens.textMuted, height: 1.4),
               ),
               const SizedBox(height: 24),
               TextField(
@@ -111,7 +112,7 @@ class _CourierSoloScreenState extends State<CourierSoloScreen> {
               const SizedBox(height: 16),
               Text('Transport turi'.tr,
                 style: TextStyle(
-                  color: Colors.grey[700],
+                  color: LuxTokens.textMuted,
                   fontWeight: FontWeight.w600,
                 ),
               ),

@@ -7,8 +7,10 @@ import '../../l10n/locale_controller.dart';
 import '../../services/call_history_service.dart';
 import '../../utils/call_helper.dart';
 import '../../theme/glass_tokens.dart';
+import '../../theme/lux_tokens.dart';
 import '../../widgets/glass/glass_scaffold.dart';
 import '../../widgets/glass/glass_surface.dart';
+import '../../widgets/gold_tab_bar_widget.dart';
 import '../../providers/auth_provider.dart';
 import '../../services/api_service.dart';
 import '../../widgets/guest_blocker_widget.dart';
@@ -55,16 +57,12 @@ class _CallHistoryScreenState extends State<CallHistoryScreen>
           ),
         ),
       ],
-      bottom: TabBar(
+      bottom: GoldTabBar(
         controller: _tab,
-        labelColor: const Color(0xFF6366F1),
-        indicatorColor: const Color(0xFF6366F1),
-        unselectedLabelColor: GlassTokens.secondaryText(context),
-        isScrollable: false,
         tabs: [
-          Tab(text: "Qo'ng'iroqlar".tr),
-          Tab(text: "Habarlar".tr),
-          Tab(text: "Bloklangan".tr),
+          "Qo'ng'iroqlar".tr,
+          "Habarlar".tr,
+          "Bloklangan".tr,
         ],
       ),
       body: auth.isAuthenticated
@@ -188,6 +186,12 @@ class _CallsTab extends StatelessWidget {
 
   Widget _menu(BuildContext context, CallHistoryService svc, CallLog log, bool blocked) {
     return PopupMenuButton<String>(
+      color: Colors.white,
+      surfaceTintColor: Colors.transparent,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: const BorderSide(color: Color(0xFFCBD5E1), width: 1.2),
+      ),
       icon: Icon(LucideIcons.ellipsisVertical, color: GlassTokens.secondaryText(context)),
       onSelected: (v) async {
         switch (v) {
@@ -226,15 +230,15 @@ class _CallsTab extends StatelessWidget {
           child: Row(children: [
             const Icon(Icons.phone, color: Colors.green, size: 18),
             const SizedBox(width: 10),
-            Text('Qo\'ng\'iroq qilish'.tr),
+            Text('Qo\'ng\'iroq qilish'.tr, style: const TextStyle(color: Color(0xFF0F172A), fontWeight: FontWeight.w700)),
           ]),
         ),
         PopupMenuItem(
           value: 'message',
           child: Row(children: [
-            const Icon(LucideIcons.messageSquare, color: Color(0xFF6366F1), size: 18),
+            const Icon(LucideIcons.messageSquare, color: Color(0xFFC9A227), size: 18),
             const SizedBox(width: 10),
-            Text('Xabar yozish'.tr),
+            Text('Xabar yozish'.tr, style: const TextStyle(color: Color(0xFF0F172A), fontWeight: FontWeight.w700)),
           ]),
         ),
         PopupMenuItem(
@@ -243,7 +247,7 @@ class _CallsTab extends StatelessWidget {
             Icon(blocked ? LucideIcons.circleCheck : LucideIcons.ban,
                 color: blocked ? Colors.green : Colors.red, size: 18),
             const SizedBox(width: 10),
-            Text(blocked ? 'Blokdan chiqarish'.tr : 'Bloklash'.tr),
+            Text(blocked ? 'Blokdan chiqarish'.tr : 'Bloklash'.tr, style: const TextStyle(color: Color(0xFF0F172A), fontWeight: FontWeight.w700)),
           ]),
         ),
         PopupMenuItem(
@@ -251,7 +255,7 @@ class _CallsTab extends StatelessWidget {
           child: Row(children: [
             const Icon(LucideIcons.trash2, color: Color(0xFFEF4444), size: 18),
             const SizedBox(width: 10),
-            Text('O\'chirish'.tr),
+            Text('O\'chirish'.tr, style: const TextStyle(color: Color(0xFFEF4444), fontWeight: FontWeight.w700)),
           ]),
         ),
       ],
@@ -282,15 +286,54 @@ class _CallsTab extends StatelessWidget {
     );
   }
 
-  Widget _empty(BuildContext context, String text) {
+  Widget _empty(BuildContext context, String text, [String? subtitle, IconData? icon]) {
     return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(LucideIcons.phoneOff, size: 48, color: GlassTokens.secondaryText(context)),
-          const SizedBox(height: 12),
-          Text(text, style: TextStyle(color: GlassTokens.secondaryText(context))),
-        ],
+      child: SingleChildScrollView(
+        child: GlassSurface(
+          margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+          padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 30),
+          borderRadius: GlassTokens.radiusLg,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: LuxTokens.gold.withValues(alpha: 0.14),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  icon ?? LucideIcons.phoneOff,
+                  size: 40,
+                  color: const Color(0xFF140D02),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                text,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  color: Color(0xFF140D02),
+                  fontSize: 16,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+              if (subtitle != null && subtitle.isNotEmpty) ...[
+                const SizedBox(height: 8),
+                Text(
+                  subtitle,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    color: Color(0xFF332205),
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    height: 1.4,
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -332,18 +375,50 @@ class _MessagesTabState extends State<_MessagesTab> {
     if (_loading) return const Center(child: CircularProgressIndicator());
     if (_convos.isEmpty) {
       return Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(LucideIcons.messageSquare, size: 48, color: GlassTokens.secondaryText(context)),
-            const SizedBox(height: 12),
-            Text('Hali yozishma yo\'q'.tr,
-                style: TextStyle(color: GlassTokens.secondaryText(context))),
-            const SizedBox(height: 6),
-            Text('Qo\'ng\'iroqlar ro\'yxatidan abonentga xabar yozing'.tr,
-                textAlign: TextAlign.center,
-                style: TextStyle(color: GlassTokens.secondaryText(context), fontSize: 12)),
-          ],
+        child: SingleChildScrollView(
+          child: GlassSurface(
+            margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+            padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 30),
+            borderRadius: GlassTokens.radiusLg,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: LuxTokens.gold.withValues(alpha: 0.14),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    LucideIcons.messageSquare,
+                    size: 40,
+                    color: Color(0xFF140D02),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  'Hali yozishma yo\'q'.tr,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    color: Color(0xFF140D02),
+                    fontSize: 16,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Qo\'ng\'iroqlar ro\'yxatidan abonentga xabar yozing'.tr,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    color: Color(0xFF332205),
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    height: 1.4,
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       );
     }
@@ -380,8 +455,8 @@ class _MessagesTabState extends State<_MessagesTab> {
             child: ListTile(
               contentPadding: const EdgeInsets.symmetric(horizontal: 8),
               leading: CircleAvatar(
-                backgroundColor: const Color(0xFF6366F1).withValues(alpha: 0.15),
-                child: const Icon(LucideIcons.user, color: Color(0xFF6366F1)),
+                backgroundColor: const Color(0xFFC9A227).withValues(alpha: 0.15),
+                child: const Icon(LucideIcons.user, color: Color(0xFFC9A227)),
               ),
               title: Text(
                 c['peer_name'] as String? ?? '',
@@ -435,6 +510,12 @@ class _MessagesTabState extends State<_MessagesTab> {
     final svc = CallHistoryService();
     final blocked = svc.isUserBlocked(peerId);
     return PopupMenuButton<String>(
+      color: Colors.white,
+      surfaceTintColor: Colors.transparent,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: const BorderSide(color: Color(0xFFCBD5E1), width: 1.2),
+      ),
       icon: Icon(LucideIcons.ellipsisVertical, color: GlassTokens.secondaryText(context)),
       onSelected: (v) async {
         switch (v) {
@@ -459,16 +540,37 @@ class _MessagesTabState extends State<_MessagesTab> {
             final ok = await showDialog<bool>(
               context: context,
               builder: (ctx) => AlertDialog(
-                title: Text('Suhbatni o\'chirish'.tr),
-                content: Text('$peerName ${'bilan yozishma o\'chiriladi. Davom etasizmi?'.tr}'),
+                backgroundColor: Colors.white,
+                surfaceTintColor: Colors.transparent,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                  side: BorderSide(
+                    color: LuxTokens.gold.withValues(alpha: 0.35),
+                    width: 1.5,
+                  ),
+                ),
+                title: Text(
+                  'Suhbatni o\'chirish'.tr,
+                  style: const TextStyle(color: Color(0xFF0F172A), fontWeight: FontWeight.w900),
+                ),
+                content: Text(
+                  '$peerName ${'bilan yozishma o\'chiriladi. Davom etasizmi?'.tr}',
+                  style: const TextStyle(color: Color(0xFF475569)),
+                ),
                 actions: [
                   TextButton(
-                      onPressed: () => Navigator.pop(ctx, false),
-                      child: Text('Bekor qilish'.tr)),
+                    onPressed: () => Navigator.pop(ctx, false),
+                    child: Text(
+                      'Bekor qilish'.tr,
+                      style: const TextStyle(color: Color(0xFF64748B), fontWeight: FontWeight.w700),
+                    ),
+                  ),
                   TextButton(
                     onPressed: () => Navigator.pop(ctx, true),
-                    child: Text('O\'chirish'.tr,
-                        style: const TextStyle(color: Color(0xFFEF4444))),
+                    child: Text(
+                      'O\'chirish'.tr,
+                      style: const TextStyle(color: Color(0xFFEF4444), fontWeight: FontWeight.w800),
+                    ),
                   ),
                 ],
               ),
@@ -488,7 +590,7 @@ class _MessagesTabState extends State<_MessagesTab> {
           child: Row(children: [
             const Icon(Icons.phone, color: Colors.green, size: 18),
             const SizedBox(width: 10),
-            Text('Qo\'ng\'iroq qilish'.tr),
+            Text('Qo\'ng\'iroq qilish'.tr, style: const TextStyle(color: Color(0xFF0F172A), fontWeight: FontWeight.w700)),
           ]),
         ),
         PopupMenuItem(
@@ -497,7 +599,7 @@ class _MessagesTabState extends State<_MessagesTab> {
             Icon(blocked ? LucideIcons.circleCheck : LucideIcons.ban,
                 color: blocked ? Colors.green : Colors.red, size: 18),
             const SizedBox(width: 10),
-            Text(blocked ? 'Blokdan chiqarish'.tr : 'Bloklash'.tr),
+            Text(blocked ? 'Blokdan chiqarish'.tr : 'Bloklash'.tr, style: const TextStyle(color: Color(0xFF0F172A), fontWeight: FontWeight.w700)),
           ]),
         ),
         PopupMenuItem(
@@ -505,7 +607,7 @@ class _MessagesTabState extends State<_MessagesTab> {
           child: Row(children: [
             const Icon(LucideIcons.trash2, color: Color(0xFFEF4444), size: 18),
             const SizedBox(width: 10),
-            Text('Suhbatni o\'chirish'.tr),
+            Text('Suhbatni o\'chirish'.tr, style: const TextStyle(color: Color(0xFFEF4444), fontWeight: FontWeight.w700)),
           ]),
         ),
       ],
@@ -524,14 +626,39 @@ class _BlockedTab extends StatelessWidget {
         final blocked = svc.blocked;
         if (blocked.isEmpty) {
           return Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(LucideIcons.shieldCheck, size: 48, color: GlassTokens.secondaryText(context)),
-                const SizedBox(height: 12),
-                Text('Bloklangan kontaktlar yo\'q'.tr,
-                    style: TextStyle(color: GlassTokens.secondaryText(context))),
-              ],
+            child: SingleChildScrollView(
+              child: GlassSurface(
+                margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+                padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 30),
+                borderRadius: GlassTokens.radiusLg,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: LuxTokens.gold.withValues(alpha: 0.14),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        LucideIcons.shieldCheck,
+                        size: 40,
+                        color: Color(0xFF140D02),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Bloklangan kontaktlar yo\'q'.tr,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        color: Color(0xFF140D02),
+                        fontSize: 16,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
           );
         }

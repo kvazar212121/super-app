@@ -149,12 +149,12 @@ class _SalonEmployeeJoinScreenState extends State<SalonEmployeeJoinScreen>
                             final selected = _selectedSalonId == id;
                             return Card(
                               margin: const EdgeInsets.only(bottom: 10),
-                              color: selected ? const Color(0xFFEC4899) : null,
+                              color: selected ? const Color(0xFFE3C766) : null,
                               child: ListTile(
                                 leading: Icon(
                                   LucideIcons.sparkles,
                                   color: selected
-                                      ? const Color(0xFFEC4899)
+                                      ? const Color(0xFFE3C766)
                                       : null,
                                 ),
                                 title: Text(s['name']?.toString() ?? ''),
@@ -162,7 +162,7 @@ class _SalonEmployeeJoinScreenState extends State<SalonEmployeeJoinScreen>
                                 trailing: selected
                                     ? const Icon(
                                         Icons.check_circle,
-                                        color: Color(0xFFEC4899),
+                                        color: Color(0xFFE3C766),
                                       )
                                     : null,
                                 onTap: () =>

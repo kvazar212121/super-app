@@ -8,6 +8,7 @@ import '../models/service_hub_kind.dart';
 import '../screens/service_hub_screen.dart';
 import '../services/top_providers_service.dart';
 import '../theme/glass_tokens.dart';
+import '../theme/lux_tokens.dart';
 
 /// Bosh sahifaning ENG PASTIDA — "Top reytingli" provayderlar ro'yxati.
 ///
@@ -244,12 +245,12 @@ class _TopProvidersSectionState extends State<TopProvidersSection> {
                     style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w800,
-                      color: Color(0xFF2563EB),
+                      color: Color(0xFFB8921F),
                     ),
                   ),
                   const SizedBox(width: 6),
                   const Icon(LucideIcons.chevronDown,
-                      size: 17, color: Color(0xFF2563EB)),
+                      size: 17, color: Color(0xFFB8921F)),
                 ],
               ],
             ),
@@ -298,7 +299,7 @@ class _TopProviderTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final primary = GlassTokens.primaryText(context);
     final secondary = GlassTokens.secondaryText(context);
-    final accent = provider.kind?.accent ?? const Color(0xFF2563EB);
+    final accent = provider.kind?.accent ?? const Color(0xFFB8921F);
 
     return Material(
       color: Colors.transparent,
@@ -383,7 +384,7 @@ class _PositionBadge extends StatelessWidget {
   Widget build(BuildContext context) {
     final medal = switch (position) {
       1 => const Color(0xFFF59E0B), // oltin
-      2 => const Color(0xFF94A3B8), // kumush
+      2 => const Color(0xFF9A9A96), // kumush
       3 => const Color(0xFFB45309), // bronza
       _ => null,
     };
@@ -516,22 +517,21 @@ class _FilterChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const accent = Color(0xFF2563EB);
     return Material(
-      color: selected ? accent : GlassTokens.glassFill(context),
-      borderRadius: BorderRadius.circular(18),
+      color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(18),
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 13),
           alignment: Alignment.center,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(18),
-            border: Border.all(
-              color: selected ? accent : GlassTokens.glassBorder(context),
-            ),
-          ),
+          decoration: selected
+              ? LuxTokens.goldBoxDecoration(radius: 18)
+              : BoxDecoration(
+                  color: GlassTokens.glassFill(context),
+                  borderRadius: BorderRadius.circular(18),
+                  border: Border.all(color: GlassTokens.glassBorder(context)),
+                ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -540,19 +540,20 @@ class _FilterChip extends StatelessWidget {
                   icon,
                   size: 14,
                   color: selected
-                      ? Colors.white
+                      ? const Color(0xFF140D02)
                       : GlassTokens.secondaryText(context),
                 ),
                 const SizedBox(width: 6),
               ],
               Text(
                 label,
-                style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w700,
-                  color:
-                      selected ? Colors.white : GlassTokens.primaryText(context),
-                ),
+                style: selected
+                    ? LuxTokens.goldEngravedTextStyle.copyWith(fontSize: 13)
+                    : TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                        color: GlassTokens.primaryText(context),
+                      ),
               ),
             ],
           ),

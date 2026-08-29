@@ -7,6 +7,7 @@ import '../providers/app_provider.dart';
 import '../utils/auth_guard.dart';
 import '../widgets/glass/mesh_background.dart';
 import 'package:super_app/l10n/locale_controller.dart';
+import '../theme/lux_tokens.dart';
 
 /// Yagona-sahifa universal bron formasi.
 /// Har bir xizmat hubidan ochiladi, [kind] bo'yicha variantlarni ko'rsatadi.
@@ -122,7 +123,7 @@ class _UniversalBookingScreenState extends State<UniversalBookingScreen> {
                     selected: selected,
                     selectedColor: accent,
                     labelStyle: TextStyle(
-                      color: selected ? accent : Colors.black87,
+                      color: selected ? accent : LuxTokens.text,
                       fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
                     ),
                     onSelected: (_) => setState(() => _variantIndex = i),
@@ -235,12 +236,12 @@ class _PickerTile extends StatelessWidget {
         height: 56,
         padding: const EdgeInsets.symmetric(horizontal: 14),
         decoration: BoxDecoration(
-          border: Border.all(color: Colors.grey.shade400),
+          border: Border.all(color: LuxTokens.textFaint),
           borderRadius: BorderRadius.circular(12),
         ),
         child: Row(
           children: [
-            Icon(icon, color: Colors.grey[700]),
+            Icon(icon, color: LuxTokens.textMuted),
             const SizedBox(width: 10),
             Text(label, style: const TextStyle(fontSize: 15)),
           ],
@@ -285,7 +286,7 @@ class _PriceCard extends StatelessWidget {
                 const SizedBox(height: 2),
                 const Text(
                   'Boshlang‘ich narx',
-                  style: TextStyle(fontSize: 12, color: Colors.black54),
+                  style: TextStyle(fontSize: 12, color: LuxTokens.textMuted),
                 ),
               ],
             ),

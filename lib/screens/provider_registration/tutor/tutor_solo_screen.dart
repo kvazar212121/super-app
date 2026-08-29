@@ -9,6 +9,7 @@ import '../../provider_side/provider_theme.dart';
 import '../../provider_side/unified_provider_dashboard_screen.dart';
 import 'package:super_app/l10n/locale_controller.dart';
 import '../../../widgets/friendly_error.dart';
+import '../../../theme/lux_tokens.dart';
 
 class TutorSoloScreen extends StatefulWidget {
   const TutorSoloScreen({super.key});
@@ -111,7 +112,7 @@ class _TutorSoloScreenState extends State<TutorSoloScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text('Onlayn yoki uyga kelib dars berasiz — band kattalar va o\'quvchilar sizni topadi.'.tr,
-                style: TextStyle(color: Colors.grey[700], height: 1.4),
+                style: TextStyle(color: LuxTokens.textMuted, height: 1.4),
               ),
               const SizedBox(height: 24),
               TextField(

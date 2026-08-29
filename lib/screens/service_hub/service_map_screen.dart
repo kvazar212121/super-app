@@ -15,6 +15,7 @@ import '../../widgets/hub/provider_map_preview_card.dart';
 import 'service_catalog_screen.dart';
 import '../../config/map_config.dart';
 import '../navigation_3d_screen.dart';
+import '../../theme/lux_tokens.dart';
 
 /// EKRAN 2 — to'liq ekranli xizmat xaritasi.
 ///
@@ -38,7 +39,7 @@ class ServiceMapScreen extends StatefulWidget {
     super.key,
     required this.title,
     required this.entries,
-    this.accent = const Color(0xFF2563EB),
+    this.accent = const Color(0xFFB8921F),
     this.markerIcon = LucideIcons.mapPin,
     this.categories = const [],
     this.selectedCategory,
@@ -262,9 +263,9 @@ class _ServiceMapScreenState extends State<ServiceMapScreen>
                       point: _userPos!,
                       radius: 260,
                       useRadiusInMeter: true,
-                      color: const Color(0xFF3B82F6).withValues(alpha: 0.12),
+                      color: const Color(0xFFC9A227).withValues(alpha: 0.12),
                       borderColor:
-                          const Color(0xFF3B82F6).withValues(alpha: 0.35),
+                          const Color(0xFFC9A227).withValues(alpha: 0.35),
                       borderStrokeWidth: 1,
                     ),
                   ],
@@ -338,7 +339,7 @@ class _ServiceMapScreenState extends State<ServiceMapScreen>
         children: [
           FloatingActionButton.small(
             heroTag: 'fitAllMap',
-            backgroundColor: Colors.white,
+            backgroundColor: LuxTokens.surface,
             foregroundColor: widget.accent,
             onPressed: _fitAll,
             child: const Icon(LucideIcons.maximize2),
@@ -422,7 +423,7 @@ class _ServiceMapScreenState extends State<ServiceMapScreen>
                   height: 20 + _pulse.value * 34,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: const Color(0xFF3B82F6)
+                    color: const Color(0xFFC9A227)
                         .withValues(alpha: (1 - _pulse.value) * 0.4),
                   ),
                 ),
@@ -431,7 +432,7 @@ class _ServiceMapScreenState extends State<ServiceMapScreen>
                   height: 18,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: const Color(0xFF3B82F6),
+                    color: const Color(0xFFC9A227),
                     border: Border.all(color: Colors.white, width: 3),
                     boxShadow: [
                       BoxShadow(
@@ -482,7 +483,7 @@ class _ServiceMapScreenState extends State<ServiceMapScreen>
                         fontSize: 10,
                         fontWeight: FontWeight.w800,
                         color:
-                            selected ? Colors.white : const Color(0xFF0F172A),
+                            selected ? Colors.white : const Color(0xFF0A0A0B),
                       ),
                     ),
                   ),
@@ -574,7 +575,7 @@ class _MapFilterButton extends StatelessWidget {
                   width: 8,
                   height: 8,
                   decoration: const BoxDecoration(
-                    color: Colors.white,
+                    color: LuxTokens.surface,
                     shape: BoxShape.circle,
                   ),
                 ),

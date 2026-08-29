@@ -9,6 +9,7 @@ import 'nanny_pending_screen.dart';
 import '../../../widgets/document_upload_tile.dart';
 import 'package:super_app/l10n/locale_controller.dart';
 import '../../../widgets/friendly_error.dart';
+import '../../../theme/lux_tokens.dart';
 
 /// Enaga — hujjatlar va admin tasdiqlash bilan ro'yxatdan o'tish.
 class NannyRegistrationScreen extends StatefulWidget {
@@ -37,7 +38,7 @@ class _NannyRegistrationScreenState extends State<NannyRegistrationScreen> {
   String? _idUrl;
   String? _criminalUrl;
 
-  static const _accent = Color(0xFF2563EB);
+  static const _accent = Color(0xFFB8921F);
   static const _ageOptions = ['0-1', '1-3', '3-7', '7-12'];
   static const _langOptions = ['uz', 'ru', 'en'];
 
@@ -199,7 +200,7 @@ class _NannyRegistrationScreenState extends State<NannyRegistrationScreen> {
           ),
           const SizedBox(height: 8),
           Text('Bolalar bilan ishlash tajribangiz va xizmat hududingiz.'.tr,
-            style: TextStyle(color: Colors.grey[700], height: 1.4),
+            style: TextStyle(color: LuxTokens.textMuted, height: 1.4),
           ),
           const SizedBox(height: 24),
           TextField(
@@ -292,7 +293,7 @@ class _NannyRegistrationScreenState extends State<NannyRegistrationScreen> {
           ),
           const SizedBox(height: 8),
           Text('Hujjatlaringiz administrator tomonidan tekshiriladi. Tasdiqlanguncha profilingiz mijozlarga ko\'rinmaydi.'.tr,
-            style: TextStyle(color: Colors.grey[700], height: 1.4),
+            style: TextStyle(color: LuxTokens.textMuted, height: 1.4),
           ),
           const SizedBox(height: 24),
           DocumentUploadTile(
@@ -345,7 +346,7 @@ class _NannyRegistrationScreenState extends State<NannyRegistrationScreen> {
           ),
           const SizedBox(height: 8),
           Text('Qaysi formatda ishlayotganingizni tanlang. Narxlarni panelda keyinroq sozlaysiz.'.tr,
-            style: TextStyle(color: Colors.grey[700], height: 1.4),
+            style: TextStyle(color: LuxTokens.textMuted, height: 1.4),
           ),
           const SizedBox(height: 16),
           ...NannyServiceType.values.map((t) {

@@ -3,6 +3,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../models/barber_shop.dart';
 import '../screens/barber_map_screen.dart';
 import '../services/api_service.dart';
+import '../theme/lux_tokens.dart';
 
 class RecommendedSectionWidget extends StatefulWidget {
   const RecommendedSectionWidget({super.key});
@@ -71,7 +72,7 @@ class _RecommendedSectionWidgetState extends State<RecommendedSectionWidget> {
           child: Container(
             height: 120,
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: LuxTokens.surface,
               borderRadius: BorderRadius.circular(20),
               boxShadow: [BoxShadow(color: Colors.black, blurRadius: 10)],
             ),
@@ -80,14 +81,14 @@ class _RecommendedSectionWidgetState extends State<RecommendedSectionWidget> {
                 Container(
                   width: 100,
                   decoration: const BoxDecoration(
-                    color: Color(0xFFF1F5F9),
+                    color: Color(0xFFF2F2F0),
                     borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(20),
                       bottomLeft: Radius.circular(20),
                     ),
                   ),
                   child: const Center(
-                    child: Icon(LucideIcons.scissors, color: Color(0xFF6366F1)),
+                    child: Icon(LucideIcons.scissors, color: Color(0xFFC9A227)),
                   ),
                 ),
                 const SizedBox(width: 15),

@@ -7,6 +7,7 @@ import '../../provider_side/provider_theme.dart';
 import '../../provider_side/unified_provider_dashboard_screen.dart';
 import '../../../services/provider_portal_service.dart';
 import 'package:super_app/l10n/locale_controller.dart';
+import '../../../theme/lux_tokens.dart';
 
 /// Repetitor / o'quv markazi — administrator tasdiqlaguncha.
 class TutorPendingScreen extends StatefulWidget {
@@ -84,13 +85,13 @@ class _TutorPendingScreenState extends State<TutorPendingScreen> {
                 Container(
                   padding: const EdgeInsets.all(24),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF8B5CF6),
+                    color: const Color(0xFFE3C766),
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(
                     LucideIcons.bookOpen,
                     size: 48,
-                    color: Color(0xFF8B5CF6),
+                    color: Color(0xFFE3C766),
                   ),
                 ),
                 const SizedBox(height: 28),
@@ -103,7 +104,7 @@ class _TutorPendingScreenState extends State<TutorPendingScreen> {
                       ? '${widget.providerName} — profilingiz administrator tomonidan tekshirilmoqda.'
                       : 'Profilingiz administrator tomonidan tekshirilmoqda.',
                   textAlign: TextAlign.center,
-                  style: TextStyle(color: Colors.grey[700], height: 1.45),
+                  style: TextStyle(color: LuxTokens.textMuted, height: 1.45),
                 ),
                 const SizedBox(height: 8),
                 Text('Tasdiqlangandan keyin mijozlar sizni topa oladi va panel to\'liq ochiladi. Onlayn video dars keyingi bosqichda qo\'shiladi.'.tr,

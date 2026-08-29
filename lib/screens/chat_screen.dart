@@ -741,9 +741,7 @@ class _ChatScreenState extends State<ChatScreen>
               ),
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               decoration: BoxDecoration(
-                // Haqiqiy quyma oltin: keskin yorug'-soya bandli metall
-                // gradient (yumshoq bir tekis gradient "metall" ko'rinmaydi).
-                gradient: isUser ? LuxTokens.goldBarGradient : null,
+                gradient: isUser ? LuxTokens.goldGradient : null,
                 color: isUser ? null : Colors.white,
                 borderRadius: BorderRadius.only(
                   topLeft: const Radius.circular(20),
@@ -835,23 +833,24 @@ class _ChatScreenState extends State<ChatScreen>
                     Text(
                       content,
                       style: TextStyle(
-                        color: isUser ? Colors.white : LuxTokens.text,
+                        color: isUser ? const Color(0xFF140D02) : LuxTokens.text,
                         fontSize: 15,
                         fontWeight: isUser ? FontWeight.w700 : FontWeight.normal,
                         height: 1.4,
-                        // Yaltiroq oltin ustida matn o'qilishi uchun
-                        // "o'yilgan" (engraved) soya beramiz.
+                        // Oltin quymaga o'yib yozilgandek (3D Engraved Stamp) qora matn effekti
                         shadows: isUser
                             ? const [
+                                // O'yma chuqurining ostida qaytuvchi oltin nuri
                                 Shadow(
-                                  color: Color(0xB35A3A05),
-                                  blurRadius: 4,
-                                  offset: Offset(0, 1),
-                                ),
-                                Shadow(
-                                  color: Color(0x805A3A05),
+                                  color: Color(0xFFFFF7C2),
                                   blurRadius: 1,
-                                  offset: Offset(0, 1),
+                                  offset: Offset(0, 1.0),
+                                ),
+                                // O'yma chuqurining ichki to'q soyasi
+                                Shadow(
+                                  color: Color(0x80000000),
+                                  blurRadius: 1,
+                                  offset: Offset(0, -0.8),
                                 ),
                               ]
                             : null,
@@ -1760,16 +1759,13 @@ class _VoiceListeningOverlayState extends State<_VoiceListeningOverlay>
                 padding:
                     const EdgeInsets.symmetric(horizontal: 28, vertical: 34),
                 decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [Color(0xFF241C57), Color(0xFF3B2F8F)],
-                  ),
+                  color: Colors.white,
                   borderRadius: BorderRadius.circular(28),
+                  border: Border.all(color: LuxTokens.border, width: 1.5),
                   boxShadow: [
                     BoxShadow(
-                      color: const Color(0xFFC9A227).withValues(alpha: 0.45),
-                      blurRadius: 40,
+                      color: const Color(0xFFC9A227).withValues(alpha: 0.25),
+                      blurRadius: 30,
                       spreadRadius: 2,
                     ),
                   ],
@@ -1784,18 +1780,19 @@ class _VoiceListeningOverlayState extends State<_VoiceListeningOverlay>
                     Text(
                       'Tinglayapman...'.tr,
                       style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 17,
-                        fontWeight: FontWeight.w700,
+                        color: LuxTokens.text,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w800,
                       ),
                     ),
                     const SizedBox(height: 6),
                     Text(
                       "So'zlang — tugagach o'zi yoziladi".tr,
                       textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: Colors.white.withValues(alpha: 0.7),
-                        fontSize: 12.5,
+                      style: const TextStyle(
+                        color: LuxTokens.textMuted,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
                     const SizedBox(height: 26),
@@ -1804,21 +1801,12 @@ class _VoiceListeningOverlayState extends State<_VoiceListeningOverlay>
                       child: Container(
                         width: 62,
                         height: 62,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          gradient: const LinearGradient(
-                            colors: [Color(0xFF22C55E), Color(0xFF16A34A)],
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: const Color(0xFF22C55E)
-                                  .withValues(alpha: 0.5),
-                              blurRadius: 18,
-                            ),
-                          ],
+                        decoration: LuxTokens.goldBoxDecoration(isCircle: true),
+                        child: const Icon(
+                          LucideIcons.check,
+                          color: Color(0xFF140D02),
+                          size: 28,
                         ),
-                        child: const Icon(LucideIcons.check,
-                            color: Colors.white, size: 28),
                       ),
                     ),
                   ],
@@ -1854,8 +1842,8 @@ class _VoiceListeningOverlayState extends State<_VoiceListeningOverlay>
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         border: Border.all(
-                          color: Colors.white.withValues(alpha: (1 - p) * 0.45),
-                          width: 2,
+                          color: LuxTokens.gold.withValues(alpha: (1 - p) * 0.45),
+                          width: 1.5,
                         ),
                       ),
                     );
@@ -1864,23 +1852,9 @@ class _VoiceListeningOverlayState extends State<_VoiceListeningOverlay>
                   Container(
                     width: 74 + norm * 16,
                     height: 74 + norm * 16,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      gradient: const LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: [Color(0xFFE3C766), Color(0xFFC9A227)],
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: const Color(0xFFE3C766).withValues(alpha: 0.6),
-                          blurRadius: 22 + norm * 22,
-                          spreadRadius: norm * 4,
-                        ),
-                      ],
-                    ),
+                    decoration: LuxTokens.goldBoxDecoration(isCircle: true),
                     child: const Icon(LucideIcons.mic,
-                        color: Colors.white, size: 32),
+                        color: Color(0xFF140D02), size: 32),
                   ),
                 ],
               ),
@@ -1917,7 +1891,7 @@ class _VoiceListeningOverlayState extends State<_VoiceListeningOverlay>
                     gradient: const LinearGradient(
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
-                      colors: [Color(0xFFC4B5FD), Color(0xFFE3C766)],
+                      colors: [LuxTokens.gold, Color(0xFFE0B454)],
                     ),
                     borderRadius: BorderRadius.circular(3),
                   ),

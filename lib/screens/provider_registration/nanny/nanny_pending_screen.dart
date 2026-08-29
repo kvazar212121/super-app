@@ -7,6 +7,7 @@ import '../../provider_side/provider_theme.dart';
 import '../../provider_side/unified_provider_dashboard_screen.dart';
 import '../../../services/provider_portal_service.dart';
 import 'package:super_app/l10n/locale_controller.dart';
+import '../../../theme/lux_tokens.dart';
 
 /// Enaga — administrator tasdiqlaguncha.
 class NannyPendingScreen extends StatefulWidget {
@@ -74,13 +75,13 @@ class _NannyPendingScreenState extends State<NannyPendingScreen> {
                 Container(
                   padding: const EdgeInsets.all(24),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFF472B6),
+                    color: const Color(0xFFEBD79B),
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(
                     LucideIcons.baby,
                     size: 48,
-                    color: Color(0xFFF472B6),
+                    color: Color(0xFFEBD79B),
                   ),
                 ),
                 const SizedBox(height: 28),
@@ -93,7 +94,7 @@ class _NannyPendingScreenState extends State<NannyPendingScreen> {
                       ? '${widget.providerName} — hujjatlaringiz administrator tomonidan tekshirilmoqda.'
                       : 'Hujjatlaringiz administrator tomonidan tekshirilmoqda.',
                   textAlign: TextAlign.center,
-                  style: TextStyle(color: Colors.grey[700], height: 1.45),
+                  style: TextStyle(color: LuxTokens.textMuted, height: 1.45),
                 ),
                 const SizedBox(height: 8),
                 Text('Tasdiqlangandan keyin profilingiz mijozlarga ko\'rinadi va panel to\'liq ochiladi.'.tr,

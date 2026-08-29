@@ -3,6 +3,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../main_screen.dart';
 import '../../provider_side/provider_theme.dart';
 import 'package:super_app/l10n/locale_controller.dart';
+import '../../../theme/lux_tokens.dart';
 
 /// Usta xona egasi tasdiqlaguncha.
 class BarberPendingScreen extends StatelessWidget {
@@ -40,12 +41,12 @@ class BarberPendingScreen extends StatelessWidget {
                 Text(
                   '$shopName xona egasi so\'rovingizni ko\'rib, qabul qiladi yoki rad etadi.',
                   textAlign: TextAlign.center,
-                  style: TextStyle(color: Colors.grey[700], height: 1.45),
+                  style: TextStyle(color: LuxTokens.textMuted, height: 1.45),
                 ),
                 const SizedBox(height: 8),
                 Text('Tasdiqlangandan keyin panelingiz ochiladi.'.tr,
                   textAlign: TextAlign.center,
-                  style: TextStyle(color: Colors.grey[600], fontSize: 13),
+                  style: TextStyle(color: LuxTokens.textMuted, fontSize: 13),
                 ),
                 const SizedBox(height: 40),
                 SizedBox(

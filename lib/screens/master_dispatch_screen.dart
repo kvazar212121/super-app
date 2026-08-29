@@ -14,6 +14,7 @@ import '../widgets/glass/mesh_background.dart';
 import 'provider_profile_screen.dart';
 import 'map_address_picker_screen.dart';
 import 'package:super_app/l10n/locale_controller.dart';
+import '../theme/lux_tokens.dart';
 
 /// Usta / mobil mutaxassisni vaqtga chaqirish — mijoz manzili bilan.
 class MasterDispatchScreen extends StatefulWidget {
@@ -374,7 +375,7 @@ class _MasterDispatchScreenState extends State<MasterDispatchScreen> {
                                     fontWeight: FontWeight.w600,
                                     color: selected
                                         ? Colors.white
-                                        : Colors.black87,
+                                        : LuxTokens.text,
                                   ),
                                 ),
                               ),
@@ -386,7 +387,7 @@ class _MasterDispatchScreenState extends State<MasterDispatchScreen> {
                                   fontWeight: FontWeight.bold,
                                   color: selected
                                       ? Colors.white
-                                      : Colors.black54,
+                                      : LuxTokens.textMuted,
                                 ),
                               ),
                             ],

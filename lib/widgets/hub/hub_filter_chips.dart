@@ -2,15 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:super_app/l10n/locale_controller.dart';
 import '../../theme/glass_tokens.dart';
+import '../../theme/lux_tokens.dart';
 
 /// Hub ekranlari uchun filtr turi — boshqa sohalarga ham qo'llash mumkin.
-enum HubListFilter { all, nearest, topRated, openNow }
+enum HubListFilter { all, nearest, topRated, openNow, promotions }
 
 const Map<HubListFilter, String> kHubFilterLabels = {
   HubListFilter.all: 'Barchasi',
   HubListFilter.nearest: 'Eng yaqin',
   HubListFilter.topRated: 'Reyting',
   HubListFilter.openNow: 'Hozir ochiq',
+  HubListFilter.promotions: 'Aksiyalar',
 };
 
 const Map<HubListFilter, IconData> _kHubFilterIcons = {
@@ -18,6 +20,7 @@ const Map<HubListFilter, IconData> _kHubFilterIcons = {
   HubListFilter.nearest: LucideIcons.mapPin,
   HubListFilter.topRated: LucideIcons.star,
   HubListFilter.openNow: LucideIcons.clock,
+  HubListFilter.promotions: LucideIcons.badgePercent,
 };
 
 /// Filtr modalini ochadi — "Xizmat turi" (subkategoriya) + "Saralash".
@@ -309,6 +312,7 @@ class HubFilterChips extends StatelessWidget {
     HubListFilter.nearest: 'Eng yaqin',
     HubListFilter.topRated: 'Reyting',
     HubListFilter.openNow: 'Hozir ochiq',
+    HubListFilter.promotions: 'Aksiyalar',
   };
 
   @override
@@ -328,11 +332,11 @@ class HubFilterChips extends StatelessWidget {
             selected: isSelected,
             onSelected: (_) => onChanged(f),
             selectedColor: accent,
-            backgroundColor: Colors.white,
+            backgroundColor: LuxTokens.surface,
             checkmarkColor: Colors.white,
             labelStyle: TextStyle(
               fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-              color: isSelected ? Colors.white : const Color(0xFF0F172A),
+              color: isSelected ? Colors.white : const Color(0xFF0A0A0B),
               fontSize: 13,
             ),
             side: BorderSide(color: isSelected ? accent : Colors.transparent),

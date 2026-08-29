@@ -9,6 +9,7 @@ import '../../services/api_service.dart';
 import '../../theme/glass_tokens.dart';
 import '../../widgets/glass/glass_scaffold.dart';
 import 'fitness_utils.dart';
+import '../../theme/lux_tokens.dart';
 
 /// Mashqlar kutubxonasi: qidiruv, filtrlar va cheksiz ro'yxat.
 class ExerciseLibraryScreen extends StatefulWidget {
@@ -197,7 +198,7 @@ class _ExerciseLibraryScreenState extends State<ExerciseLibraryScreen> {
               child: ChoiceChip(
                 label: Text(bp['label_uz'] as String? ?? value),
                 selected: selected,
-                selectedColor: Colors.teal,
+                selectedColor: LuxTokens.gold,
                 labelStyle: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
@@ -225,7 +226,7 @@ class _ExerciseLibraryScreenState extends State<ExerciseLibraryScreen> {
                       : GlassTokens.primaryText(context),
                 ),
                 backgroundColor: _selectedEquipment != null
-                    ? Colors.teal
+                    ? LuxTokens.gold
                     : null,
                 label: Text(
                   _selectedEquipment != null
@@ -277,7 +278,7 @@ class _ExerciseLibraryScreenState extends State<ExerciseLibraryScreen> {
                 _selectedEquipment == null
                     ? LucideIcons.circleCheck
                     : LucideIcons.circle,
-                color: Colors.teal,
+                color: LuxTokens.gold,
                 size: 18,
               ),
               onTap: () {
@@ -297,7 +298,7 @@ class _ExerciseLibraryScreenState extends State<ExerciseLibraryScreen> {
                   _selectedEquipment == value
                       ? LucideIcons.circleCheck
                       : LucideIcons.circle,
-                  color: Colors.teal,
+                  color: LuxTokens.gold,
                   size: 18,
                 ),
                 onTap: () {
@@ -372,8 +373,8 @@ class _ExerciseLibraryScreenState extends State<ExerciseLibraryScreen> {
     return Container(
       width: 52,
       height: 52,
-      color: Colors.tealAccent.withValues(alpha: 0.1),
-      child: const Icon(LucideIcons.dumbbell, color: Colors.teal, size: 22),
+      color: LuxTokens.goldSoft.withValues(alpha: 0.1),
+      child: const Icon(LucideIcons.dumbbell, color: LuxTokens.gold, size: 22),
     );
   }
 }

@@ -34,12 +34,10 @@ class SearchInputWidget extends StatelessWidget {
         enabledBorder: InputBorder.none,
         focusedBorder: InputBorder.none,
         filled: false,
-        prefixIcon: Icon(
+        prefixIcon: const Icon(
           LucideIcons.search,
           size: 18,
-          color: isDark
-              ? LuxTokens.goldSoft
-              : GlassTokens.secondaryText(context),
+          color: LuxTokens.gold,
         ),
         suffixIcon: controller.text.isNotEmpty
             ? IconButton(

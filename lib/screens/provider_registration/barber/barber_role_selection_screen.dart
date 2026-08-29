@@ -60,7 +60,7 @@ class BarberRoleSelectionScreen extends StatelessWidget {
                   title: 'Sartaroshxonada ishlayman'.tr,
                   subtitle:
                       'Mavjud xonani tanlang yoki taklif kodi bilan qo\'shiling. Egasi tasdiqlaydi.'.tr,
-                  color: const Color(0xFF3B82F6),
+                  color: const Color(0xFFC9A227),
                   onTap: () =>
                       _open(context, BarberRegistrationRole.shopEmployee),
                 ),

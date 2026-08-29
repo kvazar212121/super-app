@@ -12,6 +12,7 @@ import '../services/provider_availability_service.dart';
 import '../utils/auth_guard.dart';
 import '../widgets/booking_common_widgets.dart';
 import '../widgets/glass/mesh_background.dart';
+import '../theme/lux_tokens.dart';
 
 class EducationCenterBookingScreen extends StatefulWidget {
   final EducationCenter center;
@@ -41,7 +42,7 @@ class _EducationCenterBookingScreenState
   List<String> _bookedSlots = [];
   bool _loadingSlots = true;
 
-  static const _accent = Color(0xFF2563EB);
+  static const _accent = Color(0xFFB8921F);
 
   List<String> get _services => widget.center.services.isNotEmpty
       ? widget.center.services
@@ -225,7 +226,7 @@ class _EducationCenterBookingScreenState
                           child: Text(
                             widget.center.address,
                             style: TextStyle(
-                              color: Colors.grey[600],
+                              color: LuxTokens.textMuted,
                               fontSize: 13,
                             ),
                           ),

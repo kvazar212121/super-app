@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import '../theme/glass_tokens.dart';
+import '../theme/lux_tokens.dart';
 
 /// Provayder hisob (balans) kartasi.
 /// Balans — provayder lead-fee (mijoz topish komissiyasi) hamyoni.
@@ -23,24 +24,7 @@ class AccountBalanceCard extends StatelessWidget {
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 14, sigmaY: 14),
         child: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: isPremium
-                  ? [const Color(0xFF6366F1), const Color(0xFF8B5CF6)]
-                  : [const Color(0xFF6366F1), const Color(0xFF06B6D4)],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-            borderRadius: BorderRadius.circular(GlassTokens.radiusLg),
-            border: Border.all(color: Colors.white),
-            boxShadow: [
-              BoxShadow(
-                color: const Color(0xFF6366F1),
-                blurRadius: 20,
-                offset: const Offset(0, 10),
-              ),
-            ],
-          ),
+          decoration: LuxTokens.goldBoxDecoration(radius: GlassTokens.radiusLg),
           padding: const EdgeInsets.all(22),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -48,12 +32,9 @@ class AccountBalanceCard extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
+                  Text(
                     'Hisob',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600,
-                    ),
+                    style: LuxTokens.goldEngravedTextStyle.copyWith(fontSize: 15),
                   ),
                   if (isPremium)
                     Container(
@@ -62,15 +43,14 @@ class AccountBalanceCard extends StatelessWidget {
                         vertical: 4,
                       ),
                       decoration: BoxDecoration(
-                        color: Colors.amber,
+                        color: const Color(0xFF140D02),
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: const Text(
+                      child: Text(
                         'PREMIUM',
-                        style: TextStyle(
-                          color: Colors.black,
+                        style: LuxTokens.goldEngravedTextStyle.copyWith(
+                          color: LuxTokens.gold,
                           fontSize: 10,
-                          fontWeight: FontWeight.w800,
                         ),
                       ),
                     ),
@@ -79,9 +59,7 @@ class AccountBalanceCard extends StatelessWidget {
               const SizedBox(height: 8),
               Text(
                 '${balance.toStringAsFixed(0)} so\'m',
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w800,
+                style: LuxTokens.goldEngravedTextStyle.copyWith(
                   fontSize: 28,
                   letterSpacing: -0.5,
                 ),
@@ -91,15 +69,16 @@ class AccountBalanceCard extends StatelessWidget {
                 children: [
                   const Icon(
                     Icons.account_balance_wallet_rounded,
-                    color: Colors.white,
+                    color: Color(0xFF140D02),
                     size: 18,
                   ),
                   const SizedBox(width: 6),
-                  Text(
+                  const Text(
                     'Xizmat hisobingiz',
                     style: TextStyle(
-                      color: Colors.white.withValues(alpha: 0.85),
+                      color: Color(0xFF332205),
                       fontSize: 13,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ],

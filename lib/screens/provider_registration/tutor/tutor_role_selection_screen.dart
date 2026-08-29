@@ -4,6 +4,7 @@ import '../../provider_side/provider_theme.dart';
 import 'tutor_solo_screen.dart';
 import 'tutor_center_screen.dart';
 import 'package:super_app/l10n/locale_controller.dart';
+import '../../../theme/lux_tokens.dart';
 
 class TutorRoleSelectionScreen extends StatelessWidget {
   const TutorRoleSelectionScreen({super.key});
@@ -23,7 +24,7 @@ class TutorRoleSelectionScreen extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text('Yakka repetitor (onlayn yoki uyga) yoki o\'quv markazi — band odamlar va o\'quvchilar uchun.'.tr,
-              style: TextStyle(color: Colors.grey[600], height: 1.4),
+              style: TextStyle(color: LuxTokens.textMuted, height: 1.4),
             ),
             const SizedBox(height: 28),
             _RoleCard(
@@ -31,7 +32,7 @@ class TutorRoleSelectionScreen extends StatelessWidget {
               title: 'Yakka repetitor'.tr,
               subtitle:
                   'Onlayn (Zoom/Telegram) yoki uyga kelib individual dars'.tr,
-              color: const Color(0xFF7C3AED),
+              color: const Color(0xFFB8921F),
               onTap: () => Navigator.push(
                 context,
                 MaterialPageRoute(builder: (_) => const TutorSoloScreen()),

@@ -11,6 +11,7 @@ import '../utils/auth_guard.dart';
 import '../widgets/booking_common_widgets.dart';
 import '../widgets/glass/mesh_background.dart';
 import 'package:super_app/l10n/locale_controller.dart';
+import '../theme/lux_tokens.dart';
 
 class DisinfectionDispatchScreen extends StatefulWidget {
   final DisinfectionService service;
@@ -30,7 +31,7 @@ class _DisinfectionDispatchScreenState
   final _problemCtrl = TextEditingController();
   DateTime _selectedDate = DateTime.now().add(const Duration(days: 1));
 
-  final Color _accent = const Color(0xFF2563EB); // Emerald
+  final Color _accent = const Color(0xFFB8921F); // Emerald
 
   bool get _canSubmit =>
       _selectedAreaType != null &&
@@ -128,7 +129,7 @@ class _DisinfectionDispatchScreenState
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: LuxTokens.surface,
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Row(
@@ -203,7 +204,7 @@ class _DisinfectionDispatchScreenState
                   hintText: 'Ko\'cha, uy, orientir...',
                   prefixIcon: const Icon(LucideIcons.mapPin),
                   filled: true,
-                  fillColor: Colors.white,
+                  fillColor: LuxTokens.surface,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
                     borderSide: BorderSide.none,

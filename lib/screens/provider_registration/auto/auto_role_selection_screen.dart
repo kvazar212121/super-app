@@ -4,6 +4,7 @@ import '../../provider_side/provider_theme.dart';
 import 'auto_mobile_screen.dart';
 import 'auto_workshop_screen.dart';
 import 'package:super_app/l10n/locale_controller.dart';
+import '../../../theme/lux_tokens.dart';
 
 /// Avto-yordam ro'yxatdan o'tish — mobil yoki ustaxona.
 class AutoRoleSelectionScreen extends StatelessWidget {
@@ -24,7 +25,7 @@ class AutoRoleSelectionScreen extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text('Mobil yordam (yo\'lda) yoki doimiy ustaxona — o\'zingizga mos turini tanlang.'.tr,
-              style: TextStyle(color: Colors.grey[600], height: 1.4),
+              style: TextStyle(color: LuxTokens.textMuted, height: 1.4),
             ),
             const SizedBox(height: 28),
             _RoleCard(
@@ -32,7 +33,7 @@ class AutoRoleSelectionScreen extends StatelessWidget {
               title: 'Mobil avto-yordam'.tr,
               subtitle:
                   'Evakuator, benzin yetkazish, joyida ta\'mirlash — yo\'lda xizmat'.tr,
-              color: const Color(0xFF8B5CF6),
+              color: const Color(0xFFE3C766),
               onTap: () => Navigator.push(
                 context,
                 MaterialPageRoute(builder: (_) => const AutoMobileScreen()),
@@ -44,7 +45,7 @@ class AutoRoleSelectionScreen extends StatelessWidget {
               title: 'Ustaxona'.tr,
               subtitle:
                   'Doimiy servis markazi — diagnostika, remont, shinopompa'.tr,
-              color: const Color(0xFF334155),
+              color: const Color(0xFF26262A),
               onTap: () => Navigator.push(
                 context,
                 MaterialPageRoute(builder: (_) => const AutoWorkshopScreen()),

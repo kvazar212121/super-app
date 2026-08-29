@@ -8,7 +8,7 @@ import 'package:provider/provider.dart';
 import 'package:smart_auth/smart_auth.dart';
 
 import '../../providers/auth_provider.dart';
-import '../../theme/glass_tokens.dart';
+import '../../theme/lux_tokens.dart';
 import 'uz_phone_field.dart';
 import '../../l10n/locale_controller.dart';
 
@@ -107,8 +107,6 @@ class OtpCodeFieldState extends State<OtpCodeField> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final theme = Theme.of(context);
-    final accent = theme.colorScheme.primary;
 
     return Row(
       children: List.generate(widget.length, (i) {
@@ -124,9 +122,9 @@ class OtpCodeFieldState extends State<OtpCodeField> {
               autofillHints: const [AutofillHints.oneTimeCode],
               maxLength: 1,
               style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w800,
-                color: GlassTokens.primaryText(context),
+                fontSize: 22,
+                fontWeight: FontWeight.w900,
+                color: isDark ? Colors.white : const Color(0xFF0F172A),
               ),
               inputFormatters: [FilteringTextInputFormatter.digitsOnly],
               decoration: InputDecoration(
@@ -134,28 +132,30 @@ class OtpCodeFieldState extends State<OtpCodeField> {
                 isDense: true,
                 filled: true,
                 fillColor: isDark
-                    ? Colors.white.withValues(alpha: 0.08)
-                    : Colors.black.withValues(alpha: 0.05),
-                contentPadding: const EdgeInsets.symmetric(vertical: 12),
+                    ? const Color(0xFF1E293B)
+                    : const Color(0xFFF1F5F9),
+                contentPadding: const EdgeInsets.symmetric(vertical: 14),
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(12),
                   borderSide: BorderSide(
                     color: isDark
-                        ? Colors.white.withValues(alpha: 0.15)
-                        : Colors.black.withValues(alpha: 0.1),
+                        ? const Color(0xFF475569)
+                        : const Color(0xFFCBD5E1),
+                    width: 1.5,
                   ),
                 ),
                 enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(12),
                   borderSide: BorderSide(
                     color: isDark
-                        ? Colors.white.withValues(alpha: 0.15)
-                        : Colors.black.withValues(alpha: 0.1),
+                        ? const Color(0xFF475569)
+                        : const Color(0xFFCBD5E1),
+                    width: 1.5,
                   ),
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(color: accent, width: 2),
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: const BorderSide(color: LuxTokens.gold, width: 2.0),
                 ),
               ),
               onChanged: (v) => _onDigit(i, v),
@@ -298,19 +298,47 @@ class _OtpAuthPanelState extends State<OtpAuthPanel> {
           const SizedBox(height: 20),
           UzPhoneField(controller: _phoneCtrl),
           const SizedBox(height: 24),
-          SizedBox(
+          Container(
             width: double.infinity,
             height: 52,
-            child: FilledButton.icon(
+            decoration: BoxDecoration(
+              gradient: LuxTokens.goldGradient,
+              borderRadius: BorderRadius.circular(14),
+              boxShadow: const [
+                BoxShadow(
+                  color: Colors.black26,
+                  blurRadius: 8,
+                  offset: Offset(0, 3),
+                ),
+              ],
+            ),
+            child: ElevatedButton.icon(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.transparent,
+                shadowColor: Colors.transparent,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
+              ),
               onPressed: _loading ? null : _sendOtp,
               icon: _loading
                   ? const SizedBox(
                       width: 20,
                       height: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2),
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Color(0xFF140D02),
+                      ),
                     )
-                  : Icon(LucideIcons.messageSquare, size: 20),
-              label: Text('SMS kod yuborish'.tr),
+                  : const Icon(LucideIcons.messageSquare, size: 20, color: Color(0xFF140D02)),
+              label: Text(
+                'SMS kod yuborish'.tr,
+                style: const TextStyle(
+                  color: Color(0xFF140D02),
+                  fontSize: 16,
+                  fontWeight: FontWeight.w900,
+                ),
+              ),
             ),
           ),
         ],
@@ -346,16 +374,33 @@ class _OtpAuthPanelState extends State<OtpAuthPanel> {
         Row(
           children: [
             TextButton(
+              style: TextButton.styleFrom(
+                foregroundColor: const Color(0xFF8A5D0B),
+              ),
               onPressed: _loading ? null : () => setState(() => _step = 0),
-              child: Text('Raqamni o\'zgartirish'.tr),
+              child: Text(
+                'Raqamni o\'zgartirish'.tr,
+                style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 14),
+              ),
             ),
             const Spacer(),
             TextButton(
+              style: TextButton.styleFrom(
+                foregroundColor: const Color(0xFF8A5D0B),
+                disabledForegroundColor: const Color(0xFF64748B),
+              ),
               onPressed: (_loading || _resendSeconds > 0) ? null : _sendOtp,
               child: Text(
                 _resendSeconds > 0
-                    ? '${'Qayta'.tr} ($_resendSeconds)'
+                    ? '${'Qayta'.tr} ($_resendSeconds s)'
                     : 'Qayta yuborish'.tr,
+                style: TextStyle(
+                  color: _resendSeconds > 0
+                      ? const Color(0xFF64748B)
+                      : const Color(0xFF8A5D0B),
+                  fontWeight: FontWeight.w800,
+                  fontSize: 14,
+                ),
               ),
             ),
           ],
@@ -365,11 +410,19 @@ class _OtpAuthPanelState extends State<OtpAuthPanel> {
   }
 
   TextStyle _titleStyle(BuildContext context) => TextStyle(
-    fontSize: 20,
-    fontWeight: FontWeight.w800,
-    color: GlassTokens.primaryText(context),
+    fontSize: 22,
+    fontWeight: FontWeight.w900,
+    color: Theme.of(context).brightness == Brightness.dark
+        ? Colors.white
+        : const Color(0xFF0F172A),
   );
 
-  TextStyle _subStyle(BuildContext context) =>
-      TextStyle(color: GlassTokens.secondaryText(context), height: 1.4);
+  TextStyle _subStyle(BuildContext context) => TextStyle(
+    fontSize: 14,
+    fontWeight: FontWeight.w600,
+    color: Theme.of(context).brightness == Brightness.dark
+        ? const Color(0xFF94A3B8)
+        : const Color(0xFF475569),
+    height: 1.4,
+  );
 }

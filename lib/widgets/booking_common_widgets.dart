@@ -4,14 +4,15 @@ import 'package:cached_network_image/cached_network_image.dart';
 import '../theme/glass_tokens.dart';
 import '../config/app_config.dart';
 import 'package:super_app/l10n/locale_controller.dart';
+import '../theme/lux_tokens.dart';
 
 /// Booking ekranlari uchun umumiy ranglar.
 /// Kartalar har doim OQ fonda, shuning uchun ulardagi matn qat'iy qora.
 /// Mesh fon ustidagi matnlar esa [GlassTokens] orqali temaga moslashadi.
-const kBookingInk = Color(0xFF0F172A);
-const kBookingSub = Color(0xFF64748B);
+const kBookingInk = Color(0xFF0A0A0B);
+const kBookingSub = Color(0xFF6B6B68);
 const kBookingCard = Colors.white;
-const kBookingBorder = Color(0xFFE2E8F0);
+const kBookingBorder = Color(0xFFD6D6D2);
 
 class SectionTitle extends StatelessWidget {
   final String title;
@@ -555,7 +556,7 @@ class BookingActionBar extends StatelessWidget {
                   : Colors.grey[300]!.withValues(alpha: 0.5),
               foregroundColor: onPrimary != null
                   ? Colors.white
-                  : Colors.grey[500],
+                  : LuxTokens.textFaint,
               elevation: onPrimary != null ? 2 : 0,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),
@@ -916,7 +917,7 @@ class HorizontalDatePicker extends StatelessWidget {
                   Text(
                     isToday ? "Bugun" : DateFormat('E').format(date),
                     style: TextStyle(
-                      color: isSelected ? Colors.white70 : Colors.grey[600],
+                      color: isSelected ? Colors.white70 : LuxTokens.textMuted,
                       fontSize: 10,
                     ),
                   ),
@@ -994,7 +995,7 @@ class TimeSlotGrid extends StatelessWidget {
                 style: TextStyle(
                   color: isSelected
                       ? Colors.white
-                      : (isDisabled ? Colors.grey[400] : Colors.black),
+                      : (isDisabled ? LuxTokens.textFaint : Colors.black),
                   fontSize: 12,
                   fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                   decoration: isDisabled ? TextDecoration.lineThrough : null,

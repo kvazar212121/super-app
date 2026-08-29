@@ -10,6 +10,7 @@ import '../utils/auth_guard.dart';
 import '../widgets/booking_common_widgets.dart';
 import '../widgets/glass/mesh_background.dart';
 import 'package:super_app/l10n/locale_controller.dart';
+import '../theme/lux_tokens.dart';
 
 class ApplianceDispatchScreen extends StatefulWidget {
   final ApplianceRepair service;
@@ -26,7 +27,7 @@ class _ApplianceDispatchScreenState extends State<ApplianceDispatchScreen> {
   final _addressCtrl = TextEditingController();
   final _problemCtrl = TextEditingController();
 
-  final Color _accent = Colors.blueGrey;
+  final Color _accent = LuxTokens.textMuted;
 
   bool get _canSubmit =>
       _selectedApplianceType != null &&
@@ -116,7 +117,7 @@ class _ApplianceDispatchScreenState extends State<ApplianceDispatchScreen> {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: LuxTokens.surface,
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Row(
@@ -173,7 +174,7 @@ class _ApplianceDispatchScreenState extends State<ApplianceDispatchScreen> {
                   hintText: 'Ko\'cha, uy, orientir...',
                   prefixIcon: const Icon(LucideIcons.mapPin),
                   filled: true,
-                  fillColor: Colors.white,
+                  fillColor: LuxTokens.surface,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
                     borderSide: BorderSide.none,

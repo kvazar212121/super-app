@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import '../../l10n/locale_controller.dart';
 import '../../services/api_service.dart';
 import '../../theme/glass_tokens.dart';
+import '../../theme/lux_tokens.dart';
 import '../../widgets/glass/glass_scaffold.dart';
 
 /// Operator bilan jonli yozishma (qo'llab-quvvatlash chati).
@@ -151,8 +152,6 @@ class _SupportChatScreenState extends State<SupportChatScreen> {
     final isUser = m['sender'] == 'user';
     final pending = m['pending'] == true;
     final align = isUser ? Alignment.centerRight : Alignment.centerLeft;
-    final color = isUser ? const Color(0xFF6366F1) : GlassTokens.glassFill(context);
-    final textColor = isUser ? Colors.white : GlassTokens.primaryText(context);
 
     return Align(
       alignment: align,
@@ -160,16 +159,18 @@ class _SupportChatScreenState extends State<SupportChatScreen> {
         constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.75),
         margin: const EdgeInsets.only(bottom: 10),
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-        decoration: BoxDecoration(
-          color: color,
-          borderRadius: BorderRadius.only(
-            topLeft: const Radius.circular(16),
-            topRight: const Radius.circular(16),
-            bottomLeft: Radius.circular(isUser ? 16 : 4),
-            bottomRight: Radius.circular(isUser ? 4 : 16),
-          ),
-          border: isUser ? null : Border.all(color: GlassTokens.glassBorder(context)),
-        ),
+        decoration: isUser
+            ? LuxTokens.goldBoxDecoration(radius: 16)
+            : BoxDecoration(
+                color: GlassTokens.glassFill(context),
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(16),
+                  topRight: Radius.circular(16),
+                  bottomLeft: Radius.circular(4),
+                  bottomRight: Radius.circular(16),
+                ),
+                border: Border.all(color: GlassTokens.glassBorder(context)),
+              ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -181,17 +182,25 @@ class _SupportChatScreenState extends State<SupportChatScreen> {
                   style: const TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.w700,
-                    color: Color(0xFF06B6D4),
+                    color: Color(0xFF8A5D0B),
                   ),
                 ),
               ),
-            Text(m['text'] as String? ?? '', style: TextStyle(color: textColor, fontSize: 15)),
+            Text(
+              m['text'] as String? ?? '',
+              style: isUser
+                  ? LuxTokens.goldEngravedTextStyle.copyWith(fontSize: 15)
+                  : TextStyle(color: GlassTokens.primaryText(context), fontSize: 15),
+            ),
             if (pending)
               Padding(
                 padding: const EdgeInsets.only(top: 3),
                 child: Text(
                   'yuborilmoqda…'.tr,
-                  style: TextStyle(fontSize: 10, color: textColor.withValues(alpha: 0.7)),
+                  style: TextStyle(
+                    fontSize: 10,
+                    color: isUser ? const Color(0xFF332205) : GlassTokens.secondaryText(context),
+                  ),
                 ),
               ),
           ],
@@ -222,7 +231,7 @@ class _SupportChatScreenState extends State<SupportChatScreen> {
                   contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(24),
-                    borderSide: BorderSide.none,
+                    borderSide: BorderSide(color: LuxTokens.border),
                   ),
                 ),
               ),
@@ -233,16 +242,13 @@ class _SupportChatScreenState extends State<SupportChatScreen> {
               child: Container(
                 width: 46,
                 height: 46,
-                decoration: const BoxDecoration(
-                  color: Color(0xFF6366F1),
-                  shape: BoxShape.circle,
-                ),
+                decoration: LuxTokens.goldBoxDecoration(isCircle: true),
                 child: _sending
                     ? const Padding(
                         padding: EdgeInsets.all(13),
-                        child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                        child: CircularProgressIndicator(strokeWidth: 2, color: Color(0xFF140D02)),
                       )
-                    : const Icon(Icons.send_rounded, color: Colors.white, size: 22),
+                    : const Icon(Icons.send_rounded, color: Color(0xFF140D02), size: 22),
               ),
             ),
           ],

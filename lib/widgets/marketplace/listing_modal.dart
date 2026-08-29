@@ -17,6 +17,7 @@ import '../../services/marketplace_service.dart';
 import '../../theme/glass_tokens.dart';
 import 'photo_carousel.dart';
 import 'safety_warning_dialog.dart';
+import '../../theme/lux_tokens.dart';
 
 Future<void> showListingModal(BuildContext context, Listing listing) {
   return showModalBottomSheet(
@@ -41,7 +42,7 @@ class ListingModal extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final matn = isDark ? Colors.white : Colors.black87;
+    final matn = isDark ? Colors.white : LuxTokens.text;
 
     return SafeArea(
       child: ConstrainedBox(
@@ -70,7 +71,7 @@ class ListingModal extends StatelessWidget {
                 style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w800,
-                  color: Colors.blue,
+                  color: LuxTokens.gold,
                 ),
               ),
               const SizedBox(height: 8),
@@ -179,17 +180,17 @@ class ListingModal extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: Colors.blue.withValues(alpha: 0.10),
+        color: LuxTokens.gold.withValues(alpha: 0.10),
         borderRadius: BorderRadius.circular(GlassTokens.radiusSm),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 14, color: Colors.blue),
+          Icon(icon, size: 14, color: LuxTokens.gold),
           const SizedBox(width: 4),
           Text(
             text,
-            style: const TextStyle(fontSize: 12, color: Colors.blue),
+            style: const TextStyle(fontSize: 12, color: LuxTokens.gold),
           ),
         ],
       ),

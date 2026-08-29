@@ -12,6 +12,7 @@ import '../widgets/booking_common_widgets.dart';
 import '../widgets/glass/mesh_background.dart';
 import '../widgets/save_provider_button.dart';
 import 'package:super_app/l10n/locale_controller.dart';
+import '../theme/lux_tokens.dart';
 
 class MassageBookingScreen extends StatefulWidget {
   final MassageHijoma service;
@@ -104,7 +105,7 @@ class _MassageBookingScreenState extends State<MassageBookingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    const accentColor = Color(0xFF2563EB);
+    const accentColor = Color(0xFFB8921F);
     final currencyFormat = NumberFormat.currency(
       locale: 'uz_UZ',
       symbol: "so'm",
@@ -150,7 +151,7 @@ class _MassageBookingScreenState extends State<MassageBookingScreen> {
                         Text(
                           widget.service.visitModesLabel,
                           style: TextStyle(
-                            color: Colors.grey[600],
+                            color: LuxTokens.textMuted,
                             fontSize: 13,
                           ),
                         ),
@@ -331,7 +332,7 @@ class _MassageBookingScreenState extends State<MassageBookingScreen> {
                   Icon(
                     gender.icon,
                     size: 20,
-                    color: isSelected ? color : Colors.grey[500],
+                    color: isSelected ? color : LuxTokens.textFaint,
                   ),
                   const SizedBox(width: 8),
                   Text(
@@ -340,7 +341,7 @@ class _MassageBookingScreenState extends State<MassageBookingScreen> {
                       fontWeight: isSelected
                           ? FontWeight.bold
                           : FontWeight.normal,
-                      color: isSelected ? color : Colors.black87,
+                      color: isSelected ? color : LuxTokens.text,
                     ),
                   ),
                 ],

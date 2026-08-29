@@ -18,6 +18,7 @@ import '../../theme/glass_tokens.dart';
 import '../../widgets/glass/glass_scaffold.dart';
 import 'calorie_analyze_screen.dart';
 import 'calorie_profile_screen.dart';
+import '../../theme/lux_tokens.dart';
 
 /// Ovqat turlari nomlari (analyze ekranida ham ishlatiladi).
 const Map<String, String> kMealTypeNames = {
@@ -177,7 +178,7 @@ class _CalorieHomeScreenState extends State<CalorieHomeScreen> {
           children: [
             const SizedBox(height: 12),
             ListTile(
-              leading: const Icon(LucideIcons.camera, color: Colors.redAccent),
+              leading: const Icon(LucideIcons.camera, color: Color(0xFF8A5D0B)),
               title: Text(
                 'Kamera'.tr,
                 style: TextStyle(color: GlassTokens.primaryText(context)),
@@ -188,7 +189,7 @@ class _CalorieHomeScreenState extends State<CalorieHomeScreen> {
               },
             ),
             ListTile(
-              leading: const Icon(LucideIcons.image, color: Colors.redAccent),
+              leading: const Icon(LucideIcons.image, color: Color(0xFF8A5D0B)),
               title: Text(
                 'Galereya'.tr,
                 style: TextStyle(color: GlassTokens.primaryText(context)),
@@ -232,15 +233,30 @@ class _CalorieHomeScreenState extends State<CalorieHomeScreen> {
           },
         ),
       ],
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: _showPhotoSourceSheet,
-        backgroundColor: Colors.redAccent,
-        icon: const Icon(LucideIcons.camera, color: Colors.white),
-        label: Text(
-          'Suratga olish'.tr,
-          style: const TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.w700,
+      floatingActionButton: Container(
+        decoration: BoxDecoration(
+          gradient: LuxTokens.goldGradient,
+          borderRadius: BorderRadius.circular(28),
+          boxShadow: const [
+            BoxShadow(
+              color: Colors.black26,
+              blurRadius: 10,
+              offset: Offset(0, 4),
+            ),
+          ],
+        ),
+        child: FloatingActionButton.extended(
+          onPressed: _showPhotoSourceSheet,
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          highlightElevation: 0,
+          icon: const Icon(LucideIcons.camera, color: Color(0xFF140D02)),
+          label: Text(
+            'Suratga olish'.tr,
+            style: const TextStyle(
+              color: Color(0xFF140D02),
+              fontWeight: FontWeight.w900,
+            ),
           ),
         ),
       ),
@@ -338,8 +354,8 @@ class _CalorieHomeScreenState extends State<CalorieHomeScreen> {
                       value: goal != null ? progress : null,
                       strokeWidth: 9,
                       backgroundColor: GlassTokens.glassBorder(context),
-                      valueColor: AlwaysStoppedAnimation(
-                        over ? Colors.orangeAccent : Colors.redAccent,
+                      valueColor: const AlwaysStoppedAnimation(
+                        Color(0xFFC99427),
                       ),
                     ),
                     Column(
@@ -399,12 +415,12 @@ class _CalorieHomeScreenState extends State<CalorieHomeScreen> {
                         style: const TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
-                          color: Color(0xFF0D9488),
+                          color: Color(0xFFB8921F),
                         ),
                       ),
                     ],
                     SizedBox(height: 12),
-                    _buildMacroRow('Oqsil'.tr, protein, Colors.blueAccent),
+                    _buildMacroRow('Oqsil'.tr, protein, LuxTokens.goldSoft),
                     _buildMacroRow('Yog\''.tr, fat, Colors.orangeAccent),
                     _buildMacroRow('Uglevod'.tr, carbs, Colors.greenAccent),
                   ],
@@ -574,7 +590,7 @@ class _CalorieHomeScreenState extends State<CalorieHomeScreen> {
               style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w800,
-                color: Colors.redAccent,
+                color: Color(0xFF8A5D0B),
               ),
             ),
             Text(
@@ -594,10 +610,13 @@ class _CalorieHomeScreenState extends State<CalorieHomeScreen> {
     return Container(
       width: 52,
       height: 52,
-      color: Colors.redAccent.withValues(alpha: 0.12),
+      decoration: BoxDecoration(
+        color: LuxTokens.goldSoft.withValues(alpha: 0.15),
+        borderRadius: BorderRadius.circular(10),
+      ),
       child: const Icon(
         LucideIcons.utensils,
-        color: Colors.redAccent,
+        color: Color(0xFF8A5D0B),
         size: 22,
       ),
     );

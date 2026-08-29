@@ -8,6 +8,7 @@ import '../../provider_side/provider_theme.dart';
 import '../../provider_side/unified_provider_dashboard_screen.dart';
 import 'package:super_app/l10n/locale_controller.dart';
 import '../../../widgets/friendly_error.dart';
+import '../../../theme/lux_tokens.dart';
 
 class TutorCenterScreen extends StatefulWidget {
   const TutorCenterScreen({super.key});
@@ -97,7 +98,7 @@ class _TutorCenterScreenState extends State<TutorCenterScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text('Markaz manzili va kurslar — ro\'yxatdan o\'tishi bilan mijozlar vaqt bron qilishni boshlaydi.'.tr,
-                style: TextStyle(color: Colors.grey[700], height: 1.4),
+                style: TextStyle(color: LuxTokens.textMuted, height: 1.4),
               ),
               const SizedBox(height: 24),
               TextField(

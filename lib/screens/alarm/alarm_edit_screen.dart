@@ -4,6 +4,7 @@ import '../../l10n/locale_controller.dart';
 import '../../models/alarm.dart';
 import '../../services/api_service.dart';
 import '../../services/notification_helper.dart';
+import '../../theme/lux_tokens.dart';
 
 /// Budilnik qo'shish yoki tahrirlash ekrani.
 class AlarmEditScreen extends StatefulWidget {
@@ -138,239 +139,557 @@ class _AlarmEditScreenState extends State<AlarmEditScreen> {
 
   @override
   Widget build(BuildContext context) {
+    const textPrimary = Color(0xFF0F172A);
+    const textSecondary = Color(0xFF64748B);
+
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        surfaceTintColor: Colors.transparent,
+        iconTheme: const IconThemeData(color: textPrimary),
         title: Text(
           widget.existing == null
               ? 'Yangi budilnik'.tr
               : 'Budilnikni tahrirlash'.tr,
+          style: const TextStyle(
+            color: textPrimary,
+            fontSize: 20,
+            fontWeight: FontWeight.w900,
+          ),
         ),
       ),
       body: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         children: [
-          // Vaqt
+          // Vaqt ko'rsatkichi
           Center(
             child: InkWell(
+              borderRadius: BorderRadius.circular(16),
               onTap: () async {
                 final picked = await showTimePicker(
                   context: context,
                   initialTime: _time,
+                  builder: (context, child) {
+                    return Theme(
+                      data: Theme.of(context).copyWith(
+                        colorScheme: const ColorScheme.light(
+                          primary: Color(0xFFC99427),
+                          onPrimary: Color(0xFF140D02),
+                          surface: Colors.white,
+                          onSurface: Color(0xFF0F172A),
+                        ),
+                        timePickerTheme: const TimePickerThemeData(
+                          backgroundColor: Colors.white,
+                          hourMinuteColor: Color(0xFFF1F5F9),
+                          hourMinuteTextColor: Color(0xFF0F172A),
+                          dayPeriodColor: Color(0xFFF1F5F9),
+                          dayPeriodTextColor: Color(0xFF0F172A),
+                          dialBackgroundColor: Color(0xFFF8FAFC),
+                          dialHandColor: Color(0xFFC99427),
+                          dialTextColor: Color(0xFF0F172A),
+                          entryModeIconColor: Color(0xFF8A5D0B),
+                        ),
+                      ),
+                      child: child!,
+                    );
+                  },
                 );
                 if (picked != null) setState(() => _time = picked);
               },
-              child: Text(
-                '${_time.hour.toString().padLeft(2, '0')}:${_time.minute.toString().padLeft(2, '0')}',
-                style: const TextStyle(
-                  fontSize: 64,
-                  fontWeight: FontWeight.bold,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                child: Text(
+                  '${_time.hour.toString().padLeft(2, '0')}:${_time.minute.toString().padLeft(2, '0')}',
+                  style: const TextStyle(
+                    fontSize: 64,
+                    fontWeight: FontWeight.w900,
+                    color: textPrimary,
+                    letterSpacing: 2,
+                  ),
                 ),
               ),
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 20),
+
+          // Budilnik nomi input
           TextField(
             controller: _labelCtrl,
+            style: const TextStyle(
+              color: textPrimary,
+              fontWeight: FontWeight.w700,
+              fontSize: 16,
+            ),
             decoration: InputDecoration(
               labelText: 'Nomi'.tr,
-              border: const OutlineInputBorder(),
+              labelStyle: const TextStyle(
+                color: textSecondary,
+                fontWeight: FontWeight.w600,
+              ),
+              filled: true,
+              fillColor: const Color(0xFFF1F5F9),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(14),
+                borderSide: const BorderSide(color: Color(0xFFCBD5E1)),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(14),
+                borderSide: const BorderSide(color: LuxTokens.gold, width: 1.8),
+              ),
             ),
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 24),
+
+          // Takror kunlari sarlavhasi
           Text(
             'Takror kunlari'.tr,
-            style: const TextStyle(fontWeight: FontWeight.bold),
+            style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w800,
+              color: textPrimary,
+            ),
           ),
-          const SizedBox(height: 8),
-          Wrap(
-            spacing: 8,
+          const SizedBox(height: 12),
+
+          // Kunlar chip qatori
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: List.generate(7, (i) {
               final weekday = i + 1;
               final selected = _days.contains(weekday);
-              return ChoiceChip(
-                label: Text(_weekdayLabels[i].tr),
-                selected: selected,
-                onSelected: (v) => setState(() {
-                  if (v) {
-                    _days.add(weekday);
-                  } else {
+
+              return GestureDetector(
+                onTap: () => setState(() {
+                  if (selected) {
                     _days.remove(weekday);
+                  } else {
+                    _days.add(weekday);
                   }
                 }),
+                child: Container(
+                  width: 42,
+                  height: 42,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    gradient: selected ? LuxTokens.goldGradient : null,
+                    color: selected ? null : const Color(0xFFF1F5F9),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: selected ? LuxTokens.gold : const Color(0xFFCBD5E1),
+                      width: selected ? 1.5 : 1.0,
+                    ),
+                    boxShadow: selected
+                        ? const [
+                            BoxShadow(
+                              color: Colors.black12,
+                              blurRadius: 4,
+                              offset: Offset(0, 2),
+                            ),
+                          ]
+                        : null,
+                  ),
+                  child: Text(
+                    _weekdayLabels[i].tr,
+                    style: TextStyle(
+                      color: selected ? const Color(0xFF140D02) : textSecondary,
+                      fontWeight: selected ? FontWeight.w900 : FontWeight.w700,
+                      fontSize: 14,
+                    ),
+                  ),
+                ),
               );
             }),
           ),
+          const SizedBox(height: 8),
           Text(
             _days.isEmpty
                 ? 'Bir martalik (keyingi mos vaqtda)'.tr
                 : 'Har hafta belgilangan kunlarda'.tr,
-            style: const TextStyle(color: Colors.grey, fontSize: 12),
+            style: const TextStyle(
+              color: textSecondary,
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+            ),
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 24),
+
+          // O'chirish vazifasi sarlavhasi
           Text(
             'O\'chirish vazifasi'.tr,
-            style: const TextStyle(fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 8),
-          SegmentedButton<String>(
-            segments: [
-              ButtonSegment(
-                value: 'math',
-                label: Text('Misol'.tr),
-                icon: const Icon(Icons.calculate),
-              ),
-              ButtonSegment(
-                value: 'photo',
-                label: Text('Rasm'.tr),
-                icon: const Icon(Icons.camera_alt),
-              ),
-              ButtonSegment(
-                value: 'speech',
-                label: Text('Nutq'.tr),
-                icon: const Icon(Icons.mic),
-              ),
-            ],
-            selected: {_missionType},
-            onSelectionChanged: (s) => setState(() => _missionType = s.first),
+            style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w800,
+              color: textPrimary,
+            ),
           ),
           const SizedBox(height: 12),
-          _buildMissionConfigUi(),
-          const SizedBox(height: 20),
-          SwitchListTile(
-            title: Text('Snooze (kechiktirish)'.tr),
-            value: _snoozeEnabled,
-            contentPadding: EdgeInsets.zero,
-            onChanged: (v) => setState(() => _snoozeEnabled = v),
+
+          // Vazifa turini tanlash segment paneli
+          Row(
+            children: [
+              Expanded(child: _buildMissionSegment('math', 'Misol'.tr, Icons.calculate)),
+              const SizedBox(width: 8),
+              Expanded(child: _buildMissionSegment('photo', 'Rasm'.tr, Icons.camera_alt)),
+              const SizedBox(width: 8),
+              Expanded(child: _buildMissionSegment('speech', 'Nutq'.tr, Icons.mic)),
+            ],
           ),
-          if (_snoozeEnabled)
-            Row(
+          const SizedBox(height: 16),
+
+          _buildMissionConfigUi(),
+          const SizedBox(height: 24),
+
+          // Snooze yoqish/o'chirish
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+            decoration: BoxDecoration(
+              color: const Color(0xFFF8FAFC),
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: const Color(0xFFE2E8F0)),
+            ),
+            child: Column(
               children: [
-                Text('Snooze davomiyligi: '.tr),
-                DropdownButton<int>(
-                  value: _snoozeMinutes,
-                  items: const [3, 5, 10, 15]
-                      .map(
-                        (m) => DropdownMenuItem(
-                          value: m,
-                          child: Text('$m ${'daqiqa'.tr}'),
+                SwitchListTile(
+                  title: Text(
+                    'Snooze (kechiktirish)'.tr,
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w800,
+                      color: textPrimary,
+                    ),
+                  ),
+                  value: _snoozeEnabled,
+                  contentPadding: EdgeInsets.zero,
+                  activeColor: const Color(0xFF140D02),
+                  activeTrackColor: LuxTokens.gold,
+                  onChanged: (v) => setState(() => _snoozeEnabled = v),
+                ),
+                if (_snoozeEnabled) ...[
+                  const Divider(height: 1, color: Color(0xFFE2E8F0)),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Snooze davomiyligi:'.tr,
+                          style: const TextStyle(
+                            color: textSecondary,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
-                      )
-                      .toList(),
-                  onChanged: (v) => setState(() => _snoozeMinutes = v ?? 5),
+                        DropdownButton<int>(
+                          value: _snoozeMinutes,
+                          dropdownColor: Colors.white,
+                          underline: const SizedBox(),
+                          style: const TextStyle(
+                            color: textPrimary,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w800,
+                          ),
+                          items: const [3, 5, 10, 15]
+                              .map(
+                                (m) => DropdownMenuItem(
+                                  value: m,
+                                  child: Text('$m ${'daqiqa'.tr}'),
+                                ),
+                              )
+                              .toList(),
+                          onChanged: (v) => setState(() => _snoozeMinutes = v ?? 5),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+          const SizedBox(height: 32),
+
+          // Saqlash tugmasi
+          Container(
+            width: double.infinity,
+            height: 54,
+            decoration: BoxDecoration(
+              gradient: LuxTokens.goldGradient,
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: const [
+                BoxShadow(
+                  color: Colors.black26,
+                  blurRadius: 8,
+                  offset: Offset(0, 3),
                 ),
               ],
             ),
-          const SizedBox(height: 24),
-          SizedBox(
-            width: double.infinity,
             child: ElevatedButton(
               onPressed: _saving ? null : _save,
               style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 16),
+                backgroundColor: Colors.transparent,
+                shadowColor: Colors.transparent,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
               ),
               child: _saving
                   ? const SizedBox(
-                      height: 20,
-                      width: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2),
+                      height: 24,
+                      width: 24,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2.5,
+                        color: Color(0xFF140D02),
+                      ),
                     )
-                  : Text('Saqlash'.tr, style: TextStyle(fontSize: 18)),
+                  : Text(
+                      'Saqlash'.tr,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w900,
+                        color: Color(0xFF140D02),
+                      ),
+                    ),
             ),
           ),
+          const SizedBox(height: 24),
         ],
       ),
     );
   }
 
+  Widget _buildMissionSegment(String type, String label, IconData icon) {
+    final selected = _missionType == type;
+    const textSecondary = Color(0xFF64748B);
+
+    return GestureDetector(
+      onTap: () => setState(() => _missionType = type),
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          gradient: selected ? LuxTokens.goldGradient : null,
+          color: selected ? null : const Color(0xFFF1F5F9),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: selected ? LuxTokens.gold : const Color(0xFFCBD5E1),
+            width: selected ? 1.5 : 1.0,
+          ),
+          boxShadow: selected
+              ? const [
+                  BoxShadow(
+                    color: Colors.black12,
+                    blurRadius: 4,
+                    offset: Offset(0, 2),
+                  ),
+                ]
+              : null,
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              icon,
+              size: 18,
+              color: selected ? const Color(0xFF140D02) : textSecondary,
+            ),
+            const SizedBox(width: 6),
+            Text(
+              label,
+              style: TextStyle(
+                color: selected ? const Color(0xFF140D02) : textSecondary,
+                fontWeight: selected ? FontWeight.w900 : FontWeight.w700,
+                fontSize: 13,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildMissionConfigUi() {
+    const textPrimary = Color(0xFF0F172A);
+    const textSecondary = Color(0xFF64748B);
+
     switch (_missionType) {
       case 'photo':
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Nimani rasmga olish kerak:'.tr,
-              style: const TextStyle(fontSize: 13, color: Colors.grey),
-            ),
-            const SizedBox(height: 8),
-            Wrap(
-              spacing: 8,
-              children: _photoPresets.keys.map((uz) {
-                return ChoiceChip(
-                  label: Text(uz.tr),
-                  selected: _photoTargetUz == uz,
-                  onSelected: (_) => setState(() {
-                    _photoTargetUz = uz;
-                    _photoTargetEn = _photoPresets[uz]!;
-                  }),
-                );
-              }).toList(),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              'AI rasmda shu narsa borligini tekshiradi.'.tr,
-              style: const TextStyle(fontSize: 12, color: Colors.grey),
-            ),
-          ],
+        return Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: const Color(0xFFF8FAFC),
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: const Color(0xFFE2E8F0)),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Nimani rasmga olish kerak:'.tr,
+                style: const TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                  color: textSecondary,
+                ),
+              ),
+              const SizedBox(height: 10),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: _photoPresets.keys.map((uz) {
+                  final selected = _photoTargetUz == uz;
+                  return GestureDetector(
+                    onTap: () => setState(() {
+                      _photoTargetUz = uz;
+                      _photoTargetEn = _photoPresets[uz]!;
+                    }),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      decoration: BoxDecoration(
+                        gradient: selected ? LuxTokens.goldGradient : null,
+                        color: selected ? null : Colors.white,
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(
+                          color: selected ? LuxTokens.gold : const Color(0xFFCBD5E1),
+                          width: selected ? 1.5 : 1.0,
+                        ),
+                      ),
+                      child: Text(
+                        uz.tr,
+                        style: TextStyle(
+                          color: selected ? const Color(0xFF140D02) : textPrimary,
+                          fontWeight: selected ? FontWeight.w900 : FontWeight.w600,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ),
+                  );
+                }).toList(),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'AI rasmda shu narsa borligini tekshiradi.'.tr,
+                style: const TextStyle(fontSize: 12, color: textSecondary),
+              ),
+            ],
+          ),
         );
       case 'speech':
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            TextField(
-              controller: _speechPhraseCtrl,
-              decoration: InputDecoration(
-                labelText:
-                    'O\'qiladigan matn (bo\'sh qoldirsangiz tasodifiy)'.tr,
-                border: const OutlineInputBorder(),
+        return Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: const Color(0xFFF8FAFC),
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: const Color(0xFFE2E8F0)),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              TextField(
+                controller: _speechPhraseCtrl,
+                style: const TextStyle(color: textPrimary, fontWeight: FontWeight.w600),
+                decoration: InputDecoration(
+                  labelText:
+                      'O\'qiladigan matn (bo\'sh qoldirsangiz tasodifiy)'.tr,
+                  labelStyle: const TextStyle(color: textSecondary),
+                  filled: true,
+                  fillColor: Colors.white,
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: const BorderSide(color: Color(0xFFCBD5E1)),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: const BorderSide(color: LuxTokens.gold, width: 1.8),
+                  ),
+                ),
+                maxLines: 2,
               ),
-              maxLines: 2,
-            ),
-            const SizedBox(height: 4),
-            Text(
-              'Ovoz chiqarib o\'qigan matningizni ilova tekshiradi.'.tr,
-              style: const TextStyle(fontSize: 12, color: Colors.grey),
-            ),
-          ],
+              const SizedBox(height: 8),
+              Text(
+                'Ovoz chiqarib o\'qigan matningizni ilova tekshiradi.'.tr,
+                style: const TextStyle(fontSize: 12, color: textSecondary),
+              ),
+            ],
+          ),
         );
       case 'math':
       default:
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Text('Qiyinlik: '.tr),
-                DropdownButton<String>(
-                  value: _mathDifficulty,
-                  items: [
-                    DropdownMenuItem(value: 'easy', child: Text('Oson'.tr)),
-                    DropdownMenuItem(value: 'medium', child: Text('O\'rta'.tr)),
-                    DropdownMenuItem(value: 'hard', child: Text('Qiyin'.tr)),
-                  ],
-                  onChanged: (v) =>
-                      setState(() => _mathDifficulty = v ?? 'medium'),
-                ),
-              ],
-            ),
-            Row(
-              children: [
-                Text('Nechta misol: '.tr),
-                DropdownButton<int>(
-                  value: _mathCount,
-                  items: const [1, 2, 3, 5]
-                      .map(
-                        (c) => DropdownMenuItem(
-                          value: c,
-                          child: Text('$c ${'ta'.tr}'),
-                        ),
-                      )
-                      .toList(),
-                  onChanged: (v) => setState(() => _mathCount = v ?? 1),
-                ),
-              ],
-            ),
-          ],
+        return Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: const Color(0xFFF8FAFC),
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: const Color(0xFFE2E8F0)),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Qiyinlik:'.tr,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                      color: textSecondary,
+                    ),
+                  ),
+                  DropdownButton<String>(
+                    value: _mathDifficulty,
+                    dropdownColor: Colors.white,
+                    underline: const SizedBox(),
+                    style: const TextStyle(
+                      color: textPrimary,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w800,
+                    ),
+                    items: [
+                      DropdownMenuItem(value: 'easy', child: Text('Oson'.tr)),
+                      DropdownMenuItem(value: 'medium', child: Text('O\'rta'.tr)),
+                      DropdownMenuItem(value: 'hard', child: Text('Qiyin'.tr)),
+                    ],
+                    onChanged: (v) =>
+                        setState(() => _mathDifficulty = v ?? 'medium'),
+                  ),
+                ],
+              ),
+              const Divider(height: 1, color: Color(0xFFE2E8F0)),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Nechta misol:'.tr,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                      color: textSecondary,
+                    ),
+                  ),
+                  DropdownButton<int>(
+                    value: _mathCount,
+                    dropdownColor: Colors.white,
+                    underline: const SizedBox(),
+                    style: const TextStyle(
+                      color: textPrimary,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w800,
+                    ),
+                    items: const [1, 2, 3, 5]
+                        .map(
+                          (c) => DropdownMenuItem(
+                            value: c,
+                            child: Text('$c ${'ta'.tr}'),
+                          ),
+                        )
+                        .toList(),
+                    onChanged: (v) => setState(() => _mathCount = v ?? 1),
+                  ),
+                ],
+              ),
+            ],
+          ),
         );
     }
   }

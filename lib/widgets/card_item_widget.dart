@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import '../models/payment_card.dart';
 import '../theme/glass_tokens.dart';
+import '../theme/lux_tokens.dart';
 
 class CardItemWidget extends StatelessWidget {
   final PaymentCard card;
@@ -50,7 +51,7 @@ class CardItemWidget extends StatelessWidget {
                         vertical: 2,
                       ),
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: LuxTokens.surface,
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: const Text(

@@ -8,6 +8,7 @@ import '../theme/glass_tokens.dart';
 import '../l10n/locale_controller.dart';
 
 import 'plan_history_screen.dart';
+import '../theme/lux_tokens.dart';
 
 class TodoScreen extends StatefulWidget {
   const TodoScreen({super.key});
@@ -188,17 +189,25 @@ class _TodoScreenState extends State<TodoScreen> {
       builder: (context) {
         return StatefulBuilder(
           builder: (context, setDialogState) {
+            const inputBg = Color(0xFFF1F5F9);
+            const textPrimary = Color(0xFF0F172A);
+            const textSecondary = Color(0xFF64748B);
+
             return AlertDialog(
-              backgroundColor: Colors.grey[900],
+              backgroundColor: Colors.white,
+              surfaceTintColor: Colors.transparent,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(GlassTokens.radiusMd),
-                side: BorderSide(color: Colors.white),
+                borderRadius: BorderRadius.circular(20),
+                side: BorderSide(
+                  color: LuxTokens.gold.withValues(alpha: 0.35),
+                  width: 1.5,
+                ),
               ),
               title: Text(
                 "Yangi reja yaratish".tr,
                 style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
+                  color: textPrimary,
+                  fontWeight: FontWeight.w900,
                   fontSize: 20,
                 ),
               ),
@@ -208,36 +217,77 @@ class _TodoScreenState extends State<TodoScreen> {
                   children: [
                     TextField(
                       controller: titleController,
-                      style: const TextStyle(color: Colors.white),
+                      style: const TextStyle(
+                        color: textPrimary,
+                        fontWeight: FontWeight.w600,
+                      ),
                       decoration: InputDecoration(
-                        labelText: "Reja nomi".tr,
-                        labelStyle: TextStyle(color: Colors.white),
-                        enabledBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(color: Colors.white),
+                        hintText: "Reja nomi".tr,
+                        hintStyle: const TextStyle(
+                          color: textSecondary,
                         ),
-                        focusedBorder: const UnderlineInputBorder(
-                          borderSide: BorderSide(color: Colors.blueAccent),
+                        filled: true,
+                        fillColor: inputBg,
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 14,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(color: Color(0xFFCBD5E1)),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(
+                            color: LuxTokens.gold,
+                            width: 1.8,
+                          ),
                         ),
                       ),
                     ),
                     const SizedBox(height: 12),
                     TextField(
                       controller: descController,
-                      style: const TextStyle(color: Colors.white),
+                      style: const TextStyle(
+                        color: textPrimary,
+                        fontWeight: FontWeight.w500,
+                      ),
                       decoration: InputDecoration(
-                        labelText: "Tavsif (ixtiyoriy)".tr,
-                        labelStyle: TextStyle(color: Colors.white),
-                        enabledBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(color: Colors.white),
+                        hintText: "Tavsif (ixtiyoriy)".tr,
+                        hintStyle: const TextStyle(
+                          color: textSecondary,
                         ),
-                        focusedBorder: const UnderlineInputBorder(
-                          borderSide: BorderSide(color: Colors.blueAccent),
+                        filled: true,
+                        fillColor: inputBg,
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 14,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(color: Color(0xFFCBD5E1)),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(
+                            color: LuxTokens.gold,
+                            width: 1.8,
+                          ),
                         ),
                       ),
                     ),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 20),
                     // Date picker row
                     InkWell(
+                      borderRadius: BorderRadius.circular(10),
                       onTap: () async {
                         final now = DateTime.now();
                         final picked = await showDatePicker(
@@ -247,19 +297,42 @@ class _TodoScreenState extends State<TodoScreen> {
                           lastDate: DateTime.now().add(
                             const Duration(days: 365 * 2),
                           ),
+                          builder: (context, child) {
+                            return Theme(
+                              data: Theme.of(context).copyWith(
+                                colorScheme: const ColorScheme.light(
+                                  primary: Color(0xFFC99427),
+                                  onPrimary: Color(0xFF140D02),
+                                  surface: Colors.white,
+                                  onSurface: Color(0xFF0F172A),
+                                ),
+                                dialogBackgroundColor: Colors.white,
+                                textButtonTheme: TextButtonThemeData(
+                                  style: TextButton.styleFrom(
+                                    foregroundColor: const Color(0xFF8A5D0B),
+                                    textStyle: const TextStyle(fontWeight: FontWeight.w700),
+                                  ),
+                                ),
+                              ),
+                              child: child!,
+                            );
+                          },
                         );
                         if (picked != null) {
                           setDialogState(() => chosenDate = picked);
                         }
                       },
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 8.0),
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 10.0,
+                          horizontal: 8.0,
+                        ),
                         child: Row(
                           children: [
                             const Icon(
                               LucideIcons.calendar,
-                              color: Colors.blueAccent,
-                              size: 20,
+                              color: LuxTokens.gold,
+                              size: 22,
                             ),
                             const SizedBox(width: 12),
                             Expanded(
@@ -269,16 +342,16 @@ class _TodoScreenState extends State<TodoScreen> {
                                   Text(
                                     "Sana".tr,
                                     style: const TextStyle(
-                                      color: Colors.white,
+                                      color: textSecondary,
                                       fontSize: 12,
                                     ),
                                   ),
                                   Text(
                                     "${chosenDate.day}-${_getMonthName(chosenDate.month).tr} ${chosenDate.year}-${'yil'.tr}",
                                     style: const TextStyle(
-                                      color: Colors.white,
+                                      color: textPrimary,
                                       fontSize: 15,
-                                      fontWeight: FontWeight.w500,
+                                      fontWeight: FontWeight.w700,
                                     ),
                                   ),
                                 ],
@@ -286,33 +359,73 @@ class _TodoScreenState extends State<TodoScreen> {
                             ),
                             const Icon(
                               LucideIcons.chevronRight,
-                              color: Colors.white54,
-                              size: 16,
+                              color: Color(0xFF94A3B8),
+                              size: 18,
                             ),
                           ],
                         ),
                       ),
                     ),
-                    const Divider(color: Colors.white24, height: 16),
+                    const Divider(
+                      color: Color(0xFFE2E8F0),
+                      height: 16,
+                    ),
                     // Time picker row
                     InkWell(
+                      borderRadius: BorderRadius.circular(10),
                       onTap: () async {
                         final picked = await showTimePicker(
                           context: context,
                           initialTime: chosenTime,
+                          builder: (context, child) {
+                            return Theme(
+                              data: Theme.of(context).copyWith(
+                                colorScheme: const ColorScheme.light(
+                                  primary: Color(0xFFC99427),
+                                  onPrimary: Color(0xFF140D02),
+                                  surface: Colors.white,
+                                  onSurface: Color(0xFF0F172A),
+                                  secondary: Color(0xFFC99427),
+                                  onSecondary: Color(0xFF140D02),
+                                ),
+                                dialogBackgroundColor: Colors.white,
+                                timePickerTheme: const TimePickerThemeData(
+                                  backgroundColor: Colors.white,
+                                  hourMinuteColor: Color(0xFFF1F5F9),
+                                  hourMinuteTextColor: Color(0xFF0F172A),
+                                  dayPeriodColor: Color(0xFFF1F5F9),
+                                  dayPeriodTextColor: Color(0xFF0F172A),
+                                  dialBackgroundColor: Color(0xFFF8FAFC),
+                                  dialHandColor: Color(0xFFC99427),
+                                  dialTextColor: Color(0xFF0F172A),
+                                  entryModeIconColor: Color(0xFF8A5D0B),
+                                ),
+                                textButtonTheme: TextButtonThemeData(
+                                  style: TextButton.styleFrom(
+                                    foregroundColor: const Color(0xFF8A5D0B),
+                                    textStyle: const TextStyle(fontWeight: FontWeight.w700),
+                                  ),
+                                ),
+                              ),
+                              child: child!,
+                            );
+                          },
                         );
                         if (picked != null) {
                           setDialogState(() => chosenTime = picked);
                         }
                       },
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 8.0),
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 10.0,
+                          horizontal: 8.0,
+                        ),
                         child: Row(
                           children: [
                             const Icon(
                               LucideIcons.clock,
-                              color: Colors.blueAccent,
-                              size: 20,
+                              color: LuxTokens.gold,
+                              size: 22,
                             ),
                             const SizedBox(width: 12),
                             Expanded(
@@ -322,16 +435,16 @@ class _TodoScreenState extends State<TodoScreen> {
                                   Text(
                                     "Vaqt".tr,
                                     style: const TextStyle(
-                                      color: Colors.white,
+                                      color: textSecondary,
                                       fontSize: 12,
                                     ),
                                   ),
                                   Text(
                                     "${chosenTime.hour.toString().padLeft(2, '0')}:${chosenTime.minute.toString().padLeft(2, '0')}",
                                     style: const TextStyle(
-                                      color: Colors.white,
+                                      color: textPrimary,
                                       fontSize: 15,
-                                      fontWeight: FontWeight.w500,
+                                      fontWeight: FontWeight.w700,
                                     ),
                                   ),
                                 ],
@@ -339,8 +452,8 @@ class _TodoScreenState extends State<TodoScreen> {
                             ),
                             const Icon(
                               LucideIcons.chevronRight,
-                              color: Colors.white54,
-                              size: 16,
+                              color: Color(0xFF94A3B8),
+                              size: 18,
                             ),
                           ],
                         ),
@@ -354,96 +467,118 @@ class _TodoScreenState extends State<TodoScreen> {
                   onPressed: () => Navigator.pop(context),
                   child: Text(
                     "Bekor qilish".tr,
-                    style: const TextStyle(color: Colors.grey),
-                  ),
-                ),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blueAccent,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                    style: const TextStyle(
+                      color: textSecondary,
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
-                  onPressed: () async {
-                    final title = titleController.text.trim();
-                    if (title.isEmpty) return;
+                ),
+                Container(
+                  decoration: BoxDecoration(
+                    gradient: LuxTokens.goldGradient,
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Colors.black26,
+                        blurRadius: 8,
+                        offset: Offset(0, 3),
+                      ),
+                    ],
+                  ),
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.transparent,
+                      shadowColor: Colors.transparent,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 12,
+                      ),
+                    ),
+                    onPressed: () async {
+                      final title = titleController.text.trim();
+                      if (title.isEmpty) return;
 
-                    final due = DateTime(
-                      chosenDate.year,
-                      chosenDate.month,
-                      chosenDate.day,
-                      chosenTime.hour,
-                      chosenTime.minute,
-                    );
+                      final due = DateTime(
+                        chosenDate.year,
+                        chosenDate.month,
+                        chosenDate.day,
+                        chosenTime.hour,
+                        chosenTime.minute,
+                      );
 
-                    if (due.isBefore(DateTime.now())) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            "O'tib ketgan vaqtga reja qo'shib bo'lmaydi!".tr,
+                      if (due.isBefore(DateTime.now())) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              "O'tib ketgan vaqtga reja qo'shib bo'lmaydi!".tr,
+                            ),
+                            backgroundColor: Colors.redAccent,
                           ),
-                          backgroundColor: Colors.redAccent,
-                        ),
-                      );
-                      return;
-                    }
+                        );
+                        return;
+                      }
 
-                    Navigator.pop(context);
+                      Navigator.pop(context);
 
-                    // Messenger'ni await'dan OLDIN olamiz: dialog
-                    // yopilgandan keyin `context` eskirgan bo'lishi
-                    // mumkin (analizator ogohlantirishi).
-                    final messenger = ScaffoldMessenger.of(context);
+                      final messenger = ScaffoldMessenger.of(context);
 
-                    try {
-                      final res = await _api.createPlan(
-                        title,
-                        due,
-                        descController.text.trim().isEmpty
-                            ? null
-                            : descController.text.trim(),
-                      );
-                      final newPlan = PlanItem.fromJson(res);
+                      try {
+                        final res = await _api.createPlan(
+                          title,
+                          due,
+                          descController.text.trim().isEmpty
+                              ? null
+                              : descController.text.trim(),
+                        );
+                        final newPlan = PlanItem.fromJson(res);
 
-                      final selectedDateStr = formatDateForApi(_selectedDate);
-                      final newPlanDateStr = formatDateForApi(newPlan.dueDate);
-                      if (selectedDateStr == newPlanDateStr) {
-                        if (!mounted) return;
-                        setState(() {
-                          _plans.add(newPlan);
-                          _plans.sort((a, b) => a.dueDate.compareTo(b.dueDate));
-                        });
-                      } else {
+                        final selectedDateStr = formatDateForApi(_selectedDate);
+                        final newPlanDateStr = formatDateForApi(newPlan.dueDate);
+                        if (selectedDateStr == newPlanDateStr) {
+                          if (!mounted) return;
+                          setState(() {
+                            _plans.add(newPlan);
+                            _plans.sort((a, b) => a.dueDate.compareTo(b.dueDate));
+                          });
+                        } else {
+                          if (!mounted) return;
+                          messenger.showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                "${'Reja'.tr} ${newPlan.dueDate.day}-${_getMonthName(newPlan.dueDate.month).tr} ${"kuniga qo'shildi!".tr}",
+                              ),
+                              action: SnackBarAction(
+                                label: "O'tish".tr,
+                                onPressed: () {
+                                  setState(() {
+                                    _selectedDate = newPlan.dueDate;
+                                  });
+                                  _loadPlans();
+                                },
+                              ),
+                            ),
+                          );
+                        }
+                      } catch (e) {
                         if (!mounted) return;
                         messenger.showSnackBar(
                           SnackBar(
-                            content: Text(
-                              "${'Reja'.tr} ${newPlan.dueDate.day}-${_getMonthName(newPlan.dueDate.month).tr} ${"kuniga qo'shildi!".tr}",
-                            ),
-                            action: SnackBarAction(
-                              label: "O'tish".tr,
-                              onPressed: () {
-                                setState(() {
-                                  _selectedDate = newPlan.dueDate;
-                                });
-                                _loadPlans();
-                              },
-                            ),
+                            content: Text("Reja yaratishda xatolik yuz berdi".tr),
                           ),
                         );
                       }
-                    } catch (e) {
-                      if (!mounted) return;
-                      messenger.showSnackBar(
-                        SnackBar(
-                          content: Text("Reja yaratishda xatolik yuz berdi".tr),
-                        ),
-                      );
-                    }
-                  },
-                  child: Text(
-                    "Saqlash".tr,
-                    style: const TextStyle(color: Colors.white),
+                    },
+                    child: Text(
+                      "Saqlash".tr,
+                      style: const TextStyle(
+                        color: Color(0xFF140D02),
+                        fontWeight: FontWeight.w900,
+                        fontSize: 15,
+                      ),
+                    ),
                   ),
                 ),
               ],
@@ -510,25 +645,48 @@ class _TodoScreenState extends State<TodoScreen> {
                   ],
                 ),
                 // Reja qo'shish tugmasi
-                ElevatedButton.icon(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blueAccent,
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 10,
-                    ),
+                Container(
+                  decoration: BoxDecoration(
+                    gradient: LuxTokens.goldGradient,
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Colors.black26,
+                        blurRadius: 6,
+                        offset: Offset(0, 2),
+                      ),
+                    ],
                   ),
-                  onPressed: _showAddPlanDialog,
-                  icon: const Icon(LucideIcons.plus, size: 18),
-                  label: Text(
-                    "Reja qo'shish".tr,
-                    style: const TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.bold,
+                  child: Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      onTap: _showAddPlanDialog,
+                      borderRadius: BorderRadius.circular(12),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 10,
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(
+                              LucideIcons.plus,
+                              size: 18,
+                              color: Color(0xFF140D02),
+                            ),
+                            const SizedBox(width: 6),
+                            Text(
+                              "Reja qo'shish".tr,
+                              style: const TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w900,
+                                color: Color(0xFF140D02),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                   ),
                 ),
@@ -601,16 +759,24 @@ class _TodoScreenState extends State<TodoScreen> {
               width: 64,
               margin: const EdgeInsets.symmetric(horizontal: 6),
               decoration: BoxDecoration(
-                color: isSelected
-                    ? Colors.blueAccent
-                    : GlassTokens.glassFill(context),
+                gradient: isSelected ? LuxTokens.goldGradient : null,
+                color: isSelected ? null : GlassTokens.glassFill(context),
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(
                   color: isSelected
-                      ? Colors.blueAccent
+                      ? LuxTokens.gold
                       : GlassTokens.glassBorder(context),
                   width: isSelected ? 1.5 : 1.0,
                 ),
+                boxShadow: isSelected
+                    ? const [
+                        BoxShadow(
+                          color: Colors.black26,
+                          blurRadius: 6,
+                          offset: Offset(0, 3),
+                        ),
+                      ]
+                    : null,
               ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -619,11 +785,11 @@ class _TodoScreenState extends State<TodoScreen> {
                     _getWeekdayNameShort(date.weekday).tr,
                     style: TextStyle(
                       color: isSelected
-                          ? Colors.white
+                          ? const Color(0xFF332205)
                           : GlassTokens.secondaryText(context),
                       fontSize: 12,
                       fontWeight: isSelected
-                          ? FontWeight.bold
+                          ? FontWeight.w800
                           : FontWeight.normal,
                     ),
                   ),
@@ -632,10 +798,10 @@ class _TodoScreenState extends State<TodoScreen> {
                     date.day.toString(),
                     style: TextStyle(
                       color: isSelected
-                          ? Colors.white
+                          ? const Color(0xFF140D02)
                           : GlassTokens.primaryText(context),
                       fontSize: 18,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w900,
                     ),
                   ),
                   const SizedBox(height: 2),
@@ -643,9 +809,12 @@ class _TodoScreenState extends State<TodoScreen> {
                     _getMonthNameShort(date.month).tr,
                     style: TextStyle(
                       color: isSelected
-                          ? Colors.white
+                          ? const Color(0xFF332205)
                           : GlassTokens.secondaryText(context),
                       fontSize: 10,
+                      fontWeight: isSelected
+                          ? FontWeight.w700
+                          : FontWeight.normal,
                     ),
                   ),
                 ],
@@ -688,7 +857,7 @@ class _TodoScreenState extends State<TodoScreen> {
                     onChanged: (val) {
                       if (val != null) _togglePlan(item, val);
                     },
-                    activeColor: Colors.blueAccent,
+                    activeColor: LuxTokens.goldSoft,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(4),
                     ),
@@ -711,13 +880,13 @@ class _TodoScreenState extends State<TodoScreen> {
                         const Icon(
                           LucideIcons.clock,
                           size: 13,
-                          color: Colors.blueAccent,
+                          color: LuxTokens.goldSoft,
                         ),
                         const SizedBox(width: 4),
                         Text(
                           timeStr,
                           style: const TextStyle(
-                            color: Colors.blueAccent,
+                            color: LuxTokens.goldSoft,
                             fontSize: 12,
                             fontWeight: FontWeight.w500,
                           ),
@@ -778,7 +947,7 @@ class _TodoScreenState extends State<TodoScreen> {
                 onChanged: (val) {
                   if (val != null) _togglePlan(item, val);
                 },
-                activeColor: Colors.blueAccent,
+                activeColor: LuxTokens.goldSoft,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(4),
                 ),
@@ -801,13 +970,13 @@ class _TodoScreenState extends State<TodoScreen> {
                     const Icon(
                       LucideIcons.clock,
                       size: 13,
-                      color: Colors.blueAccent,
+                      color: LuxTokens.goldSoft,
                     ),
                     const SizedBox(width: 4),
                     Text(
                       timeStr,
                       style: const TextStyle(
-                        color: Colors.blueAccent,
+                        color: LuxTokens.goldSoft,
                         fontSize: 12,
                         fontWeight: FontWeight.w500,
                       ),

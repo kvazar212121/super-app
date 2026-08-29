@@ -370,7 +370,7 @@ class _BarberBookingScreenState extends State<BarberBookingScreen> {
                             decoration: BoxDecoration(
                               color: isSelected
                                   ? Colors.white.withValues(alpha: 0.2)
-                                  : const Color(0xFFF1F5F9),
+                                  : const Color(0xFFF2F2F0),
                               shape: BoxShape.circle,
                             ),
                             child: Icon(
@@ -378,7 +378,7 @@ class _BarberBookingScreenState extends State<BarberBookingScreen> {
                               size: 18,
                               color: isSelected
                                   ? Colors.white
-                                  : const Color(0xFF64748B),
+                                  : const Color(0xFF6B6B68),
                             ),
                           ),
                           const SizedBox(width: 8),
@@ -390,7 +390,7 @@ class _BarberBookingScreenState extends State<BarberBookingScreen> {
                                 fontWeight: FontWeight.w700,
                                 color: isSelected
                                     ? Colors.white
-                                    : const Color(0xFF0F172A),
+                                    : const Color(0xFF0A0A0B),
                               ),
                             ),
                           ),
@@ -410,7 +410,7 @@ class _BarberBookingScreenState extends State<BarberBookingScreen> {
                           height: 1.3,
                           color: isSelected
                               ? Colors.white.withValues(alpha: 0.8)
-                              : const Color(0xFF64748B),
+                              : const Color(0xFF6B6B68),
                         ),
                       ),
                     ],

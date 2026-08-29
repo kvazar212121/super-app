@@ -44,6 +44,7 @@ import 'widgets/incoming_order_dialog.dart';
 import 'widgets/provider_profile_editor_widget.dart';
 import '../../services/hub_data_service.dart';
 import 'package:super_app/l10n/locale_controller.dart';
+import '../../theme/lux_tokens.dart';
 
 /// Barcha soha egasi panellari — DB/API dan ma'lumot oladi.
 class UnifiedProviderDashboardScreen extends StatefulWidget {
@@ -300,7 +301,7 @@ class _UnifiedProviderDashboardScreenState
 
     if (_loading) {
       return Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: LuxTokens.surface,
         body: const Center(
           child: CircularProgressIndicator(color: Colors.black),
         ),
@@ -309,9 +310,9 @@ class _UnifiedProviderDashboardScreenState
 
     if (_error != null) {
       return Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: LuxTokens.surface,
         appBar: AppBar(
-          backgroundColor: Colors.white,
+          backgroundColor: LuxTokens.surface,
           foregroundColor: Colors.black,
           title: Text('${widget.config.title} paneli'),
           elevation: 0,
@@ -393,21 +394,21 @@ class _UnifiedProviderDashboardScreenState
       },
       child: Theme(
         data: ThemeData.light().copyWith(
-          scaffoldBackgroundColor: Colors.white,
+          scaffoldBackgroundColor: LuxTokens.surface,
           colorScheme: const ColorScheme.light(
             primary: Colors.black,
             onPrimary: Colors.white,
             surface: Colors.white,
             onSurface: Colors.black,
             outline: Colors.black,
-            outlineVariant: Colors.black54,
+            outlineVariant: LuxTokens.textMuted,
           ),
           textTheme: Typography.material2021().black,
         ),
         child: Scaffold(
-          backgroundColor: Colors.white,
+          backgroundColor: LuxTokens.surface,
           appBar: AppBar(
-            backgroundColor: Colors.white,
+            backgroundColor: LuxTokens.surface,
             foregroundColor: Colors.black,
             elevation: 0,
             scrolledUnderElevation: 0,
@@ -430,12 +431,12 @@ class _UnifiedProviderDashboardScreenState
                   icon: const Icon(
                     LucideIcons.arrowLeftRight,
                     size: 16,
-                    color: Color(0xFF3B82F6),
+                    color: Color(0xFFC9A227),
                   ),
                   label: const Text(
                     'Foydalanuvchi',
                     style: TextStyle(
-                      color: Color(0xFF3B82F6),
+                      color: Color(0xFFC9A227),
                       fontWeight: FontWeight.w700,
                     ),
                   ),
@@ -680,7 +681,7 @@ class _UnifiedProviderDashboardScreenState
               width: 60,
               height: 60,
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: LuxTokens.surface,
                 shape: BoxShape.circle,
                 border: Border.all(color: Colors.black, width: 2),
                 image: coverUrl != null && coverUrl.isNotEmpty
@@ -712,7 +713,7 @@ class _UnifiedProviderDashboardScreenState
                       Text(
                         '$rating ($reviews sharh)',
                         style: const TextStyle(
-                          color: Colors.black87,
+                          color: LuxTokens.text,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -731,7 +732,7 @@ class _UnifiedProviderDashboardScreenState
                         '${_provider?['completed_orders_count'] ?? 0} yakunlagan',
                         style: const TextStyle(
                           fontSize: 12,
-                          color: Colors.black54,
+                          color: LuxTokens.textMuted,
                         ),
                       ),
                       const SizedBox(width: 12),
@@ -745,7 +746,7 @@ class _UnifiedProviderDashboardScreenState
                         '${_provider?['cancelled_orders_count'] ?? 0} bekor qilgan',
                         style: const TextStyle(
                           fontSize: 12,
-                          color: Colors.black54,
+                          color: LuxTokens.textMuted,
                         ),
                       ),
                     ],
@@ -769,7 +770,7 @@ class _UnifiedProviderDashboardScreenState
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: LuxTokens.surface,
             borderRadius: BorderRadius.circular(16),
             border: Border.all(color: Colors.black, width: 1.5),
           ),
@@ -801,7 +802,7 @@ class _UnifiedProviderDashboardScreenState
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: LuxTokens.surface,
             borderRadius: BorderRadius.circular(16),
             border: Border.all(color: Colors.black, width: 1.5),
           ),
@@ -965,7 +966,7 @@ class _UnifiedProviderDashboardScreenState
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: LuxTokens.surface,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: Colors.black, width: 2),
         boxShadow: const [BoxShadow(color: Colors.black, offset: Offset(2, 2))],
@@ -988,7 +989,7 @@ class _UnifiedProviderDashboardScreenState
             style: const TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.bold,
-              color: Colors.black87,
+              color: LuxTokens.text,
             ),
           ),
         ],
@@ -1004,7 +1005,7 @@ class _UnifiedProviderDashboardScreenState
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: LuxTokens.surface,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: Colors.black, width: 1.5),
       ),
@@ -1013,7 +1014,7 @@ class _UnifiedProviderDashboardScreenState
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: LuxTokens.surface,
               border: Border.all(color: Colors.black, width: 1.5),
               borderRadius: BorderRadius.circular(12),
             ),
@@ -1041,7 +1042,7 @@ class _UnifiedProviderDashboardScreenState
                 Text(
                   o['service_name'] as String? ?? '',
                   style: const TextStyle(
-                    color: Colors.black87,
+                    color: LuxTokens.text,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -1145,7 +1146,7 @@ class _UnifiedProviderDashboardScreenState
       selectedIndex: _selectedIndex,
       onDestinationSelected: (i) => setState(() => _selectedIndex = i),
       destinations: destinations,
-      backgroundColor: Colors.white,
+      backgroundColor: LuxTokens.surface,
       indicatorColor: Colors.black12,
     );
   }
@@ -1154,14 +1155,14 @@ class _UnifiedProviderDashboardScreenState
     return DefaultTabController(
       length: 2,
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: LuxTokens.surface,
         appBar: PreferredSize(
           preferredSize: const Size.fromHeight(48),
           child: Container(
-            color: Colors.white,
+            color: LuxTokens.surface,
             child: const TabBar(
               labelColor: Colors.black,
-              unselectedLabelColor: Colors.black54,
+              unselectedLabelColor: LuxTokens.textMuted,
               indicatorColor: Colors.black,
               indicatorWeight: 3,
               tabs: [
@@ -1190,7 +1191,7 @@ class _UnifiedProviderDashboardScreenState
           return const Center(
             child: Text(
               'Qo\'ng\'iroqlar tarixi bo\'sh',
-              style: TextStyle(color: Colors.black54),
+              style: TextStyle(color: LuxTokens.textMuted),
             ),
           );
         }
@@ -1245,7 +1246,7 @@ class _UnifiedProviderDashboardScreenState
               ),
               subtitle: Text(
                 '$statusText • $dateStr\nDavomiyligi: ${log.duration}',
-                style: const TextStyle(color: Colors.black87),
+                style: const TextStyle(color: LuxTokens.text),
               ),
               isThreeLine: true,
               trailing: Row(
@@ -1316,7 +1317,7 @@ class _UnifiedProviderDashboardScreenState
           return const Center(
             child: Text(
               'Bloklangan foydalanuvchilar yo\'q',
-              style: TextStyle(color: Colors.black54),
+              style: TextStyle(color: LuxTokens.textMuted),
             ),
           );
         }
@@ -1343,7 +1344,7 @@ class _UnifiedProviderDashboardScreenState
               ),
               subtitle: Text(
                 'Bloklangan sana: $dateStr',
-                style: const TextStyle(color: Colors.black87),
+                style: const TextStyle(color: LuxTokens.text),
               ),
               trailing: FilledButton(
                 onPressed: () {

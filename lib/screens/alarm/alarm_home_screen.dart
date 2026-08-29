@@ -7,6 +7,7 @@ import '../../services/notification_helper.dart';
 import '../../widgets/friendly_error.dart';
 import 'alarm_edit_screen.dart';
 import 'alarm_ring_screen.dart';
+import '../../theme/lux_tokens.dart';
 
 /// Majburlovchi budilnik — budilniklar ro'yxati.
 class AlarmHomeScreen extends StatefulWidget {
@@ -202,7 +203,7 @@ class _AlarmHomeScreenState extends State<AlarmHomeScreen> {
             onTap: () => _addOrEdit(a),
             leading: Icon(
               _missionIcons[a.missionType] ?? Icons.alarm,
-              color: Colors.tealAccent,
+              color: LuxTokens.goldSoft,
             ),
             title: Row(
               children: [

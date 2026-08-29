@@ -7,6 +7,7 @@ import '../../provider_side/provider_theme.dart';
 import '../../provider_side/unified_provider_dashboard_screen.dart';
 import '../../../services/courier_portal_service.dart';
 import 'package:super_app/l10n/locale_controller.dart';
+import '../../../theme/lux_tokens.dart';
 
 class CourierPendingScreen extends StatefulWidget {
   final String providerName;
@@ -72,7 +73,7 @@ class _CourierPendingScreenState extends State<CourierPendingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    const accent = Color(0xFF2563EB);
+    const accent = Color(0xFFB8921F);
     return ProviderTheme(
       child: Scaffold(
         body: Center(
@@ -103,7 +104,7 @@ class _CourierPendingScreenState extends State<CourierPendingScreen> {
                       ? '${widget.providerName} — profilingiz tekshirilmoqda.'
                       : 'Profilingiz tekshirilmoqda.',
                   textAlign: TextAlign.center,
-                  style: TextStyle(color: Colors.grey[700], height: 1.45),
+                  style: TextStyle(color: LuxTokens.textMuted, height: 1.45),
                 ),
                 const SizedBox(height: 8),
                 Text('Yuk va narsalar bilan ishlash mas\'uliyat talab qilgani uchun administrator tasdiqlashi kutilmoqda.'.tr,

@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../services/api_service.dart';
-import '../theme/glass_tokens.dart';
 import 'weather_currency_modals.dart';
 import '../theme/lux_tokens.dart';
 import '../l10n/locale_controller.dart';
@@ -70,20 +69,12 @@ class _DailyUtilitiesWidgetState extends State<DailyUtilitiesWidget> {
     );
   }
 
-  /// Qiymat matni uslubi — dark (premium) rejimda oq va yirikroq.
   TextStyle _valueStyle(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    return isDark
-        ? const TextStyle(
-            fontFamily: LuxTokens.body,
-            color: LuxTokens.text,
-            fontSize: 10.5,
-            fontWeight: FontWeight.w600,
-          )
-        : TextStyle(
-            color: GlassTokens.secondaryText(context),
-            fontSize: 10,
-          );
+    return const TextStyle(
+      color: Color(0xFF0F172A),
+      fontSize: 11,
+      fontWeight: FontWeight.w800,
+    );
   }
 
   Widget _buildWeatherCard() {
@@ -104,8 +95,8 @@ class _DailyUtilitiesWidgetState extends State<DailyUtilitiesWidget> {
         );
       },
       child: _BaseCard(
-        icon: LucideIcons.cloudSun,
-        color: Colors.blueAccent,
+        icon: LucideIcons.sun,
+        color: const Color(0xFFC9A227),
         title: 'Ob-havo'.tr,
         customSubtitle: Text(
           txt,
@@ -137,15 +128,12 @@ class _DailyUtilitiesWidgetState extends State<DailyUtilitiesWidget> {
       },
       child: _BaseCard(
         icon: LucideIcons.circleDollarSign,
-        color: Colors.greenAccent,
+        color: const Color(0xFFC9A227),
         title: 'Valyuta kursi'.tr,
         customSubtitle: AnimatedSwitcher(
           duration: const Duration(milliseconds: 500),
           switchInCurve: Curves.easeOut,
           switchOutCurve: Curves.easeIn,
-          // layoutBuilder: eski va yangi matn almashinuvda USTMA-UST
-          // tushmasin. Standart layout ikkalasini markazda joylashtiradi va
-          // qisqa lahzada matn "ikkilanib" ko'rinadi.
           layoutBuilder: (current, previous) => Stack(
             alignment: Alignment.centerLeft,
             children: [
@@ -178,54 +166,6 @@ class _DailyUtilitiesWidgetState extends State<DailyUtilitiesWidget> {
   }
 }
 
-class PrayerWidget extends StatefulWidget {
-  const PrayerWidget({super.key});
-  @override
-  State<PrayerWidget> createState() => _PrayerWidgetState();
-}
-
-class _PrayerWidgetState extends State<PrayerWidget> {
-  final ApiService _api = ApiService();
-  Map<String, dynamic>? prayers;
-
-  @override
-  void initState() {
-    super.initState();
-    _loadData();
-  }
-
-  Future<void> _loadData() async {
-    try {
-      final p = await _api.getPrayerTimes('Tashkent');
-      if (mounted) setState(() => prayers = p);
-    } catch (_) {}
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    String txt = 'Yuklanmoqda...'.tr;
-    if (prayers != null && prayers!.containsKey('timings')) {
-      final timings = prayers!['timings'];
-      txt =
-          '${'Bomdod'.tr}: ${timings['Fajr']} • ${'Peshin'.tr}: ${timings['Dhuhr']}';
-    }
-    return _BaseCard(
-      icon: LucideIcons.moon,
-      color: Colors.deepPurpleAccent,
-      title: 'Namoz vaqtlari'.tr,
-      customSubtitle: Text(
-        txt,
-        style: TextStyle(
-          color: GlassTokens.secondaryText(context),
-          fontSize: 10,
-        ),
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-      ),
-    );
-  }
-}
-
 class _BaseCard extends StatelessWidget {
   final IconData icon;
   final Color color;
@@ -243,8 +183,7 @@ class _BaseCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     if (!isDark) return _buildLight(context);
-    // PREMIUM (dark): chapda oltin ramkali ikon, o'ngda mayda katta harfli
-    // sarlavha + qiymat. Kapsula shakli — yuqoridagi tugmalar bilan bir xil.
+
     return Container(
       height: 46,
       padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -263,7 +202,7 @@ class _BaseCard extends StatelessWidget {
               borderRadius: BorderRadius.circular(7),
               border: Border.all(color: LuxTokens.gold.withValues(alpha: 0.35)),
             ),
-            child: Icon(icon, color: LuxTokens.goldSoft, size: 13),
+            child: Icon(icon, color: LuxTokens.gold, size: 13),
           ),
           const SizedBox(width: 8),
           Expanded(
@@ -296,40 +235,64 @@ class _BaseCard extends StatelessWidget {
     );
   }
 
-  /// Eski light ko'rinish — o'zgarishsiz saqlanadi.
   Widget _buildLight(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 7),
+      height: 46,
+      padding: const EdgeInsets.symmetric(horizontal: 10),
       decoration: BoxDecoration(
-        color: Color.lerp(Colors.white, color, 0.1),
+        color: Colors.white,
         borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: const Color(0xFFC9A227).withValues(alpha: 0.5),
+          width: 1.2,
+        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.30),
-            blurRadius: 16,
-            offset: const Offset(0, 6),
+            color: LuxTokens.gold.withValues(alpha: 0.08),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
           ),
         ],
       ),
       child: Row(
         children: [
+          Container(
+            width: 26,
+            height: 26,
+            decoration: BoxDecoration(
+              color: const Color(0xFFFFFBEB),
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: const Color(0xFFFDE68A)),
+            ),
+            child: Icon(icon, color: const Color(0xFFC9A227), size: 14),
+          ),
+          const SizedBox(width: 8),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  title,
-                  style: TextStyle(
-                    color: GlassTokens.primaryText(context),
-                    fontWeight: FontWeight.bold,
-                    fontSize: 12,
+                  title.toUpperCase(),
+                  style: const TextStyle(
+                    fontSize: 8,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 1.1,
+                    color: Color(0xFF8A5D0B),
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
-                const SizedBox(height: 2),
-                customSubtitle,
+                const SizedBox(height: 1),
+                DefaultTextStyle.merge(
+                  style: const TextStyle(
+                    color: Color(0xFF0F172A),
+                    fontSize: 11,
+                    fontWeight: FontWeight.w800,
+                  ),
+                  child: customSubtitle,
+                ),
               ],
             ),
           ),

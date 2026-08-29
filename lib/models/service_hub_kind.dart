@@ -154,9 +154,8 @@ extension ServiceHubKindX on ServiceHubKind {
     ServiceHubKind.gameZona => 'assets/images/services3d/gameZona.jpg',
     ServiceHubKind.sportMaydon => 'assets/images/services3d/sportMaydon.jpg',
     ServiceHubKind.kompyuterUsta => 'assets/images/services3d/kompUsta.jpg',
-    // Telefon va IT uchun maxsus rasm yo'q — ikonka + rang ishlatiladi.
-    ServiceHubKind.telefonUsta => null,
-    ServiceHubKind.itXizmat => null,
+    ServiceHubKind.telefonUsta => 'assets/images/services3d/telefonUsta.jpg',
+    ServiceHubKind.itXizmat => 'assets/images/services3d/itXizmat.jpg',
     ServiceHubKind.boshqa => 'assets/images/services3d/boshqa.png',
     // Bepul 3D to'plamda quvur/tish iconi yo'q — aniq flat Lucide icon ishlatiladi
     ServiceHubKind.santexnik => 'assets/images/services3d/santexnik.jpg',
@@ -165,7 +164,7 @@ extension ServiceHubKindX on ServiceHubKind {
 
   /// Barcha xizmatlar uchun YAGONA brend rangi — toza, professional ko'k
   /// (binafsha emas). Ilgari har xizmatда har xil rang edi.
-  Color get accent => const Color(0xFF2563EB);
+  Color get accent => const Color(0xFFB8921F);
 
   List<({String label, double basePrice})> get variants => switch (this) {
     ServiceHubKind.sartarosh => const [

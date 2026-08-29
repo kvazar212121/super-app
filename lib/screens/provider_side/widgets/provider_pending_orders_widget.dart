@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../services/provider_portal_service.dart';
 import 'package:super_app/l10n/locale_controller.dart';
+import '../../../theme/lux_tokens.dart';
 
 /// Yangi (pending) buyurtmalar — qabul / rad etish.
 class ProviderPendingOrdersWidget extends StatefulWidget {
@@ -214,7 +215,7 @@ class ProviderPendingOrdersWidgetState
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: LuxTokens.surface,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: Colors.black, width: 2),
         boxShadow: const [BoxShadow(color: Colors.black, offset: Offset(2, 2))],
@@ -240,7 +241,7 @@ class ProviderPendingOrdersWidgetState
                       '${o['service_name'] ?? ''} · $time',
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
-                        color: Colors.black87,
+                        color: LuxTokens.text,
                       ),
                     ),
                     if ((o['notes'] as String?)?.isNotEmpty == true)
@@ -248,7 +249,7 @@ class ProviderPendingOrdersWidgetState
                         o['notes'] as String,
                         style: const TextStyle(
                           fontStyle: FontStyle.italic,
-                          color: Colors.black87,
+                          color: LuxTokens.text,
                         ),
                       ),
                   ],

@@ -251,11 +251,11 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
 
   Color _statusColor(OrderStatus s) => switch (s) {
     OrderStatus.pending => const Color(0xFFF59E0B),
-    OrderStatus.accepted => const Color(0xFF3B82F6),
-    OrderStatus.inProgress => const Color(0xFFA855F7),
+    OrderStatus.accepted => const Color(0xFFC9A227),
+    OrderStatus.inProgress => const Color(0xFFE3C766),
     OrderStatus.completed => const Color(0xFF10B981),
     OrderStatus.cancelled => const Color(0xFFEF4444),
-    _ => const Color(0xFF6B7280),
+    _ => const Color(0xFF6B6B68),
   };
 
   @override

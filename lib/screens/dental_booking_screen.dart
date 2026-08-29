@@ -14,6 +14,7 @@ import '../widgets/booking_common_widgets.dart';
 import '../widgets/glass/mesh_background.dart';
 import '../widgets/save_provider_button.dart';
 import 'package:super_app/l10n/locale_controller.dart';
+import '../theme/lux_tokens.dart';
 
 class DentalBookingScreen extends StatefulWidget {
   final DentalClinic clinic;
@@ -41,7 +42,7 @@ class _DentalBookingScreenState extends State<DentalBookingScreen> {
   List<String> _timeSlots = ProviderAvailability.defaultSlots;
   bool _loadingSlots = true;
 
-  static const _accent = Color(0xFF2563EB);
+  static const _accent = Color(0xFFB8921F);
 
   double get _price => _selectedService == null
       ? 0
@@ -192,7 +193,7 @@ class _DentalBookingScreenState extends State<DentalBookingScreen> {
                             child: Text(
                               widget.clinic.address,
                               style: TextStyle(
-                                color: Colors.grey[700],
+                                color: LuxTokens.textMuted,
                                 fontSize: 13,
                               ),
                             ),

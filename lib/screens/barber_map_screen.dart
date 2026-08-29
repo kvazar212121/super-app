@@ -15,7 +15,7 @@ class BarberMapScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return EnhancedServiceMap(
       title: "Yaqin atrofdagi sartaroshlar".tr,
-      accent: const Color(0xFF6366F1),
+      accent: const Color(0xFFC9A227),
       markerIcon: LucideIcons.scissors,
       places: shops
           .map((s) => MapPlace(

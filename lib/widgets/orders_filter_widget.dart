@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import '../theme/glass_tokens.dart';
-import 'glass/glass_surface.dart';
+import '../theme/lux_tokens.dart';
 import 'package:super_app/l10n/locale_controller.dart';
 
+/// 3-xonali buyurtmalar filtr paneli.
+/// Har bir tugma (tanlanganida) ikkala yon tarafi ham 100% bir xil va teng silliq qayrilgan kapsula (pill) shaklida bo'ladi.
 class OrdersFilterWidget extends StatelessWidget {
   final String currentFilter;
   final ValueChanged<String> onFilterChanged;
@@ -15,46 +16,66 @@ class OrdersFilterWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GlassSurface(
-      padding: const EdgeInsets.all(6),
-      borderRadius: GlassTokens.radiusLg,
-      showShadow: false,
-      child: Row(
-        children: [
-          _chip(context, 'Barchasi'.tr, 'all'),
-          _chip(context, 'Faol'.tr, 'active'),
-          _chip(context, 'Yakunlangan'.tr, 'completed'),
+    final items = [
+      {'label': 'Barchasi'.tr, 'value': 'all'},
+      {'label': 'Faol'.tr, 'value': 'active'},
+      {'label': 'Yakunlangan'.tr, 'value': 'completed'},
+    ];
+
+    return Container(
+      padding: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(
+          color: LuxTokens.gold.withValues(alpha: 0.50),
+          width: 1.5,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: LuxTokens.gold.withValues(alpha: 0.10),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
         ],
       ),
-    );
-  }
+      child: Row(
+        children: List.generate(items.length, (index) {
+          final item = items[index];
+          final selected = currentFilter == item['value'];
+          final pillRadius = BorderRadius.circular(999);
 
-  Widget _chip(BuildContext context, String label, String value) {
-    final selected = currentFilter == value;
-    return Expanded(
-      child: GestureDetector(
-        onTap: () => onFilterChanged(value),
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          padding: const EdgeInsets.symmetric(vertical: 10),
-          decoration: BoxDecoration(
-            color: selected
-                ? const Color(0xFF3B82F6)
-                : Colors.transparent,
-            borderRadius: BorderRadius.circular(14),
-          ),
-          child: Text(
-            label,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
-              fontSize: 13,
-              color: selected
-                  ? Colors.white
-                  : GlassTokens.secondaryText(context),
+          return Expanded(
+            child: GestureDetector(
+              onTap: () => onFilterChanged(item['value']!),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 220),
+                curve: Curves.easeOutCubic,
+                padding: const EdgeInsets.symmetric(vertical: 11),
+                decoration: selected
+                    ? LuxTokens.goldBoxDecoration(customRadius: pillRadius)
+                    : BoxDecoration(
+                        color: Colors.transparent,
+                        borderRadius: pillRadius,
+                      ),
+                child: Text(
+                  item['label']!,
+                  textAlign: TextAlign.center,
+                  style: selected
+                      ? LuxTokens.goldEngravedTextStyle.copyWith(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w900,
+                        )
+                      : const TextStyle(
+                          fontWeight: FontWeight.w800,
+                          fontSize: 13,
+                          color: Color(0xFF0F172A),
+                        ),
+                ),
+              ),
             ),
-          ),
-        ),
+          );
+        }),
       ),
     );
   }

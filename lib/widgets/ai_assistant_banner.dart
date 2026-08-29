@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../screens/chat_screen.dart';
 import '../l10n/locale_controller.dart';
+import '../theme/lux_tokens.dart';
 
 class AIAssistantBanner extends StatelessWidget {
   const AIAssistantBanner({super.key});
@@ -17,7 +18,7 @@ class AIAssistantBanner extends StatelessWidget {
         gradient: const LinearGradient(
           colors: [
             Color(0xFF0284C7), // To'qroq moviy
-            Color(0xFF06B6D4), // Ochiq moviy (cyan)
+            Color(0xFFE3C766), // Ochiq moviy (cyan)
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -38,7 +39,7 @@ class AIAssistantBanner extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: LuxTokens.surface,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: const Icon(
@@ -91,7 +92,7 @@ class AIAssistantBanner extends StatelessWidget {
                       horizontal: 16,
                     ),
                     decoration: BoxDecoration(
-                      color: Colors.white, // Qattiq oq rang
+                      color: LuxTokens.surface, // Qattiq oq rang
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Row(
@@ -99,13 +100,13 @@ class AIAssistantBanner extends StatelessWidget {
                         const Icon(
                           LucideIcons.messageSquare,
                           size: 18,
-                          color: Colors.black54,
+                          color: LuxTokens.textMuted,
                         ),
                         const SizedBox(width: 8),
                         Text(
                           'Yozish...'.tr,
                           style: const TextStyle(
-                            color: Colors.black54,
+                            color: LuxTokens.textMuted,
                             fontSize: 14,
                           ),
                         ),
@@ -128,7 +129,7 @@ class AIAssistantBanner extends StatelessWidget {
                 child: Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: Colors.white, // Mikrofon tugmasi ham solid oq
+                    color: LuxTokens.surface, // Mikrofon tugmasi ham solid oq
                     borderRadius: BorderRadius.circular(12),
                     boxShadow: [
                       BoxShadow(

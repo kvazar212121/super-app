@@ -19,7 +19,7 @@ class DonutChartPainter extends CustomPainter {
 
     if (stats.isEmpty) {
       final paint = Paint()
-        ..color = const Color(0xFFE2E8F0)
+        ..color = const Color(0xFFD6D6D2)
         ..style = PaintingStyle.stroke
         ..strokeWidth = 14
         ..strokeCap = StrokeCap.round;

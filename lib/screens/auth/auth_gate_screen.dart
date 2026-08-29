@@ -165,7 +165,7 @@ class _AuthGateScreenState extends State<AuthGateScreen> {
                                           ? 'Kirish'.tr
                                           : 'Ro\'yxatdan o\'ting'.tr,
                                       style: const TextStyle(
-                                        color: Color(0xFF6366F1),
+                                        color: Color(0xFFC9A227),
                                         fontWeight: FontWeight.w700,
                                       ),
                                     ),
@@ -244,7 +244,7 @@ class _AuthGateScreenState extends State<AuthGateScreen> {
                     child: Text(
                       'foydalanish shartlariga'.tr,
                       style: const TextStyle(
-                        color: Color(0xFF6366F1),
+                        color: Color(0xFFC9A227),
                         fontWeight: FontWeight.w700,
                         fontSize: 13,
                         decoration: TextDecoration.underline,

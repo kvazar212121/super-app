@@ -10,6 +10,7 @@ import '../utils/auth_guard.dart';
 import '../widgets/booking_common_widgets.dart';
 import '../widgets/glass/mesh_background.dart';
 import 'package:super_app/l10n/locale_controller.dart';
+import '../theme/lux_tokens.dart';
 
 class CourierDispatchScreen extends StatefulWidget {
   final CourierService service;
@@ -27,7 +28,7 @@ class _CourierDispatchScreenState extends State<CourierDispatchScreen> {
   final _weightController = TextEditingController();
   final _notesController = TextEditingController();
 
-  final Color _accent = const Color(0xFF2563EB); // Indigo
+  final Color _accent = const Color(0xFFB8921F); // Indigo
 
   bool get _canSubmit =>
       _selectedDeliveryType != null &&
@@ -126,7 +127,7 @@ class _CourierDispatchScreenState extends State<CourierDispatchScreen> {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: LuxTokens.surface,
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Row(
@@ -233,19 +234,19 @@ class _CourierDispatchScreenState extends State<CourierDispatchScreen> {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.blue.withValues(alpha: 0.1),
+                  color: LuxTokens.gold.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.blue.withValues(alpha: 0.3)),
+                  border: Border.all(color: LuxTokens.gold.withValues(alpha: 0.3)),
                 ),
                 child: Row(
                   children: [
-                    const Icon(LucideIcons.info, color: Colors.blue),
+                    const Icon(LucideIcons.info, color: LuxTokens.gold),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(
                         'Xizmat narxi kuryer yetib kelgach, bosib o\'tiladigan masofaga qarab belgilanadi.',
                         style: TextStyle(
-                          color: Colors.blue.shade900,
+                          color: LuxTokens.goldDim,
                           fontSize: 13,
                         ),
                       ),

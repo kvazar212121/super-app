@@ -3,6 +3,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../services/api_service.dart';
 import '../services/weather_service.dart';
 import 'package:super_app/l10n/locale_controller.dart';
+import '../theme/lux_tokens.dart';
 
 class WeatherModal extends StatefulWidget {
   const WeatherModal({super.key});
@@ -100,14 +101,14 @@ class _WeatherModalState extends State<WeatherModal> {
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [Colors.blue.shade800, Colors.blue.shade500],
+          colors: [LuxTokens.goldDim, LuxTokens.gold],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.blue,
+            color: LuxTokens.gold,
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -186,7 +187,7 @@ class _WeatherModalState extends State<WeatherModal> {
         const Text(
           "7 kunlik prognoz",
           style: TextStyle(
-            color: Color(0xFF0F172A),
+            color: Color(0xFF0A0A0B),
             fontSize: 18,
             fontWeight: FontWeight.bold,
           ),
@@ -204,9 +205,9 @@ class _WeatherModalState extends State<WeatherModal> {
                 margin: const EdgeInsets.only(right: 12),
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFF1F5F9),
+                  color: const Color(0xFFF2F2F0),
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: const Color(0xFFE2E8F0)),
+                  border: Border.all(color: const Color(0xFFD6D6D2)),
                 ),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -214,13 +215,13 @@ class _WeatherModalState extends State<WeatherModal> {
                     Text(
                       _formatDate(day['date']),
                       style: const TextStyle(
-                        color: Color(0xFF64748B),
+                        color: Color(0xFF6B6B68),
                         fontSize: 12,
                       ),
                     ),
                     Icon(
                       _getWeatherIcon(day['code']),
-                      color: Colors.blueAccent,
+                      color: LuxTokens.goldSoft,
                       size: 28,
                     ),
                     Column(
@@ -228,14 +229,14 @@ class _WeatherModalState extends State<WeatherModal> {
                         Text(
                           '${day['max']}°',
                           style: const TextStyle(
-                            color: Color(0xFF0F172A),
+                            color: Color(0xFF0A0A0B),
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                         Text(
                           '${day['min']}°',
                           style: const TextStyle(
-                            color: Color(0xFF94A3B8),
+                            color: Color(0xFF9A9A96),
                             fontSize: 12,
                           ),
                         ),
@@ -395,7 +396,7 @@ class _CurrencyModalState extends State<CurrencyModal> {
           margin: const EdgeInsets.only(bottom: 12),
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: isDark ? const Color(0xFF1E293B) : Colors.white,
+            color: isDark ? const Color(0xFF141416) : Colors.white,
             borderRadius: BorderRadius.circular(16),
             border: Border.all(color: isDark ? Colors.white10 : Colors.black12),
           ),

@@ -8,6 +8,7 @@ import '../screens/order_detail_screen.dart';
 import '../theme/glass_tokens.dart';
 import '../l10n/locale_controller.dart';
 import 'glass/glass_surface.dart';
+import '../theme/lux_tokens.dart';
 
 class OrdersListWidget extends StatelessWidget {
   final String filter;
@@ -18,21 +19,21 @@ class OrdersListWidget extends StatelessWidget {
       case OrderStatus.pending:
         return Colors.orange;
       case OrderStatus.accepted:
-        return Colors.blue;
+        return LuxTokens.gold;
       case OrderStatus.onTheWay:
-        return Colors.lightBlue;
+        return LuxTokens.goldSoft;
       case OrderStatus.arrived:
-        return Colors.deepPurple;
+        return LuxTokens.gold;
       case OrderStatus.preparing:
         return Colors.orangeAccent;
       case OrderStatus.inProgress:
-        return Colors.purple;
+        return LuxTokens.gold;
       case OrderStatus.delivered:
         return Colors.greenAccent;
       case OrderStatus.completed:
         return Colors.green;
       case OrderStatus.awaitingConfirmation:
-        return Colors.blueGrey;
+        return LuxTokens.textMuted;
       case OrderStatus.cancelled:
         return Colors.red;
       case OrderStatus.noShow:
@@ -55,19 +56,33 @@ class OrdersListWidget extends StatelessWidget {
     if (orders.isEmpty) {
       return Center(
         child: GlassSurface(
+          margin: const EdgeInsets.symmetric(horizontal: 24),
           padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 28),
+          borderRadius: GlassTokens.radiusLg,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(
-                LucideIcons.inbox,
-                size: 48,
-                color: GlassTokens.secondaryText(context),
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: LuxTokens.gold.withValues(alpha: 0.14),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  LucideIcons.inbox,
+                  size: 40,
+                  color: Color(0xFF140D02),
+                ),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 16),
               Text(
                 'Buyurtmalar topilmadi'.tr,
-                style: TextStyle(color: GlassTokens.secondaryText(context)),
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  color: Color(0xFF140D02),
+                  fontSize: 16,
+                  fontWeight: FontWeight.w800,
+                ),
               ),
             ],
           ),
@@ -92,7 +107,6 @@ class _OrderCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final accent = order.category.accent;
     final icon = order.category.icon;
     String two(int n) => n.toString().padLeft(2, '0');
     final dateStr =
@@ -116,14 +130,10 @@ class _OrderCard extends StatelessWidget {
             Row(
               children: [
                 Container(
-                  width: 44,
-                  height: 44,
-                  decoration: BoxDecoration(
-                    color: accent.withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(14),
-                    border: Border.all(color: accent.withValues(alpha: 0.3)),
-                  ),
-                  child: Icon(icon, color: accent),
+                  width: 46,
+                  height: 46,
+                  decoration: LuxTokens.goldBoxDecoration(radius: 14),
+                  child: Icon(icon, color: const Color(0xFF140D02), size: 22),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -140,30 +150,18 @@ class _OrderCard extends StatelessWidget {
                       ),
                       Text(
                         order.providerName,
-                        style: TextStyle(
-                          color: GlassTokens.secondaryText(context),
+                        style: const TextStyle(
+                          color: Color(0xFF8A5D0B),
+                          fontWeight: FontWeight.w700,
+                          fontSize: 13.5,
                         ),
                       ),
                     ],
                   ),
                 ),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 6,
-                  ),
-                  decoration: BoxDecoration(
-                    color: statusColor.withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: statusColor.withValues(alpha: 0.3)),
-                  ),
-                  child: Text(
-                    order.statusText,
-                    style: TextStyle(
-                      color: statusColor,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
+                _StatusBadge(
+                  status: order.status,
+                  statusText: order.statusText,
                 ),
               ],
             ),
@@ -171,18 +169,19 @@ class _OrderCard extends StatelessWidget {
               const SizedBox(height: 10),
               Row(
                 children: [
-                  Icon(
+                  const Icon(
                     LucideIcons.mapPin,
                     size: 14,
-                    color: GlassTokens.secondaryText(context),
+                    color: Color(0xFF140D02),
                   ),
                   const SizedBox(width: 4),
                   Expanded(
                     child: Text(
                       order.address,
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: GlassTokens.secondaryText(context),
+                      style: const TextStyle(
+                        fontSize: 12.5,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xFF140D02),
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -197,32 +196,112 @@ class _OrderCard extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    Icon(
+                    const Icon(
                       LucideIcons.calendar,
                       size: 14,
-                      color: GlassTokens.secondaryText(context),
+                      color: Color(0xFF140D02),
                     ),
                     const SizedBox(width: 4),
                     Text(
                       dateStr,
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: GlassTokens.secondaryText(context),
+                      style: const TextStyle(
+                        fontSize: 12.5,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xFF140D02),
                       ),
                     ),
                   ],
                 ),
                 Text(
                   "${order.price.toStringAsFixed(0)} ${"so'm".tr}",
-                  style: TextStyle(
-                    fontWeight: FontWeight.w800,
-                    color: GlassTokens.primaryText(context),
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w900,
+                    fontSize: 15,
+                    color: Color(0xFF140D02),
                   ),
                 ),
               ],
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// Hashamatli status nishoni (bekor qilingan, yakunlangan va faol holatlar uchun).
+class _StatusBadge extends StatelessWidget {
+  final OrderStatus status;
+  final String statusText;
+
+  const _StatusBadge({required this.status, required this.statusText});
+
+  @override
+  Widget build(BuildContext context) {
+    Color bg;
+    Color border;
+    Color text;
+    IconData icon;
+
+    switch (status) {
+      case OrderStatus.cancelled:
+      case OrderStatus.disputed:
+      case OrderStatus.noShow:
+        bg = const Color(0xFFFFF1F2); // Rose Alabaster yumshoq fon
+        border = const Color(0xFFFECDD3); // Rose Gold nozik ramka
+        text = const Color(0xFF9F1239); // Deep Burgundy Crimson to'q matn
+        icon = LucideIcons.circleX;
+        break;
+
+      case OrderStatus.completed:
+      case OrderStatus.delivered:
+        bg = const Color(0xFFF0FDF4); // Mint Emerald fon
+        border = const Color(0xFFBBF7D0); // Emerald ramka
+        text = const Color(0xFF15803D); // To'q zumrad yashil matn
+        icon = LucideIcons.circleCheck;
+        break;
+
+      case OrderStatus.accepted:
+      case OrderStatus.inProgress:
+      case OrderStatus.arrived:
+      case OrderStatus.onTheWay:
+        bg = const Color(0xFFFFFBEB); // Warm Gold Alabaster fon
+        border = const Color(0xFFFDE68A); // Oltin ramka
+        text = const Color(0xFF8A5D0B); // 24K Oltin to'q braun matn
+        icon = LucideIcons.sparkles;
+        break;
+
+      case OrderStatus.pending:
+      case OrderStatus.preparing:
+      case OrderStatus.awaitingConfirmation:
+        bg = const Color(0xFFFFF7ED); // Amber fon
+        border = const Color(0xFFFED7AA); // Amber ramka
+        text = const Color(0xFFC2410C); // Warm Amber matn
+        icon = LucideIcons.clock;
+        break;
+    }
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      decoration: BoxDecoration(
+        color: bg,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: border, width: 1.2),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 13, color: text),
+          const SizedBox(width: 5),
+          Text(
+            statusText,
+            style: TextStyle(
+              color: text,
+              fontSize: 12,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+        ],
       ),
     );
   }

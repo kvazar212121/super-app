@@ -86,7 +86,7 @@ class _SupportCenterScreenState extends State<SupportCenterScreen> {
                   _sectionLabel('Tezkor yordam'.tr),
                   _channelCard(
                     icon: Icons.smart_toy_rounded,
-                    color: const Color(0xFF06B6D4),
+                    color: const Color(0xFFE3C766),
                     title: 'AI yordamchi'.tr,
                     subtitle: 'Savolingizga darhol javob oling'.tr,
                     badge: '24/7',
@@ -101,7 +101,7 @@ class _SupportCenterScreenState extends State<SupportCenterScreen> {
                 _sectionLabel('Operator bilan yozishma'.tr),
                 _channelCard(
                   icon: Icons.forum_rounded,
-                  color: const Color(0xFF6366F1),
+                  color: const Color(0xFFC9A227),
                   title: 'Operator bilan chat'.tr,
                   subtitle: 'Xabaringizga operator javob beradi'.tr,
                   onTap: () => Navigator.push(
@@ -181,7 +181,7 @@ class _SupportCenterScreenState extends State<SupportCenterScreen> {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [Color(0xFF6366F1), Color(0xFF06B6D4)],
+          colors: [Color(0xFFC9A227), Color(0xFFE3C766)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),

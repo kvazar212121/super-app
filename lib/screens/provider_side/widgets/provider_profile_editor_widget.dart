@@ -11,6 +11,7 @@ import '../../../services/hub_data_service.dart';
 import '../../../services/settings_save_controller.dart';
 import '../../../config/app_config.dart';
 import 'package:super_app/l10n/locale_controller.dart';
+import '../../../theme/lux_tokens.dart';
 
 class ProviderProfileEditorWidget extends StatefulWidget {
   final String categoryKey;
@@ -187,7 +188,7 @@ class _ProviderProfileEditorWidgetState
         // Banner Image Editor
         const Text(
           'Muqova rasmi (Banner)',
-          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black87),
+          style: TextStyle(fontWeight: FontWeight.bold, color: LuxTokens.text),
         ),
         const SizedBox(height: 8),
         GestureDetector(
@@ -196,7 +197,7 @@ class _ProviderProfileEditorWidgetState
             height: 140,
             width: double.infinity,
             decoration: BoxDecoration(
-              color: Colors.grey[200],
+              color: LuxTokens.border,
               borderRadius: BorderRadius.circular(12),
               border: Border.all(color: Colors.black12),
             ),
@@ -222,12 +223,12 @@ class _ProviderProfileEditorWidgetState
                         Icon(
                           LucideIcons.imagePlus,
                           size: 32,
-                          color: Colors.black45,
+                          color: LuxTokens.textFaint,
                         ),
                         SizedBox(height: 8),
                         Text(
                           'Rasm tanlash',
-                          style: TextStyle(color: Colors.black54),
+                          style: TextStyle(color: LuxTokens.textMuted),
                         ),
                       ],
                     ),

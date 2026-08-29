@@ -11,6 +11,7 @@ import '../utils/auth_guard.dart';
 import '../widgets/booking_common_widgets.dart';
 import '../widgets/glass/mesh_background.dart';
 import 'package:super_app/l10n/locale_controller.dart';
+import '../theme/lux_tokens.dart';
 
 class AutoWorkshopDispatchScreen extends StatefulWidget {
   final AutoWorkshop workshop;
@@ -29,7 +30,7 @@ class _AutoWorkshopDispatchScreenState
   final _notesCtrl = TextEditingController();
   DateTime _selectedDate = DateTime.now().add(const Duration(days: 1));
 
-  final Color _accent = const Color(0xFF2563EB);
+  final Color _accent = const Color(0xFFB8921F);
 
   double get _selectedPrice => _selectedService == null
       ? 0
@@ -139,7 +140,7 @@ class _AutoWorkshopDispatchScreenState
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: LuxTokens.surface,
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Row(
@@ -164,7 +165,7 @@ class _AutoWorkshopDispatchScreenState
                           Text(
                             widget.workshop.address,
                             style: TextStyle(
-                              color: Colors.grey.shade600,
+                              color: LuxTokens.textMuted,
                               fontSize: 13,
                             ),
                           ),
@@ -202,7 +203,7 @@ class _AutoWorkshopDispatchScreenState
                               service,
                               style: TextStyle(
                                 fontWeight: FontWeight.w600,
-                                color: selected ? Colors.white : Colors.black87,
+                                color: selected ? Colors.white : LuxTokens.text,
                               ),
                             ),
                           ),
@@ -214,7 +215,7 @@ class _AutoWorkshopDispatchScreenState
                                 fontWeight: FontWeight.bold,
                                 color: selected
                                     ? Colors.white70
-                                    : Colors.black54,
+                                    : LuxTokens.textMuted,
                               ),
                             ),
                         ],

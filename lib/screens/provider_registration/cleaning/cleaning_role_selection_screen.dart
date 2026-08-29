@@ -55,7 +55,7 @@ class CleaningRoleSelectionScreen extends StatelessWidget {
                   title: 'Tozalash jamoasi / kompaniya'.tr,
                   subtitle:
                       'Bir necha kishilik jamoa — katta kvartira, ofis va general tozalash'.tr,
-                  color: const Color(0xFF06B6D4),
+                  color: const Color(0xFFE3C766),
                   onTap: () => _open(context, CleaningRegistrationRole.team),
                 ),
               ],

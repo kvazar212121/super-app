@@ -11,6 +11,7 @@ import '../theme/glass_tokens.dart';
 import '../services/api_service.dart';
 import '../l10n/locale_controller.dart';
 import 'bozorchi_profile_screen.dart';
+import '../theme/lux_tokens.dart';
 
 class ShoppingListScreen extends StatefulWidget {
   const ShoppingListScreen({super.key});
@@ -343,7 +344,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
             ),
           ),
           ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
+            style: ElevatedButton.styleFrom(backgroundColor: LuxTokens.gold),
             onPressed: () {
               final v = double.tryParse(controller.text) ?? 0.0;
               Navigator.pop(ctx, v);
@@ -414,9 +415,9 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
         preferredSize: const Size.fromHeight(48),
         child: TabBar(
           controller: _tabController,
-          indicatorColor: Colors.blue,
+          indicatorColor: LuxTokens.gold,
           indicatorWeight: 3,
-          labelColor: Colors.blue,
+          labelColor: LuxTokens.gold,
           unselectedLabelColor: GlassTokens.secondaryText(context),
           labelStyle: const TextStyle(
             fontWeight: FontWeight.w700,
@@ -469,7 +470,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
       ),
       child: Row(
         children: [
-          const Icon(LucideIcons.wallet, color: Color(0xFF2563EB), size: 20),
+          const Icon(LucideIcons.wallet, color: Color(0xFFB8921F), size: 20),
           const SizedBox(width: 10),
           Expanded(
             child: Column(
@@ -488,7 +489,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
                   'Bu ro\'yxat bilan ~${_formatPrice(projected)} bo\'ladi',
                   style: const TextStyle(
                     fontSize: 11.5,
-                    color: Color(0xFF3B82F6),
+                    color: Color(0xFFC9A227),
                   ),
                 ),
               ],
@@ -517,7 +518,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
               : Colors.black.withValues(alpha: 0.04),
           prefixIcon: Icon(
             LucideIcons.tag,
-            color: Colors.blue.shade300,
+            color: LuxTokens.goldSoft,
             size: 18,
           ),
           contentPadding: const EdgeInsets.symmetric(
@@ -556,7 +557,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
             ? Colors.white.withValues(alpha: 0.05)
             : Colors.white.withValues(alpha: 0.85),
         borderRadius: BorderRadius.circular(GlassTokens.radiusMd),
-        border: Border.all(color: Colors.blue.withValues(alpha: 0.35)),
+        border: Border.all(color: LuxTokens.gold.withValues(alpha: 0.35)),
         boxShadow: isDark
             ? []
             : [
@@ -721,7 +722,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
                   child: DropdownButton<String>(
                     value: _selectedUnit,
                     dropdownColor: isDark
-                        ? const Color(0xFF1E293B)
+                        ? const Color(0xFF141416)
                         : Colors.white,
                     style: TextStyle(
                       color: GlassTokens.primaryText(context),
@@ -739,7 +740,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
                             child: Text(
                               u.tr,
                               style: TextStyle(
-                                color: isDark ? Colors.white : Colors.black87,
+                                color: isDark ? Colors.white : LuxTokens.text,
                               ),
                             ),
                           ),
@@ -754,12 +755,12 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
                 duration: const Duration(milliseconds: 200),
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
-                    colors: [Color(0xFF3B82F6), Color(0xFF2563EB)],
+                    colors: [Color(0xFFC9A227), Color(0xFFB8921F)],
                   ),
                   borderRadius: BorderRadius.circular(12),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.blue,
+                      color: LuxTokens.gold,
                       blurRadius: 8,
                       offset: const Offset(0, 3),
                     ),
@@ -802,7 +803,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(LucideIcons.shoppingBasket, size: 64, color: Colors.blue),
+          Icon(LucideIcons.shoppingBasket, size: 64, color: LuxTokens.gold),
           const SizedBox(height: 16),
           Text(
             'Mahsulotlar qo\'shing'.tr,
@@ -862,7 +863,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
                   height: 40,
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
-                      colors: [Colors.blue, Colors.blue.shade700],
+                      colors: [LuxTokens.gold, LuxTokens.goldDim],
                     ),
                     borderRadius: BorderRadius.circular(10),
                   ),
@@ -921,8 +922,8 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
     return Container(
       padding: const EdgeInsets.fromLTRB(16, 14, 16, 20),
       decoration: BoxDecoration(
-        color: Colors.white,
-        border: const Border(top: BorderSide(color: Color(0xFFE2E8F0))),
+        color: LuxTokens.surface,
+        border: const Border(top: BorderSide(color: Color(0xFFD6D6D2))),
         boxShadow: GlassTokens.glassShadow(context),
       ),
       child: Column(
@@ -945,7 +946,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
                     Text(
                       _formatPrice(actualTotal),
                       style: const TextStyle(
-                        color: Color(0xFF3B82F6),
+                        color: Color(0xFFC9A227),
                         fontSize: 22,
                         fontWeight: FontWeight.w800,
                       ),
@@ -973,8 +974,8 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
                   icon: const Icon(LucideIcons.save, size: 18),
                   label: Text('Saqlash'.tr),
                   style: OutlinedButton.styleFrom(
-                    foregroundColor: const Color(0xFF3B82F6),
-                    side: const BorderSide(color: Color(0xFF3B82F6)),
+                    foregroundColor: const Color(0xFFC9A227),
+                    side: const BorderSide(color: Color(0xFFC9A227)),
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(14),
@@ -1020,7 +1021,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
   Widget _buildSavedListsTab() {
     if (_isLoading) {
       return const Center(
-        child: CircularProgressIndicator(color: Colors.blue),
+        child: CircularProgressIndicator(color: LuxTokens.gold),
       );
     }
     if (_lists.isEmpty) {
@@ -1028,7 +1029,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(LucideIcons.clipboardList, size: 64, color: Colors.blue),
+            Icon(LucideIcons.clipboardList, size: 64, color: LuxTokens.gold),
             const SizedBox(height: 16),
             Text(
               'Saqlangan ro\'yxatlar yo\'q'.tr,
@@ -1080,8 +1081,8 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: isDone
-                    ? [Colors.green, Colors.teal]
-                    : [Colors.blue, Colors.blue.shade700],
+                    ? [Colors.green, LuxTokens.gold]
+                    : [LuxTokens.gold, LuxTokens.goldDim],
               ),
               borderRadius: BorderRadius.circular(12),
             ),
@@ -1131,9 +1132,9 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
                       borderRadius: BorderRadius.circular(4),
                       child: LinearProgressIndicator(
                         value: progress,
-                        backgroundColor: Colors.white,
+                        backgroundColor: LuxTokens.surface,
                         valueColor: AlwaysStoppedAnimation(
-                          isDone ? Colors.green : Colors.blue,
+                          isDone ? Colors.green : LuxTokens.gold,
                         ),
                         minHeight: 4,
                       ),
@@ -1179,7 +1180,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
                     icon: Icon(LucideIcons.shoppingBag),
                     label: Text('Bozorchi yollash'.tr),
                     style: FilledButton.styleFrom(
-                      backgroundColor: Colors.blue.shade700,
+                      backgroundColor: LuxTokens.goldDim,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -1302,7 +1303,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
                     _formatPrice(item.estimatedPrice),
                     style: TextStyle(
                       color: item.estimatedPrice > 0
-                          ? Colors.blue
+                          ? LuxTokens.gold
                           : GlassTokens.secondaryText(context),
                       fontWeight: FontWeight.w600,
                       fontSize: 13,
@@ -1446,7 +1447,7 @@ class _BozorchiSelectionSheetState extends State<_BozorchiSelectionSheet> {
     return Container(
       height: MediaQuery.of(context).size.height * 0.7,
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF1E293B) : Colors.white,
+        color: isDark ? const Color(0xFF141416) : Colors.white,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
       ),
       child: Column(
@@ -1468,12 +1469,12 @@ class _BozorchiSelectionSheetState extends State<_BozorchiSelectionSheet> {
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: Colors.blue.withValues(alpha: 0.1),
+                    color: LuxTokens.gold.withValues(alpha: 0.1),
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(
                     LucideIcons.shoppingBag,
-                    color: Colors.blue,
+                    color: LuxTokens.gold,
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -1505,7 +1506,7 @@ class _BozorchiSelectionSheetState extends State<_BozorchiSelectionSheet> {
           Expanded(
             child: _isLoading
                 ? const Center(
-                    child: CircularProgressIndicator(color: Colors.blue),
+                    child: CircularProgressIndicator(color: LuxTokens.gold),
                   )
                 : _bozorchilar.isEmpty
                 ? Center(child: Text('Hozircha bo\'sh bozorchilar yo\'q'.tr))
@@ -1531,15 +1532,15 @@ class _BozorchiSelectionSheetState extends State<_BozorchiSelectionSheet> {
                             children: [
                               CircleAvatar(
                                 radius: 24,
-                                backgroundColor: Colors.blue.withValues(alpha: 0.1),
+                                backgroundColor: LuxTokens.gold.withValues(alpha: 0.1),
                                 child: const Icon(
                                   LucideIcons.user,
-                                  color: Colors.blue,
+                                  color: LuxTokens.gold,
                                 ),
                               ),
                               const Icon(
                                 Icons.verified,
-                                color: Colors.blue,
+                                color: LuxTokens.gold,
                                 size: 16,
                               ),
                             ],
@@ -1573,7 +1574,7 @@ class _BozorchiSelectionSheetState extends State<_BozorchiSelectionSheet> {
                               );
                             },
                             style: FilledButton.styleFrom(
-                              backgroundColor: Colors.blue,
+                              backgroundColor: LuxTokens.gold,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),
                               ),

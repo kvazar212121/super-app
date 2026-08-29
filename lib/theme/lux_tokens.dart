@@ -42,33 +42,68 @@ abstract final class LuxTokens {
   static const display = 'CormorantGaramond';
   static const accent = 'Syne';
 
-  /// Oltin Foil Metall Gradient — Haqiqiy yaltiroq 24K zarhal metall nuri (Specular Gold Foil).
+  /// Oltin Foil Metall Gradient — 1 palasali yaltiroq metall yorug'lik chizig'i (Single-band Specular Gleam).
   static const goldGradient = LinearGradient(
     colors: [
-      Color(0xFFE5BA53), // Bronza-oltin zamin
-      Color(0xFFFFF7C2), // YALTIRAQ NURLI SHIRA (Specular Light Streak)
-      Color(0xFFC99427), // Chuqur 24K oltin
-      Color(0xFFFFF099), // Ikkinchi yaltiroq nurlanish
-      Color(0xFF8A5D0B), // Metall soya va aks
+      Color(0xFFE0B454), // Yuqori-chap: Oltin zamin
+      Color(0xFFFFF9DB), // BIR DONA O'RTA CHIZIQ: 1 PALASA YALTIRAQ NUR! (Single specular streak)
+      Color(0xFFC99427), // Oltin tanasi
+      Color(0xFF8A5D0B), // Pastki-o'ng: Metall soya
     ],
-    stops: [0.0, 0.28, 0.52, 0.76, 1.0],
+    stops: [0.0, 0.40, 0.65, 1.0],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
 
-  /// Haqiqiy quyma oltin (gold bar) effekti — metall yuzasidagi keskin
-  /// yorug'-soya bandlari. Oddiy silliq gradientdan farqi: nur chizig'i
-  /// tor va tez o'zgaradi, shuning uchun ko'z uni "yaltiroq metall" deb
-  /// qabul qiladi.
-  static const goldBarGradient = LinearGradient(
-    colors: [
-      Color(0xFFE5BA53), // yuqori: yorug' oltin
-      Color(0xFFFFF3B8), // markaz: yaltiroq nur
-      Color(0xFF9C6E15), // past: chuqur metall
+  static const goldBarGradient = goldGradient;
+
+  /// Metallic Gold 3D Box Decoration (Tugma, karta, badge va chip uchun)
+  static BoxDecoration goldBoxDecoration({
+    double radius = radiusMd,
+    BorderRadiusGeometry? customRadius,
+    bool isCircle = false,
+  }) =>
+      BoxDecoration(
+        gradient: goldGradient,
+        shape: isCircle ? BoxShape.circle : BoxShape.rectangle,
+        borderRadius: isCircle
+            ? null
+            : (customRadius ?? BorderRadius.circular(radius)),
+        border: Border.all(
+          color: const Color(0xFFFFF7C2),
+          width: 1.2,
+        ),
+        boxShadow: [
+          const BoxShadow(
+            color: Color(0xFFFFF7C2),
+            blurRadius: 2,
+            spreadRadius: -1,
+            offset: Offset(-1, -1),
+          ),
+          BoxShadow(
+            color: const Color(0xFFC99427).withValues(alpha: 0.40),
+            blurRadius: 8,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      );
+
+  /// Metallic Gold 3D Engraved Stamp Text Style (To'q qora va o'yilgan harflar)
+  static const goldEngravedTextStyle = TextStyle(
+    color: Color(0xFF140D02),
+    fontWeight: FontWeight.w700,
+    shadows: [
+      Shadow(
+        color: Color(0xFFFFF7C2),
+        blurRadius: 1,
+        offset: Offset(0, 1.0),
+      ),
+      Shadow(
+        color: Color(0x80000000),
+        blurRadius: 1,
+        offset: Offset(0, -0.8),
+      ),
     ],
-    stops: [0.0, 0.5, 1.0],
-    begin: Alignment.topCenter,
-    end: Alignment.bottomCenter,
   );
 
   /// Karta uchun standart bezak (fon + chegara + radius).

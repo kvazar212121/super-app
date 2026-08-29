@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../models/football_field.dart';
 import '../theme/glass_tokens.dart';
+import '../theme/lux_tokens.dart';
 
 // ===================================================================
 //              VIZUAL MAYDON SXEMASI (CustomPaint)
@@ -254,7 +255,7 @@ class FieldInfoCard extends StatelessWidget {
                     ),
                     Text(
                       ' (${field.reviewCount})',
-                      style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                      style: TextStyle(fontSize: 12, color: LuxTokens.textMuted),
                     ),
                   ],
                 ),
@@ -383,7 +384,7 @@ class DateChips extends StatelessWidget {
                     weekday,
                     style: TextStyle(
                       fontSize: 12,
-                      color: isSelected ? Colors.white : Colors.black54,
+                      color: isSelected ? Colors.white : LuxTokens.textMuted,
                       fontWeight: isSelected
                           ? FontWeight.w600
                           : FontWeight.w400,
@@ -393,14 +394,14 @@ class DateChips extends StatelessWidget {
                     '${d.day}.${d.month}',
                     style: TextStyle(
                       fontWeight: FontWeight.w700,
-                      color: isSelected ? Colors.white : Colors.black87,
+                      color: isSelected ? Colors.white : LuxTokens.text,
                     ),
                   ),
                 ],
               ),
               selected: isSelected,
               selectedColor: const Color(0xFF4CAF50),
-              backgroundColor: Colors.grey.shade100,
+              backgroundColor: LuxTokens.surfaceHigh,
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
               onSelected: (_) => onDateSelected(d),
             ),

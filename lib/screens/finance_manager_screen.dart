@@ -16,6 +16,7 @@ import 'finance/finance_category_breakdown.dart';
 import 'finance/finance_transactions_list.dart';
 import 'finance/finance_planned_tab.dart';
 import 'finance/finance_sheets.dart';
+import '../theme/lux_tokens.dart';
 
 class FinanceManagerScreen extends StatefulWidget {
   const FinanceManagerScreen({super.key});
@@ -39,14 +40,14 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
   List<String> _customIncomeCategories = [];
 
   final List<Color> _chartColors = [
-    Colors.purpleAccent,
-    Colors.cyanAccent,
+    LuxTokens.goldSoft,
+    LuxTokens.goldSoft,
     Colors.orangeAccent,
-    Colors.pinkAccent,
-    Colors.blueAccent,
+    LuxTokens.goldSoft,
+    LuxTokens.goldSoft,
     Colors.amberAccent,
     Colors.redAccent,
-    Colors.tealAccent,
+    LuxTokens.goldSoft,
   ];
 
   @override
@@ -249,7 +250,7 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
               ],
             ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.blueAccent,
+        backgroundColor: LuxTokens.goldSoft,
         foregroundColor: Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         onPressed: _activeTab == 0

@@ -79,7 +79,7 @@ class ProviderCategoryConfig {
     categoryKey: 'sartarosh',
     title: 'Sartarosh',
     icon: LucideIcons.scissors,
-    accentColor: Color(0xFF6366F1),
+    accentColor: Color(0xFFC9A227),
     subCategories: ['Oddiy', 'Biznes', 'Class (Premium)'],
   );
   static const salon = ProviderCategoryConfig(
@@ -87,7 +87,7 @@ class ProviderCategoryConfig {
     categoryKey: 'salon',
     title: 'Salon',
     icon: LucideIcons.sparkles,
-    accentColor: Color(0xFFEC4899),
+    accentColor: Color(0xFFE3C766),
     subCategories: ['Soch turmagi', 'Makiyaj', 'Manikyur', 'Kosmetologiya'],
   );
   static const plumber = ProviderCategoryConfig(
@@ -95,7 +95,7 @@ class ProviderCategoryConfig {
     categoryKey: 'santexnik',
     title: 'Santexnik',
     icon: LucideIcons.droplet,
-    accentColor: Color(0xFF3B82F6),
+    accentColor: Color(0xFFC9A227),
     subCategories: [
       'Quvurlar',
       'Kran va vanna',
@@ -134,7 +134,7 @@ class ProviderCategoryConfig {
     categoryKey: 'avtoYordam',
     title: 'Avto-yordam',
     icon: LucideIcons.car,
-    accentColor: Color(0xFF8B5CF6),
+    accentColor: Color(0xFFE3C766),
     subCategories: [
       'Evakuator',
       'Shina montaj',
@@ -156,7 +156,7 @@ class ProviderCategoryConfig {
     categoryKey: 'repetitor',
     title: 'O\'quv markazi',
     icon: LucideIcons.graduationCap,
-    accentColor: Color(0xFF6366F1),
+    accentColor: Color(0xFFC9A227),
     subCategories: ['Maktab fanlari', 'Tillar', 'IT', 'Musiqa'],
   );
   static const builder = ProviderCategoryConfig(
@@ -196,7 +196,7 @@ class ProviderCategoryConfig {
     categoryKey: 'konditsioner',
     title: 'Konditsioner',
     icon: LucideIcons.wind,
-    accentColor: Color(0xFF06B6D4),
+    accentColor: Color(0xFFE3C766),
     subCategories: ['O\'rnatish', 'Ta\'mirlash', 'Tozalash', 'Freon quyish'],
   );
   static const nanny = ProviderCategoryConfig(
@@ -204,7 +204,7 @@ class ProviderCategoryConfig {
     categoryKey: 'enaga',
     title: 'Enaga',
     icon: LucideIcons.baby,
-    accentColor: Color(0xFFF472B6),
+    accentColor: Color(0xFFEBD79B),
     subCategories: ['Kunduzgi', 'Tungi', 'Soatbay', 'Chaqaloqlar uchun'],
   );
   static const tutor = ProviderCategoryConfig(
@@ -212,7 +212,7 @@ class ProviderCategoryConfig {
     categoryKey: 'repetitor',
     title: 'Repetitor',
     icon: LucideIcons.bookOpen,
-    accentColor: Color(0xFF8B5CF6),
+    accentColor: Color(0xFFE3C766),
     subCategories: ['Maktab fanlari', 'Tillar', 'IT', 'Musiqa'],
   );
   static const disinfection = ProviderCategoryConfig(
@@ -228,7 +228,7 @@ class ProviderCategoryConfig {
     categoryKey: 'texnikaUstasi',
     title: 'Texnika ustasi',
     icon: LucideIcons.refrigerator,
-    accentColor: Color(0xFF64748B),
+    accentColor: Color(0xFF6B6B68),
     // Konditsioner endi ALOHIDA kategoriya emas — shu yerning bir turi.
     subCategories: [
       'Katta texnika',
@@ -245,7 +245,7 @@ class ProviderCategoryConfig {
     categoryKey: 'kuryerlik',
     title: 'Kuryer',
     icon: LucideIcons.package,
-    accentColor: Color(0xFF0EA5E9),
+    accentColor: Color(0xFFC9A227),
     subCategories: ['Hujjatlar', 'Yuk', 'Piyoda kuryer', 'Avto kuryer'],
   );
   static const massage = ProviderCategoryConfig(
@@ -269,7 +269,7 @@ class ProviderCategoryConfig {
     categoryKey: 'stomatologiya',
     title: 'Stomatologiya',
     icon: LucideIcons.smile,
-    accentColor: Color(0xFF0EA5E9),
+    accentColor: Color(0xFFC9A227),
     subCategories: [
       'Terapiya',
       'Jarrohlik',
@@ -282,7 +282,7 @@ class ProviderCategoryConfig {
     categoryKey: 'tadbirlar',
     title: 'Tadbirlar',
     icon: LucideIcons.partyPopper,
-    accentColor: Color(0xFFA855F7),
+    accentColor: Color(0xFFE3C766),
     subCategories: ['To\'y', 'Tug\'ilgan kun', 'Korporativ', 'Fotosessiya'],
   );
   static const bozorchi = ProviderCategoryConfig(
@@ -350,7 +350,7 @@ class ProviderCategoryConfig {
     categoryKey: 'kompyuterUsta',
     title: 'Kompyuter ustasi',
     icon: LucideIcons.laptop,
-    accentColor: Color(0xFF7C3AED),
+    accentColor: Color(0xFFB8921F),
     subCategories: [
       'Noutbuk ta\'miri',
       'PC yig\'ish',
@@ -363,7 +363,7 @@ class ProviderCategoryConfig {
     categoryKey: 'itXizmat',
     title: 'IT xizmatlari',
     icon: LucideIcons.server,
-    accentColor: Color(0xFF2563EB),
+    accentColor: Color(0xFFB8921F),
     subCategories: [
       'Tarmoq va Wi-Fi',
       'Videokuzatuv',

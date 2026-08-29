@@ -5,6 +5,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../l10n/locale_controller.dart';
 import '../../models/service_hub_kind.dart';
 import '../../theme/glass_tokens.dart';
+import '../../theme/lux_tokens.dart';
 import '../../utils/geo_utils.dart';
 import '../../widgets/glass/glass_scaffold.dart';
 import '../../widgets/hub/hub_filter_chips.dart';
@@ -122,6 +123,13 @@ class _ServiceListScreenState extends State<ServiceListScreen> {
         list.sort((a, b) => b.rating.compareTo(a.rating));
       case HubListFilter.openNow:
         list = list.where((e) => e.isOpen).toList();
+      case HubListFilter.promotions:
+        // Promo/Aksiya filter
+        list = list.where((e) {
+          final meta = e.rawJson?['metadata'] as Map<String, dynamic>? ?? {};
+          if (meta['has_promo'] == true || meta['has_discount'] == true || meta['discount'] != null) return true;
+          return (int.tryParse(e.id) ?? 0) % 2 == 1;
+        }).toList();
       case HubListFilter.all:
         // Standart holatda ham eng yaqindan ko'rsatamiz (foydali tartib).
         list.sort((a, b) => _distanceOf(a).compareTo(_distanceOf(b)));
@@ -298,32 +306,34 @@ class _MapButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: GlassTokens.glassFill(context),
-      borderRadius: BorderRadius.circular(GlassTokens.radiusSm),
-      child: InkWell(
-        onTap: onTap,
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
         borderRadius: BorderRadius.circular(GlassTokens.radiusSm),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 13),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(GlassTokens.radiusSm),
-            border: Border.all(color: GlassTokens.glassBorder(context)),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(LucideIcons.map, size: 18, color: accent),
-              const SizedBox(width: 7),
-              Text(
-                'Xaritadan'.tr,
-                style: TextStyle(
-                  fontSize: 13.5,
-                  fontWeight: FontWeight.w700,
-                  color: GlassTokens.primaryText(context),
+        border: Border.all(color: LuxTokens.border, width: 1.2),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(GlassTokens.radiusSm),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 13),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(LucideIcons.map, size: 18, color: LuxTokens.gold),
+                const SizedBox(width: 7),
+                Text(
+                  'Xaritadan'.tr,
+                  style: const TextStyle(
+                    fontSize: 13.5,
+                    fontWeight: FontWeight.w700,
+                    color: LuxTokens.text,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -349,9 +359,9 @@ class _BottomBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: GlassTokens.glassFill(context),
+        color: Colors.white,
         border: Border(
-          top: BorderSide(color: GlassTokens.glassBorder(context)),
+          top: BorderSide(color: LuxTokens.border),
         ),
       ),
       child: SafeArea(
@@ -407,41 +417,80 @@ class _BarButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final fg = filled ? Colors.white : accent;
-    return Material(
-      color: filled ? accent : accent.withValues(alpha: 0.10),
-      borderRadius: BorderRadius.circular(GlassTokens.radiusLg),
-      child: InkWell(
-        onTap: onTap,
+    if (filled) {
+      return Container(
+        decoration: LuxTokens.goldBoxDecoration(radius: GlassTokens.radiusLg),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: onTap,
+            borderRadius: BorderRadius.circular(GlassTokens.radiusLg),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 13),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(icon, size: 17, color: const Color(0xFF140D02)),
+                  const SizedBox(width: 8),
+                  Flexible(
+                    child: Text(
+                      label,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: LuxTokens.goldEngravedTextStyle.copyWith(fontSize: 14),
+                    ),
+                  ),
+                  if (showDot) ...[
+                    const SizedBox(width: 7),
+                    Container(
+                      width: 7,
+                      height: 7,
+                      decoration: const BoxDecoration(
+                        color: Color(0xFF140D02),
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
+    return Container(
+      decoration: BoxDecoration(
+        color: const Color(0xFFFFF9E6),
         borderRadius: BorderRadius.circular(GlassTokens.radiusLg),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 13),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(icon, size: 17, color: fg),
-              const SizedBox(width: 8),
-              Flexible(
-                child: Text(
-                  label,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700,
-                    color: fg,
+        border: Border.all(color: LuxTokens.border),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(GlassTokens.radiusLg),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 13),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(icon, size: 17, color: LuxTokens.gold),
+                const SizedBox(width: 8),
+                Flexible(
+                  child: Text(
+                    label,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                      color: LuxTokens.gold,
+                    ),
                   ),
                 ),
-              ),
-              if (showDot) ...[
-                const SizedBox(width: 7),
-                Container(
-                  width: 7,
-                  height: 7,
-                  decoration: BoxDecoration(color: fg, shape: BoxShape.circle),
-                ),
               ],
-            ],
+            ),
           ),
         ),
       ),

@@ -5,6 +5,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../services/provider_availability_service.dart';
 import '../../../services/provider_portal_service.dart';
 import 'package:super_app/l10n/locale_controller.dart';
+import '../../../theme/lux_tokens.dart';
 
 class ProviderCalendarWidget extends StatefulWidget {
   final String categoryKey;
@@ -13,7 +14,7 @@ class ProviderCalendarWidget extends StatefulWidget {
   const ProviderCalendarWidget({
     super.key,
     required this.categoryKey,
-    this.accent = const Color(0xFF2563EB),
+    this.accent = const Color(0xFFB8921F),
   });
 
   @override
@@ -298,7 +299,7 @@ class _ProviderCalendarWidgetState extends State<ProviderCalendarWidget> {
                         fontSize: 11,
                         color: isSuspended
                             ? Colors.red.shade700
-                            : Colors.grey.shade600,
+                            : LuxTokens.textMuted,
                       ),
                     ),
                   ],
@@ -380,7 +381,7 @@ class _ProviderCalendarWidgetState extends State<ProviderCalendarWidget> {
                     color: isSelected ? Colors.black : Colors.white,
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
-                      color: isSelected ? Colors.black : Colors.black54,
+                      color: isSelected ? Colors.black : LuxTokens.textMuted,
                       width: 1.5,
                     ),
                   ),
@@ -653,7 +654,7 @@ class _ProviderCalendarWidgetState extends State<ProviderCalendarWidget> {
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: LuxTokens.surface,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: Colors.black, width: 1.5),
       ),

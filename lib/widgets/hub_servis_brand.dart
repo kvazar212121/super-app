@@ -1,9 +1,9 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '../theme/glass_tokens.dart';
+import '../theme/lux_tokens.dart';
 
 /// HubServis brend logotipi va nomi — splash, login va boshqa joylarda.
 class HubServisBrand extends StatelessWidget {
@@ -20,9 +20,9 @@ class HubServisBrand extends StatelessWidget {
     this.compact = false,
   });
 
-  static const _primary = Color(0xFF6366F1);
-  static const _accent = Color(0xFF818CF8);
-  static const _violet = Color(0xFFA855F7);
+  static const _primary = Color(0xFFC9A227);
+  static const _accent = Color(0xFFE3C766);
+  static const _violet = Color(0xFFE3C766);
 
   @override
   Widget build(BuildContext context) {
@@ -88,7 +88,8 @@ class HubServisBrand extends StatelessWidget {
           ).createShader(bounds),
           child: Text(
             'HubServis',
-            style: GoogleFonts.inter(
+            style: TextStyle(
+              fontFamily: LuxTokens.body,
               fontSize: titleSize,
               fontWeight: FontWeight.w900,
               letterSpacing: -1.2,
@@ -101,7 +102,8 @@ class HubServisBrand extends StatelessWidget {
           SizedBox(height: compact ? 4 : 8),
           Text(
             'Barcha xizmatlar bir joyda',
-            style: GoogleFonts.inter(
+            style: TextStyle(
+              fontFamily: LuxTokens.body,
               fontSize: compact ? 14 : 16,
               fontWeight: FontWeight.w500,
               color: GlassTokens.secondaryText(context),

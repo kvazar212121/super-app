@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import '../config/map_config.dart';
+import '../theme/lux_tokens.dart';
 
 /// Xarita yarmini barcha hub ekranlarida qayta ishlatish uchun.
 class HubMapPreview extends StatelessWidget {
@@ -36,8 +37,8 @@ class HubMapPreview extends StatelessWidget {
             child: FloatingActionButton.small(
               heroTag: 'expand_map',
               onPressed: onExpand,
-              backgroundColor: Colors.white,
-              child: const Icon(Icons.fullscreen, color: Colors.black87),
+              backgroundColor: LuxTokens.surface,
+              child: const Icon(Icons.fullscreen, color: LuxTokens.text),
             ),
           ),
       ],

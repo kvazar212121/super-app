@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../screens/all_categories_screen.dart';
+import '../theme/lux_tokens.dart';
 
 class ServicesGridWidget extends StatelessWidget {
   const ServicesGridWidget({super.key});
@@ -15,7 +16,7 @@ class ServicesGridWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final textColor = isDark ? Colors.white : Colors.black87;
+    final textColor = isDark ? Colors.white : LuxTokens.text;
 
     return InkWell(
       onTap: () => _openAll(context),
@@ -23,7 +24,7 @@ class ServicesGridWidget extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
         decoration: BoxDecoration(
-          color: isDark ? const Color(0xFF1E293B) : Colors.white,
+          color: isDark ? const Color(0xFF141416) : Colors.white,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(color: isDark ? Colors.white24 : Colors.black12),
         ),
@@ -32,12 +33,12 @@ class ServicesGridWidget extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Colors.blueAccent,
+                color: LuxTokens.goldSoft,
                 shape: BoxShape.circle,
               ),
               child: const Icon(
                 LucideIcons.layoutGrid,
-                color: Colors.blueAccent,
+                color: LuxTokens.goldSoft,
                 size: 28,
               ),
             ),

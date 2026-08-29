@@ -15,6 +15,7 @@ import '../../widgets/marketplace/photo_carousel.dart';
 import '../../widgets/marketplace/safety_warning_dialog.dart';
 import '../calls/dm_chat_screen.dart';
 import 'listing_photos_screen.dart';
+import '../../theme/lux_tokens.dart';
 
 class ListingDetailScreen extends StatelessWidget {
   final Listing listing;
@@ -24,7 +25,7 @@ class ListingDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final matn = isDark ? Colors.white : Colors.black87;
+    final matn = isDark ? Colors.white : LuxTokens.text;
 
     return GlassScaffold(
       title: 'E\'lon',
@@ -54,7 +55,7 @@ class ListingDetailScreen extends StatelessWidget {
             style: const TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.w800,
-              color: Colors.blue,
+              color: LuxTokens.gold,
             ),
           ),
           const SizedBox(height: 12),

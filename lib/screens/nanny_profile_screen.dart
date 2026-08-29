@@ -13,6 +13,7 @@ import '../widgets/glass/glass_surface.dart';
 import '../widgets/save_provider_button.dart';
 import 'nanny_booking_screen.dart';
 import 'package:super_app/l10n/locale_controller.dart';
+import '../theme/lux_tokens.dart';
 
 /// Enaga profili — tasdiqlash belgilari va xavfsiz booking oqimi.
 class NannyProfileScreen extends StatefulWidget {
@@ -33,7 +34,7 @@ class _NannyProfileScreenState extends State<NannyProfileScreen> {
   bool _reviewedProfile = false;
   bool _contactedNanny = false;
 
-  static const _accent = Color(0xFF2563EB);
+  static const _accent = Color(0xFFB8921F);
 
   NannyService get nanny => widget.nanny;
 
@@ -160,7 +161,7 @@ class _NannyProfileScreenState extends State<NannyProfileScreen> {
                   const SizedBox(height: 6),
                   Text(
                     '${nanny.repeatFamilies} ta oila qayta murojaat qilgan',
-                    style: TextStyle(fontSize: 13, color: Colors.grey[600]),
+                    style: TextStyle(fontSize: 13, color: LuxTokens.textMuted),
                   ),
                 ],
               ],
@@ -243,7 +244,7 @@ class _NannyProfileScreenState extends State<NannyProfileScreen> {
                 Text(
                   'Bolalar xavfsizligi uchun avval enaga bilan qisqa suhbat qiling — telefon orqali yoki uchrashuv.',
                   style: TextStyle(
-                    color: Colors.grey[700],
+                    color: LuxTokens.textMuted,
                     height: 1.4,
                     fontSize: 13,
                   ),
@@ -304,7 +305,7 @@ class _NannyProfileScreenState extends State<NannyProfileScreen> {
               child: Text(
                 'Buyurtma berish uchun yuqoridagi qadamlarni bajaring.',
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                style: TextStyle(fontSize: 12, color: LuxTokens.textMuted),
               ),
             ),
           const SizedBox(height: 10),
@@ -382,7 +383,7 @@ class _NannyProfileScreenState extends State<NannyProfileScreen> {
   Widget _badgeChip(String label, bool ok, IconData icon) {
     // To'ldirilgan chip — fon rangli, matn/ikonка OQ (fon bilan bir xil bo'lib
     // ko'rinmay qolmasligi uchun).
-    final Color bg = ok ? const Color(0xFF10B981) : const Color(0xFF64748B);
+    final Color bg = ok ? const Color(0xFF10B981) : const Color(0xFF6B6B68);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(

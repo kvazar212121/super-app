@@ -47,7 +47,7 @@ class SalonRoleSelectionScreen extends StatelessWidget {
                   title: 'Salon egasi'.tr,
                   subtitle:
                       'O\'z saloningiz, joylashuv, xodimlar va taklif kodi'.tr,
-                  color: const Color(0xFFEC4899),
+                  color: const Color(0xFFE3C766),
                   onTap: () => _open(context, SalonRegistrationRole.owner),
                 ),
                 const SizedBox(height: 16),

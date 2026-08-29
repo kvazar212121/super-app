@@ -139,36 +139,29 @@ class _AllCategoriesScreenState extends State<AllCategoriesScreen> {
                               // Bo'lim sarlavhasi: premium rejimda katta
                               // harfli, keng oraliqli (Syne) — bosh
                               // sahifadagi "KUNDALIK" bilan bir xil uslub.
-                              if (isDark)
-                                Row(
-                                  children: [
-                                    Container(
-                                      width: 3,
-                                      height: 13,
-                                      decoration: BoxDecoration(
-                                        gradient: LuxTokens.goldGradient,
-                                        borderRadius: BorderRadius.circular(2),
-                                      ),
+                              Row(
+                                children: [
+                                  Container(
+                                    width: 3,
+                                    height: 13,
+                                    decoration: BoxDecoration(
+                                      gradient: LuxTokens.goldGradient,
+                                      borderRadius: BorderRadius.circular(2),
                                     ),
-                                    const SizedBox(width: 10),
-                                    Expanded(
-                                      child: Text(
-                                        group.title.tr.toUpperCase(),
-                                        style: LuxTokens.sectionTitle,
-                                      ),
-                                    ),
-                                  ],
-                                )
-                              else
-                                Text(
-                                  group.title.tr,
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w900,
-                                    color: GlassTokens.primaryText(context),
-                                    letterSpacing: -0.3,
                                   ),
-                                ),
+                                  const SizedBox(width: 10),
+                                  Expanded(
+                                    child: Text(
+                                      group.title.tr.toUpperCase(),
+                                      style: LuxTokens.sectionTitle.copyWith(
+                                        color: LuxTokens.gold,
+                                        fontSize: 12.5,
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
                               const SizedBox(height: 14),
                               GridView.builder(
                                 shrinkWrap: true,

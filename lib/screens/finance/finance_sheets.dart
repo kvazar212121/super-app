@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../theme/glass_tokens.dart';
 import '../../l10n/locale_controller.dart';
 import 'finance_utils.dart';
+import '../../theme/lux_tokens.dart';
 
 void showAddTransactionSheet(
   BuildContext context, {
@@ -45,12 +46,16 @@ void showAddTransactionSheet(
     backgroundColor: Colors.white,
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(
-        top: Radius.circular(GlassTokens.radiusLg),
+        top: Radius.circular(24),
       ),
     ),
     builder: (context) {
       return StatefulBuilder(
         builder: (context, setSheetState) {
+          const inputBg = Color(0xFFF1F5F9);
+          const textPrimary = Color(0xFF0F172A);
+          const textSecondary = Color(0xFF64748B);
+
           final activeCategories = List<Map<String, dynamic>>.from(
             selectedType == "expense" ? expenseCategories : incomeCategories,
           );
@@ -88,16 +93,16 @@ void showAddTransactionSheet(
                     children: [
                       Text(
                         "Yangi tranzaksiya".tr,
-                        style: TextStyle(
-                          color: GlassTokens.primaryText(context),
+                        style: const TextStyle(
+                          color: textPrimary,
                           fontSize: 20,
-                          fontWeight: FontWeight.bold,
+                          fontWeight: FontWeight.w900,
                         ),
                       ),
                       IconButton(
-                        icon: Icon(
+                        icon: const Icon(
                           LucideIcons.x,
-                          color: GlassTokens.secondaryText(context),
+                          color: textSecondary,
                         ),
                         onPressed: () => Navigator.pop(context),
                       ),
@@ -118,23 +123,36 @@ void showAddTransactionSheet(
                             alignment: Alignment.center,
                             padding: const EdgeInsets.symmetric(vertical: 12),
                             decoration: BoxDecoration(
+                              gradient: selectedType == "expense"
+                                  ? LuxTokens.goldGradient
+                                  : null,
                               color: selectedType == "expense"
-                                  ? Colors.redAccent
-                                  : const Color(0xFFF1F5F9),
+                                  ? null
+                                  : inputBg,
                               borderRadius: BorderRadius.circular(12),
                               border: Border.all(
                                 color: selectedType == "expense"
-                                    ? Colors.redAccent
-                                    : GlassTokens.glassBorder(context),
+                                    ? LuxTokens.gold
+                                    : const Color(0xFFE2E8F0),
+                                width: selectedType == "expense" ? 1.5 : 1.0,
                               ),
+                              boxShadow: selectedType == "expense"
+                                  ? const [
+                                      BoxShadow(
+                                        color: Colors.black12,
+                                        blurRadius: 4,
+                                        offset: Offset(0, 2),
+                                      ),
+                                    ]
+                                  : null,
                             ),
                             child: Text(
                               "Xarajat".tr,
                               style: TextStyle(
                                 color: selectedType == "expense"
-                                    ? Colors.white
-                                    : GlassTokens.secondaryText(context),
-                                fontWeight: FontWeight.bold,
+                                    ? const Color(0xFF140D02)
+                                    : textSecondary,
+                                fontWeight: FontWeight.w900,
                               ),
                             ),
                           ),
@@ -153,23 +171,36 @@ void showAddTransactionSheet(
                             alignment: Alignment.center,
                             padding: const EdgeInsets.symmetric(vertical: 12),
                             decoration: BoxDecoration(
+                              gradient: selectedType == "income"
+                                  ? LuxTokens.goldGradient
+                                  : null,
                               color: selectedType == "income"
-                                  ? Colors.green.shade700
-                                  : const Color(0xFFF1F5F9),
+                                  ? null
+                                  : inputBg,
                               borderRadius: BorderRadius.circular(12),
                               border: Border.all(
                                 color: selectedType == "income"
-                                    ? Colors.green.shade700
-                                    : GlassTokens.glassBorder(context),
+                                    ? LuxTokens.gold
+                                    : const Color(0xFFE2E8F0),
+                                width: selectedType == "income" ? 1.5 : 1.0,
                               ),
+                              boxShadow: selectedType == "income"
+                                  ? const [
+                                      BoxShadow(
+                                        color: Colors.black12,
+                                        blurRadius: 4,
+                                        offset: Offset(0, 2),
+                                      ),
+                                    ]
+                                  : null,
                             ),
                             child: Text(
                               "Daromad".tr,
                               style: TextStyle(
                                 color: selectedType == "income"
-                                    ? Colors.white
-                                    : GlassTokens.secondaryText(context),
-                                fontWeight: FontWeight.bold,
+                                    ? const Color(0xFF140D02)
+                                    : textSecondary,
+                                fontWeight: FontWeight.w900,
                               ),
                             ),
                           ),
@@ -181,31 +212,34 @@ void showAddTransactionSheet(
                   TextField(
                     controller: amountController,
                     keyboardType: TextInputType.number,
-                    style: TextStyle(
-                      color: GlassTokens.primaryText(context),
+                    style: const TextStyle(
+                      color: textPrimary,
                       fontSize: 24,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w800,
                     ),
                     decoration: InputDecoration(
                       labelText: "Summa (UZS)".tr,
-                      labelStyle: TextStyle(
-                        color: GlassTokens.secondaryText(context),
+                      labelStyle: const TextStyle(
+                        color: textSecondary,
                         fontSize: 16,
                       ),
                       prefixIcon: const Icon(
                         LucideIcons.banknote,
-                        color: Colors.blueAccent,
+                        color: LuxTokens.gold,
                       ),
+                      filled: true,
+                      fillColor: inputBg,
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide(
-                          color: GlassTokens.glassBorder(context),
+                        borderSide: const BorderSide(
+                          color: Color(0xFFCBD5E1),
                         ),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide: const BorderSide(
-                          color: Colors.blueAccent,
+                          color: LuxTokens.gold,
+                          width: 1.8,
                         ),
                       ),
                     ),
@@ -213,10 +247,10 @@ void showAddTransactionSheet(
                   const SizedBox(height: 20),
                   Text(
                     "Toifani tanlang".tr,
-                    style: TextStyle(
-                      color: GlassTokens.secondaryText(context),
+                    style: const TextStyle(
+                      color: textSecondary,
                       fontSize: 14,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w800,
                     ),
                   ),
                   const SizedBox(height: 10),
@@ -254,14 +288,15 @@ void showAddTransactionSheet(
                         },
                         child: Container(
                           decoration: BoxDecoration(
+                            gradient: isSelected ? LuxTokens.goldGradient : null,
                             color: isSelected
-                                ? Colors.blueAccent
-                                : const Color(0xFFF1F5F9),
+                                ? null
+                                : const Color(0xFFF8FAFC),
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(
                               color: isSelected
-                                  ? Colors.blueAccent
-                                  : GlassTokens.glassBorder(context),
+                                  ? LuxTokens.gold
+                                  : const Color(0xFFE2E8F0),
                               width: isSelected ? 1.5 : 1.0,
                             ),
                           ),
@@ -271,8 +306,8 @@ void showAddTransactionSheet(
                               Icon(
                                 cat['icon'],
                                 color: isSelected
-                                    ? Colors.white
-                                    : GlassTokens.secondaryText(context),
+                                    ? const Color(0xFF140D02)
+                                    : textSecondary,
                                 size: 20,
                               ),
                               const SizedBox(height: 6),
@@ -280,12 +315,12 @@ void showAddTransactionSheet(
                                 (cat['name'] as String).tr,
                                 style: TextStyle(
                                   color: isSelected
-                                      ? Colors.white
-                                      : GlassTokens.secondaryText(context),
+                                      ? const Color(0xFF140D02)
+                                      : textSecondary,
                                   fontSize: 12,
                                   fontWeight: isSelected
-                                      ? FontWeight.bold
-                                      : FontWeight.normal,
+                                      ? FontWeight.w900
+                                      : FontWeight.w600,
                                 ),
                               ),
                             ],
@@ -297,33 +332,37 @@ void showAddTransactionSheet(
                   const SizedBox(height: 20),
                   TextField(
                     controller: descController,
-                    style: TextStyle(color: GlassTokens.primaryText(context)),
+                    style: const TextStyle(color: textPrimary, fontWeight: FontWeight.w600),
                     decoration: InputDecoration(
                       labelText: "Izoh (ixtiyoriy)".tr,
-                      labelStyle: TextStyle(
-                        color: GlassTokens.secondaryText(context),
+                      labelStyle: const TextStyle(
+                        color: textSecondary,
                       ),
-                      prefixIcon: Icon(
+                      prefixIcon: const Icon(
                         LucideIcons.pencil,
-                        color: GlassTokens.secondaryText(context),
+                        color: textSecondary,
                         size: 18,
                       ),
+                      filled: true,
+                      fillColor: inputBg,
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide(
-                          color: GlassTokens.glassBorder(context),
+                        borderSide: const BorderSide(
+                          color: Color(0xFFCBD5E1),
                         ),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide: const BorderSide(
-                          color: Colors.blueAccent,
+                          color: LuxTokens.gold,
+                          width: 1.8,
                         ),
                       ),
                     ),
                   ),
                   const SizedBox(height: 16),
                   InkWell(
+                    borderRadius: BorderRadius.circular(10),
                     onTap: () async {
                       final picked = await showDatePicker(
                         context: context,
@@ -331,38 +370,54 @@ void showAddTransactionSheet(
                         firstDate: DateTime.now().subtract(
                           const Duration(days: 365),
                         ),
-                        // Tranzaksiya — SODIR BO'LGAN daromad/xarajat,
-                        // shuning uchun kelajak sana tanlab bo'lmaydi
-                        // (backend ham 422 qaytaradi). Kelajakdagi to'lov
-                        // uchun "Rejalashtirilgan to'lovlar" bo'limi bor.
                         lastDate: DateTime.now(),
+                        builder: (context, child) {
+                          return Theme(
+                            data: Theme.of(context).copyWith(
+                              colorScheme: const ColorScheme.light(
+                                primary: Color(0xFFC99427),
+                                onPrimary: Color(0xFF140D02),
+                                surface: Colors.white,
+                                onSurface: Color(0xFF0F172A),
+                              ),
+                              textButtonTheme: TextButtonThemeData(
+                                style: TextButton.styleFrom(
+                                  foregroundColor: const Color(0xFF8A5D0B),
+                                  textStyle: const TextStyle(fontWeight: FontWeight.w700),
+                                ),
+                              ),
+                            ),
+                            child: child!,
+                          );
+                        },
                       );
                       if (picked != null) {
                         setSheetState(() => chosenDate = picked);
                       }
                     },
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
                       child: Row(
                         children: [
                           const Icon(
                             LucideIcons.calendar,
-                            color: Colors.blueAccent,
+                            color: LuxTokens.gold,
                             size: 20,
                           ),
                           const SizedBox(width: 12),
                           Expanded(
                             child: Text(
                               "${'Sana:'.tr} ${chosenDate.day}-${financeMonthNameUz(chosenDate.month).tr} ${chosenDate.year}-${'yil'.tr}",
-                              style: TextStyle(
-                                color: GlassTokens.primaryText(context),
+                              style: const TextStyle(
+                                color: textPrimary,
                                 fontSize: 15,
+                                fontWeight: FontWeight.w700,
                               ),
                             ),
                           ),
-                          Icon(
+                          const Icon(
                             LucideIcons.chevronRight,
-                            color: GlassTokens.secondaryText(context),
+                            color: textSecondary,
                             size: 16,
                           ),
                         ],
@@ -370,14 +425,26 @@ void showAddTransactionSheet(
                     ),
                   ),
                   const SizedBox(height: 24),
-                  SizedBox(
+                  Container(
                     width: double.infinity,
                     height: 52,
+                    decoration: BoxDecoration(
+                      gradient: LuxTokens.goldGradient,
+                      borderRadius: BorderRadius.circular(14),
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Colors.black26,
+                          blurRadius: 8,
+                          offset: Offset(0, 3),
+                        ),
+                      ],
+                    ),
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blueAccent,
+                        backgroundColor: Colors.transparent,
+                        shadowColor: Colors.transparent,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(14),
                         ),
                       ),
                       onPressed: () {
@@ -417,9 +484,9 @@ void showAddTransactionSheet(
                       child: Text(
                         "Saqlash".tr,
                         style: const TextStyle(
-                          color: Colors.white,
+                          color: Color(0xFF140D02),
                           fontSize: 16,
-                          fontWeight: FontWeight.bold,
+                          fontWeight: FontWeight.w900,
                         ),
                       ),
                     ),
@@ -449,32 +516,39 @@ void _showAddCategoryDialog(
     builder: (ctx) {
       return AlertDialog(
         backgroundColor: Colors.white,
+        surfaceTintColor: Colors.transparent,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(20),
+          side: BorderSide(
+            color: LuxTokens.gold.withValues(alpha: 0.35),
+            width: 1.5,
+          ),
         ),
         title: Text(
           'Yangi toifa qo\'shish'.tr,
-          style: TextStyle(
-            color: GlassTokens.primaryText(context),
+          style: const TextStyle(
+            color: Color(0xFF0F172A),
             fontSize: 18,
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w900,
           ),
         ),
         content: TextField(
           controller: catController,
-          style: TextStyle(color: GlassTokens.primaryText(context)),
+          style: const TextStyle(color: Color(0xFF0F172A), fontWeight: FontWeight.w600),
           decoration: InputDecoration(
             hintText: 'Toifa nomi'.tr,
-            hintStyle: TextStyle(color: GlassTokens.secondaryText(context)),
+            hintStyle: const TextStyle(color: Color(0xFF64748B)),
+            filled: true,
+            fillColor: const Color(0xFFF1F5F9),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(
-                color: GlassTokens.glassBorder(context),
+              borderSide: const BorderSide(
+                color: Color(0xFFCBD5E1),
               ),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: Colors.blueAccent),
+              borderSide: const BorderSide(color: LuxTokens.gold, width: 1.8),
             ),
           ),
         ),
@@ -483,45 +557,52 @@ void _showAddCategoryDialog(
             onPressed: () => Navigator.pop(ctx),
             child: Text(
               'Bekor qilish'.tr,
-              style: TextStyle(color: GlassTokens.secondaryText(context)),
+              style: const TextStyle(color: Color(0xFF64748B), fontWeight: FontWeight.w700),
             ),
           ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.blueAccent,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
+          Container(
+            decoration: BoxDecoration(
+              gradient: LuxTokens.goldGradient,
+              borderRadius: BorderRadius.circular(10),
             ),
-            onPressed: () async {
-              final name = catController.text.trim();
-              if (name.isNotEmpty) {
-                final prefs = await SharedPreferences.getInstance();
-                if (type == 'expense') {
-                  customExpenseCategories.add(name);
-                  await prefs.setStringList(
-                    'customExpenseCategories',
-                    customExpenseCategories,
-                  );
-                } else {
-                  customIncomeCategories.add(name);
-                  await prefs.setStringList(
-                    'customIncomeCategories',
-                    customIncomeCategories,
-                  );
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.transparent,
+                shadowColor: Colors.transparent,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              onPressed: () async {
+                final name = catController.text.trim();
+                if (name.isNotEmpty) {
+                  final prefs = await SharedPreferences.getInstance();
+                  if (type == 'expense') {
+                    customExpenseCategories.add(name);
+                    await prefs.setStringList(
+                      'customExpenseCategories',
+                      customExpenseCategories,
+                    );
+                  } else {
+                    customIncomeCategories.add(name);
+                    await prefs.setStringList(
+                      'customIncomeCategories',
+                      customIncomeCategories,
+                    );
+                  }
+                  setSheetState(() {});
+                  onCategoriesChanged();
                 }
-                setSheetState(() {});
-                onCategoriesChanged();
-              }
-              if (ctx.mounted) {
-                Navigator.pop(ctx);
-              }
-            },
-            child: Text(
-              'Qo\'shish'.tr,
-              style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
+                if (ctx.mounted) {
+                  Navigator.pop(ctx);
+                }
+              },
+              child: Text(
+                'Qo\'shish'.tr,
+                style: const TextStyle(
+                  color: Color(0xFF140D02),
+                  fontWeight: FontWeight.w900,
+                ),
               ),
             ),
           ),
@@ -561,12 +642,16 @@ void showAddPlannedPaymentSheet(
     backgroundColor: Colors.white,
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(
-        top: Radius.circular(GlassTokens.radiusLg),
+        top: Radius.circular(24),
       ),
     ),
     builder: (context) {
       return StatefulBuilder(
         builder: (context, setSheetState) {
+          const inputBg = Color(0xFFF1F5F9);
+          const textPrimary = Color(0xFF0F172A);
+          const textSecondary = Color(0xFF64748B);
+
           return Padding(
             padding: EdgeInsets.only(
               bottom: MediaQuery.of(context).viewInsets.bottom,
@@ -584,16 +669,16 @@ void showAddPlannedPaymentSheet(
                     children: [
                       Text(
                         "Rejalashtirilgan to'lov".tr,
-                        style: TextStyle(
-                          color: GlassTokens.primaryText(context),
+                        style: const TextStyle(
+                          color: textPrimary,
                           fontSize: 20,
-                          fontWeight: FontWeight.bold,
+                          fontWeight: FontWeight.w900,
                         ),
                       ),
                       IconButton(
-                        icon: Icon(
+                        icon: const Icon(
                           LucideIcons.x,
-                          color: GlassTokens.secondaryText(context),
+                          color: textSecondary,
                         ),
                         onPressed: () => Navigator.pop(context),
                       ),
@@ -603,26 +688,29 @@ void showAddPlannedPaymentSheet(
                   // Title field
                   TextField(
                     controller: titleController,
-                    style: TextStyle(color: GlassTokens.primaryText(context)),
+                    style: const TextStyle(color: textPrimary, fontWeight: FontWeight.w600),
                     decoration: InputDecoration(
                       labelText: "To'lov nomi (Masalan: Kredit to'lovi)".tr,
-                      labelStyle: TextStyle(
-                        color: GlassTokens.secondaryText(context),
+                      labelStyle: const TextStyle(
+                        color: textSecondary,
                       ),
                       prefixIcon: const Icon(
                         LucideIcons.pencil,
-                        color: Colors.blueAccent,
+                        color: LuxTokens.gold,
                       ),
+                      filled: true,
+                      fillColor: inputBg,
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide(
-                          color: GlassTokens.glassBorder(context),
+                        borderSide: const BorderSide(
+                          color: Color(0xFFCBD5E1),
                         ),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide: const BorderSide(
-                          color: Colors.blueAccent,
+                          color: LuxTokens.gold,
+                          width: 1.8,
                         ),
                       ),
                     ),
@@ -632,31 +720,34 @@ void showAddPlannedPaymentSheet(
                   TextField(
                     controller: amountController,
                     keyboardType: TextInputType.number,
-                    style: TextStyle(
-                      color: GlassTokens.primaryText(context),
+                    style: const TextStyle(
+                      color: textPrimary,
                       fontSize: 24,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w800,
                     ),
                     decoration: InputDecoration(
                       labelText: "Summa (UZS)".tr,
-                      labelStyle: TextStyle(
-                        color: GlassTokens.secondaryText(context),
+                      labelStyle: const TextStyle(
+                        color: textSecondary,
                         fontSize: 16,
                       ),
                       prefixIcon: const Icon(
                         LucideIcons.banknote,
-                        color: Colors.blueAccent,
+                        color: LuxTokens.gold,
                       ),
+                      filled: true,
+                      fillColor: inputBg,
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide(
-                          color: GlassTokens.glassBorder(context),
+                        borderSide: const BorderSide(
+                          color: Color(0xFFCBD5E1),
                         ),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide: const BorderSide(
-                          color: Colors.blueAccent,
+                          color: LuxTokens.gold,
+                          width: 1.8,
                         ),
                       ),
                     ),
@@ -665,10 +756,10 @@ void showAddPlannedPaymentSheet(
                   // Category Grid
                   Text(
                     "Toifani tanlang".tr,
-                    style: TextStyle(
-                      color: GlassTokens.secondaryText(context),
+                    style: const TextStyle(
+                      color: textSecondary,
                       fontSize: 14,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w800,
                     ),
                   ),
                   const SizedBox(height: 10),
@@ -695,14 +786,15 @@ void showAddPlannedPaymentSheet(
                         },
                         child: Container(
                           decoration: BoxDecoration(
+                            gradient: isSelected ? LuxTokens.goldGradient : null,
                             color: isSelected
-                                ? Colors.blueAccent
-                                : const Color(0xFFF1F5F9),
+                                ? null
+                                : const Color(0xFFF8FAFC),
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(
                               color: isSelected
-                                  ? Colors.blueAccent
-                                  : GlassTokens.glassBorder(context),
+                                  ? LuxTokens.gold
+                                  : const Color(0xFFE2E8F0),
                               width: isSelected ? 1.5 : 1.0,
                             ),
                           ),
@@ -712,8 +804,8 @@ void showAddPlannedPaymentSheet(
                               Icon(
                                 cat['icon'],
                                 color: isSelected
-                                    ? Colors.white
-                                    : GlassTokens.secondaryText(context),
+                                    ? const Color(0xFF140D02)
+                                    : textSecondary,
                                 size: 18,
                               ),
                               const SizedBox(height: 4),
@@ -721,12 +813,12 @@ void showAddPlannedPaymentSheet(
                                 (cat['name'] as String).tr,
                                 style: TextStyle(
                                   color: isSelected
-                                      ? Colors.white
-                                      : GlassTokens.secondaryText(context),
+                                      ? const Color(0xFF140D02)
+                                      : textSecondary,
                                   fontSize: 11,
                                   fontWeight: isSelected
-                                      ? FontWeight.bold
-                                      : FontWeight.normal,
+                                      ? FontWeight.w900
+                                      : FontWeight.w600,
                                 ),
                               ),
                             ],
@@ -745,17 +837,17 @@ void showAddPlannedPaymentSheet(
                         children: [
                           Text(
                             "Har oy takrorlash".tr,
-                            style: TextStyle(
-                              color: GlassTokens.primaryText(context),
+                            style: const TextStyle(
+                              color: textPrimary,
                               fontSize: 15,
-                              fontWeight: FontWeight.bold,
+                              fontWeight: FontWeight.w700,
                             ),
                           ),
                           const SizedBox(height: 2),
                           Text(
                             "Har oy belgilangan sanada eslatiladi".tr,
-                            style: TextStyle(
-                              color: GlassTokens.secondaryText(context),
+                            style: const TextStyle(
+                              color: textSecondary,
                               fontSize: 11,
                             ),
                           ),
@@ -766,13 +858,15 @@ void showAddPlannedPaymentSheet(
                         onChanged: (val) {
                           setSheetState(() => isRecurring = val);
                         },
-                        activeThumbColor: Colors.blueAccent,
+                        activeColor: const Color(0xFF140D02),
+                        activeTrackColor: LuxTokens.gold,
                       ),
                     ],
                   ),
                   const SizedBox(height: 16),
                   // Date pick row
                   InkWell(
+                    borderRadius: BorderRadius.circular(10),
                     onTap: () async {
                       final picked = await showDatePicker(
                         context: context,
@@ -783,33 +877,53 @@ void showAddPlannedPaymentSheet(
                         lastDate: DateTime.now().add(
                           const Duration(days: 365),
                         ),
+                        builder: (context, child) {
+                          return Theme(
+                            data: Theme.of(context).copyWith(
+                              colorScheme: const ColorScheme.light(
+                                primary: Color(0xFFC99427),
+                                onPrimary: Color(0xFF140D02),
+                                surface: Colors.white,
+                                onSurface: Color(0xFF0F172A),
+                              ),
+                              textButtonTheme: TextButtonThemeData(
+                                style: TextButton.styleFrom(
+                                  foregroundColor: const Color(0xFF8A5D0B),
+                                  textStyle: const TextStyle(fontWeight: FontWeight.w700),
+                                ),
+                              ),
+                            ),
+                            child: child!,
+                          );
+                        },
                       );
                       if (picked != null) {
                         setSheetState(() => chosenDate = picked);
                       }
                     },
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
                       child: Row(
                         children: [
                           const Icon(
                             LucideIcons.calendar,
-                            color: Colors.blueAccent,
+                            color: LuxTokens.gold,
                             size: 20,
                           ),
                           const SizedBox(width: 12),
                           Expanded(
                             child: Text(
                               "${'Muddati:'.tr} ${chosenDate.day}-${financeMonthNameUz(chosenDate.month).tr} ${chosenDate.year}-${'yil'.tr}",
-                              style: TextStyle(
-                                color: GlassTokens.primaryText(context),
+                              style: const TextStyle(
+                                color: textPrimary,
                                 fontSize: 15,
+                                fontWeight: FontWeight.w700,
                               ),
                             ),
                           ),
-                          Icon(
+                          const Icon(
                             LucideIcons.chevronRight,
-                            color: GlassTokens.secondaryText(context),
+                            color: textSecondary,
                             size: 16,
                           ),
                         ],
@@ -818,14 +932,26 @@ void showAddPlannedPaymentSheet(
                   ),
                   const SizedBox(height: 24),
                   // Save Button
-                  SizedBox(
+                  Container(
                     width: double.infinity,
                     height: 52,
+                    decoration: BoxDecoration(
+                      gradient: LuxTokens.goldGradient,
+                      borderRadius: BorderRadius.circular(14),
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Colors.black26,
+                          blurRadius: 8,
+                          offset: Offset(0, 3),
+                        ),
+                      ],
+                    ),
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blueAccent,
+                        backgroundColor: Colors.transparent,
+                        shadowColor: Colors.transparent,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(14),
                         ),
                       ),
                       onPressed: () {
@@ -874,9 +1000,9 @@ void showAddPlannedPaymentSheet(
                       child: Text(
                         "Saqlash".tr,
                         style: const TextStyle(
-                          color: Colors.white,
+                          color: Color(0xFF140D02),
                           fontSize: 16,
-                          fontWeight: FontWeight.bold,
+                          fontWeight: FontWeight.w900,
                         ),
                       ),
                     ),

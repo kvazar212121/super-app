@@ -25,7 +25,10 @@ class MapConfig {
   /// MapTiler kaliti. Build paytida `--dart-define=MAPTILER_KEY=...` orqali
   /// beriladi. Bo'sh bo'lsa — zaxira (OSM) ishlatiladi va ogohlantirish
   /// chiqadi.
-  static const String maptilerKey = String.fromEnvironment('MAPTILER_KEY');
+  static const String maptilerKey = String.fromEnvironment(
+    'MAPTILER_KEY',
+    defaultValue: 'haPGd4O0SDIHaFOsagDO',
+  );
 
   /// Kalit sozlanganmi.
   static bool get hasKey => maptilerKey.isNotEmpty;

@@ -67,7 +67,7 @@ class _CampaignBannerState extends State<CampaignBanner> {
         child: Ink(
           decoration: BoxDecoration(
             gradient: const LinearGradient(
-              colors: [Color(0xFF6366F1), Color(0xFFA855F7)],
+              colors: [Color(0xFFC9A227), Color(0xFFE3C766)],
               begin: Alignment.centerLeft,
               end: Alignment.centerRight,
             ),

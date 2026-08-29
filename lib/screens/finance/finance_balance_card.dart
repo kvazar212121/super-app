@@ -5,6 +5,7 @@ import '../../models/finance_models.dart';
 import '../../theme/glass_tokens.dart';
 import '../../l10n/locale_controller.dart';
 import 'finance_utils.dart';
+import '../../theme/lux_tokens.dart';
 
 class FinanceBalanceCard extends StatelessWidget {
   final FinanceStats? stats;
@@ -26,7 +27,7 @@ class FinanceBalanceCard extends StatelessWidget {
           child: Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: LuxTokens.surface,
               borderRadius: BorderRadius.circular(24),
               border: Border.all(color: GlassTokens.glassBorder(context)),
               boxShadow: GlassTokens.glassShadow(context),

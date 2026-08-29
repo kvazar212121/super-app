@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../services/provider_portal_service.dart';
 import 'package:super_app/l10n/locale_controller.dart';
+import '../../../theme/lux_tokens.dart';
 
 class IncomingOrderDialog extends StatefulWidget {
   final Map<String, dynamic> order;
@@ -135,7 +136,7 @@ class _IncomingOrderDialogState extends State<IncomingOrderDialog> {
 
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-      backgroundColor: Colors.white,
+      backgroundColor: LuxTokens.surface,
       child: Padding(
         padding: const EdgeInsets.all(24),
         child: Column(
@@ -163,7 +164,7 @@ class _IncomingOrderDialogState extends State<IncomingOrderDialog> {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.grey[50],
+                color: LuxTokens.surfaceHigh,
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(color: Colors.black12),
               ),
@@ -271,12 +272,12 @@ class _IncomingOrderDialogState extends State<IncomingOrderDialog> {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(icon, size: 20, color: Colors.black54),
+        Icon(icon, size: 20, color: LuxTokens.textMuted),
         const SizedBox(width: 12),
         Text(
           label,
           style: const TextStyle(
-            color: Colors.black54,
+            color: LuxTokens.textMuted,
             fontWeight: FontWeight.bold,
           ),
         ),

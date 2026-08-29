@@ -5,6 +5,7 @@ import '../../../services/provider_availability_service.dart';
 import '../../../services/provider_portal_service.dart';
 import 'package:super_app/l10n/locale_controller.dart';
 import '../../../widgets/friendly_error.dart';
+import '../../../theme/lux_tokens.dart';
 
 class _ServiceRow {
   final nameCtrl = TextEditingController();
@@ -203,7 +204,7 @@ class _ProviderCleaningSettingsWidgetState
           _isTeam
               ? 'Jamoa sifatida xizmatlar va narxlarni belgilang'
               : 'Yakka tozalovchi sifatida xizmatlar va narxlarni belgilang',
-          style: TextStyle(color: Colors.grey[600]),
+          style: TextStyle(color: LuxTokens.textMuted),
         ),
         if (_isTeam) ...[
           const SizedBox(height: 16),

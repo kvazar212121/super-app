@@ -7,6 +7,7 @@ import '../../provider_side/provider_theme.dart';
 import '../provider_success_screen.dart';
 import 'package:super_app/l10n/locale_controller.dart';
 import '../../../widgets/friendly_error.dart';
+import '../../../theme/lux_tokens.dart';
 
 class MasterSoloScreen extends StatefulWidget {
   const MasterSoloScreen({super.key});
@@ -85,7 +86,7 @@ class _MasterSoloScreenState extends State<MasterSoloScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text('Mijoz manziliga borib ta\'mirlash va montaj xizmati ko\'rsatasiz.'.tr,
-                style: TextStyle(color: Colors.grey[700], height: 1.4),
+                style: TextStyle(color: LuxTokens.textMuted, height: 1.4),
               ),
               const SizedBox(height: 24),
               TextField(

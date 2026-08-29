@@ -3,6 +3,7 @@ import 'package:super_app/l10n/locale_controller.dart';
 import 'package:intl/intl.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../services/provider_portal_service.dart';
+import '../../../theme/lux_tokens.dart';
 
 class ProviderReportsWidget extends StatefulWidget {
   final String categoryKey;
@@ -80,7 +81,7 @@ class _ProviderReportsWidgetState extends State<ProviderReportsWidget> {
                 'Tizim orqali kelganlar',
                 '$totalLeads ta',
                 LucideIcons.users,
-                Colors.blue.shade900,
+                LuxTokens.goldDim,
               ),
             ),
             const SizedBox(width: 12),
@@ -89,7 +90,7 @@ class _ProviderReportsWidgetState extends State<ProviderReportsWidget> {
                 'Hisob balansi',
                 '${NumberFormat('#,###').format(balance)} so\'m',
                 LucideIcons.wallet,
-                balance < 0 ? Colors.red.shade900 : Colors.teal.shade900,
+                balance < 0 ? Colors.red.shade900 : LuxTokens.goldDim,
                 subtitle: balance < 0 ? 'Balans manfiy!' : 'Balans yetarli',
               ),
             ),
@@ -99,20 +100,20 @@ class _ProviderReportsWidgetState extends State<ProviderReportsWidget> {
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.blue.shade50,
+            color: LuxTokens.gold.withValues(alpha: 0.10),
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.blue.shade200),
+            border: Border.all(color: LuxTokens.gold.withValues(alpha: 0.30)),
           ),
           child: const Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Icon(Icons.info_outline, color: Colors.blue, size: 24),
+              Icon(Icons.info_outline, color: LuxTokens.gold, size: 24),
               SizedBox(width: 12),
               Expanded(
                 child: Text(
                   "Ma'lumot: Tizim orqali kelgan har bir mijoz uchun hisobingizdan admin paneldan belgilangan miqdorda xizmat haqi yechib olinadi.",
                   style: TextStyle(
-                    color: Colors.black87,
+                    color: LuxTokens.text,
                     fontSize: 13,
                     height: 1.4,
                   ),
@@ -169,7 +170,7 @@ class _ProviderReportsWidgetState extends State<ProviderReportsWidget> {
               const SizedBox(height: 6),
               const Text(
                 "To'lov usulini tanlang",
-                style: TextStyle(color: Colors.black54, fontSize: 14),
+                style: TextStyle(color: LuxTokens.textMuted, fontSize: 14),
               ),
               const SizedBox(height: 18),
               _payMethodTile("Payme", const Color(0xFF33C4D8)),
@@ -231,7 +232,7 @@ class _ProviderReportsWidgetState extends State<ProviderReportsWidget> {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: Colors.grey.shade100,
+        color: LuxTokens.surfaceHigh,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: Colors.grey.shade300),
       ),
@@ -292,7 +293,7 @@ class _ProviderReportsWidgetState extends State<ProviderReportsWidget> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: LuxTokens.surface,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: Colors.black, width: 1.5),
         boxShadow: const [
@@ -312,7 +313,7 @@ class _ProviderReportsWidgetState extends State<ProviderReportsWidget> {
                   style: const TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
-                    color: Colors.black87,
+                    color: LuxTokens.text,
                   ),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,

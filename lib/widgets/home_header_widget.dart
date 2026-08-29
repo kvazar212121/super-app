@@ -4,9 +4,7 @@ import 'package:provider/provider.dart';
 import '../providers/app_provider.dart';
 import '../screens/notifications_screen.dart';
 import '../screens/profile_screen.dart';
-import '../theme/glass_tokens.dart';
 import '../theme/lux_tokens.dart';
-import 'glass/glass_surface.dart';
 import 'daily_utilities_widget.dart';
 
 class HomeHeaderWidget extends StatelessWidget {
@@ -17,7 +15,6 @@ class HomeHeaderWidget extends StatelessWidget {
     final provider = Provider.of<AppProvider>(context);
     final unreadCount = provider.unreadCount;
 
-    // Chapda — ob-havo/valyuta (ixcham), o'ngda — qo'ng'iroqcha + profil tugmasi.
     return Row(
       children: [
         const Expanded(child: DailyUtilitiesWidget()),
@@ -31,7 +28,6 @@ class HomeHeaderWidget extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 8),
-        // Profil endi shu yerda (yuqori o'ng) — pastki menyudan ko'chirildi.
         _GlassIconButton(
           icon: LucideIcons.user,
           onTap: () => Navigator.push(
@@ -44,8 +40,7 @@ class HomeHeaderWidget extends StatelessWidget {
   }
 }
 
-/// Shisha uslubidagi ixcham dumaloq-burchakli ikon tugma (qo'ng'iroqcha/profil).
-/// Ixtiyoriy [badgeCount] > 0 bo'lsa o'ng-yuqorida qizil hisoblagich chiqadi.
+/// Shisha va Oltin uslubidagi ixcham tugma (qo'ng'iroqcha/profil).
 class _GlassIconButton extends StatelessWidget {
   final IconData icon;
   final VoidCallback onTap;
@@ -62,7 +57,7 @@ class _GlassIconButton extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     if (!isDark) return _buildLight(context);
 
-    // PREMIUM (dark): qora fon, oltin ramka, 46px kvadrat kapsula.
+    // PREMIUM (dark): qora fon, oltin ramka va sof oltin rangli ikonka.
     return Stack(
       clipBehavior: Clip.none,
       children: [
@@ -80,7 +75,7 @@ class _GlassIconButton extends StatelessWidget {
                   borderRadius: BorderRadius.circular(14),
                   border: Border.all(color: LuxTokens.border),
                 ),
-                child: Icon(icon, color: LuxTokens.text, size: 19),
+                child: Icon(icon, color: LuxTokens.gold, size: 20),
               ),
             ),
           ),
@@ -92,8 +87,6 @@ class _GlassIconButton extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.all(3),
               decoration: BoxDecoration(
-                // Premium palitrada qizil o'rniga OLTIN nishon —
-                // qora fonda ogohlantirishdek emas, urg'udek ko'rinadi.
                 gradient: LuxTokens.goldGradient,
                 shape: BoxShape.circle,
                 border: Border.all(color: LuxTokens.bg, width: 1.5),
@@ -118,14 +111,37 @@ class _GlassIconButton extends StatelessWidget {
     return Stack(
       clipBehavior: Clip.none,
       children: [
-        GlassSurface(
-          padding: EdgeInsets.zero,
-          borderRadius: GlassTokens.radiusMd,
-          child: IconButton(
-            icon: Icon(icon, color: GlassTokens.primaryText(context)),
-            onPressed: onTap,
-            padding: EdgeInsets.zero,
-            constraints: const BoxConstraints(minWidth: 46, minHeight: 46),
+        Container(
+          width: 46,
+          height: 46,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(
+              color: const Color(0xFFC9A227).withValues(alpha: 0.5),
+              width: 1.2,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: LuxTokens.gold.withValues(alpha: 0.08),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: onTap,
+              borderRadius: BorderRadius.circular(14),
+              child: Center(
+                child: Icon(
+                  icon,
+                  color: const Color(0xFFC9A227),
+                  size: 20,
+                ),
+              ),
+            ),
           ),
         ),
         if (badgeCount > 0)

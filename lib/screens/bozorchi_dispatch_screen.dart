@@ -7,6 +7,7 @@ import '../theme/glass_tokens.dart';
 import '../widgets/glass/glass_scaffold.dart';
 import '../widgets/glass/glass_surface.dart';
 import 'package:super_app/l10n/locale_controller.dart';
+import '../theme/lux_tokens.dart';
 
 class BozorchiDispatchScreen extends StatefulWidget {
   final Master bozorchi;
@@ -95,7 +96,7 @@ class _BozorchiDispatchScreenState extends State<BozorchiDispatchScreen> {
 
   @override
   Widget build(BuildContext context) {
-    const accent = Color(0xFF2563EB);
+    const accent = Color(0xFFB8921F);
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return GlassScaffold(
@@ -132,7 +133,7 @@ class _BozorchiDispatchScreenState extends State<BozorchiDispatchScreen> {
                         children: [
                           const Icon(
                             Icons.verified,
-                            color: Colors.blue,
+                            color: LuxTokens.gold,
                             size: 14,
                           ),
                           const SizedBox(width: 4),

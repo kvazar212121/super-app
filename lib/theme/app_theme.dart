@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'glass_tokens.dart';
 import 'lux_tokens.dart';
 
@@ -10,31 +9,32 @@ class AppTheme {
   static ThemeData _build(Brightness brightness) {
     final isDark = brightness == Brightness.dark;
     final base = isDark ? ThemeData.dark() : ThemeData.light();
-    // Dark (premium) rejim — lokal Plus Jakarta Sans (asset).
-    // Light rejim — eski Inter (google_fonts), o'zgarishsiz.
-    final textTheme =
-        (isDark
-                ? base.textTheme.apply(fontFamily: LuxTokens.body)
-                : GoogleFonts.interTextTheme(base.textTheme))
-            .apply(
-              bodyColor: isDark ? LuxTokens.text : const Color(0xFF000000),
-              displayColor: isDark ? LuxTokens.text : const Color(0xFF000000),
-            );
+    // Ikkala rejim ham LOKAL Plus Jakarta Sans (assets/fonts) ishlatadi.
+    //
+    // NEGA google_fonts EMAS: u shriftni birinchi ishga tushirishda
+    // INTERNETDAN yuklaydi. Bu uch muammo bergan:
+    //   1. Internetsiz qurilmada shrift tushib qolardi.
+    //   2. Widget testlari tarmoqqa chiqa olmagani uchun YIQILARDI.
+    //   3. Birinchi ochilishda matn "sakrab" almashardi.
+    // Asset shrift bularning uchalasini ham yo'q qiladi.
+    final textTheme = base.textTheme.apply(fontFamily: LuxTokens.body).apply(
+          bodyColor: isDark ? LuxTokens.text : const Color(0xFF000000),
+          displayColor: isDark ? LuxTokens.text : const Color(0xFF000000),
+        );
 
     return ThemeData(
       useMaterial3: true,
       brightness: brightness,
-      scaffoldBackgroundColor: isDark ? LuxTokens.bg : const Color(0xFFEEF2FF),
+      scaffoldBackgroundColor: isDark ? LuxTokens.bg : const Color(0xFFF8F9FA),
       colorScheme:
           ColorScheme.fromSeed(
-            // Dark rejimda urg'u OLTIN, light rejimda eski ko'k saqlanadi.
-            seedColor: isDark ? LuxTokens.gold : const Color(0xFF3B82F6),
-            secondary: isDark ? LuxTokens.goldSoft : const Color(0xFF06B6D4),
+            seedColor: LuxTokens.gold,
+            secondary: isDark ? LuxTokens.goldSoft : const Color(0xFF141416),
             brightness: brightness,
             surface: isDark ? LuxTokens.surface : Colors.white,
           ).copyWith(
-            primary: isDark ? LuxTokens.gold : null,
-            onPrimary: isDark ? const Color(0xFF14100A) : null,
+            primary: LuxTokens.gold,
+            onPrimary: isDark ? const Color(0xFF14100A) : Colors.black,
           ),
       textTheme: textTheme.copyWith(
         titleLarge: textTheme.titleLarge?.copyWith(
@@ -46,7 +46,7 @@ class AppTheme {
           letterSpacing: -0.2,
         ),
       ),
-      fontFamily: isDark ? LuxTokens.body : GoogleFonts.inter().fontFamily,
+      fontFamily: LuxTokens.body,
       appBarTheme: AppBarTheme(
         centerTitle: true,
         elevation: 0,
@@ -67,8 +67,8 @@ class AppTheme {
       ),
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
-          backgroundColor: isDark ? LuxTokens.gold : const Color(0xFF3B82F6),
-          foregroundColor: isDark ? const Color(0xFF14100A) : Colors.white,
+          backgroundColor: LuxTokens.gold,
+          foregroundColor: const Color(0xFF14100A),
           elevation: 0,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
           shape: RoundedRectangleBorder(
@@ -79,9 +79,9 @@ class AppTheme {
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
-          foregroundColor: isDark ? LuxTokens.goldSoft : const Color(0xFF6366F1),
+          foregroundColor: isDark ? LuxTokens.goldSoft : LuxTokens.gold,
           side: BorderSide(
-            color: isDark ? LuxTokens.goldDim : const Color(0xFF3B82F6),
+            color: isDark ? LuxTokens.goldDim : LuxTokens.gold,
           ),
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
           shape: RoundedRectangleBorder(
@@ -99,13 +99,13 @@ class AppTheme {
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(GlassTokens.radiusMd),
           borderSide: BorderSide(
-            color: isDark ? Colors.transparent : Colors.white,
+            color: LuxTokens.border,
           ),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(GlassTokens.radiusMd),
           borderSide: BorderSide(
-            color: isDark ? LuxTokens.gold : const Color(0xFF3B82F6),
+            color: LuxTokens.gold,
             width: 1.5,
           ),
         ),
@@ -114,11 +114,41 @@ class AppTheme {
         ),
       ),
       dividerTheme: DividerThemeData(
-        color: isDark ? LuxTokens.border : Colors.black,
+        color: isDark ? LuxTokens.border : const Color(0xFFE2E8F0),
+      ),
+      timePickerTheme: const TimePickerThemeData(
+        backgroundColor: Colors.white,
+        hourMinuteColor: Color(0xFFF1F5F9),
+        hourMinuteTextColor: Color(0xFF0F172A),
+        dayPeriodColor: Color(0xFFF1F5F9),
+        dayPeriodTextColor: Color(0xFF0F172A),
+        dialBackgroundColor: Color(0xFFF8FAFC),
+        dialHandColor: Color(0xFFC99427),
+        dialTextColor: Color(0xFF0F172A),
+        entryModeIconColor: Color(0xFF8A5D0B),
+      ),
+      datePickerTheme: const DatePickerThemeData(
+        backgroundColor: Colors.white,
+        headerBackgroundColor: Color(0xFFC99427),
+        headerForegroundColor: Color(0xFF140D02),
+        surfaceTintColor: Colors.transparent,
+      ),
+      popupMenuTheme: PopupMenuThemeData(
+        color: Colors.white,
+        surfaceTintColor: Colors.transparent,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+          side: const BorderSide(color: Color(0xFFCBD5E1), width: 1.2),
+        ),
+        textStyle: const TextStyle(
+          color: Color(0xFF0F172A),
+          fontWeight: FontWeight.w700,
+          fontSize: 14,
+        ),
       ),
       floatingActionButtonTheme: FloatingActionButtonThemeData(
-        backgroundColor: isDark ? LuxTokens.gold : const Color(0xFF3B82F6),
-        foregroundColor: isDark ? const Color(0xFF14100A) : Colors.white,
+        backgroundColor: LuxTokens.gold,
+        foregroundColor: const Color(0xFF14100A),
         elevation: 0,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(GlassTokens.radiusLg),

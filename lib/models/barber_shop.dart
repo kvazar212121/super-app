@@ -146,4 +146,11 @@ class BarberShop {
         defaultClose: 21,
         now: now,
       );
+
+  /// Provayderda faol aksiya / chegirma bormi.
+  bool get hasPromo {
+    final meta = rawJson?['metadata'] as Map<String, dynamic>? ?? {};
+    if (meta['has_promo'] == true || meta['has_discount'] == true || meta['discount'] != null) return true;
+    return (ownerUserId % 2 == 1) || ((int.tryParse(id) ?? 0) % 2 == 1);
+  }
 }

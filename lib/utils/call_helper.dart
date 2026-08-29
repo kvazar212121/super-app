@@ -7,6 +7,7 @@ import '../screens/calls/call_screen.dart';
 import '../providers/auth_provider.dart';
 import '../providers/app_provider.dart';
 import '../screens/auth/auth_gate_screen.dart';
+import '../theme/lux_tokens.dart';
 
 class CallHelper {
   /// Chaqiruvdan OLDIN internet tekshiruvi — oflayn bo'lsa qizil xabar
@@ -98,7 +99,7 @@ class CallHelper {
             ),
             const SizedBox(height: 16),
             ListTile(
-              leading: const Icon(Icons.calendar_today, color: Colors.blue),
+              leading: const Icon(Icons.calendar_today, color: LuxTokens.gold),
               title: const Text('Yangi bandlov (bron) qilish'),
               onTap: () => Navigator.pop(ctx, true),
             ),

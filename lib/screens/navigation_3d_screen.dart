@@ -10,6 +10,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../config/map_config.dart';
 import '../l10n/locale_controller.dart';
+import '../theme/lux_tokens.dart';
 
 /// HAQIQIY 3D navigatsiya ekrani (vektor xarita).
 ///
@@ -30,7 +31,7 @@ class Navigation3DScreen extends StatefulWidget {
     super.key,
     required this.route,
     required this.destinationName,
-    this.accent = const Color(0xFF2563EB),
+    this.accent = const Color(0xFFB8921F),
     this.distanceKm,
     this.durationMin,
   });
@@ -192,7 +193,7 @@ class _Navigation3DScreenState extends State<Navigation3DScreen> {
               child: Padding(
                 padding: const EdgeInsets.all(12),
                 child: Material(
-                  color: Colors.white,
+                  color: LuxTokens.surface,
                   borderRadius: BorderRadius.circular(16),
                   elevation: 6,
                   child: Padding(
@@ -203,7 +204,7 @@ class _Navigation3DScreenState extends State<Navigation3DScreen> {
                         IconButton(
                           onPressed: () => Navigator.maybePop(context),
                           icon: const Icon(Icons.arrow_back_rounded),
-                          color: Colors.black87,
+                          color: LuxTokens.text,
                         ),
                         Expanded(
                           child: Column(
@@ -217,7 +218,7 @@ class _Navigation3DScreenState extends State<Navigation3DScreen> {
                                 style: const TextStyle(
                                   fontWeight: FontWeight.w700,
                                   fontSize: 16,
-                                  color: Colors.black87,
+                                  color: LuxTokens.text,
                                 ),
                               ),
                               const SizedBox(height: 2),
@@ -230,7 +231,7 @@ class _Navigation3DScreenState extends State<Navigation3DScreen> {
                                 ].join(' · '),
                                 style: TextStyle(
                                   fontSize: 13,
-                                  color: Colors.grey.shade700,
+                                  color: LuxTokens.textMuted,
                                 ),
                               ),
                             ],

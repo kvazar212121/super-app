@@ -11,7 +11,10 @@ import '../../models/marketplace/listing.dart';
 import '../../services/marketplace_service.dart';
 import '../../theme/glass_tokens.dart';
 import '../../widgets/glass/glass_scaffold.dart';
+import '../../widgets/glass/glass_surface.dart';
 import '../../widgets/marketplace/listing_modal.dart';
+import '../../theme/lux_tokens.dart';
+import '../../l10n/locale_controller.dart';
 
 class MyListingsScreen extends StatefulWidget {
   /// «Buyurtmalarim» ichida tab sifatida ochilgan bo'lsa true.
@@ -85,7 +88,53 @@ class _MyListingsScreenState extends State<MyListingsScreen> {
       );
     }
     if (_items.isEmpty) {
-      return const Center(child: Text('Hozircha e\'loningiz yo\'q'));
+      return Center(
+        child: SingleChildScrollView(
+          child: GlassSurface(
+            margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+            padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 30),
+            borderRadius: GlassTokens.radiusLg,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: LuxTokens.gold.withValues(alpha: 0.14),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    LucideIcons.shoppingBag,
+                    size: 40,
+                    color: Color(0xFF140D02),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  'Hozircha e\'loningiz yo\'q'.tr,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    color: Color(0xFF140D02),
+                    fontSize: 16,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Sotiladigan buyumingiz bo\'lsa e\'lon berishingiz mumkin.'.tr,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    color: Color(0xFF332205),
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    height: 1.4,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
     }
     return RefreshIndicator(
       onRefresh: _load,
@@ -144,7 +193,7 @@ class _MyListingsScreenState extends State<MyListingsScreen> {
             ],
           ),
           const SizedBox(height: 4),
-          Text(listing.priceText, style: const TextStyle(color: Colors.blue)),
+          Text(listing.priceText, style: const TextStyle(color: LuxTokens.gold)),
           const SizedBox(height: 4),
           Text(
             _muddatMatni(listing),

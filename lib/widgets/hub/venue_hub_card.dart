@@ -15,6 +15,7 @@ import '../../theme/glass_tokens.dart';
 import '../../utils/geo_utils.dart';
 import '../glass/glass_surface.dart';
 import 'package:super_app/l10n/locale_controller.dart';
+import '../../theme/lux_tokens.dart';
 
 /// Jismoniy joylar kartasi — sartarosh, salon, futbol maydoni va h.k.
 class VenueHubCard extends StatelessWidget {
@@ -203,7 +204,7 @@ class VenueHubCard extends StatelessWidget {
         boxShadow: GlassTokens.glassShadow(context),
       ),
       child: Material(
-        color: Colors.white,
+        color: LuxTokens.surface,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(18),
           side: BorderSide(color: GlassTokens.glassBorder(context), width: 1),
@@ -248,7 +249,7 @@ class VenueHubCard extends StatelessWidget {
                         vertical: 2,
                       ),
                       decoration: BoxDecoration(
-                        color: Colors.black45,
+                        color: LuxTokens.textFaint,
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Text(
@@ -283,7 +284,7 @@ class VenueHubCard extends StatelessWidget {
                       subtitle,
                       style: const TextStyle(
                         fontSize: 10,
-                        color: Colors.black54,
+                        color: LuxTokens.textMuted,
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,

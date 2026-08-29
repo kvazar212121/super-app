@@ -6,6 +6,8 @@ import '../../l10n/locale_controller.dart';
 import '../../services/api_service.dart';
 import '../../services/feature_service.dart';
 
+import '../../widgets/crystal_diamond_widget.dart';
+
 /// Premium obuna ekrani — narx, imkoniyatlar va obuna bo'lish (Balans / Payme / Click).
 class PremiumScreen extends StatefulWidget {
   const PremiumScreen({super.key});
@@ -151,7 +153,7 @@ class _PremiumScreenState extends State<PremiumScreen> with WidgetsBindingObserv
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [Color(0xFF7C3AED), Color(0xFF6366F1)],
+          colors: [Color(0xFFB8921F), Color(0xFFC9A227)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -160,7 +162,7 @@ class _PremiumScreenState extends State<PremiumScreen> with WidgetsBindingObserv
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Icon(Icons.workspace_premium, color: Colors.white, size: 44),
+          const CrystalDiamondWidget(size: 54),
           const SizedBox(height: 12),
           Text(
             'HubServis Premium'.tr,
@@ -192,10 +194,10 @@ class _PremiumScreenState extends State<PremiumScreen> with WidgetsBindingObserv
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF7C3AED).withValues(alpha: 0.12),
+                  color: const Color(0xFFB8921F).withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: Icon(f.$2, color: const Color(0xFF7C3AED), size: 20),
+                child: Icon(f.$2, color: const Color(0xFFB8921F), size: 20),
               ),
               const SizedBox(width: 14),
               Expanded(

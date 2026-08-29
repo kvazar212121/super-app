@@ -14,6 +14,7 @@ import '../widgets/glass/glass_surface.dart';
 import '../widgets/save_provider_button.dart';
 import 'courier_dispatch_screen.dart';
 import 'package:super_app/l10n/locale_controller.dart';
+import '../theme/lux_tokens.dart';
 
 class CourierProfileScreen extends StatelessWidget {
   final CourierService service;
@@ -22,7 +23,7 @@ class CourierProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const accent = Color(0xFF2563EB); // Indigo
+    const accent = Color(0xFFB8921F); // Indigo
     final currency = NumberFormat.currency(
       locale: 'uz_UZ',
       symbol: 'so\'m',
@@ -190,7 +191,7 @@ class CourierProfileScreen extends StatelessWidget {
           const SizedBox(height: 8),
           const Text(
             '* Yakuniy narx manzillar orasidagi masofaga va yuk og\'irligiga qarab kuryer bilan kelishiladi.',
-            style: TextStyle(fontSize: 13, color: Colors.black54),
+            style: TextStyle(fontSize: 13, color: LuxTokens.textMuted),
           ),
           const SizedBox(height: 28),
           Row(

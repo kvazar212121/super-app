@@ -3,6 +3,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../services/api_service.dart';
+import '../theme/lux_tokens.dart';
 
 /// Hujjat rasmini tanlash va serverga yuklash.
 class DocumentUploadTile extends StatefulWidget {
@@ -18,7 +19,7 @@ class DocumentUploadTile extends StatefulWidget {
     this.subtitle,
     this.url,
     required this.onUrlChanged,
-    this.accent = const Color(0xFFF472B6),
+    this.accent = const Color(0xFFEBD79B),
   });
 
   @override
@@ -96,7 +97,7 @@ class _DocumentUploadTileState extends State<DocumentUploadTile> {
                 if (widget.subtitle != null)
                   Text(
                     widget.subtitle!,
-                    style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                    style: TextStyle(fontSize: 12, color: LuxTokens.textMuted),
                   ),
                 if (hasUrl)
                   Text(

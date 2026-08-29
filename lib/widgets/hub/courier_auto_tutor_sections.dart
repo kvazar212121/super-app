@@ -266,7 +266,7 @@ class AutoWorkshopHubSection extends StatelessWidget {
                 reviewCount: w.reviewCount,
                 priceLabel: '${(minPrice / 1000).round()}k+',
                 icon: LucideIcons.home,
-                accent: const Color(0xFF334155),
+                accent: const Color(0xFF26262A),
                 distanceKmValue: distanceKm(
                   kDefaultUserLat, kDefaultUserLng, w.latitude, w.longitude,
                 ),

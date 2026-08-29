@@ -52,6 +52,8 @@ class _BarberHubSectionState extends State<BarberHubSection> {
         list.sort((a, b) => b.rating.compareTo(a.rating));
       case HubListFilter.openNow:
         list = list.where((s) => s.isOpenNow()).toList();
+      case HubListFilter.promotions:
+        list = list.where((s) => s.hasPromo).toList();
       case HubListFilter.all:
         break;
     }
@@ -107,7 +109,7 @@ class _BarberHubSectionState extends State<BarberHubSection> {
               child: Center(
                 child: Text(
                   'Bu filtr bo\'yicha sartaroshxona topilmadi',
-                  style: TextStyle(color: const Color(0xFF64748B)),
+                  style: TextStyle(color: const Color(0xFF6B6B68)),
                 ),
               ),
             ),
@@ -178,6 +180,8 @@ class _SalonHubSectionState extends State<SalonHubSection> {
         list.sort((a, b) => b.rating.compareTo(a.rating));
       case HubListFilter.openNow:
         list = list.where((s) => s.isOpenNow()).toList();
+      case HubListFilter.promotions:
+        list = list.where((s) => s.hasPromo).toList();
       case HubListFilter.all:
         break;
     }
@@ -233,7 +237,7 @@ class _SalonHubSectionState extends State<SalonHubSection> {
               child: Center(
                 child: Text(
                   'Bu filtr bo\'yicha salon topilmadi',
-                  style: TextStyle(color: const Color(0xFF64748B)),
+                  style: TextStyle(color: const Color(0xFF6B6B68)),
                 ),
               ),
             ),

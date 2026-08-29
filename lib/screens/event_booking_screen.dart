@@ -12,6 +12,7 @@ import '../widgets/booking_common_widgets.dart';
 import '../widgets/glass/mesh_background.dart';
 import '../widgets/save_provider_button.dart';
 import 'package:super_app/l10n/locale_controller.dart';
+import '../theme/lux_tokens.dart';
 
 class EventBookingScreen extends StatefulWidget {
   final EventPlanning service;
@@ -81,7 +82,7 @@ class _EventBookingScreenState extends State<EventBookingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final accentColor = const Color(0xFF2563EB);
+    final accentColor = const Color(0xFFB8921F);
     final currencyFormat = NumberFormat.currency(
       locale: 'uz_UZ',
       symbol: "so'm",
@@ -133,7 +134,7 @@ class _EventBookingScreenState extends State<EventBookingScreen> {
                             child: Text(
                               widget.service.serviceArea!,
                               style: TextStyle(
-                                color: Colors.grey[700],
+                                color: LuxTokens.textMuted,
                                 fontSize: 13,
                               ),
                             ),
@@ -145,7 +146,7 @@ class _EventBookingScreenState extends State<EventBookingScreen> {
                       const SizedBox(height: 4),
                       Text(
                         'Jamoa: ${widget.service.teamSize} kishi · ${widget.service.capabilitiesLabel}',
-                        style: TextStyle(color: Colors.grey[600], fontSize: 13),
+                        style: TextStyle(color: LuxTokens.textMuted, fontSize: 13),
                       ),
                     ],
                     const SizedBox(height: 24),
@@ -298,7 +299,7 @@ class _EventBookingScreenState extends State<EventBookingScreen> {
                           venue.toLowerCase().contains('maydon')
                       ? LucideIcons.trees
                       : LucideIcons.mapPin,
-                  color: isSelected ? color : Colors.grey[400],
+                  color: isSelected ? color : LuxTokens.textFaint,
                   size: 20,
                 ),
                 const SizedBox(width: 12),
@@ -373,7 +374,7 @@ class _EventBookingScreenState extends State<EventBookingScreen> {
                   style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFFEC4899),
+                    color: Color(0xFFE3C766),
                   ),
                 ),
               ],

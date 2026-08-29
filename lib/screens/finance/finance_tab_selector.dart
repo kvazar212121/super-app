@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import '../../theme/glass_tokens.dart';
 import '../../l10n/locale_controller.dart';
+import '../../theme/lux_tokens.dart';
 
 class FinanceTabSelector extends StatelessWidget {
   final int activeTab;
@@ -24,7 +25,7 @@ class FinanceTabSelector extends StatelessWidget {
           child: Container(
             height: 46,
             decoration: BoxDecoration(
-              color: const Color(0xFFF1F5F9),
+              color: const Color(0xFFF2F2F0),
               borderRadius: BorderRadius.circular(14),
               border: Border.all(color: GlassTokens.glassBorder(context)),
             ),
@@ -37,7 +38,7 @@ class FinanceTabSelector extends StatelessWidget {
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
                         color: activeTab == 0
-                            ? Colors.blueAccent
+                            ? LuxTokens.goldSoft
                             : Colors.transparent,
                         borderRadius: BorderRadius.circular(14),
                       ),
@@ -61,7 +62,7 @@ class FinanceTabSelector extends StatelessWidget {
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
                         color: activeTab == 1
-                            ? Colors.blueAccent
+                            ? LuxTokens.goldSoft
                             : Colors.transparent,
                         borderRadius: BorderRadius.circular(14),
                       ),

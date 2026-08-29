@@ -14,6 +14,7 @@ import '../widgets/glass/glass_surface.dart';
 import '../widgets/save_provider_button.dart';
 import 'disinfection_dispatch_screen.dart';
 import 'package:super_app/l10n/locale_controller.dart';
+import '../theme/lux_tokens.dart';
 
 class DisinfectionProfileScreen extends StatelessWidget {
   final DisinfectionService service;
@@ -22,7 +23,7 @@ class DisinfectionProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const accent = Color(0xFF2563EB); // Emerald
+    const accent = Color(0xFFB8921F); // Emerald
     final currency = NumberFormat.currency(
       locale: 'uz_UZ',
       symbol: 'so\'m',
@@ -158,7 +159,7 @@ class DisinfectionProfileScreen extends StatelessWidget {
                     (c) => Chip(
                       avatar: Icon(c.icon, size: 16, color: accent),
                       label: Text(c.name.tr + (c.isEcoFriendly ? ' (Eko)' : '')),
-                      backgroundColor: Colors.white,
+                      backgroundColor: LuxTokens.surface,
                       side: BorderSide(color: Colors.grey.shade300),
                     ),
                   )

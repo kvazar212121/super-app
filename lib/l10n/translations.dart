@@ -21,7 +21,7 @@ const Map<String, String> kTranslationsRu = {
   'Aqlli savdo': 'Умные покупки',
   'Barcha xizmatlar': 'Все услуги',
   // ── Premium (qora+oltin) bosh sahifa ──
-  'VOSITALAR': 'ИНСТРУМЕНТЫ',
+  'Kundalik vositalar': 'Ежедневные инструменты',
   'MAXSUS TAKLIF': 'СПЕЦПРЕДЛОЖЕНИЕ',
   "KO'RISH": 'СМОТРЕТЬ',
   'Valyuta kursi': 'Курс валют',

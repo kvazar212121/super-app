@@ -7,6 +7,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../../config/app_config.dart';
 import '../../theme/glass_tokens.dart';
+import '../../theme/lux_tokens.dart';
 
 class PhotoCarousel extends StatefulWidget {
   final List<String> photos;
@@ -34,9 +35,9 @@ class _PhotoCarouselState extends State<PhotoCarousel> {
       return SizedBox(
         height: widget.height,
         child: ColoredBox(
-          color: Colors.blue.withValues(alpha: 0.10),
+          color: LuxTokens.gold.withValues(alpha: 0.10),
           child: const Center(
-            child: Icon(LucideIcons.image, size: 40, color: Colors.blue),
+            child: Icon(LucideIcons.image, size: 40, color: LuxTokens.gold),
           ),
         ),
       );

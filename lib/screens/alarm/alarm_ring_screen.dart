@@ -14,6 +14,7 @@ import '../../l10n/locale_controller.dart';
 import '../../models/alarm.dart';
 import '../../services/api_service.dart';
 import '../../services/notification_helper.dart';
+import '../../theme/lux_tokens.dart';
 
 /// Budilnik jiringlaganda ochiladigan to'liq-ekranli ekran.
 /// Baland ovozda jiringlaydi, orqaga qaytishni bloklaydi va vazifa bajarilgunicha o'chmaydi.
@@ -126,7 +127,7 @@ class _AlarmRingScreenState extends State<AlarmRingScreen> {
                   style: const TextStyle(fontSize: 18, color: Colors.white70),
                 ),
                 const SizedBox(height: 24),
-                const Icon(Icons.alarm, color: Colors.tealAccent, size: 40),
+                const Icon(Icons.alarm, color: LuxTokens.goldSoft, size: 40),
                 const SizedBox(height: 16),
                 Expanded(
                   child: _MissionArea(
@@ -298,7 +299,7 @@ class _MathMissionState extends State<_MathMission> {
               borderSide: BorderSide(color: Colors.white24),
             ),
             focusedBorder: const UnderlineInputBorder(
-              borderSide: BorderSide(color: Colors.tealAccent),
+              borderSide: BorderSide(color: LuxTokens.goldSoft),
             ),
           ),
           onSubmitted: (_) => _check(),
@@ -308,7 +309,7 @@ class _MathMissionState extends State<_MathMission> {
           width: double.infinity,
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.tealAccent,
+              backgroundColor: LuxTokens.goldSoft,
               foregroundColor: Colors.black,
               padding: const EdgeInsets.symmetric(vertical: 16),
             ),
@@ -403,7 +404,7 @@ class _PhotoMissionState extends State<_PhotoMission> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        const Icon(Icons.camera_alt, color: Colors.tealAccent, size: 48),
+        const Icon(Icons.camera_alt, color: LuxTokens.goldSoft, size: 48),
         const SizedBox(height: 16),
         Text(
           'Shuni rasmga oling:'.tr,
@@ -433,7 +434,7 @@ class _PhotoMissionState extends State<_PhotoMission> {
           width: double.infinity,
           child: ElevatedButton.icon(
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.tealAccent,
+              backgroundColor: LuxTokens.goldSoft,
               foregroundColor: Colors.black,
               padding: const EdgeInsets.symmetric(vertical: 16),
             ),
@@ -582,7 +583,7 @@ class _SpeechMissionState extends State<_SpeechMission> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        const Icon(Icons.record_voice_over, color: Colors.tealAccent, size: 48),
+        const Icon(Icons.record_voice_over, color: LuxTokens.goldSoft, size: 48),
         const SizedBox(height: 12),
         Text(
           'Ushbu matnni ovoz chiqarib o\'qing:'.tr,
@@ -619,7 +620,7 @@ class _SpeechMissionState extends State<_SpeechMission> {
             style: ElevatedButton.styleFrom(
               backgroundColor: _listening
                   ? Colors.redAccent
-                  : Colors.tealAccent,
+                  : LuxTokens.goldSoft,
               foregroundColor: Colors.black,
               padding: const EdgeInsets.symmetric(vertical: 16),
             ),

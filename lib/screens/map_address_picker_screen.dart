@@ -8,6 +8,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:super_app/l10n/locale_controller.dart';
 import '../widgets/friendly_error.dart';
 import '../config/map_config.dart';
+import '../theme/lux_tokens.dart';
 
 /// Xaritadan manzil tanlash ekrani.
 /// Foydalanuvchi xaritani siljitib belgi qo'yadi,
@@ -216,7 +217,7 @@ class _MapAddressPickerScreenState extends State<MapAddressPickerScreen> {
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
-                  colors: [Colors.black87, Colors.transparent],
+                  colors: [LuxTokens.text, Colors.transparent],
                 ),
               ),
               child: Row(
@@ -248,7 +249,7 @@ class _MapAddressPickerScreenState extends State<MapAddressPickerScreen> {
             bottom: 160,
             child: FloatingActionButton.small(
               heroTag: 'my_location',
-              backgroundColor: Colors.white,
+              backgroundColor: LuxTokens.surface,
               onPressed: _locating ? null : _goToMyLocation,
               child: _locating
                   ? const SizedBox(
@@ -256,7 +257,7 @@ class _MapAddressPickerScreenState extends State<MapAddressPickerScreen> {
                       height: 20,
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
-                  : const Icon(Icons.my_location, color: Colors.black87),
+                  : const Icon(Icons.my_location, color: LuxTokens.text),
             ),
           ),
 
@@ -273,7 +274,7 @@ class _MapAddressPickerScreenState extends State<MapAddressPickerScreen> {
                 MediaQuery.of(context).padding.bottom + 20,
               ),
               decoration: const BoxDecoration(
-                color: Colors.white,
+                color: LuxTokens.surface,
                 borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
                 boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 20)],
               ),
@@ -287,7 +288,7 @@ class _MapAddressPickerScreenState extends State<MapAddressPickerScreen> {
                       width: 40,
                       height: 4,
                       decoration: BoxDecoration(
-                        color: Colors.grey.shade300,
+                        color: LuxTokens.border,
                         borderRadius: BorderRadius.circular(2),
                       ),
                     ),

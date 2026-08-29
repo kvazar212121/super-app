@@ -11,6 +11,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../config/app_config.dart';
 import '../../models/marketplace/listing.dart';
 import '../../theme/glass_tokens.dart';
+import '../../theme/lux_tokens.dart';
 
 class ListingCard extends StatelessWidget {
   final Listing listing;
@@ -58,7 +59,7 @@ class ListingCard extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
-                        color: isDark ? Colors.white : Colors.black87,
+                        color: isDark ? Colors.white : LuxTokens.text,
                       ),
                     ),
                     const SizedBox(height: 2),
@@ -69,7 +70,7 @@ class ListingCard extends StatelessWidget {
                       style: const TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w700,
-                        color: Colors.blue,
+                        color: LuxTokens.gold,
                       ),
                     ),
                     const SizedBox(height: 2),
@@ -79,7 +80,7 @@ class ListingCard extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                         fontSize: 11,
-                        color: isDark ? Colors.white70 : Colors.black54,
+                        color: isDark ? Colors.white70 : LuxTokens.textMuted,
                       ),
                     ),
                   ],
@@ -118,9 +119,9 @@ class ListingCard extends StatelessWidget {
   }
 
   Widget _fallback(BuildContext context) => ColoredBox(
-    color: Colors.blue.withValues(alpha: 0.12),
+    color: LuxTokens.gold.withValues(alpha: 0.12),
     child: const Center(
-      child: Icon(LucideIcons.image, color: Colors.blue, size: 26),
+      child: Icon(LucideIcons.image, color: LuxTokens.gold, size: 26),
     ),
   );
 }

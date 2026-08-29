@@ -34,7 +34,7 @@ class HomeScreen extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     // Dark rejimda fon LuxTokens.bg — MeshBackground bilan bir xil, shuning
     // uchun ekranlar orasida rang "sakramaydi".
-    final bgColor = isDark ? LuxTokens.bg : const Color(0xFFF0F4FF);
+    final bgColor = isDark ? LuxTokens.bg : const Color(0xFFF8F9FA);
 
     return ColoredBox(
       color: bgColor,
@@ -206,6 +206,8 @@ class HomeScreen extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        // Dark (premium) rejimda sarlavha 'Kundalik vositalar' bo'lib
+        // ko'rsatiladi; light rejimda qisqa 'Kundalik' qoladi.
         _SectionTitle(title: 'Kundalik'.tr),
         const SizedBox(height: 12),
         // Har 3 tadan qatorga bo'lamiz. Kartalar soni o'zgarsa
@@ -411,13 +413,10 @@ class _ServicesButtonState extends State<_ServicesButton>
                 child: Container(
                   width: 30,
                   height: 30,
-                  decoration: const BoxDecoration(
-                    color: Color(0xFF1F1F22),
-                    shape: BoxShape.circle,
-                  ),
+                  decoration: LuxTokens.goldBoxDecoration(isCircle: true),
                   child: const Icon(
                     LucideIcons.chevronRight,
-                    color: LuxTokens.text,
+                    color: Color(0xFF140D02),
                     size: 15,
                   ),
                 ),
@@ -564,8 +563,10 @@ class _SectionTitle extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     if (isDark) {
       // PREMIUM: oltin chiziq + katta harfli, keng oraliqli sarlavha.
-      // Yonida xira "VOSITALAR" — bu bo'lim nima ekanini izohlaydi va
-      // tipografik muvozanat beradi (yakka so'z yolg'iz qolmaydi).
+      //
+      // "KUNDALIK | VOSITALAR" ikki xil uslubdagi bo'lak edi va ikkita
+      // alohida yorliqdek o'qilardi. Endi BITTA GAP, bitta shriftda va
+      // bitta rangda — bo'lim nomi aniq va yaxlit.
       return Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
@@ -578,11 +579,14 @@ class _SectionTitle extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 10),
-          Text(title.toUpperCase(), style: LuxTokens.sectionTitle),
-          const SizedBox(width: 10),
-          Container(width: 1, height: 12, color: LuxTokens.border),
-          const SizedBox(width: 10),
-          Text('VOSITALAR'.tr, style: LuxTokens.sectionTitleMuted),
+          Expanded(
+            child: Text(
+              'Kundalik vositalar'.tr.toUpperCase(),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: LuxTokens.sectionTitle,
+            ),
+          ),
         ],
       );
     }
@@ -674,104 +678,75 @@ class _DailyBtn extends StatelessWidget {
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(LuxTokens.radiusMd),
-        child: Ink(
-          // 142: ichkarida ikon(28) + son(22, serif) + izoh + ajratgich +
-          // nom(11.5) va oraliqlar joylashadi. Kamroq bo'lsa overflow bo'ladi.
-          height: 142,
+        child: Container(
+          height: 138,
           decoration: BoxDecoration(
+            color: LuxTokens.surface,
             borderRadius: BorderRadius.circular(LuxTokens.radiusMd),
             border: Border.all(color: LuxTokens.border),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.05),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
           ),
-          padding: const EdgeInsets.all(11),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          clipBehavior: Clip.antiAlias,
+          child: Stack(
+            fit: StackFit.expand,
             children: [
-              Row(
-                children: [
-                  // Ikon — oltin ramkali kvadrat, kartaning "shaxsiyati".
-                  Container(
-                    width: 28,
-                    height: 28,
-                    decoration: BoxDecoration(
-                      color: LuxTokens.gold.withValues(alpha: 0.10),
-                      borderRadius: BorderRadius.circular(9),
-                      border: Border.all(
-                        color: LuxTokens.gold.withValues(alpha: 0.32),
-                      ),
-                    ),
-                    child: Icon(icon, color: LuxTokens.goldSoft, size: 14),
+              if (bgImage != null)
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(4, 10, 4, 32),
+                  child: Image.asset(
+                    bgImage!,
+                    fit: BoxFit.contain,
+                    alignment: Alignment.center,
                   ),
-                  const Spacer(),
-                  if (stat != null)
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 7,
-                        vertical: 3,
-                      ),
-                      decoration: LuxTokens.chip(accent: statAccent),
-                      child: Text(
-                        stat!,
-                        style: LuxTokens.label(
-                          color: statAccent
-                              ? LuxTokens.goldSoft
-                              : LuxTokens.textMuted,
-                          size: 8.5,
-                          weight: FontWeight.w600,
-                          spacing: 0.6,
+                )
+              else
+                Center(
+                  child: Icon(icon, color: LuxTokens.gold, size: 36),
+                ),
+              Positioned(
+                left: 0,
+                right: 0,
+                bottom: 0,
+                child: Container(
+                  padding: const EdgeInsets.fromLTRB(10, 7, 10, 8),
+                  decoration: BoxDecoration(
+                    color: LuxTokens.surface,
+                    border: const Border(
+                      top: BorderSide(color: LuxTokens.border),
+                    ),
+                    borderRadius: const BorderRadius.vertical(
+                      bottom: Radius.circular(LuxTokens.radiusMd - 1),
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          label,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            fontFamily: LuxTokens.body,
+                            color: LuxTokens.text,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                       ),
-                    ),
-                ],
-              ),
-              const Spacer(),
-              if (value != null)
-                // FittedBox: uzun qiymat ("1,105 ming") qirqilmasin, balki
-                // karta eniga sig'adigan darajada kichraysin. Ellipsis
-                // ma'lumotni yo'qotardi, bu esa saqlaydi.
-                FittedBox(
-                  fit: BoxFit.scaleDown,
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    value!,
-                    maxLines: 1,
-                    style: LuxTokens.value(size: 22),
-                  ),
-                ),
-              if (caption != null) ...[
-                const SizedBox(height: 3),
-                Text(
-                  caption!.toUpperCase(),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: LuxTokens.label(size: 7.5, spacing: 1.3),
-                ),
-              ],
-              const SizedBox(height: 9),
-              // Ajratuvchi chiziq — nom qismini ma'lumotdan ajratadi.
-              Container(height: 1, color: LuxTokens.border),
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      label,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        fontFamily: LuxTokens.body,
-                        color: LuxTokens.text,
-                        fontSize: 11.5,
-                        fontWeight: FontWeight.w500,
-                        letterSpacing: -0.1,
+                      const Icon(
+                        LucideIcons.chevronRight,
+                        size: 13,
+                        color: LuxTokens.gold,
                       ),
-                    ),
+                    ],
                   ),
-                  const Icon(
-                    LucideIcons.chevronRight,
-                    size: 13,
-                    color: LuxTokens.textFaint,
-                  ),
-                ],
+                ),
               ),
             ],
           ),
@@ -781,8 +756,8 @@ class _DailyBtn extends StatelessWidget {
   }
 
   Widget _buildLight(BuildContext context) {
-    // YAGONA rang — barcha kartalar pastki tasmasi BIR XIL ko'k-zangori.
-    const tasmaRang = Color(0xFF1E40AF);
+    // 3 Rang palitrasi — oq fon, qora pastki tasmasi va oltin urg'u.
+    const tasmaRang = Color(0xFF141416);
 
     return InkWell(
       onTap: onTap,
@@ -792,16 +767,12 @@ class _DailyBtn extends StatelessWidget {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(18),
+          border: Border.all(color: LuxTokens.border),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.13),
-              blurRadius: 18,
-              offset: const Offset(0, 8),
-            ),
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.05),
-              blurRadius: 3,
-              offset: const Offset(0, 1),
+              color: Colors.black.withValues(alpha: 0.07),
+              blurRadius: 14,
+              offset: const Offset(0, 5),
             ),
           ],
         ),
@@ -820,46 +791,46 @@ class _DailyBtn extends StatelessWidget {
               )
             else
               Container(
-                color: color.withValues(alpha: 0.12),
-                child: Center(child: Icon(icon, color: color, size: 32)),
+                color: LuxTokens.gold.withValues(alpha: 0.12),
+                child: Center(child: Icon(icon, color: LuxTokens.gold, size: 32)),
               ),
-            Positioned(
-              top: 7,
-              left: 7,
-              child: Container(
-                padding: const EdgeInsets.all(5),
-                decoration: BoxDecoration(
-                  color: color,
-                  borderRadius: BorderRadius.circular(9),
-                  boxShadow: [
-                    BoxShadow(
-                      color: color.withValues(alpha: 0.5),
-                      blurRadius: 8,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: Icon(icon, color: Colors.white, size: 13),
-              ),
-            ),
             Positioned(
               left: 0,
               right: 0,
               bottom: 0,
               child: Container(
-                padding: const EdgeInsets.fromLTRB(9, 7, 9, 8),
-                decoration: const BoxDecoration(color: tasmaRang),
-                child: Text(
-                  label,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w700,
-                    fontSize: 12.5,
-                    height: 1.1,
-                    letterSpacing: -0.2,
+                padding: const EdgeInsets.fromLTRB(10, 7, 10, 8),
+                decoration: const BoxDecoration(
+                  color: LuxTokens.surface,
+                  border: Border(
+                    top: BorderSide(color: LuxTokens.border),
                   ),
+                  borderRadius: BorderRadius.vertical(
+                    bottom: Radius.circular(17),
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        label,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          color: LuxTokens.text,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 12.5,
+                          height: 1.1,
+                          letterSpacing: -0.2,
+                        ),
+                      ),
+                    ),
+                    const Icon(
+                      LucideIcons.chevronRight,
+                      size: 13,
+                      color: LuxTokens.gold,
+                    ),
+                  ],
                 ),
               ),
             ),

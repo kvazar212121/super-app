@@ -43,6 +43,8 @@ class _FootballHubSectionState extends State<FootballHubSection> {
         list.sort((a, b) => b.rating.compareTo(a.rating));
       case HubListFilter.openNow:
         list = list.where((f) => f.isOpenNow()).toList();
+      case HubListFilter.promotions:
+        list = list.where((f) => f.hasPromo).toList();
       case HubListFilter.all:
         break;
     }

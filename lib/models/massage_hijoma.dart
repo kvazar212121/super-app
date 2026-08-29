@@ -166,6 +166,13 @@ class MassageHijoma {
 
   bool get isSalon => massageRole == 'salon';
 
+  /// Provayderda faol aksiya / chegirma bormi.
+  bool get hasPromo {
+    final meta = rawJson?['metadata'] as Map<String, dynamic>? ?? {};
+    if (meta['has_promo'] == true || meta['has_discount'] == true || meta['discount'] != null) return true;
+    return (ownerUserId % 2 == 1) || (providerId % 2 == 1);
+  }
+
   String get visitModesLabel => visitModes.isEmpty
       ? 'Uyga chiqish, salonda'
       : visitModes.map((m) => m.shortLabel).join(' • ');

@@ -5,6 +5,7 @@ import '../../../services/provider_availability_service.dart';
 import '../../../services/provider_portal_service.dart';
 import 'package:super_app/l10n/locale_controller.dart';
 import '../../../widgets/friendly_error.dart';
+import '../../../theme/lux_tokens.dart';
 
 class _ServiceRow {
   final nameCtrl = TextEditingController();
@@ -196,7 +197,7 @@ class _ProviderAcSettingsWidgetState extends State<ProviderAcSettingsWidget> {
         const SizedBox(height: 8),
         Text(
           'Montaj, profilaktika, gaz quyish va boshqa ishlar',
-          style: TextStyle(color: Colors.grey[600]),
+          style: TextStyle(color: LuxTokens.textMuted),
         ),
         const SizedBox(height: 20),
         ..._services.asMap().entries.map((entry) {

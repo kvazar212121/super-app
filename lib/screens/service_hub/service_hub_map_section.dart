@@ -545,12 +545,12 @@ class _MapSectionState extends State<_MapSection> {
         height: 48,
         child: Container(
           decoration: BoxDecoration(
-            color: Colors.blue,
+            color: LuxTokens.gold,
             shape: BoxShape.circle,
             border: Border.all(color: Colors.white, width: 3),
             boxShadow: [
               BoxShadow(
-                color: Colors.blue.withValues(alpha: 0.5),
+                color: LuxTokens.gold.withValues(alpha: 0.5),
                 blurRadius: 10,
                 spreadRadius: 2,
                 offset: const Offset(0, 3),
@@ -660,7 +660,7 @@ class _MapSectionState extends State<_MapSection> {
               height: 55,
               child: _MapPin(
                 icon: LucideIcons.home,
-                color: const Color(0xFF334155),
+                color: const Color(0xFF26262A),
                 label: ws.name,
                 onTap: () => Navigator.push(
                   context,
@@ -730,7 +730,7 @@ class _MapSectionState extends State<_MapSection> {
                 height: 55,
                 child: _MapPin(
                   icon: LucideIcons.home,
-                  color: const Color(0xFF334155),
+                  color: const Color(0xFF26262A),
                   label: ws.name,
                   onTap: () => ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text('${ws.name} ${'ustaxonasi'.tr}')),
@@ -770,7 +770,7 @@ class _MapSectionState extends State<_MapSection> {
               height: 55,
               child: _MapPin(
                 icon: LucideIcons.graduationCap,
-                color: const Color(0xFF6366F1),
+                color: const Color(0xFFC9A227),
                 label: ec.name,
                 onTap: () => Navigator.push(
                   context,
@@ -1072,7 +1072,7 @@ class _MapPin extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: LuxTokens.surface,
               borderRadius: BorderRadius.circular(6),
               boxShadow: [
                 BoxShadow(
@@ -1089,7 +1089,7 @@ class _MapPin extends StatelessWidget {
               style: const TextStyle(
                 fontSize: 8.5,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF0F172A),
+                color: Color(0xFF0A0A0B),
               ),
             ),
           ),

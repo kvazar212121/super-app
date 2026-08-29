@@ -10,6 +10,7 @@ import '../providers/app_provider.dart';
 import '../screens/order_detail_screen.dart';
 import '../theme/glass_tokens.dart';
 import '../l10n/locale_controller.dart';
+import '../theme/lux_tokens.dart';
 
 /// Asosiy ekrandagi "joriy buyurtma" — shaffof gradient glass karta.
 class ActiveOrderBanner extends StatelessWidget {
@@ -17,16 +18,16 @@ class ActiveOrderBanner extends StatelessWidget {
 
   Color _statusColor(OrderStatus s) => switch (s) {
     OrderStatus.pending => const Color(0xFFF59E0B),
-    OrderStatus.accepted => const Color(0xFF3B82F6),
-    OrderStatus.onTheWay => const Color(0xFF0EA5E9),
-    OrderStatus.arrived => const Color(0xFF8B5CF6),
+    OrderStatus.accepted => const Color(0xFFC9A227),
+    OrderStatus.onTheWay => const Color(0xFFC9A227),
+    OrderStatus.arrived => const Color(0xFFE3C766),
     OrderStatus.preparing => const Color(0xFFF59E0B),
-    OrderStatus.inProgress => const Color(0xFFA855F7),
+    OrderStatus.inProgress => const Color(0xFFE3C766),
     OrderStatus.delivered => const Color(0xFF10B981),
     OrderStatus.completed => const Color(0xFF10B981),
-    OrderStatus.awaitingConfirmation => const Color(0xFF3B82F6),
+    OrderStatus.awaitingConfirmation => const Color(0xFFC9A227),
     OrderStatus.cancelled => const Color(0xFFEF4444),
-    OrderStatus.noShow => const Color(0xFF6B7280),
+    OrderStatus.noShow => const Color(0xFF6B6B68),
     OrderStatus.disputed => const Color(0xFFDC2626),
   };
 
@@ -72,7 +73,7 @@ class ActiveOrderBanner extends StatelessWidget {
                   width: 50,
                   height: 50,
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: LuxTokens.surface,
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(color: Colors.white),
                   ),

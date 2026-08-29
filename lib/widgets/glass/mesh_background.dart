@@ -9,25 +9,8 @@ class MeshBackground extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Light rejim — toza OQ fon (rasm yo'q).
-    if (!isDark) {
-      return const ColoredBox(color: Colors.white);
-    }
-    // Dark rejim — deyarli tekis qora. Premium ko'rinishda fon "jim"
-    // turishi kerak, e'tibor kartalarga va oltin urg'ularga qaratiladi.
-    return const DecoratedBox(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [
-            Color(0xFF0C0C0D),
-            LuxTokens.bg,
-            Color(0xFF08080A),
-          ],
-        ),
-      ),
-    );
+    // Toza OQ fon — har qanday holatda tiniq oq fon bo'ladi
+    return const ColoredBox(color: Colors.white);
   }
 }
 

@@ -6,6 +6,7 @@ import '../../l10n/locale_controller.dart';
 import '../../services/api_service.dart';
 import '../../services/notification_helper.dart';
 import '../../theme/glass_tokens.dart';
+import '../../theme/lux_tokens.dart';
 
 /// Workout eslatma bildirishnomalari ID diapazoni: 7100 + ISO weekday.
 const int kWorkoutReminderBaseId = 7100;
@@ -217,11 +218,11 @@ class _ExerciseDetailSheetState extends State<_ExerciseDetailSheet> {
                   ),
                   errorWidget: (_, _, _) => Container(
                     height: 240,
-                    color: Colors.tealAccent.withValues(alpha: 0.08),
+                    color: LuxTokens.goldSoft.withValues(alpha: 0.08),
                     child: const Icon(
                       LucideIcons.dumbbell,
                       size: 56,
-                      color: Colors.tealAccent,
+                      color: LuxTokens.goldSoft,
                     ),
                   ),
                 ),
@@ -247,7 +248,7 @@ class _ExerciseDetailSheetState extends State<_ExerciseDetailSheet> {
                       height: 24,
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
-                        color: Colors.tealAccent.withValues(alpha: 0.15),
+                        color: LuxTokens.goldSoft.withValues(alpha: 0.15),
                         shape: BoxShape.circle,
                       ),
                       child: Text(
@@ -255,7 +256,7 @@ class _ExerciseDetailSheetState extends State<_ExerciseDetailSheet> {
                         style: const TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w800,
-                          color: Colors.teal,
+                          color: LuxTokens.gold,
                         ),
                       ),
                     ),

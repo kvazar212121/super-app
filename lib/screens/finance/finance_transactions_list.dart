@@ -4,6 +4,7 @@ import '../../models/finance_models.dart';
 import '../../theme/glass_tokens.dart';
 import '../../l10n/locale_controller.dart';
 import 'finance_utils.dart';
+import '../../theme/lux_tokens.dart';
 
 class FinanceTransactionsList extends StatelessWidget {
   final List<FinanceRecord> records;
@@ -60,7 +61,7 @@ class FinanceTransactionsList extends StatelessWidget {
                         vertical: 10,
                       ),
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: LuxTokens.surface,
                         borderRadius: BorderRadius.circular(16),
                         border: Border.all(
                           color: GlassTokens.glassBorder(context),

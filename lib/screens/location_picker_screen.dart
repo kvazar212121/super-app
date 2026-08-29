@@ -7,6 +7,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:super_app/l10n/locale_controller.dart';
 import '../config/map_config.dart';
+import '../theme/lux_tokens.dart';
 
 class LocationPickerScreen extends StatefulWidget {
   final double initialLat;
@@ -179,9 +180,9 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
             bottom: 180,
             child: FloatingActionButton(
               heroTag: 'my_location',
-              backgroundColor: Colors.white,
+              backgroundColor: LuxTokens.surface,
               onPressed: _getCurrentLocation,
-              child: const Icon(LucideIcons.navigation, color: Colors.blue),
+              child: const Icon(LucideIcons.navigation, color: LuxTokens.gold),
             ),
           ),
           // Bottom Panel
@@ -192,7 +193,7 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
             child: Container(
               padding: const EdgeInsets.all(24),
               decoration: const BoxDecoration(
-                color: Colors.white,
+                color: LuxTokens.surface,
                 borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
                 boxShadow: [
                   BoxShadow(
@@ -217,7 +218,7 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
                       children: [
                         const Icon(
                           LucideIcons.mapPin,
-                          color: Colors.blue,
+                          color: LuxTokens.gold,
                           size: 20,
                         ),
                         const SizedBox(width: 8),

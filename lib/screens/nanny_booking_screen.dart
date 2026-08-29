@@ -12,6 +12,7 @@ import '../utils/auth_guard.dart';
 import '../widgets/booking_common_widgets.dart';
 import '../widgets/glass/mesh_background.dart';
 import 'package:super_app/l10n/locale_controller.dart';
+import '../theme/lux_tokens.dart';
 
 class NannyBookingScreen extends StatefulWidget {
   final NannyService nanny;
@@ -43,7 +44,7 @@ class _NannyBookingScreenState extends State<NannyBookingScreen> {
   bool _loadingSlots = true;
   bool _trialDay = false;
 
-  static const _accent = Color(0xFF2563EB);
+  static const _accent = Color(0xFFB8921F);
 
   double get _selectedPrice {
     if (_selectedService == null) return 0.0;
@@ -359,7 +360,7 @@ class _NannyBookingScreenState extends State<NannyBookingScreen> {
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 12,
-                        color: Colors.grey[600],
+                        color: LuxTokens.textMuted,
                         height: 1.4,
                       ),
                     ),

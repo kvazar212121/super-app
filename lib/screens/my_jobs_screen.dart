@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../models/job.dart';
 import '../services/api_service.dart';
 import 'job_offers_screen.dart';
+import '../theme/lux_tokens.dart';
+import '../theme/glass_tokens.dart';
+import '../widgets/glass/glass_surface.dart';
+import '../l10n/locale_controller.dart';
 
 /// Mijozning ish e'lonlari: ro'yxat + yangi e'lon berish.
-///
-/// Foydalanuvchi talabi: "ish qilinadigan joyni rasmga olib, summani
-/// yozib, qachon qilinish kerakligini yozib e'lon berib qo'yilishi kerak".
 class MyJobsScreen extends StatefulWidget {
-  /// [embedded] — "Buyurtmalarim" ekrani ichidagi tab sifatida ochilgan
-  /// (o'z AppBar'i kerak emas, fon tashqi ekrandan keladi).
   final bool embedded;
 
   const MyJobsScreen({super.key, this.embedded = false});
@@ -49,7 +49,7 @@ class _MyJobsScreenState extends State<MyJobsScreen> {
     } catch (e) {
       if (!mounted) return;
       setState(() {
-        _error = 'E\'lonlarni yuklab bo\'lmadi';
+        _error = 'E\'lonlarni yuklab bo\'lmadi'.tr;
         _loading = false;
       });
     }
@@ -58,63 +58,154 @@ class _MyJobsScreenState extends State<MyJobsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: widget.embedded ? Colors.transparent : null,
+      backgroundColor: widget.embedded ? Colors.transparent : Colors.white,
       appBar: widget.embedded
           ? null
-          : AppBar(title: const Text('Mening e\'lonlarim')),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: _openCreate,
-        icon: const Icon(Icons.add),
-        label: const Text('E\'lon berish'),
+          : AppBar(
+              title: Text('Mening e\'lonlarim'.tr),
+              backgroundColor: Colors.white,
+              surfaceTintColor: Colors.transparent,
+              elevation: 0,
+            ),
+      floatingActionButton: Container(
+        height: 52,
+        padding: const EdgeInsets.symmetric(horizontal: 18),
+        decoration: BoxDecoration(
+          gradient: LuxTokens.goldGradient,
+          borderRadius: BorderRadius.circular(26),
+          boxShadow: const [
+            BoxShadow(
+              color: Colors.black26,
+              blurRadius: 8,
+              offset: Offset(0, 3),
+            ),
+          ],
+        ),
+        child: InkWell(
+          onTap: _openCreate,
+          borderRadius: BorderRadius.circular(26),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(LucideIcons.plus, color: Color(0xFF140D02), size: 20),
+              const SizedBox(width: 8),
+              Text(
+                'E\'lon berish'.tr,
+                style: const TextStyle(
+                  color: Color(0xFF140D02),
+                  fontWeight: FontWeight.w900,
+                  fontSize: 15,
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
-      body: RefreshIndicator(onRefresh: _load, child: _body()),
+      body: RefreshIndicator(
+        onRefresh: _load,
+        color: LuxTokens.gold,
+        child: _body(),
+      ),
     );
   }
 
   Widget _body() {
-    final theme = Theme.of(context);
     if (_loading) return const Center(child: CircularProgressIndicator());
     if (_error != null) {
       return ListView(children: [
         const SizedBox(height: 120),
-        Icon(Icons.wifi_off, size: 52, color: theme.hintColor),
+        const Icon(LucideIcons.wifiOff, size: 52, color: Color(0xFF64748B)),
         const SizedBox(height: 12),
-        Text(_error!, textAlign: TextAlign.center),
+        Text(_error!, textAlign: TextAlign.center, style: const TextStyle(color: Color(0xFF0F172A))),
         const SizedBox(height: 14),
         Center(
-          child: FilledButton(
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: LuxTokens.gold,
+              foregroundColor: const Color(0xFF140D02),
+            ),
             onPressed: _load,
-            child: const Text('Qayta urinish'),
+            child: Text('Qayta urinish'.tr),
           ),
         ),
       ]);
     }
     if (_jobs.isEmpty) {
-      return ListView(children: [
-        const SizedBox(height: 120),
-        Icon(Icons.assignment_outlined, size: 56, color: theme.hintColor),
-        const SizedBox(height: 14),
-        Text(
-          'Hali e\'lon bermagansiz.\n"E\'lon berish" tugmasini bosing —\n'
-          'ustalar sizga taklif yuborishadi.',
-          textAlign: TextAlign.center,
-          style: theme.textTheme.bodyMedium?.copyWith(color: theme.hintColor),
+      return Center(
+        child: SingleChildScrollView(
+          child: GlassSurface(
+            margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+            padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 30),
+            borderRadius: GlassTokens.radiusLg,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: LuxTokens.gold.withValues(alpha: 0.14),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    LucideIcons.clipboardList,
+                    size: 40,
+                    color: Color(0xFF140D02),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  'Hali e\'lon bermagansiz'.tr,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    color: Color(0xFF140D02),
+                    fontSize: 16,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  '"E\'lon berish" tugmasini bosing — ustalar sizga taklif yuborishadi.'.tr,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    color: Color(0xFF332205),
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    height: 1.4,
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
-      ]);
+      );
     }
     return ListView.builder(
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
       itemCount: _jobs.length,
-      itemBuilder: (_, i) => _jobCard(theme, _jobs[i]),
+      itemBuilder: (_, i) => _jobCard(_jobs[i]),
     );
   }
 
-  Widget _jobCard(ThemeData theme, JobPost job) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 12),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+  Widget _jobCard(JobPost job) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 14),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: LuxTokens.gold.withValues(alpha: 0.35),
+          width: 1.2,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: LuxTokens.gold.withValues(alpha: 0.08),
+            blurRadius: 10,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
       child: InkWell(
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(16),
         onTap: () async {
           await Navigator.push(
             context,
@@ -123,56 +214,87 @@ class _MyJobsScreenState extends State<MyJobsScreen> {
           _load();
         },
         child: Padding(
-          padding: const EdgeInsets.all(14),
+          padding: const EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Expanded(
                     child: Text(
                       job.title,
                       style: const TextStyle(
-                          fontWeight: FontWeight.bold, fontSize: 16),
+                        fontWeight: FontWeight.w900,
+                        fontSize: 16.5,
+                        color: Color(0xFF0F172A),
+                      ),
                     ),
                   ),
-                  _statusChip(theme, job.status),
+                  const SizedBox(width: 8),
+                  _statusChip(job.status),
                 ],
               ),
               const SizedBox(height: 6),
-              Text(
-                job.address,
-                style: theme.textTheme.bodySmall
-                    ?.copyWith(color: theme.hintColor),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
+              Row(
+                children: [
+                  const Icon(LucideIcons.mapPin, size: 14, color: Color(0xFF64748B)),
+                  const SizedBox(width: 4),
+                  Expanded(
+                    child: Text(
+                      job.address,
+                      style: const TextStyle(
+                        fontSize: 13,
+                        color: Color(0xFF475569),
+                        fontWeight: FontWeight.w600,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(height: 10),
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical: 10),
+                child: Divider(height: 1, color: Color(0xFFE2E8F0)),
+              ),
               Row(
                 children: [
                   if (job.budget != null) ...[
-                    Icon(Icons.payments_outlined,
-                        size: 16, color: theme.colorScheme.primary),
+                    const Icon(LucideIcons.banknote, size: 15, color: Color(0xFF8A5D0B)),
                     const SizedBox(width: 4),
                     Text(
-                      '${job.budget!.toStringAsFixed(0)} so\'m',
-                      style: TextStyle(
-                        color: theme.colorScheme.primary,
-                        fontWeight: FontWeight.w600,
+                      '${job.budget!.toStringAsFixed(0)} ${'so\'m'.tr}',
+                      style: const TextStyle(
+                        color: Color(0xFF8A5D0B),
+                        fontWeight: FontWeight.w900,
+                        fontSize: 14,
                       ),
                     ),
                     const SizedBox(width: 14),
                   ],
-                  Icon(Icons.mark_email_unread_outlined,
-                      size: 16, color: theme.hintColor),
+                  const Icon(LucideIcons.messageSquare, size: 15, color: Color(0xFF64748B)),
                   const SizedBox(width: 4),
-                  Text('${job.offersCount} taklif'),
+                  Text(
+                    '${job.offersCount} ${'taklif'.tr}',
+                    style: const TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                      color: Color(0xFF0F172A),
+                    ),
+                  ),
                   if (job.photos.isNotEmpty) ...[
                     const SizedBox(width: 14),
-                    Icon(Icons.photo_outlined,
-                        size: 16, color: theme.hintColor),
+                    const Icon(LucideIcons.image, size: 15, color: Color(0xFF64748B)),
                     const SizedBox(width: 4),
-                    Text('${job.photos.length}'),
+                    Text(
+                      '${job.photos.length}',
+                      style: const TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                        color: Color(0xFF0F172A),
+                      ),
+                    ),
                   ],
                 ],
               ),
@@ -183,30 +305,50 @@ class _MyJobsScreenState extends State<MyJobsScreen> {
     );
   }
 
-  Widget _statusChip(ThemeData theme, JobStatus s) {
-    Color c;
+  Widget _statusChip(JobStatus s) {
+    Color bg;
+    Color border;
+    Color text;
+    IconData icon;
+
     switch (s) {
       case JobStatus.open:
-        c = const Color(0xFF0EA5E9);
+        bg = const Color(0xFFFFFBEB);
+        border = const Color(0xFFFDE68A);
+        text = const Color(0xFF8A5D0B);
+        icon = LucideIcons.sparkles;
         break;
       case JobStatus.assigned:
-        c = const Color(0xFF10B981);
-        break;
       case JobStatus.completed:
-        c = theme.hintColor;
+        bg = const Color(0xFFF0FDF4);
+        border = const Color(0xFFBBF7D0);
+        text = const Color(0xFF15803D);
+        icon = LucideIcons.circleCheck;
         break;
       default:
-        c = const Color(0xFFEF4444);
+        bg = const Color(0xFFFFF1F2);
+        border = const Color(0xFFFECDD3);
+        text = const Color(0xFF9F1239);
+        icon = LucideIcons.circleX;
     }
+
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
-        color: c.withValues(alpha: 0.12),
+        color: bg,
         borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: border, width: 1.2),
       ),
-      child: Text(
-        jobStatusLabel(s),
-        style: TextStyle(color: c, fontSize: 12, fontWeight: FontWeight.w600),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 12, color: text),
+          const SizedBox(width: 4),
+          Text(
+            jobStatusLabel(s),
+            style: TextStyle(color: text, fontSize: 11.5, fontWeight: FontWeight.w800),
+          ),
+        ],
       ),
     );
   }
@@ -263,9 +405,7 @@ class _CreateJobScreenState extends State<CreateJobScreen> {
       final cats = await _api.getCategories();
       if (!mounted) return;
       setState(() => _categories = cats);
-    } catch (_) {
-      // Kategoriyasiz forma ham ko'rsatiladi, lekin saqlab bo'lmaydi
-    }
+    } catch (_) {}
   }
 
   Future<void> _pickPhoto() async {
@@ -288,7 +428,7 @@ class _CreateJobScreenState extends State<CreateJobScreen> {
       if (!mounted) return;
       setState(() => _uploading = false);
       messenger.showSnackBar(
-        const SnackBar(content: Text('Rasmni yuklab bo\'lmadi')),
+        SnackBar(content: Text('Rasmni yuklab bo\'lmadi'.tr)),
       );
     }
   }
@@ -297,7 +437,7 @@ class _CreateJobScreenState extends State<CreateJobScreen> {
     if (!_formKey.currentState!.validate()) return;
     if (_categoryId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Sohani tanlang')),
+        SnackBar(content: Text('Sohani tanlang'.tr)),
       );
       return;
     }
@@ -318,34 +458,60 @@ class _CreateJobScreenState extends State<CreateJobScreen> {
       });
       if (!mounted) return;
       messenger.showSnackBar(
-        const SnackBar(content: Text('E\'lon berildi! Ustalar taklif yuborishadi.')),
+        SnackBar(content: Text('E\'lon berildi! Ustalar taklif yuborishadi.'.tr)),
       );
       navigator.pop(true);
     } catch (e) {
       if (!mounted) return;
       setState(() => _saving = false);
       messenger.showSnackBar(
-        const SnackBar(content: Text('E\'lon berib bo\'lmadi')),
+        SnackBar(content: Text('E\'lon berib bo\'lmadi'.tr)),
       );
     }
   }
 
+  InputDecoration _inputDeco(String label, {String? hint, String? suffix}) {
+    return InputDecoration(
+      labelText: label,
+      labelStyle: const TextStyle(color: Color(0xFF64748B), fontWeight: FontWeight.w600),
+      hintText: hint,
+      hintStyle: const TextStyle(color: Color(0xFF94A3B8)),
+      suffixText: suffix,
+      suffixStyle: const TextStyle(color: Color(0xFF8A5D0B), fontWeight: FontWeight.w700),
+      filled: true,
+      fillColor: const Color(0xFFF1F5F9),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(14),
+        borderSide: const BorderSide(color: Color(0xFFCBD5E1), width: 1.5),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(14),
+        borderSide: const BorderSide(color: LuxTokens.gold, width: 2),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     return Scaffold(
-      appBar: AppBar(title: const Text('E\'lon berish')),
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        title: Text('E\'lon berish'.tr),
+        backgroundColor: Colors.white,
+        surfaceTintColor: Colors.transparent,
+        elevation: 0,
+      ),
       body: Form(
         key: _formKey,
         child: ListView(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(20),
           children: [
             DropdownButtonFormField<int>(
               initialValue: _categoryId,
-              decoration: const InputDecoration(
-                labelText: 'Qaysi soha ustasi kerak *',
-                border: OutlineInputBorder(),
-              ),
+              decoration: _inputDeco('Qaysi soha ustasi kerak *'.tr),
+              dropdownColor: Colors.white,
+              style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
               items: _categories
                   .map((c) => DropdownMenuItem<int>(
                         value: c['id'] as int,
@@ -354,96 +520,109 @@ class _CreateJobScreenState extends State<CreateJobScreen> {
                   .toList(),
               onChanged: (v) => setState(() => _categoryId = v),
             ),
-            const SizedBox(height: 14),
+            const SizedBox(height: 16),
             TextFormField(
               controller: _title,
-              decoration: const InputDecoration(
-                labelText: 'Sarlavha *',
-                hintText: 'Masalan: Rozetka almashtirish',
-                border: OutlineInputBorder(),
-              ),
+              style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
+              decoration: _inputDeco('Sarlavha *'.tr, hint: 'Masalan: Rozetka almashtirish'.tr),
               validator: (v) => (v == null || v.trim().length < 3)
-                  ? 'Kamida 3 ta harf'
+                  ? 'Kamida 3 ta harf'.tr
                   : null,
             ),
-            const SizedBox(height: 14),
+            const SizedBox(height: 16),
             TextFormField(
               controller: _description,
               maxLines: 4,
-              decoration: const InputDecoration(
-                labelText: 'Nima qilish kerak *',
-                hintText: 'Batafsil yozing — usta aniqroq narx aytadi',
-                border: OutlineInputBorder(),
-              ),
+              style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: Color(0xFF0F172A)),
+              decoration: _inputDeco('Nima qilish kerak *'.tr, hint: 'Batafsil yozing — usta aniqroq narx aytadi'.tr),
               validator: (v) => (v == null || v.trim().length < 5)
-                  ? 'Batafsilroq yozing'
+                  ? 'Batafsilroq yozing'.tr
                   : null,
             ),
-            const SizedBox(height: 14),
+            const SizedBox(height: 16),
             TextFormField(
               controller: _address,
-              decoration: const InputDecoration(
-                labelText: 'Manzil *',
-                border: OutlineInputBorder(),
-              ),
+              style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
+              decoration: _inputDeco('Manzil *'.tr),
               validator: (v) =>
-                  (v == null || v.trim().length < 3) ? 'Manzilni yozing' : null,
+                  (v == null || v.trim().length < 3) ? 'Manzilni yozing'.tr : null,
             ),
-            const SizedBox(height: 14),
+            const SizedBox(height: 16),
             TextFormField(
               controller: _budget,
               keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
-                labelText: 'Taxminiy summa (ixtiyoriy)',
-                hintText: 'Bo\'sh qoldirsangiz ustalar o\'zi narx aytadi',
-                suffixText: 'so\'m',
-                border: OutlineInputBorder(),
+              style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
+              decoration: _inputDeco(
+                'Taxminiy summa (ixtiyoriy)'.tr,
+                hint: 'Bo\'sh qoldirsangiz ustalar o\'zi narx aytadi'.tr,
+                suffix: 'so\'m',
               ),
             ),
-            const SizedBox(height: 14),
+            const SizedBox(height: 16),
 
-            // "qachon qilinish kerakligini yozib"
-            ListTile(
-              contentPadding: EdgeInsets.zero,
-              leading: const Icon(Icons.event),
-              title: Text(_neededAt == null
-                  ? 'Qachon kerak? (ixtiyoriy)'
-                  : '${_neededAt!.day}.${_neededAt!.month}.${_neededAt!.year}'),
-              trailing: const Icon(Icons.chevron_right),
-              onTap: () async {
-                final now = DateTime.now();
-                final d = await showDatePicker(
-                  context: context,
-                  initialDate: now.add(const Duration(days: 1)),
-                  firstDate: now,
-                  lastDate: now.add(const Duration(days: 365)),
-                );
-                if (d != null) setState(() => _neededAt = d);
-              },
+            Container(
+              decoration: BoxDecoration(
+                color: const Color(0xFFF1F5F9),
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: const Color(0xFFCBD5E1), width: 1.5),
+              ),
+              child: ListTile(
+                leading: const Icon(LucideIcons.calendar, color: LuxTokens.gold, size: 22),
+                title: Text(
+                  _neededAt == null
+                      ? 'Qachon kerak? (ixtiyoriy)'.tr
+                      : '${_neededAt!.day}.${_neededAt!.month}.${_neededAt!.year}',
+                  style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 15, color: Color(0xFF0F172A)),
+                ),
+                trailing: const Icon(LucideIcons.chevronRight, color: Color(0xFF64748B)),
+                onTap: () async {
+                  final now = DateTime.now();
+                  final d = await showDatePicker(
+                    context: context,
+                    initialDate: now.add(const Duration(days: 1)),
+                    firstDate: now,
+                    lastDate: now.add(const Duration(days: 365)),
+                  );
+                  if (d != null) setState(() => _neededAt = d);
+                },
+              ),
             ),
-            const Divider(),
+            const SizedBox(height: 16),
 
-            // "ish qilinadigan joyni rasmga olib"
-            Row(
-              children: [
-                const Icon(Icons.photo_camera_outlined),
-                const SizedBox(width: 8),
-                const Expanded(child: Text('Ish joyining rasmi')),
-                if (_uploading)
-                  const SizedBox(
-                    width: 18,
-                    height: 18,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  )
-                else
-                  TextButton.icon(
-                    onPressed: _pickPhoto,
-                    icon: const Icon(Icons.add_a_photo, size: 18),
-                    label: const Text('Qo\'shish'),
+            Container(
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                color: const Color(0xFFF1F5F9),
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: const Color(0xFFCBD5E1), width: 1.5),
+              ),
+              child: Row(
+                children: [
+                  const Icon(LucideIcons.camera, color: LuxTokens.gold, size: 22),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      'Ish joyining rasmi'.tr,
+                      style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 14, color: Color(0xFF0F172A)),
+                    ),
                   ),
-              ],
+                  if (_uploading)
+                    const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2, color: LuxTokens.gold),
+                    )
+                  else
+                    TextButton.icon(
+                      onPressed: _pickPhoto,
+                      icon: const Icon(LucideIcons.imagePlus, size: 18, color: Color(0xFF8A5D0B)),
+                      label: Text('Qo\'shish'.tr, style: const TextStyle(color: Color(0xFF8A5D0B), fontWeight: FontWeight.w800)),
+                    ),
+                ],
+              ),
             ),
-            if (_photoUrls.isNotEmpty)
+            if (_photoUrls.isNotEmpty) ...[
+              const SizedBox(height: 12),
               SizedBox(
                 height: 84,
                 child: ListView.separated(
@@ -453,28 +632,26 @@ class _CreateJobScreenState extends State<CreateJobScreen> {
                   itemBuilder: (_, i) => Stack(
                     children: [
                       ClipRRect(
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.circular(12),
                         child: Container(
                           width: 84,
                           height: 84,
-                          color: theme.colorScheme.surfaceContainerHighest,
-                          child: const Icon(Icons.image, size: 30),
+                          color: const Color(0xFFE2E8F0),
+                          child: const Icon(LucideIcons.image, size: 30, color: Color(0xFF64748B)),
                         ),
                       ),
                       Positioned(
-                        right: 0,
-                        top: 0,
-                        child: InkWell(
-                          onTap: () =>
-                              setState(() => _photoUrls.removeAt(i)),
+                        right: 2,
+                        top: 2,
+                        child: GestureDetector(
+                          onTap: () => setState(() => _photoUrls.removeAt(i)),
                           child: Container(
                             decoration: const BoxDecoration(
-                              color: Colors.black54,
+                              color: Color(0xFFEF4444),
                               shape: BoxShape.circle,
                             ),
-                            padding: const EdgeInsets.all(2),
-                            child: const Icon(Icons.close,
-                                size: 14, color: Colors.white),
+                            padding: const EdgeInsets.all(3),
+                            child: const Icon(LucideIcons.x, size: 12, color: Colors.white),
                           ),
                         ),
                       ),
@@ -482,19 +659,49 @@ class _CreateJobScreenState extends State<CreateJobScreen> {
                   ),
                 ),
               ),
-            const SizedBox(height: 24),
-            FilledButton(
-              onPressed: _saving ? null : _submit,
-              style: FilledButton.styleFrom(
-                minimumSize: const Size.fromHeight(48),
+            ],
+            const SizedBox(height: 28),
+            Container(
+              width: double.infinity,
+              height: 52,
+              decoration: BoxDecoration(
+                gradient: LuxTokens.goldGradient,
+                borderRadius: BorderRadius.circular(14),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Colors.black26,
+                    blurRadius: 8,
+                    offset: Offset(0, 3),
+                  ),
+                ],
               ),
-              child: _saving
-                  ? const SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : const Text('E\'lon berish'),
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.transparent,
+                  shadowColor: Colors.transparent,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                ),
+                onPressed: _saving ? null : _submit,
+                child: _saving
+                    ? const SizedBox(
+                        width: 22,
+                        height: 22,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2.5,
+                          color: Color(0xFF140D02),
+                        ),
+                      )
+                    : Text(
+                        'E\'lon berish'.tr,
+                        style: const TextStyle(
+                          color: Color(0xFF140D02),
+                          fontSize: 16,
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
+              ),
             ),
           ],
         ),

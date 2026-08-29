@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../models/game_zone.dart';
 import '../theme/glass_tokens.dart';
+import '../theme/lux_tokens.dart';
 
 // ===================================================================
 //              GAME ZONE VISUAL WIDGET
@@ -130,7 +131,7 @@ class GameZoneInfoCard extends StatelessWidget {
                   vertical: 6,
                 ),
                 decoration: BoxDecoration(
-                  color: Colors.deepPurpleAccent,
+                  color: LuxTokens.goldSoft,
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Row(
@@ -171,12 +172,12 @@ class GameZoneInfoCard extends StatelessWidget {
               _InfoChip(
                 icon: Icons.gamepad,
                 label: zone.zoneType,
-                color: Colors.deepPurpleAccent,
+                color: LuxTokens.goldSoft,
               ),
               _InfoChip(
                 icon: Icons.meeting_room,
                 label: zone.roomType,
-                color: Colors.blueAccent,
+                color: LuxTokens.goldSoft,
               ),
             ],
           ),

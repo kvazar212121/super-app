@@ -11,6 +11,7 @@ import '../providers/saved_places_provider.dart';
 import '../screens/master_dispatch_screen.dart';
 import '../screens/cleaning_dispatch_screen.dart';
 import '../theme/glass_tokens.dart';
+import '../theme/lux_tokens.dart';
 import '../widgets/glass/glass_scaffold.dart';
 import '../widgets/glass/glass_surface.dart';
 import '../widgets/save_provider_button.dart';
@@ -106,10 +107,21 @@ class ProviderProfileScreen extends StatelessWidget {
             borderRadius: GlassTokens.radiusLg,
             child: Column(
               children: [
-                CircleAvatar(
-                  radius: 44,
-                  backgroundColor: accent,
-                  child: Icon(category.icon, color: accent, size: 40),
+                Container(
+                  width: 84,
+                  height: 84,
+                  decoration: BoxDecoration(
+                    gradient: LuxTokens.goldGradient,
+                    shape: BoxShape.circle,
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Colors.black26,
+                        blurRadius: 8,
+                        offset: Offset(0, 3),
+                      ),
+                    ],
+                  ),
+                  child: Icon(category.icon, color: const Color(0xFF140D02), size: 38),
                 ),
                 const SizedBox(height: 16),
                 Text(
@@ -335,11 +347,7 @@ class ProviderProfileScreen extends StatelessWidget {
   /// bilan ko'rsatadi. Masalan 4.8/5 = 96% mamnunlik.
   Widget _satisfactionBar(BuildContext context, double rating) {
     final percent = (rating / 5 * 100).clamp(0, 100).round();
-    final color = percent >= 80
-        ? const Color(0xFF16A34A)
-        : percent >= 60
-        ? const Color(0xFFF59E0B)
-        : const Color(0xFFEF4444);
+    const color = Color(0xFF8A5D0B);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 32),
       child: Column(
@@ -349,9 +357,9 @@ class ProviderProfileScreen extends StatelessWidget {
             children: [
               Text(
                 '$percent% ${'mamnunlik'.tr}',
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 12,
-                  fontWeight: FontWeight.w700,
+                  fontWeight: FontWeight.w800,
                   color: color,
                 ),
               ),
@@ -363,8 +371,8 @@ class ProviderProfileScreen extends StatelessWidget {
             child: LinearProgressIndicator(
               value: percent / 100,
               minHeight: 6,
-              backgroundColor: color.withValues(alpha: 0.15),
-              valueColor: AlwaysStoppedAnimation<Color>(color),
+              backgroundColor: LuxTokens.gold.withValues(alpha: 0.2),
+              valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFFC99427)),
             ),
           ),
         ],

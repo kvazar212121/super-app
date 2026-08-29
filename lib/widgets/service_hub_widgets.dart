@@ -37,10 +37,11 @@ import '../screens/dental_booking_screen.dart';
 import '../screens/event_booking_screen.dart';
 import '../screens/worker_profile_screen.dart';
 import 'package:super_app/l10n/locale_controller.dart';
+import '../theme/lux_tokens.dart';
 
 /// Oq kartalardagi matnlar (har doim oq fonda, shuning uchun qat'iy qora).
 const _cardTitleColor = Colors.black;
-const _cardSubColor = Colors.black87;
+const _cardSubColor = LuxTokens.text;
 
 class ShopSmallCard extends StatelessWidget {
   final BarberShop shop;
@@ -57,7 +58,7 @@ class ShopSmallCard extends StatelessWidget {
     return Container(
       width: 150,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: LuxTokens.surface,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: Colors.black26),
       ),
@@ -120,7 +121,7 @@ class SalonSmallCard extends StatelessWidget {
     return Container(
       width: 150,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: LuxTokens.surface,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: Colors.black26),
       ),
@@ -183,7 +184,7 @@ class FieldSmallCard extends StatelessWidget {
     return Container(
       width: 150,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: LuxTokens.surface,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: Colors.black26),
       ),
@@ -248,7 +249,7 @@ class SportFacilitySmallCard extends StatelessWidget {
     return Container(
       width: 150,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: LuxTokens.surface,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: Colors.black26),
       ),
@@ -316,7 +317,7 @@ class GameZoneSmallCard extends StatelessWidget {
     return Container(
       width: 150,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: LuxTokens.surface,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: Colors.black26),
       ),
@@ -382,7 +383,7 @@ class EventVenueSmallCard extends StatelessWidget {
     return Container(
       width: 150,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: LuxTokens.surface,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: Colors.black26),
       ),
@@ -450,7 +451,7 @@ class EventTeamSmallCard extends StatelessWidget {
     return Container(
       width: 150,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: LuxTokens.surface,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: Colors.black26),
       ),
@@ -512,7 +513,7 @@ class MasterSmallCard extends StatelessWidget {
     return Container(
       width: 140,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: LuxTokens.surface,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: Colors.black26),
       ),
@@ -549,8 +550,13 @@ class MasterSmallCard extends StatelessWidget {
             children: [
               CircleAvatar(
                 radius: 28,
-                backgroundColor: Colors.blue[50],
-                child: const Icon(LucideIcons.user, color: Color(0xFF0F172A)),
+                backgroundColor: LuxTokens.gold.withValues(alpha: 0.14),
+                // Ikon OLTIN: fon endi shaffof oltin, qora ikon esa
+                // unda ko'rinmay qolardi.
+                child: const Icon(
+                  LucideIcons.user,
+                  color: LuxTokens.goldSoft,
+                ),
               ),
               const SizedBox(height: 8),
               Text(
@@ -564,7 +570,7 @@ class MasterSmallCard extends StatelessWidget {
               ),
               Text(
                 master.specialty.tr,
-                style: TextStyle(fontSize: 11, color: Colors.blue[700]),
+                style: TextStyle(fontSize: 11, color: LuxTokens.goldSoft),
               ),
             ],
           ),
@@ -584,7 +590,7 @@ class WorkerSmallCard extends StatelessWidget {
     return Container(
       width: 130,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: LuxTokens.surface,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: Colors.black26),
       ),
@@ -616,7 +622,7 @@ class WorkerSmallCard extends StatelessWidget {
               ),
               Text(
                 worker.type.tr,
-                style: TextStyle(fontSize: 10, color: Colors.grey[600]),
+                style: TextStyle(fontSize: 10, color: LuxTokens.textMuted),
               ),
             ],
           ),
@@ -700,11 +706,11 @@ class WorkshopSmallCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const accentColor = Color(0xFF334155); // Slate for physical buildings
+    const accentColor = Color(0xFF26262A); // Slate for physical buildings
     return Container(
       width: 170,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: LuxTokens.surface,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: Colors.black26),
       ),
@@ -743,7 +749,7 @@ class WorkshopSmallCard extends StatelessWidget {
               ),
               Text(
                 workshop.specializations.join(", "),
-                style: TextStyle(fontSize: 10, color: Colors.grey[600]),
+                style: TextStyle(fontSize: 10, color: LuxTokens.textMuted),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -777,11 +783,11 @@ class EducationCenterSmallCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const accentColor = Color(0xFF6366F1); // Indigo for education
+    const accentColor = Color(0xFFC9A227); // Indigo for education
     return Container(
       width: 170,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: LuxTokens.surface,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: Colors.black26),
       ),
@@ -820,7 +826,7 @@ class EducationCenterSmallCard extends StatelessWidget {
               ),
               Text(
                 center.courses.join(", "),
-                style: TextStyle(fontSize: 10, color: Colors.grey[600]),
+                style: TextStyle(fontSize: 10, color: LuxTokens.textMuted),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -859,7 +865,7 @@ class DisinfectionSmallCard extends StatelessWidget {
     return Container(
       width: 150,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: LuxTokens.surface,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: Colors.black26),
       ),
@@ -924,7 +930,7 @@ class ApplianceSmallCard extends StatelessWidget {
     return Container(
       width: 150,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: LuxTokens.surface,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: Colors.black26),
       ),
@@ -989,7 +995,7 @@ class CourierSmallCard extends StatelessWidget {
     return Container(
       width: 150,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: LuxTokens.surface,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: Colors.black26),
       ),
@@ -1054,7 +1060,7 @@ class MassageSmallCard extends StatelessWidget {
     return Container(
       width: 150,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: LuxTokens.surface,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: Colors.black26),
       ),
@@ -1125,7 +1131,7 @@ class NurseSmallCard extends StatelessWidget {
     return Container(
       width: 150,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: LuxTokens.surface,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: Colors.black26),
       ),
@@ -1192,11 +1198,11 @@ class DentalSmallCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const accentColor = Color(0xFF0EA5E9);
+    const accentColor = Color(0xFFC9A227);
     return Container(
       width: 150,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: LuxTokens.surface,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: Colors.black26),
       ),
@@ -1267,7 +1273,7 @@ class EventSmallCard extends StatelessWidget {
     return Container(
       width: 150,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: LuxTokens.surface,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: Colors.black26),
       ),

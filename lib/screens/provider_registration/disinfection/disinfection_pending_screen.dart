@@ -7,6 +7,7 @@ import '../../provider_side/provider_theme.dart';
 import '../../provider_side/unified_provider_dashboard_screen.dart';
 import '../../../services/provider_portal_service.dart';
 import 'package:super_app/l10n/locale_controller.dart';
+import '../../../theme/lux_tokens.dart';
 
 /// Dezinfeksiya — administrator tasdiqlaguncha.
 class DisinfectionPendingScreen extends StatefulWidget {
@@ -74,7 +75,7 @@ class _DisinfectionPendingScreenState extends State<DisinfectionPendingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    const accent = Color(0xFF2563EB);
+    const accent = Color(0xFFB8921F);
     return ProviderTheme(
       child: Scaffold(
         body: Center(
@@ -105,7 +106,7 @@ class _DisinfectionPendingScreenState extends State<DisinfectionPendingScreen> {
                       ? '${widget.providerName} — profilingiz administrator tomonidan tekshirilmoqda.'
                       : 'Profilingiz administrator tomonidan tekshirilmoqda.',
                   textAlign: TextAlign.center,
-                  style: TextStyle(color: Colors.grey[700], height: 1.45),
+                  style: TextStyle(color: LuxTokens.textMuted, height: 1.45),
                 ),
                 const SizedBox(height: 8),
                 Text('Tasdiqlangandan keyin mijozlar sizni topa oladi va buyurtma bera oladi.'.tr,

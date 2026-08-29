@@ -8,6 +8,7 @@ import '../../services/notification_helper.dart';
 import '../../theme/glass_tokens.dart';
 import '../../widgets/glass/glass_scaffold.dart';
 import 'fitness_utils.dart';
+import '../../theme/lux_tokens.dart';
 
 /// Bir kunlik mashg'ulot: mashqlar ro'yxati, GIF'lar, bajarish belgilari.
 class FitnessWorkoutDayScreen extends StatefulWidget {
@@ -52,7 +53,7 @@ class _FitnessWorkoutDayScreenState extends State<FitnessWorkoutDayScreen> {
       if (mounted && burned > 0) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            backgroundColor: const Color(0xFF0D9488),
+            backgroundColor: const Color(0xFFB8921F),
             content: Text('🔥 ~$burned ${'kkal yoqildi'.tr}'),
           ),
         );
@@ -101,7 +102,7 @@ class _FitnessWorkoutDayScreenState extends State<FitnessWorkoutDayScreen> {
                 child: ElevatedButton.icon(
                   onPressed: _isSaving ? null : _finishWorkout,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: allDone ? Colors.green : Colors.teal,
+                    backgroundColor: allDone ? Colors.green : LuxTokens.gold,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(GlassTokens.radiusSm),
                     ),
@@ -223,8 +224,8 @@ class _FitnessWorkoutDayScreenState extends State<FitnessWorkoutDayScreen> {
     return Container(
       width: 64,
       height: 64,
-      color: Colors.tealAccent.withValues(alpha: 0.1),
-      child: const Icon(LucideIcons.dumbbell, color: Colors.teal, size: 26),
+      color: LuxTokens.goldSoft.withValues(alpha: 0.1),
+      child: const Icon(LucideIcons.dumbbell, color: LuxTokens.gold, size: 26),
     );
   }
 }

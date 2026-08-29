@@ -15,6 +15,7 @@ import '../services/provider_portal_service.dart';
 import '../services/barber_portal_service.dart';
 import '../services/salon_portal_service.dart';
 import '../theme/glass_tokens.dart';
+import '../theme/lux_tokens.dart';
 import 'glass/glass_surface.dart';
 import '../l10n/locale_controller.dart';
 
@@ -272,17 +273,10 @@ class _ProviderPortalEntryState extends State<ProviderPortalEntry> {
                   horizontal: 12,
                   vertical: 6,
                 ),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF6366F1),
-                  borderRadius: BorderRadius.circular(20),
-                ),
+                decoration: LuxTokens.goldBoxDecoration(radius: 20),
                 child: Text(
                   'Ro\'yxatdan o\'tish'.tr,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w700,
-                    fontSize: 12,
-                  ),
+                  style: LuxTokens.goldEngravedTextStyle.copyWith(fontSize: 12),
                 ),
               )
             else
@@ -325,7 +319,25 @@ class _ProviderPortalEntryState extends State<ProviderPortalEntry> {
           const SizedBox(height: 20),
           SizedBox(
             width: double.infinity,
-            child: FilledButton(onPressed: _onTap, child: Text(buttonLabel)),
+            child: Container(
+              decoration: LuxTokens.goldBoxDecoration(radius: GlassTokens.radiusMd),
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: _onTap,
+                  borderRadius: BorderRadius.circular(GlassTokens.radiusMd),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    child: Center(
+                      child: Text(
+                        buttonLabel,
+                        style: LuxTokens.goldEngravedTextStyle.copyWith(fontSize: 15),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
           ),
         ],
       ),
@@ -352,19 +364,26 @@ class _ProviderAlertTile extends StatelessWidget {
     final statusLabel = order.statusText;
     final statusColor = switch (order.status) {
       OrderStatus.pending => const Color(0xFFF59E0B),
-      OrderStatus.accepted => const Color(0xFF3B82F6),
-      OrderStatus.onTheWay => const Color(0xFF0EA5E9),
-      OrderStatus.arrived => const Color(0xFF8B5CF6),
+      OrderStatus.accepted => const Color(0xFFC9A227),
+      OrderStatus.onTheWay => const Color(0xFFC9A227),
+      OrderStatus.arrived => const Color(0xFFE3C766),
       OrderStatus.preparing => const Color(0xFFF59E0B),
-      OrderStatus.inProgress => const Color(0xFFA855F7),
-      OrderStatus.noShow => const Color(0xFF6B7280),
+      OrderStatus.inProgress => const Color(0xFFE3C766),
+      OrderStatus.noShow => const Color(0xFF6B6B68),
       OrderStatus.disputed => const Color(0xFFDC2626),
-      _ => const Color(0xFF6B7280),
+      _ => const Color(0xFF6B6B68),
     };
 
     String two(int n) => n.toString().padLeft(2, '0');
     final dateStr =
         '${two(order.date.day)}.${two(order.date.month)} ${two(order.date.hour)}:${two(order.date.minute)}';
+
+    final isGoldStatus = (order.status == OrderStatus.pending ||
+        order.status == OrderStatus.accepted ||
+        order.status == OrderStatus.inProgress ||
+        order.status == OrderStatus.onTheWay ||
+        order.status == OrderStatus.preparing ||
+        order.status == OrderStatus.arrived);
 
     return GestureDetector(
       onTap: () => Navigator.push(
@@ -377,25 +396,31 @@ class _ProviderAlertTile extends StatelessWidget {
         margin: const EdgeInsets.only(top: 8),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
         decoration: BoxDecoration(
-          color: statusColor.withValues(alpha: 0.08),
+          color: isGoldStatus ? const Color(0xFFFFF9E6) : statusColor.withValues(alpha: 0.08),
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: statusColor.withValues(alpha: 0.2)),
+          border: Border.all(
+            color: isGoldStatus ? LuxTokens.border : statusColor.withValues(alpha: 0.2),
+          ),
         ),
         child: Row(
           children: [
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-              decoration: BoxDecoration(
-                color: statusColor,
-                borderRadius: BorderRadius.circular(6),
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: isGoldStatus
+                  ? LuxTokens.goldBoxDecoration(radius: 6)
+                  : BoxDecoration(
+                      color: statusColor,
+                      borderRadius: BorderRadius.circular(6),
+                    ),
               child: Text(
                 statusLabel,
-                style: const TextStyle(
-                  fontSize: 10,
-                  color: Colors.white,
-                  fontWeight: FontWeight.w700,
-                ),
+                style: isGoldStatus
+                    ? LuxTokens.goldEngravedTextStyle.copyWith(fontSize: 10.5)
+                    : const TextStyle(
+                        fontSize: 10.5,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w700,
+                      ),
               ),
             ),
             const SizedBox(width: 8),

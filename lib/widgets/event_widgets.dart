@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import '../models/event_venue.dart';
 import '../models/event_planning.dart';
 import '../theme/glass_tokens.dart';
+import '../theme/lux_tokens.dart';
 
 // ===================================================================
 //              EVENT VENUE WIDGETS
@@ -170,12 +171,12 @@ class EventVenueInfoCard extends StatelessWidget {
               _InfoChip(
                 icon: Icons.groups,
                 label: '${venue.maxGuests} kishigacha',
-                color: Colors.blueAccent,
+                color: LuxTokens.goldSoft,
               ),
               _InfoChip(
                 icon: Icons.location_city,
                 label: venue.venueType,
-                color: Colors.pinkAccent,
+                color: LuxTokens.goldSoft,
               ),
             ],
           ),
@@ -359,7 +360,7 @@ class EventTeamInfoCard extends StatelessWidget {
                   (type) => _InfoChip(
                     icon: type.icon,
                     label: type.label,
-                    color: Colors.deepPurple,
+                    color: LuxTokens.gold,
                   ),
                 )
                 .toList(),

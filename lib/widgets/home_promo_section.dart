@@ -35,19 +35,19 @@ class _HomePromoSectionState extends State<HomePromoSection>
       title: 'Sartarosh — 25% chegirma',
       subtitle: 'Dushanba–chorshanba, barcha xizmatlar',
       badge: '-25%',
-      colors: const [Color(0xFF6366F1), Color(0xFFA855F7)],
+      colors: const [Color(0xFFE0B454), Color(0xFF8A5D0B)],
     ),
     _PromoItem(
       title: 'Tozalash — birinchi buyurtma',
       subtitle: '30% gacha chegirma, kod: TOZA30',
       badge: 'AKSIYA',
-      colors: const [Color(0xFF0D9488), Color(0xFF06B6D4)],
+      colors: const [Color(0xFFD4AF37), Color(0xFF996515)],
     ),
     _PromoItem(
       title: 'Avto-yordam tungi tarif',
       subtitle: 'Evakuator 20% arzonroq 22:00 dan keyin',
       badge: '-20%',
-      colors: const [Color(0xFFEA580C), Color(0xFFF59E0B)],
+      colors: const [Color(0xFFC99427), Color(0xFF6B4500)],
     ),
   ];
 
@@ -484,7 +484,14 @@ class _LuxPromoCard extends StatelessWidget {
                           horizontal: 10,
                           vertical: 5,
                         ),
-                        decoration: LuxTokens.chip(),
+                        decoration: BoxDecoration(
+                          color: Colors.black.withValues(alpha: 0.55),
+                          borderRadius: BorderRadius.circular(999),
+                          border: Border.all(
+                            color: LuxTokens.gold.withValues(alpha: 0.5),
+                            width: 1,
+                          ),
+                        ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
@@ -500,7 +507,7 @@ class _LuxPromoCard extends StatelessWidget {
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                                 style: LuxTokens.label(
-                                  color: LuxTokens.text,
+                                  color: Colors.white,
                                   size: 8.5,
                                   weight: FontWeight.w600,
                                   spacing: 1.8,
@@ -537,7 +544,7 @@ class _LuxPromoCard extends StatelessWidget {
                   Text(
                     'MAXSUS TAKLIF'.tr,
                     style: LuxTokens.label(
-                      color: LuxTokens.textMuted,
+                      color: Colors.white70,
                       size: 8.5,
                       spacing: 2.6,
                     ),
@@ -547,8 +554,8 @@ class _LuxPromoCard extends StatelessWidget {
                     promo.title.tr,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    // Cormorant Garamond — nafis serif sarlavha.
-                    style: LuxTokens.heading(size: 27),
+                    // Cormorant Garamond — nafis oq serif sarlavha.
+                    style: LuxTokens.heading(color: Colors.white, size: 27),
                   ),
                   const SizedBox(height: 8),
                   Row(
@@ -560,7 +567,7 @@ class _LuxPromoCard extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
                             fontFamily: LuxTokens.body,
-                            color: LuxTokens.textMuted,
+                            color: Colors.white70,
                             fontSize: 10.5,
                             fontWeight: FontWeight.w400,
                           ),

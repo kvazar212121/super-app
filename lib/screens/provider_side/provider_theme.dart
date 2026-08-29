@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import '../../theme/lux_tokens.dart';
 
 /// Soha egasi (provider) paneli uchun majburiy yorug' (light) tema.
 ///
@@ -17,24 +17,26 @@ class ProviderTheme extends StatelessWidget {
     const primary = Colors.black;
     final base = ThemeData.light(useMaterial3: true);
 
-    final textTheme = GoogleFonts.interTextTheme(
-      base.textTheme,
-    ).apply(bodyColor: ink, displayColor: ink);
+    // Lokal asset shrift (google_fonts EMAS): tarmoqsiz ishlaydi va
+    // testlarda yiqilmaydi. Ilovaning qolgan qismi bilan ham bir xil.
+    final textTheme = base.textTheme
+        .apply(fontFamily: LuxTokens.body)
+        .apply(bodyColor: ink, displayColor: ink);
 
     return Theme(
       data: base.copyWith(
-        scaffoldBackgroundColor: Colors.white,
+        scaffoldBackgroundColor: LuxTokens.surface,
         colorScheme: base.colorScheme.copyWith(
           primary: primary,
           surface: Colors.white,
           onSurface: ink,
           outline: Colors.black,
-          outlineVariant: Colors.black54,
+          outlineVariant: LuxTokens.textMuted,
         ),
         textTheme: textTheme,
         iconTheme: const IconThemeData(color: ink),
         appBarTheme: const AppBarTheme(
-          backgroundColor: Colors.white,
+          backgroundColor: LuxTokens.surface,
           foregroundColor: ink,
           elevation: 0,
         ),

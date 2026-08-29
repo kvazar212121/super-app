@@ -11,6 +11,7 @@ import '../../location_picker_screen.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:super_app/l10n/locale_controller.dart';
 import '../../../widgets/friendly_error.dart';
+import '../../../theme/lux_tokens.dart';
 
 /// Massaj va hijoma — uyga chiqish va/yoki salonda.
 class MassageRegistrationScreen extends StatefulWidget {
@@ -134,7 +135,7 @@ class _MassageRegistrationScreenState extends State<MassageRegistrationScreen> {
 
   @override
   Widget build(BuildContext context) {
-    const accent = Color(0xFF2563EB);
+    const accent = Color(0xFFB8921F);
     return ProviderTheme(
       child: Scaffold(
         appBar: AppBar(title: Text('Massaj va Hijoma'.tr)),
@@ -144,7 +145,7 @@ class _MassageRegistrationScreenState extends State<MassageRegistrationScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text('Mijozlarni o\'z markazingizda yoki salonda qabul qilasiz.'.tr,
-                style: TextStyle(color: Colors.grey[700], height: 1.4),
+                style: TextStyle(color: LuxTokens.textMuted, height: 1.4),
               ),
               const SizedBox(height: 20),
               SegmentedButton<String>(

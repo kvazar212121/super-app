@@ -22,7 +22,7 @@ class TutorProfileScreen extends StatelessWidget {
     this.preselectedMode,
   });
 
-  static const _accent = Color(0xFF2563EB);
+  static const _accent = Color(0xFFB8921F);
 
   @override
   Widget build(BuildContext context) {

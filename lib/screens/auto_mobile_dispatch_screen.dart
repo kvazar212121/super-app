@@ -11,6 +11,7 @@ import '../utils/auth_guard.dart';
 import '../widgets/booking_common_widgets.dart';
 import '../widgets/glass/mesh_background.dart';
 import 'package:super_app/l10n/locale_controller.dart';
+import '../theme/lux_tokens.dart';
 
 class AutoMobileDispatchScreen extends StatefulWidget {
   final AutoMobileService service;
@@ -28,7 +29,7 @@ class _AutoMobileDispatchScreenState extends State<AutoMobileDispatchScreen> {
   final _carCtrl = TextEditingController();
   final _notesCtrl = TextEditingController();
 
-  final Color _accent = const Color(0xFF2563EB);
+  final Color _accent = const Color(0xFFB8921F);
 
   double get _selectedPrice => _selectedService == null
       ? 0
@@ -141,7 +142,7 @@ class _AutoMobileDispatchScreenState extends State<AutoMobileDispatchScreen> {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: LuxTokens.surface,
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Row(
@@ -208,7 +209,7 @@ class _AutoMobileDispatchScreenState extends State<AutoMobileDispatchScreen> {
                               service,
                               style: TextStyle(
                                 fontWeight: FontWeight.w600,
-                                color: selected ? Colors.white : Colors.black87,
+                                color: selected ? Colors.white : LuxTokens.text,
                               ),
                             ),
                           ),
@@ -220,7 +221,7 @@ class _AutoMobileDispatchScreenState extends State<AutoMobileDispatchScreen> {
                                 fontWeight: FontWeight.bold,
                                 color: selected
                                     ? Colors.white70
-                                    : Colors.black54,
+                                    : LuxTokens.textMuted,
                               ),
                             ),
                         ],
@@ -239,7 +240,7 @@ class _AutoMobileDispatchScreenState extends State<AutoMobileDispatchScreen> {
                   hintText: 'Ko\'cha, mo\'ljal yoki xaritadan tanlang...',
                   prefixIcon: const Icon(LucideIcons.mapPin),
                   filled: true,
-                  fillColor: Colors.white,
+                  fillColor: LuxTokens.surface,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
                     borderSide: BorderSide.none,

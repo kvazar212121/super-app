@@ -10,6 +10,7 @@ import '../widgets/guest_blocker_widget.dart';
 import '../l10n/locale_controller.dart';
 import 'marketplace/my_listings_screen.dart';
 import 'my_jobs_screen.dart';
+import '../widgets/gold_tab_bar_widget.dart';
 
 class OrdersScreen extends StatefulWidget {
   /// [embedded] — MainScreen pastki menyu tabi ichida (o'z foni MainScreen'dan,
@@ -50,13 +51,11 @@ class _OrdersScreenState extends State<OrdersScreen> {
               length: savdoOchiq ? 3 : 2,
               child: Column(
                 children: [
-                  TabBar(
-                    labelColor: const Color(0xFF6366F1),
-                    indicatorColor: const Color(0xFF6366F1),
+                  GoldTabBar(
                     tabs: [
-                      Tab(text: 'Buyurtmalar'.tr),
-                      Tab(text: 'E\'lonlarim'.tr),
-                      if (savdoOchiq) Tab(text: 'Savdo'.tr),
+                      'Buyurtmalar'.tr,
+                      'E\'lonlarim'.tr,
+                      if (savdoOchiq) 'Savdo'.tr,
                     ],
                   ),
                   Expanded(
@@ -76,7 +75,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                             Expanded(
                               child: RefreshIndicator(
                                 onRefresh: () => provider.fetchOrders(),
-                                color: const Color(0xFF6366F1),
+                                color: const Color(0xFFC9A227),
                                 child: OrdersListWidget(filter: _filter),
                               ),
                             ),

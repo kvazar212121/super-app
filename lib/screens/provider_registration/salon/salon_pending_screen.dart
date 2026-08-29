@@ -3,6 +3,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../main_screen.dart';
 import '../../provider_side/provider_theme.dart';
 import 'package:super_app/l10n/locale_controller.dart';
+import '../../../theme/lux_tokens.dart';
 
 class SalonPendingScreen extends StatelessWidget {
   final String salonName;
@@ -39,7 +40,7 @@ class SalonPendingScreen extends StatelessWidget {
                 Text(
                   '$salonName salon egasi so\'rovingizni ko\'rib, qabul qiladi yoki rad etadi.',
                   textAlign: TextAlign.center,
-                  style: TextStyle(color: Colors.grey[700], height: 1.45),
+                  style: TextStyle(color: LuxTokens.textMuted, height: 1.45),
                 ),
                 const SizedBox(height: 40),
                 SizedBox(

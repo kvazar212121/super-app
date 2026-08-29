@@ -14,6 +14,7 @@ import '../widgets/glass/glass_surface.dart';
 import '../widgets/save_provider_button.dart';
 import 'appliance_dispatch_screen.dart';
 import 'package:super_app/l10n/locale_controller.dart';
+import '../theme/lux_tokens.dart';
 
 class ApplianceProfileScreen extends StatelessWidget {
   final ApplianceRepair service;
@@ -22,7 +23,7 @@ class ApplianceProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const accent = Colors.blueGrey;
+    const accent = LuxTokens.textMuted;
     final currency = NumberFormat.currency(
       locale: 'uz_UZ',
       symbol: 'so\'m',
@@ -156,7 +157,7 @@ class ApplianceProfileScreen extends StatelessWidget {
                   .map(
                     (b) => Chip(
                       label: Text(b),
-                      backgroundColor: Colors.white,
+                      backgroundColor: LuxTokens.surface,
                       side: BorderSide(color: Colors.grey.shade300),
                     ),
                   )

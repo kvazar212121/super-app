@@ -7,17 +7,18 @@ import 'package:image_picker/image_picker.dart';
 import '../../services/api_service.dart';
 import '../../services/meal_reminder_service.dart';
 import 'calorie_analyze_screen.dart';
+import '../../theme/lux_tokens.dart';
 
 /// "Ovqat qildingizmi?" modali — eslatma bosilganda yoki panel ochilganda.
 /// 3 yo'l: 📷 rasm (AI), ✍️ matn (AI taxmin + qo'lda), ⏭️ yemadim/keyin.
 class MealCheckDialog {
-  static const _blue = Color(0xFF3B82F6);
+  static const _blue = Color(0xFFC9A227);
 
   static Future<void> show(BuildContext context, String mealType) async {
     final label = MealReminderService.labelFor(mealType);
     await showModalBottomSheet<void>(
       context: context,
-      backgroundColor: Colors.white,
+      backgroundColor: LuxTokens.surface,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
@@ -33,7 +34,7 @@ class MealCheckDialog {
                   width: 40,
                   height: 4,
                   decoration: BoxDecoration(
-                    color: Colors.grey[300],
+                    color: LuxTokens.border,
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
@@ -50,7 +51,7 @@ class MealCheckDialog {
               const SizedBox(height: 4),
               Text(
                 'Nima yeganingizni belgilang — kaloriya hisobiga qo\'shiladi.',
-                style: TextStyle(fontSize: 13, color: Colors.grey[600]),
+                style: TextStyle(fontSize: 13, color: LuxTokens.textMuted),
               ),
               const SizedBox(height: 20),
               _option(
@@ -97,7 +98,7 @@ class MealCheckDialog {
     required VoidCallback onTap,
     bool muted = false,
   }) {
-    final color = muted ? Colors.grey[600]! : _blue;
+    final color = muted ? LuxTokens.textMuted! : _blue;
     return Material(
       color: muted ? Colors.grey[100] : const Color(0xFFEFF6FF),
       borderRadius: BorderRadius.circular(16),
@@ -119,18 +120,18 @@ class MealCheckDialog {
                       style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w700,
-                        color: muted ? Colors.grey[800] : Colors.black,
+                        color: muted ? LuxTokens.textMuted : Colors.black,
                       ),
                     ),
                     const SizedBox(height: 2),
                     Text(
                       subtitle,
-                      style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                      style: TextStyle(fontSize: 12, color: LuxTokens.textMuted),
                     ),
                   ],
                 ),
               ),
-              Icon(Icons.chevron_right, color: Colors.grey[400]),
+              Icon(Icons.chevron_right, color: LuxTokens.textFaint),
             ],
           ),
         ),
@@ -183,7 +184,7 @@ class _MealTextDialogState extends State<_MealTextDialog> {
   bool _saving = false;
   double _protein = 0, _fat = 0, _carbs = 0;
 
-  static const _blue = Color(0xFF3B82F6);
+  static const _blue = Color(0xFFC9A227);
 
   @override
   void dispose() {

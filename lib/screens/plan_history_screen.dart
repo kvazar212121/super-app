@@ -6,6 +6,7 @@ import '../services/api_service.dart';
 import '../widgets/glass/glass_scaffold.dart';
 import '../theme/glass_tokens.dart';
 import '../l10n/locale_controller.dart';
+import '../theme/lux_tokens.dart';
 
 class PlanHistoryScreen extends StatefulWidget {
   const PlanHistoryScreen({super.key});
@@ -112,7 +113,7 @@ class _PlanHistoryScreenState extends State<PlanHistoryScreen> {
                 return Container(
                   margin: const EdgeInsets.only(bottom: 12),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: LuxTokens.surface,
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(color: Colors.white),
                   ),

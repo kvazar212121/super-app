@@ -25,7 +25,7 @@ class _DentalRegistrationScreenState extends State<DentalRegistrationScreen> {
   final _addressCtrl = TextEditingController();
   bool _submitting = false;
 
-  static const accent = Color(0xFF2563EB);
+  static const accent = Color(0xFFB8921F);
 
   @override
   void dispose() {

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:super_app/l10n/locale_controller.dart';
 import '../../services/api_service.dart';
+import '../../theme/lux_tokens.dart';
 
 /// Zakaz qo'ng'irog'i tugagach — IKKI TOMONLAMA "kelishuv" oqimi.
 ///
@@ -315,12 +316,12 @@ class PostCallDialogs {
     DateTime? when,
   }) {
     if (!context.mounted) return;
-    const blue = Color(0xFF3B82F6);
+    const blue = Color(0xFFC9A227);
     showDialog<void>(
       context: context,
       barrierDismissible: false,
       builder: (ctx) => Dialog(
-        backgroundColor: Colors.white,
+        backgroundColor: LuxTokens.surface,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
         child: Padding(
           padding: const EdgeInsets.fromLTRB(24, 32, 24, 24),
@@ -336,7 +337,7 @@ class PostCallDialogs {
                   gradient: const LinearGradient(
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
-                    colors: [Color(0xFF60A5FA), Color(0xFF2563EB)],
+                    colors: [Color(0xFFE3C766), Color(0xFFB8921F)],
                   ),
                   boxShadow: [
                     BoxShadow(
@@ -367,7 +368,7 @@ class PostCallDialogs {
                 Text(
                   subtitle,
                   textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 14, color: Colors.grey[700]),
+                  style: TextStyle(fontSize: 14, color: LuxTokens.textMuted),
                 ),
               ],
               if (when != null) ...[

@@ -34,9 +34,7 @@ class GlassBottomBar extends StatelessWidget {
     final highlight = GlassTokens.glassHighlight(context);
 
     return ClipRRect(
-      borderRadius: const BorderRadius.vertical(
-        top: Radius.circular(GlassTokens.radiusMd),
-      ),
+      borderRadius: BorderRadius.zero,
       child: BackdropFilter(
         filter: ImageFilter.blur(
           sigmaX: GlassTokens.glassBlur,
@@ -44,9 +42,7 @@ class GlassBottomBar extends StatelessWidget {
         ),
         child: DecoratedBox(
           decoration: BoxDecoration(
-            borderRadius: const BorderRadius.vertical(
-              top: Radius.circular(GlassTokens.radiusMd),
-            ),
+            borderRadius: BorderRadius.zero,
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
@@ -55,7 +51,9 @@ class GlassBottomBar extends StatelessWidget {
                 Color.lerp(fill, Colors.transparent, 0.12) ?? fill,
               ],
             ),
-            border: Border.all(color: border, width: 1.2),
+            border: Border(
+              top: BorderSide(color: border, width: 1.2),
+            ),
             boxShadow: GlassTokens.glassShadow(context),
           ),
           child: Stack(
@@ -64,12 +62,9 @@ class GlassBottomBar extends StatelessWidget {
                 top: 0,
                 left: 0,
                 right: 0,
-                height: GlassTokens.radiusMd,
+                height: 1,
                 child: DecoratedBox(
                   decoration: BoxDecoration(
-                    borderRadius: const BorderRadius.vertical(
-                      top: Radius.circular(GlassTokens.radiusMd),
-                    ),
                     gradient: LinearGradient(
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,

@@ -4,6 +4,7 @@ import 'todo_screen.dart';
 import 'shopping_list_screen.dart';
 import '../widgets/daily_utilities_widget.dart';
 import 'package:super_app/l10n/locale_controller.dart';
+import '../theme/lux_tokens.dart';
 
 class PlannerHubScreen extends StatelessWidget {
   const PlannerHubScreen({super.key});
@@ -20,7 +21,7 @@ class PlannerHubScreen extends StatelessWidget {
               icon: LucideIcons.checkSquare,
               title: 'Mening rejalarim',
               subtitle: 'Kundalik vazifalar va eslatmalar',
-              color: Colors.blueAccent,
+              color: LuxTokens.goldSoft,
               bgImage: 'assets/images/my_plans.jpg',
               onTap: () {
                 Navigator.push(
@@ -74,7 +75,7 @@ class _HubActionCard extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final textColor = bgImage != null
         ? Colors.white
-        : (isDark ? Colors.white : Colors.black87);
+        : (isDark ? Colors.white : LuxTokens.text);
     final iconBgColor = bgImage != null ? Colors.white24 : color;
     final iconColor = bgImage != null ? Colors.white : color;
     final chevronColor = bgImage != null ? Colors.white70 : color;
@@ -88,7 +89,7 @@ class _HubActionCard extends StatelessWidget {
           color: bgImage != null
               ? Colors.black
               : (isDark
-                    ? Color.lerp(const Color(0xFF1E293B), color, 0.15)
+                    ? Color.lerp(const Color(0xFF141416), color, 0.15)
                     : Color.lerp(Colors.white, color, 0.1)),
           borderRadius: BorderRadius.circular(16),
           border: Border.all(color: isDark ? color : color),
@@ -127,7 +128,7 @@ class _HubActionCard extends StatelessWidget {
                       shadows: bgImage != null
                           ? [
                               const Shadow(
-                                color: Colors.black87,
+                                color: LuxTokens.text,
                                 offset: Offset(0, 1),
                                 blurRadius: 4,
                               ),
@@ -144,7 +145,7 @@ class _HubActionCard extends StatelessWidget {
                       shadows: bgImage != null
                           ? [
                               const Shadow(
-                                color: Colors.black54,
+                                color: LuxTokens.textMuted,
                                 offset: Offset(0, 1),
                                 blurRadius: 2,
                               ),

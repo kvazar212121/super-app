@@ -22,7 +22,7 @@ class AutoWorkshopProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const accent = Color(0xFF2563EB); // Slate
+    const accent = Color(0xFFB8921F); // Slate
     final currency = NumberFormat.currency(
       locale: 'uz_UZ',
       symbol: 'so\'m',

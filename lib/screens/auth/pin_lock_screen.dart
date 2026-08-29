@@ -107,13 +107,13 @@ class _PinLockScreenState extends State<PinLockScreen>
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       gradient: const LinearGradient(
-                        colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
+                        colors: [Color(0xFFC9A227), Color(0xFFE3C766)],
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: const Color(0xFF6366F1).withValues(alpha: 0.55),
+                          color: const Color(0xFFC9A227).withValues(alpha: 0.55),
                           blurRadius: 32,
                           offset: const Offset(0, 12),
                         ),
@@ -165,11 +165,11 @@ class _PinLockScreenState extends State<PinLockScreen>
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
                             color: filled
-                                ? const Color(0xFF6366F1)
+                                ? const Color(0xFFC9A227)
                                 : Colors.transparent,
                             border: Border.all(
                               color: filled
-                                  ? const Color(0xFF6366F1)
+                                  ? const Color(0xFFC9A227)
                                   : Colors.white.withValues(alpha: 0.45),
                               width: 2.5,
                             ),

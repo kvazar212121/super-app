@@ -13,6 +13,7 @@ import '../../map_address_picker_screen.dart';
 import 'nurse_pending_screen.dart';
 import 'package:super_app/l10n/locale_controller.dart';
 import '../../../widgets/friendly_error.dart';
+import '../../../theme/lux_tokens.dart';
 
 class NurseRegistrationScreen extends StatefulWidget {
   const NurseRegistrationScreen({super.key});
@@ -40,7 +41,7 @@ class _NurseRegistrationScreenState extends State<NurseRegistrationScreen> {
 
   final _picker = ImagePicker();
 
-  static const accent = Color(0xFF2563EB);
+  static const accent = Color(0xFFB8921F);
 
   @override
   void dispose() {
@@ -66,7 +67,7 @@ class _NurseRegistrationScreenState extends State<NurseRegistrationScreen> {
               width: 36,
               height: 4,
               decoration: BoxDecoration(
-                color: Colors.grey.shade300,
+                color: LuxTokens.border,
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -362,7 +363,7 @@ class _NurseRegistrationScreenState extends State<NurseRegistrationScreen> {
                     }),
                     selectedColor: accent,
                     labelStyle: TextStyle(
-                      color: selected ? Colors.white : Colors.black87,
+                      color: selected ? Colors.white : LuxTokens.text,
                       fontWeight: selected
                           ? FontWeight.bold
                           : FontWeight.normal,
@@ -436,7 +437,7 @@ class _DocumentUploadTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const accent = Color(0xFF2563EB);
+    const accent = Color(0xFFB8921F);
     final Color borderColor = isUploaded
         ? Colors.green
         : isUploading
@@ -489,7 +490,7 @@ class _DocumentUploadTile extends StatelessWidget {
                       fontWeight: FontWeight.w600,
                       color: isUploaded
                           ? Colors.green.shade700
-                          : Colors.black87,
+                          : LuxTokens.text,
                     ),
                   ),
                   const SizedBox(height: 2),

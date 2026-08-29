@@ -7,6 +7,7 @@ import '../../provider_side/provider_theme.dart';
 import '../provider_success_screen.dart';
 import 'package:super_app/l10n/locale_controller.dart';
 import '../../../widgets/friendly_error.dart';
+import '../../../theme/lux_tokens.dart';
 
 /// Ustaxona ro'yxatdan o'tish.
 class AutoWorkshopScreen extends StatefulWidget {
@@ -96,7 +97,7 @@ class _AutoWorkshopScreenState extends State<AutoWorkshopScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text('Doimiy servis markazi — mijozlar ustaxonangizga vaqt bron qiladi.'.tr,
-                style: TextStyle(color: Colors.grey[700], height: 1.4),
+                style: TextStyle(color: LuxTokens.textMuted, height: 1.4),
               ),
               const SizedBox(height: 24),
               TextField(
@@ -120,7 +121,7 @@ class _AutoWorkshopScreenState extends State<AutoWorkshopScreen> {
               const SizedBox(height: 16),
               Text('Mutaxassislik'.tr,
                 style: TextStyle(
-                  color: Colors.grey[700],
+                  color: LuxTokens.textMuted,
                   fontWeight: FontWeight.w600,
                 ),
               ),

@@ -11,6 +11,7 @@ import '../l10n/locale_controller.dart';
 import '../utils/geo_utils.dart';
 import '../config/map_config.dart';
 import '../screens/navigation_3d_screen.dart';
+import '../theme/lux_tokens.dart';
 
 /// Xaritada ko'rsatiladigan bitta joy (provayder/xizmat).
 class MapPlace {
@@ -54,7 +55,7 @@ class EnhancedServiceMap extends StatefulWidget {
     super.key,
     required this.places,
     required this.title,
-    this.accent = const Color(0xFF6366F1),
+    this.accent = const Color(0xFFC9A227),
     this.markerIcon = LucideIcons.mapPin,
     this.onOpen,
   });
@@ -248,9 +249,9 @@ class _EnhancedServiceMapState extends State<EnhancedServiceMap>
                       point: _userPos!,
                       radius: 260,
                       useRadiusInMeter: true,
-                      color: const Color(0xFF3B82F6).withValues(alpha: 0.12),
+                      color: const Color(0xFFC9A227).withValues(alpha: 0.12),
                       borderColor:
-                          const Color(0xFF3B82F6).withValues(alpha: 0.35),
+                          const Color(0xFFC9A227).withValues(alpha: 0.35),
                       borderStrokeWidth: 1,
                     ),
                   ],
@@ -272,7 +273,7 @@ class _EnhancedServiceMapState extends State<EnhancedServiceMap>
               bottom: 20 + MediaQuery.paddingOf(context).bottom,
               child: Center(
                 child: Material(
-                  color: const Color(0xFF2563EB),
+                  color: const Color(0xFFB8921F),
                   borderRadius: BorderRadius.circular(28),
                   elevation: 6,
                   child: InkWell(
@@ -346,7 +347,7 @@ class _EnhancedServiceMapState extends State<EnhancedServiceMap>
         children: [
           FloatingActionButton.small(
             heroTag: 'fitAll',
-            backgroundColor: Colors.white,
+            backgroundColor: LuxTokens.surface,
             foregroundColor: widget.accent,
             onPressed: _fitAll,
             child: const Icon(LucideIcons.maximize2),
@@ -397,7 +398,7 @@ class _EnhancedServiceMapState extends State<EnhancedServiceMap>
                     height: 20 + _pulse.value * 34,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: const Color(0xFF3B82F6)
+                      color: const Color(0xFFC9A227)
                           .withValues(alpha: (1 - _pulse.value) * 0.4),
                     ),
                   ),
@@ -406,7 +407,7 @@ class _EnhancedServiceMapState extends State<EnhancedServiceMap>
                     height: 18,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: const Color(0xFF3B82F6),
+                      color: const Color(0xFFC9A227),
                       border: Border.all(color: Colors.white, width: 3),
                       boxShadow: [
                         BoxShadow(
@@ -460,7 +461,7 @@ class _EnhancedServiceMapState extends State<EnhancedServiceMap>
                       style: TextStyle(
                         fontSize: 10,
                         fontWeight: FontWeight.w800,
-                        color: selected ? Colors.white : const Color(0xFF0F172A),
+                        color: selected ? Colors.white : const Color(0xFF0A0A0B),
                       ),
                     ),
                   ),

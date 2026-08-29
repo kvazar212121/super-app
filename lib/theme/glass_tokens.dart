@@ -53,8 +53,7 @@ abstract final class GlassTokens {
   }
 
   static Color glassBorder(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    return isDark ? LuxTokens.border : const Color(0xFFE2E8F0);
+    return LuxTokens.border;
   }
 
   static Color glassHighlight(BuildContext context) {

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../models/campaign.dart';
 import '../services/api_service.dart';
+import '../theme/lux_tokens.dart';
 
 /// Sovrinli sezonli reyting ekrani.
 ///
@@ -242,7 +243,7 @@ class _CampaignRatingScreenState extends State<CampaignRatingScreen> {
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [Color(0xFF6366F1), Color(0xFFA855F7)],
+          colors: [Color(0xFFC9A227), Color(0xFFE3C766)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -414,7 +415,7 @@ class _CampaignRatingScreenState extends State<CampaignRatingScreen> {
         '$position',
         style: TextStyle(
           fontWeight: FontWeight.bold,
-          color: c != null ? Colors.black87 : theme.hintColor,
+          color: c != null ? LuxTokens.text : theme.hintColor,
         ),
       ),
     );

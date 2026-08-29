@@ -9,6 +9,7 @@ import '../../provider_side/provider_theme.dart';
 import '../../provider_side/unified_provider_dashboard_screen.dart';
 import 'package:super_app/l10n/locale_controller.dart';
 import '../../../widgets/friendly_error.dart';
+import '../../../theme/lux_tokens.dart';
 
 /// Dezinfeksiya xizmati — ro'yxatdan o'tish.
 class DisinfectionRegistrationScreen extends StatefulWidget {
@@ -90,7 +91,7 @@ class _DisinfectionRegistrationScreenState
 
   @override
   Widget build(BuildContext context) {
-    const accent = Color(0xFF2563EB);
+    const accent = Color(0xFFB8921F);
     return ProviderTheme(
       child: Scaffold(
         appBar: AppBar(title: Text('Dezinfeksiya xizmati'.tr)),
@@ -100,7 +101,7 @@ class _DisinfectionRegistrationScreenState
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text('Uy, ofis, mashina va maktablarni professional dezinfeksiya qilasiz. Ro\'yxatdan o\'tishi bilan darhol ishlashni boshlashingiz mumkin.'.tr,
-                style: TextStyle(color: Colors.grey[700], height: 1.4),
+                style: TextStyle(color: LuxTokens.textMuted, height: 1.4),
               ),
               const SizedBox(height: 24),
               TextField(

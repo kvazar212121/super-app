@@ -14,6 +14,7 @@ import '../widgets/glass/glass_scaffold.dart';
 import '../widgets/glass/glass_surface.dart';
 import '../widgets/save_provider_button.dart';
 import 'bozorchi_dispatch_screen.dart';
+import '../theme/lux_tokens.dart';
 
 class BozorchiProfileScreen extends StatelessWidget {
   final Master bozorchi;
@@ -27,7 +28,7 @@ class BozorchiProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const accent = Color(0xFF2563EB); // Amber
+    const accent = Color(0xFFB8921F); // Amber
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return GlassScaffold(
@@ -91,12 +92,12 @@ class BozorchiProfileScreen extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.all(4),
                       decoration: const BoxDecoration(
-                        color: Colors.white,
+                        color: LuxTokens.surface,
                         shape: BoxShape.circle,
                       ),
                       child: const Icon(
                         Icons.verified,
-                        color: Colors.blue,
+                        color: LuxTokens.gold,
                         size: 24,
                       ),
                     ),
@@ -148,9 +149,9 @@ class BozorchiProfileScreen extends StatelessWidget {
                 colors: isDark
                     ? [
                         Colors.green.shade900.withValues(alpha: 0.5),
-                        Colors.teal.shade900.withValues(alpha: 0.5),
+                        LuxTokens.goldDim.withValues(alpha: 0.5),
                       ]
-                    : [Colors.green.shade50, Colors.teal.shade50],
+                    : [Colors.green.shade50, LuxTokens.gold.withValues(alpha: 0.10)],
               ),
               borderRadius: BorderRadius.circular(16),
               border: Border.all(color: Colors.green.withValues(alpha: 0.3)),

@@ -7,6 +7,7 @@ import '../../provider_side/provider_theme.dart';
 import '../provider_success_screen.dart';
 import 'package:super_app/l10n/locale_controller.dart';
 import '../../../widgets/friendly_error.dart';
+import '../../../theme/lux_tokens.dart';
 
 class CleaningSoloScreen extends StatefulWidget {
   const CleaningSoloScreen({super.key});
@@ -85,7 +86,7 @@ class _CleaningSoloScreenState extends State<CleaningSoloScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text('Mijoz uyiga borib tozalash xizmati ko\'rsatasiz. Kichik va o\'rta hajmli ishlar uchun mos.'.tr,
-                style: TextStyle(color: Colors.grey[700], height: 1.4),
+                style: TextStyle(color: LuxTokens.textMuted, height: 1.4),
               ),
               const SizedBox(height: 24),
               TextField(

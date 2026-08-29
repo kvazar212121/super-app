@@ -6,6 +6,7 @@ import '../widgets/glass/mesh_background.dart';
 import '../widgets/save_provider_button.dart';
 import '../utils/call_helper.dart';
 import 'package:super_app/l10n/locale_controller.dart';
+import '../theme/lux_tokens.dart';
 
 class EventVenueBookingScreen extends StatefulWidget {
   final EventVenue venue;
@@ -140,7 +141,7 @@ class _SectionTitle extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Icon(icon, size: 20, color: Colors.grey[700]),
+        Icon(icon, size: 20, color: LuxTokens.textMuted),
         const SizedBox(width: 8),
         Text(
           title,

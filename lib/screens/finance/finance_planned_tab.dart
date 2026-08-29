@@ -5,6 +5,7 @@ import '../../models/finance_models.dart';
 import '../../theme/glass_tokens.dart';
 import '../../l10n/locale_controller.dart';
 import 'finance_utils.dart';
+import '../../theme/lux_tokens.dart';
 
 class FinancePlannedTab extends StatelessWidget {
   final List<PlannedPayment> plannedPayments;
@@ -100,7 +101,7 @@ class FinancePlannedTab extends StatelessWidget {
                           margin: const EdgeInsets.only(bottom: 12),
                           padding: const EdgeInsets.all(16),
                           decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: LuxTokens.surface,
                             borderRadius: BorderRadius.circular(18),
                             border: Border.all(
                               color: isOverdue
@@ -116,7 +117,7 @@ class FinancePlannedTab extends StatelessWidget {
                                   Container(
                                     padding: const EdgeInsets.all(8),
                                     decoration: BoxDecoration(
-                                      color: Colors.blueAccent,
+                                      color: LuxTokens.goldSoft,
                                       shape: BoxShape.circle,
                                     ),
                                     child: Icon(
@@ -204,13 +205,13 @@ class FinancePlannedTab extends StatelessWidget {
                                         const Icon(
                                           LucideIcons.repeat,
                                           size: 12,
-                                          color: Colors.blueAccent,
+                                          color: LuxTokens.goldSoft,
                                         ),
                                         const SizedBox(width: 4),
                                         Text(
                                           "Obuna".tr,
                                           style: const TextStyle(
-                                            color: Colors.blueAccent,
+                                            color: LuxTokens.goldSoft,
                                             fontSize: 11,
                                           ),
                                         ),

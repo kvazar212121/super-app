@@ -14,6 +14,7 @@ import '../widgets/glass/mesh_background.dart';
 import '../widgets/save_provider_button.dart';
 import '../services/provider_availability_service.dart';
 import 'package:super_app/l10n/locale_controller.dart';
+import '../theme/lux_tokens.dart';
 
 class NurseBookingScreen extends StatefulWidget {
   final NurseService service;
@@ -144,7 +145,7 @@ class _NurseBookingScreenState extends State<NurseBookingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final accentColor = const Color(0xFF2563EB);
+    final accentColor = const Color(0xFFB8921F);
     final currencyFormat = NumberFormat.currency(
       locale: 'uz_UZ',
       symbol: "so'm",
@@ -186,7 +187,7 @@ class _NurseBookingScreenState extends State<NurseBookingScreen> {
                       const SizedBox(height: 8),
                       Text(
                         'Hudud: ${widget.service.serviceArea}',
-                        style: TextStyle(color: Colors.grey[600], fontSize: 13),
+                        style: TextStyle(color: LuxTokens.textMuted, fontSize: 13),
                       ),
                     ],
                     const SizedBox(height: 12),
@@ -216,7 +217,7 @@ class _NurseBookingScreenState extends State<NurseBookingScreen> {
                                   'Hamshira sizning manzilingizga keladi',
                                   style: TextStyle(
                                     fontSize: 12,
-                                    color: Colors.grey[600],
+                                    color: LuxTokens.textMuted,
                                   ),
                                 ),
                               ],
@@ -368,7 +369,7 @@ class _NurseBookingScreenState extends State<NurseBookingScreen> {
                   Icon(
                     group == "Katta" ? LucideIcons.user : LucideIcons.baby,
                     size: 20,
-                    color: isSelected ? color : Colors.grey[500],
+                    color: isSelected ? color : LuxTokens.textFaint,
                   ),
                   const SizedBox(width: 8),
                   Text(
@@ -377,7 +378,7 @@ class _NurseBookingScreenState extends State<NurseBookingScreen> {
                       fontWeight: isSelected
                           ? FontWeight.bold
                           : FontWeight.normal,
-                      color: isSelected ? color : Colors.black87,
+                      color: isSelected ? color : LuxTokens.text,
                     ),
                   ),
                 ],

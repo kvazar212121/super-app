@@ -61,6 +61,8 @@ class _MassageCenterHubSectionState extends State<MassageCenterHubSection> {
       case HubListFilter.openNow:
         // Mocking open status for now
         break;
+      case HubListFilter.promotions:
+        list = list.where((s) => s.hasPromo).toList();
       case HubListFilter.all:
         break;
     }
@@ -116,7 +118,7 @@ class _MassageCenterHubSectionState extends State<MassageCenterHubSection> {
               child: Center(
                 child: Text(
                   'Bu filtr bo\'yicha markaz topilmadi',
-                  style: TextStyle(color: const Color(0xFF64748B)),
+                  style: TextStyle(color: const Color(0xFF6B6B68)),
                 ),
               ),
             ),

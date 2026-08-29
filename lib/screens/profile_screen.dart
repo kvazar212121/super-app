@@ -16,8 +16,10 @@ import 'auth/pin_setup_screen.dart';
 import 'premium/premium_screen.dart';
 import 'orders_screen.dart';
 import 'support/support_center_screen.dart';
+import '../widgets/crystal_diamond_widget.dart';
 import '../config/app_config.dart';
 import '../services/pin_service.dart';
+import '../theme/lux_tokens.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -302,32 +304,18 @@ class ProfileScreen extends StatelessWidget {
       ),
       child: Container(
         padding: const EdgeInsets.all(18),
-        decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            colors: [Color(0xFF6366F1), Color(0xFF4F46E5)],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-          borderRadius: BorderRadius.circular(GlassTokens.radiusLg),
-          boxShadow: [
-            BoxShadow(
-              color: const Color(0xFF6366F1).withValues(alpha: 0.35),
-              blurRadius: 18,
-              offset: const Offset(0, 8),
-            ),
-          ],
-        ),
+        decoration: LuxTokens.goldBoxDecoration(radius: GlassTokens.radiusLg),
         child: Row(
           children: [
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.2),
+                color: const Color(0xFF140D02).withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: const Icon(
                 Icons.receipt_long,
-                color: Colors.white,
+                color: Color(0xFF140D02),
                 size: 26,
               ),
             ),
@@ -338,21 +326,21 @@ class ProfileScreen extends StatelessWidget {
                 children: [
                   Text(
                     'Buyurtmalarim'.tr,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w800,
-                    ),
+                    style: LuxTokens.goldEngravedTextStyle.copyWith(fontSize: 16),
                   ),
                   const SizedBox(height: 2),
                   Text(
                     'Faol va o\'tgan buyurtmalar'.tr,
-                    style: const TextStyle(color: Colors.white70, fontSize: 13),
+                    style: const TextStyle(
+                      color: Color(0xFF332205),
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ],
               ),
             ),
-            const Icon(Icons.chevron_right, color: Colors.white, size: 24),
+            const Icon(Icons.chevron_right, color: Color(0xFF140D02), size: 24),
           ],
         ),
       ),
@@ -370,38 +358,26 @@ class ProfileScreen extends StatelessWidget {
       ),
       child: Container(
         padding: const EdgeInsets.all(18),
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: isPremium
-                ? const [Color(0xFF059669), Color(0xFF10B981)]
-                : const [Color(0xFF3B82F6), Color(0xFF2563EB)],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-          borderRadius: BorderRadius.circular(GlassTokens.radiusLg),
-          boxShadow: [
-            BoxShadow(
-              color: (isPremium ? const Color(0xFF10B981) : const Color(0xFF3B82F6))
-                  .withValues(alpha: 0.35),
-              blurRadius: 18,
-              offset: const Offset(0, 8),
-            ),
-          ],
-        ),
+        decoration: isPremium
+            ? BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [Color(0xFF059669), Color(0xFF10B981)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(GlassTokens.radiusLg),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFF10B981).withValues(alpha: 0.35),
+                    blurRadius: 18,
+                    offset: const Offset(0, 8),
+                  ),
+                ],
+              )
+            : LuxTokens.goldBoxDecoration(radius: GlassTokens.radiusLg),
         child: Row(
           children: [
-            Container(
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.2),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: const Icon(
-                Icons.workspace_premium,
-                color: Colors.white,
-                size: 26,
-              ),
-            ),
+            const CrystalDiamondWidget(size: 48),
             const SizedBox(width: 14),
             Expanded(
               child: Column(
@@ -409,18 +385,24 @@ class ProfileScreen extends StatelessWidget {
                 children: [
                   Text(
                     isPremium ? 'Premium faol'.tr : 'HubServis Premium'.tr,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w800,
-                    ),
+                    style: isPremium
+                        ? const TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w800,
+                          )
+                        : LuxTokens.goldEngravedTextStyle.copyWith(fontSize: 16),
                   ),
                   const SizedBox(height: 2),
                   Text(
                     isPremium
                         ? 'Barcha imkoniyatlar ochiq ✅'.tr
                         : 'Barcha imkoniyatlarni oching'.tr,
-                    style: const TextStyle(color: Colors.white70, fontSize: 13),
+                    style: TextStyle(
+                      color: isPremium ? Colors.white70 : const Color(0xFF332205),
+                      fontSize: 13,
+                      fontWeight: isPremium ? FontWeight.normal : FontWeight.w600,
+                    ),
                   ),
                 ],
               ),
@@ -431,11 +413,18 @@ class ProfileScreen extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: LuxTokens.border),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.08),
+                      blurRadius: 6,
+                    ),
+                  ],
                 ),
                 child: Text(
                   'Sotib olish'.tr,
                   style: const TextStyle(
-                    color: Color(0xFF3B82F6),
+                    color: Color(0xFF8A5D0B),
                     fontWeight: FontWeight.w800,
                     fontSize: 13,
                   ),
@@ -574,7 +563,7 @@ class ProfileScreen extends StatelessWidget {
                   Text(
                     user.telegramUsername!,
                     style: const TextStyle(
-                      color: Color(0xFF3B82F6),
+                      color: Color(0xFFC9A227),
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -611,22 +600,24 @@ class ProfileScreen extends StatelessWidget {
       onTap: () => _switchLang(context, lang),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-        decoration: BoxDecoration(
-          color: active ? Color(0xFF3B82F6) : Colors.transparent,
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(
-            color: active
-                ? const Color(0xFF3B82F6)
-                : GlassTokens.secondaryText(context).withValues(alpha: 0.4),
-          ),
-        ),
+        decoration: active
+            ? LuxTokens.goldBoxDecoration(radius: 10)
+            : BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                  color: GlassTokens.secondaryText(context).withValues(alpha: 0.3),
+                ),
+              ),
         child: Text(
           label,
-          style: TextStyle(
-            color: active ? Colors.white : GlassTokens.primaryText(context),
-            fontWeight: FontWeight.w700,
-            fontSize: 13,
-          ),
+          style: active
+              ? LuxTokens.goldEngravedTextStyle.copyWith(fontSize: 13)
+              : TextStyle(
+                  color: GlassTokens.primaryText(context),
+                  fontWeight: FontWeight.w700,
+                  fontSize: 13,
+                ),
         ),
       ),
     );
@@ -794,7 +785,7 @@ class ProfileScreen extends StatelessWidget {
                 style: const TextStyle(color: Colors.white),
               ),
               trailing: isSelected
-                  ? const Icon(Icons.check_circle, color: Color(0xFF3B82F6))
+                  ? const Icon(Icons.check_circle, color: Color(0xFFC9A227))
                   : null,
               onTap: () async {
                 Navigator.pop(ctx);
@@ -947,7 +938,7 @@ class _PinSectionState extends State<_PinSection> {
               Switch(
                 value: _pinEnabled,
                 onChanged: _onToggle,
-                activeThumbColor: const Color(0xFF6366F1),
+                activeThumbColor: const Color(0xFFC9A227),
               ),
             ],
           ),

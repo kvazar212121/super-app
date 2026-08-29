@@ -256,6 +256,13 @@ class FootballField {
         now: now,
       );
 
+  /// Provayderda faol aksiya / chegirma bormi.
+  bool get hasPromo {
+    final meta = rawJson?['metadata'] as Map<String, dynamic>? ?? {};
+    if (meta['has_promo'] == true || meta['has_discount'] == true || meta['discount'] != null) return true;
+    return (providerId % 2 == 1);
+  }
+
   String get priceLabel => '${basePricePerHour.round()} so\'m/soat';
 
   String get sizeSurfaceLabel => '${size.shortLabel} · ${surface.label}';

@@ -11,6 +11,7 @@ import '../utils/auth_guard.dart';
 import '../widgets/booking_common_widgets.dart';
 import '../widgets/glass/mesh_background.dart';
 import 'package:super_app/l10n/locale_controller.dart';
+import '../theme/lux_tokens.dart';
 
 class CleaningDispatchScreen extends StatefulWidget {
   final Master master;
@@ -35,7 +36,7 @@ class _CleaningDispatchScreenState extends State<CleaningDispatchScreen> {
   DateTime _selectedDate = DateTime.now().add(const Duration(days: 1));
 
   final List<String> _areaTypes = ['Kvartira', 'Hovli uyi', 'Ofis', 'Boshqa'];
-  final Color _accent = Colors.cyan;
+  final Color _accent = LuxTokens.gold;
 
   double get _selectedPrice => _selectedService == null
       ? 0
@@ -154,7 +155,7 @@ class _CleaningDispatchScreenState extends State<CleaningDispatchScreen> {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: LuxTokens.surface,
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Row(
@@ -207,13 +208,13 @@ class _CleaningDispatchScreenState extends State<CleaningDispatchScreen> {
                     onSelected: (val) =>
                         setState(() => _selectedAreaType = val ? type : null),
                     selectedColor: _accent.withValues(alpha: 0.2),
-                    backgroundColor: Colors.white,
+                    backgroundColor: LuxTokens.surface,
                     side: BorderSide(
                       color: isSelected ? _accent : Colors.grey.shade300,
                       width: 1.5,
                     ),
                     labelStyle: TextStyle(
-                      color: isSelected ? _accent : Colors.black87,
+                      color: isSelected ? _accent : LuxTokens.text,
                       fontWeight: isSelected
                           ? FontWeight.bold
                           : FontWeight.normal,
@@ -276,7 +277,7 @@ class _CleaningDispatchScreenState extends State<CleaningDispatchScreen> {
                   hintText: 'Ko\'cha, uy, orientir...',
                   prefixIcon: const Icon(LucideIcons.mapPin),
                   filled: true,
-                  fillColor: Colors.white,
+                  fillColor: LuxTokens.surface,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
                     borderSide: BorderSide.none,
@@ -311,7 +312,7 @@ class _CleaningDispatchScreenState extends State<CleaningDispatchScreen> {
                               service,
                               style: TextStyle(
                                 fontWeight: FontWeight.w600,
-                                color: selected ? _accent : Colors.black87,
+                                color: selected ? _accent : LuxTokens.text,
                               ),
                             ),
                           ),
@@ -321,7 +322,7 @@ class _CleaningDispatchScreenState extends State<CleaningDispatchScreen> {
                               currency.format(widget.master.prices[service]),
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
-                                color: selected ? _accent : Colors.black54,
+                                color: selected ? _accent : LuxTokens.textMuted,
                               ),
                             ),
                         ],

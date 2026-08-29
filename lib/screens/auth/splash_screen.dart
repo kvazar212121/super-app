@@ -103,7 +103,10 @@ class _SplashScreenState extends State<SplashScreen>
 
   @override
   Widget build(BuildContext context) {
-    final isDark = context.watch<AppProvider>().isDarkMode;
+    // Fon TEMADAN olinadi (AppProvider.isDarkMode emas) — ilova temasi
+    // main.dart da majburan dark, bayroq esa false qolib ketardi va
+    // splash OQ chiqib, keyingi qora ekranga o'tishda "chaqnash" berardi.
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Stack(
       fit: StackFit.expand,
@@ -140,7 +143,7 @@ class _SplashScreenState extends State<SplashScreen>
                         height: 32,
                         child: CircularProgressIndicator(
                           strokeWidth: 2.5,
-                          color: const Color(0xFF6366F1),
+                          color: const Color(0xFFC9A227),
                         ),
                       ),
                     ],

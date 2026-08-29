@@ -4,6 +4,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../screens/service_hub/service_catalog_screen.dart';
 import 'provider_banner.dart';
 import '../../theme/glass_tokens.dart';
+import '../../theme/lux_tokens.dart';
 import '../../utils/geo_utils.dart';
 
 /// Xizmat ro'yxatidagi BITTA qator (yangi dizayn).
@@ -249,15 +250,16 @@ class _Tag extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 7),
       alignment: Alignment.center,
       decoration: BoxDecoration(
-        color: accent.withValues(alpha: 0.10),
+        color: const Color(0xFFFFF9E6),
         borderRadius: BorderRadius.circular(6),
+        border: Border.all(color: LuxTokens.border.withValues(alpha: 0.6)),
       ),
       child: Text(
         label,
-        style: TextStyle(
+        style: const TextStyle(
           fontSize: 10.5,
-          fontWeight: FontWeight.w600,
-          color: accent,
+          fontWeight: FontWeight.w700,
+          color: Color(0xFF8A5D0B),
         ),
       ),
     );
@@ -272,7 +274,7 @@ class _StatusDot extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = isOpen ? const Color(0xFF16A34A) : const Color(0xFF94A3B8);
+    final color = isOpen ? const Color(0xFF16A34A) : const Color(0xFF9A9A96);
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
