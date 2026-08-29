@@ -40,7 +40,7 @@ class HomeHeaderWidget extends StatelessWidget {
   }
 }
 
-/// Shisha va Oltin uslubidagi ixcham tugma (qo'ng'iroqcha/profil).
+/// Shisha va 24K Metallik Oltin uslubidagi ixcham tugma (qo'ng'iroqcha/profil).
 class _GlassIconButton extends StatelessWidget {
   final IconData icon;
   final VoidCallback onTap;
@@ -57,7 +57,6 @@ class _GlassIconButton extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     if (!isDark) return _buildLight(context);
 
-    // PREMIUM (dark): qora fon, oltin ramka va sof oltin rangli ikonka.
     return Stack(
       clipBehavior: Clip.none,
       children: [
@@ -75,7 +74,13 @@ class _GlassIconButton extends StatelessWidget {
                   borderRadius: BorderRadius.circular(14),
                   border: Border.all(color: LuxTokens.border),
                 ),
-                child: Icon(icon, color: LuxTokens.gold, size: 20),
+                child: Center(
+                  child: ShaderMask(
+                    shaderCallback: (bounds) =>
+                        LuxTokens.goldGradient.createShader(bounds),
+                    child: Icon(icon, color: Colors.white, size: 21),
+                  ),
+                ),
               ),
             ),
           ),
@@ -118,12 +123,12 @@ class _GlassIconButton extends StatelessWidget {
             color: Colors.white,
             borderRadius: BorderRadius.circular(14),
             border: Border.all(
-              color: const Color(0xFFC9A227).withValues(alpha: 0.5),
-              width: 1.2,
+              color: LuxTokens.gold.withValues(alpha: 0.6),
+              width: 1.3,
             ),
             boxShadow: [
               BoxShadow(
-                color: LuxTokens.gold.withValues(alpha: 0.08),
+                color: LuxTokens.gold.withValues(alpha: 0.10),
                 blurRadius: 8,
                 offset: const Offset(0, 2),
               ),
@@ -135,10 +140,14 @@ class _GlassIconButton extends StatelessWidget {
               onTap: onTap,
               borderRadius: BorderRadius.circular(14),
               child: Center(
-                child: Icon(
-                  icon,
-                  color: const Color(0xFFC9A227),
-                  size: 20,
+                child: ShaderMask(
+                  shaderCallback: (bounds) =>
+                      LuxTokens.goldGradient.createShader(bounds),
+                  child: Icon(
+                    icon,
+                    color: Colors.white,
+                    size: 21,
+                  ),
                 ),
               ),
             ),

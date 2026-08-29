@@ -197,12 +197,8 @@ class _BaseCard extends StatelessWidget {
           Container(
             width: 24,
             height: 24,
-            decoration: BoxDecoration(
-              color: LuxTokens.gold.withValues(alpha: 0.12),
-              borderRadius: BorderRadius.circular(7),
-              border: Border.all(color: LuxTokens.gold.withValues(alpha: 0.35)),
-            ),
-            child: Icon(icon, color: LuxTokens.gold, size: 13),
+            decoration: LuxTokens.goldBoxDecoration(radius: 7),
+            child: Icon(icon, color: const Color(0xFF140D02), size: 13),
           ),
           const SizedBox(width: 8),
           Expanded(
@@ -243,12 +239,12 @@ class _BaseCard extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: const Color(0xFFC9A227).withValues(alpha: 0.5),
-          width: 1.2,
+          color: LuxTokens.gold.withValues(alpha: 0.6),
+          width: 1.3,
         ),
         boxShadow: [
           BoxShadow(
-            color: LuxTokens.gold.withValues(alpha: 0.08),
+            color: LuxTokens.gold.withValues(alpha: 0.10),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -259,12 +255,8 @@ class _BaseCard extends StatelessWidget {
           Container(
             width: 26,
             height: 26,
-            decoration: BoxDecoration(
-              color: const Color(0xFFFFFBEB),
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: const Color(0xFFFDE68A)),
-            ),
-            child: Icon(icon, color: const Color(0xFFC9A227), size: 14),
+            decoration: LuxTokens.goldBoxDecoration(radius: 8),
+            child: Icon(icon, color: const Color(0xFF140D02), size: 14),
           ),
           const SizedBox(width: 8),
           Expanded(
