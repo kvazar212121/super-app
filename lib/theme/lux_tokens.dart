@@ -6,25 +6,25 @@ import 'package:flutter/material.dart';
 /// o'zgartirish 80+ ekranga ta'sir qiladi. Yangi ko'rinish avval bosh
 /// ekranda sinaladi, keyin qolgan ekranlarga bosqichma-bosqich ko'chiriladi.
 abstract final class LuxTokens {
-  /// Sahifa foni — deyarli qora, ozgina iliq ohang bilan.
-  static const bg = Color(0xFF0A0A0B);
+  /// Sahifa foni — toza yorug' fon.
+  static const bg = Color(0xFFF8F9FA);
 
-  /// Karta foni — fondan bir pog'ona ochiq, chegara bilan ajraladi.
-  static const surface = Color(0xFF141416);
-  static const surfaceHigh = Color(0xFF1B1B1E);
+  /// Karta foni — oq rang, chegara va nozik soya bilan.
+  static const surface = Color(0xFFFFFFFF);
+  static const surfaceHigh = Color(0xFFF1F5F9);
 
-  /// Nozik chegara — oltin emas, kulrang. Oltin faqat urg'u uchun.
-  static const border = Color(0xFF26262A);
+  /// Nozik oltin chegara — barcha kartalar va panellar qirg'og'i uchun.
+  static const border = Color(0xFFD4AF37);
 
-  /// Asosiy urg'u — issiq oltin (shampan emas, to'yingan).
+  /// Asosiy urg'u — issiq to'yingan oltin rang.
   static const gold = Color(0xFFC9A227);
-  static const goldSoft = Color(0xFFE3C766);
-  static const goldDim = Color(0xFF6E5A1E);
+  static const goldSoft = Color(0xFFD4AF37);
+  static const goldDim = Color(0xFF8C6D13);
 
-  /// Matn ierarxiyasi: uch pog'ona yetarli, ko'proq chalkashtiradi.
-  static const text = Color(0xFFF2F2F0);
-  static const textMuted = Color(0xFF9A9A96);
-  static const textFaint = Color(0xFF6B6B68);
+  /// Matn ierarxiyasi: to'q qora va kulrang matnlar.
+  static const text = Color(0xFF0F172A);
+  static const textMuted = Color(0xFF475569);
+  static const textFaint = Color(0xFF64748B);
 
   static const radiusSm = 12.0;
   static const radiusMd = 18.0;
@@ -42,11 +42,58 @@ abstract final class LuxTokens {
   static const display = 'CormorantGaramond';
   static const accent = 'Syne';
 
-  /// Oltin gradient — tugma va urg'uli matnlar uchun.
+  /// Oltin Foil Metall Gradient — Haqiqiy yaltiroq 24K zarhal metall nuri (Specular Gold Foil).
   static const goldGradient = LinearGradient(
-    colors: [Color(0xFFE3C766), Color(0xFFC9A227), Color(0xFF9C7B15)],
+    colors: [
+      Color(0xFFE5BA53), // Bronza-oltin zamin
+      Color(0xFFFFF7C2), // YALTIRAQ NURLI SHIRA (Specular Light Streak)
+      Color(0xFFC99427), // Chuqur 24K oltin
+      Color(0xFFFFF099), // Ikkinchi yaltiroq nurlanish
+      Color(0xFF8A5D0B), // Metall soya va aks
+    ],
+    stops: [0.0, 0.28, 0.52, 0.76, 1.0],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
+  );
+
+  /// Haqiqiy quyma oltin (gold bar) effekti — metall yuzasidagi keskin
+  /// yorug'-soya bandlari. Oddiy silliq gradientdan farqi: nur chizig'i
+  /// tor va tez o'zgaradi, shuning uchun ko'z uni "yaltiroq metall" deb
+  /// qabul qiladi.
+  static const goldBarGradient = LinearGradient(
+    colors: [
+      Color(0xFF8A5D0B), // qirra soyasi
+      Color(0xFFC9992B), // 24K zamin
+      Color(0xFFF6DC8A), // ko'tarilayotgan nur
+      Color(0xFFFFFDF0), // KESKIN SPECULAR CHAQNASH
+      Color(0xFFF3D179), // nurdan tushish
+      Color(0xFFB8801C), // chuqur metall
+      Color(0xFFE8C465), // ikkinchi aks
+      Color(0xFFFFF6C8), // ikkinchi chaqnash
+      Color(0xFFA9741A), // soya
+      Color(0xFF6E4708), // pastki qirra
+    ],
+    stops: [0.00, 0.10, 0.20, 0.26, 0.33, 0.46, 0.58, 0.68, 0.85, 1.00],
+    begin: Alignment(-0.9, -1.0),
+    end: Alignment(0.9, 1.0),
+  );
+
+  /// Metall yuzasi ustidagi qiya "shisha" nur chizig'i (sheen).
+  /// goldBarGradient ustiga qo'yiladi va yaltirashni jonlantiradi.
+  static const goldSheenOverlay = LinearGradient(
+    colors: [
+      Color(0x00FFFFFF),
+      Color(0x00FFFFFF),
+      Color(0x66FFFFFF),
+      Color(0xB3FFFFFF),
+      Color(0x59FFFFFF),
+      Color(0x00FFFFFF),
+      Color(0x1AFFFFFF),
+      Color(0x00FFFFFF),
+    ],
+    stops: [0.00, 0.30, 0.40, 0.455, 0.51, 0.62, 0.76, 1.00],
+    begin: Alignment(-1.0, -0.6),
+    end: Alignment(1.0, 0.6),
   );
 
   /// Karta uchun standart bezak (fon + chegara + radius).
@@ -70,10 +117,10 @@ abstract final class LuxTokens {
     ),
   );
 
-  /// Bo'lim sarlavhasi uslubi — Syne, keng harf oralig'i "premium" hissini beradi.
+  /// Bo'lim sarlavhasi uslubi — Syne, keng harf oralig'i oltin rangda.
   static const sectionTitle = TextStyle(
     fontFamily: accent,
-    color: text,
+    color: gold,
     fontSize: 12,
     fontWeight: FontWeight.w600,
     letterSpacing: 3.2,

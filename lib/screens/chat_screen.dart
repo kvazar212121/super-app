@@ -29,6 +29,7 @@ import '../l10n/locale_controller.dart';
 import '../models/marketplace/listing.dart';
 import '../widgets/marketplace/listing_grid.dart';
 import '../widgets/marketplace/listing_modal.dart';
+import '../theme/lux_tokens.dart';
 
 enum _VoiceState { idle, recording, processing }
 
@@ -521,9 +522,9 @@ class _ChatScreenState extends State<ChatScreen>
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
-        color: isDark ? Colors.black26 : Colors.grey.shade100,
+        color: const Color(0xFFF1F5F9),
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: GlassTokens.glassBorder(context)),
+        border: Border.all(color: LuxTokens.border),
       ),
       child: Row(
         children: [
@@ -740,9 +741,10 @@ class _ChatScreenState extends State<ChatScreen>
               ),
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               decoration: BoxDecoration(
-                color: isUser
-                    ? Colors.blue
-                    : (isDark ? const Color(0xFF334155) : Colors.white),
+                // Haqiqiy quyma oltin: keskin yorug'-soya bandli metall
+                // gradient (yumshoq bir tekis gradient "metall" ko'rinmaydi).
+                gradient: isUser ? LuxTokens.goldBarGradient : null,
+                color: isUser ? null : Colors.white,
                 borderRadius: BorderRadius.only(
                   topLeft: const Radius.circular(20),
                   topRight: const Radius.circular(20),
@@ -750,9 +752,47 @@ class _ChatScreenState extends State<ChatScreen>
                   bottomRight: Radius.circular(isUser ? 0 : 20),
                 ),
                 border: Border.all(
-                  color: isUser ? Colors.blue : GlassTokens.glassBorder(context),
+                  color: isUser ? const Color(0xFFFFF3B8) : LuxTokens.border,
+                  width: isUser ? 1.2 : 1.0,
                 ),
+                boxShadow: [
+                  if (isUser) ...[
+                    // Yuqori qirradagi oq nur — metall qirrasi aksi.
+                    BoxShadow(
+                      color: const Color(0xFFFFFDF0).withValues(alpha: 0.9),
+                      blurRadius: 2,
+                      spreadRadius: -2,
+                      offset: const Offset(-1, -1),
+                    ),
+                    // Oltin nurning atrofga tarqalishi (glow).
+                    BoxShadow(
+                      color: const Color(0xFFE8B93A).withValues(alpha: 0.55),
+                      blurRadius: 18,
+                      spreadRadius: -2,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                  BoxShadow(
+                    color: isUser
+                        ? const Color(0xFF6E4708).withValues(alpha: 0.5)
+                        : Colors.black.withValues(alpha: 0.04),
+                    blurRadius: isUser ? 10 : 8,
+                    offset: const Offset(0, 5),
+                  ),
+                ],
               ),
+              // Metall yuzasi bo'ylab o'tuvchi qiya "shisha" nur chizig'i.
+              foregroundDecoration: isUser
+                  ? BoxDecoration(
+                      gradient: LuxTokens.goldSheenOverlay,
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(20),
+                        topRight: Radius.circular(20),
+                        bottomLeft: Radius.circular(20),
+                        bottomRight: Radius.circular(0),
+                      ),
+                    )
+                  : null,
               child: Builder(builder: (context) {
                 if (providerListAction != null) {
                   final (headerText, footerText) = _splitContentForProviderList(content);
@@ -763,8 +803,8 @@ class _ChatScreenState extends State<ChatScreen>
                       if (headerText.isNotEmpty) ...[
                         Text(
                           headerText,
-                          style: TextStyle(
-                            color: isDark ? Colors.white : Colors.black87,
+                          style: const TextStyle(
+                            color: LuxTokens.text,
                             fontSize: 15,
                             fontWeight: FontWeight.w600,
                             height: 1.4,
@@ -777,8 +817,8 @@ class _ChatScreenState extends State<ChatScreen>
                         const SizedBox(height: 10),
                         Text(
                           footerText,
-                          style: TextStyle(
-                            color: isDark ? Colors.white70 : Colors.black87,
+                          style: const TextStyle(
+                            color: LuxTokens.text,
                             fontSize: 14,
                             height: 1.4,
                           ),
@@ -807,11 +847,26 @@ class _ChatScreenState extends State<ChatScreen>
                     Text(
                       content,
                       style: TextStyle(
-                        color: isUser
-                            ? Colors.white
-                            : (isDark ? Colors.white : Colors.black87),
+                        color: isUser ? Colors.white : LuxTokens.text,
                         fontSize: 15,
+                        fontWeight: isUser ? FontWeight.w700 : FontWeight.normal,
                         height: 1.4,
+                        // Yaltiroq oltin ustida matn o'qilishi uchun
+                        // "o'yilgan" (engraved) soya beramiz.
+                        shadows: isUser
+                            ? const [
+                                Shadow(
+                                  color: Color(0xB35A3A05),
+                                  blurRadius: 4,
+                                  offset: Offset(0, 1),
+                                ),
+                                Shadow(
+                                  color: Color(0x805A3A05),
+                                  blurRadius: 1,
+                                  offset: Offset(0, 1),
+                                ),
+                              ]
+                            : null,
                       ),
                     ),
                   ],
@@ -1005,7 +1060,7 @@ class _ChatScreenState extends State<ChatScreen>
                   style: TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w700,
-                    color: isDark ? Colors.white : Colors.black87,
+                    color: isDark ? Colors.white : LuxTokens.text,
                   ),
                 ),
               ),
@@ -1153,25 +1208,37 @@ class _ChatScreenState extends State<ChatScreen>
     if (address.isNotEmpty) details.add('📍 $address');
     if (dist != null) details.add('📏 ${dist.toStringAsFixed(1)} km');
 
+    const cardBg = Color(0xFFF8F9FA);
+    const nameColor = LuxTokens.text;
+    const detailColor = LuxTokens.textMuted;
+    const borderColor = LuxTokens.border;
+
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF1E293B) : const Color(0xFFF8FAFC),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0),
-        ),
+        color: cardBg,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: borderColor),
+        boxShadow: isDark
+            ? null
+            : [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.05),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
       ),
       child: Row(
         children: [
           Container(
-            width: 32,
-            height: 32,
+            width: 34,
+            height: 34,
             decoration: BoxDecoration(
-              color: Colors.blue.withValues(alpha: 0.12),
+              color: LuxTokens.gold.withValues(alpha: 0.14),
               shape: BoxShape.circle,
             ),
-            child: const Icon(LucideIcons.store, color: Colors.blue, size: 16),
+            child: const Icon(LucideIcons.store, color: LuxTokens.gold, size: 17),
           ),
           const SizedBox(width: 10),
           Expanded(
@@ -1184,20 +1251,20 @@ class _ChatScreenState extends State<ChatScreen>
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
-                    fontSize: 13.5,
+                    fontSize: 14,
                     fontWeight: FontWeight.w700,
-                    color: GlassTokens.primaryText(context),
+                    color: nameColor,
                   ),
                 ),
-                const SizedBox(height: 2),
+                const SizedBox(height: 3),
                 Text(
                   details.join('  •  '),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
-                    fontSize: 11,
+                    fontSize: 11.5,
                     fontWeight: FontWeight.w500,
-                    color: GlassTokens.secondaryText(context),
+                    color: detailColor,
                   ),
                 ),
               ],
@@ -1205,13 +1272,13 @@ class _ChatScreenState extends State<ChatScreen>
           ),
           const SizedBox(width: 8),
           Material(
-            color: Colors.blue,
-            borderRadius: BorderRadius.circular(9),
+            color: LuxTokens.gold,
+            borderRadius: BorderRadius.circular(10),
             child: InkWell(
               onTap: () => _openProviderBooking(id, pKey),
-              borderRadius: BorderRadius.circular(9),
+              borderRadius: BorderRadius.circular(10),
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -1221,7 +1288,7 @@ class _ChatScreenState extends State<ChatScreen>
                       'Bron'.tr,
                       style: const TextStyle(
                         color: Colors.white,
-                        fontSize: 11.5,
+                        fontSize: 12,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
@@ -1307,7 +1374,7 @@ class _ChatScreenState extends State<ChatScreen>
     required VoidCallback onTap,
   }) {
     return Material(
-      color: Colors.blue,
+      color: LuxTokens.gold,
       borderRadius: BorderRadius.circular(14),
       child: InkWell(
         onTap: onTap,
@@ -1456,29 +1523,27 @@ class _ChatScreenState extends State<ChatScreen>
   }
 
   Widget _buildTypingIndicator() {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
     return Align(
       alignment: Alignment.centerLeft,
       child: Container(
         margin: const EdgeInsets.only(bottom: 16),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         decoration: BoxDecoration(
-          color: isDark ? const Color(0xFF334155) : Colors.white,
+          color: Colors.white,
           borderRadius: const BorderRadius.only(
             topLeft: Radius.circular(20),
             topRight: Radius.circular(20),
             bottomRight: Radius.circular(20),
           ),
-          border: Border.all(color: GlassTokens.glassBorder(context)),
+          border: Border.all(color: LuxTokens.border),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
               'Yozmoqda'.tr,
-              style: TextStyle(
-                color: GlassTokens.secondaryText(context),
+              style: const TextStyle(
+                color: LuxTokens.textMuted,
                 fontSize: 13,
               ),
             ),
@@ -1488,7 +1553,7 @@ class _ChatScreenState extends State<ChatScreen>
               height: 14,
               child: CircularProgressIndicator(
                 strokeWidth: 2,
-                color: Colors.blueAccent,
+                color: LuxTokens.goldSoft,
               ),
             ),
           ],
@@ -1502,10 +1567,10 @@ class _ChatScreenState extends State<ChatScreen>
     final isRecording = _voiceState == _VoiceState.recording;
 
     return Container(
-      decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF1E293B) : Colors.white,
+      decoration: const BoxDecoration(
+        color: Colors.white,
         border: Border(
-          top: BorderSide(color: GlassTokens.glassBorder(context)),
+          top: BorderSide(color: LuxTokens.border),
         ),
       ),
       child: SafeArea(
@@ -1528,21 +1593,19 @@ class _ChatScreenState extends State<ChatScreen>
                     onPressed: isRecording ? null : _pickPhotoSource,
                     icon: const Icon(Icons.add_a_photo_outlined),
                     tooltip: 'Ish joyi rasmini yuborish'.tr,
-                    color: GlassTokens.secondaryText(context),
+                    color: LuxTokens.gold,
                   ),
                   Expanded(
                 child: Container(
                   decoration: BoxDecoration(
                     color: isRecording
-                        ? (isDark
-                              ? Colors.red.withValues(alpha: 0.1)
-                              : Colors.red.shade50)
-                        : (isDark ? Colors.black : Colors.grey.shade100),
+                        ? Colors.red.shade50
+                        : const Color(0xFFF1F5F9),
                     borderRadius: BorderRadius.circular(24),
                     border: Border.all(
                       color: isRecording
                           ? Colors.redAccent
-                          : GlassTokens.glassBorder(context),
+                          : LuxTokens.border,
                     ),
                   ),
                   child: TextField(
@@ -1550,7 +1613,7 @@ class _ChatScreenState extends State<ChatScreen>
                     style: TextStyle(
                       color: isRecording
                           ? Colors.redAccent
-                          : GlassTokens.primaryText(context),
+                          : LuxTokens.text,
                     ),
                     maxLines: 3,
                     minLines: 1,
@@ -1573,7 +1636,7 @@ class _ChatScreenState extends State<ChatScreen>
                       hintStyle: TextStyle(
                         color: isRecording
                             ? Colors.redAccent.withValues(alpha: 0.7)
-                            : GlassTokens.secondaryText(context),
+                            : LuxTokens.textMuted,
                       ),
                       contentPadding: const EdgeInsets.symmetric(
                         horizontal: 16,
@@ -1615,12 +1678,12 @@ class _ChatScreenState extends State<ChatScreen>
                                   ]
                                 : (_hasText || _pendingPhoto != null)
                                 ? [
-                                    const Color(0xFF8B5CF6),
-                                    const Color(0xFF3B82F6),
+                                    const Color(0xFFE3C766),
+                                    const Color(0xFFC9A227),
                                   ]
                                 : [
-                                    const Color(0xFF10B981),
-                                    const Color(0xFF059669),
+                                    const Color(0xFFE3C766),
+                                    const Color(0xFFC9A227),
                                   ],
                           ),
                           shape: BoxShape.circle,
@@ -1628,10 +1691,7 @@ class _ChatScreenState extends State<ChatScreen>
                             BoxShadow(
                               color: isRecording
                                   ? Colors.redAccent.withValues(alpha: 0.5)
-                                  : ((_hasText || _pendingPhoto != null)
-                                            ? const Color(0xFF3B82F6)
-                                            : const Color(0xFF10B981))
-                                        .withValues(alpha: 0.5),
+                                  : const Color(0xFFC9A227).withValues(alpha: 0.5),
                               blurRadius: isRecording ? 12 : 8,
                               offset: const Offset(0, 4),
                             ),
@@ -1720,7 +1780,7 @@ class _VoiceListeningOverlayState extends State<_VoiceListeningOverlay>
                   borderRadius: BorderRadius.circular(28),
                   boxShadow: [
                     BoxShadow(
-                      color: const Color(0xFF6366F1).withValues(alpha: 0.45),
+                      color: const Color(0xFFC9A227).withValues(alpha: 0.45),
                       blurRadius: 40,
                       spreadRadius: 2,
                     ),
@@ -1821,11 +1881,11 @@ class _VoiceListeningOverlayState extends State<_VoiceListeningOverlay>
                       gradient: const LinearGradient(
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
-                        colors: [Color(0xFF8B5CF6), Color(0xFF6366F1)],
+                        colors: [Color(0xFFE3C766), Color(0xFFC9A227)],
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: const Color(0xFF8B5CF6).withValues(alpha: 0.6),
+                          color: const Color(0xFFE3C766).withValues(alpha: 0.6),
                           blurRadius: 22 + norm * 22,
                           spreadRadius: norm * 4,
                         ),
@@ -1869,7 +1929,7 @@ class _VoiceListeningOverlayState extends State<_VoiceListeningOverlay>
                     gradient: const LinearGradient(
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
-                      colors: [Color(0xFFC4B5FD), Color(0xFF60A5FA)],
+                      colors: [Color(0xFFC4B5FD), Color(0xFFE3C766)],
                     ),
                     borderRadius: BorderRadius.circular(3),
                   ),
