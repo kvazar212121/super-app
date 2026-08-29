@@ -117,7 +117,7 @@ class _AllCategoriesScreenState extends State<AllCategoriesScreen> {
                         ),
                       )
                     : ListView.separated(
-                        padding: const EdgeInsets.fromLTRB(16, 8, 16, 90),
+                        padding: const EdgeInsets.fromLTRB(16, 8, 16, 160),
                         itemCount: _groups.length,
                         separatorBuilder: (context, index) => Padding(
                           padding: const EdgeInsets.symmetric(vertical: 20),

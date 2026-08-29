@@ -180,7 +180,7 @@ class _MyJobsScreenState extends State<MyJobsScreen> {
       );
     }
     return ListView.builder(
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 160),
       itemCount: _jobs.length,
       itemBuilder: (_, i) => _jobCard(_jobs[i]),
     );

@@ -126,7 +126,7 @@ class _CallsTab extends StatelessWidget {
             ),
             Expanded(
               child: ListView.separated(
-                padding: const EdgeInsets.fromLTRB(16, 8, 16, 100),
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 160),
                 itemCount: logs.length,
                 separatorBuilder: (_, _) => const SizedBox(height: 8),
                 itemBuilder: (context, idx) {
@@ -425,7 +425,7 @@ class _MessagesTabState extends State<_MessagesTab> {
     return RefreshIndicator(
       onRefresh: _load,
       child: ListView.separated(
-        padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 160),
         itemCount: _convos.length,
         separatorBuilder: (_, _) => const SizedBox(height: 8),
         itemBuilder: (context, idx) {
@@ -663,7 +663,7 @@ class _BlockedTab extends StatelessWidget {
           );
         }
         return ListView.separated(
-          padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
+          padding: const EdgeInsets.fromLTRB(16, 16, 16, 160),
           itemCount: blocked.length,
           separatorBuilder: (_, _) => const SizedBox(height: 8),
           itemBuilder: (context, idx) {
