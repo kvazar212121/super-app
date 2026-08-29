@@ -62,38 +62,13 @@ abstract final class LuxTokens {
   /// qabul qiladi.
   static const goldBarGradient = LinearGradient(
     colors: [
-      Color(0xFF8A5D0B), // qirra soyasi
-      Color(0xFFC9992B), // 24K zamin
-      Color(0xFFF6DC8A), // ko'tarilayotgan nur
-      Color(0xFFFFFDF0), // KESKIN SPECULAR CHAQNASH
-      Color(0xFFF3D179), // nurdan tushish
-      Color(0xFFB8801C), // chuqur metall
-      Color(0xFFE8C465), // ikkinchi aks
-      Color(0xFFFFF6C8), // ikkinchi chaqnash
-      Color(0xFFA9741A), // soya
-      Color(0xFF6E4708), // pastki qirra
+      Color(0xFFE5BA53), // yuqori: yorug' oltin
+      Color(0xFFFFF3B8), // markaz: yaltiroq nur
+      Color(0xFF9C6E15), // past: chuqur metall
     ],
-    stops: [0.00, 0.10, 0.20, 0.26, 0.33, 0.46, 0.58, 0.68, 0.85, 1.00],
-    begin: Alignment(-0.9, -1.0),
-    end: Alignment(0.9, 1.0),
-  );
-
-  /// Metall yuzasi ustidagi qiya "shisha" nur chizig'i (sheen).
-  /// goldBarGradient ustiga qo'yiladi va yaltirashni jonlantiradi.
-  static const goldSheenOverlay = LinearGradient(
-    colors: [
-      Color(0x00FFFFFF),
-      Color(0x00FFFFFF),
-      Color(0x66FFFFFF),
-      Color(0xB3FFFFFF),
-      Color(0x59FFFFFF),
-      Color(0x00FFFFFF),
-      Color(0x1AFFFFFF),
-      Color(0x00FFFFFF),
-    ],
-    stops: [0.00, 0.30, 0.40, 0.455, 0.51, 0.62, 0.76, 1.00],
-    begin: Alignment(-1.0, -0.6),
-    end: Alignment(1.0, 0.6),
+    stops: [0.0, 0.5, 1.0],
+    begin: Alignment.topCenter,
+    end: Alignment.bottomCenter,
   );
 
   /// Karta uchun standart bezak (fon + chegara + radius).

@@ -781,18 +781,6 @@ class _ChatScreenState extends State<ChatScreen>
                   ),
                 ],
               ),
-              // Metall yuzasi bo'ylab o'tuvchi qiya "shisha" nur chizig'i.
-              foregroundDecoration: isUser
-                  ? BoxDecoration(
-                      gradient: LuxTokens.goldSheenOverlay,
-                      borderRadius: const BorderRadius.only(
-                        topLeft: Radius.circular(20),
-                        topRight: Radius.circular(20),
-                        bottomLeft: Radius.circular(20),
-                        bottomRight: Radius.circular(0),
-                      ),
-                    )
-                  : null,
               child: Builder(builder: (context) {
                 if (providerListAction != null) {
                   final (headerText, footerText) = _splitContentForProviderList(content);
