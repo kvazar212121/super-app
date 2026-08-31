@@ -715,12 +715,12 @@ class _DailyBtn extends StatelessWidget {
                 bottom: 0,
                 child: Container(
                   padding: const EdgeInsets.fromLTRB(10, 7, 10, 8),
-                  decoration: BoxDecoration(
-                    color: LuxTokens.surface,
-                    border: const Border(
-                      top: BorderSide(color: LuxTokens.border),
+                  decoration: const BoxDecoration(
+                    gradient: LuxTokens.goldGradient,
+                    border: Border(
+                      top: BorderSide(color: Color(0xFFC9A227), width: 1.2),
                     ),
-                    borderRadius: const BorderRadius.vertical(
+                    borderRadius: BorderRadius.vertical(
                       bottom: Radius.circular(LuxTokens.radiusMd - 1),
                     ),
                   ),
@@ -733,16 +733,17 @@ class _DailyBtn extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
                             fontFamily: LuxTokens.body,
-                            color: LuxTokens.text,
+                            color: Color(0xFF140D02),
                             fontSize: 12,
-                            fontWeight: FontWeight.w600,
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: -0.2,
                           ),
                         ),
                       ),
                       const Icon(
                         LucideIcons.chevronRight,
                         size: 13,
-                        color: LuxTokens.gold,
+                        color: Color(0xFF140D02),
                       ),
                     ],
                   ),
@@ -756,9 +757,6 @@ class _DailyBtn extends StatelessWidget {
   }
 
   Widget _buildLight(BuildContext context) {
-    // 3 Rang palitrasi — oq fon, qora pastki tasmasi va oltin urg'u.
-    const tasmaRang = Color(0xFF141416);
-
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(18),
@@ -767,12 +765,12 @@ class _DailyBtn extends StatelessWidget {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: LuxTokens.border),
+          border: Border.all(color: LuxTokens.gold.withValues(alpha: 0.6), width: 1.2),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.07),
-              blurRadius: 14,
-              offset: const Offset(0, 5),
+              color: LuxTokens.gold.withValues(alpha: 0.12),
+              blurRadius: 12,
+              offset: const Offset(0, 4),
             ),
           ],
         ),
@@ -801,9 +799,9 @@ class _DailyBtn extends StatelessWidget {
               child: Container(
                 padding: const EdgeInsets.fromLTRB(10, 7, 10, 8),
                 decoration: const BoxDecoration(
-                  color: LuxTokens.surface,
+                  gradient: LuxTokens.goldGradient,
                   border: Border(
-                    top: BorderSide(color: LuxTokens.border),
+                    top: BorderSide(color: Color(0xFFC9A227), width: 1.2),
                   ),
                   borderRadius: BorderRadius.vertical(
                     bottom: Radius.circular(17),
@@ -817,8 +815,8 @@ class _DailyBtn extends StatelessWidget {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
-                          color: LuxTokens.text,
-                          fontWeight: FontWeight.w700,
+                          color: Color(0xFF140D02),
+                          fontWeight: FontWeight.w800,
                           fontSize: 12.5,
                           height: 1.1,
                           letterSpacing: -0.2,
@@ -828,7 +826,7 @@ class _DailyBtn extends StatelessWidget {
                     const Icon(
                       LucideIcons.chevronRight,
                       size: 13,
-                      color: LuxTokens.gold,
+                      color: Color(0xFF140D02),
                     ),
                   ],
                 ),
