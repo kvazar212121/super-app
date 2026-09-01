@@ -167,10 +167,10 @@ class _VoiceNotesWidgetState extends State<VoiceNotesWidget> {
                       Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: isDark ? const Color(0xFF1E293B) : const Color(0xFFF8FAFC),
+                          color: const Color(0xFFFFFBEB),
                           borderRadius: BorderRadius.circular(14),
                           border: Border.all(
-                            color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0),
+                            color: LuxTokens.gold.withValues(alpha: 0.3),
                           ),
                         ),
                         child: Row(
@@ -185,11 +185,11 @@ class _VoiceNotesWidgetState extends State<VoiceNotesWidget> {
                             Expanded(
                               child: Text(
                                 note['transcription'] ?? '',
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontSize: 13,
                                   fontWeight: FontWeight.w500,
                                   height: 1.4,
-                                  color: const Color(0xFF334155),
+                                  color: Color(0xFF334155),
                                 ),
                               ),
                             ),
