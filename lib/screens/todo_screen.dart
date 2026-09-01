@@ -124,7 +124,7 @@ class _TodoScreenState extends State<TodoScreen> with SingleTickerProviderStateM
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w800,
-            color: isDark ? Colors.white : const Color(0xFF0F172A),
+            color: const Color(0xFF0F172A),
           ),
         ),
         content: Column(
@@ -217,7 +217,7 @@ class _TodoScreenState extends State<TodoScreen> with SingleTickerProviderStateM
                 indicatorColor: LuxTokens.gold,
                 indicatorWeight: 3,
                 labelColor: isDark ? LuxTokens.gold : const Color(0xFF8A5D0B),
-                unselectedLabelColor: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+                unselectedLabelColor: const Color(0xFF64748B),
                 labelStyle: const TextStyle(fontWeight: FontWeight.w800, fontSize: 13),
                 unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
                 tabs: const [
@@ -371,7 +371,7 @@ class _TodoScreenState extends State<TodoScreen> with SingleTickerProviderStateM
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w800,
-                    color: isDark ? Colors.white : const Color(0xFF0F172A),
+                    color: const Color(0xFF0F172A),
                   ),
                 ),
                 Container(
@@ -415,7 +415,7 @@ class _TodoScreenState extends State<TodoScreen> with SingleTickerProviderStateM
                     style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w800,
-                      color: isDark ? Colors.white : const Color(0xFF0F172A),
+                      color: const Color(0xFF0F172A),
                     ),
                   ),
                 ],
@@ -485,7 +485,7 @@ class _TodoScreenState extends State<TodoScreen> with SingleTickerProviderStateM
             style: TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.w800,
-              color: isDark ? Colors.white : const Color(0xFF0F172A),
+              color: const Color(0xFF0F172A),
             ),
           ),
           const SizedBox(height: 6),
@@ -495,7 +495,7 @@ class _TodoScreenState extends State<TodoScreen> with SingleTickerProviderStateM
             style: TextStyle(
               fontSize: 12.5,
               height: 1.4,
-              color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+              color: const Color(0xFF64748B),
             ),
           ),
         ],
@@ -577,8 +577,8 @@ class _TodoScreenState extends State<TodoScreen> with SingleTickerProviderStateM
                       fontWeight: FontWeight.w700,
                       decoration: isDone ? TextDecoration.lineThrough : null,
                       color: isDone
-                          ? (isDark ? const Color(0xFF94A3B8) : const Color(0xFF94A3B8))
-                          : (isDark ? Colors.white : const Color(0xFF0F172A)),
+                          ? const Color(0xFF94A3B8)
+                          : (const Color(0xFF0F172A)),
                     ),
                   ),
                   const SizedBox(height: 5),
