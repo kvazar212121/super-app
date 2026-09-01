@@ -69,6 +69,42 @@ class _TodoScreenState extends State<TodoScreen> with SingleTickerProviderStateM
     await _loadTasks();
   }
 
+  Future<void> _deleteTask(String taskId) async {
+    await _service.deleteTask(taskId);
+    await _loadTasks();
+  }
+
+  /// Kategoriyaga mos urg'u rangi — kartaning chap chetidagi belgi uchun.
+  Color _categoryColor(String? category) {
+    switch (category) {
+      case 'xarid':
+        return const Color(0xFF16A34A);
+      case 'xizmat':
+        return const Color(0xFF2563EB);
+      case 'ish':
+        return const Color(0xFF9333EA);
+      case 'sogliq':
+        return const Color(0xFFDC2626);
+      default:
+        return LuxTokens.gold;
+    }
+  }
+
+  IconData _categoryIcon(String? category) {
+    switch (category) {
+      case 'xarid':
+        return LucideIcons.shoppingBag;
+      case 'xizmat':
+        return LucideIcons.wrench;
+      case 'ish':
+        return LucideIcons.briefcase;
+      case 'sogliq':
+        return LucideIcons.heartPulse;
+      default:
+        return LucideIcons.calendarCheck;
+    }
+  }
+
   Future<void> _showAddTaskDialog() async {
     final titleCtrl = TextEditingController();
     final timeCtrl = TextEditingController(text: '12:00');
@@ -317,11 +353,16 @@ class _TodoScreenState extends State<TodoScreen> with SingleTickerProviderStateM
       return const Center(child: CircularProgressIndicator(color: LuxTokens.gold));
     }
 
+    final int doneCount = _tasks.where((t) => t['is_done'] == true).length;
+    final int totalCount = _tasks.length;
+    final double progress = totalCount == 0 ? 0 : doneCount / totalCount;
+
     return Stack(
       children: [
         ListView(
           padding: const EdgeInsets.fromLTRB(16, 12, 16, 160),
           children: [
+            // ── Sarlavha + sana + progress ──────────────────────────
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -333,104 +374,60 @@ class _TodoScreenState extends State<TodoScreen> with SingleTickerProviderStateM
                     color: isDark ? Colors.white : const Color(0xFF0F172A),
                   ),
                 ),
-                Text(
-                  _service.formatDate(_selectedDate),
-                  style: const TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w700,
-                    color: LuxTokens.gold,
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: LuxTokens.gold.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    _service.formatDate(_selectedDate),
+                    style: const TextStyle(
+                      fontSize: 12.5,
+                      fontWeight: FontWeight.w800,
+                      color: LuxTokens.goldDim,
+                    ),
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 12),
 
-            if (_tasks.isEmpty)
-              Container(
-                padding: const EdgeInsets.all(24),
-                decoration: BoxDecoration(
-                  color: isDark ? LuxTokens.surface : Colors.white,
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: LuxTokens.border),
-                ),
-                child: Center(
-                  child: Text(
-                    'Bu kunda vazifalar yo\'q. Paqirdan "+" tugmasini bosing.',
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
-                    ),
-                  ),
-                ),
-              )
-            else
-              Column(
-                children: _tasks.map<Widget>((task) {
-                  final bool isDone = task['is_done'] == true;
-
-                  return Container(
-                    margin: const EdgeInsets.only(bottom: 10),
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: isDark ? LuxTokens.surface : Colors.white,
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(
-                        color: isDone
-                            ? (isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0))
-                            : LuxTokens.gold.withValues(alpha: 0.6),
-                        width: isDone ? 1.0 : 1.3,
+            if (totalCount > 0) ...[
+              const SizedBox(height: 14),
+              Row(
+                children: [
+                  Expanded(
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: LinearProgressIndicator(
+                        value: progress,
+                        minHeight: 8,
+                        backgroundColor: isDark
+                            ? const Color(0xFF334155)
+                            : const Color(0xFFEDE3C7),
+                        valueColor: const AlwaysStoppedAnimation(LuxTokens.gold),
                       ),
                     ),
-                    child: Row(
-                      children: [
-                        GestureDetector(
-                          onTap: () => _toggleTask(task['id'], isDone),
-                          child: Container(
-                            width: 28,
-                            height: 28,
-                            decoration: isDone
-                                ? LuxTokens.goldBoxDecoration(radius: 8)
-                                : BoxDecoration(
-                                    borderRadius: BorderRadius.circular(8),
-                                    border: Border.all(color: const Color(0xFFCBD5E1), width: 1.5),
-                                  ),
-                            child: isDone
-                                ? const Icon(LucideIcons.check, color: Color(0xFF140D02), size: 18)
-                                : null,
-                          ),
-                        ),
-                        const SizedBox(width: 14),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                task['title'] ?? '',
-                                style: TextStyle(
-                                  fontSize: 14.5,
-                                  fontWeight: FontWeight.w700,
-                                  decoration: isDone ? TextDecoration.lineThrough : null,
-                                  color: isDone
-                                      ? (isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B))
-                                      : (isDark ? Colors.white : const Color(0xFF0F172A)),
-                                ),
-                              ),
-                              const SizedBox(height: 2),
-                              Text(
-                                task['time'] ?? '',
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                  color: LuxTokens.gold,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
+                  ),
+                  const SizedBox(width: 12),
+                  Text(
+                    '$doneCount/$totalCount',
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w800,
+                      color: isDark ? Colors.white : const Color(0xFF0F172A),
                     ),
-                  );
-                }).toList(),
+                  ),
+                ],
+              ),
+            ],
+            const SizedBox(height: 16),
+
+            if (_tasks.isEmpty)
+              _buildEmptyState(isDark)
+            else
+              Column(
+                children: _tasks.map<Widget>((task) => _buildTaskCard(task, isDark)).toList(),
               ),
           ],
         ),
@@ -439,14 +436,182 @@ class _TodoScreenState extends State<TodoScreen> with SingleTickerProviderStateM
         Positioned(
           right: 20,
           bottom: 160,
-          child: FloatingActionButton(
-            backgroundColor: LuxTokens.gold,
-            foregroundColor: const Color(0xFF140D02),
-            onPressed: _showAddTaskDialog,
-            child: const Icon(LucideIcons.plus, size: 28),
+          child: Container(
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: LuxTokens.gold.withValues(alpha: 0.45),
+                  blurRadius: 18,
+                  offset: const Offset(0, 6),
+                ),
+              ],
+            ),
+            child: FloatingActionButton(
+              backgroundColor: LuxTokens.gold,
+              foregroundColor: const Color(0xFF140D02),
+              elevation: 0,
+              onPressed: _showAddTaskDialog,
+              child: const Icon(LucideIcons.plus, size: 28),
+            ),
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildEmptyState(bool isDark) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 24),
+      decoration: BoxDecoration(
+        color: isDark ? LuxTokens.surface : Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: LuxTokens.gold.withValues(alpha: 0.3)),
+      ),
+      child: Column(
+        children: [
+          Container(
+            width: 64,
+            height: 64,
+            decoration: BoxDecoration(
+              color: LuxTokens.gold.withValues(alpha: 0.12),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(LucideIcons.calendarPlus, color: LuxTokens.gold, size: 30),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'Bu kunda vazifa yo\'q'.tr,
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w800,
+              color: isDark ? Colors.white : const Color(0xFF0F172A),
+            ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            'Yangi reja qo\'shish uchun "+" tugmasini bosing yoki ovozli buyruq bering.'.tr,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 12.5,
+              height: 1.4,
+              color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTaskCard(Map<String, dynamic> task, bool isDark) {
+    final bool isDone = task['is_done'] == true;
+    final Color catColor = _categoryColor(task['category'] as String?);
+
+    return Dismissible(
+      key: ValueKey(task['id']),
+      direction: DismissDirection.endToStart,
+      background: Container(
+        alignment: Alignment.centerRight,
+        margin: const EdgeInsets.only(bottom: 10),
+        padding: const EdgeInsets.only(right: 24),
+        decoration: BoxDecoration(
+          color: const Color(0xFFDC2626),
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: const Icon(LucideIcons.trash2, color: Colors.white, size: 24),
+      ),
+      confirmDismiss: (_) async {
+        _deleteTask(task['id']);
+        return true;
+      },
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        margin: const EdgeInsets.only(bottom: 10),
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: isDark ? LuxTokens.surface : Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: isDone
+                ? (isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0))
+                : LuxTokens.gold.withValues(alpha: 0.55),
+            width: isDone ? 1.0 : 1.3,
+          ),
+          boxShadow: isDone
+              ? null
+              : [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.03),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+        ),
+        child: Row(
+          children: [
+            GestureDetector(
+              onTap: () => _toggleTask(task['id'], isDone),
+              child: Container(
+                width: 30,
+                height: 30,
+                decoration: isDone
+                    ? LuxTokens.goldBoxDecoration(radius: 9)
+                    : BoxDecoration(
+                        borderRadius: BorderRadius.circular(9),
+                        border: Border.all(color: const Color(0xFFCBD5E1), width: 1.5),
+                      ),
+                child: isDone
+                    ? const Icon(LucideIcons.check, color: Color(0xFF140D02), size: 18)
+                    : null,
+              ),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    task['title'] ?? '',
+                    style: TextStyle(
+                      fontSize: 14.5,
+                      fontWeight: FontWeight.w700,
+                      decoration: isDone ? TextDecoration.lineThrough : null,
+                      color: isDone
+                          ? (isDark ? const Color(0xFF94A3B8) : const Color(0xFF94A3B8))
+                          : (isDark ? Colors.white : const Color(0xFF0F172A)),
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+                  Row(
+                    children: [
+                      Icon(LucideIcons.clock, size: 12, color: LuxTokens.gold.withValues(alpha: 0.8)),
+                      const SizedBox(width: 4),
+                      Text(
+                        task['time'] ?? '',
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: LuxTokens.goldDim,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            // Kategoriya belgisi
+            Container(
+              width: 34,
+              height: 34,
+              decoration: BoxDecoration(
+                color: catColor.withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Icon(_categoryIcon(task['category'] as String?), size: 17, color: catColor),
+            ),
+          ],
+        ),
+      ),
     );
   }
 

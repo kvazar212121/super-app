@@ -61,6 +61,15 @@ class TodoLocalService {
     await prefs.setString(_kTasksKey, jsonEncode(list));
   }
 
+  Future<void> deleteTask(String taskId) async {
+    final prefs = await _getPrefs();
+    final raw = prefs.getString(_kTasksKey);
+    if (raw == null) return;
+    List<dynamic> list = jsonDecode(raw);
+    list.removeWhere((item) => item['id'] == taskId);
+    await prefs.setString(_kTasksKey, jsonEncode(list));
+  }
+
   List<Map<String, dynamic>> _defaultTasks(DateTime date) {
     final dateStr = formatDate(date);
     return [
