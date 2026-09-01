@@ -325,7 +325,7 @@ class _TodoScreenState extends State<TodoScreen> with SingleTickerProviderStateM
                       fontWeight: FontWeight.w800,
                       color: isSelected
                           ? const Color(0xFF140D02)
-                          : (isDark ? const Color(0xFF94A3B8) : const Color(0xFF475569)),
+                          : const Color(0xFF475569),
                     ),
                   ),
                   const SizedBox(height: 3),
@@ -336,7 +336,7 @@ class _TodoScreenState extends State<TodoScreen> with SingleTickerProviderStateM
                       fontWeight: FontWeight.w900,
                       color: isSelected
                           ? const Color(0xFF140D02)
-                          : (isDark ? Colors.white : const Color(0xFF0F172A)),
+                          : const Color(0xFF0F172A),
                     ),
                   ),
                 ],
