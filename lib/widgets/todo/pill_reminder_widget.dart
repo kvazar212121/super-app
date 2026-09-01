@@ -73,7 +73,7 @@ class _PillReminderWidgetState extends State<PillReminderWidget> {
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w800,
-            color: isDark ? Colors.white : const Color(0xFF0F172A),
+            color: const Color(0xFF0F172A),
           ),
         ),
         content: Column(
@@ -143,7 +143,7 @@ class _PillReminderWidgetState extends State<PillReminderWidget> {
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w800,
-                  color: isDark ? Colors.white : const Color(0xFF0F172A),
+                  color: const Color(0xFF0F172A),
                 ),
               ),
               IconButton(
@@ -167,7 +167,7 @@ class _PillReminderWidgetState extends State<PillReminderWidget> {
                   'Hali dorilar qo\'shilmadi.',
                   style: TextStyle(
                     fontSize: 13,
-                    color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+                    color: const Color(0xFF64748B),
                   ),
                 ),
               ),
@@ -222,7 +222,7 @@ class _PillReminderWidgetState extends State<PillReminderWidget> {
                                   style: TextStyle(
                                     fontSize: 15,
                                     fontWeight: FontWeight.w800,
-                                    color: isDark ? Colors.white : const Color(0xFF0F172A),
+                                    color: const Color(0xFF0F172A),
                                   ),
                                 ),
                                 const SizedBox(height: 2),
@@ -230,7 +230,7 @@ class _PillReminderWidgetState extends State<PillReminderWidget> {
                                   pill['dosage'] ?? '',
                                   style: TextStyle(
                                     fontSize: 12.5,
-                                    color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+                                    color: const Color(0xFF64748B),
                                   ),
                                 ),
                               ],

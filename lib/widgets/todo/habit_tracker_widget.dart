@@ -72,7 +72,7 @@ class _HabitTrackerWidgetState extends State<HabitTrackerWidget> {
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w800,
-            color: isDark ? Colors.white : const Color(0xFF0F172A),
+            color: const Color(0xFF0F172A),
           ),
         ),
         content: TextField(
@@ -125,7 +125,7 @@ class _HabitTrackerWidgetState extends State<HabitTrackerWidget> {
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w800,
-                  color: isDark ? Colors.white : const Color(0xFF0F172A),
+                  color: const Color(0xFF0F172A),
                 ),
               ),
               IconButton(
@@ -149,7 +149,7 @@ class _HabitTrackerWidgetState extends State<HabitTrackerWidget> {
                   'Hali odatlar qo\'shilmadi. "+" tugmasini bosing.',
                   style: TextStyle(
                     fontSize: 13,
-                    color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+                    color: const Color(0xFF64748B),
                   ),
                 ),
               ),
@@ -216,8 +216,8 @@ class _HabitTrackerWidgetState extends State<HabitTrackerWidget> {
                                 fontWeight: FontWeight.w700,
                                 decoration: isCompleted ? TextDecoration.lineThrough : null,
                                 color: isCompleted
-                                    ? (isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B))
-                                    : (isDark ? Colors.white : const Color(0xFF0F172A)),
+                                    ? const Color(0xFF64748B)
+                                    : const Color(0xFF0F172A),
                               ),
                             ),
                             const SizedBox(height: 2),
@@ -225,7 +225,8 @@ class _HabitTrackerWidgetState extends State<HabitTrackerWidget> {
                               isCompleted ? 'Bugunga bajarildi ✨' : 'Bajarish kutilmoqda',
                               style: TextStyle(
                                 fontSize: 12,
-                                color: isCompleted ? LuxTokens.gold : const Color(0xFF94A3B8),
+                                fontWeight: FontWeight.w600,
+                                color: isCompleted ? LuxTokens.goldDim : const Color(0xFF64748B),
                               ),
                             ),
                           ],

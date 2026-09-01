@@ -121,7 +121,7 @@ class _WaterTrackerWidgetState extends State<WaterTrackerWidget> {
                                 fontFamily: LuxTokens.body,
                                 fontSize: 18,
                                 fontWeight: FontWeight.w800,
-                                color: isDark ? Colors.white : const Color(0xFF0F172A),
+                                color: const Color(0xFF0F172A),
                               ),
                             ),
                             Text(
@@ -129,7 +129,7 @@ class _WaterTrackerWidgetState extends State<WaterTrackerWidget> {
                               style: TextStyle(
                                 fontSize: 12.5,
                                 fontWeight: FontWeight.w600,
-                                color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+                                color: const Color(0xFF64748B),
                               ),
                             ),
                           ],
@@ -177,7 +177,7 @@ class _WaterTrackerWidgetState extends State<WaterTrackerWidget> {
                       style: TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w700,
-                        color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+                        color: const Color(0xFF64748B),
                       ),
                     ),
                   ],
@@ -193,7 +193,7 @@ class _WaterTrackerWidgetState extends State<WaterTrackerWidget> {
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w800,
-              color: isDark ? Colors.white : const Color(0xFF0F172A),
+              color: const Color(0xFF0F172A),
             ),
           ),
           const SizedBox(height: 10),
@@ -215,7 +215,7 @@ class _WaterTrackerWidgetState extends State<WaterTrackerWidget> {
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w800,
-              color: isDark ? Colors.white : const Color(0xFF0F172A),
+              color: const Color(0xFF0F172A),
             ),
           ),
           const SizedBox(height: 10),
@@ -233,7 +233,7 @@ class _WaterTrackerWidgetState extends State<WaterTrackerWidget> {
                   'Hali suv ichilganligi belgilanmadi',
                   style: TextStyle(
                     fontSize: 13,
-                    color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+                    color: const Color(0xFF64748B),
                   ),
                 ),
               ),
@@ -258,7 +258,7 @@ class _WaterTrackerWidgetState extends State<WaterTrackerWidget> {
                         style: TextStyle(
                           fontSize: 13.5,
                           fontWeight: FontWeight.w700,
-                          color: isDark ? Colors.white : const Color(0xFF0F172A),
+                          color: const Color(0xFF0F172A),
                         ),
                       ),
                       const Spacer(),
@@ -267,7 +267,7 @@ class _WaterTrackerWidgetState extends State<WaterTrackerWidget> {
                         style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
-                          color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+                          color: const Color(0xFF64748B),
                         ),
                       ),
                     ],

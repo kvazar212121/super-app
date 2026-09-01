@@ -210,7 +210,7 @@ class _AiVoiceRecordingModalState extends State<_AiVoiceRecordingModal>
                   fontFamily: LuxTokens.body,
                   fontSize: 19,
                   fontWeight: FontWeight.w800,
-                  color: isDark ? Colors.white : const Color(0xFF0F172A),
+                  color: const Color(0xFF0F172A),
                 ),
               ),
             ],
@@ -299,7 +299,7 @@ class _AiVoiceRecordingModalState extends State<_AiVoiceRecordingModal>
               style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w800,
-                color: isDark ? Colors.white : const Color(0xFF0F172A),
+                color: const Color(0xFF0F172A),
               ),
             ),
           ),
