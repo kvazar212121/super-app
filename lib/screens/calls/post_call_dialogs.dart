@@ -704,8 +704,27 @@ class _DealQuestionDialogState extends State<_DealQuestionDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return AlertDialog(
-      title: Text('Kelishuvga erishdingizmi?'.tr),
+      backgroundColor: isDark ? LuxTokens.surface : Colors.white,
+      surfaceTintColor: Colors.transparent,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(24),
+        side: BorderSide(
+          color: LuxTokens.gold.withValues(alpha: 0.6),
+          width: 1.5,
+        ),
+      ),
+      title: Text(
+        'Kelishuvga erishdingizmi?'.tr,
+        style: TextStyle(
+          fontFamily: LuxTokens.body,
+          fontSize: 19,
+          fontWeight: FontWeight.w800,
+          color: isDark ? Colors.white : const Color(0xFF0F172A),
+        ),
+      ),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -714,33 +733,91 @@ class _DealQuestionDialogState extends State<_DealQuestionDialog> {
             widget.iAmProvider
                 ? '${widget.otherName} bilan xizmat bo\'yicha kelishuvga erishdingizmi?'
                 : '${widget.otherName} bilan narx va vaqt bo\'yicha kelisha oldingizmi?',
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+              color: isDark ? const Color(0xFFCBD5E1) : const Color(0xFF334155),
+              height: 1.4,
+            ),
           ),
-          const SizedBox(height: 14),
-          // Qolgan vaqt — foydalanuvchi shoshilishi kerakligini ko'rsin.
-          Row(
-            children: [
-              const Icon(Icons.timer_outlined, size: 16, color: Colors.red),
-              const SizedBox(width: 6),
-              Text(
-                '$_remaining soniya qoldi',
-                style: const TextStyle(
-                  color: Colors.red,
-                  fontWeight: FontWeight.w700,
-                  fontSize: 13,
+          const SizedBox(height: 16),
+          // Qolgan vaqt — qizil pill nishoni
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+            decoration: BoxDecoration(
+              color: const Color(0xFFFEF2F2),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: const Color(0xFFFCA5A5)),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.timer_outlined, size: 16, color: Color(0xFFDC2626)),
+                const SizedBox(width: 6),
+                Text(
+                  '$_remaining soniya qoldi',
+                  style: const TextStyle(
+                    color: Color(0xFFDC2626),
+                    fontWeight: FontWeight.w700,
+                    fontSize: 13,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ],
       ),
+      actionsPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
       actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).pop('declined'),
-          child: Text('Kelishmadik'.tr),
-        ),
-        FilledButton(
-          onPressed: () => Navigator.of(context).pop('agreed'),
-          child: Text('Kelishdik'.tr),
+        Row(
+          children: [
+            Expanded(
+              child: OutlinedButton(
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  side: const BorderSide(color: Color(0xFFCBD5E1)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                ),
+                onPressed: () => Navigator.of(context).pop('declined'),
+                child: Text(
+                  'Kelishmadik'.tr,
+                  style: const TextStyle(
+                    color: Color(0xFF64748B),
+                    fontWeight: FontWeight.w700,
+                    fontSize: 13.5,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Container(
+                decoration: LuxTokens.goldBoxDecoration(radius: 14),
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(14),
+                    onTap: () => Navigator.of(context).pop('agreed'),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      child: Center(
+                        child: Text(
+                          'Kelishdik'.tr,
+                          style: const TextStyle(
+                            color: Color(0xFF140D02),
+                            fontWeight: FontWeight.w800,
+                            fontSize: 13.5,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       ],
     );

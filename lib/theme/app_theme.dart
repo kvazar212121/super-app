@@ -146,6 +146,29 @@ class AppTheme {
           fontSize: 14,
         ),
       ),
+      dialogTheme: DialogThemeData(
+        backgroundColor: isDark ? LuxTokens.surface : Colors.white,
+        surfaceTintColor: Colors.transparent,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(24),
+          side: BorderSide(
+            color: isDark ? LuxTokens.gold.withValues(alpha: 0.5) : LuxTokens.gold.withValues(alpha: 0.7),
+            width: 1.3,
+          ),
+        ),
+        titleTextStyle: TextStyle(
+          fontFamily: LuxTokens.body,
+          fontSize: 19,
+          fontWeight: FontWeight.w800,
+          color: isDark ? Colors.white : const Color(0xFF0F172A),
+        ),
+        contentTextStyle: TextStyle(
+          fontFamily: LuxTokens.body,
+          fontSize: 14,
+          fontWeight: FontWeight.w500,
+          color: isDark ? const Color(0xFFCBD5E1) : const Color(0xFF334155),
+        ),
+      ),
       floatingActionButtonTheme: FloatingActionButtonThemeData(
         backgroundColor: LuxTokens.gold,
         foregroundColor: const Color(0xFF14100A),
