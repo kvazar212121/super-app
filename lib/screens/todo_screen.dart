@@ -75,20 +75,9 @@ class _TodoScreenState extends State<TodoScreen> with SingleTickerProviderStateM
   }
 
   /// Kategoriyaga mos urg'u rangi — kartaning chap chetidagi belgi uchun.
-  Color _categoryColor(String? category) {
-    switch (category) {
-      case 'xarid':
-        return const Color(0xFF16A34A);
-      case 'xizmat':
-        return const Color(0xFF2563EB);
-      case 'ish':
-        return const Color(0xFF9333EA);
-      case 'sogliq':
-        return const Color(0xFFDC2626);
-      default:
-        return LuxTokens.gold;
-    }
-  }
+  /// Palitra faqat qora/oq/tilla — barcha kategoriyalar tilla urg'uda,
+  /// faqat ikonka bilan farqlanadi.
+  Color _categoryColor(String? category) => LuxTokens.gold;
 
   IconData _categoryIcon(String? category) {
     switch (category) {
@@ -553,10 +542,10 @@ class _TodoScreenState extends State<TodoScreen> with SingleTickerProviderStateM
         margin: const EdgeInsets.only(bottom: 10),
         padding: const EdgeInsets.only(right: 24),
         decoration: BoxDecoration(
-          color: const Color(0xFFDC2626),
+          color: const Color(0xFF140D02),
           borderRadius: BorderRadius.circular(20),
         ),
-        child: const Icon(LucideIcons.trash2, color: Colors.white, size: 24),
+        child: const Icon(LucideIcons.trash2, color: LuxTokens.gold, size: 24),
       ),
       confirmDismiss: (_) async {
         _deleteTask(task['id']);

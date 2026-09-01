@@ -101,13 +101,13 @@ class _WaterTrackerWidgetState extends State<WaterTrackerWidget> {
                           width: 42,
                           height: 42,
                           decoration: BoxDecoration(
-                            color: const Color(0xFFEFF6FF),
+                            color: const Color(0xFFFFFBEB),
                             borderRadius: BorderRadius.circular(14),
-                            border: Border.all(color: const Color(0xFFBFDBFE)),
+                            border: Border.all(color: const Color(0xFFFDE68A)),
                           ),
                           child: const Icon(
                             LucideIcons.droplets,
-                            color: Color(0xFF2563EB),
+                            color: LuxTokens.gold,
                             size: 22,
                           ),
                         ),
@@ -142,7 +142,7 @@ class _WaterTrackerWidgetState extends State<WaterTrackerWidget> {
                         fontFamily: LuxTokens.body,
                         fontSize: 22,
                         fontWeight: FontWeight.w900,
-                        color: Color(0xFF2563EB),
+                        color: LuxTokens.gold,
                       ),
                     ),
                   ],
@@ -155,8 +155,8 @@ class _WaterTrackerWidgetState extends State<WaterTrackerWidget> {
                   child: LinearProgressIndicator(
                     value: percent,
                     minHeight: 14,
-                    backgroundColor: const Color(0xFFDBEAFE),
-                    valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF2563EB)),
+                    backgroundColor: const Color(0xFFEDE3C7),
+                    valueColor: const AlwaysStoppedAnimation<Color>(LuxTokens.gold),
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -251,7 +251,7 @@ class _WaterTrackerWidgetState extends State<WaterTrackerWidget> {
                   ),
                   child: Row(
                     children: [
-                      const Icon(LucideIcons.droplets, color: Color(0xFF2563EB), size: 18),
+                      const Icon(LucideIcons.droplets, color: LuxTokens.gold, size: 18),
                       const SizedBox(width: 10),
                       Text(
                         '${entry['amount']} ml suv ichildi',
@@ -287,18 +287,18 @@ class _WaterTrackerWidgetState extends State<WaterTrackerWidget> {
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 12),
           decoration: BoxDecoration(
-            color: const Color(0xFFEFF6FF),
+            color: const Color(0xFFFFFBEB),
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: const Color(0xFFBFDBFE), width: 1.2),
+            border: Border.all(color: const Color(0xFFFDE68A), width: 1.2),
           ),
           child: Column(
             children: [
-              const Icon(LucideIcons.plus, color: Color(0xFF2563EB), size: 18),
+              const Icon(LucideIcons.plus, color: LuxTokens.gold, size: 18),
               const SizedBox(height: 4),
               Text(
                 label,
                 style: const TextStyle(
-                  color: Color(0xFF1E40AF),
+                  color: Color(0xFF8A5D0B),
                   fontWeight: FontWeight.w800,
                   fontSize: 13,
                 ),

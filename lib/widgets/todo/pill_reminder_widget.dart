@@ -239,13 +239,13 @@ class _PillReminderWidgetState extends State<PillReminderWidget> {
                             width: 36,
                             height: 36,
                             decoration: BoxDecoration(
-                              color: const Color(0xFFFEF2F2),
+                              color: const Color(0xFFFFFBEB),
                               borderRadius: BorderRadius.circular(12),
-                              border: Border.all(color: const Color(0xFFFCA5A5)),
+                              border: Border.all(color: const Color(0xFFFDE68A)),
                             ),
                             child: const Icon(
                               LucideIcons.pill,
-                              color: Color(0xFFDC2626),
+                              color: LuxTokens.gold,
                               size: 20,
                             ),
                           ),
@@ -289,10 +289,10 @@ class _PillReminderWidgetState extends State<PillReminderWidget> {
                             child: Container(
                               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                               decoration: BoxDecoration(
-                                color: isTaken ? const Color(0xFFDCFCE7) : const Color(0xFFF1F5F9),
+                                color: isTaken ? const Color(0xFFFFFBEB) : const Color(0xFFF1F5F9),
                                 borderRadius: BorderRadius.circular(14),
                                 border: Border.all(
-                                  color: isTaken ? const Color(0xFF86EFAC) : const Color(0xFFCBD5E1),
+                                  color: isTaken ? LuxTokens.gold : const Color(0xFFCBD5E1),
                                 ),
                               ),
                               child: Row(
@@ -301,7 +301,7 @@ class _PillReminderWidgetState extends State<PillReminderWidget> {
                                   Icon(
                                     isTaken ? LucideIcons.checkCircle : LucideIcons.clock,
                                     size: 15,
-                                    color: isTaken ? const Color(0xFF166534) : const Color(0xFF475569),
+                                    color: isTaken ? const Color(0xFF8A5D0B) : const Color(0xFF475569),
                                   ),
                                   const SizedBox(width: 6),
                                   Text(
@@ -309,7 +309,7 @@ class _PillReminderWidgetState extends State<PillReminderWidget> {
                                     style: TextStyle(
                                       fontSize: 12.5,
                                       fontWeight: FontWeight.w700,
-                                      color: isTaken ? const Color(0xFF166534) : const Color(0xFF475569),
+                                      color: isTaken ? const Color(0xFF8A5D0B) : const Color(0xFF475569),
                                     ),
                                   ),
                                 ],
