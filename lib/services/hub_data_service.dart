@@ -18,8 +18,6 @@ import '../models/dental_clinic.dart';
 import '../models/event_planning.dart';
 import '../models/event_venue.dart';
 import '../models/service_hub_kind.dart';
-import '../models/sport_facility.dart';
-import '../models/game_zone.dart';
 import 'api_service.dart';
 
 /// API dan hub ma'lumotlarini yuklash.

@@ -45,7 +45,7 @@ class PlannerHubScreen extends StatelessWidget {
               },
             ),
             const SizedBox(height: 16),
-            const PrayerWidget(), // Fits beautifully due to its internal styling
+            const DailyUtilitiesWidget(),
           ],
         ),
       ),

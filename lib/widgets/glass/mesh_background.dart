@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../theme/lux_tokens.dart';
 
 /// Orqa fonda rangli "orb"lar — glass effekt uchun asos (yengil versiya).
 class MeshBackground extends StatelessWidget {
