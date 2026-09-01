@@ -220,9 +220,9 @@ class _AiVoiceRecordingModalState extends State<_AiVoiceRecordingModal>
             _statusText,
             textAlign: TextAlign.center,
             style: TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w500,
-              color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+              fontSize: 13.5,
+              fontWeight: FontWeight.w700,
+              color: isDark ? const Color(0xFFCBD5E1) : const Color(0xFF334155),
             ),
           ),
           const SizedBox(height: 24),
@@ -273,16 +273,16 @@ class _AiVoiceRecordingModalState extends State<_AiVoiceRecordingModal>
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
               decoration: BoxDecoration(
-                color: LuxTokens.gold.withValues(alpha: 0.12),
+                color: LuxTokens.gold.withValues(alpha: 0.15),
                 borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: LuxTokens.gold.withValues(alpha: 0.4)),
+                border: Border.all(color: LuxTokens.gold, width: 1.2),
               ),
               child: Text(
                 '"$_recognizedText"',
                 textAlign: TextAlign.center,
                 style: const TextStyle(
                   color: Color(0xFF8A5D0B),
-                  fontWeight: FontWeight.w700,
+                  fontWeight: FontWeight.w800,
                   fontSize: 14,
                 ),
               ),
@@ -297,30 +297,53 @@ class _AiVoiceRecordingModalState extends State<_AiVoiceRecordingModal>
             child: Text(
               'Ovozli namuna buyruqlari:'.tr,
               style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w700,
-                color: isDark ? const Color(0xFFCBD5E1) : const Color(0xFF475569),
+                fontSize: 13,
+                fontWeight: FontWeight.w800,
+                color: isDark ? Colors.white : const Color(0xFF0F172A),
               ),
             ),
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 12),
 
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
+          Column(
             children: _sampleVoiceCommands.map((cmd) {
-              return ActionChip(
-                backgroundColor: isDark ? const Color(0xFF1E293B) : const Color(0xFFF1F5F9),
-                side: BorderSide(color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0)),
-                label: Text(
-                  cmd,
-                  style: TextStyle(
-                    fontSize: 12.5,
-                    fontWeight: FontWeight.w600,
-                    color: isDark ? Colors.white : const Color(0xFF0F172A),
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: InkWell(
+                  onTap: () => _processVoiceCommand(cmd),
+                  borderRadius: BorderRadius.circular(14),
+                  child: Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                    decoration: BoxDecoration(
+                      color: isDark ? const Color(0xFF1E293B) : const Color(0xFFFFFBEB),
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(
+                        color: isDark ? const Color(0xFF334155) : const Color(0xFFFDE68A),
+                        width: 1.2,
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            cmd,
+                            style: TextStyle(
+                              fontSize: 13.5,
+                              fontWeight: FontWeight.w700,
+                              color: isDark ? Colors.white : const Color(0xFF140D02),
+                            ),
+                          ),
+                        ),
+                        const Icon(
+                          LucideIcons.chevronRight,
+                          size: 16,
+                          color: LuxTokens.gold,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-                onPressed: () => _processVoiceCommand(cmd),
               );
             }).toList(),
           ),

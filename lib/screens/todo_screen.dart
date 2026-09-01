@@ -236,7 +236,7 @@ class _TodoScreenState extends State<TodoScreen> with SingleTickerProviderStateM
 
   Widget _buildCalendarStrip(bool isDark) {
     return SizedBox(
-      height: 72,
+      height: 76,
       child: ListView.builder(
         controller: _calendarScrollController,
         scrollDirection: Axis.horizontal,
@@ -253,22 +253,31 @@ class _TodoScreenState extends State<TodoScreen> with SingleTickerProviderStateM
               _loadTasks();
             },
             child: Container(
-              width: 54,
-              margin: const EdgeInsets.only(right: 8),
+              width: 58,
+              margin: const EdgeInsets.only(right: 8, top: 4, bottom: 4),
               decoration: BoxDecoration(
                 gradient: isSelected ? LuxTokens.goldGradient : null,
                 color: isSelected
                     ? null
                     : (isDark ? LuxTokens.surface : Colors.white),
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(18),
                 border: Border.all(
                   color: isSelected
                       ? const Color(0xFFC9A227)
                       : (isToday
                           ? LuxTokens.gold
-                          : (isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0))),
+                          : (isDark ? const Color(0xFF334155) : const Color(0xFFCBD5E1))),
                   width: isSelected || isToday ? 1.5 : 1.0,
                 ),
+                boxShadow: [
+                  BoxShadow(
+                    color: isSelected
+                        ? LuxTokens.gold.withValues(alpha: 0.25)
+                        : Colors.black.withValues(alpha: 0.04),
+                    blurRadius: 6,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
               ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -276,18 +285,18 @@ class _TodoScreenState extends State<TodoScreen> with SingleTickerProviderStateM
                   Text(
                     _getDayNameShort(date.weekday),
                     style: TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w700,
+                      fontSize: 11.5,
+                      fontWeight: FontWeight.w800,
                       color: isSelected
                           ? const Color(0xFF140D02)
-                          : (isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B)),
+                          : (isDark ? const Color(0xFF94A3B8) : const Color(0xFF475569)),
                     ),
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 3),
                   Text(
                     '${date.day}',
                     style: TextStyle(
-                      fontSize: 17,
+                      fontSize: 18,
                       fontWeight: FontWeight.w900,
                       color: isSelected
                           ? const Color(0xFF140D02)
