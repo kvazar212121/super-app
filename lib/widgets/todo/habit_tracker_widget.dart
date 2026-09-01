@@ -77,9 +77,28 @@ class _HabitTrackerWidgetState extends State<HabitTrackerWidget> {
         ),
         content: TextField(
           controller: titleCtrl,
+          autofocus: true,
+          style: const TextStyle(
+            color: Color(0xFF0F172A),
+            fontWeight: FontWeight.w600,
+          ),
           decoration: InputDecoration(
             hintText: 'Masalan: 10,000 qadam yurish',
-            fillColor: isDark ? const Color(0xFF1E293B) : const Color(0xFFF1F5F9),
+            hintStyle: const TextStyle(color: Color(0xFF94A3B8)),
+            filled: true,
+            fillColor: const Color(0xFFF1F5F9),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(14),
+              borderSide: BorderSide.none,
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(14),
+              borderSide: BorderSide(color: LuxTokens.gold.withValues(alpha: 0.3)),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(14),
+              borderSide: const BorderSide(color: LuxTokens.gold, width: 1.5),
+            ),
           ),
         ),
         actions: [

@@ -81,17 +81,54 @@ class _PillReminderWidgetState extends State<PillReminderWidget> {
           children: [
             TextField(
               controller: titleCtrl,
+              autofocus: true,
+              style: const TextStyle(
+                color: Color(0xFF0F172A),
+                fontWeight: FontWeight.w600,
+              ),
               decoration: InputDecoration(
                 hintText: 'Dori nomi (masalan: C Vitamini)',
-                fillColor: isDark ? const Color(0xFF1E293B) : const Color(0xFFF1F5F9),
+                hintStyle: const TextStyle(color: Color(0xFF94A3B8)),
+                filled: true,
+                fillColor: const Color(0xFFF1F5F9),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(14),
+                  borderSide: BorderSide.none,
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(14),
+                  borderSide: BorderSide(color: LuxTokens.gold.withValues(alpha: 0.3)),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(14),
+                  borderSide: const BorderSide(color: LuxTokens.gold, width: 1.5),
+                ),
               ),
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 12),
             TextField(
               controller: dosageCtrl,
+              style: const TextStyle(
+                color: Color(0xFF0F172A),
+                fontWeight: FontWeight.w600,
+              ),
               decoration: InputDecoration(
                 hintText: 'Dozasi (masalan: 1 kapsula ovqatdan so\'ng)',
-                fillColor: isDark ? const Color(0xFF1E293B) : const Color(0xFFF1F5F9),
+                hintStyle: const TextStyle(color: Color(0xFF94A3B8)),
+                filled: true,
+                fillColor: const Color(0xFFF1F5F9),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(14),
+                  borderSide: BorderSide.none,
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(14),
+                  borderSide: BorderSide(color: LuxTokens.gold.withValues(alpha: 0.3)),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(14),
+                  borderSide: const BorderSide(color: LuxTokens.gold, width: 1.5),
+                ),
               ),
             ),
           ],

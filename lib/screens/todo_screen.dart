@@ -132,17 +132,55 @@ class _TodoScreenState extends State<TodoScreen> with SingleTickerProviderStateM
           children: [
             TextField(
               controller: titleCtrl,
+              autofocus: true,
+              style: const TextStyle(
+                color: Color(0xFF0F172A),
+                fontWeight: FontWeight.w600,
+              ),
               decoration: InputDecoration(
                 hintText: 'Reja nomi (masalan: Usta bilan ko\'rishish)',
-                fillColor: isDark ? const Color(0xFF1E293B) : const Color(0xFFF1F5F9),
+                hintStyle: const TextStyle(color: Color(0xFF94A3B8)),
+                filled: true,
+                fillColor: const Color(0xFFF1F5F9),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(14),
+                  borderSide: BorderSide.none,
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(14),
+                  borderSide: BorderSide(color: LuxTokens.gold.withValues(alpha: 0.3)),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(14),
+                  borderSide: const BorderSide(color: LuxTokens.gold, width: 1.5),
+                ),
               ),
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 12),
             TextField(
               controller: timeCtrl,
+              style: const TextStyle(
+                color: Color(0xFF0F172A),
+                fontWeight: FontWeight.w600,
+              ),
               decoration: InputDecoration(
                 hintText: 'Vaqti (masalan: 14:30)',
-                fillColor: isDark ? const Color(0xFF1E293B) : const Color(0xFFF1F5F9),
+                hintStyle: const TextStyle(color: Color(0xFF94A3B8)),
+                prefixIcon: const Icon(LucideIcons.clock, size: 18, color: LuxTokens.gold),
+                filled: true,
+                fillColor: const Color(0xFFF1F5F9),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(14),
+                  borderSide: BorderSide.none,
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(14),
+                  borderSide: BorderSide(color: LuxTokens.gold.withValues(alpha: 0.3)),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(14),
+                  borderSide: const BorderSide(color: LuxTokens.gold, width: 1.5),
+                ),
               ),
             ),
           ],
