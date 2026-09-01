@@ -316,10 +316,10 @@ class _AiVoiceRecordingModalState extends State<_AiVoiceRecordingModal>
                     width: double.infinity,
                     padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                     decoration: BoxDecoration(
-                      color: isDark ? const Color(0xFF1E293B) : const Color(0xFFFFFBEB),
+                      color: const Color(0xFFFFFBEB),
                       borderRadius: BorderRadius.circular(14),
                       border: Border.all(
-                        color: isDark ? const Color(0xFF334155) : const Color(0xFFFDE68A),
+                        color: const Color(0xFFFDE68A),
                         width: 1.2,
                       ),
                     ),
@@ -328,10 +328,10 @@ class _AiVoiceRecordingModalState extends State<_AiVoiceRecordingModal>
                         Expanded(
                           child: Text(
                             cmd,
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: 13.5,
                               fontWeight: FontWeight.w700,
-                              color: isDark ? Colors.white : const Color(0xFF140D02),
+                              color: Color(0xFF140D02),
                             ),
                           ),
                         ),
