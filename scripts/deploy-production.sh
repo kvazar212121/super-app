@@ -8,14 +8,10 @@ cd "$ROOT/backend"
 docker compose up -d --build backend
 
 echo ""
-echo "2/3 Nginx yangilash..."
-bash "$ROOT/scripts/setup-nginx.sh"
-
-echo ""
-echo "3/3 SSL sertifikat (90 kun, avtomatik yangilanadi)..."
-bash "$ROOT/scripts/setup-ssl.sh"
+echo "2/2 Nginx yangilash (HTTP 80)..."
+bash "$ROOT/scripts/apply-nginx.sh"
 
 echo ""
 echo "Tayyor!"
-echo "  https://hubservis.uz/          — landing"
-echo "  https://hubservis.uz/admin/login — admin"
+echo "  http://hubservis.uz/          — landing"
+echo "  http://hubservis.uz/admin/login — admin"
