@@ -19,10 +19,32 @@ class AppTheme {
     // Asset shrift bularning uchalasini ham yo'q qiladi.
     // BUTUN ILOVA SHRIFTI: Cormorant Garamond (nafis serif).
     // Foydalanuvchi so'rovi — banner bilan bir xil stil barcha ekranlarda.
-    final textTheme = base.textTheme.apply(fontFamily: LuxTokens.display).apply(
-          bodyColor: isDark ? LuxTokens.text : const Color(0xFF000000),
-          displayColor: isDark ? LuxTokens.text : const Color(0xFF000000),
+    // Serif shrift ingichka ko'ringani uchun asosiy matnni sal qalinroq
+    // (w600) qilamiz — o'qilishi yaxshiroq bo'ladi.
+    final ink = isDark ? LuxTokens.text : const Color(0xFF000000);
+    TextStyle? bolden(TextStyle? s) => s?.copyWith(
+          fontFamily: LuxTokens.display,
+          fontWeight: FontWeight.w600,
+          color: ink,
         );
+    final base2 = base.textTheme;
+    final textTheme = base2.copyWith(
+      displayLarge: bolden(base2.displayLarge),
+      displayMedium: bolden(base2.displayMedium),
+      displaySmall: bolden(base2.displaySmall),
+      headlineLarge: bolden(base2.headlineLarge),
+      headlineMedium: bolden(base2.headlineMedium),
+      headlineSmall: bolden(base2.headlineSmall),
+      titleLarge: bolden(base2.titleLarge),
+      titleMedium: bolden(base2.titleMedium),
+      titleSmall: bolden(base2.titleSmall),
+      bodyLarge: bolden(base2.bodyLarge),
+      bodyMedium: bolden(base2.bodyMedium),
+      bodySmall: bolden(base2.bodySmall),
+      labelLarge: bolden(base2.labelLarge),
+      labelMedium: bolden(base2.labelMedium),
+      labelSmall: bolden(base2.labelSmall),
+    );
 
     return ThemeData(
       useMaterial3: true,
