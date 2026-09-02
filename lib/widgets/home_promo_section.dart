@@ -566,7 +566,7 @@ class _LuxPromoCard extends StatelessWidget {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
-                            fontFamily: LuxTokens.body,
+                            fontFamily: LuxTokens.display,
                             color: Colors.white70,
                             fontSize: 10.5,
                             fontWeight: FontWeight.w400,

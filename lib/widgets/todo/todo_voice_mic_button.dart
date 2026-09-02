@@ -48,7 +48,7 @@ class TodoVoiceMicButton extends StatelessWidget {
                 Text(
                   'Ovozli buyruq yuborish...'.tr,
                   style: const TextStyle(
-                    fontFamily: LuxTokens.body,
+                    fontFamily: LuxTokens.display,
                     color: Color(0xFF140D02),
                     fontSize: 15,
                     fontWeight: FontWeight.w800,
@@ -207,7 +207,7 @@ class _AiVoiceRecordingModalState extends State<_AiVoiceRecordingModal>
               Text(
                 'AI Ovozli Yordamchi'.tr,
                 style: TextStyle(
-                  fontFamily: LuxTokens.body,
+                  fontFamily: LuxTokens.display,
                   fontSize: 19,
                   fontWeight: FontWeight.w800,
                   color: const Color(0xFF0F172A),

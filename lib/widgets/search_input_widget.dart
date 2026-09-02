@@ -25,7 +25,7 @@ class SearchInputWidget extends StatelessWidget {
       onChanged: (_) => onChanged(),
       style: TextStyle(
         color: GlassTokens.primaryText(context),
-        fontFamily: isDark ? LuxTokens.body : null,
+        fontFamily: LuxTokens.display,
         fontSize: 14,
       ),
       decoration: InputDecoration(
@@ -53,7 +53,7 @@ class SearchInputWidget extends StatelessWidget {
           color: isDark
               ? LuxTokens.textFaint
               : GlassTokens.secondaryText(context),
-          fontFamily: isDark ? LuxTokens.body : null,
+          fontFamily: LuxTokens.display,
           fontSize: 14,
         ),
       ),

@@ -110,7 +110,7 @@ class GlassScaffold extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.w800,
-                      fontFamily: LuxTokens.body,
+                      fontFamily: LuxTokens.display,
                       color: GlassTokens.primaryText(context),
                       letterSpacing: -0.4,
                     ),
@@ -164,7 +164,7 @@ class _ShellHeader extends StatelessWidget {
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.w800,
-                fontFamily: LuxTokens.body,
+                fontFamily: LuxTokens.display,
                 color: GlassTokens.primaryText(context),
                 letterSpacing: -0.4,
               ),

@@ -61,15 +61,13 @@ abstract final class GlassTokens {
   }
 
   static Color primaryText(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    // Light rejimda — TIM QORA (maksimal o'qilishi uchun)
-    return isDark ? LuxTokens.text : const Color(0xFF000000);
+    // Ilova oq/oltin dizaynda — sarlavha va asosiy matnlar HAR DOIM tim qora.
+    return const Color(0xFF000000);
   }
 
   static Color secondaryText(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    // Light rejimda — qora-ga yaqin to'q kulrang (grey emas)
-    return isDark ? LuxTokens.textMuted : const Color(0xFF2A2A2A);
+    // Ikkilamchi matn — qora-ga yaqin to'q rang (xira kulrang emas).
+    return const Color(0xFF2A2A2A);
   }
 
   static List<BoxShadow> glassShadow(BuildContext context) => [

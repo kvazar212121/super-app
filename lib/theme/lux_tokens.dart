@@ -22,8 +22,8 @@ abstract final class LuxTokens {
   static const goldDim = Color(0xFF8C6D13);
 
   /// Matn ierarxiyasi: to'q qora va kulrang matnlar.
-  static const text = Color(0xFF0F172A);
-  static const textMuted = Color(0xFF475569);
+  static const text = Color(0xFF000000);
+  static const textMuted = Color(0xFF2A2A2A);
   static const textFaint = Color(0xFF64748B);
 
   static const radiusSm = 12.0;
@@ -162,7 +162,7 @@ abstract final class LuxTokens {
   static TextStyle heading({
     Color color = text,
     double size = 26,
-    FontWeight weight = FontWeight.w400,
+    FontWeight weight = FontWeight.w600,
   }) => TextStyle(
     fontFamily: display,
     color: color,

@@ -720,7 +720,7 @@ class _DailyBtn extends StatelessWidget {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
-                            fontFamily: LuxTokens.body,
+                            fontFamily: LuxTokens.display,
                             color: Color(0xFF140D02),
                             fontSize: 12,
                             fontWeight: FontWeight.w800,

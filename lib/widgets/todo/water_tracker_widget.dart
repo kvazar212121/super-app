@@ -118,7 +118,7 @@ class _WaterTrackerWidgetState extends State<WaterTrackerWidget> {
                             Text(
                               'Suv Balansi'.tr,
                               style: TextStyle(
-                                fontFamily: LuxTokens.body,
+                                fontFamily: LuxTokens.display,
                                 fontSize: 18,
                                 fontWeight: FontWeight.w800,
                                 color: const Color(0xFF0F172A),
@@ -139,7 +139,7 @@ class _WaterTrackerWidgetState extends State<WaterTrackerWidget> {
                     Text(
                       '${(percent * 100).toInt()}%',
                       style: const TextStyle(
-                        fontFamily: LuxTokens.body,
+                        fontFamily: LuxTokens.display,
                         fontSize: 22,
                         fontWeight: FontWeight.w900,
                         color: LuxTokens.gold,

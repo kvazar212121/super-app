@@ -172,7 +172,7 @@ class _HubServisBrandState extends State<HubServisBrand>
           Text(
             'Barcha xizmatlar bir joyda',
             style: TextStyle(
-              fontFamily: LuxTokens.body,
+              fontFamily: LuxTokens.display,
               fontSize: widget.compact ? 14 : 15,
               fontWeight: FontWeight.w700,
               color: isDark ? const Color(0xFFCBD5E1) : const Color(0xFF475569),

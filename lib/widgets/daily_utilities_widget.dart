@@ -216,7 +216,7 @@ class _BaseCard extends StatelessWidget {
                 const SizedBox(height: 1),
                 DefaultTextStyle.merge(
                   style: const TextStyle(
-                    fontFamily: LuxTokens.body,
+                    fontFamily: LuxTokens.display,
                     color: LuxTokens.text,
                     fontSize: 10.5,
                     fontWeight: FontWeight.w600,

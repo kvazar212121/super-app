@@ -719,7 +719,7 @@ class _DealQuestionDialogState extends State<_DealQuestionDialog> {
       title: Text(
         'Kelishuvga erishdingizmi?'.tr,
         style: TextStyle(
-          fontFamily: LuxTokens.body,
+          fontFamily: LuxTokens.display,
           fontSize: 19,
           fontWeight: FontWeight.w800,
           color: isDark ? Colors.white : const Color(0xFF0F172A),
