@@ -135,6 +135,8 @@ flutter:
           weight: 400
         - asset: assets/fonts/CormorantGaramond-SemiBold.ttf
           weight: 600
+        - asset: assets/fonts/CormorantGaramond-Bold.ttf
+          weight: 700
     # Zamonaviy aksentlar — katta harfli, keng oraliqli yorliqlar uchun.
     - family: Syne
       fonts:

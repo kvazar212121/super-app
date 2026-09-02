@@ -32,6 +32,7 @@ yukla "Plus+Jakarta+Sans" 700 PlusJakartaSans-Bold.ttf
 yukla "Cormorant+Garamond" 300 CormorantGaramond-Light.ttf
 yukla "Cormorant+Garamond" 400 CormorantGaramond-Regular.ttf
 yukla "Cormorant+Garamond" 600 CormorantGaramond-SemiBold.ttf
+yukla "Cormorant+Garamond" 700 CormorantGaramond-Bold.ttf
 
 yukla "Syne" 400 Syne-Regular.ttf
 yukla "Syne" 600 Syne-SemiBold.ttf

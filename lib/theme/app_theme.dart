@@ -24,7 +24,7 @@ class AppTheme {
     final ink = isDark ? LuxTokens.text : const Color(0xFF000000);
     TextStyle? bolden(TextStyle? s) => s?.copyWith(
           fontFamily: LuxTokens.display,
-          fontWeight: FontWeight.w600,
+          fontWeight: FontWeight.w700,
           color: ink,
         );
     final base2 = base.textTheme;
