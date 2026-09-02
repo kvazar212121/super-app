@@ -710,8 +710,18 @@ class ProfileScreen extends StatelessWidget {
     showDialog<void>(
       context: context,
       builder: (_) => AlertDialog(
-        title: Text('Chiqish'.tr),
-        content: Text('Haqiqatan chiqasizmi?'.tr),
+        backgroundColor: Colors.white,
+        title: Text(
+          'Chiqish'.tr,
+          style: const TextStyle(
+            color: Color(0xFF140D02),
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        content: Text(
+          'Haqiqatan chiqasizmi?'.tr,
+          style: const TextStyle(color: Color(0xFF140D02)),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -733,9 +743,17 @@ class ProfileScreen extends StatelessWidget {
     showDialog<void>(
       context: context,
       builder: (_) => AlertDialog(
-        title: Text('Hisobni o\'chirish'.tr),
+        backgroundColor: Colors.white,
+        title: Text(
+          'Hisobni o\'chirish'.tr,
+          style: const TextStyle(
+            color: Color(0xFF140D02),
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         content: const Text(
           'Haqiqatan ham hisobingizni butunlay o\'chirmoqchimisiz? Bu amalni ortga qaytarib bo\'lmaydi.',
+          style: TextStyle(color: Color(0xFF140D02)),
         ),
         actions: [
           TextButton(
