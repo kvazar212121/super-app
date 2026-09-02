@@ -166,7 +166,6 @@ class _AiOrbState extends State<_AiOrb> with SingleTickerProviderStateMixin {
     const c2 = Color(0xFFE3C766); // ochiq oltin — porlash
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final accent = isDark ? LuxTokens.goldSoft : const Color(0xFF3B82F6);
-    final inactive = GlassTokens.secondaryText(context);
 
     return Material(
       color: Colors.transparent,
@@ -234,7 +233,7 @@ class _AiOrbState extends State<_AiOrb> with SingleTickerProviderStateMixin {
                   fontWeight: FontWeight.w700,
                   color: widget.selected
                       ? accent
-                      : (isDark ? inactive : const Color(0xFF0A0A0A)),
+                      : const Color(0xFF0A0A0A),
                 ),
               ),
             ),
@@ -267,7 +266,6 @@ class _NavButton extends StatelessWidget {
     final activeColor = isDark
         ? Colors.transparent
         : accent.withValues(alpha: 0.12);
-    final inactive = GlassTokens.secondaryText(context);
 
     return Material(
       color: Colors.transparent,
@@ -290,7 +288,7 @@ class _NavButton extends StatelessWidget {
                 size: 24,
                 color: selected
                     ? accent
-                    : (isDark ? inactive : const Color(0xFF0A0A0A)),
+                    : const Color(0xFF0A0A0A),
               ),
               const SizedBox(height: 4),
               FittedBox(
@@ -303,7 +301,7 @@ class _NavButton extends StatelessWidget {
                     fontWeight: FontWeight.w700,
                     color: selected
                         ? accent
-                        : (isDark ? inactive : const Color(0xFF0A0A0A)),
+                        : const Color(0xFF0A0A0A),
                   ),
                 ),
               ),
