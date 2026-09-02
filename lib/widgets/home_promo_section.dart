@@ -554,8 +554,16 @@ class _LuxPromoCard extends StatelessWidget {
                     promo.title.tr,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    // Cormorant Garamond — nafis oq serif sarlavha.
-                    style: LuxTokens.heading(color: Colors.white, size: 27),
+                    // Ilovaning asosiy shrifti (PlusJakartaSans) — serif emas,
+                    // qolgan barcha ekranlar bilan bir xil stil.
+                    style: const TextStyle(
+                      fontFamily: LuxTokens.body,
+                      color: Colors.white,
+                      fontSize: 23,
+                      fontWeight: FontWeight.w700,
+                      height: 1.15,
+                      letterSpacing: 0.2,
+                    ),
                   ),
                   const SizedBox(height: 8),
                   Row(
