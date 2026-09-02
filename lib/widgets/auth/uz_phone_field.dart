@@ -30,7 +30,8 @@ class UzPhoneField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    // Ilova dizayni oq/oltin — telefon maydoni har doim och fon, to'q matn.
+    // (Ilgari dark rejimda qora panel chiqib, matn ko'rinmay qolardi.)
     const textPrimary = Color(0xFF0F172A);
     const textSecondary = Color(0xFF64748B);
 
@@ -38,10 +39,10 @@ class UzPhoneField extends StatelessWidget {
       controller: controller,
       enabled: enabled,
       keyboardType: TextInputType.phone,
-      style: TextStyle(
+      style: const TextStyle(
         fontSize: 16,
         fontWeight: FontWeight.w800,
-        color: isDark ? Colors.white : textPrimary,
+        color: textPrimary,
       ),
       inputFormatters: [
         FilteringTextInputFormatter.digitsOnly,
@@ -49,36 +50,36 @@ class UzPhoneField extends StatelessWidget {
       ],
       decoration: InputDecoration(
         labelText: label,
-        labelStyle: TextStyle(
-          color: isDark ? const Color(0xFF94A3B8) : textSecondary,
+        labelStyle: const TextStyle(
+          color: textSecondary,
           fontWeight: FontWeight.w600,
         ),
         hintText: '901234567 yoki 200163068'.tr,
-        hintStyle: TextStyle(
-          color: isDark ? const Color(0xFF64748B) : const Color(0xFF94A3B8),
+        hintStyle: const TextStyle(
+          color: Color(0xFF94A3B8),
         ),
         prefixIcon: const Padding(
           padding: EdgeInsets.symmetric(horizontal: 12),
           child: Icon(LucideIcons.phone, size: 20, color: LuxTokens.gold),
         ),
         prefixIconConstraints: const BoxConstraints(minWidth: 0, minHeight: 0),
-        prefix: Padding(
-          padding: const EdgeInsets.only(left: 4, right: 4),
+        prefix: const Padding(
+          padding: EdgeInsets.only(left: 4, right: 4),
           child: Text(
             '+998 ',
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w800,
-              color: isDark ? Colors.white : textPrimary,
+              color: textPrimary,
             ),
           ),
         ),
         filled: true,
-        fillColor: isDark ? const Color(0xFF1E293B) : const Color(0xFFF1F5F9),
+        fillColor: const Color(0xFFF1F5F9),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
-          borderSide: BorderSide(
-            color: isDark ? const Color(0xFF475569) : const Color(0xFFCBD5E1),
+          borderSide: const BorderSide(
+            color: Color(0xFFCBD5E1),
             width: 1.5,
           ),
         ),

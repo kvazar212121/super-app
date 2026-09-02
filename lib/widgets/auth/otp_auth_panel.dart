@@ -106,7 +106,6 @@ class OtpCodeFieldState extends State<OtpCodeField> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Row(
       children: List.generate(widget.length, (i) {
@@ -121,35 +120,29 @@ class OtpCodeFieldState extends State<OtpCodeField> {
               keyboardType: TextInputType.number,
               autofillHints: const [AutofillHints.oneTimeCode],
               maxLength: 1,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.w900,
-                color: isDark ? Colors.white : const Color(0xFF0F172A),
+                color: Color(0xFF0F172A),
               ),
               inputFormatters: [FilteringTextInputFormatter.digitsOnly],
               decoration: InputDecoration(
                 counterText: '',
                 isDense: true,
                 filled: true,
-                fillColor: isDark
-                    ? const Color(0xFF1E293B)
-                    : const Color(0xFFF1F5F9),
+                fillColor: const Color(0xFFF1F5F9),
                 contentPadding: const EdgeInsets.symmetric(vertical: 14),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(
-                    color: isDark
-                        ? const Color(0xFF475569)
-                        : const Color(0xFFCBD5E1),
+                  borderSide: const BorderSide(
+                    color: Color(0xFFCBD5E1),
                     width: 1.5,
                   ),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(
-                    color: isDark
-                        ? const Color(0xFF475569)
-                        : const Color(0xFFCBD5E1),
+                  borderSide: const BorderSide(
+                    color: Color(0xFFCBD5E1),
                     width: 1.5,
                   ),
                 ),
@@ -409,20 +402,16 @@ class _OtpAuthPanelState extends State<OtpAuthPanel> {
     );
   }
 
-  TextStyle _titleStyle(BuildContext context) => TextStyle(
+  TextStyle _titleStyle(BuildContext context) => const TextStyle(
     fontSize: 22,
     fontWeight: FontWeight.w900,
-    color: Theme.of(context).brightness == Brightness.dark
-        ? Colors.white
-        : const Color(0xFF0F172A),
+    color: Color(0xFF0F172A),
   );
 
-  TextStyle _subStyle(BuildContext context) => TextStyle(
+  TextStyle _subStyle(BuildContext context) => const TextStyle(
     fontSize: 14,
     fontWeight: FontWeight.w600,
-    color: Theme.of(context).brightness == Brightness.dark
-        ? const Color(0xFF94A3B8)
-        : const Color(0xFF475569),
+    color: Color(0xFF475569),
     height: 1.4,
   );
 }
