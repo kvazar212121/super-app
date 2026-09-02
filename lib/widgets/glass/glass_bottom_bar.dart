@@ -230,11 +230,11 @@ class _AiOrbState extends State<_AiOrb> with SingleTickerProviderStateMixin {
                 widget.item.label,
                 style: TextStyle(
                   fontFamily: LuxTokens.display,
-                  fontSize: 11,
-                  fontWeight: widget.selected
-                      ? FontWeight.w700
-                      : FontWeight.w600,
-                  color: widget.selected ? accent : inactive,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                  color: widget.selected
+                      ? accent
+                      : (isDark ? inactive : const Color(0xFF0A0A0A)),
                 ),
               ),
             ),
@@ -297,9 +297,11 @@ class _NavButton extends StatelessWidget {
                   item.label,
                   style: TextStyle(
                     fontFamily: LuxTokens.display,
-                    fontSize: 11,
-                    fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
-                    color: selected ? accent : inactive,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                    color: selected
+                        ? accent
+                        : (isDark ? inactive : const Color(0xFF0A0A0A)),
                   ),
                 ),
               ),
