@@ -287,8 +287,10 @@ class _NavButton extends StatelessWidget {
             children: [
               Icon(
                 item.icon,
-                size: 22,
-                color: selected ? accent : inactive,
+                size: 24,
+                color: selected
+                    ? accent
+                    : (isDark ? inactive : const Color(0xFF0A0A0A)),
               ),
               const SizedBox(height: 4),
               FittedBox(
