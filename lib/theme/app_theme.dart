@@ -17,7 +17,9 @@ class AppTheme {
     //   2. Widget testlari tarmoqqa chiqa olmagani uchun YIQILARDI.
     //   3. Birinchi ochilishda matn "sakrab" almashardi.
     // Asset shrift bularning uchalasini ham yo'q qiladi.
-    final textTheme = base.textTheme.apply(fontFamily: LuxTokens.body).apply(
+    // BUTUN ILOVA SHRIFTI: Cormorant Garamond (nafis serif).
+    // Foydalanuvchi so'rovi — banner bilan bir xil stil barcha ekranlarda.
+    final textTheme = base.textTheme.apply(fontFamily: LuxTokens.display).apply(
           bodyColor: isDark ? LuxTokens.text : const Color(0xFF000000),
           displayColor: isDark ? LuxTokens.text : const Color(0xFF000000),
         );
@@ -46,7 +48,7 @@ class AppTheme {
           letterSpacing: -0.2,
         ),
       ),
-      fontFamily: LuxTokens.body,
+      fontFamily: LuxTokens.display,
       appBarTheme: AppBarTheme(
         centerTitle: true,
         elevation: 0,
@@ -157,13 +159,13 @@ class AppTheme {
           ),
         ),
         titleTextStyle: TextStyle(
-          fontFamily: LuxTokens.body,
+          fontFamily: LuxTokens.display,
           fontSize: 19,
           fontWeight: FontWeight.w800,
           color: isDark ? Colors.white : const Color(0xFF0F172A),
         ),
         contentTextStyle: TextStyle(
-          fontFamily: LuxTokens.body,
+          fontFamily: LuxTokens.display,
           fontSize: 14,
           fontWeight: FontWeight.w500,
           color: isDark ? const Color(0xFFCBD5E1) : const Color(0xFF334155),

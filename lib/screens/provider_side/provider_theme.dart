@@ -20,7 +20,7 @@ class ProviderTheme extends StatelessWidget {
     // Lokal asset shrift (google_fonts EMAS): tarmoqsiz ishlaydi va
     // testlarda yiqilmaydi. Ilovaning qolgan qismi bilan ham bir xil.
     final textTheme = base.textTheme
-        .apply(fontFamily: LuxTokens.body)
+        .apply(fontFamily: LuxTokens.display)
         .apply(bodyColor: ink, displayColor: ink);
 
     return Theme(
