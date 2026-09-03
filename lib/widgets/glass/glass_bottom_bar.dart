@@ -35,7 +35,7 @@ class GlassBottomBar extends StatelessWidget {
 
     // Tepada shaffof "havo" chizig'i: markaziy orb shu yerga chiqib turadi va
     // panel tepa chizig'i uning ustidan yumaloq qayrilib o'tadi.
-    const topStrip = 18.0;
+    const topStrip = 26.0;
 
     return SizedBox(
       width: double.infinity,
@@ -78,8 +78,8 @@ class GlassBottomBar extends StatelessWidget {
                   itemCount: items.length,
                   centerIndex: centerIndex,
                   baseY: topStrip,
-                  // Orb radiusi (42/2) + biroz havo.
-                  notchRadius: 26,
+                  // Orb radiusi (54/2) + biroz havo — chiziq undan keng qayriladi.
+                  notchRadius: 34,
                 ),
               ),
             ),
@@ -92,11 +92,12 @@ class GlassBottomBar extends StatelessWidget {
               padding: const EdgeInsets.only(
                 left: 4,
                 right: 4,
-                top: topStrip - 4,
+                top: topStrip,
                 bottom: 6,
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
+                crossAxisAlignment: CrossAxisAlignment.end,
                 children: List.generate(items.length, (i) {
                   final item = items[i];
                   final selected = i == currentIndex;
@@ -276,15 +277,19 @@ class _AiOrbState extends State<_AiOrb> with SingleTickerProviderStateMixin {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            AnimatedBuilder(
+            // Orbni biroz yuqoriga suramiz — u panel tepa chizig'idan chiqib,
+            // chiziq uning ustidan qayrilib o'tadi (g'ildirak ustidagi qanot).
+            Transform.translate(
+              offset: const Offset(0, -10),
+              child: AnimatedBuilder(
               animation: _c,
               builder: (context, _) {
                 final t = _c.value; // 0..1
                 return Transform.scale(
                   scale: 1.0 + 0.07 * t,
                   child: Container(
-                    width: 42,
-                    height: 42,
+                    width: 54,
+                    height: 54,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       // Orbning o'z ranglariga mos ikki qatlamli porlash
@@ -307,8 +312,8 @@ class _AiOrbState extends State<_AiOrb> with SingleTickerProviderStateMixin {
                     child: ClipOval(
                       child: Image.asset(
                         'assets/images/ai_orb.webp',
-                        width: 42,
-                        height: 42,
+                        width: 54,
+                        height: 54,
                         fit: BoxFit.cover,
                         gaplessPlayback: true,
                       ),
@@ -316,8 +321,9 @@ class _AiOrbState extends State<_AiOrb> with SingleTickerProviderStateMixin {
                   ),
                 );
               },
+              ),
             ),
-            const SizedBox(height: 3),
+            const SizedBox(height: 1),
             FittedBox(
               fit: BoxFit.scaleDown,
               child: Text(
@@ -370,7 +376,7 @@ class _NavButton extends StatelessWidget {
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 220),
           curve: Curves.easeOutCubic,
-          padding: const EdgeInsets.only(top: 14, bottom: 6),
+          padding: const EdgeInsets.only(top: 6, bottom: 0),
           decoration: BoxDecoration(
             color: selected ? activeColor : Colors.transparent,
             borderRadius: BorderRadius.circular(20),
