@@ -71,7 +71,7 @@ class ProfileScreen extends StatelessWidget {
                 onTap: () => _showReminderOffsetDialog(context, provider),
                 padding: const EdgeInsets.symmetric(
                   horizontal: 16,
-                  vertical: 14,
+                  vertical: 12,
                 ),
                 opacity: 0.55,
                 child: Row(
@@ -79,6 +79,7 @@ class ProfileScreen extends StatelessWidget {
                     Icon(
                       Icons.notifications_active_outlined,
                       color: GlassTokens.primaryText(context),
+                      size: 20,
                     ),
                     const SizedBox(width: 12),
                     Expanded(
@@ -88,14 +89,15 @@ class ProfileScreen extends StatelessWidget {
                           Text(
                             'Eslatmalar vaqti'.tr,
                             style: TextStyle(
-                              fontWeight: FontWeight.w600,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w700,
                               color: GlassTokens.primaryText(context),
                             ),
                           ),
                           Text(
                             '${'Rejadan'.tr} ${user.reminderOffsetMinutes} ${'daqiqa oldin xabar berish'.tr}',
                             style: TextStyle(
-                              fontSize: 12,
+                              fontSize: 11.5,
                               color: GlassTokens.secondaryText(context),
                             ),
                           ),
@@ -105,16 +107,17 @@ class ProfileScreen extends StatelessWidget {
                     Icon(
                       Icons.chevron_right_rounded,
                       color: GlassTokens.secondaryText(context),
+                      size: 20,
                     ),
                   ],
                 ),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 10),
               // Til almashtirgich (UZ / RU)
               GlassSurface(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 16,
-                  vertical: 14,
+                  vertical: 10,
                 ),
                 opacity: 0.55,
                 child: Row(
@@ -122,27 +125,29 @@ class ProfileScreen extends StatelessWidget {
                     Icon(
                       Icons.language,
                       color: GlassTokens.primaryText(context),
+                      size: 20,
                     ),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(
                         'Ilova tili'.tr,
                         style: TextStyle(
-                          fontWeight: FontWeight.w600,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
                           color: GlassTokens.primaryText(context),
                         ),
                       ),
                     ),
                     _langBtn(context, 'uz', "O'zbek"),
-                    const SizedBox(width: 8),
+                    const SizedBox(width: 6),
                     _langBtn(context, 'ru', 'Русский'),
                   ],
                 ),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 10),
               // PIN himoya bo'limi
               const _PinSection(),
-              const SizedBox(height: 12),
+              const SizedBox(height: 10),
               // Yordam markazi (AI yordamchi / operator)
               GlassSurface(
                 onTap: () => Navigator.push(
@@ -151,7 +156,7 @@ class ProfileScreen extends StatelessWidget {
                 ),
                 padding: const EdgeInsets.symmetric(
                   horizontal: 16,
-                  vertical: 14,
+                  vertical: 12,
                 ),
                 opacity: 0.55,
                 child: Row(
@@ -159,6 +164,7 @@ class ProfileScreen extends StatelessWidget {
                     Icon(
                       Icons.headset_mic_outlined,
                       color: GlassTokens.primaryText(context),
+                      size: 20,
                     ),
                     const SizedBox(width: 12),
                     Expanded(
@@ -168,14 +174,15 @@ class ProfileScreen extends StatelessWidget {
                           Text(
                             'Yordam markazi'.tr,
                             style: TextStyle(
-                              fontWeight: FontWeight.w600,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w700,
                               color: GlassTokens.primaryText(context),
                             ),
                           ),
                           Text(
                             'AI yordamchi yoki operator'.tr,
                             style: TextStyle(
-                              fontSize: 12,
+                              fontSize: 11.5,
                               color: GlassTokens.secondaryText(context),
                             ),
                           ),
@@ -185,18 +192,19 @@ class ProfileScreen extends StatelessWidget {
                     Icon(
                       Icons.chevron_right,
                       color: GlassTokens.secondaryText(context),
+                      size: 20,
                     ),
                   ],
                 ),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 14),
               const ProviderPortalEntry(compact: true),
-              const SizedBox(height: 16),
+              const SizedBox(height: 14),
               if (user.isProvider) ...[
                 _sectionTitle(context, 'Mening kartalarim'),
                 ...provider.cards.map(
                   (card) => Padding(
-                    padding: const EdgeInsets.only(bottom: 12),
+                    padding: const EdgeInsets.only(bottom: 10),
                     child: CardItemWidget(card: card),
                   ),
                 ),
@@ -204,7 +212,7 @@ class ProfileScreen extends StatelessWidget {
                   onTap: () => _showAddCardDialog(context, provider),
                   padding: const EdgeInsets.symmetric(
                     horizontal: 16,
-                    vertical: 14,
+                    vertical: 12,
                   ),
                   opacity: 0.5,
                   child: Row(
@@ -212,42 +220,46 @@ class ProfileScreen extends StatelessWidget {
                       Icon(
                         Icons.add_circle_outline,
                         color: GlassTokens.primaryText(context),
+                        size: 20,
                       ),
                       const SizedBox(width: 12),
                       Text(
-                        'Karta qo\'shish',
+                        'Karta qo\'shish'.tr,
                         style: TextStyle(
-                          fontWeight: FontWeight.w600,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
                           color: GlassTokens.primaryText(context),
                         ),
                       ),
                     ],
                   ),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 14),
               ],
               Row(
                 children: [
                   Expanded(
+                    flex: 2,
                     child: GlassSurface(
                       onTap: () => _showLogoutDialog(context),
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 16,
+                        horizontal: 10,
+                        vertical: 14,
                       ),
                       opacity: 0.48,
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           const Icon(Icons.logout_rounded,
-                              color: Color(0xFFEF4444), size: 20),
-                          const SizedBox(width: 8),
-                          Flexible(
+                              color: Color(0xFFEF4444), size: 18),
+                          const SizedBox(width: 6),
+                          FittedBox(
+                            fit: BoxFit.scaleDown,
                             child: Text(
                               'Chiqish'.tr,
-                              overflow: TextOverflow.ellipsis,
                               style: const TextStyle(
-                                fontWeight: FontWeight.w600,
+                                fontSize: 13,
+                                fontWeight: FontWeight.w700,
                                 color: Color(0xFFEF4444),
                               ),
                             ),
@@ -256,27 +268,29 @@ class ProfileScreen extends StatelessWidget {
                       ),
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: 10),
                   Expanded(
+                    flex: 3,
                     child: GlassSurface(
                       onTap: () => _showDeleteAccountDialog(context),
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 16,
+                        horizontal: 10,
+                        vertical: 14,
                       ),
                       opacity: 0.48,
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           const Icon(Icons.delete_forever_rounded,
-                              color: Color(0xFFEF4444), size: 20),
-                          const SizedBox(width: 8),
-                          Flexible(
+                              color: Color(0xFFEF4444), size: 18),
+                          const SizedBox(width: 6),
+                          FittedBox(
+                            fit: BoxFit.scaleDown,
                             child: Text(
                               'Hisobni o\'chirish'.tr,
-                              overflow: TextOverflow.ellipsis,
                               style: const TextStyle(
-                                fontWeight: FontWeight.w600,
+                                fontSize: 13,
+                                fontWeight: FontWeight.w700,
                                 color: Color(0xFFEF4444),
                               ),
                             ),
@@ -924,11 +938,11 @@ class _PinSectionState extends State<_PinSection> {
       children: [
         // Asosiy toggle qator
         GlassSurface(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           opacity: 0.55,
           child: Row(
             children: [
-              Icon(Icons.lock_outlined, color: GlassTokens.primaryText(context)),
+              Icon(Icons.lock_outlined, color: GlassTokens.primaryText(context), size: 20),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
@@ -937,7 +951,8 @@ class _PinSectionState extends State<_PinSection> {
                     Text(
                       'PIN himoya'.tr,
                       style: TextStyle(
-                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
                         color: GlassTokens.primaryText(context),
                       ),
                     ),
@@ -946,7 +961,7 @@ class _PinSectionState extends State<_PinSection> {
                           ? 'Ilova ochilganda PIN so\'raladi'.tr
                           : 'Background\'dan qaytganda PIN so\'raladi'.tr,
                       style: TextStyle(
-                        fontSize: 12,
+                        fontSize: 11.5,
                         color: GlassTokens.secondaryText(context),
                       ),
                     ),
