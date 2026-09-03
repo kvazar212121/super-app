@@ -43,10 +43,15 @@ class GlassBottomBar extends StatelessWidget {
       child: Stack(
         clipBehavior: Clip.none,
         children: [
-          // 1) Shishasimon panel — faqat pastki qism (topStrip'dan pastda).
+          // 1) Shishasimon panel — markaziy orb egri qayrilishi bilan birga to'liq bo'yaladi.
           Positioned.fill(
-            top: topStrip,
-            child: ClipRect(
+            child: ClipPath(
+              clipper: _NotchedBarClipper(
+                itemCount: items.length,
+                centerIndex: centerIndex,
+                baseY: topStrip,
+                notchRadius: 30,
+              ),
               child: BackdropFilter(
                 filter: ImageFilter.blur(
                   sigmaX: GlassTokens.glassBlur,
@@ -210,6 +215,58 @@ class _NotchedTopBorderPainter extends CustomPainter {
       old.centerIndex != centerIndex ||
       old.baseY != baseY ||
       old.notchRadius != notchRadius;
+}
+
+class _NotchedBarClipper extends CustomClipper<Path> {
+  final int itemCount;
+  final int centerIndex;
+  final double baseY;
+  final double notchRadius;
+
+  const _NotchedBarClipper({
+    required this.itemCount,
+    required this.centerIndex,
+    required this.baseY,
+    required this.notchRadius,
+  });
+
+  @override
+  Path getClip(Size size) {
+    final slot = size.width / itemCount;
+    final cx = slot * (centerIndex + 0.5);
+    final topY = baseY;
+    final lift = baseY;
+    final half = notchRadius + 30;
+    final startX = cx - half;
+    final endX = cx + half;
+
+    final path = Path();
+    path.moveTo(0, topY);
+    path.lineTo(startX, topY);
+    path.cubicTo(
+      cx - half * 0.62, topY,
+      cx - notchRadius * 0.72, topY - lift,
+      cx, topY - lift,
+    );
+    path.cubicTo(
+      cx + notchRadius * 0.72, topY - lift,
+      cx + half * 0.62, topY,
+      endX, topY,
+    );
+    path.lineTo(size.width, topY);
+    path.lineTo(size.width, size.height);
+    path.lineTo(0, size.height);
+    path.close();
+    return path;
+  }
+
+  @override
+  bool shouldReclip(_NotchedBarClipper oldClipper) {
+    return oldClipper.itemCount != itemCount ||
+        oldClipper.centerIndex != centerIndex ||
+        oldClipper.baseY != baseY ||
+        oldClipper.notchRadius != notchRadius;
+  }
 }
 
 class GlassNavItem {
