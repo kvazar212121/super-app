@@ -721,11 +721,9 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
                 child: DropdownButtonHideUnderline(
                   child: DropdownButton<String>(
                     value: _selectedUnit,
-                    dropdownColor: isDark
-                        ? const Color(0xFF141416)
-                        : Colors.white,
-                    style: TextStyle(
-                      color: GlassTokens.primaryText(context),
+                    dropdownColor: Colors.white,
+                    style: const TextStyle(
+                      color: Color(0xFF0A0A0A),
                       fontSize: 14,
                     ),
                     icon: Icon(
@@ -739,8 +737,8 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
                             value: u,
                             child: Text(
                               u.tr,
-                              style: TextStyle(
-                                color: isDark ? Colors.white : LuxTokens.text,
+                              style: const TextStyle(
+                                color: Color(0xFF0A0A0A),
                               ),
                             ),
                           ),

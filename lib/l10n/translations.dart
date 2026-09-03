@@ -1409,4 +1409,19 @@ const Map<String, String> kTranslationsRu = {
   'E\'lonlarim': 'Мои объявления',
   'Savdo': 'Продажа',
   'E\'lonlar yuklanmadi': 'Не удалось загрузить объявления',
+
+  // ── Kategoriya guruhlari (Barcha xizmatlar) ──
+  'Tozalik va Sanitariya': 'Чистота и санитария',
+  'Avto va Yetkazib berish': 'Авто и доставка',
+  'Ta\'lim va Bola parvarishi': 'Образование и уход за детьми',
+  'Oziq-ovqat va Xaridlar': 'Продукты и покупки',
+  'Dam olish va Tadbirlar': 'Отдых и мероприятия',
+  'Boshqa xizmatlar': 'Другие услуги',
+
+  // ── Xarid: o'lchov birliklari ──
+  'kg': 'кг',
+  'dona': 'шт',
+  'litr': 'литр',
+  'bog\'': 'пучок',
+  'qadoq': 'упаковка',
 };
