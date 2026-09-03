@@ -306,14 +306,14 @@ class MyApp extends StatelessWidget {
               darkTheme: AppTheme.darkTheme,
               // Yangi "qora + oltin" premium ko'rinish — doim dark rejim.
               themeMode: ThemeMode.dark,
-              // BUTUN PLATFORMA MATNI 1.5x KATTA — mayda ko'rinmasligi uchun.
+              // BUTUN PLATFORMA MATNI 1.25x KATTA — mayda ko'rinmasligi uchun.
               // Foydalanuvchi qurilma sozlamasidan qancha qo'ygan bo'lsa,
-              // uning ustiga 1.5 barobar qo'llanadi (lekin haddan tashqari
+              // uning ustiga 1.25 barobar qo'llanadi (lekin haddan tashqari
               // katta bo'lib ketmasligi uchun cheklaymiz).
               builder: (context, child) {
                 final mq = MediaQuery.of(context);
                 final userScale = mq.textScaler.scale(1.0);
-                final scaled = (userScale * 1.5).clamp(1.5, 1.9);
+                final scaled = (userScale * 1.25).clamp(1.25, 1.6);
                 return MediaQuery(
                   data: mq.copyWith(
                     textScaler: TextScaler.linear(scaled),

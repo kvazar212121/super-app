@@ -782,7 +782,7 @@ class _ChatScreenState extends State<ChatScreen>
                 final message = _chatHistory[index];
                 // Foydalanuvchi tanlagan chat matn o'lchamini butun
                 // xabar (matn + tugmalar + provayder kartalari) ga qo'llaymiz.
-                // Global 1.5x miqyos ustiga chat tanlovi ko'paytiriladi.
+                // Global miqyos ustiga chat tanlovi ko'paytiriladi.
                 final globalScale =
                     MediaQuery.of(context).textScaler.scale(1.0);
                 return MediaQuery(
