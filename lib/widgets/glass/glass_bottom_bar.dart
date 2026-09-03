@@ -33,85 +33,180 @@ class GlassBottomBar extends StatelessWidget {
     final border = GlassTokens.glassBorder(context);
     final highlight = GlassTokens.glassHighlight(context);
 
-    return ClipRRect(
-      borderRadius: BorderRadius.zero,
-      child: BackdropFilter(
-        filter: ImageFilter.blur(
-          sigmaX: GlassTokens.glassBlur,
-          sigmaY: GlassTokens.glassBlur,
-        ),
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.zero,
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                fill,
-                Color.lerp(fill, Colors.transparent, 0.12) ?? fill,
-              ],
-            ),
-            border: Border(
-              top: BorderSide(color: border, width: 1.2),
-            ),
-            boxShadow: GlassTokens.glassShadow(context),
-          ),
-          child: Stack(
-            children: [
-              Positioned(
-                top: 0,
-                left: 0,
-                right: 0,
-                height: 1,
+    // Tepada shaffof "havo" chizig'i: markaziy orb shu yerga chiqib turadi va
+    // panel tepa chizig'i uning ustidan yumaloq qayrilib o'tadi.
+    const topStrip = 18.0;
+
+    return SizedBox(
+      width: double.infinity,
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          // 1) Shishasimon panel — faqat pastki qism (topStrip'dan pastda).
+          Positioned.fill(
+            top: topStrip,
+            child: ClipRect(
+              child: BackdropFilter(
+                filter: ImageFilter.blur(
+                  sigmaX: GlassTokens.glassBlur,
+                  sigmaY: GlassTokens.glassBlur,
+                ),
                 child: DecoratedBox(
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [highlight, Colors.transparent],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        fill,
+                        Color.lerp(fill, Colors.transparent, 0.12) ?? fill,
+                      ],
                     ),
+                    boxShadow: GlassTokens.glassShadow(context),
                   ),
                 ),
               ),
-              SafeArea(
-                top: false,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 4,
-                    vertical: 10,
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: List.generate(items.length, (i) {
-                      final item = items[i];
-                      final selected = i == currentIndex;
-                      if (i == centerIndex) {
-                        return Expanded(
-                          child: _AiOrb(
-                            item: item,
-                            selected: selected,
-                            onTap: () => onTap(i),
-                            onLongPress: onCenterLongPress,
-                          ),
-                        );
-                      }
-                      return Expanded(
-                        child: _NavButton(
-                          item: item,
-                          selected: selected,
-                          onTap: () => onTap(i),
-                        ),
-                      );
-                    }),
-                  ),
-                ),
-              ),
-            ],
+            ),
           ),
-        ),
+          // 2) Panel tepa chizig'i — markaziy orb ustidan yumaloq qayrilib
+          //    o'tadi (mashina qanoti g'ildirak ustidan o'tgandek).
+          Positioned.fill(
+            child: IgnorePointer(
+              child: CustomPaint(
+                painter: _NotchedTopBorderPainter(
+                  color: border,
+                  highlight: highlight,
+                  itemCount: items.length,
+                  centerIndex: centerIndex,
+                  baseY: topStrip,
+                  // Orb radiusi (42/2) + biroz havo.
+                  notchRadius: 26,
+                ),
+              ),
+            ),
+          ),
+          // 3) Tugmalar qatori — orbdan tashqarilar panel ichida; markaziy
+          //    orb esa yuqoriga chiqib turadi.
+          SafeArea(
+            top: false,
+            child: Padding(
+              padding: const EdgeInsets.only(
+                left: 4,
+                right: 4,
+                top: topStrip - 4,
+                bottom: 6,
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: List.generate(items.length, (i) {
+                  final item = items[i];
+                  final selected = i == currentIndex;
+                  if (i == centerIndex) {
+                    return Expanded(
+                      child: _AiOrb(
+                        item: item,
+                        selected: selected,
+                        onTap: () => onTap(i),
+                        onLongPress: onCenterLongPress,
+                      ),
+                    );
+                  }
+                  return Expanded(
+                    child: _NavButton(
+                      item: item,
+                      selected: selected,
+                      onTap: () => onTap(i),
+                    ),
+                  );
+                }),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
+}
+
+/// Pastki menyu tepa chizig'ini chizadi va markaziy orb ustidan YUMALOQ
+/// qayradi (g'ildirak ustidan o'tgan qanotdek). Chiziq chapdan o'ngga
+/// boradi, orb yaqinida yuqoriga arc bilan ko'tarilib, ustidan aylanib
+/// o'tadi va davom etadi.
+class _NotchedTopBorderPainter extends CustomPainter {
+  final Color color;
+  final Color highlight;
+  final int itemCount;
+  final int centerIndex;
+  final double baseY;
+  final double notchRadius;
+
+  const _NotchedTopBorderPainter({
+    required this.color,
+    required this.highlight,
+    required this.itemCount,
+    required this.centerIndex,
+    required this.baseY,
+    required this.notchRadius,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    // Markaziy orbning gorizontal markazi (teng bo'lingan kataklar).
+    final slot = size.width / itemCount;
+    final cx = slot * (centerIndex + 0.5);
+    final topY = baseY; // panelning tekis tepa chizig'i
+    final lift = baseY; // orb ustida shu qadar yuqoriga (0 gacha) ko'tariladi
+
+    // Qayrilish yarim kengligi: orb radiusidan biroz keng — silliq bo'lishi uchun.
+    final half = notchRadius + 12;
+    final startX = cx - half;
+    final endX = cx + half;
+
+    // Chiziq chapdan o'ngga; markazda YUQORIGA (kichik Y) gumbaz bo'lib
+    // orb ustidan aylanib o'tadi (mashina qanoti g'ildirak ustidan).
+    final path = Path()..moveTo(0, topY);
+    path.lineTo(startX, topY);
+    // Chap yon: pastdan tepaga silliq ko'tarilish.
+    path.cubicTo(
+      cx - half * 0.45, topY,
+      cx - notchRadius * 0.85, topY - lift,
+      cx, topY - lift,
+    );
+    // O'ng yon: tepadan pastga silliq tushish (simmetrik).
+    path.cubicTo(
+      cx + notchRadius * 0.85, topY - lift,
+      cx + half * 0.45, topY,
+      endX, topY,
+    );
+    path.lineTo(size.width, topY);
+
+    // 1) Asosiy chiziq (oltin/border rangi).
+    final linePaint = Paint()
+      ..color = color
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.3
+      ..strokeCap = StrokeCap.round
+      ..strokeJoin = StrokeJoin.round;
+    canvas.drawPath(path, linePaint);
+
+    // 2) Chiziq ostidagi nozik yorug'lik (highlight) — shishasimon his.
+    final glowPaint = Paint()
+      ..color = highlight
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 0.8;
+    canvas.save();
+    canvas.translate(0, 1.0);
+    canvas.drawPath(path, glowPaint);
+    canvas.restore();
+  }
+
+  @override
+  bool shouldRepaint(_NotchedTopBorderPainter old) =>
+      old.color != color ||
+      old.highlight != highlight ||
+      old.itemCount != itemCount ||
+      old.centerIndex != centerIndex ||
+      old.baseY != baseY ||
+      old.notchRadius != notchRadius;
 }
 
 class GlassNavItem {
@@ -222,14 +317,14 @@ class _AiOrbState extends State<_AiOrb> with SingleTickerProviderStateMixin {
                 );
               },
             ),
-            const SizedBox(height: 2),
+            const SizedBox(height: 3),
             FittedBox(
               fit: BoxFit.scaleDown,
               child: Text(
                 widget.item.label,
                 style: TextStyle(
                   fontFamily: LuxTokens.display,
-                  fontSize: 13,
+                  fontSize: 11,
                   fontWeight: FontWeight.w700,
                   color: widget.selected
                       ? accent
@@ -275,7 +370,7 @@ class _NavButton extends StatelessWidget {
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 220),
           curve: Curves.easeOutCubic,
-          padding: const EdgeInsets.symmetric(vertical: 8),
+          padding: const EdgeInsets.only(top: 14, bottom: 6),
           decoration: BoxDecoration(
             color: selected ? activeColor : Colors.transparent,
             borderRadius: BorderRadius.circular(20),
@@ -285,19 +380,19 @@ class _NavButton extends StatelessWidget {
             children: [
               Icon(
                 item.icon,
-                size: 24,
+                size: 20,
                 color: selected
                     ? accent
                     : const Color(0xFF0A0A0A),
               ),
-              const SizedBox(height: 4),
+              const SizedBox(height: 3),
               FittedBox(
                 fit: BoxFit.scaleDown,
                 child: Text(
                   item.label,
                   style: TextStyle(
                     fontFamily: LuxTokens.display,
-                    fontSize: 13,
+                    fontSize: 11,
                     fontWeight: FontWeight.w700,
                     color: selected
                         ? accent
