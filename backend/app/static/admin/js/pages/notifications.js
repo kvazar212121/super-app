@@ -6,10 +6,10 @@ import { navigateTo, renderPage } from '../router.js';
         async function renderNotifications() {
             var notifItems = [];
             try {
-                const r = await window.api(window.API_BASE + '/notifications');
+                const r = await window.api(window.API_BASE + '/notifications?per_page=10');
                 if (r && r.ok) {
                     var data = await r.json();
-                    notifItems = data.items || [];
+                    notifItems = (data.items || []).slice(0, 10);
                 }
             } catch(e) {}
 
@@ -66,7 +66,7 @@ import { navigateTo, renderPage } from '../router.js';
                     '</div>' +
                     '<div class="card">' +
                         '<div class="card-header" style="display:flex;justify-content:space-between;align-items:center;">' +
-                            '<h3 class="card-title">Yuborilgan bildirishnomalar</h3>' +
+                            '<h3 class="card-title">Yuborilgan bildirishnomalar (eng oxirgi 10 tasi)</h3>' +
                             '<div style="display:flex;gap:8px;">' +
                                 '<button class="btn btn-sm" onclick="clearNotifications(true)" title="O\'qilganlarni tozalash">🧹 O\'qilganlar</button>' +
                                 '<button class="btn btn-sm" onclick="clearNotifications(false)" style="color:#dc2626;" title="Hammasini tozalash">🗑 Hammasini tozalash</button>' +
