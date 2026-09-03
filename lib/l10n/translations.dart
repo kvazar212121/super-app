@@ -1390,6 +1390,9 @@ const Map<String, String> kTranslationsRu = {
       'Сегодня этот приём пищи больше не спросим',
 
   // ── Rejalar: tablar va taqvim ──
+  'Mening Rejalarim': 'Мои планы',
+  'Ovozli buyruq yuborish...': 'Отправить голосовую команду...',
+  'Ovozli Qaydlar va Matnlar:': 'Голосовые заметки и тексты:',
   'Vazifalar': 'Задачи',
   'Suv Balansi': 'Баланс воды',
   'Odatlar': 'Привычки',
@@ -1409,6 +1412,9 @@ const Map<String, String> kTranslationsRu = {
   'E\'lonlarim': 'Мои объявления',
   'Savdo': 'Продажа',
   'E\'lonlar yuklanmadi': 'Не удалось загрузить объявления',
+
+  // ── Aloqa tarixi tablari ──
+  'Habarlar': 'Сообщения',
 
   // ── Kategoriya guruhlari (Barcha xizmatlar) ──
   'Tozalik va Sanitariya': 'Чистота и санитария',

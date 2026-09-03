@@ -35,8 +35,13 @@ class GoldTabBar extends StatelessWidget implements PreferredSizeWidget {
             dividerColor: Colors.transparent,
             tabs: List.generate(tabs.length, (index) {
               final isSelected = index == currentIndex;
+              // Tab yorliqlari bitta qatorda tursin — uzun ruscha so'zlar
+              // (masalan "Завершённые") 1.5x miqyosda ikkinchi qatorga
+              // tushmasligi uchun FittedBox bilan kichraytiramiz.
               return Tab(
-                child: isSelected
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: isSelected
                     ? ShaderMask(
                         shaderCallback: (bounds) => const LinearGradient(
                           colors: [
@@ -50,6 +55,7 @@ class GoldTabBar extends StatelessWidget implements PreferredSizeWidget {
                         ).createShader(bounds),
                         child: Text(
                           tabs[index],
+                          maxLines: 1,
                           style: const TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.w900,
@@ -60,12 +66,14 @@ class GoldTabBar extends StatelessWidget implements PreferredSizeWidget {
                       )
                     : Text(
                         tabs[index],
+                        maxLines: 1,
                         style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w700,
                           color: Color(0xFF140D02),
                         ),
                       ),
+                ),
               );
             }),
           ),
