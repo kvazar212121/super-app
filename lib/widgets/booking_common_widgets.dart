@@ -686,7 +686,7 @@ class SelectableStaffRow extends StatelessWidget {
     }
 
     return SizedBox(
-      height: 96,
+      height: 108,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         itemCount: items.length,
