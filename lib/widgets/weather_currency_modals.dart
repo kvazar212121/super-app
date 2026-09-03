@@ -19,7 +19,6 @@ class _WeatherModalState extends State<WeatherModal> {
   @override
   void initState() {
     super.initState();
-    // Agar ma'lumot hali yo'q bo'lsa, yuklashni kutamiz. Agar bor bo'lsa, srazi ko'rsatamiz.
     if (!_weatherService.hasData && !_weatherService.isLoading) {
       _fetchData();
     }
@@ -35,81 +34,99 @@ class _WeatherModalState extends State<WeatherModal> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: theme.scaffoldBackgroundColor,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+        color: isDark ? LuxTokens.surface : Colors.white,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+        border: Border.all(color: LuxTokens.gold, width: 1.5),
+        boxShadow: const [
+          BoxShadow(
+            color: Colors.black26,
+            blurRadius: 20,
+            offset: Offset(0, -4),
+          ),
+        ],
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            width: 40,
-            height: 4,
+            width: 44,
+            height: 5,
             decoration: BoxDecoration(
-              color: Colors.grey,
-              borderRadius: BorderRadius.circular(2),
+              color: Colors.grey.withValues(alpha: 0.3),
+              borderRadius: BorderRadius.circular(10),
             ),
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 20),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                'Ob-havo ma\'lumoti',
-                style: theme.textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+              Row(
+                children: [
+                  const Icon(LucideIcons.cloudSun, color: LuxTokens.gold, size: 24),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Ob-havo ma\'lumoti'.tr,
+                    style: TextStyle(
+                      fontFamily: LuxTokens.body,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w800,
+                      color: isDark ? Colors.white : const Color(0xFF0F172A),
+                    ),
+                  ),
+                ],
               ),
               IconButton(
-                icon: const Icon(LucideIcons.refreshCw),
+                icon: const Icon(LucideIcons.refreshCw, color: LuxTokens.gold, size: 22),
                 onPressed: _fetchData,
               ),
             ],
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 20),
           if (_weatherService.isLoading || _isRefreshing)
             const Padding(
               padding: EdgeInsets.all(32.0),
-              child: Center(child: CircularProgressIndicator()),
+              child: Center(child: CircularProgressIndicator(color: LuxTokens.gold)),
             )
           else if (_weatherService.hasData &&
               _weatherService.weather != null) ...[
-            _buildWeatherInfo(theme),
-            const SizedBox(height: 24),
+            _buildWeatherInfo(isDark),
+            const SizedBox(height: 20),
             if (_weatherService.dailyForecast != null &&
                 _weatherService.dailyForecast!.isNotEmpty)
-              _buildDailyForecast(),
+              _buildDailyForecast(isDark),
           ] else
-            Center(child: Text("Ma'lumot topilmadi".tr)),
-          const SizedBox(height: 32),
+            Center(
+              child: Text(
+                "Ma'lumot topilmadi".tr,
+                style: TextStyle(color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B)),
+              ),
+            ),
+          const SizedBox(height: 24),
         ],
       ),
     );
   }
 
-  Widget _buildWeatherInfo(ThemeData theme) {
+  Widget _buildWeatherInfo(bool isDark) {
     final weather = _weatherService.weather!;
-    final temp =
-        weather['temperature_celsius'] ?? weather['temperature'] ?? '--';
+    final temp = weather['temperature_celsius'] ?? weather['temperature'] ?? '--';
     final cond = weather['condition'] ?? '--';
     final wind = weather['windspeed'] ?? '--';
 
     return Container(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(22),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [LuxTokens.goldDim, LuxTokens.gold],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
+        gradient: LuxTokens.goldGradient,
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: LuxTokens.gold,
-            blurRadius: 10,
+            color: LuxTokens.gold.withValues(alpha: 0.3),
+            blurRadius: 16,
             offset: const Offset(0, 4),
           ),
         ],
@@ -125,22 +142,27 @@ class _WeatherModalState extends State<WeatherModal> {
                   Text(
                     _weatherService.currentCity,
                     style: const TextStyle(
-                      color: Colors.white,
+                      fontFamily: LuxTokens.body,
+                      color: Color(0xFF140D02),
                       fontSize: 24,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w900,
                     ),
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 2),
                   Text(
                     cond,
-                    style: const TextStyle(color: Colors.white70, fontSize: 16),
+                    style: const TextStyle(
+                      color: Color(0xFF4A3409),
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                 ],
               ),
-              const Icon(LucideIcons.cloudSun, color: Colors.white, size: 48),
+              const Icon(LucideIcons.cloudSun, color: Color(0xFF140D02), size: 48),
             ],
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 20),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.end,
@@ -148,26 +170,28 @@ class _WeatherModalState extends State<WeatherModal> {
               Text(
                 '$temp°C',
                 style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 48,
+                  fontFamily: LuxTokens.body,
+                  color: Color(0xFF140D02),
+                  fontSize: 44,
                   fontWeight: FontWeight.w900,
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.only(bottom: 8.0),
+                padding: const EdgeInsets.only(bottom: 6.0),
                 child: Row(
                   children: [
                     const Icon(
                       LucideIcons.wind,
-                      color: Colors.white70,
-                      size: 16,
+                      color: Color(0xFF4A3409),
+                      size: 18,
                     ),
-                    const SizedBox(width: 4),
+                    const SizedBox(width: 6),
                     Text(
                       '$wind km/h',
                       style: const TextStyle(
-                        color: Colors.white70,
-                        fontSize: 16,
+                        color: Color(0xFF4A3409),
+                        fontSize: 15,
+                        fontWeight: FontWeight.w800,
                       ),
                     ),
                   ],
@@ -180,64 +204,70 @@ class _WeatherModalState extends State<WeatherModal> {
     );
   }
 
-  Widget _buildDailyForecast() {
+  Widget _buildDailyForecast(bool isDark) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          "7 kunlik prognoz",
+        Text(
+          "7 kunlik prognoz".tr,
           style: TextStyle(
-            color: Color(0xFF0A0A0B),
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
+            fontSize: 16,
+            fontWeight: FontWeight.w800,
+            color: isDark ? Colors.white : const Color(0xFF0F172A),
           ),
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: 12),
         SizedBox(
-          height: 150,
+          height: 140,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             itemCount: _weatherService.dailyForecast!.length,
             itemBuilder: (context, index) {
               final day = _weatherService.dailyForecast![index];
               return Container(
-                width: 80,
-                margin: const EdgeInsets.only(right: 12),
-                padding: const EdgeInsets.symmetric(vertical: 16),
+                width: 82,
+                margin: const EdgeInsets.only(right: 10),
+                padding: const EdgeInsets.symmetric(vertical: 14),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFF2F2F0),
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: const Color(0xFFD6D6D2)),
+                  color: isDark ? const Color(0xFF1E293B) : const Color(0xFFFFFBEB),
+                  borderRadius: BorderRadius.circular(18),
+                  border: Border.all(
+                    color: isDark ? const Color(0xFF334155) : const Color(0xFFFDE68A),
+                    width: 1.2,
+                  ),
                 ),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
                       _formatDate(day['date']),
-                      style: const TextStyle(
-                        color: Color(0xFF6B6B68),
+                      style: TextStyle(
                         fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                        color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
                       ),
                     ),
                     Icon(
                       _getWeatherIcon(day['code']),
-                      color: LuxTokens.goldSoft,
-                      size: 28,
+                      color: LuxTokens.gold,
+                      size: 26,
                     ),
                     Column(
                       children: [
                         Text(
                           '${day['max']}°',
-                          style: const TextStyle(
-                            color: Color(0xFF0A0A0B),
-                            fontWeight: FontWeight.bold,
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w800,
+                            color: isDark ? Colors.white : const Color(0xFF0F172A),
                           ),
                         ),
                         Text(
                           '${day['min']}°',
-                          style: const TextStyle(
-                            color: Color(0xFF9A9A96),
+                          style: TextStyle(
                             fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
                           ),
                         ),
                       ],
@@ -332,53 +362,74 @@ class _CurrencyModalState extends State<CurrencyModal> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: theme.scaffoldBackgroundColor,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+        color: isDark ? LuxTokens.surface : Colors.white,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+        border: Border.all(color: LuxTokens.gold, width: 1.5),
+        boxShadow: const [
+          BoxShadow(
+            color: Colors.black26,
+            blurRadius: 20,
+            offset: Offset(0, -4),
+          ),
+        ],
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            width: 40,
-            height: 4,
+            width: 44,
+            height: 5,
             decoration: BoxDecoration(
-              color: Colors.grey,
-              borderRadius: BorderRadius.circular(2),
+              color: Colors.grey.withValues(alpha: 0.3),
+              borderRadius: BorderRadius.circular(10),
             ),
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 20),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                'Valyuta kurslari',
-                style: theme.textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+              Row(
+                children: [
+                  const Icon(LucideIcons.coins, color: LuxTokens.gold, size: 24),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Valyuta kurslari'.tr,
+                    style: TextStyle(
+                      fontFamily: LuxTokens.body,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w800,
+                      color: isDark ? Colors.white : const Color(0xFF0F172A),
+                    ),
+                  ),
+                ],
               ),
               IconButton(
-                icon: const Icon(LucideIcons.refreshCw),
+                icon: const Icon(LucideIcons.refreshCw, color: LuxTokens.gold, size: 22),
                 onPressed: _fetchCurrency,
               ),
             ],
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 20),
           if (_loading)
             const Padding(
               padding: EdgeInsets.all(32.0),
-              child: Center(child: CircularProgressIndicator()),
+              child: Center(child: CircularProgressIndicator(color: LuxTokens.gold)),
             )
           else if (currencies != null && currencies!.isNotEmpty)
             _buildCurrencyList(isDark)
           else
-            Center(child: Text("Ma'lumot topilmadi".tr)),
-          const SizedBox(height: 32),
+            Center(
+              child: Text(
+                "Ma'lumot topilmadi".tr,
+                style: TextStyle(color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B)),
+              ),
+            ),
+          const SizedBox(height: 24),
         ],
       ),
     );
@@ -387,75 +438,108 @@ class _CurrencyModalState extends State<CurrencyModal> {
   Widget _buildCurrencyList(bool isDark) {
     return Column(
       children: currencies!.map((cur) {
-        final ccy = cur['Ccy'];
-        final rate = cur['Rate'];
-        final diff = cur['Diff'] ?? '0';
-        final isUp = !diff.startsWith('-');
+        final String ccy = cur['Ccy'] ?? '';
+        final String rate = cur['Rate'] ?? '0';
+        final String diff = cur['Diff'] ?? '0';
+        final bool isUp = !diff.startsWith('-');
 
         return Container(
-          margin: const EdgeInsets.only(bottom: 12),
-          padding: const EdgeInsets.all(16),
+          margin: const EdgeInsets.only(bottom: 10),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
           decoration: BoxDecoration(
-            color: isDark ? const Color(0xFF141416) : Colors.white,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: isDark ? Colors.white10 : Colors.black12),
+            color: isDark ? const Color(0xFF1E293B) : const Color(0xFFFFFBEB),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: isDark ? const Color(0xFF334155) : const Color(0xFFFDE68A),
+              width: 1.2,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.03),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
+              ),
+            ],
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
+              // Left: 24K Gold Specular Circle Badge & Currency Code
               Row(
                 children: [
                   Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: Colors.green,
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(
-                      LucideIcons.banknote,
-                      color: Colors.green,
-                      size: 20,
+                    width: 40,
+                    height: 40,
+                    decoration: LuxTokens.goldBoxDecoration(radius: 12),
+                    child: Center(
+                      child: Text(
+                        _getCurrencySymbol(ccy),
+                        style: const TextStyle(
+                          fontFamily: LuxTokens.body,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w900,
+                          color: Color(0xFF140D02),
+                        ),
+                      ),
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: 14),
                   Text(
                     ccy,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18,
+                    style: TextStyle(
+                      fontFamily: LuxTokens.body,
+                      fontWeight: FontWeight.w900,
+                      fontSize: 17,
+                      color: isDark ? Colors.white : const Color(0xFF0F172A),
                     ),
                   ),
                 ],
               ),
+
+              // Right: Rate amount & Pill Diff Badge
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text(
                     '$rate UZS',
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
+                    style: TextStyle(
+                      fontFamily: LuxTokens.body,
+                      fontWeight: FontWeight.w900,
                       fontSize: 16,
+                      color: isDark ? LuxTokens.gold : const Color(0xFF8A5D0B),
                     ),
                   ),
                   const SizedBox(height: 4),
-                  Row(
-                    children: [
-                      Icon(
-                        isUp
-                            ? LucideIcons.trendingUp
-                            : LucideIcons.trendingDown,
-                        color: isUp ? Colors.green : Colors.red,
-                        size: 14,
+
+                  // Pill diff badge (Green for gain, Red for drop)
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                    decoration: BoxDecoration(
+                      color: isUp ? const Color(0xFFDCFCE7) : const Color(0xFFFEF2F2),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(
+                        color: isUp ? const Color(0xFF86EFAC) : const Color(0xFFFCA5A5),
                       ),
-                      const SizedBox(width: 4),
-                      Text(
-                        diff,
-                        style: TextStyle(
-                          color: isUp ? Colors.green : Colors.red,
-                          fontSize: 12,
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          isUp ? LucideIcons.trendingUp : LucideIcons.trendingDown,
+                          color: isUp ? const Color(0xFF166534) : const Color(0xFF991B1B),
+                          size: 13,
                         ),
-                      ),
-                    ],
+                        const SizedBox(width: 4),
+                        Text(
+                          diff,
+                          style: TextStyle(
+                            color: isUp ? const Color(0xFF166534) : const Color(0xFF991B1B),
+                            fontSize: 12,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
@@ -464,5 +548,22 @@ class _CurrencyModalState extends State<CurrencyModal> {
         );
       }).toList(),
     );
+  }
+
+  String _getCurrencySymbol(String ccy) {
+    switch (ccy.toUpperCase()) {
+      case 'USD':
+        return '\$';
+      case 'EUR':
+        return '€';
+      case 'RUB':
+        return '₽';
+      case 'GBP':
+        return '£';
+      case 'KZT':
+        return '₸';
+      default:
+        return ccy.substring(0, 1);
+    }
   }
 }
