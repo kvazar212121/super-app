@@ -1359,4 +1359,54 @@ const Map<String, String> kTranslationsRu = {
   'Kutilmagan xatolik': 'Непредвиденная ошибка',
   'Qayta urinib ko\'ring. Muammo davom etsa yordam so\'rang.':
       'Попробуйте снова. Если проблема остаётся — обратитесь в поддержку.',
+
+  // ── Qidiruv / provayder ro'yxati ──
+  'Qidiruv maydoni': 'Поиск',
+  'Xaritadan': 'На карте',
+  'Filtrlar': 'Фильтры',
+  'Hozircha provayder yo\'q': 'Пока нет поставщиков',
+  'Tez orada bu bo\'limda xizmatlar paydo bo\'ladi':
+      'Скоро здесь появятся услуги',
+
+  // ── Fitnes ──
+  'Qadam sanagichni yoqing': 'Включить шагомер',
+
+  // ── Kaloriya: ovqat tekshirish modali ──
+  'Nonushta': 'Завтрак',
+  'Tushlik': 'Обед',
+  'Kechki ovqat': 'Ужин',
+  'Ovqat': 'Приём пищи',
+  'qildingizmi?': 'поели?',
+  'Nima yeganingizni belgilang — kaloriya hisobiga qo\'shiladi.':
+      'Отметьте, что вы съели — добавится к подсчёту калорий.',
+  'Rasmga olish': 'Сфотографировать',
+  'AI taomni aniqlab kaloriyani hisoblaydi':
+      'ИИ распознает блюдо и посчитает калории',
+  'Yozib berish': 'Ввести текстом',
+  '"2 ta non, choy" — AI kaloriyani taxminlaydi':
+      '«2 лепёшки, чай» — ИИ оценит калории',
+  'Yemadim / keyinroq': 'Не ел / позже',
+  'Bu ovqat bugun qayta so\'ralmaydi':
+      'Сегодня этот приём пищи больше не спросим',
+
+  // ── Rejalar: tablar va taqvim ──
+  'Vazifalar': 'Задачи',
+  'Suv Balansi': 'Баланс воды',
+  'Odatlar': 'Привычки',
+  'Dorilar': 'Лекарства',
+  'Ovozli Qaydlar': 'Голосовые заметки',
+  'Kunlik Vazifalar:': 'Задачи на день:',
+  // Hafta kunlari (qisqa) — душ bilan to'qnashmasligi uchun alohida.
+  'Dushanba_qisqa': 'Пн',
+  'Seshanba_qisqa': 'Вт',
+  'Chorshanba_qisqa': 'Ср',
+  'Payshanba_qisqa': 'Чт',
+  'Juma_qisqa': 'Пт',
+  'Shanba_qisqa': 'Сб',
+  'Yakshanba_qisqa': 'Вс',
+
+  // ── Buyurtmalar / e'lonlar ──
+  'E\'lonlarim': 'Мои объявления',
+  'Savdo': 'Продажа',
+  'E\'lonlar yuklanmadi': 'Не удалось загрузить объявления',
 };

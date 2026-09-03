@@ -23,7 +23,8 @@ class MealCheckDialog {
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       builder: (ctx) => SafeArea(
-        child: Padding(
+        child: SingleChildScrollView(
+          child: Padding(
           padding: const EdgeInsets.fromLTRB(20, 20, 20, 24),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -41,7 +42,7 @@ class MealCheckDialog {
               ),
               const SizedBox(height: 18),
               Text(
-                '$label qildingizmi?',
+                '${label.tr} ${'qildingizmi?'.tr}',
                 style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w800,
@@ -50,14 +51,14 @@ class MealCheckDialog {
               ),
               const SizedBox(height: 4),
               Text(
-                'Nima yeganingizni belgilang — kaloriya hisobiga qo\'shiladi.',
+                'Nima yeganingizni belgilang — kaloriya hisobiga qo\'shiladi.'.tr,
                 style: TextStyle(fontSize: 13, color: LuxTokens.textMuted),
               ),
               const SizedBox(height: 20),
               _option(
                 icon: Icons.photo_camera_rounded,
-                title: 'Rasmga olish',
-                subtitle: 'AI taomni aniqlab kaloriyani hisoblaydi',
+                title: 'Rasmga olish'.tr,
+                subtitle: 'AI taomni aniqlab kaloriyani hisoblaydi'.tr,
                 onTap: () {
                   Navigator.pop(ctx);
                   _pickPhoto(context, mealType);
@@ -66,8 +67,8 @@ class MealCheckDialog {
               const SizedBox(height: 10),
               _option(
                 icon: Icons.edit_note_rounded,
-                title: 'Yozib berish',
-                subtitle: '"2 ta non, choy" — AI kaloriyani taxminlaydi',
+                title: 'Yozib berish'.tr,
+                subtitle: '"2 ta non, choy" — AI kaloriyani taxminlaydi'.tr,
                 onTap: () {
                   Navigator.pop(ctx);
                   _showTextEntry(context, mealType);
@@ -76,8 +77,8 @@ class MealCheckDialog {
               const SizedBox(height: 10),
               _option(
                 icon: Icons.skip_next_rounded,
-                title: 'Yemadim / keyinroq',
-                subtitle: 'Bu ovqat bugun qayta so\'ralmaydi',
+                title: 'Yemadim / keyinroq'.tr,
+                subtitle: 'Bu ovqat bugun qayta so\'ralmaydi'.tr,
                 muted: true,
                 onTap: () async {
                   await MealReminderService().markHandled(mealType);
@@ -86,6 +87,7 @@ class MealCheckDialog {
               ),
             ],
           ),
+        ),
         ),
       ),
     );
@@ -98,7 +100,7 @@ class MealCheckDialog {
     required VoidCallback onTap,
     bool muted = false,
   }) {
-    final color = muted ? LuxTokens.textMuted! : _blue;
+    final color = muted ? LuxTokens.textMuted : _blue;
     return Material(
       color: muted ? Colors.grey[100] : const Color(0xFFEFF6FF),
       borderRadius: BorderRadius.circular(16),

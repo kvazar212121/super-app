@@ -247,12 +247,12 @@ class _TodoScreenState extends State<TodoScreen> with SingleTickerProviderStateM
                 unselectedLabelColor: const Color(0xFF64748B),
                 labelStyle: const TextStyle(fontWeight: FontWeight.w800, fontSize: 13),
                 unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
-                tabs: const [
-                  Tab(text: 'Vazifalar'),
-                  Tab(text: 'Suv Balansi'),
-                  Tab(text: 'Odatlar'),
-                  Tab(text: 'Dorilar'),
-                  Tab(text: 'Ovozli Qaydlar'),
+                tabs: [
+                  Tab(text: 'Vazifalar'.tr),
+                  Tab(text: 'Suv Balansi'.tr),
+                  Tab(text: 'Odatlar'.tr),
+                  Tab(text: 'Dorilar'.tr),
+                  Tab(text: 'Ovozli Qaydlar'.tr),
                 ],
               ),
             ),
@@ -298,7 +298,10 @@ class _TodoScreenState extends State<TodoScreen> with SingleTickerProviderStateM
   }
 
   Widget _buildCalendarStrip(bool isDark) {
-    return SizedBox(
+    // Taqvim chiplari mayda va o'lchami qat'iy — global 1.5x matn miqyosi
+    // ularni sig'dirmaydi. Shuning uchun chiplarni miqyossiz ko'rsatamiz.
+    return MediaQuery.withNoTextScaling(
+      child: SizedBox(
       height: 76,
       child: ListView.builder(
         controller: _calendarScrollController,
@@ -372,6 +375,7 @@ class _TodoScreenState extends State<TodoScreen> with SingleTickerProviderStateM
           );
         },
       ),
+    ),
     );
   }
 
@@ -643,7 +647,20 @@ class _TodoScreenState extends State<TodoScreen> with SingleTickerProviderStateM
   }
 
   String _getDayNameShort(int day) {
-    const days = ['Dush', 'Sesh', 'Chor', 'Pay', 'Jum', 'Shan', 'Yak'];
-    return days[day - 1];
+    // Kalit sifatida to'liq nom + '_qisqa' ishlatiladi: ruscha "Dush" (душ)
+    // bilan to'qnashmaslik uchun. Topilmasa o'zbekcha qisqa nom qoladi.
+    const keys = [
+      'Dushanba_qisqa',
+      'Seshanba_qisqa',
+      'Chorshanba_qisqa',
+      'Payshanba_qisqa',
+      'Juma_qisqa',
+      'Shanba_qisqa',
+      'Yakshanba_qisqa',
+    ];
+    const uz = ['Dush', 'Sesh', 'Chor', 'Pay', 'Jum', 'Shan', 'Yak'];
+    final t = keys[day - 1].tr;
+    // Tarjima topilmagan bo'lsa (kalitning o'zi qaytsa) — o'zbekcha qisqa nom.
+    return t == keys[day - 1] ? uz[day - 1] : t;
   }
 }
