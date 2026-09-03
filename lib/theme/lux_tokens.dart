@@ -39,7 +39,9 @@ abstract final class LuxTokens {
   //  • [accent]  — KATTA HARFLI, keng oraliqli mayda yorliqlar
   //                ("KUNDALIK", "MAXSUS TAKLIF", "KO'RISH").
   static const body = 'PlusJakartaSans';
-  static const display = 'CormorantGaramond';
+  // Asosiy ilova shrifti — Volkorn (serif). Bitta shu joyni o'zgartirsak,
+  // butun ilova matni shu oilaga o'tadi.
+  static const display = 'Vollkorn';
   static const accent = 'Syne';
 
   /// Oltin Foil Metall Gradient — 1 palasali yaltiroq metall yorug'lik chizig'i (Single-band Specular Gleam).

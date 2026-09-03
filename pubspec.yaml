@@ -137,6 +137,15 @@ flutter:
           weight: 600
         - asset: assets/fonts/CormorantGaramond-Bold.ttf
           weight: 700
+    # Volkorn — asosiy serif shrift (butun ilova matni shu oilada).
+    - family: Vollkorn
+      fonts:
+        - asset: assets/fonts/Vollkorn-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/Vollkorn-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/Vollkorn-Bold.ttf
+          weight: 700
     # Zamonaviy aksentlar — katta harfli, keng oraliqli yorliqlar uchun.
     - family: Syne
       fonts:

@@ -34,6 +34,10 @@ yukla "Cormorant+Garamond" 400 CormorantGaramond-Regular.ttf
 yukla "Cormorant+Garamond" 600 CormorantGaramond-SemiBold.ttf
 yukla "Cormorant+Garamond" 700 CormorantGaramond-Bold.ttf
 
+yukla "Vollkorn" 400 Vollkorn-Regular.ttf
+yukla "Vollkorn" 600 Vollkorn-SemiBold.ttf
+yukla "Vollkorn" 700 Vollkorn-Bold.ttf
+
 yukla "Syne" 400 Syne-Regular.ttf
 yukla "Syne" 600 Syne-SemiBold.ttf
 yukla "Syne" 700 Syne-Bold.ttf
