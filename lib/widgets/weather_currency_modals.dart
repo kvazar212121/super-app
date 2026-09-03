@@ -39,7 +39,7 @@ class _WeatherModalState extends State<WeatherModal> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: isDark ? LuxTokens.surface : Colors.white,
+        color: isDark ? const Color(0xFF0F172A) : Colors.white,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
         border: Border.all(color: LuxTokens.gold, width: 1.5),
         boxShadow: const [
@@ -367,7 +367,7 @@ class _CurrencyModalState extends State<CurrencyModal> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: isDark ? LuxTokens.surface : Colors.white,
+        color: isDark ? const Color(0xFF0F172A) : Colors.white,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
         border: Border.all(color: LuxTokens.gold, width: 1.5),
         boxShadow: const [
