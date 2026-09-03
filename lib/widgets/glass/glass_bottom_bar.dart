@@ -35,7 +35,8 @@ class GlassBottomBar extends StatelessWidget {
 
     // Tepada shaffof "havo" chizig'i: markaziy orb shu yerga chiqib turadi va
     // panel tepa chizig'i uning ustidan yumaloq qayrilib o'tadi.
-    const topStrip = 26.0;
+    // Kichikroq strip = chiziq pastroqda, ikonlarga yaqinroq.
+    const topStrip = 16.0;
 
     return SizedBox(
       width: double.infinity,
@@ -78,8 +79,8 @@ class GlassBottomBar extends StatelessWidget {
                   itemCount: items.length,
                   centerIndex: centerIndex,
                   baseY: topStrip,
-                  // Orb radiusi (54/2) + biroz havo — chiziq undan keng qayriladi.
-                  notchRadius: 34,
+                  // Orb radiusi (46/2) + havo. Egri ikki chetga keng tortiladi.
+                  notchRadius: 30,
                 ),
               ),
             ),
@@ -157,8 +158,9 @@ class _NotchedTopBorderPainter extends CustomPainter {
     final topY = baseY; // panelning tekis tepa chizig'i
     final lift = baseY; // orb ustida shu qadar yuqoriga (0 gacha) ko'tariladi
 
-    // Qayrilish yarim kengligi: orb radiusidan biroz keng — silliq bo'lishi uchun.
-    final half = notchRadius + 12;
+    // Qayrilish yarim kengligi: orb radiusidan ANCHA keng — ikki chet
+    // yon tomonlarga cho'zilib, egri juda silliq (yumshoq) bo'ladi.
+    final half = notchRadius + 30;
     final startX = cx - half;
     final endX = cx + half;
 
@@ -166,16 +168,16 @@ class _NotchedTopBorderPainter extends CustomPainter {
     // orb ustidan aylanib o'tadi (mashina qanoti g'ildirak ustidan).
     final path = Path()..moveTo(0, topY);
     path.lineTo(startX, topY);
-    // Chap yon: pastdan tepaga silliq ko'tarilish.
+    // Chap yon: pastdan tepaga uzun, silliq ko'tarilish (chetga tortilgan).
     path.cubicTo(
-      cx - half * 0.45, topY,
-      cx - notchRadius * 0.85, topY - lift,
+      cx - half * 0.62, topY,
+      cx - notchRadius * 0.72, topY - lift,
       cx, topY - lift,
     );
-    // O'ng yon: tepadan pastga silliq tushish (simmetrik).
+    // O'ng yon: tepadan pastga uzun, silliq tushish (simmetrik).
     path.cubicTo(
-      cx + notchRadius * 0.85, topY - lift,
-      cx + half * 0.45, topY,
+      cx + notchRadius * 0.72, topY - lift,
+      cx + half * 0.62, topY,
       endX, topY,
     );
     path.lineTo(size.width, topY);
@@ -280,7 +282,7 @@ class _AiOrbState extends State<_AiOrb> with SingleTickerProviderStateMixin {
             // Orbni biroz yuqoriga suramiz — u panel tepa chizig'idan chiqib,
             // chiziq uning ustidan qayrilib o'tadi (g'ildirak ustidagi qanot).
             Transform.translate(
-              offset: const Offset(0, -10),
+              offset: const Offset(0, -6),
               child: AnimatedBuilder(
               animation: _c,
               builder: (context, _) {
@@ -288,8 +290,8 @@ class _AiOrbState extends State<_AiOrb> with SingleTickerProviderStateMixin {
                 return Transform.scale(
                   scale: 1.0 + 0.07 * t,
                   child: Container(
-                    width: 54,
-                    height: 54,
+                    width: 46,
+                    height: 46,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       // Orbning o'z ranglariga mos ikki qatlamli porlash
@@ -312,8 +314,8 @@ class _AiOrbState extends State<_AiOrb> with SingleTickerProviderStateMixin {
                     child: ClipOval(
                       child: Image.asset(
                         'assets/images/ai_orb.webp',
-                        width: 54,
-                        height: 54,
+                        width: 46,
+                        height: 46,
                         fit: BoxFit.cover,
                         gaplessPlayback: true,
                       ),
