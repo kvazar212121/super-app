@@ -170,8 +170,12 @@ void main() {
       expect(LuxTokens.body, isNotEmpty);
       expect(LuxTokens.display, isNotEmpty);
       expect(LuxTokens.accent, isNotEmpty);
-      // Ular bir-biridan farq qilishi kerak, aks holda rol ajratish yo'q.
-      expect({LuxTokens.body, LuxTokens.display, LuxTokens.accent}.length, 3);
+      // Yangi arxitektura: butun ilova BITTA markaziy shriftdan (fontFamily)
+      // oladi — body/display/accent hammasi shunga bog'langan. Shuning uchun
+      // ular bir xil bo'lishi KUTILADI (bitta joydan boshqarish oson bo'lsin).
+      expect(LuxTokens.body, LuxTokens.fontFamily);
+      expect(LuxTokens.display, LuxTokens.fontFamily);
+      expect(LuxTokens.accent, LuxTokens.fontFamily);
     });
   });
 

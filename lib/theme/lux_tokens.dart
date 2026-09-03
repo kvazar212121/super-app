@@ -30,19 +30,23 @@ abstract final class LuxTokens {
   static const radiusMd = 18.0;
   static const radiusLg = 24.0;
 
-  // ── SHRIFTLAR ──────────────────────────────────────────────────
-  // Uchta rol, aniq chegara bilan. Aralashtirilsa dizayn buziladi:
-  //  • [body]    — barcha oddiy matn, tugma, izoh. Geometrik grotesk.
-  //  • [display] — nafis SARLAVHALAR (banner nomi, ekran sarlavhasi).
-  //                Serif bo'lgani uchun faqat YIRIK o'lchamda ishlatiladi;
-  //                12px dan kichikda ingichka shtrixlari yo'qoladi.
-  //  • [accent]  — KATTA HARFLI, keng oraliqli mayda yorliqlar
-  //                ("KUNDALIK", "MAXSUS TAKLIF", "KO'RISH").
-  static const body = 'PlusJakartaSans';
-  // Asosiy ilova shrifti — Volkorn (serif). Bitta shu joyni o'zgartirsak,
-  // butun ilova matni shu oilaga o'tadi.
-  static const display = 'Vollkorn';
-  static const accent = 'Syne';
+  // ── SHRIFT (BITTA MARKAZIY JOY) ────────────────────────────────
+  // BUTUN ILOVA SHRIFTI shu yerda belgilanadi. Faqat shu bitta qatorni
+  // o'zgartirsangiz — bosh sahifa, sarlavhalar, banner, chat, menyu,
+  // yorliqlar, provayder nomlari... HAMMA joy yangi shriftga o'tadi.
+  //
+  // Yangi shrift qo'shish: assets/fonts/ ga .ttf tashlang, pubspec.yaml
+  // 'fonts:' ro'yxatiga family qo'shing, keyin shu qatordagi nomni yozing.
+  static const fontFamily = 'Vollkorn';
+
+  // Uch rol ham SHU BITTA shriftdan oladi (ilgari alohida edi). Shu tufayli
+  // butun UI bir xil va bitta joydan boshqariladi.
+  //  • [body]    — oddiy matn, tugma, izoh.
+  //  • [display] — sarlavhalar, banner nomi, ekran sarlavhasi.
+  //  • [accent]  — KATTA HARFLI mayda yorliqlar ("MAXSUS TAKLIF").
+  static const body = fontFamily;
+  static const display = fontFamily;
+  static const accent = fontFamily;
 
   /// Oltin Foil Metall Gradient — 1 palasali yaltiroq metall yorug'lik chizig'i (Single-band Specular Gleam).
   static const goldGradient = LinearGradient(
