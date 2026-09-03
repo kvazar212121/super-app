@@ -34,17 +34,15 @@ class _WeatherModalState extends State<WeatherModal> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF0F172A) : Colors.white,
+        color: Colors.white,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
         border: Border.all(color: LuxTokens.gold, width: 1.5),
         boxShadow: const [
           BoxShadow(
-            color: Colors.black26,
+            color: Colors.black12,
             blurRadius: 20,
             offset: Offset(0, -4),
           ),
@@ -71,10 +69,10 @@ class _WeatherModalState extends State<WeatherModal> {
                   const SizedBox(width: 8),
                   Text(
                     'Ob-havo ma\'lumoti'.tr,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 17,
                       fontWeight: FontWeight.w800,
-                      color: isDark ? Colors.white : const Color(0xFF0F172A),
+                      color: Color(0xFF0F172A),
                     ),
                   ),
                 ],
@@ -93,18 +91,18 @@ class _WeatherModalState extends State<WeatherModal> {
             )
           else if (_weatherService.hasData &&
               _weatherService.weather != null) ...[
-            _buildWeatherInfo(isDark),
+            _buildWeatherInfo(),
             const SizedBox(height: 16),
             if (_weatherService.dailyForecast != null &&
                 _weatherService.dailyForecast!.isNotEmpty)
-              _buildDailyForecast(isDark),
+              _buildDailyForecast(),
           ] else
             Center(
               child: Text(
                 "Ma'lumot topilmadi".tr,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 13,
-                  color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+                  color: Color(0xFF64748B),
                 ),
               ),
             ),
@@ -114,7 +112,7 @@ class _WeatherModalState extends State<WeatherModal> {
     );
   }
 
-  Widget _buildWeatherInfo(bool isDark) {
+  Widget _buildWeatherInfo() {
     final weather = _weatherService.weather!;
     final temp = weather['temperature_celsius'] ?? weather['temperature'] ?? '--';
     final cond = weather['condition'] ?? '--';
@@ -204,16 +202,16 @@ class _WeatherModalState extends State<WeatherModal> {
     );
   }
 
-  Widget _buildDailyForecast(bool isDark) {
+  Widget _buildDailyForecast() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           "7 kunlik prognoz".tr,
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w800,
-            color: isDark ? Colors.white : const Color(0xFF0F172A),
+            color: Color(0xFF0F172A),
           ),
         ),
         const SizedBox(height: 10),
@@ -229,10 +227,10 @@ class _WeatherModalState extends State<WeatherModal> {
                 margin: const EdgeInsets.only(right: 8),
                 padding: const EdgeInsets.symmetric(vertical: 10),
                 decoration: BoxDecoration(
-                  color: isDark ? const Color(0xFF1E293B) : const Color(0xFFFFFBEB),
+                  color: const Color(0xFFFFFBEB),
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(
-                    color: isDark ? const Color(0xFF334155) : const Color(0xFFFDE68A),
+                    color: const Color(0xFFFDE68A),
                     width: 1.2,
                   ),
                 ),
@@ -241,10 +239,10 @@ class _WeatherModalState extends State<WeatherModal> {
                   children: [
                     Text(
                       _formatDate(day['date']),
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.w700,
-                        color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+                        color: Color(0xFF64748B),
                       ),
                     ),
                     Icon(
@@ -256,18 +254,18 @@ class _WeatherModalState extends State<WeatherModal> {
                       children: [
                         Text(
                           '${day['max']}°',
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 13,
                             fontWeight: FontWeight.w800,
-                            color: isDark ? Colors.white : const Color(0xFF0F172A),
+                            color: Color(0xFF0F172A),
                           ),
                         ),
                         Text(
                           '${day['min']}°',
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.w600,
-                            color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+                            color: Color(0xFF8A5D0B),
                           ),
                         ),
                       ],
@@ -362,17 +360,15 @@ class _CurrencyModalState extends State<CurrencyModal> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF0F172A) : Colors.white,
+        color: Colors.white,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
         border: Border.all(color: LuxTokens.gold, width: 1.5),
         boxShadow: const [
           BoxShadow(
-            color: Colors.black26,
+            color: Colors.black12,
             blurRadius: 20,
             offset: Offset(0, -4),
           ),
@@ -399,10 +395,10 @@ class _CurrencyModalState extends State<CurrencyModal> {
                   const SizedBox(width: 8),
                   Text(
                     'Valyuta kurslari'.tr,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 17,
                       fontWeight: FontWeight.w800,
-                      color: isDark ? Colors.white : const Color(0xFF0F172A),
+                      color: Color(0xFF0F172A),
                     ),
                   ),
                 ],
@@ -420,14 +416,14 @@ class _CurrencyModalState extends State<CurrencyModal> {
               child: Center(child: CircularProgressIndicator(color: LuxTokens.gold, strokeWidth: 2.5)),
             )
           else if (currencies != null && currencies!.isNotEmpty)
-            _buildCurrencyList(isDark)
+            _buildCurrencyList()
           else
             Center(
               child: Text(
                 "Ma'lumot topilmadi".tr,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 13,
-                  color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+                  color: Color(0xFF64748B),
                 ),
               ),
             ),
@@ -437,7 +433,7 @@ class _CurrencyModalState extends State<CurrencyModal> {
     );
   }
 
-  Widget _buildCurrencyList(bool isDark) {
+  Widget _buildCurrencyList() {
     return Column(
       children: currencies!.map((cur) {
         final String ccy = cur['Ccy'] ?? '';
@@ -449,10 +445,10 @@ class _CurrencyModalState extends State<CurrencyModal> {
           margin: const EdgeInsets.only(bottom: 8),
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
           decoration: BoxDecoration(
-            color: isDark ? const Color(0xFF1E293B) : const Color(0xFFFFFBEB),
+            color: const Color(0xFFFFFBEB),
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: isDark ? const Color(0xFF334155) : const Color(0xFFFDE68A),
+              color: const Color(0xFFFDE68A),
               width: 1.2,
             ),
             boxShadow: [
@@ -487,10 +483,10 @@ class _CurrencyModalState extends State<CurrencyModal> {
                   const SizedBox(width: 12),
                   Text(
                     ccy,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontWeight: FontWeight.w800,
                       fontSize: 15,
-                      color: isDark ? Colors.white : const Color(0xFF0F172A),
+                      color: Color(0xFF0F172A),
                     ),
                   ),
                 ],
@@ -502,10 +498,10 @@ class _CurrencyModalState extends State<CurrencyModal> {
                 children: [
                   Text(
                     '$rate UZS',
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontWeight: FontWeight.w800,
                       fontSize: 14.5,
-                      color: isDark ? LuxTokens.gold : const Color(0xFF8A5D0B),
+                      color: Color(0xFF8A5D0B),
                     ),
                   ),
                   const SizedBox(height: 3),
