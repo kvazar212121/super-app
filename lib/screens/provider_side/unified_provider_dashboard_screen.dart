@@ -413,13 +413,15 @@ class _UnifiedProviderDashboardScreenState
             elevation: 0,
             scrolledUnderElevation: 0,
             automaticallyImplyLeading: false,
-            titleSpacing: 20,
+            titleSpacing: 16,
             title: Text(
               '${widget.config.title} paneli',
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
               style: const TextStyle(
                 color: Colors.black,
                 fontWeight: FontWeight.w800,
-                fontSize: 15.5,
+                fontSize: 15,
               ),
             ),
             actions: [
@@ -430,7 +432,7 @@ class _UnifiedProviderDashboardScreenState
                       context.read<AppProvider>().switchToUser(),
                   icon: const Icon(
                     LucideIcons.arrowLeftRight,
-                    size: 16,
+                    size: 14,
                     color: Color(0xFFC9A227),
                   ),
                   label: const Text(
@@ -438,6 +440,7 @@ class _UnifiedProviderDashboardScreenState
                     style: TextStyle(
                       color: Color(0xFFC9A227),
                       fontWeight: FontWeight.w700,
+                      fontSize: 12,
                     ),
                   ),
                 ),
@@ -720,34 +723,45 @@ class _UnifiedProviderDashboardScreenState
                     ],
                   ),
                   const SizedBox(height: 4),
-                  Row(
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 4,
                     children: [
-                      const Icon(
-                        LucideIcons.checkCircle2,
-                        color: Colors.green,
-                        size: 14,
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(
+                            LucideIcons.checkCircle2,
+                            color: Colors.green,
+                            size: 13,
+                          ),
+                          const SizedBox(width: 3),
+                          Text(
+                            '${_provider?['completed_orders_count'] ?? 0} yakunlagan',
+                            style: const TextStyle(
+                              fontSize: 11,
+                              color: LuxTokens.textMuted,
+                            ),
+                          ),
+                        ],
                       ),
-                      const SizedBox(width: 4),
-                      Text(
-                        '${_provider?['completed_orders_count'] ?? 0} yakunlagan',
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: LuxTokens.textMuted,
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      const Icon(
-                        LucideIcons.xCircle,
-                        color: Colors.red,
-                        size: 14,
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        '${_provider?['cancelled_orders_count'] ?? 0} bekor qilgan',
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: LuxTokens.textMuted,
-                        ),
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(
+                            LucideIcons.xCircle,
+                            color: Colors.red,
+                            size: 13,
+                          ),
+                          const SizedBox(width: 3),
+                          Text(
+                            '${_provider?['cancelled_orders_count'] ?? 0} bekor qilgan',
+                            style: const TextStyle(
+                              fontSize: 11,
+                              color: LuxTokens.textMuted,
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
@@ -760,7 +774,7 @@ class _UnifiedProviderDashboardScreenState
                 borderRadius: BorderRadius.circular(12),
               ),
               child: IconButton(
-                icon: const Icon(LucideIcons.refreshCw, color: Colors.black),
+                icon: const Icon(LucideIcons.refreshCw, color: Colors.black, size: 20),
                 onPressed: _refreshDashboard,
               ),
             ),
@@ -768,7 +782,7 @@ class _UnifiedProviderDashboardScreenState
         ),
         const SizedBox(height: 24),
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
           decoration: BoxDecoration(
             color: LuxTokens.surface,
             borderRadius: BorderRadius.circular(16),
@@ -780,15 +794,17 @@ class _UnifiedProviderDashboardScreenState
                 _isActive ? LucideIcons.checkCircle2 : LucideIcons.pauseCircle,
                 color: Colors.black,
               ),
-              const SizedBox(width: 12),
-              Text(
-                _isActive ? 'Hozir ishlayapman' : 'Faol emas',
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  _isActive ? 'Hozir ishlayapman' : 'Faol emas',
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                    fontSize: 13,
+                  ),
                 ),
               ),
-              const Spacer(),
               Switch(
                 value: _isActive,
                 onChanged: _toggleActive,
@@ -800,7 +816,7 @@ class _UnifiedProviderDashboardScreenState
         ),
         const SizedBox(height: 12),
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
           decoration: BoxDecoration(
             color: LuxTokens.surface,
             borderRadius: BorderRadius.circular(16),
@@ -812,15 +828,17 @@ class _UnifiedProviderDashboardScreenState
                 _isPaused ? LucideIcons.pauseCircle : LucideIcons.playCircle,
                 color: Colors.black,
               ),
-              const SizedBox(width: 12),
-              const Text(
-                'Uzoq muddatli tanaffus',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
+              const SizedBox(width: 10),
+              Expanded(
+                child: const Text(
+                  'Uzoq muddatli tanaffus',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                    fontSize: 13,
+                  ),
                 ),
               ),
-              const Spacer(),
               Switch(
                 value: _isPaused,
                 onChanged: _togglePaused,
@@ -1142,12 +1160,20 @@ class _UnifiedProviderDashboardScreenState
       ),
     ];
 
-    return NavigationBar(
-      selectedIndex: _selectedIndex,
-      onDestinationSelected: (i) => setState(() => _selectedIndex = i),
-      destinations: destinations,
-      backgroundColor: LuxTokens.surface,
-      indicatorColor: Colors.black12,
+    return NavigationBarTheme(
+      data: NavigationBarThemeData(
+        labelTextStyle: WidgetStateProperty.all(
+          const TextStyle(fontSize: 10, fontWeight: FontWeight.w600),
+        ),
+      ),
+      child: NavigationBar(
+        selectedIndex: _selectedIndex,
+        onDestinationSelected: (i) => setState(() => _selectedIndex = i),
+        destinations: destinations,
+        backgroundColor: LuxTokens.surface,
+        indicatorColor: Colors.black12,
+        labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+      ),
     );
   }
 

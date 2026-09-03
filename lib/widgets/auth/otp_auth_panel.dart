@@ -111,7 +111,7 @@ class OtpCodeFieldState extends State<OtpCodeField> {
       children: List.generate(widget.length, (i) {
         return Expanded(
           child: Padding(
-            padding: EdgeInsets.only(left: i == 0 ? 0 : 6),
+            padding: EdgeInsets.only(left: i == 0 ? 0 : 4),
             child: TextField(
               controller: _controllers[i],
               focusNode: _focusNodes[i],
@@ -366,33 +366,42 @@ class _OtpAuthPanelState extends State<OtpAuthPanel> {
         const SizedBox(height: 16),
         Row(
           children: [
-            TextButton(
-              style: TextButton.styleFrom(
-                foregroundColor: const Color(0xFF8A5D0B),
-              ),
-              onPressed: _loading ? null : () => setState(() => _step = 0),
-              child: Text(
-                'Raqamni o\'zgartirish'.tr,
-                style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 14),
+            Expanded(
+              child: TextButton(
+                style: TextButton.styleFrom(
+                  foregroundColor: const Color(0xFF8A5D0B),
+                  padding: EdgeInsets.zero,
+                  alignment: Alignment.centerLeft,
+                ),
+                onPressed: _loading ? null : () => setState(() => _step = 0),
+                child: Text(
+                  'Raqamni o\'zgartirish'.tr,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 12.5),
+                ),
               ),
             ),
-            const Spacer(),
+            const SizedBox(width: 6),
             TextButton(
               style: TextButton.styleFrom(
                 foregroundColor: const Color(0xFF8A5D0B),
                 disabledForegroundColor: const Color(0xFF64748B),
+                padding: EdgeInsets.zero,
+                alignment: Alignment.centerRight,
               ),
               onPressed: (_loading || _resendSeconds > 0) ? null : _sendOtp,
               child: Text(
                 _resendSeconds > 0
                     ? '${'Qayta'.tr} ($_resendSeconds s)'
                     : 'Qayta yuborish'.tr,
+                maxLines: 1,
                 style: TextStyle(
                   color: _resendSeconds > 0
                       ? const Color(0xFF64748B)
                       : const Color(0xFF8A5D0B),
                   fontWeight: FontWeight.w800,
-                  fontSize: 14,
+                  fontSize: 12.5,
                 ),
               ),
             ),

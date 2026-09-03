@@ -20,81 +20,87 @@ class ProviderOnboardingScreen extends StatelessWidget {
               elevation: 0,
             ),
             body: SafeArea(
-              child: Padding(
+              child: SingleChildScrollView(
                 padding: const EdgeInsets.all(24.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Icon(
                       LucideIcons.briefcase,
-                      size: 64,
+                      size: 52,
                       color: Colors.black,
                     ),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 16),
                     Text(
                       'O\'z xizmatingizni taqdim eting'.tr,
-                      style: theme.textTheme.headlineMedium?.copyWith(
+                      style: theme.textTheme.headlineSmall?.copyWith(
                         fontWeight: FontWeight.bold,
                         color: theme.colorScheme.onSurface,
                       ),
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 12),
                     Text(
                       'Bizning platformada minglab mijozlar o\'ziga kerakli ustani qidirmoqda. Siz ham ular orasida bo\'ling!'.tr,
-                      style: theme.textTheme.bodyLarge?.copyWith(
+                      style: theme.textTheme.bodyMedium?.copyWith(
                         color: theme.colorScheme.onSurface,
                       ),
                     ),
-                    const SizedBox(height: 32),
+                    const SizedBox(height: 24),
                     _buildFeatureItem(
                       context,
                       LucideIcons.users,
                       'Mijozlar oqimini ko\'paytiring'.tr,
                       'Doimiy mijozlar va ko\'proq buyurtmalar oling.'.tr,
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 16),
                     _buildFeatureItem(
                       context,
                       LucideIcons.clock,
                       'Erkin ish grafigi'.tr,
                       'O\'zingizga qulay vaqtda va joyda ishlang.'.tr,
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 16),
                     _buildFeatureItem(
                       context,
                       LucideIcons.shieldCheck,
                       'Ishonchli to\'lov'.tr,
                       'Xizmatlaringiz uchun kafolatlangan to\'lovlar.'.tr,
                     ),
-                    const Spacer(),
-                    SizedBox(
-                      width: double.infinity,
-                      child: FilledButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  const ProviderCategorySelectionScreen(),
-                            ),
-                          );
-                        },
-                        style: FilledButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
-                          ),
+                  ],
+                ),
+              ),
+            ),
+            bottomNavigationBar: SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.all(24.0),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: FilledButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              const ProviderCategorySelectionScreen(),
                         ),
-                        child: Text(
-                          'Davom etish'.tr,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
+                      );
+                    },
+                    style: FilledButton.styleFrom(
+                      backgroundColor: Colors.black,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
                       ),
                     ),
-                  ],
+                    child: Text(
+                      'Davom etish'.tr,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
                 ),
               ),
             ),
