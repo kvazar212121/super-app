@@ -7,6 +7,7 @@ import 'dart:io';
 import 'dart:math' as math;
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:permission_handler/permission_handler.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../services/ai_service.dart';
 import '../services/api_service.dart';
 import '../models/master_worker.dart';
@@ -93,9 +94,90 @@ class _ChatScreenState extends State<ChatScreen>
   // dispose'дан keyin kech kelган speech callback disposed notifier'ga yozmasin.
   bool _disposed = false;
 
+  /// Chat matn o'lchami koeffitsienti — foydalanuvchi 3 xil o'lchamдан
+  /// birini tanlaydi (kichik 0.85, o'rtacha 1.0, katta 1.2). Tanlov
+  /// SharedPreferences'да saqlanadi va keyingi ochilishда tiklanadi.
+  double _chatTextScale = 1.0;
+  static const String _chatScaleKey = 'chat_text_scale';
+
+  Future<void> _loadChatScale() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final v = prefs.getDouble(_chatScaleKey);
+      if (v != null && mounted) {
+        setState(() => _chatTextScale = v);
+      }
+    } catch (_) {}
+  }
+
+  Future<void> _saveChatScale(double v) async {
+    setState(() => _chatTextScale = v);
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setDouble(_chatScaleKey, v);
+    } catch (_) {}
+  }
+
+  void _showTextSizeSheet() {
+    showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (ctx) {
+        Widget option(String label, double scale, double preview) {
+          final selected = (_chatTextScale - scale).abs() < 0.01;
+          return ListTile(
+            title: Text(
+              label,
+              style: TextStyle(
+                fontFamily: LuxTokens.display,
+                fontSize: preview,
+                fontWeight: FontWeight.w700,
+                color: const Color(0xFF0A0A0A),
+              ),
+            ),
+            trailing: selected
+                ? const Icon(LucideIcons.check, color: LuxTokens.gold)
+                : null,
+            onTap: () {
+              _saveChatScale(scale);
+              Navigator.pop(ctx);
+            },
+          );
+        }
+
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const SizedBox(height: 12),
+              Text(
+                'Matn o\'lchami'.tr,
+                style: const TextStyle(
+                  fontFamily: LuxTokens.display,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                  color: Color(0xFF0A0A0A),
+                ),
+              ),
+              const SizedBox(height: 8),
+              option('Kichik'.tr, 0.85, 15),
+              option('O\'rtacha'.tr, 1.0, 18),
+              option('Katta'.tr, 1.2, 22),
+              const SizedBox(height: 8),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   @override
   void initState() {
     super.initState();
+    _loadChatScale();
     _pendingPhoto = widget.initialPhoto;
     _textController.addListener(() {
       setState(() {
@@ -658,6 +740,15 @@ class _ChatScreenState extends State<ChatScreen>
       title: 'AiHub'.tr,
       actions: [
         IconButton(
+          tooltip: 'Matn o\'lchami'.tr,
+          icon: Icon(
+            LucideIcons.aLargeSmall,
+            color: GlassTokens.primaryText(context),
+            size: 22,
+          ),
+          onPressed: _showTextSizeSheet,
+        ),
+        IconButton(
           icon: Icon(
             LucideIcons.refreshCcw,
             color: GlassTokens.primaryText(context),
@@ -689,12 +780,23 @@ class _ChatScreenState extends State<ChatScreen>
                   return _buildTypingIndicator();
                 }
                 final message = _chatHistory[index];
-                return _buildMessageBubble(
-                  content: message['content'],
-                  isUser: message['role'] == 'user',
-                  actions: (message['actions'] as List?)
-                      ?.cast<Map<String, dynamic>>(),
-                  localPhoto: message['localPhoto'] as String?,
+                // Foydalanuvchi tanlagan chat matn o'lchamini butun
+                // xabar (matn + tugmalar + provayder kartalari) ga qo'llaymiz.
+                // Global 1.5x miqyos ustiga chat tanlovi ko'paytiriladi.
+                final globalScale =
+                    MediaQuery.of(context).textScaler.scale(1.0);
+                return MediaQuery(
+                  data: MediaQuery.of(context).copyWith(
+                    textScaler:
+                        TextScaler.linear(globalScale * _chatTextScale),
+                  ),
+                  child: _buildMessageBubble(
+                    content: message['content'],
+                    isUser: message['role'] == 'user',
+                    actions: (message['actions'] as List?)
+                        ?.cast<Map<String, dynamic>>(),
+                    localPhoto: message['localPhoto'] as String?,
+                  ),
                 );
               },
             ),
