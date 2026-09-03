@@ -403,7 +403,7 @@ class _UnifiedProviderDashboardScreenState
             outline: Colors.black,
             outlineVariant: LuxTokens.textMuted,
           ),
-          textTheme: Typography.material2021().black,
+          textTheme: Typography.material2021().black.apply(fontSizeFactor: 0.82),
         ),
         child: Scaffold(
           backgroundColor: LuxTokens.surface,
@@ -419,7 +419,7 @@ class _UnifiedProviderDashboardScreenState
               style: const TextStyle(
                 color: Colors.black,
                 fontWeight: FontWeight.w800,
-                fontSize: 18,
+                fontSize: 15.5,
               ),
             ),
             actions: [
@@ -703,8 +703,8 @@ class _UnifiedProviderDashboardScreenState
                   Text(
                     name,
                     style: const TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.w900,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w800,
                       color: Colors.black,
                     ),
                   ),

@@ -4,8 +4,8 @@ import '../../theme/lux_tokens.dart';
 /// Soha egasi (provider) paneli uchun majburiy yorug' (light) tema.
 ///
 /// Mijoz ilovasi dark rejimda bo'lsa ham, biznes paneli har doim oq fon va
-/// qora matnli bo'ladi. Bu `colorScheme.surface` ni shaffof emas, opaque oq
-/// qilib, "qora fon" muammosini bartaraf etadi.
+/// qora matnli bo'ladi. Shriftlar hajmi soha egalari uchun maxsus 20-30% ga
+/// ixchamlashtirilgan.
 class ProviderTheme extends StatelessWidget {
   final Widget child;
 
@@ -17,10 +17,10 @@ class ProviderTheme extends StatelessWidget {
     const primary = Colors.black;
     final base = ThemeData.light(useMaterial3: true);
 
-    // Lokal asset shrift (google_fonts EMAS): tarmoqsiz ishlaydi va
-    // testlarda yiqilmaydi. Ilovaning qolgan qismi bilan ham bir xil.
     final textTheme = base.textTheme
-        .apply(fontFamily: LuxTokens.display)
+        .apply(
+          fontSizeFactor: 0.82, // Shriftlar o'lchamini ~25-30% ga ixchamlashtiradi
+        )
         .apply(bodyColor: ink, displayColor: ink);
 
     return Theme(
