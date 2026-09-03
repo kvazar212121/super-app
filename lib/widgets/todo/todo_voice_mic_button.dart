@@ -45,17 +45,21 @@ class TodoVoiceMicButton extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 12),
-                Text(
-                  'Ovozli buyruq yuborish...'.tr,
-                  style: const TextStyle(
-                    fontFamily: LuxTokens.display,
-                    color: Color(0xFF140D02),
-                    fontSize: 15,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: -0.3,
+                Expanded(
+                  child: Text(
+                    'Ovozli buyruq yuborish...'.tr,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontFamily: LuxTokens.display,
+                      color: Color(0xFF140D02),
+                      fontSize: 15,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: -0.3,
+                    ),
                   ),
                 ),
-                const Spacer(),
+                const SizedBox(width: 8),
                 const Icon(
                   LucideIcons.sparkles,
                   color: Color(0xFF140D02),

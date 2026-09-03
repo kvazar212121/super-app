@@ -1391,6 +1391,10 @@ const Map<String, String> kTranslationsRu = {
 
   // ── Rejalar: tablar va taqvim ──
   'Mening Rejalarim': 'Мои планы',
+  'Yangi reja qo\'shish': 'Добавить план',
+  'Reja nomi (masalan: Usta bilan ko\'rishish)':
+      'Название плана (например: Встреча с мастером)',
+  'Vaqti (masalan: 14:30)': 'Время (например: 14:30)',
   'Ovozli buyruq yuborish...': 'Отправить голосовую команду...',
   'Ovozli Qaydlar va Matnlar:': 'Голосовые заметки и тексты:',
   'Vazifalar': 'Задачи',

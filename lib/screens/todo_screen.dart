@@ -110,10 +110,13 @@ class _TodoScreenState extends State<TodoScreen> with SingleTickerProviderStateM
         ),
         title: Text(
           'Yangi reja qo\'shish'.tr,
-          style: TextStyle(
-            fontSize: 18,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: const TextStyle(
+            fontFamily: LuxTokens.display,
+            fontSize: 17,
             fontWeight: FontWeight.w800,
-            color: const Color(0xFF0F172A),
+            color: Color(0xFF0A0A0A),
           ),
         ),
         content: Column(
@@ -127,7 +130,7 @@ class _TodoScreenState extends State<TodoScreen> with SingleTickerProviderStateM
                 fontWeight: FontWeight.w600,
               ),
               decoration: InputDecoration(
-                hintText: 'Reja nomi (masalan: Usta bilan ko\'rishish)',
+                hintText: 'Reja nomi (masalan: Usta bilan ko\'rishish)'.tr,
                 hintStyle: const TextStyle(color: Color(0xFF94A3B8)),
                 filled: true,
                 fillColor: const Color(0xFFF1F5F9),
@@ -153,7 +156,7 @@ class _TodoScreenState extends State<TodoScreen> with SingleTickerProviderStateM
                 fontWeight: FontWeight.w600,
               ),
               decoration: InputDecoration(
-                hintText: 'Vaqti (masalan: 14:30)',
+                hintText: 'Vaqti (masalan: 14:30)'.tr,
                 hintStyle: const TextStyle(color: Color(0xFF94A3B8)),
                 prefixIcon: const Icon(LucideIcons.clock, size: 18, color: LuxTokens.gold),
                 filled: true,
