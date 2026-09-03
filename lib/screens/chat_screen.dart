@@ -837,23 +837,8 @@ class _ChatScreenState extends State<ChatScreen>
                         fontSize: 15,
                         fontWeight: isUser ? FontWeight.w700 : FontWeight.normal,
                         height: 1.4,
-                        // Oltin quymaga o'yib yozilgandek (3D Engraved Stamp) qora matn effekti
-                        shadows: isUser
-                            ? const [
-                                // O'yma chuqurining ostida qaytuvchi oltin nuri
-                                Shadow(
-                                  color: Color(0xFFFFF7C2),
-                                  blurRadius: 1,
-                                  offset: Offset(0, 1.0),
-                                ),
-                                // O'yma chuqurining ichki to'q soyasi
-                                Shadow(
-                                  color: Color(0x80000000),
-                                  blurRadius: 1,
-                                  offset: Offset(0, -0.8),
-                                ),
-                              ]
-                            : null,
+                        // Oddiy tekis matn — oltin ustiga yozilgan (o'yma
+                        // effekti yo'q, ko'zni charchatmasligi uchun).
                       ),
                     ),
                   ],
