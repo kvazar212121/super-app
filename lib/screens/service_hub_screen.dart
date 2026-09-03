@@ -65,6 +65,21 @@ import 'package:super_app/l10n/locale_controller.dart';
 part 'service_hub/service_hub_map_section.dart';
 part 'service_hub/service_hub_action_list.dart';
 
+/// Public yordamchi funksiya — biron bir xizmat turi va ma'lumotlar to'plami
+/// bo'yicha CatalogEntry ro'yxatini yaratadi.
+List<CatalogEntry> buildCatalogEntriesForKind(
+  BuildContext context,
+  ServiceHubKind kind,
+  HubScreenData data, {
+  Color accentColor = const Color(0xFFB8921F),
+}) {
+  return _ActionList(
+    kind: kind,
+    accentColor: accentColor,
+    data: data,
+  ).catalogEntries(context);
+}
+
 /// Yangi dizayn (qidiruv + vertikal qatorlar + alohida xarita ekrani) YOQILGAN
 /// xizmat turlari. Sartaroshda sinovdan o'tkazilib, keyin qolganlariga
 /// bosqichma-bosqich tarqatiladi. Ro'yxatda bo'lmagan xizmatlar eski

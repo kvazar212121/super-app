@@ -130,12 +130,12 @@ class _OrderCard extends StatelessWidget {
             Row(
               children: [
                 Container(
-                  width: 46,
-                  height: 46,
-                  decoration: LuxTokens.goldBoxDecoration(radius: 14),
-                  child: Icon(icon, color: const Color(0xFF140D02), size: 22),
+                  width: 36,
+                  height: 36,
+                  decoration: LuxTokens.goldBoxDecoration(radius: 10),
+                  child: Icon(icon, color: const Color(0xFF140D02), size: 17),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: 10),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -144,7 +144,7 @@ class _OrderCard extends StatelessWidget {
                         order.serviceName,
                         style: TextStyle(
                           fontWeight: FontWeight.w800,
-                          fontSize: 16,
+                          fontSize: 12.5,
                           color: GlassTokens.primaryText(context),
                         ),
                       ),
@@ -153,7 +153,7 @@ class _OrderCard extends StatelessWidget {
                         style: const TextStyle(
                           color: Color(0xFF8A5D0B),
                           fontWeight: FontWeight.w700,
-                          fontSize: 13.5,
+                          fontSize: 10.5,
                         ),
                       ),
                     ],
@@ -166,12 +166,12 @@ class _OrderCard extends StatelessWidget {
               ],
             ),
             if (order.address.isNotEmpty) ...[
-              const SizedBox(height: 10),
+              const SizedBox(height: 8),
               Row(
                 children: [
                   const Icon(
                     LucideIcons.mapPin,
-                    size: 14,
+                    size: 12,
                     color: Color(0xFF140D02),
                   ),
                   const SizedBox(width: 4),
@@ -179,7 +179,7 @@ class _OrderCard extends StatelessWidget {
                     child: Text(
                       order.address,
                       style: const TextStyle(
-                        fontSize: 12.5,
+                        fontSize: 10,
                         fontWeight: FontWeight.w600,
                         color: Color(0xFF140D02),
                       ),
@@ -190,7 +190,7 @@ class _OrderCard extends StatelessWidget {
                 ],
               ),
             ],
-            Divider(height: 24, color: GlassTokens.glassBorder(context)),
+            Divider(height: 16, color: GlassTokens.glassBorder(context)),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -198,14 +198,14 @@ class _OrderCard extends StatelessWidget {
                   children: [
                     const Icon(
                       LucideIcons.calendar,
-                      size: 14,
+                      size: 12,
                       color: Color(0xFF140D02),
                     ),
                     const SizedBox(width: 4),
                     Text(
                       dateStr,
                       style: const TextStyle(
-                        fontSize: 12.5,
+                        fontSize: 10,
                         fontWeight: FontWeight.w600,
                         color: Color(0xFF140D02),
                       ),
@@ -216,7 +216,7 @@ class _OrderCard extends StatelessWidget {
                   "${order.price.toStringAsFixed(0)} ${"so'm".tr}",
                   style: const TextStyle(
                     fontWeight: FontWeight.w900,
-                    fontSize: 15,
+                    fontSize: 11.5,
                     color: Color(0xFF140D02),
                   ),
                 ),
@@ -282,22 +282,22 @@ class _StatusBadge extends StatelessWidget {
     }
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
         color: bg,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: border, width: 1.2),
+        border: Border.all(color: border, width: 1),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 13, color: text),
-          const SizedBox(width: 5),
+          Icon(icon, size: 11, color: text),
+          const SizedBox(width: 4),
           Text(
             statusText,
             style: TextStyle(
               color: text,
-              fontSize: 12,
+              fontSize: 9.5,
               fontWeight: FontWeight.w800,
             ),
           ),

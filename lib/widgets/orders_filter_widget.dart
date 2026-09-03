@@ -51,7 +51,7 @@ class OrdersFilterWidget extends StatelessWidget {
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 220),
                 curve: Curves.easeOutCubic,
-                padding: const EdgeInsets.symmetric(vertical: 11),
+                padding: const EdgeInsets.symmetric(vertical: 7),
                 decoration: selected
                     ? LuxTokens.goldBoxDecoration(customRadius: pillRadius)
                     : BoxDecoration(
@@ -63,12 +63,12 @@ class OrdersFilterWidget extends StatelessWidget {
                   textAlign: TextAlign.center,
                   style: selected
                       ? LuxTokens.goldEngravedTextStyle.copyWith(
-                          fontSize: 13,
+                          fontSize: 10.5,
                           fontWeight: FontWeight.w900,
                         )
                       : const TextStyle(
                           fontWeight: FontWeight.w800,
-                          fontSize: 13,
+                          fontSize: 10.5,
                           color: Color(0xFF0F172A),
                         ),
                 ),

@@ -57,7 +57,7 @@ class GoldTabBar extends StatelessWidget implements PreferredSizeWidget {
                           tabs[index],
                           maxLines: 1,
                           style: const TextStyle(
-                            fontSize: 15,
+                            fontSize: 11.5,
                             fontWeight: FontWeight.w900,
                             color: Colors.white,
                             letterSpacing: -0.2,
@@ -68,7 +68,7 @@ class GoldTabBar extends StatelessWidget implements PreferredSizeWidget {
                         tabs[index],
                         maxLines: 1,
                         style: const TextStyle(
-                          fontSize: 14,
+                          fontSize: 10.5,
                           fontWeight: FontWeight.w700,
                           color: Color(0xFF140D02),
                         ),

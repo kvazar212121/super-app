@@ -1,12 +1,16 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../models/service_hub_kind.dart';
 import '../services/feature_service.dart';
+import '../services/hub_data_service.dart';
 import '../l10n/locale_controller.dart';
 import '../theme/glass_tokens.dart';
 import '../theme/lux_tokens.dart';
 import '../widgets/glass/glass_scaffold.dart';
 import 'service_hub_screen.dart';
+import 'service_hub/service_catalog_screen.dart';
+import 'service_hub/service_map_screen.dart';
 
 import '../widgets/search_input_widget.dart';
 import '../widgets/search_results_widget.dart';
@@ -86,6 +90,46 @@ class _AllCategoriesScreenState extends State<AllCategoriesScreen> {
     super.dispose();
   }
 
+  Future<void> _openGlobalMap() async {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const Center(
+        child: CircularProgressIndicator(color: LuxTokens.gold),
+      ),
+    );
+
+    final allEntries = <CatalogEntry>[];
+    for (final kind in ServiceHubKind.values) {
+      try {
+        final data = await HubDataService().loadFor(kind);
+        if (mounted) {
+          final entries = buildCatalogEntriesForKind(
+            context,
+            kind,
+            data,
+            accentColor: LuxTokens.gold,
+          );
+          allEntries.addAll(entries);
+        }
+      } catch (_) {}
+    }
+
+    if (!mounted) return;
+    Navigator.pop(context); // close loader
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ServiceMapScreen(
+          title: 'Xizmatlar Xaritasi'.tr,
+          accent: LuxTokens.gold,
+          entries: allEntries,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
@@ -99,13 +143,59 @@ class _AllCategoriesScreenState extends State<AllCategoriesScreen> {
             children: [
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-                child: SearchInputWidget(
-                  controller: _searchController,
-                  onChanged: () => setState(() {}),
-                  onClear: () {
-                    _searchController.clear();
-                    setState(() {});
-                  },
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: SearchInputWidget(
+                        controller: _searchController,
+                        onChanged: () => setState(() {}),
+                        onClear: () {
+                          _searchController.clear();
+                          setState(() {});
+                        },
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Container(
+                      height: 48,
+                      decoration: BoxDecoration(
+                        color: isDark ? LuxTokens.surface : Colors.white,
+                        borderRadius: BorderRadius.circular(GlassTokens.radiusSm),
+                        border: Border.all(color: LuxTokens.border, width: 1.2),
+                        boxShadow: [
+                          BoxShadow(
+                            color: LuxTokens.gold.withValues(alpha: 0.15),
+                            blurRadius: 8,
+                          ),
+                        ],
+                      ),
+                      child: Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          onTap: _openGlobalMap,
+                          borderRadius: BorderRadius.circular(GlassTokens.radiusSm),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 14),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Icon(LucideIcons.mapPin, size: 18, color: LuxTokens.gold),
+                                const SizedBox(width: 6),
+                                Text(
+                                  'Xarita'.tr,
+                                  style: TextStyle(
+                                    fontSize: 13.5,
+                                    fontWeight: FontWeight.w700,
+                                    color: isDark ? Colors.white : LuxTokens.text,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
               Expanded(
