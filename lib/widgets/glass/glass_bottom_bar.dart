@@ -187,24 +187,44 @@ class _NotchedTopBorderPainter extends CustomPainter {
     );
     path.lineTo(size.width, topY);
 
-    // 1) Asosiy chiziq (oltin/border rangi).
-    final linePaint = Paint()
-      ..color = color
+    // Haqiqiy 24K Oltin Metallik Gradiyenti (tovlanuvchi va yarqiraydigan oltin nuri)
+    final goldShader = const LinearGradient(
+      begin: Alignment.centerLeft,
+      end: Alignment.centerRight,
+      colors: [
+        Color(0xFFBF953F), // metallik oltin
+        Color(0xFFFCF6BA), // yarqiragan oq-oltin nuri
+        Color(0xFFB38728), // to'q sof oltin
+        Color(0xFFFBF5B7), // porloq nurlar
+        Color(0xFFAA771C), // 24K oltin soya
+        Color(0xFFE5C158), // yarqiroq oltin
+      ],
+      stops: [0.0, 0.25, 0.5, 0.72, 0.88, 1.0],
+    ).createShader(Rect.fromLTWH(0, 0, size.width, size.height));
+
+    // 1) Oltin yog'du porlashi (Golden Aura Glow Effect)
+    final glowPaint = Paint()
+      ..shader = goldShader
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.3
+      ..strokeWidth = 5.0
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 4.0);
+    canvas.drawPath(path, glowPaint);
+
+    // 2) Asosiy 24K Qalin Oltin metallik chiziq (2.5px qalinlik)
+    final linePaint = Paint()
+      ..shader = goldShader
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2.5
       ..strokeCap = StrokeCap.round
       ..strokeJoin = StrokeJoin.round;
     canvas.drawPath(path, linePaint);
 
-    // 2) Chiziq ostidagi nozik yorug'lik (highlight) — shishasimon his.
-    final glowPaint = Paint()
-      ..color = highlight
+    // 3) Markaziy nozik nurlanish yadrosi (Specular highlight core)
+    final corePaint = Paint()
+      ..color = const Color(0xFFFFFDF0).withValues(alpha: 0.85)
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 0.8;
-    canvas.save();
-    canvas.translate(0, 1.0);
-    canvas.drawPath(path, glowPaint);
-    canvas.restore();
+      ..strokeWidth = 0.9;
+    canvas.drawPath(path, corePaint);
   }
 
   @override
