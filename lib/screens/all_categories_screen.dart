@@ -155,7 +155,7 @@ class _AllCategoriesScreenState extends State<AllCategoriesScreen> {
                                       group.title.tr.toUpperCase(),
                                       style: LuxTokens.sectionTitle.copyWith(
                                         color: LuxTokens.gold,
-                                        fontSize: 12.5,
+                                        fontSize: 9.5,
                                         fontWeight: FontWeight.w700,
                                       ),
                                     ),

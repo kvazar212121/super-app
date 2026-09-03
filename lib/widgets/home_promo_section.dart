@@ -230,7 +230,8 @@ class _HomePromoSectionState extends State<HomePromoSection>
                       sigmaX: GlassTokens.glassBlur,
                       sigmaY: GlassTokens.glassBlur,
                     ),
-                    child: Container(
+                    child: MediaQuery.withNoTextScaling(
+                      child: Container(
                       width: double.infinity,
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
@@ -335,6 +336,7 @@ class _HomePromoSectionState extends State<HomePromoSection>
                         ],
                       ),
                     ),
+                    ),
                   ),
                 ),
               ),
@@ -424,7 +426,8 @@ class _LuxPromoCard extends StatelessWidget {
           ),
         ),
       ),
-      child: Container(
+      child: MediaQuery.withNoTextScaling(
+        child: Container(
         width: double.infinity,
         decoration: BoxDecoration(
           color: LuxTokens.surface,
@@ -601,6 +604,7 @@ class _LuxPromoCard extends StatelessWidget {
               ),
             ),
           ],
+        ),
         ),
       ),
     );
