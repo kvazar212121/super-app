@@ -29,106 +29,99 @@ class GlassBottomBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final fill = GlassTokens.glassFill(context);
-    final border = GlassTokens.glassBorder(context);
-    final highlight = GlassTokens.glassHighlight(context);
-
-    // Tepada shaffof "havo" chizig'i: markaziy orb shu yerga chiqib turadi va
-    // panel tepa chizig'i uning ustidan yumaloq qayrilib o'tadi.
-    // Kichikroq strip = chiziq pastroqda, ikonlarga yaqinroq.
     const topStrip = 16.0;
 
-    return SizedBox(
-      width: double.infinity,
-      child: Stack(
-        clipBehavior: Clip.none,
-        children: [
-          // 1) Shishasimon panel — markaziy orb egri qayrilishi bilan birga to'liq bo'yaladi.
-          Positioned.fill(
-            child: ClipPath(
-              clipper: _NotchedBarClipper(
-                itemCount: items.length,
-                centerIndex: centerIndex,
-                baseY: topStrip,
-                notchRadius: 30,
-              ),
-              child: BackdropFilter(
-                filter: ImageFilter.blur(
-                  sigmaX: GlassTokens.glassBlur,
-                  sigmaY: GlassTokens.glassBlur,
-                ),
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [
-                        fill,
-                        Color.lerp(fill, Colors.transparent, 0.12) ?? fill,
-                      ],
+    return Container(
+      margin: const EdgeInsets.fromLTRB(14, 0, 14, 10),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(36),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFFC9A227).withValues(alpha: 0.28),
+            blurRadius: 18,
+            spreadRadius: 2,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(36),
+        child: SizedBox(
+          width: double.infinity,
+          child: Stack(
+            clipBehavior: Clip.none,
+            children: [
+              // 1) Oq shishasimon panel — markaziy orb egri qayrilishi bilan birga to'liq bo'yaladi.
+              Positioned.fill(
+                child: ClipPath(
+                  clipper: _NotchedBarClipper(
+                    itemCount: items.length,
+                    centerIndex: centerIndex,
+                    baseY: topStrip,
+                    notchRadius: 30,
+                  ),
+                  child: Container(
+                    decoration: const BoxDecoration(
+                      color: Colors.white,
                     ),
-                    boxShadow: GlassTokens.glassShadow(context),
                   ),
                 ),
               ),
-            ),
-          ),
-          // 2) Panel tepa chizig'i — markaziy orb ustidan yumaloq qayrilib
-          //    o'tadi (mashina qanoti g'ildirak ustidan o'tgandek).
-          Positioned.fill(
-            child: IgnorePointer(
-              child: CustomPaint(
-                painter: _NotchedTopBorderPainter(
-                  color: border,
-                  highlight: highlight,
-                  itemCount: items.length,
-                  centerIndex: centerIndex,
-                  baseY: topStrip,
-                  // Orb radiusi (46/2) + havo. Egri ikki chetga keng tortiladi.
-                  notchRadius: 30,
+              // 2) Panel tepa chizig'i — markaziy orb ustidan yumaloq qayrilib o'tadi.
+              Positioned.fill(
+                child: IgnorePointer(
+                  child: CustomPaint(
+                    painter: _NotchedTopBorderPainter(
+                      color: const Color(0xFFC9A227),
+                      highlight: const Color(0xFFFFF7C2),
+                      itemCount: items.length,
+                      centerIndex: centerIndex,
+                      baseY: topStrip,
+                      notchRadius: 30,
+                    ),
+                  ),
                 ),
               ),
-            ),
-          ),
-          // 3) Tugmalar qatori — orbdan tashqarilar panel ichida; markaziy
-          //    orb esa yuqoriga chiqib turadi.
-          SafeArea(
-            top: false,
-            child: Padding(
-              padding: const EdgeInsets.only(
-                left: 4,
-                right: 4,
-                top: topStrip,
-                bottom: 6,
+              // 3) Tugmalar qatori
+              SafeArea(
+                top: false,
+                child: Padding(
+                  padding: const EdgeInsets.only(
+                    left: 8,
+                    right: 8,
+                    top: topStrip,
+                    bottom: 6,
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: List.generate(items.length, (i) {
+                      final item = items[i];
+                      final selected = i == currentIndex;
+                      if (i == centerIndex) {
+                        return Expanded(
+                          child: _AiOrb(
+                            item: item,
+                            selected: selected,
+                            onTap: () => onTap(i),
+                            onLongPress: onCenterLongPress,
+                          ),
+                        );
+                      }
+                      return Expanded(
+                        child: _NavButton(
+                          item: item,
+                          selected: selected,
+                          onTap: () => onTap(i),
+                        ),
+                      );
+                    }),
+                  ),
+                ),
               ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: List.generate(items.length, (i) {
-                  final item = items[i];
-                  final selected = i == currentIndex;
-                  if (i == centerIndex) {
-                    return Expanded(
-                      child: _AiOrb(
-                        item: item,
-                        selected: selected,
-                        onTap: () => onTap(i),
-                        onLongPress: onCenterLongPress,
-                      ),
-                    );
-                  }
-                  return Expanded(
-                    child: _NavButton(
-                      item: item,
-                      selected: selected,
-                      onTap: () => onTap(i),
-                    ),
-                  );
-                }),
-              ),
-            ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
@@ -437,54 +430,37 @@ class _NavButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Tanlangan element: dark rejimda OLTIN, light rejimda eski ko'k.
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final accent = isDark ? LuxTokens.goldSoft : const Color(0xFF3B82F6);
-    // Dark (premium) rejimda tanlanganlik FAQAT rang bilan ko'rsatiladi —
-    // orqa fon kapsulasi yo'q. Qora fonda rangli plashka og'ir ko'rinadi va
-    // panelning tekis, tinch ko'rinishini buzadi.
-    final activeColor = isDark
-        ? Colors.transparent
-        : accent.withValues(alpha: 0.12);
+    const goldColor = Color(0xFFC9A227);
+    const inactiveColor = Color(0xFF94A3B8);
 
     return Material(
       color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(20),
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 220),
-          curve: Curves.easeOutCubic,
-          padding: const EdgeInsets.only(top: 6, bottom: 0),
-          decoration: BoxDecoration(
-            color: selected ? activeColor : Colors.transparent,
-            borderRadius: BorderRadius.circular(20),
-          ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 4),
           child: Column(
             mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(
                 item.icon,
-                size: 20,
-                color: selected
-                    ? accent
-                    : const Color(0xFF0A0A0A),
+                size: 22,
+                color: selected ? goldColor : inactiveColor,
               ),
               const SizedBox(height: 3),
-              FittedBox(
-                fit: BoxFit.scaleDown,
-                child: Text(
-                  item.label,
-                  style: TextStyle(
-                    fontFamily: LuxTokens.display,
-                    fontSize: 11,
-                    fontWeight: FontWeight.w700,
-                    color: selected
-                        ? accent
-                        : const Color(0xFF0A0A0A),
+              if (selected)
+                Container(
+                  width: 4,
+                  height: 4,
+                  decoration: const BoxDecoration(
+                    color: goldColor,
+                    shape: BoxShape.circle,
                   ),
-                ),
-              ),
+                )
+              else
+                const SizedBox(height: 4),
             ],
           ),
         ),
