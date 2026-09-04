@@ -625,11 +625,7 @@ class _DailyBtn extends StatelessWidget {
   final VoidCallback onTap;
   final String? bgImage;
 
-  /// PREMIUM ko'rinish uchun qo'shimcha ma'lumot (dark rejimda ishlatiladi).
-  /// [stat] — o'ng-yuqoridagi kichik yorliq (masalan "68%", "2/5").
-  /// [value] — kartaning markazidagi ASOSIY son (oltin rangda).
-  /// [caption] — [value] ostidagi izoh (masalan "/ 2100 KCAL").
-  /// Berilmasa, o'sha element chizilmaydi — karta baribir to'g'ri ko'rinadi.
+  /// PREMIUM ko'rinish uchun qo'shimcha ma'lumot.
   final String? stat;
   final String? value;
   final String? caption;
@@ -650,93 +646,123 @@ class _DailyBtn extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    if (isDark) return _buildLux(context);
-    return _buildLight(context);
-  }
+    final cardBg = isDark ? LuxTokens.surface : Colors.white;
+    final titleColor = isDark ? Colors.white : const Color(0xFF0F172A);
+    final subColor = isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B);
 
-  /// PREMIUM karta: rasm YO'Q, faqat tipografiya va bitta ikon.
-  ///
-  /// NEGA rasmsiz: 3D render rasmlar rangli va "o'yinchoqdek" ko'rinadi,
-  /// qora+oltin qat'iy uslubga zid. Bu yerda ma'lumot (son) asosiy —
-  /// foydalanuvchi bir qarashda holatini ko'radi, keyin bosadi.
-  Widget _buildLux(BuildContext context) {
     return Material(
-      color: LuxTokens.surface,
-      borderRadius: BorderRadius.circular(LuxTokens.radiusMd),
+      color: cardBg,
+      borderRadius: BorderRadius.circular(20),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(LuxTokens.radiusMd),
+        borderRadius: BorderRadius.circular(20),
         child: Container(
-          height: 138,
+          height: 148,
           decoration: BoxDecoration(
-            color: LuxTokens.surface,
-            borderRadius: BorderRadius.circular(LuxTokens.radiusMd),
-            border: Border.all(color: LuxTokens.border),
+            color: cardBg,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: isDark ? LuxTokens.border : LuxTokens.gold.withValues(alpha: 0.35),
+              width: 1.2,
+            ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.05),
+                color: isDark
+                    ? Colors.black.withValues(alpha: 0.15)
+                    : LuxTokens.gold.withValues(alpha: 0.08),
                 blurRadius: 10,
                 offset: const Offset(0, 4),
               ),
             ],
           ),
-          clipBehavior: Clip.antiAlias,
           child: Stack(
-            fit: StackFit.expand,
             children: [
-              if (bgImage != null)
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(4, 10, 4, 32),
-                  child: Image.asset(
-                    bgImage!,
-                    fit: BoxFit.contain,
-                    alignment: Alignment.center,
-                  ),
-                )
-              else
-                Center(
-                  child: Icon(icon, color: LuxTokens.gold, size: 36),
-                ),
-              Positioned(
-                left: 0,
-                right: 0,
-                bottom: 0,
-                child: Container(
-                  padding: const EdgeInsets.fromLTRB(10, 7, 10, 8),
-                  decoration: const BoxDecoration(
-                    gradient: LuxTokens.goldGradient,
-                    border: Border(
-                      top: BorderSide(color: Color(0xFFC9A227), width: 1.2),
-                    ),
-                    borderRadius: BorderRadius.vertical(
-                      bottom: Radius.circular(LuxTokens.radiusMd - 1),
-                    ),
-                  ),
-                  child: Row(
+              // 1) Asosiy tarkib: Tepadagi rasm/ikon va pastdagi tiniq matnlar (bloklarsiz)
+              Positioned.fill(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(8, 10, 8, 10),
+                  child: Column(
                     children: [
+                      // Tepadagi 3D rasm yoki ikonka
                       Expanded(
-                        child: Text(
-                          label,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            fontFamily: LuxTokens.body,
-                            color: Color(0xFF000000),
-                            fontSize: 15,
-                            fontWeight: FontWeight.w900,
-                            letterSpacing: -0.2,
-                          ),
+                        child: Center(
+                          child: bgImage != null
+                              ? Image.asset(
+                                  bgImage!,
+                                  fit: BoxFit.contain,
+                                )
+                              : Container(
+                                  width: 48,
+                                  height: 48,
+                                  decoration: BoxDecoration(
+                                    color: LuxTokens.gold.withValues(alpha: 0.12),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: Icon(icon, color: LuxTokens.gold, size: 26),
+                                ),
                         ),
                       ),
-                      const Icon(
-                        LucideIcons.chevronRight,
-                        size: 15,
-                        color: Color(0xFF000000),
+                      const SizedBox(height: 4),
+                      // Sarlavha (Kaloriya, Fitnes, Rejalarim...)
+                      Text(
+                        label,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontFamily: LuxTokens.body,
+                          color: titleColor,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: -0.2,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      // Izoh/Subtitle (masalan: "Kaloriya nazorati")
+                      Text(
+                        _getSubtitle(label),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontFamily: LuxTokens.body,
+                          color: subColor,
+                          fontSize: 10.5,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                     ],
                   ),
                 ),
               ),
+              // 2) O'ng-yuqoridagi nozik oltin lenta ("Yangi" / Stat nishon)
+              if (stat != null && stat!.isNotEmpty)
+                Positioned(
+                  top: 8,
+                  right: 8,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2.5),
+                    decoration: BoxDecoration(
+                      gradient: LuxTokens.goldGradient,
+                      borderRadius: BorderRadius.circular(6),
+                      boxShadow: [
+                        BoxShadow(
+                          color: LuxTokens.gold.withValues(alpha: 0.25),
+                          blurRadius: 4,
+                          offset: const Offset(0, 1),
+                        ),
+                      ],
+                    ),
+                    child: Text(
+                      stat!,
+                      style: const TextStyle(
+                        fontSize: 9,
+                        fontWeight: FontWeight.w900,
+                        color: Color(0xFF140D02),
+                      ),
+                    ),
+                  ),
+                ),
             ],
           ),
         ),
@@ -744,86 +770,17 @@ class _DailyBtn extends StatelessWidget {
     );
   }
 
-  Widget _buildLight(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(18),
-      child: Container(
-        height: 138,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: LuxTokens.gold.withValues(alpha: 0.6), width: 1.2),
-          boxShadow: [
-            BoxShadow(
-              color: LuxTokens.gold.withValues(alpha: 0.12),
-              blurRadius: 12,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        clipBehavior: Clip.antiAlias,
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            if (bgImage != null)
-              Padding(
-                padding: const EdgeInsets.fromLTRB(4, 10, 4, 30),
-                child: Image.asset(
-                  bgImage!,
-                  fit: BoxFit.contain,
-                  alignment: Alignment.center,
-                ),
-              )
-            else
-              Container(
-                color: LuxTokens.gold.withValues(alpha: 0.12),
-                child: Center(child: Icon(icon, color: LuxTokens.gold, size: 32)),
-              ),
-            Positioned(
-              left: 0,
-              right: 0,
-              bottom: 0,
-              child: Container(
-                padding: const EdgeInsets.fromLTRB(10, 7, 10, 8),
-                decoration: const BoxDecoration(
-                  gradient: LuxTokens.goldGradient,
-                  border: Border(
-                    top: BorderSide(color: Color(0xFFC9A227), width: 1.2),
-                  ),
-                  borderRadius: BorderRadius.vertical(
-                    bottom: Radius.circular(17),
-                  ),
-                ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        label,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          fontFamily: LuxTokens.body,
-                          color: Color(0xFF000000),
-                          fontWeight: FontWeight.w900,
-                          fontSize: 15,
-                          height: 1.1,
-                          letterSpacing: -0.2,
-                        ),
-                      ),
-                    ),
-                    const Icon(
-                      LucideIcons.chevronRight,
-                      size: 15,
-                      color: Color(0xFF000000),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
+  String _getSubtitle(String cardTitle) {
+    if (caption != null && caption!.isNotEmpty && caption != 'xarajat' && caption != 'uyg\'onish') {
+      return caption!;
+    }
+    final t = cardTitle.toLowerCase();
+    if (t.contains('kaloriya')) return 'Kaloriya nazorati';
+    if (t.contains('fitnes')) return 'Mashq & Salomatlik';
+    if (t.contains('rejalar')) return 'Kunlik vazifalar';
+    if (t.contains('moliya')) return 'Moliya & Budjet';
+    if (t.contains('aqlli') || t.contains('savdo')) return 'Aqlli xaridlar';
+    if (t.contains('budilnik')) return 'Budilnik & Qaydlar';
+    return 'Qulay vosita';
   }
 }
