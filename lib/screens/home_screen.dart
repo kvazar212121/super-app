@@ -139,7 +139,7 @@ class HomeScreen extends StatelessWidget {
         badgeText: '2/5',
         bottomCaption: 'Fitness & Mashqlar',
         color: const Color(0xFF14B8A6),
-        bgImage: 'assets/images/fitness_trainer_shaffof.png',
+        bgImage: 'assets/images/fitness_trainer.jpg',
         onTap: () =>
             _openFeature(context, 'fitness', () => const FitnessHomeScreen()),
       ),
@@ -150,7 +150,7 @@ class HomeScreen extends StatelessWidget {
         badgeText: '68%',
         bottomCaption: 'Kaloriya Nazorati',
         color: const Color(0xFFEF4444),
-        bgImage: 'assets/images/calorie_counter_shaffof.png',
+        bgImage: 'assets/images/calorie_counter.jpg',
         onTap: () =>
             _openFeature(context, 'calorie', () => const CalorieHomeScreen()),
       ),
@@ -161,7 +161,7 @@ class HomeScreen extends StatelessWidget {
         badgeText: '1/5',
         bottomCaption: 'Kunlik Rejalashtiruvchi',
         color: const Color(0xFF3B82F6),
-        bgImage: 'assets/images/my_plans_shaffof.png',
+        bgImage: 'assets/images/my_plans.jpg',
         onTap: () => _openFeature(context, 'plans', () => const TodoScreen()),
       ),
       _DailyBtn(
@@ -171,7 +171,7 @@ class HomeScreen extends StatelessWidget {
         badgeText: 'UZS',
         bottomCaption: 'Moliya & Budjet',
         color: const Color(0xFF22C55E),
-        bgImage: 'assets/images/my_finance_shaffof.png',
+        bgImage: 'assets/images/my_finance.jpg',
         onTap: () => _openFeature(
           context,
           'finance',
@@ -185,7 +185,7 @@ class HomeScreen extends StatelessWidget {
         badgeText: '2/5',
         bottomCaption: 'Aqlli Xarid',
         color: const Color(0xFFF97316),
-        bgImage: 'assets/images/smart_shopping_shaffof.png',
+        bgImage: 'assets/images/smart_shopping.jpg',
         onTap: () =>
             _openFeature(context, 'shopping', () => const ShoppingListScreen()),
       ),
@@ -196,7 +196,7 @@ class HomeScreen extends StatelessWidget {
         badgeText: 'Faol',
         bottomCaption: 'Budilnik & Eslatmalar',
         color: const Color(0xFF6366F1),
-        bgImage: 'assets/images/majburolovchi_shaffof.png',
+        bgImage: 'assets/images/majburolovchi.jpg',
         onTap: () =>
             _openFeature(context, 'alarm', () => const AlarmHomeScreen()),
       ),
