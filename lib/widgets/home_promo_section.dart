@@ -480,47 +480,8 @@ class _LuxPromoCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      // Kategoriya chipi (chapda) — nimaga oid aksiya ekani.
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 5,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.black.withValues(alpha: 0.55),
-                          borderRadius: BorderRadius.circular(999),
-                          border: Border.all(
-                            color: LuxTokens.gold.withValues(alpha: 0.5),
-                            width: 1,
-                          ),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const Icon(
-                              LucideIcons.sparkles,
-                              size: 11,
-                              color: LuxTokens.goldSoft,
-                            ),
-                            const SizedBox(width: 5),
-                            Flexible(
-                              child: Text(
-                                promo.title.tr.toUpperCase(),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: LuxTokens.label(
-                                  color: Colors.white,
-                                  size: 8.5,
-                                  weight: FontWeight.w600,
-                                  spacing: 1.8,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const Spacer(),
                       // Chegirma nishoni (o'ngda) — oltin, eng ko'zga tashlanadigan.
                       if (promo.badge.trim().isNotEmpty)
                         Container(
@@ -544,15 +505,6 @@ class _LuxPromoCard extends StatelessWidget {
                     ],
                   ),
                   const Spacer(),
-                  Text(
-                    'MAXSUS TAKLIF'.tr,
-                    style: LuxTokens.label(
-                      color: Colors.white70,
-                      size: 8.5,
-                      spacing: 2.6,
-                    ),
-                  ),
-                  const SizedBox(height: 5),
                   Text(
                     promo.title.tr,
                     maxLines: 1,
