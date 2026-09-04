@@ -139,7 +139,7 @@ class HomeScreen extends StatelessWidget {
         badgeText: '2/5',
         bottomCaption: 'Fitness & Mashqlar',
         color: const Color(0xFF14B8A6),
-        bgImage: 'assets/images/fitness_trainer.jpg',
+        bgImage: 'assets/images/card_fitnes.png',
         onTap: () =>
             _openFeature(context, 'fitness', () => const FitnessHomeScreen()),
       ),
@@ -150,7 +150,7 @@ class HomeScreen extends StatelessWidget {
         badgeText: '68%',
         bottomCaption: 'Kaloriya Nazorati',
         color: const Color(0xFFEF4444),
-        bgImage: 'assets/images/calorie_counter.jpg',
+        bgImage: 'assets/images/card_kalorie.png',
         onTap: () =>
             _openFeature(context, 'calorie', () => const CalorieHomeScreen()),
       ),
@@ -161,7 +161,7 @@ class HomeScreen extends StatelessWidget {
         badgeText: '1/5',
         bottomCaption: 'Kunlik Rejalashtiruvchi',
         color: const Color(0xFF3B82F6),
-        bgImage: 'assets/images/my_plans.jpg',
+        bgImage: 'assets/images/card_planner.png',
         onTap: () => _openFeature(context, 'plans', () => const TodoScreen()),
       ),
       _DailyBtn(
@@ -171,7 +171,7 @@ class HomeScreen extends StatelessWidget {
         badgeText: 'UZS',
         bottomCaption: 'Moliya & Budjet',
         color: const Color(0xFF22C55E),
-        bgImage: 'assets/images/my_finance.jpg',
+        bgImage: 'assets/images/card_moliya.png',
         onTap: () => _openFeature(
           context,
           'finance',
@@ -185,7 +185,7 @@ class HomeScreen extends StatelessWidget {
         badgeText: '2/5',
         bottomCaption: 'Aqlli Xarid',
         color: const Color(0xFFF97316),
-        bgImage: 'assets/images/smart_shopping.jpg',
+        bgImage: 'assets/images/card_bozor.png',
         onTap: () =>
             _openFeature(context, 'shopping', () => const ShoppingListScreen()),
       ),
@@ -196,7 +196,7 @@ class HomeScreen extends StatelessWidget {
         badgeText: 'Faol',
         bottomCaption: 'Budilnik & Eslatmalar',
         color: const Color(0xFF6366F1),
-        bgImage: 'assets/images/majburolovchi.jpg',
+        bgImage: 'assets/images/card_budilnik.png',
         onTap: () =>
             _openFeature(context, 'alarm', () => const AlarmHomeScreen()),
       ),
@@ -667,57 +667,63 @@ class _DailyBtn extends StatelessWidget {
           ),
           child: Stack(
             children: [
-              // Ichki kontent (rasm + tagidagi yozuv)
-              Padding(
-                padding: const EdgeInsets.fromLTRB(6, 12, 6, 8),
-                child: Column(
-                  children: [
-                    Expanded(
-                      child: Center(
-                        child: bgImage != null
-                            ? Image.asset(
-                                bgImage!,
-                                fit: BoxFit.contain,
-                              )
-                            : Container(
-                                width: 48,
-                                height: 48,
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFFC9A227).withValues(alpha: 0.12),
-                                  shape: BoxShape.circle,
-                                ),
-                                child: Icon(icon, color: const Color(0xFFC9A227), size: 26),
-                              ),
-                      ),
+              // Ichki kontent (rasm yoki belgi+matn)
+              if (bgImage != null)
+                Positioned.fill(
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(18),
+                    child: Image.asset(
+                      bgImage!,
+                      fit: BoxFit.cover,
                     ),
-                    const SizedBox(height: 4),
-                    Text(
-                      label,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        color: Color(0xFF0F172A),
-                        fontSize: 13.5,
-                        fontWeight: FontWeight.w900,
-                        letterSpacing: -0.2,
+                  ),
+                )
+              else
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(6, 12, 6, 8),
+                  child: Column(
+                    children: [
+                      Expanded(
+                        child: Center(
+                          child: Container(
+                            width: 48,
+                            height: 48,
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFC9A227).withValues(alpha: 0.12),
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(icon, color: const Color(0xFFC9A227), size: 26),
+                          ),
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      bottomCaption ?? customSubtitle,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        color: Color(0xFF64748B),
-                        fontSize: 10.5,
-                        fontWeight: FontWeight.w600,
+                      const SizedBox(height: 4),
+                      Text(
+                        label,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          color: Color(0xFF0F172A),
+                          fontSize: 13.5,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: -0.2,
+                        ),
                       ),
-                    ),
-                  ],
+                      const SizedBox(height: 2),
+                      Text(
+                        bottomCaption ?? customSubtitle,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          color: Color(0xFF64748B),
+                          fontSize: 10.5,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
               // Tepadagi o'ng oltin nishon (Badge: 68%, 2/5, 1/5, UZS, Faol)
               if (badgeText != null)
                 Positioned(
