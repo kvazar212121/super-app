@@ -134,44 +134,44 @@ class HomeScreen extends StatelessWidget {
     final kartalar = <Widget>[
       _DailyBtn(
         icon: LucideIcons.flame,
-        label: 'Kaloriya'.tr,
+        label: 'Kalorie'.tr,
+        customSubtitle: 'Kaloriya Nazorati'.tr,
+        badgeText: '68%',
+        bottomCaption: '/ 2100 kcal',
         color: const Color(0xFFEF4444),
         bgImage: 'assets/images/calorie_counter_shaffof.png',
-        stat: '68%',
-        value: '1425',
-        caption: '/ 2100 kcal',
         onTap: () =>
             _openFeature(context, 'calorie', () => const CalorieHomeScreen()),
       ),
       _DailyBtn(
         icon: LucideIcons.dumbbell,
-        label: 'Fitnes'.tr,
+        label: 'Fitness'.tr,
+        customSubtitle: 'Fitness & Mashqlar'.tr,
+        badgeText: '2/5',
+        bottomCaption: '5 mashq',
         color: const Color(0xFF14B8A6),
         bgImage: 'assets/images/fitness_trainer_shaffof.png',
-        stat: '2/5',
-        value: 'Ko\'krak',
-        caption: '5 mashq',
         onTap: () =>
             _openFeature(context, 'fitness', () => const FitnessHomeScreen()),
       ),
       _DailyBtn(
         icon: LucideIcons.calendarCheck,
-        label: 'Rejalarim'.tr,
+        label: 'Planner'.tr,
+        customSubtitle: 'Kunlik Rejalashtiruvchi'.tr,
+        badgeText: '1/5',
+        bottomCaption: 'keyingi',
         color: const Color(0xFF3B82F6),
         bgImage: 'assets/images/my_plans_shaffof.png',
-        stat: '1/5',
-        value: '14:30',
-        caption: 'keyingi',
         onTap: () => _openFeature(context, 'plans', () => const TodoScreen()),
       ),
       _DailyBtn(
         icon: LucideIcons.wallet,
-        label: 'Moliyam'.tr,
+        label: 'Finance'.tr,
+        customSubtitle: 'Moliya & Budjet'.tr,
+        badgeText: 'UZS',
+        bottomCaption: 'Moliya & Budjet',
         color: const Color(0xFF22C55E),
         bgImage: 'assets/images/my_finance_shaffof.png',
-        stat: 'UZS',
-        value: '1,105 ming',
-        caption: 'xarajat',
         onTap: () => _openFeature(
           context,
           'finance',
@@ -180,24 +180,23 @@ class HomeScreen extends StatelessWidget {
       ),
       _DailyBtn(
         icon: LucideIcons.shoppingBag,
-        label: 'Aqlli savdo'.tr,
+        label: 'Smart Shop'.tr,
+        customSubtitle: 'Aqlli Xarid'.tr,
+        badgeText: '2/5',
+        bottomCaption: 'savdo ro\'yxati',
         color: const Color(0xFFF97316),
         bgImage: 'assets/images/smart_shopping_shaffof.png',
-        stat: '2/5',
-        value: '3 ta qoldi',
-        caption: 'savdo ro\'yxati',
         onTap: () =>
             _openFeature(context, 'shopping', () => const ShoppingListScreen()),
       ),
       _DailyBtn(
         icon: LucideIcons.alarmClock,
-        label: 'Budilnik'.tr,
+        label: 'Alarm'.tr,
+        customSubtitle: 'Budilnik & Eslatmalar'.tr,
+        badgeText: 'Faol',
+        bottomCaption: 'Budilnik & Qaydlar',
         color: const Color(0xFF6366F1),
         bgImage: 'assets/images/majburolovchi_shaffof.png',
-        stat: 'Faol',
-        statAccent: true,
-        value: '06:30',
-        caption: 'uyg\'onish',
         onTap: () =>
             _openFeature(context, 'alarm', () => const AlarmHomeScreen()),
       ),
@@ -621,34 +620,27 @@ class _SectionTitle extends StatelessWidget {
 class _DailyBtn extends StatelessWidget {
   final IconData icon;
   final String label;
+  final String customSubtitle;
   final Color color;
   final VoidCallback onTap;
   final String? bgImage;
-
-  /// PREMIUM ko'rinish uchun qo'shimcha ma'lumot.
-  final String? stat;
-  final String? value;
-  final String? caption;
-  final bool statAccent;
+  final String? badgeText;
+  final String? bottomCaption;
 
   const _DailyBtn({
     required this.icon,
     required this.label,
+    required this.customSubtitle,
     required this.color,
     required this.onTap,
     this.bgImage,
-    this.stat,
-    this.value,
-    this.caption,
-    this.statAccent = false,
+    this.badgeText,
+    this.bottomCaption,
   });
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final cardBg = isDark ? LuxTokens.surface : Colors.white;
-    final titleColor = isDark ? Colors.white : const Color(0xFF0F172A);
-    final subColor = isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B);
+    const cardBg = Colors.white;
 
     return Material(
       color: cardBg,
@@ -657,19 +649,17 @@ class _DailyBtn extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(20),
         child: Container(
-          height: 148,
+          height: 142,
           decoration: BoxDecoration(
             color: cardBg,
             borderRadius: BorderRadius.circular(20),
             border: Border.all(
-              color: isDark ? LuxTokens.border : LuxTokens.gold.withValues(alpha: 0.35),
-              width: 1.2,
+              color: const Color(0xFFDFB435),
+              width: 1.5,
             ),
             boxShadow: [
               BoxShadow(
-                color: isDark
-                    ? Colors.black.withValues(alpha: 0.15)
-                    : LuxTokens.gold.withValues(alpha: 0.08),
+                color: Colors.black.withValues(alpha: 0.04),
                 blurRadius: 10,
                 offset: const Offset(0, 4),
               ),
@@ -677,88 +667,61 @@ class _DailyBtn extends StatelessWidget {
           ),
           child: Stack(
             children: [
-              // 1) Asosiy tarkib: Tepadagi rasm/ikon va pastdagi tiniq matnlar (bloklarsiz)
-              Positioned.fill(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(8, 10, 8, 10),
-                  child: Column(
-                    children: [
-                      // Tepadagi 3D rasm yoki ikonka
-                      Expanded(
-                        child: Center(
-                          child: bgImage != null
-                              ? Image.asset(
-                                  bgImage!,
-                                  fit: BoxFit.contain,
-                                )
-                              : Container(
-                                  width: 48,
-                                  height: 48,
-                                  decoration: BoxDecoration(
-                                    color: LuxTokens.gold.withValues(alpha: 0.12),
-                                    shape: BoxShape.circle,
-                                  ),
-                                  child: Icon(icon, color: LuxTokens.gold, size: 26),
+              // Ichki kontent (rasm + tagidagi yozuv)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(6, 12, 6, 8),
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: Center(
+                        child: bgImage != null
+                            ? Image.asset(
+                                bgImage!,
+                                fit: BoxFit.contain,
+                              )
+                            : Container(
+                                width: 48,
+                                height: 48,
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFC9A227).withValues(alpha: 0.12),
+                                  shape: BoxShape.circle,
                                 ),
-                        ),
+                                child: Icon(icon, color: const Color(0xFFC9A227), size: 26),
+                              ),
                       ),
-                      const SizedBox(height: 4),
-                      // Sarlavha (Kaloriya, Fitnes, Rejalarim...)
-                      Text(
-                        label,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontFamily: LuxTokens.body,
-                          color: titleColor,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w800,
-                          letterSpacing: -0.2,
-                        ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      bottomCaption ?? customSubtitle,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        color: Color(0xFF8E9BAE),
+                        fontSize: 11.5,
+                        fontWeight: FontWeight.w600,
                       ),
-                      const SizedBox(height: 2),
-                      // Izoh/Subtitle (masalan: "Kaloriya nazorati")
-                      Text(
-                        _getSubtitle(label),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontFamily: LuxTokens.body,
-                          color: subColor,
-                          fontSize: 10.5,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
-              // 2) O'ng-yuqoridagi nozik oltin lenta ("Yangi" / Stat nishon)
-              if (stat != null && stat!.isNotEmpty)
+              // Tepadagi o'ng oltin nishon (Badge: 68%, 2/5, 1/5, UZS, Faol)
+              if (badgeText != null)
                 Positioned(
                   top: 8,
                   right: 8,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2.5),
+                    padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 3.5),
                     decoration: BoxDecoration(
-                      gradient: LuxTokens.goldGradient,
-                      borderRadius: BorderRadius.circular(6),
-                      boxShadow: [
-                        BoxShadow(
-                          color: LuxTokens.gold.withValues(alpha: 0.25),
-                          blurRadius: 4,
-                          offset: const Offset(0, 1),
-                        ),
-                      ],
+                      color: const Color(0xFFE5B82A),
+                      borderRadius: BorderRadius.circular(9),
                     ),
                     child: Text(
-                      stat!,
+                      badgeText!,
                       style: const TextStyle(
-                        fontSize: 9,
-                        fontWeight: FontWeight.w900,
-                        color: Color(0xFF140D02),
+                        color: Color(0xFF1E1B18),
+                        fontSize: 10.5,
+                        fontWeight: FontWeight.w800,
                       ),
                     ),
                   ),
@@ -768,19 +731,5 @@ class _DailyBtn extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  String _getSubtitle(String cardTitle) {
-    if (caption != null && caption!.isNotEmpty && caption != 'xarajat' && caption != 'uyg\'onish') {
-      return caption!;
-    }
-    final t = cardTitle.toLowerCase();
-    if (t.contains('kaloriya')) return 'Kaloriya nazorati';
-    if (t.contains('fitnes')) return 'Mashq & Salomatlik';
-    if (t.contains('rejalar')) return 'Kunlik vazifalar';
-    if (t.contains('moliya')) return 'Moliya & Budjet';
-    if (t.contains('aqlli') || t.contains('savdo')) return 'Aqlli xaridlar';
-    if (t.contains('budilnik')) return 'Budilnik & Qaydlar';
-    return 'Qulay vosita';
   }
 }

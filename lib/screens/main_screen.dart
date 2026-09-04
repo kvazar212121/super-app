@@ -43,7 +43,7 @@ class _MainScreenState extends State<MainScreen> {
     GlassNavItem(
       icon: LucideIcons.messageSquare,
       activeIcon: Icons.chat_bubble_rounded,
-      label: 'Aloqa'.tr,
+      label: 'Xabarlar'.tr,
     ),
     GlassNavItem(
       icon: LucideIcons.clipboardList,
@@ -100,14 +100,20 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Fon TEMADAN (AppProvider.isDarkMode emas) — main.dart da tema
-    // majburan dark, bayroq esa false bo'lib qolishi mumkin.
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    return Stack(
-      fit: StackFit.expand,
-      children: [
-        MeshBackground(isDark: isDark),
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.dark,
+        statusBarBrightness: Brightness.light,
+        systemNavigationBarColor: Colors.transparent,
+        systemNavigationBarIconBrightness: Brightness.dark,
+      ),
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          MeshBackground(isDark: isDark),
         Scaffold(
           backgroundColor: Colors.transparent,
           // IndexedStack: tab almashganda ekran QAYTA yaratilmaydi, holati
@@ -160,6 +166,7 @@ class _MainScreenState extends State<MainScreen> {
           ),
         ),
       ],
-    );
-  }
+    ),
+  );
+}
 }

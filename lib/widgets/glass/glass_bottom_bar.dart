@@ -32,8 +32,8 @@ class GlassBottomBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const double barTopY = 16.0;
-    const double dipDepth = 18.0;
-    const double notchRadius = 34.0;
+    const double dipDepth = 32.0;
+    const double notchRadius = 42.0;
 
     return Container(
       margin: const EdgeInsets.fromLTRB(16, 0, 16, 10),
@@ -49,19 +49,25 @@ class GlassBottomBar extends StatelessWidget {
             bottom: 0,
             child: Container(
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(32),
+                borderRadius: BorderRadius.circular(20),
                 boxShadow: [
                   BoxShadow(
-                    color: const Color(0xFFE89A3C).withValues(alpha: 0.35),
+                    color: const Color(0xFFC9A227).withValues(alpha: 0.35),
                     blurRadius: 24,
                     spreadRadius: 2,
+                    offset: const Offset(0, 4),
+                  ),
+                  BoxShadow(
+                    color: const Color(0xFFDAA520).withValues(alpha: 0.25),
+                    blurRadius: 36,
+                    spreadRadius: 4,
                     offset: const Offset(0, 6),
                   ),
                   BoxShadow(
-                    color: const Color(0xFFF59E0B).withValues(alpha: 0.18),
-                    blurRadius: 36,
-                    spreadRadius: 6,
-                    offset: const Offset(0, 8),
+                    color: Colors.black.withValues(alpha: 0.12),
+                    blurRadius: 16,
+                    spreadRadius: 0,
+                    offset: const Offset(0, 4),
                   ),
                 ],
               ),
@@ -79,11 +85,9 @@ class GlassBottomBar extends StatelessWidget {
                 notchRadius: notchRadius,
               ),
               child: Container(
-                decoration: const BoxDecoration(
+                decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.vertical(
-                    bottom: Radius.circular(32),
-                  ),
+                  borderRadius: BorderRadius.circular(20),
                 ),
               ),
             ),
@@ -132,12 +136,12 @@ class GlassBottomBar extends StatelessWidget {
 
           // 5) Center Floating Orb (Sitting in concave notch, top half floating outside)
           Positioned(
-            top: -2,
+            top: -12,
             left: 0,
             right: 0,
             child: Center(
               child: SizedBox(
-                width: 64,
+                width: 72,
                 child: _AiOrb(
                   item: items[centerIndex],
                   selected: currentIndex == centerIndex,
@@ -173,36 +177,56 @@ class _ConcaveNotchedBarClipper extends CustomClipper<Path> {
   Path getClip(Size size) {
     final slot = size.width / itemCount;
     final cx = slot * (centerIndex + 0.5);
-    final half = notchRadius + 18;
+    final half = notchRadius + 22;
     final startX = cx - half;
     final endX = cx + half;
+    const cornerRadius = 20.0;
 
     final path = Path();
-    path.moveTo(0, topY + 12);
-    // Top-left rounded corner
-    path.quadraticBezierTo(0, topY, 16, topY);
+    path.moveTo(0, topY + cornerRadius);
+    // Top-left circular arc
+    path.arcToPoint(
+      Offset(cornerRadius, topY),
+      radius: const Radius.circular(cornerRadius),
+      clockwise: true,
+    );
     path.lineTo(startX, topY);
 
     // Smooth Concave dip going DOWNWARDS under the orb
     path.cubicTo(
-      cx - half * 0.5, topY,
-      cx - notchRadius * 0.6, topY + dipDepth,
+      cx - half * 0.55, topY,
+      cx - notchRadius * 0.7, topY + dipDepth,
       cx, topY + dipDepth,
     );
     path.cubicTo(
-      cx + notchRadius * 0.6, topY + dipDepth,
-      cx + half * 0.5, topY,
+      cx + notchRadius * 0.7, topY + dipDepth,
+      cx + half * 0.55, topY,
       endX, topY,
     );
 
-    path.lineTo(size.width - 16, topY);
-    // Top-right rounded corner
-    path.quadraticBezierTo(size.width, topY, size.width, topY + 12);
+    path.lineTo(size.width - cornerRadius, topY);
+    // Top-right circular arc
+    path.arcToPoint(
+      Offset(size.width, topY + cornerRadius),
+      radius: const Radius.circular(cornerRadius),
+      clockwise: true,
+    );
 
-    path.lineTo(size.width, size.height - 16);
-    path.quadraticBezierTo(size.width, size.height, size.width - 16, size.height);
-    path.lineTo(16, size.height);
-    path.quadraticBezierTo(0, size.height, 0, size.height - 16);
+    path.lineTo(size.width, size.height - cornerRadius);
+    // Bottom-right circular arc
+    path.arcToPoint(
+      Offset(size.width - cornerRadius, size.height),
+      radius: const Radius.circular(cornerRadius),
+      clockwise: true,
+    );
+
+    path.lineTo(cornerRadius, size.height);
+    // Bottom-left circular arc
+    path.arcToPoint(
+      Offset(0, size.height - cornerRadius),
+      radius: const Radius.circular(cornerRadius),
+      clockwise: true,
+    );
     path.close();
     return path;
   }
@@ -237,53 +261,72 @@ class _ConcaveTopBorderPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final slot = size.width / itemCount;
     final cx = slot * (centerIndex + 0.5);
-    final half = notchRadius + 18;
+    final half = notchRadius + 22;
     final startX = cx - half;
     final endX = cx + half;
+    const cornerRadius = 20.0;
 
     final path = Path();
-    path.moveTo(16, topY);
+    path.moveTo(0, topY + cornerRadius);
+    // Top-left circular arc
+    path.arcToPoint(
+      Offset(cornerRadius, topY),
+      radius: const Radius.circular(cornerRadius),
+      clockwise: true,
+    );
     path.lineTo(startX, topY);
 
+    // Concave Notch Dip
     path.cubicTo(
-      cx - half * 0.5, topY,
-      cx - notchRadius * 0.6, topY + dipDepth,
+      cx - half * 0.55, topY,
+      cx - notchRadius * 0.7, topY + dipDepth,
       cx, topY + dipDepth,
     );
     path.cubicTo(
-      cx + notchRadius * 0.6, topY + dipDepth,
-      cx + half * 0.5, topY,
+      cx + notchRadius * 0.7, topY + dipDepth,
+      cx + half * 0.55, topY,
       endX, topY,
     );
-    path.lineTo(size.width - 16, topY);
 
-    final goldShader = const LinearGradient(
-      begin: Alignment.centerLeft,
-      end: Alignment.centerRight,
-      colors: [
-        Color(0xFFE5C158),
-        Color(0xFFFCF6BA),
-        Color(0xFFB38728),
-        Color(0xFFFBF5B7),
-        Color(0xFFE5C158),
-      ],
-      stops: [0.0, 0.3, 0.5, 0.7, 1.0],
-    ).createShader(Rect.fromLTWH(0, 0, size.width, size.height));
+    path.lineTo(size.width - cornerRadius, topY);
+    // Top-right circular arc
+    path.arcToPoint(
+      Offset(size.width, topY + cornerRadius),
+      radius: const Radius.circular(cornerRadius),
+      clockwise: true,
+    );
 
-    // Soft Golden Aura Glow
+    path.lineTo(size.width, size.height - cornerRadius);
+    // Bottom-right circular arc
+    path.arcToPoint(
+      Offset(size.width - cornerRadius, size.height),
+      radius: const Radius.circular(cornerRadius),
+      clockwise: true,
+    );
+
+    path.lineTo(cornerRadius, size.height);
+    // Bottom-left circular arc
+    path.arcToPoint(
+      Offset(0, size.height - cornerRadius),
+      radius: const Radius.circular(cornerRadius),
+      clockwise: true,
+    );
+    path.close();
+
+    // Rich gold ambient aura glow along path
     final glowPaint = Paint()
-      ..shader = goldShader
+      ..color = const Color(0xFFC9A227).withValues(alpha: 0.40)
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 3.5
-      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 3.0);
+      ..strokeWidth = 4.0
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 4.0);
     canvas.drawPath(path, glowPaint);
 
-    // Golden stroke line
     final linePaint = Paint()
-      ..shader = goldShader
+      ..color = const Color(0xFFC9A227)
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.6
-      ..strokeCap = StrokeCap.round;
+      ..strokeWidth = 1.8
+      ..strokeCap = StrokeCap.round
+      ..strokeJoin = StrokeJoin.round;
     canvas.drawPath(path, linePaint);
   }
 
@@ -347,7 +390,7 @@ class _AiOrbState extends State<_AiOrb> with SingleTickerProviderStateMixin {
                 HapticFeedback.mediumImpact();
                 widget.onLongPress!();
               },
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(28),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -358,8 +401,8 @@ class _AiOrbState extends State<_AiOrb> with SingleTickerProviderStateMixin {
                 return Transform.scale(
                   scale: 1.0 + 0.05 * t,
                   child: Container(
-                    width: 44,
-                    height: 44,
+                    width: 50,
+                    height: 50,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       boxShadow: [
@@ -378,8 +421,8 @@ class _AiOrbState extends State<_AiOrb> with SingleTickerProviderStateMixin {
                     child: ClipOval(
                       child: Image.asset(
                         'assets/images/ai_orb.webp',
-                        width: 44,
-                        height: 44,
+                        width: 50,
+                        height: 50,
                         fit: BoxFit.cover,
                         gaplessPlayback: true,
                       ),
@@ -408,20 +451,23 @@ class _NavButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const goldColor = Color(0xFFC9A227);
-    const inactiveColor = Color(0xFF9E988F);
+    // Tiniq va aniq ko'rinadigan ranglar
+    const activeColor = Color(0xFFC9A227); // Tanlangan tab uchun tilla rang
+    const darkBlackColor = Color(0xFF0F172A); // Tiniq qora rang
 
     final displayIcon = selected
         ? (item.activeIcon ?? item.icon)
         : item.icon;
 
+    final iconColor = selected ? activeColor : darkBlackColor;
+
     return Material(
       color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(16),
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 4),
+          padding: const EdgeInsets.symmetric(vertical: 2),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
@@ -429,20 +475,19 @@ class _NavButton extends StatelessWidget {
               Icon(
                 displayIcon,
                 size: 24,
-                color: selected ? goldColor : inactiveColor,
+                color: iconColor,
               ),
-              const SizedBox(height: 3),
-              if (selected)
-                Container(
-                  width: 4,
-                  height: 4,
-                  decoration: const BoxDecoration(
-                    color: goldColor,
-                    shape: BoxShape.circle,
-                  ),
-                )
-              else
-                const SizedBox(height: 4),
+              const SizedBox(height: 2),
+              Text(
+                item.label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: 11,
+                  fontWeight: selected ? FontWeight.w800 : FontWeight.w700,
+                  color: iconColor,
+                ),
+              ),
             ],
           ),
         ),
