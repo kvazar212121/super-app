@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../../theme/lux_tokens.dart';
 
 class GlassNavItem {
   final IconData icon;
