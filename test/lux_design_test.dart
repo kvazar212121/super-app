@@ -170,11 +170,10 @@ void main() {
       expect(LuxTokens.body, isNotEmpty);
       expect(LuxTokens.display, isNotEmpty);
       expect(LuxTokens.accent, isNotEmpty);
-      // Yangi arxitektura: butun ilova BITTA markaziy shriftdan (fontFamily)
-      // oladi — body/display/accent hammasi shunga bog'langan. Shuning uchun
-      // ular bir xil bo'lishi KUTILADI (bitta joydan boshqarish oson bo'lsin).
+      // Gibrid arxitektura: oddiy matnlar (body, accent) PlusJakartaSans (fontFamily),
+      // katta sarlavhalar (display) esa CormorantGaramond (displayFontFamily) ishlatadi.
       expect(LuxTokens.body, LuxTokens.fontFamily);
-      expect(LuxTokens.display, LuxTokens.fontFamily);
+      expect(LuxTokens.display, LuxTokens.displayFontFamily);
       expect(LuxTokens.accent, LuxTokens.fontFamily);
     });
   });

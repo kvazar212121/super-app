@@ -38,13 +38,14 @@ abstract final class LuxTokens {
   // Yangi shrift qo'shish: assets/fonts/ ga .ttf tashlang, pubspec.yaml
   // 'fonts:' ro'yxatiga family qo'shing, keyin shu qatordagi nomni yozing.
   static const fontFamily = 'PlusJakartaSans';
+  static const displayFontFamily = 'CormorantGaramond';
 
   //  • [body]    — oddiy matn, tugma, ro'yxat va izoh (geometrik, ixcham, o'qilishi oson).
-  //  • [display] — nafis sarlavhalar, banner nomi, nufuzli sarlavha (serif).
+  //  • [display] — nafis sarlavhalar, banner nomi, nufuzli sarlavha (Cormorant Garamond serif).
   //  • [accent]  — KATTA HARFLI mayda yorliqlar.
-  static const body = 'PlusJakartaSans';
-  static const display = 'CormorantGaramond';
-  static const accent = 'PlusJakartaSans';
+  static const body = fontFamily;
+  static const display = displayFontFamily;
+  static const accent = fontFamily;
 
   /// Oltin Foil Metall Gradient — 1 palasali yaltiroq metall yorug'lik chizig'i (Single-band Specular Gleam).
   static const goldGradient = LinearGradient(
