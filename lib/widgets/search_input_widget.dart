@@ -23,9 +23,9 @@ class SearchInputWidget extends StatelessWidget {
     final field = TextField(
       controller: controller,
       onChanged: (_) => onChanged(),
-      style: TextStyle(
-        color: GlassTokens.primaryText(context),
-        fontFamily: LuxTokens.display,
+      style: const TextStyle(
+        color: LuxTokens.text,
+        fontFamily: LuxTokens.body,
         fontSize: 14,
       ),
       decoration: InputDecoration(
@@ -41,19 +41,17 @@ class SearchInputWidget extends StatelessWidget {
         ),
         suffixIcon: controller.text.isNotEmpty
             ? IconButton(
-                icon: Icon(
+                icon: const Icon(
                   LucideIcons.x,
                   size: 18,
-                  color: GlassTokens.secondaryText(context),
+                  color: Color(0xFF757575),
                 ),
                 onPressed: onClear,
               )
             : null,
-        hintStyle: TextStyle(
-          color: isDark
-              ? LuxTokens.textFaint
-              : GlassTokens.secondaryText(context),
-          fontFamily: LuxTokens.display,
+        hintStyle: const TextStyle(
+          color: Color(0xFF757575),
+          fontFamily: LuxTokens.body,
           fontSize: 14,
         ),
       ),

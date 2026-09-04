@@ -159,12 +159,12 @@ class _AllCategoriesScreenState extends State<AllCategoriesScreen> {
                     Container(
                       height: 48,
                       decoration: BoxDecoration(
-                        color: isDark ? LuxTokens.surface : Colors.white,
+                        gradient: LuxTokens.goldGradient,
                         borderRadius: BorderRadius.circular(GlassTokens.radiusSm),
-                        border: Border.all(color: LuxTokens.border, width: 1.2),
+                        border: Border.all(color: const Color(0xFFFFF7C2), width: 1.2),
                         boxShadow: [
                           BoxShadow(
-                            color: LuxTokens.gold.withValues(alpha: 0.15),
+                            color: LuxTokens.gold.withValues(alpha: 0.3),
                             blurRadius: 8,
                           ),
                         ],
@@ -179,14 +179,15 @@ class _AllCategoriesScreenState extends State<AllCategoriesScreen> {
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                const Icon(LucideIcons.mapPin, size: 18, color: LuxTokens.gold),
+                                const Icon(LucideIcons.mapPin, size: 18, color: Color(0xFF14100A)),
                                 const SizedBox(width: 6),
                                 Text(
                                   'Xarita'.tr,
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     fontSize: 13.5,
                                     fontWeight: FontWeight.w700,
-                                    color: isDark ? Colors.white : LuxTokens.text,
+                                    color: Color(0xFF14100A),
+                                    fontFamily: LuxTokens.body,
                                   ),
                                 ),
                               ],
