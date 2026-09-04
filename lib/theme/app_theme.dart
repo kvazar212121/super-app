@@ -22,28 +22,33 @@ class AppTheme {
     // Serif shrift ingichka ko'ringani uchun asosiy matnni sal qalinroq
     // (w600) qilamiz — o'qilishi yaxshiroq bo'ladi.
     final ink = isDark ? LuxTokens.text : const Color(0xFF000000);
-    TextStyle? bolden(TextStyle? s) => s?.copyWith(
+    TextStyle? styleDisplay(TextStyle? s) => s?.copyWith(
           fontFamily: LuxTokens.display,
           fontWeight: FontWeight.w700,
           color: ink,
         );
+    TextStyle? styleBody(TextStyle? s, {FontWeight weight = FontWeight.w500}) => s?.copyWith(
+          fontFamily: LuxTokens.body,
+          fontWeight: weight,
+          color: ink,
+        );
     final base2 = base.textTheme;
     final textTheme = base2.copyWith(
-      displayLarge: bolden(base2.displayLarge),
-      displayMedium: bolden(base2.displayMedium),
-      displaySmall: bolden(base2.displaySmall),
-      headlineLarge: bolden(base2.headlineLarge),
-      headlineMedium: bolden(base2.headlineMedium),
-      headlineSmall: bolden(base2.headlineSmall),
-      titleLarge: bolden(base2.titleLarge),
-      titleMedium: bolden(base2.titleMedium),
-      titleSmall: bolden(base2.titleSmall),
-      bodyLarge: bolden(base2.bodyLarge),
-      bodyMedium: bolden(base2.bodyMedium),
-      bodySmall: bolden(base2.bodySmall),
-      labelLarge: bolden(base2.labelLarge),
-      labelMedium: bolden(base2.labelMedium),
-      labelSmall: bolden(base2.labelSmall),
+      displayLarge: styleDisplay(base2.displayLarge),
+      displayMedium: styleDisplay(base2.displayMedium),
+      displaySmall: styleDisplay(base2.displaySmall),
+      headlineLarge: styleDisplay(base2.headlineLarge),
+      headlineMedium: styleDisplay(base2.headlineMedium),
+      headlineSmall: styleDisplay(base2.headlineSmall),
+      titleLarge: styleDisplay(base2.titleLarge),
+      titleMedium: styleBody(base2.titleMedium, weight: FontWeight.w600),
+      titleSmall: styleBody(base2.titleSmall, weight: FontWeight.w600),
+      bodyLarge: styleBody(base2.bodyLarge, weight: FontWeight.w500),
+      bodyMedium: styleBody(base2.bodyMedium, weight: FontWeight.w400),
+      bodySmall: styleBody(base2.bodySmall, weight: FontWeight.w400),
+      labelLarge: styleBody(base2.labelLarge, weight: FontWeight.w600),
+      labelMedium: styleBody(base2.labelMedium, weight: FontWeight.w500),
+      labelSmall: styleBody(base2.labelSmall, weight: FontWeight.w400),
     );
 
     return ThemeData(
@@ -70,7 +75,7 @@ class AppTheme {
           letterSpacing: -0.2,
         ),
       ),
-      fontFamily: LuxTokens.display,
+      fontFamily: LuxTokens.body,
       appBarTheme: AppBarTheme(
         centerTitle: true,
         elevation: 0,
