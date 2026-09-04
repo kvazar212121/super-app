@@ -25,11 +25,31 @@ class _MainScreenState extends State<MainScreen> {
   AppProvider? _appProvider;
 
   List<GlassNavItem> get _navItems => [
-    GlassNavItem(icon: LucideIcons.home, label: 'Asosiy'.tr),
-    GlassNavItem(icon: LucideIcons.layoutGrid, label: 'Xizmatlar'.tr),
-    GlassNavItem(icon: LucideIcons.sparkles, label: 'AiHub'.tr),
-    GlassNavItem(icon: LucideIcons.phone, label: 'Aloqa'.tr),
-    GlassNavItem(icon: LucideIcons.clipboardList, label: 'Buyurtmalar'.tr),
+    GlassNavItem(
+      icon: LucideIcons.home,
+      activeIcon: Icons.home_rounded,
+      label: 'Asosiy'.tr,
+    ),
+    GlassNavItem(
+      icon: LucideIcons.layoutGrid,
+      activeIcon: Icons.grid_view_rounded,
+      label: 'Xizmatlar'.tr,
+    ),
+    GlassNavItem(
+      icon: LucideIcons.sparkles,
+      activeIcon: LucideIcons.sparkles,
+      label: 'AiHub'.tr,
+    ),
+    GlassNavItem(
+      icon: LucideIcons.messageSquare,
+      activeIcon: Icons.chat_bubble_rounded,
+      label: 'Aloqa'.tr,
+    ),
+    GlassNavItem(
+      icon: LucideIcons.clipboardList,
+      activeIcon: Icons.assignment_rounded,
+      label: 'Buyurtmalar'.tr,
+    ),
   ];
 
   @override
