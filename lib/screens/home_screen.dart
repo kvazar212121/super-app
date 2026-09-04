@@ -192,9 +192,9 @@ class HomeScreen extends StatelessWidget {
       _DailyBtn(
         icon: LucideIcons.alarmClock,
         label: 'Alarm'.tr,
-        customSubtitle: 'Budilnik & Eslatmalar'.tr,
+        customSubtitle: 'Majburlovchi Budilnik'.tr,
         badgeText: 'Faol',
-        bottomCaption: 'Budilnik & Eslatmalar',
+        bottomCaption: 'Majburlovchi Budilnik',
         color: const Color(0xFF6366F1),
         bgImage: 'assets/images/card_budilnik.png',
         onTap: () =>
