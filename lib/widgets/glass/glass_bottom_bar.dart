@@ -133,33 +133,19 @@ class GlassBottomBar extends StatelessWidget {
 
           // 5) Center Floating Orb (Sitting in concave notch, top half floating outside)
           Positioned(
+            top: -2,
             left: 0,
             right: 0,
-            top: 0,
-            child: LayoutBuilder(
-              builder: (context, constraints) {
-                final slotWidth = constraints.maxWidth / items.length;
-                final centerX = slotWidth * (centerIndex + 0.5);
-
-                return Stack(
-                  alignment: Alignment.topCenter,
-                  children: [
-                    Positioned(
-                      left: centerX - 30,
-                      top: 0,
-                      child: SizedBox(
-                        width: 60,
-                        child: _AiOrb(
-                          item: items[centerIndex],
-                          selected: currentIndex == centerIndex,
-                          onTap: () => onTap(centerIndex),
-                          onLongPress: onCenterLongPress,
-                        ),
-                      ),
-                    ),
-                  ],
-                );
-              },
+            child: Center(
+              child: SizedBox(
+                width: 64,
+                child: _AiOrb(
+                  item: items[centerIndex],
+                  selected: currentIndex == centerIndex,
+                  onTap: () => onTap(centerIndex),
+                  onLongPress: onCenterLongPress,
+                ),
+              ),
             ),
           ),
         ],
