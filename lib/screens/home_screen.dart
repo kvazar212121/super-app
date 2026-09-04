@@ -643,7 +643,7 @@ class _DailyBtn extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(20),
         child: Container(
-          height: 142,
+          height: 115,
           decoration: BoxDecoration(
             color: cardBg,
             borderRadius: BorderRadius.circular(20),
