@@ -670,11 +670,14 @@ class _DailyBtn extends StatelessWidget {
               // Ichki kontent (rasm yoki belgi+matn)
               if (bgImage != null)
                 Positioned.fill(
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(18),
-                    child: Image.asset(
-                      bgImage!,
-                      fit: BoxFit.cover,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(14),
+                      child: Image.asset(
+                        bgImage!,
+                        fit: BoxFit.contain,
+                      ),
                     ),
                   ),
                 )
