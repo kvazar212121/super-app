@@ -133,33 +133,27 @@ class HomeScreen extends StatelessWidget {
     // budilnik keyingi signal vaqti.
     final kartalar = <Widget>[
       _DailyBtn(
-        icon: LucideIcons.flame,
-        label: 'Kalorie'.tr,
-        customSubtitle: 'Kaloriya Nazorati'.tr,
-        badgeText: '68%',
-        bottomCaption: '/ 2100 kcal',
-        color: const Color(0xFFEF4444),
-        bgImage: 'assets/images/calorie_counter_shaffof.png',
-        onTap: () =>
-            _openFeature(context, 'calorie', () => const CalorieHomeScreen()),
-      ),
-      _DailyBtn(
         icon: LucideIcons.dumbbell,
         label: 'Fitness'.tr,
         customSubtitle: 'Fitness & Mashqlar'.tr,
-        badgeText: '2/5',
-        bottomCaption: '5 mashq',
         color: const Color(0xFF14B8A6),
         bgImage: 'assets/images/fitness_trainer_shaffof.png',
         onTap: () =>
             _openFeature(context, 'fitness', () => const FitnessHomeScreen()),
       ),
       _DailyBtn(
+        icon: LucideIcons.flame,
+        label: 'Kalorie'.tr,
+        customSubtitle: 'Kaloriya Nazorati'.tr,
+        color: const Color(0xFFEF4444),
+        bgImage: 'assets/images/calorie_counter_shaffof.png',
+        onTap: () =>
+            _openFeature(context, 'calorie', () => const CalorieHomeScreen()),
+      ),
+      _DailyBtn(
         icon: LucideIcons.calendarCheck,
         label: 'Planner'.tr,
         customSubtitle: 'Kunlik Rejalashtiruvchi'.tr,
-        badgeText: '1/5',
-        bottomCaption: 'keyingi',
         color: const Color(0xFF3B82F6),
         bgImage: 'assets/images/my_plans_shaffof.png',
         onTap: () => _openFeature(context, 'plans', () => const TodoScreen()),
@@ -168,8 +162,6 @@ class HomeScreen extends StatelessWidget {
         icon: LucideIcons.wallet,
         label: 'Finance'.tr,
         customSubtitle: 'Moliya & Budjet'.tr,
-        badgeText: 'UZS',
-        bottomCaption: 'Moliya & Budjet',
         color: const Color(0xFF22C55E),
         bgImage: 'assets/images/my_finance_shaffof.png',
         onTap: () => _openFeature(
@@ -182,8 +174,6 @@ class HomeScreen extends StatelessWidget {
         icon: LucideIcons.shoppingBag,
         label: 'Smart Shop'.tr,
         customSubtitle: 'Aqlli Xarid'.tr,
-        badgeText: '2/5',
-        bottomCaption: 'savdo ro\'yxati',
         color: const Color(0xFFF97316),
         bgImage: 'assets/images/smart_shopping_shaffof.png',
         onTap: () =>
@@ -193,8 +183,6 @@ class HomeScreen extends StatelessWidget {
         icon: LucideIcons.alarmClock,
         label: 'Alarm'.tr,
         customSubtitle: 'Budilnik & Eslatmalar'.tr,
-        badgeText: 'Faol',
-        bottomCaption: 'Budilnik & Qaydlar',
         color: const Color(0xFF6366F1),
         bgImage: 'assets/images/majburolovchi_shaffof.png',
         onTap: () =>
@@ -641,6 +629,8 @@ class _DailyBtn extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const cardBg = Colors.white;
+    const titleColor = Color(0xFF0F172A);
+    const subColor = Color(0xFF475569);
 
     return Material(
       color: cardBg,
@@ -649,84 +639,74 @@ class _DailyBtn extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(20),
         child: Container(
-          height: 142,
+          height: 148,
           decoration: BoxDecoration(
             color: cardBg,
             borderRadius: BorderRadius.circular(20),
             border: Border.all(
-              color: const Color(0xFFDFB435),
-              width: 1.5,
+              color: const Color(0xFFC9A227).withValues(alpha: 0.5),
+              width: 1.3,
             ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.04),
+                color: const Color(0xFFC9A227).withValues(alpha: 0.08),
                 blurRadius: 10,
                 offset: const Offset(0, 4),
               ),
             ],
           ),
-          child: Stack(
-            children: [
-              // Ichki kontent (rasm + tagidagi yozuv)
-              Padding(
-                padding: const EdgeInsets.fromLTRB(6, 12, 6, 8),
-                child: Column(
-                  children: [
-                    Expanded(
-                      child: Center(
-                        child: bgImage != null
-                            ? Image.asset(
-                                bgImage!,
-                                fit: BoxFit.contain,
-                              )
-                            : Container(
-                                width: 48,
-                                height: 48,
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFFC9A227).withValues(alpha: 0.12),
-                                  shape: BoxShape.circle,
-                                ),
-                                child: Icon(icon, color: const Color(0xFFC9A227), size: 26),
-                              ),
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      bottomCaption ?? customSubtitle,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        color: Color(0xFF8E9BAE),
-                        fontSize: 11.5,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              // Tepadagi o'ng oltin nishon (Badge: 68%, 2/5, 1/5, UZS, Faol)
-              if (badgeText != null)
-                Positioned(
-                  top: 8,
-                  right: 8,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 3.5),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFE5B82A),
-                      borderRadius: BorderRadius.circular(9),
-                    ),
-                    child: Text(
-                      badgeText!,
-                      style: const TextStyle(
-                        color: Color(0xFF1E1B18),
-                        fontSize: 10.5,
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(6, 12, 6, 10),
+            child: Column(
+              children: [
+                // Tepadagi 3D rasm yoki ikonka
+                Expanded(
+                  child: Center(
+                    child: bgImage != null
+                        ? Image.asset(
+                            bgImage!,
+                            fit: BoxFit.contain,
+                          )
+                        : Container(
+                            width: 48,
+                            height: 48,
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFC9A227).withValues(alpha: 0.12),
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(icon, color: const Color(0xFFC9A227), size: 26),
+                          ),
                   ),
                 ),
-            ],
+                const SizedBox(height: 6),
+                // Card Main Title (Fitness, Kalorie, Planner, Finance, Smart Shop, Alarm)
+                Text(
+                  label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    color: titleColor,
+                    fontSize: 14.5,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: -0.3,
+                  ),
+                ),
+                const SizedBox(height: 3),
+                // Subtitle (Fitness & Mashqlar, Kaloriya Nazorati, etc.)
+                Text(
+                  customSubtitle,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    color: subColor,
+                    fontSize: 10.5,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
