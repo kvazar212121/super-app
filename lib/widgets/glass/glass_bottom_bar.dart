@@ -33,8 +33,8 @@ class GlassBottomBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const double barTopY = 16.0;
-    const double dipDepth = 20.0;
-    const double notchRadius = 26.0;
+    const double dipDepth = 18.0;
+    const double notchRadius = 34.0;
 
     return Container(
       margin: const EdgeInsets.fromLTRB(16, 0, 16, 10),
@@ -174,7 +174,7 @@ class _ConcaveNotchedBarClipper extends CustomClipper<Path> {
   Path getClip(Size size) {
     final slot = size.width / itemCount;
     final cx = slot * (centerIndex + 0.5);
-    final half = notchRadius + 14;
+    final half = notchRadius + 18;
     final startX = cx - half;
     final endX = cx + half;
 
@@ -238,7 +238,7 @@ class _ConcaveTopBorderPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final slot = size.width / itemCount;
     final cx = slot * (centerIndex + 0.5);
-    final half = notchRadius + 14;
+    final half = notchRadius + 18;
     final startX = cx - half;
     final endX = cx + half;
 
@@ -388,19 +388,6 @@ class _AiOrbState extends State<_AiOrb> with SingleTickerProviderStateMixin {
                   ),
                 );
               },
-            ),
-            const SizedBox(height: 3),
-            FittedBox(
-              fit: BoxFit.scaleDown,
-              child: Text(
-                widget.item.label,
-                style: const TextStyle(
-                  fontFamily: LuxTokens.display,
-                  fontSize: 11,
-                  fontWeight: FontWeight.w800,
-                  color: Color(0xFF1E293B),
-                ),
-              ),
             ),
           ],
         ),
