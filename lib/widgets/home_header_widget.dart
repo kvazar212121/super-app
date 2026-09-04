@@ -6,7 +6,6 @@ import '../providers/app_provider.dart';
 import '../providers/auth_provider.dart';
 import '../screens/notifications_screen.dart';
 import '../screens/profile_screen.dart';
-import '../theme/lux_tokens.dart';
 import 'daily_utilities_widget.dart';
 
 class HomeHeaderWidget extends StatelessWidget {
@@ -23,7 +22,6 @@ class HomeHeaderWidget extends StatelessWidget {
     final String name = authProvider.displayName;
     final String initialLetter = name.isNotEmpty ? name[0].toUpperCase() : 'U';
 
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     const textColor = Color(0xFF0F172A);
 
     return AnnotatedRegion<SystemUiOverlayStyle>(

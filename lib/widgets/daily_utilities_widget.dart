@@ -3,8 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../services/api_service.dart';
 import 'weather_currency_modals.dart';
-import '../theme/lux_tokens.dart';
-import '../l10n/locale_controller.dart';
 
 class DailyUtilitiesWidget extends StatefulWidget {
   const DailyUtilitiesWidget({super.key});
@@ -66,14 +64,6 @@ class _DailyUtilitiesWidgetState extends State<DailyUtilitiesWidget> {
         const SizedBox(width: 8),
         Expanded(child: _buildCurrencyCard()),
       ],
-    );
-  }
-
-  TextStyle _valueStyle(BuildContext context) {
-    return const TextStyle(
-      color: Color(0xFF0F172A),
-      fontSize: 11,
-      fontWeight: FontWeight.w800,
     );
   }
 
