@@ -1825,7 +1825,7 @@ class _VoiceListeningOverlayState extends State<_VoiceListeningOverlay>
                   border: Border.all(color: LuxTokens.border, width: 1.5),
                   boxShadow: [
                     BoxShadow(
-                      color: const Color(0xFFC9A227).withValues(alpha: 0.25),
+                      color: const Color(0xFF102A43).withValues(alpha: 0.18),
                       blurRadius: 30,
                       spreadRadius: 2,
                     ),
@@ -1862,10 +1862,20 @@ class _VoiceListeningOverlayState extends State<_VoiceListeningOverlay>
                       child: Container(
                         width: 62,
                         height: 62,
-                        decoration: LuxTokens.goldBoxDecoration(isCircle: true),
+                        decoration: const BoxDecoration(
+                          color: Color(0xFF102A43),
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Color(0x33102A43),
+                              blurRadius: 10,
+                              offset: Offset(0, 4),
+                            ),
+                          ],
+                        ),
                         child: const Icon(
                           LucideIcons.check,
-                          color: Color(0xFF140D02),
+                          color: Colors.white,
                           size: 28,
                         ),
                       ),
@@ -1903,7 +1913,7 @@ class _VoiceListeningOverlayState extends State<_VoiceListeningOverlay>
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         border: Border.all(
-                          color: LuxTokens.gold.withValues(alpha: (1 - p) * 0.45),
+                          color: const Color(0xFF102A43).withValues(alpha: (1 - p) * 0.35),
                           width: 1.5,
                         ),
                       ),
@@ -1913,9 +1923,19 @@ class _VoiceListeningOverlayState extends State<_VoiceListeningOverlay>
                   Container(
                     width: 74 + norm * 16,
                     height: 74 + norm * 16,
-                    decoration: LuxTokens.goldBoxDecoration(isCircle: true),
+                    decoration: const BoxDecoration(
+                      color: Color(0xFF102A43),
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Color(0x33102A43),
+                          blurRadius: 12,
+                          offset: Offset(0, 4),
+                        ),
+                      ],
+                    ),
                     child: const Icon(LucideIcons.mic,
-                        color: Color(0xFF140D02), size: 32),
+                        color: Colors.white, size: 32),
                   ),
                 ],
               ),
@@ -1949,11 +1969,7 @@ class _VoiceListeningOverlayState extends State<_VoiceListeningOverlay>
                   height: h,
                   margin: const EdgeInsets.symmetric(horizontal: 2.5),
                   decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [LuxTokens.gold, Color(0xFFE0B454)],
-                    ),
+                    color: const Color(0xFF102A43),
                     borderRadius: BorderRadius.circular(3),
                   ),
                 );
