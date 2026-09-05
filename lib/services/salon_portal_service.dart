@@ -65,6 +65,9 @@ class SalonPortalService {
     final data = await _api.regenerateSalonInvite();
     return data['invite_code']?.toString() ?? '';
   }
+
+  Future<Map<String, dynamic>> cancelJoin() => _api.cancelSalonJoin();
+  Future<Map<String, dynamic>> leaveSalon() => _api.leaveSalon();
 }
 
 enum SalonRegistrationRole { owner, employee, mobile }

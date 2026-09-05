@@ -469,3 +469,61 @@ class SalonService:
         salon.metadata_json = meta
         await db.flush()
         return code
+
+    @staticmethod
+    async def cancel_join_request(db: AsyncSession, user: User) -> dict:
+        cat_id = await SalonService._category_id(db)
+        result = await db.execute(select(Provider).where(Provider.category_id == cat_id))
+        found = False
+        for salon in result.scalars().all():
+            if not is_salon_venue(salon):
+                continue
+            meta = dict(salon.metadata_json or {})
+            pending = list(meta.get("pending_members", []))
+            new_pending = [m for m in pending if m.get("user_id") != user.id]
+            if len(new_pending) < len(pending):
+                meta["pending_members"] = new_pending
+                salon.metadata_json = meta
+                await db.flush()
+                found = True
+        if not found:
+            raise HTTPException(status_code=404, detail="Yuborilgan ariza topilmadi")
+        return {"message": "Arizangiz muvaffaqiyatli bekor qilindi"}
+
+    @staticmethod
+    async def leave_salon(db: AsyncSession, user: User) -> dict:
+        cat_id = await SalonService._category_id(db)
+        result = await db.execute(
+            select(Provider).where(
+                Provider.owner_user_id == user.id,
+                Provider.category_id == cat_id,
+            )
+        )
+        employee_provider = None
+        for p in result.scalars().all():
+            meta = p.metadata_json or {}
+            if meta.get("salon_role") == "salon_employee":
+                employee_provider = p
+                break
+
+        if not employee_provider:
+            raise HTTPException(status_code=404, detail="Aktiv salon xodimi a'zoligi topilmadi")
+
+        emp_meta = employee_provider.metadata_json or {}
+        salon_id = emp_meta.get("salon_provider_id")
+
+        if salon_id:
+            salon = await db.get(Provider, salon_id)
+            if salon:
+                salon_meta = dict(salon.metadata_json or {})
+                approved = [m for m in salon_meta.get("approved_members", []) if m.get("user_id") != user.id]
+                staff = [s for s in salon_meta.get("staff", []) if s.get("user_id") != user.id and s.get("provider_id") != employee_provider.id]
+                salon_meta["approved_members"] = approved
+                salon_meta["staff"] = staff
+                salon.metadata_json = salon_meta
+                await db.flush()
+
+        await db.delete(employee_provider)
+        await db.flush()
+        return {"message": "Siz salondan chiqdingiz"}
+

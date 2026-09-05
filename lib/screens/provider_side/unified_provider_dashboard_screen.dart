@@ -10,6 +10,8 @@ import '../../providers/app_provider.dart';
 import '../jobs_feed_screen.dart';
 import '../../config/provider_category_config.dart';
 import '../../services/provider_portal_service.dart';
+import '../../services/barber_portal_service.dart';
+import '../../services/salon_portal_service.dart';
 import 'widgets/provider_calendar_widget.dart';
 import 'widgets/provider_barber_team_widget.dart';
 import 'widgets/provider_salon_team_widget.dart';
@@ -185,6 +187,58 @@ class _UnifiedProviderDashboardScreenState
         _provider?['metadata_json'] as Map<String, dynamic>?;
     return meta?['type'] == 'education_center' ||
         meta?['tutor_role'] == 'center';
+  }
+
+  bool get _isShopEmployee {
+    final meta =
+        _provider?['metadata'] as Map<String, dynamic>? ??
+        _provider?['metadata_json'] as Map<String, dynamic>?;
+    final bRole = meta?['barber_role'];
+    final sRole = meta?['salon_role'];
+    return bRole == 'shop_employee' || sRole == 'salon_employee';
+  }
+
+  Future<void> _leaveShop() async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text('Xonadan chiqish'.tr),
+        content: Text('Haqiqatan ham ushbu xona/salon safidan chiqmoqchimisiz?'.tr),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text('Yo\'q'.tr),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            child: Text('Ha, chiqish'.tr),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm != true) return;
+
+    try {
+      if (widget.config.categoryKey == 'sartarosh') {
+        await BarberPortalService().leaveShop();
+      } else if (widget.config.categoryKey == 'salon') {
+        await SalonPortalService().leaveSalon();
+      }
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Xona safidan chiqdingiz'.tr)),
+        );
+        context.read<AppProvider>().switchToUser();
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Xatolik: $e')),
+        );
+      }
+    }
   }
 
   int get _calendarIndex => 1;
@@ -425,6 +479,15 @@ class _UnifiedProviderDashboardScreenState
               ),
             ),
             actions: [
+              if (_isShopEmployee)
+                Padding(
+                  padding: const EdgeInsets.only(right: 4),
+                  child: IconButton(
+                    tooltip: 'Xonadan chiqish'.tr,
+                    icon: const Icon(LucideIcons.logOut, size: 18, color: Colors.redAccent),
+                    onPressed: _leaveShop,
+                  ),
+                ),
               Padding(
                 padding: const EdgeInsets.only(right: 8),
                 child: TextButton.icon(

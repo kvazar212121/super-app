@@ -474,3 +474,61 @@ class BarberService:
         shop.metadata_json = meta
         await db.flush()
         return code
+
+    @staticmethod
+    async def cancel_join_request(db: AsyncSession, user: User) -> dict:
+        cat_id = await BarberService._category_id(db)
+        result = await db.execute(select(Provider).where(Provider.category_id == cat_id))
+        found = False
+        for shop in result.scalars().all():
+            if not is_barber_shop(shop):
+                continue
+            meta = dict(shop.metadata_json or {})
+            pending = list(meta.get("pending_members", []))
+            new_pending = [m for m in pending if m.get("user_id") != user.id]
+            if len(new_pending) < len(pending):
+                meta["pending_members"] = new_pending
+                shop.metadata_json = meta
+                await db.flush()
+                found = True
+        if not found:
+            raise HTTPException(status_code=404, detail="Yuborilgan ariza topilmadi")
+        return {"message": "Arizangiz muvaffaqiyatli bekor qilindi"}
+
+    @staticmethod
+    async def leave_shop(db: AsyncSession, user: User) -> dict:
+        cat_id = await BarberService._category_id(db)
+        result = await db.execute(
+            select(Provider).where(
+                Provider.owner_user_id == user.id,
+                Provider.category_id == cat_id,
+            )
+        )
+        employee_provider = None
+        for p in result.scalars().all():
+            meta = p.metadata_json or {}
+            if meta.get("barber_role") == "shop_employee":
+                employee_provider = p
+                break
+
+        if not employee_provider:
+            raise HTTPException(status_code=404, detail="Aktiv usta a'zoligi topilmadi")
+
+        emp_meta = employee_provider.metadata_json or {}
+        shop_id = emp_meta.get("shop_provider_id")
+
+        if shop_id:
+            shop = await db.get(Provider, shop_id)
+            if shop:
+                shop_meta = dict(shop.metadata_json or {})
+                approved = [m for m in shop_meta.get("approved_members", []) if m.get("user_id") != user.id]
+                barbers = [b for b in shop_meta.get("barbers", []) if b.get("user_id") != user.id and b.get("provider_id") != employee_provider.id]
+                shop_meta["approved_members"] = approved
+                shop_meta["barbers"] = barbers
+                shop.metadata_json = shop_meta
+                await db.flush()
+
+        await db.delete(employee_provider)
+        await db.flush()
+        return {"message": "Siz usta xonasidan chiqdingiz"}
+

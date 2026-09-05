@@ -156,3 +156,20 @@ async def regenerate_invite(
 ):
     code = await BarberService.regenerate_invite(db, user)
     return {"invite_code": code}
+
+
+@router.post("/cancel-join")
+async def cancel_join_request(
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    return await BarberService.cancel_join_request(db, user)
+
+
+@router.post("/leave")
+async def leave_shop(
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    return await BarberService.leave_shop(db, user)
+

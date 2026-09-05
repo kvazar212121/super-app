@@ -69,6 +69,9 @@ class BarberPortalService {
     final data = await _api.regenerateBarberInvite();
     return data['invite_code']?.toString() ?? '';
   }
+
+  Future<Map<String, dynamic>> cancelJoin() => _api.cancelBarberJoin();
+  Future<Map<String, dynamic>> leaveShop() => _api.leaveBarberShop();
 }
 
 enum BarberRegistrationRole { shopOwner, shopEmployee, mobile }

@@ -831,6 +831,16 @@ class ApiService {
     return response.data as Map<String, dynamic>;
   }
 
+  Future<Map<String, dynamic>> cancelBarberJoin() async {
+    final response = await _dio.post('/provider/barber/cancel-join');
+    return response.data as Map<String, dynamic>;
+  }
+
+  Future<Map<String, dynamic>> leaveBarberShop() async {
+    final response = await _dio.post('/provider/barber/leave');
+    return response.data as Map<String, dynamic>;
+  }
+
   // ─────────────── CLEANING PORTAL ───────────────
 
   Future<Map<String, dynamic>> registerCleaningSolo({
@@ -1005,6 +1015,16 @@ class ApiService {
 
   Future<Map<String, dynamic>> regenerateSalonInvite() async {
     final response = await _dio.post('/provider/salon/regenerate-invite');
+    return response.data as Map<String, dynamic>;
+  }
+
+  Future<Map<String, dynamic>> cancelSalonJoin() async {
+    final response = await _dio.post('/provider/salon/cancel-join');
+    return response.data as Map<String, dynamic>;
+  }
+
+  Future<Map<String, dynamic>> leaveSalon() async {
+    final response = await _dio.post('/provider/salon/leave');
     return response.data as Map<String, dynamic>;
   }
 
