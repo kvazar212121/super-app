@@ -22,6 +22,7 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
+  late final PageController _pageController = PageController(initialPage: _selectedIndex);
   AppProvider? _appProvider;
 
   List<GlassNavItem> get _navItems => [
@@ -66,6 +67,7 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   void dispose() {
+    _pageController.dispose();
     _appProvider?.removeListener(_onAppChanged);
     super.dispose();
   }
@@ -116,12 +118,11 @@ class _MainScreenState extends State<MainScreen> {
           MeshBackground(isDark: isDark),
         Scaffold(
           backgroundColor: Colors.transparent,
-          // IndexedStack: tab almashganda ekran QAYTA yaratilmaydi, holati
-          // saqlanadi (masalan xizmatlar ro'yxatida foydalanuvchi qayerda
-          // to'xtagan bo'lsa — o'sha joydan davom etadi). Bu qulaylik va
-          // tezlik uchun juda muhim.
-          body: IndexedStack(
-            index: _selectedIndex,
+          body: PageView(
+            controller: _pageController,
+            onPageChanged: (index) {
+              setState(() => _selectedIndex = index);
+            },
             children: _screens,
           ),
         ),
@@ -137,13 +138,9 @@ class _MainScreenState extends State<MainScreen> {
             child: GlassBottomBar(
               currentIndex: _selectedIndex,
               onTap: (i) {
-                // Bosilganini his qildiradi (haptic) — bu foydalanuvchi
-                // tugma "bosildi" degan ishonchni beradi, ayniqsa yupqa
-                // shishasimon tugmalarda.
+                // Bosilganini his qildiradi (haptic)
                 HapticFeedback.selectionClick();
                 // AiHub markaziy orbi — chatni TO'LIQ EKRAN sifatida ochadi
-                // (tab emas). Aks holda chat matn maydoni pastki menyu ostida
-                // qolib ko'rinmaydi.
                 if (i == 2) {
                   Navigator.push(
                     context,
@@ -152,6 +149,11 @@ class _MainScreenState extends State<MainScreen> {
                   return;
                 }
                 setState(() => _selectedIndex = i);
+                _pageController.animateToPage(
+                  i,
+                  duration: const Duration(milliseconds: 300),
+                  curve: Curves.easeOutCubic,
+                );
               },
               items: _navItems,
               centerIndex: 2, // AiHub — markaziy jonli orb
