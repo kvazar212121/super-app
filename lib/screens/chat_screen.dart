@@ -843,41 +843,24 @@ class _ChatScreenState extends State<ChatScreen>
               ),
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               decoration: BoxDecoration(
-                gradient: isUser ? LuxTokens.goldGradient : null,
-                color: isUser ? null : Colors.white,
+                color: isUser ? const Color(0xFF102A43) : Colors.white,
                 borderRadius: BorderRadius.only(
                   topLeft: const Radius.circular(20),
                   topRight: const Radius.circular(20),
-                  bottomLeft: Radius.circular(isUser ? 20 : 0),
-                  bottomRight: Radius.circular(isUser ? 0 : 20),
+                  bottomLeft: Radius.circular(isUser ? 20 : 4),
+                  bottomRight: Radius.circular(isUser ? 4 : 20),
                 ),
                 border: Border.all(
-                  color: isUser ? const Color(0xFFFFF3B8) : LuxTokens.border,
-                  width: isUser ? 1.2 : 1.0,
+                  color: isUser ? const Color(0xFF102A43) : LuxTokens.border,
+                  width: 1.0,
                 ),
                 boxShadow: [
-                  if (isUser) ...[
-                    // Yuqori qirradagi oq nur — metall qirrasi aksi.
-                    BoxShadow(
-                      color: const Color(0xFFFFFDF0).withValues(alpha: 0.9),
-                      blurRadius: 2,
-                      spreadRadius: -2,
-                      offset: const Offset(-1, -1),
-                    ),
-                    // Oltin nurning atrofga tarqalishi (glow).
-                    BoxShadow(
-                      color: const Color(0xFFE8B93A).withValues(alpha: 0.55),
-                      blurRadius: 18,
-                      spreadRadius: -2,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
                   BoxShadow(
                     color: isUser
-                        ? const Color(0xFF6E4708).withValues(alpha: 0.5)
+                        ? const Color(0xFF102A43).withValues(alpha: 0.15)
                         : Colors.black.withValues(alpha: 0.04),
-                    blurRadius: isUser ? 10 : 8,
-                    offset: const Offset(0, 5),
+                    blurRadius: 8,
+                    offset: const Offset(0, 3),
                   ),
                 ],
               ),
@@ -935,12 +918,10 @@ class _ChatScreenState extends State<ChatScreen>
                     Text(
                       content,
                       style: TextStyle(
-                        color: isUser ? const Color(0xFF140D02) : LuxTokens.text,
+                        color: isUser ? Colors.white : LuxTokens.text,
                         fontSize: 15,
-                        fontWeight: isUser ? FontWeight.w700 : FontWeight.normal,
+                        fontWeight: isUser ? FontWeight.w600 : FontWeight.w400,
                         height: 1.4,
-                        // Oddiy tekis matn — oltin ustiga yozilgan (o'yma
-                        // effekti yo'q, ko'zni charchatmasligi uchun).
                       ),
                     ),
                   ],

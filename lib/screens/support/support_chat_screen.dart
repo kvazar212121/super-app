@@ -160,7 +160,22 @@ class _SupportChatScreenState extends State<SupportChatScreen> {
         margin: const EdgeInsets.only(bottom: 10),
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
         decoration: isUser
-            ? LuxTokens.goldBoxDecoration(radius: 16)
+            ? BoxDecoration(
+                color: const Color(0xFF102A43),
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(16),
+                  topRight: Radius.circular(16),
+                  bottomLeft: Radius.circular(16),
+                  bottomRight: Radius.circular(4),
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFF102A43).withValues(alpha: 0.15),
+                    blurRadius: 6,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              )
             : BoxDecoration(
                 color: GlassTokens.glassFill(context),
                 borderRadius: const BorderRadius.only(
@@ -182,14 +197,14 @@ class _SupportChatScreenState extends State<SupportChatScreen> {
                   style: const TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.w700,
-                    color: Color(0xFF8A5D0B),
+                    color: Color(0xFF102A43),
                   ),
                 ),
               ),
             Text(
               m['text'] as String? ?? '',
               style: isUser
-                  ? LuxTokens.goldEngravedTextStyle.copyWith(fontSize: 15)
+                  ? const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w600)
                   : TextStyle(color: GlassTokens.primaryText(context), fontSize: 15),
             ),
             if (pending)
@@ -199,7 +214,7 @@ class _SupportChatScreenState extends State<SupportChatScreen> {
                   'yuborilmoqda…'.tr,
                   style: TextStyle(
                     fontSize: 10,
-                    color: isUser ? const Color(0xFF332205) : GlassTokens.secondaryText(context),
+                    color: isUser ? Colors.white70 : GlassTokens.secondaryText(context),
                   ),
                 ),
               ),
@@ -242,13 +257,16 @@ class _SupportChatScreenState extends State<SupportChatScreen> {
               child: Container(
                 width: 46,
                 height: 46,
-                decoration: LuxTokens.goldBoxDecoration(isCircle: true),
+                decoration: const BoxDecoration(
+                  color: Color(0xFF102A43),
+                  shape: BoxShape.circle,
+                ),
                 child: _sending
                     ? const Padding(
                         padding: EdgeInsets.all(13),
-                        child: CircularProgressIndicator(strokeWidth: 2, color: Color(0xFF140D02)),
+                        child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                       )
-                    : const Icon(Icons.send_rounded, color: Color(0xFF140D02), size: 22),
+                    : const Icon(Icons.send_rounded, color: Colors.white, size: 22),
               ),
             ),
           ],

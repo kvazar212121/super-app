@@ -171,14 +171,29 @@ class _DmChatScreenState extends State<DmChatScreen> {
         margin: const EdgeInsets.only(bottom: 10),
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
         decoration: isMine
-            ? LuxTokens.goldBoxDecoration(radius: 16)
-            : BoxDecoration(
-                color: GlassTokens.glassFill(context),
+            ? BoxDecoration(
+                color: const Color(0xFF102A43),
                 borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(16),
                   topRight: Radius.circular(16),
                   bottomLeft: Radius.circular(16),
                   bottomRight: Radius.circular(4),
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFF102A43).withValues(alpha: 0.15),
+                    blurRadius: 6,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              )
+            : BoxDecoration(
+                color: GlassTokens.glassFill(context),
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(16),
+                  topRight: Radius.circular(16),
+                  bottomLeft: Radius.circular(4),
+                  bottomRight: Radius.circular(16),
                 ),
                 border: Border.all(color: GlassTokens.glassBorder(context)),
               ),
@@ -186,11 +201,11 @@ class _DmChatScreenState extends State<DmChatScreen> {
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             if (m['job'] != null)
-              _jobTag(m['job'] as Map, isMine ? const Color(0xFF140D02) : GlassTokens.primaryText(context)),
+              _jobTag(m['job'] as Map, isMine ? Colors.white : GlassTokens.primaryText(context)),
             Text(
               m['text'] as String? ?? '',
               style: isMine
-                  ? LuxTokens.goldEngravedTextStyle.copyWith(fontSize: 15)
+                  ? const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w600)
                   : TextStyle(color: GlassTokens.primaryText(context), fontSize: 15),
             ),
             if (pending)
@@ -200,7 +215,7 @@ class _DmChatScreenState extends State<DmChatScreen> {
                   'yuborilmoqda…'.tr,
                   style: TextStyle(
                     fontSize: 10,
-                    color: isMine ? const Color(0xFF332205) : GlassTokens.secondaryText(context),
+                    color: isMine ? Colors.white70 : GlassTokens.secondaryText(context),
                   ),
                 ),
               ),
@@ -316,13 +331,16 @@ class _DmChatScreenState extends State<DmChatScreen> {
               child: Container(
                 width: 46,
                 height: 46,
-                decoration: LuxTokens.goldBoxDecoration(isCircle: true),
+                decoration: const BoxDecoration(
+                  color: Color(0xFF102A43),
+                  shape: BoxShape.circle,
+                ),
                 child: _sending
                     ? const Padding(
                         padding: EdgeInsets.all(13),
-                        child: CircularProgressIndicator(strokeWidth: 2, color: Color(0xFF140D02)),
+                        child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                       )
-                    : const Icon(Icons.send_rounded, color: Color(0xFF140D02), size: 22),
+                    : const Icon(Icons.send_rounded, color: Colors.white, size: 22),
               ),
             ),
           ],

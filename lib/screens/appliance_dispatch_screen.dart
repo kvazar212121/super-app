@@ -199,7 +199,6 @@ class _ApplianceDispatchScreenState extends State<ApplianceDispatchScreen> {
                   onPressed: _canSubmit ? _confirmDispatch : null,
                   style: FilledButton.styleFrom(
                     backgroundColor: _accent,
-                    foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
                     ),
