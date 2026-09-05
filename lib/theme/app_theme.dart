@@ -83,6 +83,7 @@ class AppTheme {
         backgroundColor: Colors.transparent,
         foregroundColor: isDark ? Colors.white : const Color(0xFF0F172A),
         titleTextStyle: textTheme.titleLarge?.copyWith(
+          fontFamily: LuxTokens.fontFamily,
           fontWeight: FontWeight.w700,
           letterSpacing: -0.3,
         ),

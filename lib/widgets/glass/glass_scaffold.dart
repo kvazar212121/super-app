@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../theme/glass_tokens.dart';
+import '../../theme/lux_tokens.dart';
 import '../../theme/app_theme.dart';
 import 'mesh_background.dart';
 
@@ -62,7 +63,7 @@ class GlassScaffold extends StatelessWidget {
                   showBackButton: showBackButton,
                   actions: actions,
                 ),
-              ?bottom,
+              if (bottom != null) bottom!,
               Expanded(child: body),
             ],
           ),
@@ -107,7 +108,8 @@ class GlassScaffold extends StatelessWidget {
                   title: Text(
                     title!,
                     style: TextStyle(
-                      fontSize: 17,
+                      fontFamily: LuxTokens.fontFamily,
+                      fontSize: 18,
                       fontWeight: FontWeight.w700,
                       color: GlassTokens.primaryText(context),
                       letterSpacing: -0.2,
@@ -160,7 +162,8 @@ class _ShellHeader extends StatelessWidget {
               title,
               textAlign: showBackButton ? TextAlign.start : TextAlign.center,
               style: TextStyle(
-                fontSize: 17,
+                fontFamily: LuxTokens.fontFamily,
+                fontSize: 18,
                 fontWeight: FontWeight.w700,
                 color: GlassTokens.primaryText(context),
                 letterSpacing: -0.2,
