@@ -53,8 +53,22 @@ class ProviderTheme extends StatelessWidget {
           primary: primary,
           surface: Colors.white,
           onSurface: ink,
-          outline: Colors.black,
+          outline: const Color(0xFFE5E7EB),
           outlineVariant: LuxTokens.textMuted,
+        ),
+        dialogTheme: const DialogThemeData(
+          backgroundColor: Colors.white,
+          surfaceTintColor: Colors.transparent,
+          titleTextStyle: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF0F172A),
+          ),
+          contentTextStyle: TextStyle(
+            fontSize: 14,
+            color: Color(0xFF334155),
+            height: 1.4,
+          ),
         ),
         textTheme: textTheme,
         iconTheme: const IconThemeData(color: ink),

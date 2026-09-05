@@ -22,17 +22,49 @@ class _SalonPendingScreenState extends State<SalonPendingScreen> {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text('Arizani bekor qilish'.tr),
-        content: Text('Salonga yuborgan so\'rovingizni bekor qilmoqchimisiz?'.tr),
+        backgroundColor: Colors.white,
+        surfaceTintColor: Colors.transparent,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+          side: const BorderSide(color: Color(0xFFE5E7EB)),
+        ),
+        title: Text(
+          'Arizani bekor qilish'.tr,
+          style: const TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF0F172A),
+          ),
+        ),
+        content: Text(
+          'Salonga yuborgan so\'rovingizni bekor qilmoqchimisiz?'.tr,
+          style: const TextStyle(
+            fontSize: 14,
+            color: Color(0xFF334155),
+            height: 1.4,
+          ),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: Text('Yo\'q'.tr),
+            child: Text(
+              'Yo\'q'.tr,
+              style: const TextStyle(
+                color: Color(0xFF64748B),
+                fontWeight: FontWeight.w600,
+              ),
+            ),
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
-            style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: Text('Ha, bekor qilish'.tr),
+            style: TextButton.styleFrom(foregroundColor: Colors.redAccent),
+            child: Text(
+              'Ha, bekor qilish'.tr,
+              style: const TextStyle(
+                color: Colors.redAccent,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ),
         ],
       ),
