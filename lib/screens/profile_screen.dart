@@ -336,7 +336,18 @@ class ProfileScreen extends StatelessWidget {
                   ),
                 ],
               )
-            : LuxTokens.goldBoxDecoration(radius: GlassTokens.radiusLg),
+            : BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(GlassTokens.radiusLg),
+                border: Border.all(color: LuxTokens.border, width: 1.5),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFF102A43).withValues(alpha: 0.08),
+                    blurRadius: 16,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
         child: Row(
           children: [
             const CrystalDiamondWidget(size: 48),
@@ -347,13 +358,11 @@ class ProfileScreen extends StatelessWidget {
                 children: [
                   Text(
                     isPremium ? 'Premium faol'.tr : 'HubServis Premium'.tr,
-                    style: isPremium
-                        ? const TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w800,
-                          )
-                        : LuxTokens.goldEngravedTextStyle.copyWith(fontSize: 16),
+                    style: TextStyle(
+                      color: isPremium ? Colors.white : const Color(0xFF0F172A),
+                      fontSize: 16,
+                      fontWeight: FontWeight.w800,
+                    ),
                   ),
                   const SizedBox(height: 2),
                   Text(
@@ -361,7 +370,7 @@ class ProfileScreen extends StatelessWidget {
                         ? 'Barcha imkoniyatlar ochiq ✅'.tr
                         : 'Barcha imkoniyatlarni oching'.tr,
                     style: TextStyle(
-                      color: isPremium ? Colors.white70 : const Color(0xFF332205),
+                      color: isPremium ? Colors.white70 : const Color(0xFF64748B),
                       fontSize: 13,
                       fontWeight: isPremium ? FontWeight.normal : FontWeight.w600,
                     ),
@@ -373,20 +382,20 @@ class ProfileScreen extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: const Color(0xFF102A43),
                   borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: LuxTokens.border),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.08),
+                      color: const Color(0xFF102A43).withValues(alpha: 0.25),
                       blurRadius: 6,
+                      offset: const Offset(0, 2),
                     ),
                   ],
                 ),
                 child: Text(
                   'Sotib olish'.tr,
                   style: const TextStyle(
-                    color: Color(0xFF8A5D0B),
+                    color: Colors.white,
                     fontWeight: FontWeight.w800,
                     fontSize: 13,
                   ),
@@ -521,7 +530,10 @@ class ProfileScreen extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
         decoration: active
-            ? LuxTokens.goldBoxDecoration(radius: 10)
+            ? BoxDecoration(
+                color: const Color(0xFF102A43),
+                borderRadius: BorderRadius.circular(10),
+              )
             : BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(10),
@@ -532,7 +544,11 @@ class ProfileScreen extends StatelessWidget {
         child: Text(
           label,
           style: active
-              ? LuxTokens.goldEngravedTextStyle.copyWith(fontSize: 13)
+              ? const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 13,
+                )
               : TextStyle(
                   color: GlassTokens.primaryText(context),
                   fontWeight: FontWeight.w700,
@@ -877,7 +893,7 @@ class _PinSectionState extends State<_PinSection> {
               Switch(
                 value: _pinEnabled,
                 onChanged: _onToggle,
-                activeThumbColor: const Color(0xFFC9A227),
+                activeThumbColor: const Color(0xFF102A43),
               ),
             ],
           ),
@@ -996,7 +1012,7 @@ class _ProfileAvatarWidgetState extends State<_ProfileAvatarWidget> {
                   Colors.white.withValues(alpha: 0.05),
                 ],
               ),
-              border: Border.all(color: const Color(0xFFC9A227), width: 2),
+              border: Border.all(color: const Color(0xFF102A43), width: 2),
             ),
             child: _uploading
                 ? const Center(
@@ -1005,7 +1021,7 @@ class _ProfileAvatarWidgetState extends State<_ProfileAvatarWidget> {
                       height: 24,
                       child: CircularProgressIndicator(
                         strokeWidth: 2.5,
-                        color: Color(0xFFC9A227),
+                        color: Color(0xFF102A43),
                       ),
                     ),
                   )
@@ -1045,7 +1061,7 @@ class _ProfileAvatarWidgetState extends State<_ProfileAvatarWidget> {
             child: Container(
               padding: const EdgeInsets.all(6),
               decoration: const BoxDecoration(
-                color: Color(0xFFC9A227),
+                color: Color(0xFF102A43),
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
@@ -1058,7 +1074,7 @@ class _ProfileAvatarWidgetState extends State<_ProfileAvatarWidget> {
               child: const Icon(
                 LucideIcons.camera,
                 size: 14,
-                color: Colors.black,
+                color: Colors.white,
               ),
             ),
           ),

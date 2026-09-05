@@ -273,10 +273,17 @@ class _ProviderPortalEntryState extends State<ProviderPortalEntry> {
                   horizontal: 12,
                   vertical: 6,
                 ),
-                decoration: LuxTokens.goldBoxDecoration(radius: 20),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF102A43),
+                  borderRadius: BorderRadius.circular(20),
+                ),
                 child: Text(
                   'Ro\'yxatdan o\'tish'.tr,
-                  style: LuxTokens.goldEngravedTextStyle.copyWith(fontSize: 12),
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 12,
+                  ),
                 ),
               )
             else
@@ -420,21 +427,17 @@ class _ProviderAlertTile extends StatelessWidget {
           children: [
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              decoration: isGoldStatus
-                  ? LuxTokens.goldBoxDecoration(radius: 6)
-                  : BoxDecoration(
-                      color: statusColor,
-                      borderRadius: BorderRadius.circular(6),
-                    ),
+              decoration: BoxDecoration(
+                color: isGoldStatus ? const Color(0xFF102A43) : statusColor,
+                borderRadius: BorderRadius.circular(6),
+              ),
               child: Text(
                 statusLabel,
-                style: isGoldStatus
-                    ? LuxTokens.goldEngravedTextStyle.copyWith(fontSize: 10.5)
-                    : const TextStyle(
-                        fontSize: 10.5,
-                        color: Colors.white,
-                        fontWeight: FontWeight.w700,
-                      ),
+                style: const TextStyle(
+                  fontSize: 10.5,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w700,
+                ),
               ),
             ),
             const SizedBox(width: 8),
