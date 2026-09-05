@@ -31,7 +31,7 @@ class HomeScreen extends StatelessWidget {
     // Oraliqlar bir maromda: bo'limlar orasi 24, ichkarisi 10-12.
     // Yon chekka 18 (oldin 20) — kartalar biroz kengroq nafas oladi.
     // Yagona yuqa ko'k-zangori orqa fon — sahifa bir xil ko'rinadi.
-    return const ColoredBox(
+    return ColoredBox(
       color: LuxTokens.bg,
       child: SafeArea(
         bottom: false,
