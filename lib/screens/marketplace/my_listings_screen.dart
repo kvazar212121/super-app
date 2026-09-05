@@ -15,6 +15,7 @@ import '../../widgets/glass/glass_surface.dart';
 import '../../widgets/marketplace/listing_modal.dart';
 import '../../theme/lux_tokens.dart';
 import '../../l10n/locale_controller.dart';
+import '../chat_screen.dart';
 
 class MyListingsScreen extends StatefulWidget {
   /// «Buyurtmalarim» ichida tab sifatida ochilgan bo'lsa true.
@@ -62,14 +63,73 @@ class _MyListingsScreenState extends State<MyListingsScreen> {
     }
   }
 
+  Future<void> _openCreateListing() async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => const ChatScreen(
+          initialText: "Sotiladigan buyum e'lonini joylashtirmoqchiman: ",
+        ),
+      ),
+    );
+    _load();
+  }
+
   @override
   Widget build(BuildContext context) {
-    final body = _body();
-    if (widget.embedded) return body;
+    final bodyContent = _body();
+    final fab = Container(
+      height: 52,
+      margin: EdgeInsets.only(bottom: widget.embedded ? 90 : 16),
+      padding: const EdgeInsets.symmetric(horizontal: 18),
+      decoration: BoxDecoration(
+        color: const Color(0xFF102A43),
+        borderRadius: BorderRadius.circular(26),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x33102A43),
+            blurRadius: 10,
+            offset: Offset(0, 4),
+          ),
+        ],
+      ),
+      child: InkWell(
+        onTap: _openCreateListing,
+        borderRadius: BorderRadius.circular(26),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(LucideIcons.plus, color: Colors.white, size: 20),
+            const SizedBox(width: 8),
+            Text(
+              'E\'lon berish'.tr,
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w700,
+                fontSize: 15,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    if (widget.embedded) {
+      return Scaffold(
+        backgroundColor: Colors.transparent,
+        floatingActionButton: fab,
+        body: bodyContent,
+      );
+    }
+
     return GlassScaffold(
-      title: 'Mening e\'lonlarim',
+      title: 'Mening e\'lonlarim'.tr,
       showBackButton: true,
-      body: body,
+      body: Scaffold(
+        backgroundColor: Colors.transparent,
+        floatingActionButton: fab,
+        body: bodyContent,
+      ),
     );
   }
 
@@ -100,13 +160,13 @@ class _MyListingsScreenState extends State<MyListingsScreen> {
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: LuxTokens.gold.withValues(alpha: 0.14),
+                    color: const Color(0xFF102A43).withValues(alpha: 0.08),
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(
                     LucideIcons.shoppingBag,
                     size: 40,
-                    color: Color(0xFF140D02),
+                    color: Color(0xFF102A43),
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -114,7 +174,7 @@ class _MyListingsScreenState extends State<MyListingsScreen> {
                   'Hozircha e\'loningiz yo\'q'.tr,
                   textAlign: TextAlign.center,
                   style: const TextStyle(
-                    color: Color(0xFF140D02),
+                    color: Color(0xFF102A43),
                     fontSize: 16,
                     fontWeight: FontWeight.w800,
                   ),
@@ -124,7 +184,7 @@ class _MyListingsScreenState extends State<MyListingsScreen> {
                   'Sotiladigan buyumingiz bo\'lsa e\'lon berishingiz mumkin.'.tr,
                   textAlign: TextAlign.center,
                   style: const TextStyle(
-                    color: Color(0xFF332205),
+                    color: Color(0xFF64748B),
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
                     height: 1.4,
@@ -138,8 +198,9 @@ class _MyListingsScreenState extends State<MyListingsScreen> {
     }
     return RefreshIndicator(
       onRefresh: _load,
+      color: const Color(0xFF102A43),
       child: ListView.separated(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 160),
         itemCount: _items.length,
         separatorBuilder: (_, _) => const SizedBox(height: 10),
         itemBuilder: (context, i) => _card(_items[i]),

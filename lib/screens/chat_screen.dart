@@ -47,11 +47,13 @@ class ChatScreen extends StatefulWidget {
   /// Ishlab turgan ilovada hech qachon berilmaydi.
   @visibleForTesting
   final XFile? initialPhoto;
+  final String? initialText;
 
   const ChatScreen({
     super.key,
     this.startVoice = false,
     this.initialPhoto,
+    this.initialText,
   });
 
   @override
@@ -179,6 +181,10 @@ class _ChatScreenState extends State<ChatScreen>
     super.initState();
     _loadChatScale();
     _pendingPhoto = widget.initialPhoto;
+    if (widget.initialText != null && widget.initialText!.isNotEmpty) {
+      _textController.text = widget.initialText!;
+      _hasText = true;
+    }
     _textController.addListener(() {
       setState(() {
         _hasText = _textController.text.trim().isNotEmpty;
