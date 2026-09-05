@@ -157,20 +157,41 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
       context: context,
       builder: (ctx) => StatefulBuilder(
         builder: (context, setState) => AlertDialog(
-          title: Text('Ustani baholang'.tr),
+          backgroundColor: Colors.white,
+          surfaceTintColor: Colors.transparent,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(24),
+            side: const BorderSide(color: Color(0xFFE2E8F0), width: 1.2),
+          ),
+          title: Text(
+            'Ustani baholang'.tr,
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w800,
+              color: Color(0xFF0F172A),
+            ),
+          ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text('Xizmat sifati qanday bo\'ldi?'.tr),
+              Text(
+                'Xizmat sifati qanday bo\'ldi?'.tr,
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: Color(0xFF475569),
+                ),
+              ),
               const SizedBox(height: 16),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: List.generate(5, (index) {
+                  final isSelected = index < rating;
                   return IconButton(
                     icon: Icon(
-                      index < rating ? Icons.star : Icons.star_border,
-                      color: Colors.amber,
-                      size: 32,
+                      isSelected ? Icons.star_rounded : Icons.star_outline_rounded,
+                      color: isSelected ? const Color(0xFFF59E0B) : const Color(0xFFCBD5E1),
+                      size: 36,
                     ),
                     onPressed: () => setState(() => rating = index + 1),
                   );
@@ -178,9 +199,27 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
               ),
               const SizedBox(height: 16),
               TextField(
+                style: const TextStyle(
+                  color: Color(0xFF0F172A),
+                  fontWeight: FontWeight.w600,
+                ),
                 decoration: InputDecoration(
-                  labelText: 'Izoh (ixtiyoriy)'.tr,
-                  border: OutlineInputBorder(),
+                  hintText: 'Izoh (ixtiyoriy)'.tr,
+                  hintStyle: const TextStyle(color: Color(0xFF94A3B8)),
+                  filled: true,
+                  fillColor: const Color(0xFFF1F5F9),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: BorderSide.none,
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: const BorderSide(color: Color(0xFF102A43), width: 1.5),
+                  ),
                 ),
                 maxLines: 3,
                 onChanged: (v) => comment = v,
@@ -190,20 +229,16 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx),
-              child: Text(
-                'Yopish'.tr,
-                style: const TextStyle(color: Colors.black),
+              style: TextButton.styleFrom(
+                foregroundColor: const Color(0xFF64748B),
               ),
+              child: Text('Yopish'.tr),
             ),
             FilledButton(
               onPressed: submitting
                   ? null
                   : () async {
                       setState(() => submitting = true);
-                      // ScaffoldMessenger'ni async'dan OLDIN olamiz:
-                      // await'dan keyin `context` eskirgan bo'lishi
-                      // mumkin (dialog yopilgan bo'lsa), bu esa
-                      // ilovaning qulashiga olib keladi.
                       final messenger = ScaffoldMessenger.of(context);
                       final navigator = Navigator.of(ctx);
                       try {
@@ -229,15 +264,19 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                       }
                     },
               style: FilledButton.styleFrom(
-                backgroundColor: Colors.amber,
-                foregroundColor: Colors.black,
+                backgroundColor: const Color(0xFF102A43),
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
               ),
               child: submitting
                   ? const SizedBox(
                       width: 16,
                       height: 16,
                       child: CircularProgressIndicator(
-                        color: Colors.black,
+                        color: Colors.white,
                         strokeWidth: 2,
                       ),
                     )
