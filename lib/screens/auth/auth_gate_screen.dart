@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import '../../providers/app_provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../theme/glass_tokens.dart';
+import '../../theme/lux_tokens.dart';
 import '../../widgets/auth/otp_auth_panel.dart';
 import '../../widgets/glass/glass_surface.dart';
 import '../../widgets/glass/mesh_background.dart';
@@ -106,8 +107,11 @@ class _AuthGateScreenState extends State<AuthGateScreen> {
                   ? 'Ma\'lumotlaringiz'.tr
                   : (_showRegister ? 'Ro\'yxatdan o\'tish'.tr : 'Kirish'.tr),
               style: TextStyle(
-                color: GlassTokens.primaryText(context),
+                fontFamily: LuxTokens.fontFamily,
+                fontSize: 19,
                 fontWeight: FontWeight.w800,
+                color: GlassTokens.primaryText(context),
+                letterSpacing: -0.3,
               ),
             ),
           ),
