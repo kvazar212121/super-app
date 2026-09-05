@@ -28,7 +28,7 @@ class NotificationsScreen extends StatelessWidget {
             child: Text(
               "Hammasini o'qish".tr,
               style: const TextStyle(
-                color: Color(0xFF8A5D0B),
+                color: Color(0xFF102A43),
                 fontWeight: FontWeight.w900,
                 fontSize: 13.5,
               ),
@@ -43,7 +43,7 @@ class NotificationsScreen extends StatelessWidget {
       ],
       body: RefreshIndicator(
         onRefresh: () => provider.fetchNotifications(),
-        color: LuxTokens.gold,
+        color: const Color(0xFF102A43),
         child: notifications.isEmpty
             ? _buildEmptyState(context)
             : ListView.separated(
@@ -90,16 +90,14 @@ class NotificationsScreen extends StatelessWidget {
                           border: Border.all(
                             color: isRead
                                 ? const Color(0xFFE2E8F0)
-                                : LuxTokens.gold,
+                                : const Color(0xFF102A43).withValues(alpha: 0.25),
                             width: isRead ? 1.0 : 1.5,
                           ),
-                          boxShadow: [
+                          boxShadow: const [
                             BoxShadow(
-                              color: isRead
-                                  ? Colors.black.withValues(alpha: 0.02)
-                                  : LuxTokens.gold.withValues(alpha: 0.12),
+                              color: Color(0x0A000000),
                               blurRadius: 10,
-                              offset: const Offset(0, 3),
+                              offset: Offset(0, 3),
                             ),
                           ],
                         ),
@@ -133,7 +131,7 @@ class NotificationsScreen extends StatelessWidget {
                                           width: 9,
                                           height: 9,
                                           decoration: const BoxDecoration(
-                                            color: LuxTokens.gold,
+                                            color: Color(0xFF102A43),
                                             shape: BoxShape.circle,
                                           ),
                                         ),
@@ -179,8 +177,8 @@ class NotificationsScreen extends StatelessWidget {
         surfaceTintColor: Colors.transparent,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
-          side: BorderSide(
-            color: LuxTokens.gold.withValues(alpha: 0.35),
+          side: const BorderSide(
+            color: Color(0xFFE2E8F0),
             width: 1.5,
           ),
         ),
@@ -243,8 +241,11 @@ class NotificationsScreen extends StatelessWidget {
     return Container(
       width: 44,
       height: 44,
-      decoration: LuxTokens.goldBoxDecoration(isCircle: true),
-      child: Icon(iconData, color: const Color(0xFF140D02), size: 20),
+      decoration: BoxDecoration(
+        color: const Color(0xFF102A43).withValues(alpha: 0.08),
+        shape: BoxShape.circle,
+      ),
+      child: Icon(iconData, color: const Color(0xFF102A43), size: 20),
     );
   }
 
@@ -261,13 +262,13 @@ class NotificationsScreen extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: LuxTokens.gold.withValues(alpha: 0.14),
+                  color: const Color(0xFF102A43).withValues(alpha: 0.08),
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(
                   LucideIcons.bellOff,
                   size: 40,
-                  color: Color(0xFF140D02),
+                  color: Color(0xFF102A43),
                 ),
               ),
               const SizedBox(height: 16),
@@ -275,7 +276,7 @@ class NotificationsScreen extends StatelessWidget {
                 "Bildirishnomalar yo'q".tr,
                 textAlign: TextAlign.center,
                 style: const TextStyle(
-                  color: Color(0xFF140D02),
+                  color: Color(0xFF102A43),
                   fontSize: 16,
                   fontWeight: FontWeight.w800,
                 ),
@@ -286,7 +287,7 @@ class NotificationsScreen extends StatelessWidget {
                     .tr,
                 textAlign: TextAlign.center,
                 style: const TextStyle(
-                  color: Color(0xFF332205),
+                  color: Color(0xFF64748B),
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
                   height: 1.4,
