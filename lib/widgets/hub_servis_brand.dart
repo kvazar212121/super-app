@@ -131,7 +131,7 @@ class _HubServisBrandState extends State<HubServisBrand>
         ),
         SizedBox(height: widget.compact ? 14 : 22),
 
-        // 2. "HubServis" SARLAVHASI (100% TO'LIQ VA ANIQ KORINADIGAN OLTIN JILO BILAN)
+        // 2. "HubServis" SARLAVHASI (OCHIQ FONDA JUDA TINIQ VA HASHAMATLI OLTIN SHIMMER)
         AnimatedBuilder(
           animation: _shimmerController,
           builder: (context, child) {
@@ -140,17 +140,11 @@ class _HubServisBrandState extends State<HubServisBrand>
               shaderCallback: (bounds) => LinearGradient(
                 begin: Alignment(-1.5 + (t * 3.0), 0.0),
                 end: Alignment(-0.5 + (t * 3.0), 0.0),
-                colors: isDark
-                    ? const [
-                        Color(0xFFFFFFFF),
-                        Color(0xFFFDE68A),
-                        Color(0xFFFFFFFF),
-                      ]
-                    : const [
-                        Color(0xFF8A5D0B),
-                        Color(0xFFFDE68A),
-                        Color(0xFF8A5D0B),
-                      ],
+                colors: const [
+                  Color(0xFF6B4505),
+                  Color(0xFFD4AF37),
+                  Color(0xFF6B4505),
+                ],
                 stops: const [0.0, 0.5, 1.0],
               ).createShader(bounds),
               child: Text(
@@ -175,7 +169,7 @@ class _HubServisBrandState extends State<HubServisBrand>
               fontFamily: LuxTokens.display,
               fontSize: widget.compact ? 14 : 15,
               fontWeight: FontWeight.w700,
-              color: isDark ? const Color(0xFFCBD5E1) : const Color(0xFF475569),
+              color: const Color(0xFF1E293B),
               letterSpacing: 0.2,
             ),
           ),

@@ -1,7 +1,12 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:provider/provider.dart';
+
+import '../../l10n/locale_controller.dart';
 import '../../providers/app_provider.dart';
 import '../../providers/auth_provider.dart';
+import '../../theme/lux_tokens.dart';
 import '../../widgets/glass/mesh_background.dart';
 import '../../widgets/hub_servis_brand.dart';
 import '../root_shell.dart';
@@ -22,6 +27,42 @@ class _SplashScreenState extends State<SplashScreen>
   late Animation<double> _fadeAnim;
   late Animation<double> _slideAnim;
   late Animation<double> _pulseAnim;
+
+  Timer? _tipTimer;
+  int _currentTipIndex = 0;
+
+  final List<Map<String, dynamic>> _tips = [
+    {
+      'icon': LucideIcons.wrench,
+      'category': 'Maishiy xizmatlar',
+      'text': 'Usta, santexnik va elektrik xizmatlarini bir zumda chaqiring',
+    },
+    {
+      'icon': LucideIcons.car,
+      'category': 'Avto xizmatlar',
+      'text': 'Avto-ustaxona, yuvish va evakuator xizmatlari doim qo\'l ostingizda',
+    },
+    {
+      'icon': LucideIcons.sparkles,
+      'category': 'AiHub Intellekti',
+      'text': 'Sun\'iy intellekt yordamchisidan har qanday savolingizga javob oling',
+    },
+    {
+      'icon': LucideIcons.home,
+      'category': 'Uy va Oila',
+      'text': 'Uy tozalash, enaga va tibbiy hamshira xizmatlarini qulay buyurtma qiling',
+    },
+    {
+      'icon': LucideIcons.briefcase,
+      'category': 'Ish va Bandlik',
+      'text': 'Xizmat ko\'rsatish bo\'yicha bo\'sh ish o\'rinlari va e\'lonlar',
+    },
+    {
+      'icon': LucideIcons.shoppingBag,
+      'category': 'Smart Bozor',
+      'text': 'Moliyaviy kalkulyatorlar va ehtiyojlar uchun foydali vositalar',
+    },
+  ];
 
   @override
   void initState() {
@@ -55,7 +96,18 @@ class _SplashScreenState extends State<SplashScreen>
     );
 
     _mainController.forward();
+    _startTipCarousel();
     _checkAuth();
+  }
+
+  void _startTipCarousel() {
+    _tipTimer = Timer.periodic(const Duration(milliseconds: 1500), (_) {
+      if (mounted) {
+        setState(() {
+          _currentTipIndex = (_currentTipIndex + 1) % _tips.length;
+        });
+      }
+    });
   }
 
   Future<void> _checkAuth() async {
@@ -83,7 +135,7 @@ class _SplashScreenState extends State<SplashScreen>
     }();
 
     // Wait for the splash screen presentation delay
-    await Future.delayed(const Duration(milliseconds: 2200));
+    await Future.delayed(const Duration(milliseconds: 2800));
 
     // Ensure auth check is completed before navigating
     await authFuture;
@@ -96,6 +148,7 @@ class _SplashScreenState extends State<SplashScreen>
 
   @override
   void dispose() {
+    _tipTimer?.cancel();
     _mainController.dispose();
     _pulseController.dispose();
     super.dispose();
@@ -103,10 +156,8 @@ class _SplashScreenState extends State<SplashScreen>
 
   @override
   Widget build(BuildContext context) {
-    // Fon TEMADAN olinadi (AppProvider.isDarkMode emas) — ilova temasi
-    // main.dart da majburan dark, bayroq esa false qolib ketardi va
-    // splash OQ chiqib, keyingi qora ekranga o'tishda "chaqnash" berardi.
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final tip = _tips[_currentTipIndex];
 
     return Stack(
       fit: StackFit.expand,
@@ -115,40 +166,157 @@ class _SplashScreenState extends State<SplashScreen>
         Scaffold(
           backgroundColor: Colors.transparent,
           body: SafeArea(
-            child: Center(
-              child: FadeTransition(
-                opacity: _fadeAnim,
-                child: AnimatedBuilder(
-                  animation: Listenable.merge([
-                    _scaleAnim,
-                    _slideAnim,
-                    _pulseAnim,
-                  ]),
-                  builder: (context, child) {
-                    return Transform.translate(
-                      offset: Offset(0, _slideAnim.value),
-                      child: Transform.scale(
-                        scale: _scaleAnim.value * _pulseAnim.value,
-                        child: child,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Column(
+                children: [
+                  const Spacer(flex: 2),
+                  // 1) Logo + HubServis Title + Tagline (High Contrast & Clear Typography)
+                  FadeTransition(
+                    opacity: _fadeAnim,
+                    child: AnimatedBuilder(
+                      animation: Listenable.merge([
+                        _scaleAnim,
+                        _slideAnim,
+                        _pulseAnim,
+                      ]),
+                      builder: (context, child) {
+                        return Transform.translate(
+                          offset: Offset(0, _slideAnim.value),
+                          child: Transform.scale(
+                            scale: _scaleAnim.value * _pulseAnim.value,
+                            child: child,
+                          ),
+                        );
+                      },
+                      child: const HubServisBrand(logoSize: 112, titleSize: 42),
+                    ),
+                  ),
+
+                  const Spacer(flex: 3),
+
+                  // 2) Dynamic App Features & Tips Carousel Card
+                  FadeTransition(
+                    opacity: _fadeAnim,
+                    child: Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.92),
+                        borderRadius: BorderRadius.circular(24),
+                        border: Border.all(
+                          color: LuxTokens.gold.withValues(alpha: 0.5),
+                          width: 1.4,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: LuxTokens.gold.withValues(alpha: 0.15),
+                            blurRadius: 20,
+                            offset: const Offset(0, 8),
+                          ),
+                        ],
                       ),
-                    );
-                  },
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
+                      child: AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 400),
+                        transitionBuilder: (child, anim) {
+                          return FadeTransition(
+                            opacity: anim,
+                            child: SlideTransition(
+                              position: Tween<Offset>(
+                                begin: const Offset(0, 0.15),
+                                end: Offset.zero,
+                              ).animate(anim),
+                              child: child,
+                            ),
+                          );
+                        },
+                        child: KeyedSubtree(
+                          key: ValueKey<int>(_currentTipIndex),
+                          child: Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                  gradient: LuxTokens.goldGradient,
+                                  shape: BoxShape.circle,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: LuxTokens.gold.withValues(alpha: 0.35),
+                                      blurRadius: 8,
+                                    ),
+                                  ],
+                                ),
+                                child: Icon(
+                                  tip['icon'] as IconData,
+                                  size: 20,
+                                  color: const Color(0xFF140D02),
+                                ),
+                              ),
+                              const SizedBox(width: 14),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      (tip['category'] as String).tr,
+                                      style: const TextStyle(
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.w800,
+                                        color: Color(0xFF8A5D0B),
+                                        letterSpacing: 0.6,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 3),
+                                    Text(
+                                      (tip['text'] as String).tr,
+                                      style: const TextStyle(
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w700,
+                                        color: Color(0xFF0F172A),
+                                        height: 1.3,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 24),
+
+                  // 3) High Quality Animated Loading Spinner with Status Text
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const HubServisBrand(logoSize: 108, titleSize: 38),
-                      const SizedBox(height: 52),
                       SizedBox(
-                        width: 32,
-                        height: 32,
+                        width: 22,
+                        height: 22,
                         child: CircularProgressIndicator(
-                          strokeWidth: 2.5,
+                          strokeWidth: 2.8,
                           color: const Color(0xFFC9A227),
+                          backgroundColor: LuxTokens.gold.withValues(alpha: 0.2),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Text(
+                        'Xizmatlar yuklanmoqda...'.tr,
+                        style: const TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                          color: Color(0xFF334155),
+                          letterSpacing: 0.2,
                         ),
                       ),
                     ],
                   ),
-                ),
+
+                  const SizedBox(height: 32),
+                ],
               ),
             ),
           ),
