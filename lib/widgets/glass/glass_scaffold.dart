@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../../theme/glass_tokens.dart';
 import '../../theme/lux_tokens.dart';
 import '../../theme/app_theme.dart';
@@ -91,6 +92,17 @@ class GlassScaffold extends StatelessWidget {
           appBar: title == null
               ? null
               : AppBar(
+                  systemOverlayStyle: isDark
+                      ? SystemUiOverlayStyle.light.copyWith(
+                          statusBarColor: Colors.transparent,
+                          statusBarIconBrightness: Brightness.light,
+                          statusBarBrightness: Brightness.dark,
+                        )
+                      : SystemUiOverlayStyle.dark.copyWith(
+                          statusBarColor: Colors.transparent,
+                          statusBarIconBrightness: Brightness.dark,
+                          statusBarBrightness: Brightness.light,
+                        ),
                   backgroundColor: Colors.transparent,
                   elevation: 0,
                   scrolledUnderElevation: 0,
