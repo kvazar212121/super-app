@@ -691,7 +691,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(icon, size: 18, color: GlassTokens.secondaryText(context)),
+        Icon(icon, size: 18, color: GlassTokens.primaryText(context)),
         const SizedBox(width: 10),
         Expanded(
           child: Column(
