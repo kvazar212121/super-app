@@ -148,7 +148,7 @@ class OtpCodeFieldState extends State<OtpCodeField> {
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: LuxTokens.gold, width: 2.0),
+                  borderSide: const BorderSide(color: Color(0xFF102A43), width: 2.0),
                 ),
               ),
               onChanged: (v) => _onDigit(i, v),
@@ -295,13 +295,13 @@ class _OtpAuthPanelState extends State<OtpAuthPanel> {
             width: double.infinity,
             height: 52,
             decoration: BoxDecoration(
-              gradient: LuxTokens.goldGradient,
+              color: const Color(0xFF102A43),
               borderRadius: BorderRadius.circular(14),
               boxShadow: const [
                 BoxShadow(
-                  color: Colors.black26,
-                  blurRadius: 8,
-                  offset: Offset(0, 3),
+                  color: Color(0x1A102A43),
+                  blurRadius: 10,
+                  offset: Offset(0, 4),
                 ),
               ],
             ),
@@ -320,14 +320,14 @@ class _OtpAuthPanelState extends State<OtpAuthPanel> {
                       height: 20,
                       child: CircularProgressIndicator(
                         strokeWidth: 2,
-                        color: Color(0xFF140D02),
+                        color: Colors.white,
                       ),
                     )
-                  : const Icon(LucideIcons.messageSquare, size: 20, color: Color(0xFF140D02)),
+                  : const Icon(LucideIcons.messageSquare, size: 20, color: Colors.white),
               label: Text(
                 'SMS kod yuborish'.tr,
                 style: const TextStyle(
-                  color: Color(0xFF140D02),
+                  color: Colors.white,
                   fontSize: 16,
                   fontWeight: FontWeight.w900,
                 ),
@@ -369,7 +369,7 @@ class _OtpAuthPanelState extends State<OtpAuthPanel> {
             Expanded(
               child: TextButton(
                 style: TextButton.styleFrom(
-                  foregroundColor: const Color(0xFF8A5D0B),
+                  foregroundColor: const Color(0xFF102A43),
                   padding: EdgeInsets.zero,
                   alignment: Alignment.centerLeft,
                 ),
@@ -385,7 +385,7 @@ class _OtpAuthPanelState extends State<OtpAuthPanel> {
             const SizedBox(width: 6),
             TextButton(
               style: TextButton.styleFrom(
-                foregroundColor: const Color(0xFF8A5D0B),
+                foregroundColor: const Color(0xFF102A43),
                 disabledForegroundColor: const Color(0xFF64748B),
                 padding: EdgeInsets.zero,
                 alignment: Alignment.centerRight,
@@ -399,7 +399,7 @@ class _OtpAuthPanelState extends State<OtpAuthPanel> {
                 style: TextStyle(
                   color: _resendSeconds > 0
                       ? const Color(0xFF64748B)
-                      : const Color(0xFF8A5D0B),
+                      : const Color(0xFF102A43),
                   fontWeight: FontWeight.w800,
                   fontSize: 12.5,
                 ),

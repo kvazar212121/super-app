@@ -158,45 +158,58 @@ class _ProviderCategorySelectionScreenState
                                   duration: const Duration(milliseconds: 200),
                                   decoration: BoxDecoration(
                                     color: isSelected
-                                        ? Colors.black12
-                                        : theme.colorScheme.surface,
+                                        ? const Color(0xFF102A43).withValues(alpha: 0.08)
+                                        : Colors.white,
                                     borderRadius: BorderRadius.circular(20),
                                     border: Border.all(
                                       color: isSelected
-                                          ? Colors.black
-                                          : Colors.grey,
-                                      width: 2,
+                                          ? const Color(0xFF102A43)
+                                          : const Color(0xFFE2E8F0),
+                                      width: isSelected ? 2 : 1.5,
                                     ),
+                                    boxShadow: isSelected
+                                        ? const [
+                                            BoxShadow(
+                                              color: Color(0x1A102A43),
+                                              blurRadius: 10,
+                                              offset: Offset(0, 4),
+                                            ),
+                                          ]
+                                        : const [
+                                            BoxShadow(
+                                              color: Color(0x06000000),
+                                              blurRadius: 6,
+                                              offset: Offset(0, 2),
+                                            ),
+                                          ],
                                   ),
                                   child: Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       Icon(
                                         cat['icon'] as IconData,
-                                        size: 40,
+                                        size: 38,
                                         color: isSelected
-                                            ? Colors.black
-                                            : Colors.grey,
+                                            ? const Color(0xFF102A43)
+                                            : const Color(0xFF64748B),
                                       ),
                                       const SizedBox(height: 12),
                                       Padding(
                                         padding: const EdgeInsets.symmetric(
-                                          horizontal: 8,
+                                          horizontal: 10,
                                         ),
                                         child: Text(
                                           (cat['name'] as String).tr,
                                           textAlign: TextAlign.center,
-                                          style: theme.textTheme.titleMedium
-                                              ?.copyWith(
-                                                fontWeight: isSelected
-                                                    ? FontWeight.bold
-                                                    : FontWeight.normal,
-                                                color: isSelected
-                                                    ? Colors.black
-                                                    : theme
-                                                          .colorScheme
-                                                          .onSurface,
-                                              ),
+                                          style: TextStyle(
+                                            fontSize: 13.5,
+                                            fontWeight: isSelected
+                                                ? FontWeight.w800
+                                                : FontWeight.w600,
+                                            color: isSelected
+                                                ? const Color(0xFF102A43)
+                                                : const Color(0xFF334155),
+                                          ),
                                         ),
                                       ),
                                     ],
@@ -209,6 +222,7 @@ class _ProviderCategorySelectionScreenState
                   const SizedBox(height: 16),
                   SizedBox(
                     width: double.infinity,
+                    height: 52,
                     child: FilledButton(
                       onPressed: _selectedCategory == null || _loading
                           ? null
@@ -278,12 +292,19 @@ class _ProviderCategorySelectionScreenState
                               );
                             },
                       style: FilledButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        backgroundColor: const Color(0xFF102A43),
+                        foregroundColor: Colors.white,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(16),
                         ),
                       ),
-                      child: Text('Davom etish'.tr),
+                      child: Text(
+                        'Davom etish'.tr,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
                     ),
                   ),
                 ],

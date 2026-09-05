@@ -127,8 +127,8 @@ class _LoginScreenState extends State<LoginScreen>
                                       TextSpan(
                                         text: 'Ro\'yxatdan o\'ting'.tr,
                                         style: const TextStyle(
-                                          color: Color(0xFFC9A227),
-                                          fontWeight: FontWeight.w700,
+                                          color: Color(0xFF102A43),
+                                          fontWeight: FontWeight.w800,
                                         ),
                                       ),
                                     ],
