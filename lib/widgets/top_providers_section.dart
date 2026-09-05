@@ -242,15 +242,15 @@ class _TopProvidersSectionState extends State<TopProvidersSection> {
                 ] else ...[
                   Text(
                     'Yana'.tr,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w800,
-                      color: Color(0xFFB8921F),
+                      color: GlassTokens.primaryText(context),
                     ),
                   ),
                   const SizedBox(width: 6),
-                  const Icon(LucideIcons.chevronDown,
-                      size: 17, color: Color(0xFFB8921F)),
+                  Icon(LucideIcons.chevronDown,
+                      size: 17, color: GlassTokens.primaryText(context)),
                 ],
               ],
             ),
@@ -299,7 +299,6 @@ class _TopProviderTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final primary = GlassTokens.primaryText(context);
     final secondary = GlassTokens.secondaryText(context);
-    final accent = provider.kind?.accent ?? const Color(0xFFB8921F);
 
     return Material(
       color: Colors.transparent,
@@ -311,7 +310,7 @@ class _TopProviderTile extends StatelessWidget {
             children: [
               _PositionBadge(position: position),
               const SizedBox(width: 10),
-              _Avatar(provider: provider, accent: accent),
+              _Avatar(provider: provider),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
@@ -339,7 +338,7 @@ class _TopProviderTile extends StatelessWidget {
                             style: TextStyle(
                               fontSize: 11.5,
                               fontWeight: FontWeight.w600,
-                              color: accent,
+                              color: secondary,
                             ),
                           ),
                         ),
@@ -382,22 +381,19 @@ class _PositionBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final medal = switch (position) {
-      1 => const Color(0xFFF59E0B), // oltin
-      2 => const Color(0xFF9A9A96), // kumush
-      3 => const Color(0xFFB45309), // bronza
-      _ => null,
-    };
-    final isTop = medal != null;
+    final isTop1 = position == 1;
+    final isTop2Or3 = position == 2 || position == 3;
 
     return Container(
       width: 26,
       height: 26,
       alignment: Alignment.center,
       decoration: BoxDecoration(
-        color: isTop
-            ? medal.withValues(alpha: 0.16)
-            : GlassTokens.glassBorder(context).withValues(alpha: 0.5),
+        color: isTop1
+            ? const Color(0xFF102A43)
+            : (isTop2Or3
+                ? GlassTokens.glassBorder(context).withValues(alpha: 0.8)
+                : GlassTokens.glassBorder(context).withValues(alpha: 0.4)),
         shape: BoxShape.circle,
       ),
       child: Text(
@@ -405,7 +401,11 @@ class _PositionBadge extends StatelessWidget {
         style: TextStyle(
           fontSize: 12,
           fontWeight: FontWeight.w800,
-          color: isTop ? medal : GlassTokens.secondaryText(context),
+          color: isTop1
+              ? Colors.white
+              : (isTop2Or3
+                  ? GlassTokens.primaryText(context)
+                  : GlassTokens.secondaryText(context)),
         ),
       ),
     );
@@ -415,9 +415,8 @@ class _PositionBadge extends StatelessWidget {
 /// Provayder rasmi yoki soha ikonkasi.
 class _Avatar extends StatelessWidget {
   final TopProvider provider;
-  final Color accent;
 
-  const _Avatar({required this.provider, required this.accent});
+  const _Avatar({required this.provider});
 
   @override
   Widget build(BuildContext context) {
@@ -431,22 +430,27 @@ class _Avatar extends StatelessWidget {
             ? CachedNetworkImage(
                 imageUrl: AppConfig.formatImageUrl(url),
                 fit: BoxFit.cover,
-                // 46x46 dp avatar — 128px kifoya, RAM tejaymiz.
                 memCacheWidth: 128,
                 memCacheHeight: 128,
                 maxWidthDiskCache: 256,
                 fadeInDuration: const Duration(milliseconds: 120),
-                errorWidget: (_, _, _) => _fallback(),
-                placeholder: (_, _) => _fallback(),
+                errorWidget: (_, _, _) => _fallback(context),
+                placeholder: (_, _) => _fallback(context),
               )
-            : _fallback(),
+            : _fallback(context),
       ),
     );
   }
 
-  Widget _fallback() => ColoredBox(
-        color: accent.withValues(alpha: 0.14),
-        child: Center(child: Icon(provider.icon, size: 22, color: accent)),
+  Widget _fallback(BuildContext context) => ColoredBox(
+        color: GlassTokens.glassFill(context),
+        child: Center(
+          child: Icon(
+            provider.icon,
+            size: 22,
+            color: GlassTokens.secondaryText(context),
+          ),
+        ),
       );
 }
 
@@ -466,8 +470,9 @@ class _RatingBadge extends StatelessWidget {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
           decoration: BoxDecoration(
-            color: const Color(0xFFF59E0B).withValues(alpha: 0.14),
+            color: GlassTokens.glassFill(context),
             borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: GlassTokens.glassBorder(context), width: 0.8),
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
@@ -477,10 +482,10 @@ class _RatingBadge extends StatelessWidget {
               const SizedBox(width: 3),
               Text(
                 rating.toStringAsFixed(1),
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 12.5,
                   fontWeight: FontWeight.w800,
-                  color: Color(0xFFB45309),
+                  color: GlassTokens.primaryText(context),
                 ),
               ),
             ],
@@ -526,7 +531,17 @@ class _FilterChip extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 13),
           alignment: Alignment.center,
           decoration: selected
-              ? LuxTokens.goldBoxDecoration(radius: 18)
+              ? BoxDecoration(
+                  color: const Color(0xFF102A43),
+                  borderRadius: BorderRadius.circular(18),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFF102A43).withValues(alpha: 0.2),
+                      blurRadius: 6,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                )
               : BoxDecoration(
                   color: GlassTokens.glassFill(context),
                   borderRadius: BorderRadius.circular(18),
@@ -540,20 +555,20 @@ class _FilterChip extends StatelessWidget {
                   icon,
                   size: 14,
                   color: selected
-                      ? const Color(0xFF140D02)
+                      ? Colors.white
                       : GlassTokens.secondaryText(context),
                 ),
                 const SizedBox(width: 6),
               ],
               Text(
                 label,
-                style: selected
-                    ? LuxTokens.goldEngravedTextStyle.copyWith(fontSize: 13)
-                    : TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w700,
-                        color: GlassTokens.primaryText(context),
-                      ),
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
+                  color: selected
+                      ? Colors.white
+                      : GlassTokens.primaryText(context),
+                ),
               ),
             ],
           ),

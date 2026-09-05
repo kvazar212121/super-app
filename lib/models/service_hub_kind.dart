@@ -162,9 +162,8 @@ extension ServiceHubKindX on ServiceHubKind {
     ServiceHubKind.stomatologiya => 'assets/images/services3d/stamatolg.jpg',
   };
 
-  /// Barcha xizmatlar uchun YAGONA brend rangi — toza, professional ko'k
-  /// (binafsha emas). Ilgari har xizmatда har xil rang edi.
-  Color get accent => const Color(0xFFB8921F);
+  /// Barcha xizmatlar uchun YAGONA brend rangi — toza, professional to'q navy/ko'k rang.
+  Color get accent => const Color(0xFF102A43);
 
   List<({String label, double basePrice})> get variants => switch (this) {
     ServiceHubKind.sartarosh => const [
