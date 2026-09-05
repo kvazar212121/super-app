@@ -279,6 +279,18 @@ class AppProvider extends ChangeNotifier {
     }
   }
 
+  Future<void> updateAvatar(String filePath) async {
+    try {
+      final avatarUrl = await _api.uploadAvatar(filePath);
+      final updatedData = await _api.updateMe({'avatar_url': avatarUrl});
+      _user = UserProfile.fromJson(updatedData);
+      notifyListeners();
+    } catch (e) {
+      debugPrint('Error updating avatar: $e');
+      rethrow;
+    }
+  }
+
   Future<void> updateReminderOffset(int offset) async {
     try {
       final updatedData = await _api.updateMe({

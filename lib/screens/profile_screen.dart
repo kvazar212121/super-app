@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:provider/provider.dart';
 import '../models/user_profile.dart';
 import '../providers/app_provider.dart';
@@ -459,49 +461,7 @@ class ProfileScreen extends StatelessWidget {
       opacity: 0.55,
       child: Row(
         children: [
-          Container(
-            width: 72,
-            height: 72,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  Colors.white.withValues(alpha: 0.25),
-                  Colors.white.withValues(alpha: 0.05),
-                ],
-              ),
-              border: Border.all(color: Colors.white, width: 2),
-            ),
-            child: isLoggedIn && user.avatarUrl != null
-                ? ClipOval(
-                    // Avatar keshlansin (Image.network keshlamaydi — har rebuild
-                    // qayta yuklanardi). memCacheWidth avatar o'lchamiga.
-                    child: CachedNetworkImage(
-                      imageUrl: AppConfig.formatImageUrl(user.avatarUrl),
-                      fit: BoxFit.cover,
-                      memCacheWidth: 240,
-                      memCacheHeight: 240,
-                      maxWidthDiskCache: 480,
-                      fadeInDuration: const Duration(milliseconds: 120),
-                    ),
-                  )
-                : Center(
-                    child: Text(
-                      isLoggedIn
-                          ? (user.name.isNotEmpty
-                                ? user.name[0].toUpperCase()
-                                : '?')
-                          : 'M',
-                      style: TextStyle(
-                        fontSize: 28,
-                        fontWeight: FontWeight.w800,
-                        color: GlassTokens.primaryText(context),
-                      ),
-                    ),
-                  ),
-          ),
+          _ProfileAvatarWidget(user: user, isLoggedIn: isLoggedIn),
           const SizedBox(width: 16),
           Expanded(
             child: Column(
@@ -954,6 +914,155 @@ class _PinSectionState extends State<_PinSection> {
             ),
           ),
         ],
+      ],
+    );
+  }
+}
+
+class _ProfileAvatarWidget extends StatefulWidget {
+  final UserProfile user;
+  final bool isLoggedIn;
+
+  const _ProfileAvatarWidget({
+    required this.user,
+    required this.isLoggedIn,
+  });
+
+  @override
+  State<_ProfileAvatarWidget> createState() => _ProfileAvatarWidgetState();
+}
+
+class _ProfileAvatarWidgetState extends State<_ProfileAvatarWidget> {
+  bool _uploading = false;
+
+  Future<void> _pickAndUploadAvatar(BuildContext context) async {
+    if (!widget.isLoggedIn) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Avatar yuklash uchun tizimga kiring'.tr)),
+      );
+      return;
+    }
+
+    final messenger = ScaffoldMessenger.of(context);
+    final appProvider = context.read<AppProvider>();
+    final picker = ImagePicker();
+    final file = await picker.pickImage(
+      source: ImageSource.gallery,
+      maxWidth: 800,
+      maxHeight: 800,
+      imageQuality: 85,
+    );
+
+    if (file == null || !mounted) return;
+
+    setState(() => _uploading = true);
+    try {
+      await appProvider.updateAvatar(file.path);
+      if (mounted) {
+        messenger.showSnackBar(
+          SnackBar(content: Text('Rasm muvaffaqiyatli yangilandi'.tr)),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        messenger.showSnackBar(
+          SnackBar(content: Text('Rasm yuklashda xatolik yuz berdi'.tr)),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _uploading = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final user = widget.user;
+    final isLoggedIn = widget.isLoggedIn;
+
+    return Stack(
+      children: [
+        GestureDetector(
+          onTap: () => _pickAndUploadAvatar(context),
+          child: Container(
+            width: 76,
+            height: 76,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  Colors.white.withValues(alpha: 0.25),
+                  Colors.white.withValues(alpha: 0.05),
+                ],
+              ),
+              border: Border.all(color: const Color(0xFFC9A227), width: 2),
+            ),
+            child: _uploading
+                ? const Center(
+                    child: SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2.5,
+                        color: Color(0xFFC9A227),
+                      ),
+                    ),
+                  )
+                : (isLoggedIn && user.avatarUrl != null && user.avatarUrl!.isNotEmpty
+                    ? ClipOval(
+                        child: CachedNetworkImage(
+                          imageUrl: AppConfig.formatImageUrl(user.avatarUrl),
+                          fit: BoxFit.cover,
+                          memCacheWidth: 240,
+                          memCacheHeight: 240,
+                          maxWidthDiskCache: 480,
+                          fadeInDuration: const Duration(milliseconds: 120),
+                        ),
+                      )
+                    : Center(
+                        child: Text(
+                          isLoggedIn
+                              ? (user.name.isNotEmpty
+                                    ? user.name[0].toUpperCase()
+                                    : '?')
+                              : 'M',
+                          style: TextStyle(
+                            fontSize: 28,
+                            fontWeight: FontWeight.w800,
+                            color: GlassTokens.primaryText(context),
+                          ),
+                        ),
+                      )),
+          ),
+        ),
+        // Foto apparat icon (burchagida)
+        Positioned(
+          right: 0,
+          bottom: 0,
+          child: GestureDetector(
+            onTap: () => _pickAndUploadAvatar(context),
+            child: Container(
+              padding: const EdgeInsets.all(6),
+              decoration: const BoxDecoration(
+                color: Color(0xFFC9A227),
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black26,
+                    blurRadius: 4,
+                    offset: Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: const Icon(
+                LucideIcons.camera,
+                size: 14,
+                color: Colors.black,
+              ),
+            ),
+          ),
+        ),
       ],
     );
   }
