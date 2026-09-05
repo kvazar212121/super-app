@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import '../../theme/lux_tokens.dart';
 
 /// Orqa fonda rangli "orb"lar — glass effekt uchun asos (yengil versiya).
 class MeshBackground extends StatelessWidget {
@@ -8,8 +8,10 @@ class MeshBackground extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Toza OQ fon — har qanday holatda tiniq oq fon bo'ladi
-    return const ColoredBox(color: Colors.white);
+    // Yuqa zangori-ko'k fon — barcha ekranlarda bir xil nafis fon
+    return ColoredBox(
+      color: isDark ? LuxTokens.bg : const Color(0xFFEFF4FA),
+    );
   }
 }
 
