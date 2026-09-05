@@ -64,6 +64,11 @@ class _CallHistoryScreenState extends State<CallHistoryScreen>
           "Habarlar".tr,
           "Bloklangan".tr,
         ],
+        icons: const [
+          LucideIcons.phoneCall,
+          LucideIcons.messageSquare,
+          LucideIcons.shieldAlert,
+        ],
       ),
       body: auth.isAuthenticated
           ? TabBarView(

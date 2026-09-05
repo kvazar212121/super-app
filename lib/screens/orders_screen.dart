@@ -10,6 +10,7 @@ import '../widgets/guest_blocker_widget.dart';
 import '../l10n/locale_controller.dart';
 import 'marketplace/my_listings_screen.dart';
 import 'my_jobs_screen.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../widgets/gold_tab_bar_widget.dart';
 
 class OrdersScreen extends StatefulWidget {
@@ -56,6 +57,11 @@ class _OrdersScreenState extends State<OrdersScreen> {
                       'Buyurtmalar'.tr,
                       'E\'lonlarim'.tr,
                       if (savdoOchiq) 'Savdo'.tr,
+                    ],
+                    icons: [
+                      LucideIcons.shoppingBag,
+                      LucideIcons.briefcase,
+                      if (savdoOchiq) LucideIcons.store,
                     ],
                   ),
                   Expanded(
