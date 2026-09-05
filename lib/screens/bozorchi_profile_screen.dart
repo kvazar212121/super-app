@@ -251,6 +251,7 @@ class BozorchiProfileScreen extends StatelessWidget {
                   ),
                   style: FilledButton.styleFrom(
                     backgroundColor: accent,
+                    foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),

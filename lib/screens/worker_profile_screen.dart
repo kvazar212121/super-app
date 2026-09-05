@@ -150,6 +150,7 @@ class WorkerProfileScreen extends StatelessWidget {
               ),
               style: FilledButton.styleFrom(
                 backgroundColor: Colors.orange[600],
+                foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16),
                 ),

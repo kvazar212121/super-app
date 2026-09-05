@@ -89,6 +89,7 @@ class _EventTeamProfileScreenState extends State<EventTeamProfileScreen> {
               child: FilledButton.icon(
                 style: FilledButton.styleFrom(
                   backgroundColor: _accent,
+                  foregroundColor: Colors.white,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(14),
                   ),

@@ -295,6 +295,7 @@ class _NannyProfileScreenState extends State<NannyProfileScreen> {
               label: Text('Buyurtma berish'.tr),
               style: FilledButton.styleFrom(
                 backgroundColor: _accent,
+                foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(vertical: 16),
               ),
             ),

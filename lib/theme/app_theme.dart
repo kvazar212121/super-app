@@ -103,26 +103,28 @@ class AppTheme {
       ),
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
-          backgroundColor: LuxTokens.gold,
-          foregroundColor: const Color(0xFF14100A),
+          backgroundColor: LuxTokens.navy,
+          foregroundColor: Colors.white,
           elevation: 0,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(GlassTokens.radiusMd),
           ),
-          textStyle: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
+          textStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15),
         ),
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
-          foregroundColor: isDark ? LuxTokens.goldSoft : LuxTokens.gold,
-          side: BorderSide(
-            color: isDark ? LuxTokens.goldDim : LuxTokens.gold,
+          foregroundColor: LuxTokens.navy,
+          side: const BorderSide(
+            color: LuxTokens.navy,
+            width: 1.5,
           ),
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(GlassTokens.radiusMd),
           ),
+          textStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15),
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
