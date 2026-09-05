@@ -351,6 +351,7 @@ class _MyJobsScreenState extends State<MyJobsScreen> {
           ),
         ],
       ),
+    );
   }
 
   Future<void> _openCreate() async {
