@@ -66,14 +66,14 @@ class _PillReminderWidgetState extends State<PillReminderWidget> {
         surfaceTintColor: Colors.transparent,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(24),
-          side: BorderSide(color: LuxTokens.gold.withValues(alpha: 0.6), width: 1.5),
+          side: BorderSide(color: const Color(0xFF102A43).withValues(alpha: 0.3), width: 1.5),
         ),
         title: Text(
           'Dori / Vitamin eslatmasi qo\'shish'.tr,
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w800,
-            color: const Color(0xFF0F172A),
+            color: Color(0xFF0F172A),
           ),
         ),
         content: Column(
@@ -97,11 +97,11 @@ class _PillReminderWidgetState extends State<PillReminderWidget> {
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(14),
-                  borderSide: BorderSide(color: LuxTokens.gold.withValues(alpha: 0.3)),
+                  borderSide: BorderSide(color: const Color(0xFF102A43).withValues(alpha: 0.3)),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(14),
-                  borderSide: const BorderSide(color: LuxTokens.gold, width: 1.5),
+                  borderSide: const BorderSide(color: Color(0xFF102A43), width: 1.5),
                 ),
               ),
             ),
@@ -123,11 +123,11 @@ class _PillReminderWidgetState extends State<PillReminderWidget> {
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(14),
-                  borderSide: BorderSide(color: LuxTokens.gold.withValues(alpha: 0.3)),
+                  borderSide: BorderSide(color: const Color(0xFF102A43).withValues(alpha: 0.3)),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(14),
-                  borderSide: const BorderSide(color: LuxTokens.gold, width: 1.5),
+                  borderSide: const BorderSide(color: Color(0xFF102A43), width: 1.5),
                 ),
               ),
             ),
@@ -136,6 +136,9 @@ class _PillReminderWidgetState extends State<PillReminderWidget> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
+            style: TextButton.styleFrom(
+              foregroundColor: const Color(0xFF102A43),
+            ),
             child: Text('Bekor qilish'.tr),
           ),
           FilledButton(
@@ -151,6 +154,10 @@ class _PillReminderWidgetState extends State<PillReminderWidget> {
                 widget.onChanged();
               }
             },
+            style: FilledButton.styleFrom(
+              backgroundColor: const Color(0xFF102A43),
+              foregroundColor: Colors.white,
+            ),
             child: Text('Qo\'shish'.tr),
           ),
         ],
@@ -164,7 +171,7 @@ class _PillReminderWidgetState extends State<PillReminderWidget> {
     final dateStr = _service.formatDate(widget.selectedDate);
 
     if (_isLoading) {
-      return const Center(child: CircularProgressIndicator(color: LuxTokens.gold));
+      return const Center(child: CircularProgressIndicator(color: Color(0xFF102A43)));
     }
 
     return SingleChildScrollView(
@@ -177,14 +184,14 @@ class _PillReminderWidgetState extends State<PillReminderWidget> {
             children: [
               Text(
                 'Dori-Darmon va Vitaminlar:'.tr,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w800,
-                  color: const Color(0xFF0F172A),
+                  color: Color(0xFF0F172A),
                 ),
               ),
               IconButton(
-                icon: const Icon(LucideIcons.plusCircle, color: LuxTokens.gold, size: 24),
+                icon: const Icon(LucideIcons.plusCircle, color: Color(0xFF102A43), size: 24),
                 onPressed: _showAddPillDialog,
               ),
             ],
@@ -202,9 +209,9 @@ class _PillReminderWidgetState extends State<PillReminderWidget> {
               child: Center(
                 child: Text(
                   'Hali dorilar qo\'shilmadi.',
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 13,
-                    color: const Color(0xFF64748B),
+                    color: Color(0xFF64748B),
                   ),
                 ),
               ),
@@ -239,13 +246,13 @@ class _PillReminderWidgetState extends State<PillReminderWidget> {
                             width: 36,
                             height: 36,
                             decoration: BoxDecoration(
-                              color: const Color(0xFFFFFBEB),
+                              color: const Color(0xFFEFF6FF),
                               borderRadius: BorderRadius.circular(12),
-                              border: Border.all(color: const Color(0xFFFDE68A)),
+                              border: Border.all(color: const Color(0xFFBFDBFE)),
                             ),
                             child: const Icon(
                               LucideIcons.pill,
-                              color: LuxTokens.gold,
+                              color: Color(0xFF102A43),
                               size: 20,
                             ),
                           ),
@@ -256,18 +263,18 @@ class _PillReminderWidgetState extends State<PillReminderWidget> {
                               children: [
                                 Text(
                                   pill['title'] ?? '',
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     fontSize: 15,
                                     fontWeight: FontWeight.w800,
-                                    color: const Color(0xFF0F172A),
+                                    color: Color(0xFF0F172A),
                                   ),
                                 ),
                                 const SizedBox(height: 2),
                                 Text(
                                   pill['dosage'] ?? '',
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     fontSize: 12.5,
-                                    color: const Color(0xFF64748B),
+                                    color: Color(0xFF64748B),
                                   ),
                                 ),
                               ],
@@ -289,10 +296,10 @@ class _PillReminderWidgetState extends State<PillReminderWidget> {
                             child: Container(
                               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                               decoration: BoxDecoration(
-                                color: isTaken ? const Color(0xFFFFFBEB) : const Color(0xFFF1F5F9),
+                                color: isTaken ? const Color(0xFFEFF6FF) : const Color(0xFFF1F5F9),
                                 borderRadius: BorderRadius.circular(14),
                                 border: Border.all(
-                                  color: isTaken ? LuxTokens.gold : const Color(0xFFCBD5E1),
+                                  color: isTaken ? const Color(0xFF102A43) : const Color(0xFFCBD5E1),
                                 ),
                               ),
                               child: Row(
@@ -301,7 +308,7 @@ class _PillReminderWidgetState extends State<PillReminderWidget> {
                                   Icon(
                                     isTaken ? LucideIcons.checkCircle : LucideIcons.clock,
                                     size: 15,
-                                    color: isTaken ? const Color(0xFF8A5D0B) : const Color(0xFF475569),
+                                    color: isTaken ? const Color(0xFF102A43) : const Color(0xFF475569),
                                   ),
                                   const SizedBox(width: 6),
                                   Text(
@@ -309,7 +316,7 @@ class _PillReminderWidgetState extends State<PillReminderWidget> {
                                     style: TextStyle(
                                       fontSize: 12.5,
                                       fontWeight: FontWeight.w700,
-                                      color: isTaken ? const Color(0xFF8A5D0B) : const Color(0xFF475569),
+                                      color: isTaken ? const Color(0xFF102A43) : const Color(0xFF475569),
                                     ),
                                   ),
                                 ],

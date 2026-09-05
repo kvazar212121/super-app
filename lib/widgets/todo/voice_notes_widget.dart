@@ -54,7 +54,7 @@ class _VoiceNotesWidgetState extends State<VoiceNotesWidget> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     if (_isLoading) {
-      return const Center(child: CircularProgressIndicator(color: LuxTokens.gold));
+      return const Center(child: CircularProgressIndicator(color: Color(0xFF102A43)));
     }
 
     return SingleChildScrollView(
@@ -64,10 +64,10 @@ class _VoiceNotesWidgetState extends State<VoiceNotesWidget> {
         children: [
           Text(
             'Ovozli Qaydlar va Matnlar:'.tr,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w800,
-              color: const Color(0xFF0F172A),
+              color: Color(0xFF0F172A),
             ),
           ),
           const SizedBox(height: 12),
@@ -83,9 +83,9 @@ class _VoiceNotesWidgetState extends State<VoiceNotesWidget> {
               child: Center(
                 child: Text(
                   'Hali ovozli qaydlar saqlanmadi.',
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 13,
-                    color: const Color(0xFF64748B),
+                    color: Color(0xFF64748B),
                   ),
                 ),
               ),
@@ -103,14 +103,14 @@ class _VoiceNotesWidgetState extends State<VoiceNotesWidget> {
                     borderRadius: BorderRadius.circular(22),
                     border: Border.all(
                       color: isPlaying
-                          ? LuxTokens.gold
+                          ? const Color(0xFF102A43)
                           : (isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0)),
                       width: isPlaying ? 1.5 : 1.0,
                     ),
                     boxShadow: [
                       BoxShadow(
                         color: isPlaying
-                            ? LuxTokens.gold.withValues(alpha: 0.12)
+                            ? const Color(0xFF102A43).withValues(alpha: 0.12)
                             : Colors.black.withValues(alpha: 0.03),
                         blurRadius: 10,
                         offset: const Offset(0, 3),
@@ -127,10 +127,13 @@ class _VoiceNotesWidgetState extends State<VoiceNotesWidget> {
                             child: Container(
                               width: 42,
                               height: 42,
-                              decoration: LuxTokens.goldBoxDecoration(radius: 14),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFF102A43),
+                                borderRadius: BorderRadius.circular(14),
+                              ),
                               child: Icon(
                                 isPlaying ? LucideIcons.pause : LucideIcons.play,
-                                color: const Color(0xFF140D02),
+                                color: Colors.white,
                                 size: 20,
                               ),
                             ),
@@ -142,18 +145,18 @@ class _VoiceNotesWidgetState extends State<VoiceNotesWidget> {
                               children: [
                                 Text(
                                   note['title'] ?? 'Ovozli qayd',
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     fontSize: 15,
                                     fontWeight: FontWeight.w800,
-                                    color: const Color(0xFF0F172A),
+                                    color: Color(0xFF0F172A),
                                   ),
                                 ),
                                 const SizedBox(height: 2),
                                 Text(
                                   '${note['date']} · ${note['time']} · ${note['duration_sec']} sek',
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     fontSize: 12,
-                                    color: const Color(0xFF64748B),
+                                    color: Color(0xFF64748B),
                                   ),
                                 ),
                               ],
@@ -167,10 +170,10 @@ class _VoiceNotesWidgetState extends State<VoiceNotesWidget> {
                       Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: const Color(0xFFFFFBEB),
+                          color: const Color(0xFFF1F5F9),
                           borderRadius: BorderRadius.circular(14),
                           border: Border.all(
-                            color: LuxTokens.gold.withValues(alpha: 0.3),
+                            color: const Color(0xFF102A43).withValues(alpha: 0.2),
                           ),
                         ),
                         child: Row(
@@ -179,7 +182,7 @@ class _VoiceNotesWidgetState extends State<VoiceNotesWidget> {
                             const Icon(
                               LucideIcons.quote,
                               size: 16,
-                              color: LuxTokens.gold,
+                              color: Color(0xFF102A43),
                             ),
                             const SizedBox(width: 8),
                             Expanded(

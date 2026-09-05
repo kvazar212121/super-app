@@ -75,9 +75,7 @@ class _TodoScreenState extends State<TodoScreen> with SingleTickerProviderStateM
   }
 
   /// Kategoriyaga mos urg'u rangi — kartaning chap chetidagi belgi uchun.
-  /// Palitra faqat qora/oq/tilla — barcha kategoriyalar tilla urg'uda,
-  /// faqat ikonka bilan farqlanadi.
-  Color _categoryColor(String? category) => LuxTokens.gold;
+  Color _categoryColor(String? category) => const Color(0xFF102A43);
 
   IconData _categoryIcon(String? category) {
     switch (category) {
@@ -106,7 +104,7 @@ class _TodoScreenState extends State<TodoScreen> with SingleTickerProviderStateM
         surfaceTintColor: Colors.transparent,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(24),
-          side: BorderSide(color: LuxTokens.gold.withValues(alpha: 0.6), width: 1.5),
+          side: BorderSide(color: const Color(0xFF102A43).withValues(alpha: 0.4), width: 1.5),
         ),
         title: Text(
           'Yangi reja qo\'shish'.tr,
@@ -140,11 +138,11 @@ class _TodoScreenState extends State<TodoScreen> with SingleTickerProviderStateM
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(14),
-                  borderSide: BorderSide(color: LuxTokens.gold.withValues(alpha: 0.3)),
+                  borderSide: BorderSide(color: const Color(0xFF102A43).withValues(alpha: 0.3)),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(14),
-                  borderSide: const BorderSide(color: LuxTokens.gold, width: 1.5),
+                  borderSide: const BorderSide(color: Color(0xFF102A43), width: 1.5),
                 ),
               ),
             ),
@@ -158,7 +156,7 @@ class _TodoScreenState extends State<TodoScreen> with SingleTickerProviderStateM
               decoration: InputDecoration(
                 hintText: 'Vaqti (masalan: 14:30)'.tr,
                 hintStyle: const TextStyle(color: Color(0xFF94A3B8)),
-                prefixIcon: const Icon(LucideIcons.clock, size: 18, color: LuxTokens.gold),
+                prefixIcon: const Icon(LucideIcons.clock, size: 18, color: Color(0xFF102A43)),
                 filled: true,
                 fillColor: const Color(0xFFF1F5F9),
                 border: OutlineInputBorder(
@@ -167,11 +165,11 @@ class _TodoScreenState extends State<TodoScreen> with SingleTickerProviderStateM
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(14),
-                  borderSide: BorderSide(color: LuxTokens.gold.withValues(alpha: 0.3)),
+                  borderSide: BorderSide(color: const Color(0xFF102A43).withValues(alpha: 0.3)),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(14),
-                  borderSide: const BorderSide(color: LuxTokens.gold, width: 1.5),
+                  borderSide: const BorderSide(color: Color(0xFF102A43), width: 1.5),
                 ),
               ),
             ),
@@ -197,6 +195,10 @@ class _TodoScreenState extends State<TodoScreen> with SingleTickerProviderStateM
                 await _loadTasks();
               }
             },
+            style: FilledButton.styleFrom(
+              backgroundColor: const Color(0xFF102A43),
+              foregroundColor: Colors.white,
+            ),
             child: Text('Qo\'shish'.tr),
           ),
         ],
@@ -212,7 +214,7 @@ class _TodoScreenState extends State<TodoScreen> with SingleTickerProviderStateM
       title: 'Mening Rejalarim'.tr,
       actions: [
         IconButton(
-          icon: const Icon(LucideIcons.history, color: LuxTokens.gold),
+          icon: const Icon(LucideIcons.history, color: Color(0xFF102A43)),
           onPressed: () {
             Navigator.push(
               context,
@@ -233,21 +235,26 @@ class _TodoScreenState extends State<TodoScreen> with SingleTickerProviderStateM
             _buildCalendarStrip(isDark),
             const SizedBox(height: 10),
 
-            // 3. 24K WHITE+GOLD TAB BAR
+            // 3. TAB BAR
             Container(
               margin: const EdgeInsets.symmetric(horizontal: 16),
+              padding: const EdgeInsets.all(4),
               decoration: BoxDecoration(
-                color: isDark ? LuxTokens.surface : Colors.white,
+                color: isDark ? const Color(0xFF1E293B) : const Color(0xFFF1F5F9),
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: LuxTokens.gold.withValues(alpha: 0.5), width: 1.2),
+                border: Border.all(color: const Color(0xFF102A43).withValues(alpha: 0.15), width: 1.2),
               ),
               child: TabBar(
                 controller: _tabController,
                 isScrollable: true,
-                indicatorColor: LuxTokens.gold,
-                indicatorWeight: 3,
-                labelColor: isDark ? LuxTokens.gold : const Color(0xFF8A5D0B),
-                unselectedLabelColor: const Color(0xFF64748B),
+                indicator: BoxDecoration(
+                  color: const Color(0xFF102A43),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                indicatorSize: TabBarIndicatorSize.tab,
+                dividerColor: Colors.transparent,
+                labelColor: Colors.white,
+                unselectedLabelColor: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
                 labelStyle: const TextStyle(fontWeight: FontWeight.w800, fontSize: 13),
                 unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
                 tabs: [
@@ -301,8 +308,6 @@ class _TodoScreenState extends State<TodoScreen> with SingleTickerProviderStateM
   }
 
   Widget _buildCalendarStrip(bool isDark) {
-    // Taqvim chiplari mayda va o'lchami qat'iy — global 1.5x matn miqyosi
-    // ularni sig'dirmaydi. Shuning uchun chiplarni miqyossiz ko'rsatamiz.
     return MediaQuery.withNoTextScaling(
       child: SizedBox(
       height: 76,
@@ -325,23 +330,22 @@ class _TodoScreenState extends State<TodoScreen> with SingleTickerProviderStateM
               width: 58,
               margin: const EdgeInsets.only(right: 8, top: 4, bottom: 4),
               decoration: BoxDecoration(
-                gradient: isSelected ? LuxTokens.goldGradient : null,
                 color: isSelected
-                    ? null
+                    ? const Color(0xFF102A43)
                     : (isDark ? LuxTokens.surface : Colors.white),
                 borderRadius: BorderRadius.circular(18),
                 border: Border.all(
                   color: isSelected
-                      ? const Color(0xFFC9A227)
+                      ? const Color(0xFF102A43)
                       : (isToday
-                          ? LuxTokens.gold
+                          ? const Color(0xFF102A43)
                           : (isDark ? const Color(0xFF334155) : const Color(0xFFCBD5E1))),
                   width: isSelected || isToday ? 1.5 : 1.0,
                 ),
                 boxShadow: [
                   BoxShadow(
                     color: isSelected
-                        ? LuxTokens.gold.withValues(alpha: 0.25)
+                        ? const Color(0xFF102A43).withValues(alpha: 0.2)
                         : Colors.black.withValues(alpha: 0.04),
                     blurRadius: 6,
                     offset: const Offset(0, 2),
@@ -357,7 +361,7 @@ class _TodoScreenState extends State<TodoScreen> with SingleTickerProviderStateM
                       fontSize: 11.5,
                       fontWeight: FontWeight.w800,
                       color: isSelected
-                          ? const Color(0xFF140D02)
+                          ? Colors.white70
                           : const Color(0xFF475569),
                     ),
                   ),
@@ -368,7 +372,7 @@ class _TodoScreenState extends State<TodoScreen> with SingleTickerProviderStateM
                       fontSize: 18,
                       fontWeight: FontWeight.w900,
                       color: isSelected
-                          ? const Color(0xFF140D02)
+                          ? Colors.white
                           : const Color(0xFF0F172A),
                     ),
                   ),
@@ -384,7 +388,7 @@ class _TodoScreenState extends State<TodoScreen> with SingleTickerProviderStateM
 
   Widget _buildTasksTab(bool isDark) {
     if (_isLoading) {
-      return const Center(child: CircularProgressIndicator(color: LuxTokens.gold));
+      return const Center(child: CircularProgressIndicator(color: Color(0xFF102A43)));
     }
 
     final int doneCount = _tasks.where((t) => t['is_done'] == true).length;
@@ -411,7 +415,7 @@ class _TodoScreenState extends State<TodoScreen> with SingleTickerProviderStateM
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
-                    color: LuxTokens.gold.withValues(alpha: 0.12),
+                    color: const Color(0xFF102A43).withValues(alpha: 0.08),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
@@ -419,7 +423,7 @@ class _TodoScreenState extends State<TodoScreen> with SingleTickerProviderStateM
                     style: const TextStyle(
                       fontSize: 12.5,
                       fontWeight: FontWeight.w800,
-                      color: LuxTokens.goldDim,
+                      color: Color(0xFF102A43),
                     ),
                   ),
                 ),
@@ -438,8 +442,8 @@ class _TodoScreenState extends State<TodoScreen> with SingleTickerProviderStateM
                         minHeight: 8,
                         backgroundColor: isDark
                             ? const Color(0xFF334155)
-                            : const Color(0xFFEDE3C7),
-                        valueColor: const AlwaysStoppedAnimation(LuxTokens.gold),
+                            : const Color(0xFFE2E8F0),
+                        valueColor: const AlwaysStoppedAnimation(Color(0xFF102A43)),
                       ),
                     ),
                   ),
@@ -475,15 +479,15 @@ class _TodoScreenState extends State<TodoScreen> with SingleTickerProviderStateM
               shape: BoxShape.circle,
               boxShadow: [
                 BoxShadow(
-                  color: LuxTokens.gold.withValues(alpha: 0.45),
+                  color: const Color(0xFF102A43).withValues(alpha: 0.3),
                   blurRadius: 18,
                   offset: const Offset(0, 6),
                 ),
               ],
             ),
             child: FloatingActionButton(
-              backgroundColor: LuxTokens.gold,
-              foregroundColor: const Color(0xFF140D02),
+              backgroundColor: const Color(0xFF102A43),
+              foregroundColor: Colors.white,
               elevation: 0,
               onPressed: _showAddTaskDialog,
               child: const Icon(LucideIcons.plus, size: 28),
@@ -500,7 +504,7 @@ class _TodoScreenState extends State<TodoScreen> with SingleTickerProviderStateM
       decoration: BoxDecoration(
         color: isDark ? LuxTokens.surface : Colors.white,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: LuxTokens.gold.withValues(alpha: 0.3)),
+        border: Border.all(color: const Color(0xFF102A43).withValues(alpha: 0.2)),
       ),
       child: Column(
         children: [
@@ -508,10 +512,10 @@ class _TodoScreenState extends State<TodoScreen> with SingleTickerProviderStateM
             width: 64,
             height: 64,
             decoration: BoxDecoration(
-              color: LuxTokens.gold.withValues(alpha: 0.12),
+              color: const Color(0xFF102A43).withValues(alpha: 0.08),
               shape: BoxShape.circle,
             ),
-            child: const Icon(LucideIcons.calendarPlus, color: LuxTokens.gold, size: 30),
+            child: const Icon(LucideIcons.calendarPlus, color: Color(0xFF102A43), size: 30),
           ),
           const SizedBox(height: 16),
           Text(
@@ -549,10 +553,10 @@ class _TodoScreenState extends State<TodoScreen> with SingleTickerProviderStateM
         margin: const EdgeInsets.only(bottom: 10),
         padding: const EdgeInsets.only(right: 24),
         decoration: BoxDecoration(
-          color: const Color(0xFF140D02),
+          color: const Color(0xFFEF4444),
           borderRadius: BorderRadius.circular(20),
         ),
-        child: const Icon(LucideIcons.trash2, color: LuxTokens.gold, size: 24),
+        child: const Icon(LucideIcons.trash2, color: Colors.white, size: 24),
       ),
       confirmDismiss: (_) async {
         _deleteTask(task['id']);
@@ -568,7 +572,7 @@ class _TodoScreenState extends State<TodoScreen> with SingleTickerProviderStateM
           border: Border.all(
             color: isDone
                 ? (isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0))
-                : LuxTokens.gold.withValues(alpha: 0.55),
+                : const Color(0xFF102A43).withValues(alpha: 0.25),
             width: isDone ? 1.0 : 1.3,
           ),
           boxShadow: isDone
@@ -588,14 +592,16 @@ class _TodoScreenState extends State<TodoScreen> with SingleTickerProviderStateM
               child: Container(
                 width: 30,
                 height: 30,
-                decoration: isDone
-                    ? LuxTokens.goldBoxDecoration(radius: 9)
-                    : BoxDecoration(
-                        borderRadius: BorderRadius.circular(9),
-                        border: Border.all(color: const Color(0xFFCBD5E1), width: 1.5),
-                      ),
+                decoration: BoxDecoration(
+                  color: isDone ? const Color(0xFF102A43) : Colors.transparent,
+                  borderRadius: BorderRadius.circular(9),
+                  border: Border.all(
+                    color: isDone ? const Color(0xFF102A43) : const Color(0xFFCBD5E1),
+                    width: 1.5,
+                  ),
+                ),
                 child: isDone
-                    ? const Icon(LucideIcons.check, color: Color(0xFF140D02), size: 18)
+                    ? const Icon(LucideIcons.check, color: Colors.white, size: 18)
                     : null,
               ),
             ),
@@ -618,13 +624,13 @@ class _TodoScreenState extends State<TodoScreen> with SingleTickerProviderStateM
                   const SizedBox(height: 5),
                   Row(
                     children: [
-                      Icon(LucideIcons.clock, size: 12, color: LuxTokens.gold.withValues(alpha: 0.8)),
+                      Icon(LucideIcons.clock, size: 12, color: const Color(0xFF102A43).withValues(alpha: 0.8)),
                       const SizedBox(width: 4),
                       Text(
                         task['time'] ?? '',
                         style: const TextStyle(
                           fontSize: 12,
-                          color: LuxTokens.goldDim,
+                          color: Color(0xFF102A43),
                           fontWeight: FontWeight.w700,
                         ),
                       ),
@@ -638,7 +644,7 @@ class _TodoScreenState extends State<TodoScreen> with SingleTickerProviderStateM
               width: 34,
               height: 34,
               decoration: BoxDecoration(
-                color: catColor.withValues(alpha: 0.12),
+                color: catColor.withValues(alpha: 0.08),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Icon(_categoryIcon(task['category'] as String?), size: 17, color: catColor),

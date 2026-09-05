@@ -20,7 +20,17 @@ class TodoVoiceMicButton extends StatelessWidget {
     return Container(
       height: 56,
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      decoration: LuxTokens.goldBoxDecoration(radius: 20),
+      decoration: BoxDecoration(
+        color: const Color(0xFF102A43),
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x1A102A43),
+            blurRadius: 10,
+            offset: Offset(0, 4),
+          ),
+        ],
+      ),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
@@ -35,12 +45,12 @@ class TodoVoiceMicButton extends StatelessWidget {
                   width: 38,
                   height: 38,
                   decoration: const BoxDecoration(
-                    color: Color(0xFF140D02),
+                    color: Colors.white24,
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(
                     LucideIcons.mic,
-                    color: LuxTokens.gold,
+                    color: Colors.white,
                     size: 20,
                   ),
                 ),
@@ -52,7 +62,7 @@ class TodoVoiceMicButton extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
                       fontFamily: LuxTokens.display,
-                      color: Color(0xFF140D02),
+                      color: Colors.white,
                       fontSize: 15,
                       fontWeight: FontWeight.w800,
                       letterSpacing: -0.3,
@@ -62,7 +72,7 @@ class TodoVoiceMicButton extends StatelessWidget {
                 const SizedBox(width: 8),
                 const Icon(
                   LucideIcons.sparkles,
-                  color: Color(0xFF140D02),
+                  color: Colors.white,
                   size: 20,
                 ),
               ],
@@ -180,7 +190,7 @@ class _AiVoiceRecordingModalState extends State<_AiVoiceRecordingModal>
       decoration: BoxDecoration(
         color: isDark ? LuxTokens.surface : Colors.white,
         borderRadius: BorderRadius.circular(28),
-        border: Border.all(color: LuxTokens.gold, width: 1.5),
+        border: Border.all(color: const Color(0xFF102A43).withValues(alpha: 0.3), width: 1.5),
         boxShadow: const [
           BoxShadow(
             color: Colors.black26,
@@ -206,15 +216,15 @@ class _AiVoiceRecordingModalState extends State<_AiVoiceRecordingModal>
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(LucideIcons.sparkles, color: LuxTokens.gold, size: 22),
+              const Icon(LucideIcons.sparkles, color: Color(0xFF102A43), size: 22),
               const SizedBox(width: 8),
               Text(
                 'AI Ovozli Yordamchi'.tr,
-                style: TextStyle(
+                style: const TextStyle(
                   fontFamily: LuxTokens.display,
                   fontSize: 19,
                   fontWeight: FontWeight.w800,
-                  color: const Color(0xFF0F172A),
+                  color: Color(0xFF0F172A),
                 ),
               ),
             ],
@@ -243,10 +253,10 @@ class _AiVoiceRecordingModalState extends State<_AiVoiceRecordingModal>
                   height: 90,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    gradient: LuxTokens.goldGradient,
+                    color: const Color(0xFF102A43),
                     boxShadow: [
                       BoxShadow(
-                        color: LuxTokens.gold.withValues(alpha: 0.4),
+                        color: const Color(0xFF102A43).withValues(alpha: 0.3),
                         blurRadius: 24,
                         spreadRadius: _waveController.value * 8,
                       ),
@@ -257,12 +267,12 @@ class _AiVoiceRecordingModalState extends State<_AiVoiceRecordingModal>
                       width: 72,
                       height: 72,
                       decoration: const BoxDecoration(
-                        color: Color(0xFF140D02),
+                        color: Color(0xFF0B1D2F),
                         shape: BoxShape.circle,
                       ),
                       child: const Icon(
                         LucideIcons.mic,
-                        color: LuxTokens.gold,
+                        color: Colors.white,
                         size: 36,
                       ),
                     ),
@@ -277,15 +287,15 @@ class _AiVoiceRecordingModalState extends State<_AiVoiceRecordingModal>
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
               decoration: BoxDecoration(
-                color: LuxTokens.gold.withValues(alpha: 0.15),
+                color: const Color(0xFF102A43).withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: LuxTokens.gold, width: 1.2),
+                border: Border.all(color: const Color(0xFF102A43), width: 1.2),
               ),
               child: Text(
                 '"$_recognizedText"',
                 textAlign: TextAlign.center,
                 style: const TextStyle(
-                  color: Color(0xFF8A5D0B),
+                  color: Color(0xFF102A43),
                   fontWeight: FontWeight.w800,
                   fontSize: 14,
                 ),
@@ -300,10 +310,10 @@ class _AiVoiceRecordingModalState extends State<_AiVoiceRecordingModal>
             alignment: Alignment.centerLeft,
             child: Text(
               'Ovozli namuna buyruqlari:'.tr,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w800,
-                color: const Color(0xFF0F172A),
+                color: Color(0xFF0F172A),
               ),
             ),
           ),
@@ -320,10 +330,10 @@ class _AiVoiceRecordingModalState extends State<_AiVoiceRecordingModal>
                     width: double.infinity,
                     padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFFFFBEB),
+                      color: const Color(0xFFEFF6FF),
                       borderRadius: BorderRadius.circular(14),
                       border: Border.all(
-                        color: const Color(0xFFFDE68A),
+                        color: const Color(0xFFBFDBFE),
                         width: 1.2,
                       ),
                     ),
@@ -335,14 +345,14 @@ class _AiVoiceRecordingModalState extends State<_AiVoiceRecordingModal>
                             style: const TextStyle(
                               fontSize: 13.5,
                               fontWeight: FontWeight.w700,
-                              color: Color(0xFF140D02),
+                              color: Color(0xFF0F172A),
                             ),
                           ),
                         ),
                         const Icon(
                           LucideIcons.chevronRight,
                           size: 16,
-                          color: LuxTokens.gold,
+                          color: Color(0xFF102A43),
                         ),
                       ],
                     ),

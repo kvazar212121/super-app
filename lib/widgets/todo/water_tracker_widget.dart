@@ -59,7 +59,7 @@ class _WaterTrackerWidgetState extends State<WaterTrackerWidget> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     if (_isLoading || _waterData == null) {
-      return const Center(child: CircularProgressIndicator(color: LuxTokens.gold));
+      return const Center(child: CircularProgressIndicator(color: Color(0xFF102A43)));
     }
 
     final int currentMl = _waterData!['current_ml'] ?? 0;
@@ -72,19 +72,19 @@ class _WaterTrackerWidgetState extends State<WaterTrackerWidget> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // 1. KATTA 24K OLTIN SUV KARTASI
+          // 1. SUV KARTASI
           Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
               color: isDark ? LuxTokens.surface : Colors.white,
               borderRadius: BorderRadius.circular(24),
               border: Border.all(
-                color: LuxTokens.gold.withValues(alpha: 0.6),
+                color: const Color(0xFF102A43).withValues(alpha: 0.3),
                 width: 1.5,
               ),
               boxShadow: [
                 BoxShadow(
-                  color: LuxTokens.gold.withValues(alpha: 0.1),
+                  color: const Color(0xFF102A43).withValues(alpha: 0.08),
                   blurRadius: 16,
                   offset: const Offset(0, 4),
                 ),
@@ -101,13 +101,13 @@ class _WaterTrackerWidgetState extends State<WaterTrackerWidget> {
                           width: 42,
                           height: 42,
                           decoration: BoxDecoration(
-                            color: const Color(0xFFFFFBEB),
+                            color: const Color(0xFFEFF6FF),
                             borderRadius: BorderRadius.circular(14),
-                            border: Border.all(color: const Color(0xFFFDE68A)),
+                            border: Border.all(color: const Color(0xFFBFDBFE)),
                           ),
                           child: const Icon(
                             LucideIcons.droplets,
-                            color: LuxTokens.gold,
+                            color: Color(0xFF102A43),
                             size: 22,
                           ),
                         ),
@@ -117,19 +117,19 @@ class _WaterTrackerWidgetState extends State<WaterTrackerWidget> {
                           children: [
                             Text(
                               'Suv Balansi'.tr,
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontFamily: LuxTokens.display,
                                 fontSize: 18,
                                 fontWeight: FontWeight.w800,
-                                color: const Color(0xFF0F172A),
+                                color: Color(0xFF0F172A),
                               ),
                             ),
                             Text(
                               'Kunlik me\'yor: ${(targetMl / 1000).toStringAsFixed(1)} Litr',
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 12.5,
                                 fontWeight: FontWeight.w600,
-                                color: const Color(0xFF64748B),
+                                color: Color(0xFF64748B),
                               ),
                             ),
                           ],
@@ -142,7 +142,7 @@ class _WaterTrackerWidgetState extends State<WaterTrackerWidget> {
                         fontFamily: LuxTokens.display,
                         fontSize: 22,
                         fontWeight: FontWeight.w900,
-                        color: LuxTokens.gold,
+                        color: Color(0xFF102A43),
                       ),
                     ),
                   ],
@@ -155,8 +155,8 @@ class _WaterTrackerWidgetState extends State<WaterTrackerWidget> {
                   child: LinearProgressIndicator(
                     value: percent,
                     minHeight: 14,
-                    backgroundColor: const Color(0xFFEDE3C7),
-                    valueColor: const AlwaysStoppedAnimation<Color>(LuxTokens.gold),
+                    backgroundColor: const Color(0xFFE2E8F0),
+                    valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF102A43)),
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -174,10 +174,10 @@ class _WaterTrackerWidgetState extends State<WaterTrackerWidget> {
                     ),
                     Text(
                       'Qoldi: ${(targetMl - currentMl).clamp(0, 9999)} ml',
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w700,
-                        color: const Color(0xFF64748B),
+                        color: Color(0xFF64748B),
                       ),
                     ),
                   ],
@@ -190,10 +190,10 @@ class _WaterTrackerWidgetState extends State<WaterTrackerWidget> {
           // 2. TEZKOR SUV QO'SHISH TUGMALARI
           Text(
             'Tezkor suv qo\'shish:'.tr,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w800,
-              color: const Color(0xFF0F172A),
+              color: Color(0xFF0F172A),
             ),
           ),
           const SizedBox(height: 10),
@@ -212,10 +212,10 @@ class _WaterTrackerWidgetState extends State<WaterTrackerWidget> {
           // 3. SUV TARIXI RO'YXATI
           Text(
             'Bugungi suv tarixi:'.tr,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w800,
-              color: const Color(0xFF0F172A),
+              color: Color(0xFF0F172A),
             ),
           ),
           const SizedBox(height: 10),
@@ -231,9 +231,9 @@ class _WaterTrackerWidgetState extends State<WaterTrackerWidget> {
               child: Center(
                 child: Text(
                   'Hali suv ichilganligi belgilanmadi',
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 13,
-                    color: const Color(0xFF64748B),
+                    color: Color(0xFF64748B),
                   ),
                 ),
               ),
@@ -251,23 +251,23 @@ class _WaterTrackerWidgetState extends State<WaterTrackerWidget> {
                   ),
                   child: Row(
                     children: [
-                      const Icon(LucideIcons.droplets, color: LuxTokens.gold, size: 18),
+                      const Icon(LucideIcons.droplets, color: Color(0xFF102A43), size: 18),
                       const SizedBox(width: 10),
                       Text(
                         '${entry['amount']} ml suv ichildi',
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 13.5,
                           fontWeight: FontWeight.w700,
-                          color: const Color(0xFF0F172A),
+                          color: Color(0xFF0F172A),
                         ),
                       ),
                       const Spacer(),
                       Text(
                         entry['time'] ?? '',
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
-                          color: const Color(0xFF64748B),
+                          color: Color(0xFF64748B),
                         ),
                       ),
                     ],
@@ -287,18 +287,18 @@ class _WaterTrackerWidgetState extends State<WaterTrackerWidget> {
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 12),
           decoration: BoxDecoration(
-            color: const Color(0xFFFFFBEB),
+            color: const Color(0xFFEFF6FF),
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: const Color(0xFFFDE68A), width: 1.2),
+            border: Border.all(color: const Color(0xFFBFDBFE), width: 1.2),
           ),
           child: Column(
             children: [
-              const Icon(LucideIcons.plus, color: LuxTokens.gold, size: 18),
+              const Icon(LucideIcons.plus, color: Color(0xFF102A43), size: 18),
               const SizedBox(height: 4),
               Text(
                 label,
                 style: const TextStyle(
-                  color: Color(0xFF8A5D0B),
+                  color: Color(0xFF102A43),
                   fontWeight: FontWeight.w800,
                   fontSize: 13,
                 ),

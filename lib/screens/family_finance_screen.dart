@@ -180,7 +180,7 @@ class _FamilyFinanceScreenState extends State<FamilyFinanceScreen> {
         gradient: LinearGradient(
           colors: inGroup
               ? const [Color(0xFF059669), Color(0xFF10B981)]
-              : const [Color(0xFFC9A227), Color(0xFFE3C766)],
+              : const [Color(0xFF102A43), Color(0xFF244E77)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -229,7 +229,7 @@ class _FamilyFinanceScreenState extends State<FamilyFinanceScreen> {
       children: [
         _actionTile(
           icon: LucideIcons.qrCode,
-          color: const Color(0xFFC9A227),
+          color: const Color(0xFF102A43),
           title: 'QR kod ko\'rsatish'.tr,
           subtitle: 'Juftingiz sizning QR kodingizni skanerlaydi'.tr,
           onTap: _busy ? null : _showInviteQr,
@@ -237,7 +237,7 @@ class _FamilyFinanceScreenState extends State<FamilyFinanceScreen> {
         const SizedBox(height: 10),
         _actionTile(
           icon: LucideIcons.scanLine,
-          color: const Color(0xFFB8921F),
+          color: const Color(0xFF244E77),
           title: 'QR kod skanerlash'.tr,
           subtitle: 'Juftingizning QR kodini skanerlab ulaning'.tr,
           onTap: _busy ? null : _scanQr,
@@ -319,11 +319,11 @@ class _FamilyFinanceScreenState extends State<FamilyFinanceScreen> {
                     children: [
                       CircleAvatar(
                         radius: 18,
-                        backgroundColor: const Color(0xFFC9A227).withValues(alpha: 0.15),
+                        backgroundColor: const Color(0xFF102A43).withValues(alpha: 0.15),
                         child: Text(
                           (mm['name'] as String? ?? '?').characters.first.toUpperCase(),
                           style: const TextStyle(
-                            color: Color(0xFFC9A227),
+                            color: Color(0xFF102A43),
                             fontWeight: FontWeight.w800,
                           ),
                         ),
@@ -339,14 +339,14 @@ class _FamilyFinanceScreenState extends State<FamilyFinanceScreen> {
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                           decoration: BoxDecoration(
-                            color: const Color(0xFFC9A227).withValues(alpha: 0.15),
+                            color: const Color(0xFF102A43).withValues(alpha: 0.15),
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: Text('Egasi'.tr,
                               style: const TextStyle(
                                 fontSize: 11,
                                 fontWeight: FontWeight.w700,
-                                color: Color(0xFFC9A227),
+                                color: Color(0xFF102A43),
                               )),
                         ),
                       ],
@@ -361,7 +361,7 @@ class _FamilyFinanceScreenState extends State<FamilyFinanceScreen> {
         // Boshqa a'zoni qo'shish uchun yana QR
         _actionTile(
           icon: LucideIcons.userPlus,
-          color: const Color(0xFFC9A227),
+          color: const Color(0xFF102A43),
           title: 'Yana a\'zo qo\'shish'.tr,
           subtitle: 'QR kod ko\'rsatib yangi a\'zoni ulang'.tr,
           onTap: _busy ? null : _showInviteQr,

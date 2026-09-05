@@ -5,6 +5,7 @@ import '../../models/alarm.dart';
 import '../../services/api_service.dart';
 import '../../services/notification_helper.dart';
 import '../../widgets/friendly_error.dart';
+import '../../widgets/glass/glass_scaffold.dart';
 import 'alarm_edit_screen.dart';
 import 'alarm_ring_screen.dart';
 import '../../theme/lux_tokens.dart';
@@ -147,11 +148,14 @@ class _AlarmHomeScreenState extends State<AlarmHomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('Majburlovchi budilnik'.tr)),
+    return GlassScaffold(
+      showBackButton: true,
+      title: 'Majburlovchi budilnik'.tr,
       floatingActionButton: FloatingActionButton.extended(
+        backgroundColor: const Color(0xFF102A43),
+        foregroundColor: Colors.white,
         onPressed: () => _addOrEdit(),
-        icon: Icon(Icons.add_alarm),
+        icon: const Icon(Icons.add_alarm),
         label: Text('Yangi'.tr),
       ),
       body: RefreshIndicator(onRefresh: _load, child: _buildBody()),
@@ -203,7 +207,7 @@ class _AlarmHomeScreenState extends State<AlarmHomeScreen> {
             onTap: () => _addOrEdit(a),
             leading: Icon(
               _missionIcons[a.missionType] ?? Icons.alarm,
-              color: LuxTokens.goldSoft,
+              color: const Color(0xFF102A43),
             ),
             title: Row(
               children: [

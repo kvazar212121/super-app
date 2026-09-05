@@ -112,16 +112,16 @@ class _FitnessPlanSetupScreenState extends State<FitnessPlanSetupScreen> {
             child: InkWell(
               onTap: () => setState(() => _goal = entry.key),
               borderRadius: BorderRadius.circular(GlassTokens.radiusSm),
-              child: Container(
+                child: Container(
                 padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
                   color: selected
-                      ? LuxTokens.gold
+                      ? const Color(0xFF102A43)
                       : GlassTokens.glassFill(context),
                   borderRadius: BorderRadius.circular(GlassTokens.radiusSm),
                   border: Border.all(
                     color: selected
-                        ? LuxTokens.gold
+                        ? const Color(0xFF102A43)
                         : GlassTokens.glassBorder(context),
                   ),
                 ),
@@ -129,7 +129,7 @@ class _FitnessPlanSetupScreenState extends State<FitnessPlanSetupScreen> {
                   children: [
                     Icon(
                       entry.value.$2,
-                      color: selected ? Colors.white : LuxTokens.gold,
+                      color: selected ? Colors.white : const Color(0xFF102A43),
                       size: 20,
                     ),
                     const SizedBox(width: 12),
@@ -211,7 +211,7 @@ class _FitnessPlanSetupScreenState extends State<FitnessPlanSetupScreen> {
           child: ElevatedButton.icon(
             onPressed: _isGenerating ? null : _generate,
             style: ElevatedButton.styleFrom(
-              backgroundColor: LuxTokens.gold,
+              backgroundColor: const Color(0xFF102A43),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(GlassTokens.radiusSm),
               ),
@@ -256,9 +256,7 @@ class _FitnessPlanSetupScreenState extends State<FitnessPlanSetupScreen> {
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [LuxTokens.gold, LuxTokens.goldDim],
-            ),
+            color: const Color(0xFF102A43),
             borderRadius: BorderRadius.circular(GlassTokens.radiusMd),
           ),
           child: Row(
@@ -316,7 +314,7 @@ class _FitnessPlanSetupScreenState extends State<FitnessPlanSetupScreen> {
                   height: 40,
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
-                    color: LuxTokens.goldSoft.withValues(alpha: 0.12),
+                    color: const Color(0xFF102A43).withValues(alpha: 0.1),
                     shape: BoxShape.circle,
                   ),
                   child: Text(
@@ -325,7 +323,7 @@ class _FitnessPlanSetupScreenState extends State<FitnessPlanSetupScreen> {
                         : '${entry.key + 1}',
                     style: const TextStyle(
                       fontWeight: FontWeight.w800,
-                      color: LuxTokens.gold,
+                      color: Color(0xFF102A43),
                     ),
                   ),
                 ),
@@ -358,7 +356,7 @@ class _FitnessPlanSetupScreenState extends State<FitnessPlanSetupScreen> {
         const SizedBox(height: 8),
         SwitchListTile(
           value: _reminderEnabled,
-          activeThumbColor: LuxTokens.gold,
+          activeThumbColor: const Color(0xFF102A43),
           title: Text(
             'Mashg\'ulot kunlari eslatma'.tr,
             style: TextStyle(
@@ -374,7 +372,7 @@ class _FitnessPlanSetupScreenState extends State<FitnessPlanSetupScreen> {
             ),
           ),
           secondary: IconButton(
-            icon: const Icon(LucideIcons.clock, color: LuxTokens.gold),
+            icon: const Icon(LucideIcons.clock, color: Color(0xFF102A43)),
             onPressed: () async {
               final picked = await showTimePicker(
                 context: context,
@@ -391,7 +389,7 @@ class _FitnessPlanSetupScreenState extends State<FitnessPlanSetupScreen> {
           child: ElevatedButton(
             onPressed: _start,
             style: ElevatedButton.styleFrom(
-              backgroundColor: LuxTokens.gold,
+              backgroundColor: const Color(0xFF102A43),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(GlassTokens.radiusSm),
               ),
@@ -437,10 +435,10 @@ class _FitnessPlanSetupScreenState extends State<FitnessPlanSetupScreen> {
         padding: const EdgeInsets.symmetric(vertical: 12),
         alignment: Alignment.center,
         decoration: BoxDecoration(
-          color: selected ? LuxTokens.gold : GlassTokens.glassFill(context),
+          color: selected ? const Color(0xFF102A43) : GlassTokens.glassFill(context),
           borderRadius: BorderRadius.circular(GlassTokens.radiusSm),
           border: Border.all(
-            color: selected ? LuxTokens.gold : GlassTokens.glassBorder(context),
+            color: selected ? const Color(0xFF102A43) : GlassTokens.glassBorder(context),
           ),
         ),
         child: Text(

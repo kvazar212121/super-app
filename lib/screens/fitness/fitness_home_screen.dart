@@ -220,11 +220,11 @@ class _FitnessHomeScreenState extends State<FitnessHomeScreen> {
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        gradient: LuxTokens.goldGradient,
+        color: const Color(0xFF102A43),
         borderRadius: BorderRadius.circular(GlassTokens.radiusMd),
         boxShadow: const [
           BoxShadow(
-            color: Colors.black26,
+            color: Color(0x1A102A43),
             blurRadius: 10,
             offset: Offset(0, 4),
           ),
@@ -235,7 +235,7 @@ class _FitnessHomeScreenState extends State<FitnessHomeScreen> {
           Row(
             children: [
               _energyStat(LucideIcons.footprints, '$steps', 'qadam'.tr),
-              Container(width: 1, height: 40, color: const Color(0x33140D02)),
+              Container(width: 1, height: 40, color: Colors.white24),
               _energyStat(LucideIcons.flame, '${burned.round()}', 'kkal yoqildi'.tr),
             ],
           ),
@@ -245,7 +245,7 @@ class _FitnessHomeScreenState extends State<FitnessHomeScreen> {
             children: [
               Text(
                 '${'Mashq'.tr}: ${workoutCal.round()} · ${'Yurish'.tr}: ${stepsCal.round()} kkal',
-                style: const TextStyle(color: Color(0xFF332205), fontSize: 12, fontWeight: FontWeight.w600),
+                style: const TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.w600),
               ),
             ],
           ),
@@ -264,12 +264,12 @@ class _FitnessHomeScreenState extends State<FitnessHomeScreen> {
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF140D02),
+                  color: Colors.white.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Text(
                   'Aniq hisob uchun bo\'y/vazningizni kiriting'.tr,
-                  style: const TextStyle(color: Color(0xFFE0B454), fontSize: 12, fontWeight: FontWeight.w800),
+                  style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w800),
                 ),
               ),
             ),
@@ -282,20 +282,20 @@ class _FitnessHomeScreenState extends State<FitnessHomeScreen> {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF140D02),
+                  color: Colors.white.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     const Icon(LucideIcons.footprints,
-                        color: Color(0xFFE0B454), size: 16),
+                        color: Colors.white, size: 16),
                     const SizedBox(width: 8),
                     Flexible(
                       child: Text(
                         'Qadam sanagichni yoqing'.tr,
                         style: const TextStyle(
-                            color: Color(0xFFE0B454),
+                            color: Colors.white,
                             fontSize: 12,
                             fontWeight: FontWeight.w800),
                       ),
@@ -319,12 +319,12 @@ class _FitnessHomeScreenState extends State<FitnessHomeScreen> {
     return Expanded(
       child: Column(
         children: [
-          Icon(icon, color: const Color(0xFF140D02), size: 24),
+          Icon(icon, color: Colors.white, size: 24),
           const SizedBox(height: 4),
           Text(value,
               style: const TextStyle(
-                  color: Color(0xFF140D02), fontSize: 24, fontWeight: FontWeight.w900)),
-          Text(label, style: const TextStyle(color: Color(0xFF332205), fontSize: 12, fontWeight: FontWeight.w700)),
+                  color: Colors.white, fontSize: 24, fontWeight: FontWeight.w900)),
+          Text(label, style: const TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.w700)),
         ],
       ),
     );
@@ -349,13 +349,13 @@ class _FitnessHomeScreenState extends State<FitnessHomeScreen> {
                 width: 72,
                 height: 72,
                 decoration: BoxDecoration(
-                  color: LuxTokens.goldSoft.withValues(alpha: 0.12),
+                  color: const Color(0xFF102A43).withValues(alpha: 0.1),
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(
                   LucideIcons.dumbbell,
                   size: 34,
-                  color: LuxTokens.gold,
+                  color: Color(0xFF102A43),
                 ),
               ),
               const SizedBox(height: 16),
@@ -385,7 +385,7 @@ class _FitnessHomeScreenState extends State<FitnessHomeScreen> {
                 child: ElevatedButton.icon(
                   onPressed: _openSetup,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: LuxTokens.gold,
+                    backgroundColor: const Color(0xFF102A43),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(GlassTokens.radiusSm),
                     ),
@@ -526,11 +526,11 @@ class _FitnessHomeScreenState extends State<FitnessHomeScreen> {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          gradient: LuxTokens.goldGradient,
+          color: const Color(0xFF102A43),
           borderRadius: BorderRadius.circular(GlassTokens.radiusMd),
           boxShadow: const [
             BoxShadow(
-              color: Colors.black26,
+              color: Color(0x1A102A43),
               blurRadius: 10,
               offset: Offset(0, 4),
             ),
@@ -541,12 +541,12 @@ class _FitnessHomeScreenState extends State<FitnessHomeScreen> {
             Container(
               padding: const EdgeInsets.all(8),
               decoration: const BoxDecoration(
-                color: Color(0xFF140D02),
+                color: Colors.white24,
                 shape: BoxShape.circle,
               ),
               child: Icon(
                 done ? LucideIcons.circleCheck : LucideIcons.play,
-                color: const Color(0xFFE0B454),
+                color: Colors.white,
                 size: 22,
               ),
             ),
@@ -560,7 +560,7 @@ class _FitnessHomeScreenState extends State<FitnessHomeScreen> {
                         ? 'Bugungi mashg\'ulot bajarildi! 🎉'.tr
                         : 'Bugungi mashg\'ulot'.tr,
                     style: const TextStyle(
-                      color: Color(0xFF332205),
+                      color: Colors.white70,
                       fontSize: 12,
                       fontWeight: FontWeight.w700,
                     ),
@@ -569,7 +569,7 @@ class _FitnessHomeScreenState extends State<FitnessHomeScreen> {
                   Text(
                     day['title'] as String? ?? '',
                     style: const TextStyle(
-                      color: Color(0xFF140D02),
+                      color: Colors.white,
                       fontSize: 17,
                       fontWeight: FontWeight.w900,
                     ),
@@ -577,12 +577,12 @@ class _FitnessHomeScreenState extends State<FitnessHomeScreen> {
                   const SizedBox(height: 2),
                   Text(
                     '${exercises.length} ${'ta mashq'.tr}',
-                    style: const TextStyle(color: Color(0xFF332205), fontSize: 12, fontWeight: FontWeight.w600),
+                    style: const TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.w600),
                   ),
                 ],
               ),
             ),
-            const Icon(LucideIcons.chevronRight, color: Color(0xFF140D02), size: 24),
+            const Icon(LucideIcons.chevronRight, color: Colors.white, size: 24),
           ],
         ),
       ),
@@ -597,7 +597,7 @@ class _FitnessHomeScreenState extends State<FitnessHomeScreen> {
         color: GlassTokens.glassFill(context),
         borderRadius: BorderRadius.circular(GlassTokens.radiusSm),
         border: Border.all(
-          color: isToday ? LuxTokens.gold : GlassTokens.glassBorder(context),
+          color: isToday ? const Color(0xFF102A43) : GlassTokens.glassBorder(context),
           width: isToday ? 1.6 : 1,
         ),
       ),
@@ -608,17 +608,18 @@ class _FitnessHomeScreenState extends State<FitnessHomeScreen> {
           height: 42,
           alignment: Alignment.center,
           decoration: BoxDecoration(
-            gradient: done ? LuxTokens.goldGradient : null,
-            color: done ? null : LuxTokens.goldSoft.withValues(alpha: 0.15),
+            color: done
+                ? const Color(0xFF102A43)
+                : const Color(0xFF102A43).withValues(alpha: 0.08),
             shape: BoxShape.circle,
           ),
           child: done
-              ? const Icon(LucideIcons.check, color: Color(0xFF140D02), size: 20)
+              ? const Icon(LucideIcons.check, color: Colors.white, size: 20)
               : Text(
                   kWeekdayShortNames[weekday - 1].tr,
                   style: const TextStyle(
                     fontWeight: FontWeight.w900,
-                    color: Color(0xFF8A5D0B),
+                    color: Color(0xFF102A43),
                   ),
                 ),
         ),
@@ -659,7 +660,7 @@ class _FitnessHomeScreenState extends State<FitnessHomeScreen> {
         children: [
           Icon(
             enabled ? LucideIcons.bellRing : LucideIcons.bellOff,
-            color: enabled ? LuxTokens.gold : GlassTokens.secondaryText(context),
+            color: enabled ? const Color(0xFF102A43) : GlassTokens.secondaryText(context),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -722,12 +723,12 @@ class _FitnessHomeScreenState extends State<FitnessHomeScreen> {
               width: 42,
               height: 42,
               decoration: BoxDecoration(
-                color: LuxTokens.goldSoft.withValues(alpha: 0.12),
+                color: const Color(0xFF102A43).withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: const Icon(
                 LucideIcons.library,
-                color: LuxTokens.gold,
+                color: Color(0xFF102A43),
                 size: 20,
               ),
             ),

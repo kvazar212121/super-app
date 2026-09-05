@@ -61,11 +61,13 @@ abstract final class GlassTokens {
   }
 
   static Color primaryText(BuildContext context) {
-    return const Color(0xFF17202A);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return isDark ? Colors.white : const Color(0xFF102A43);
   }
 
   static Color secondaryText(BuildContext context) {
-    return const Color(0xFF6B7280);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B);
   }
 
   static List<BoxShadow> glassShadow(BuildContext context) => [

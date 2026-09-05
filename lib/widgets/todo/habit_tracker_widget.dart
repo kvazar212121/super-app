@@ -65,14 +65,14 @@ class _HabitTrackerWidgetState extends State<HabitTrackerWidget> {
         surfaceTintColor: Colors.transparent,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(24),
-          side: BorderSide(color: LuxTokens.gold.withValues(alpha: 0.6), width: 1.5),
+          side: BorderSide(color: const Color(0xFF102A43).withValues(alpha: 0.3), width: 1.5),
         ),
         title: Text(
           'Yangi odat qo\'shish'.tr,
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w800,
-            color: const Color(0xFF0F172A),
+            color: Color(0xFF0F172A),
           ),
         ),
         content: TextField(
@@ -93,17 +93,20 @@ class _HabitTrackerWidgetState extends State<HabitTrackerWidget> {
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(14),
-              borderSide: BorderSide(color: LuxTokens.gold.withValues(alpha: 0.3)),
+              borderSide: BorderSide(color: const Color(0xFF102A43).withValues(alpha: 0.3)),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(14),
-              borderSide: const BorderSide(color: LuxTokens.gold, width: 1.5),
+              borderSide: const BorderSide(color: Color(0xFF102A43), width: 1.5),
             ),
           ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
+            style: TextButton.styleFrom(
+              foregroundColor: const Color(0xFF102A43),
+            ),
             child: Text('Bekor qilish'.tr),
           ),
           FilledButton(
@@ -115,6 +118,10 @@ class _HabitTrackerWidgetState extends State<HabitTrackerWidget> {
                 widget.onChanged();
               }
             },
+            style: FilledButton.styleFrom(
+              backgroundColor: const Color(0xFF102A43),
+              foregroundColor: Colors.white,
+            ),
             child: Text('Qo\'shish'.tr),
           ),
         ],
@@ -128,7 +135,7 @@ class _HabitTrackerWidgetState extends State<HabitTrackerWidget> {
     final dateStr = _service.formatDate(widget.selectedDate);
 
     if (_isLoading) {
-      return const Center(child: CircularProgressIndicator(color: LuxTokens.gold));
+      return const Center(child: CircularProgressIndicator(color: Color(0xFF102A43)));
     }
 
     return SingleChildScrollView(
@@ -141,14 +148,14 @@ class _HabitTrackerWidgetState extends State<HabitTrackerWidget> {
             children: [
               Text(
                 'Kunlik Odatlar va Ketma-ketlik:'.tr,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w800,
-                  color: const Color(0xFF0F172A),
+                  color: Color(0xFF0F172A),
                 ),
               ),
               IconButton(
-                icon: const Icon(LucideIcons.plusCircle, color: LuxTokens.gold, size: 24),
+                icon: const Icon(LucideIcons.plusCircle, color: Color(0xFF102A43), size: 24),
                 onPressed: _showAddHabitDialog,
               ),
             ],
@@ -166,9 +173,9 @@ class _HabitTrackerWidgetState extends State<HabitTrackerWidget> {
               child: Center(
                 child: Text(
                   'Hali odatlar qo\'shilmadi. "+" tugmasini bosing.',
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 13,
-                    color: const Color(0xFF64748B),
+                    color: Color(0xFF64748B),
                   ),
                 ),
               ),
@@ -188,14 +195,14 @@ class _HabitTrackerWidgetState extends State<HabitTrackerWidget> {
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(
                       color: isCompleted
-                          ? LuxTokens.gold
+                          ? const Color(0xFF102A43)
                           : (isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0)),
                       width: isCompleted ? 1.5 : 1.0,
                     ),
                     boxShadow: [
                       BoxShadow(
                         color: isCompleted
-                            ? LuxTokens.gold.withValues(alpha: 0.12)
+                            ? const Color(0xFF102A43).withValues(alpha: 0.12)
                             : Colors.black.withValues(alpha: 0.03),
                         blurRadius: 10,
                         offset: const Offset(0, 3),
@@ -211,13 +218,16 @@ class _HabitTrackerWidgetState extends State<HabitTrackerWidget> {
                           width: 28,
                           height: 28,
                           decoration: isCompleted
-                              ? LuxTokens.goldBoxDecoration(radius: 8)
+                              ? BoxDecoration(
+                                  color: const Color(0xFF102A43),
+                                  borderRadius: BorderRadius.circular(8),
+                                )
                               : BoxDecoration(
                                   borderRadius: BorderRadius.circular(8),
                                   border: Border.all(color: const Color(0xFFCBD5E1), width: 1.5),
                                 ),
                           child: isCompleted
-                              ? const Icon(LucideIcons.check, color: Color(0xFF140D02), size: 18)
+                              ? const Icon(LucideIcons.check, color: Colors.white, size: 18)
                               : null,
                         ),
                       ),
@@ -245,7 +255,7 @@ class _HabitTrackerWidgetState extends State<HabitTrackerWidget> {
                               style: TextStyle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w600,
-                                color: isCompleted ? LuxTokens.goldDim : const Color(0xFF64748B),
+                                color: isCompleted ? const Color(0xFF102A43) : const Color(0xFF64748B),
                               ),
                             ),
                           ],
@@ -256,9 +266,9 @@ class _HabitTrackerWidgetState extends State<HabitTrackerWidget> {
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                         decoration: BoxDecoration(
-                          color: const Color(0xFFFFFBEB),
+                          color: const Color(0xFFEFF6FF),
                           borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: const Color(0xFFFDE68A)),
+                          border: Border.all(color: const Color(0xFFBFDBFE)),
                         ),
                         child: Row(
                           children: [
@@ -266,7 +276,7 @@ class _HabitTrackerWidgetState extends State<HabitTrackerWidget> {
                             Text(
                               '$streak kun',
                               style: const TextStyle(
-                                color: Color(0xFF8A5D0B),
+                                color: Color(0xFF102A43),
                                 fontWeight: FontWeight.w800,
                                 fontSize: 12.5,
                               ),

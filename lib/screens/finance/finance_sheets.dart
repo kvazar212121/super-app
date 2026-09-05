@@ -124,7 +124,7 @@ void showAddTransactionSheet(
                             padding: const EdgeInsets.symmetric(vertical: 12),
                             decoration: BoxDecoration(
                               gradient: selectedType == "expense"
-                                  ? LuxTokens.goldGradient
+                                  ? const LinearGradient(colors: [Color(0xFF102A43), Color(0xFF244E77)])
                                   : null,
                               color: selectedType == "expense"
                                   ? null
@@ -132,7 +132,7 @@ void showAddTransactionSheet(
                               borderRadius: BorderRadius.circular(12),
                               border: Border.all(
                                 color: selectedType == "expense"
-                                    ? LuxTokens.gold
+                                    ? const Color(0xFF102A43)
                                     : const Color(0xFFE2E8F0),
                                 width: selectedType == "expense" ? 1.5 : 1.0,
                               ),
@@ -150,7 +150,7 @@ void showAddTransactionSheet(
                               "Xarajat".tr,
                               style: TextStyle(
                                 color: selectedType == "expense"
-                                    ? const Color(0xFF140D02)
+                                    ? Colors.white
                                     : textSecondary,
                                 fontWeight: FontWeight.w900,
                               ),
@@ -172,7 +172,7 @@ void showAddTransactionSheet(
                             padding: const EdgeInsets.symmetric(vertical: 12),
                             decoration: BoxDecoration(
                               gradient: selectedType == "income"
-                                  ? LuxTokens.goldGradient
+                                  ? const LinearGradient(colors: [Color(0xFF102A43), Color(0xFF244E77)])
                                   : null,
                               color: selectedType == "income"
                                   ? null
@@ -180,7 +180,7 @@ void showAddTransactionSheet(
                               borderRadius: BorderRadius.circular(12),
                               border: Border.all(
                                 color: selectedType == "income"
-                                    ? LuxTokens.gold
+                                    ? const Color(0xFF102A43)
                                     : const Color(0xFFE2E8F0),
                                 width: selectedType == "income" ? 1.5 : 1.0,
                               ),
@@ -198,7 +198,7 @@ void showAddTransactionSheet(
                               "Daromad".tr,
                               style: TextStyle(
                                 color: selectedType == "income"
-                                    ? const Color(0xFF140D02)
+                                    ? Colors.white
                                     : textSecondary,
                                 fontWeight: FontWeight.w900,
                               ),
@@ -225,7 +225,7 @@ void showAddTransactionSheet(
                       ),
                       prefixIcon: const Icon(
                         LucideIcons.banknote,
-                        color: LuxTokens.gold,
+                        color: Color(0xFF102A43),
                       ),
                       filled: true,
                       fillColor: inputBg,
@@ -238,7 +238,7 @@ void showAddTransactionSheet(
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide: const BorderSide(
-                          color: LuxTokens.gold,
+                          color: Color(0xFF102A43),
                           width: 1.8,
                         ),
                       ),
@@ -288,14 +288,16 @@ void showAddTransactionSheet(
                         },
                         child: Container(
                           decoration: BoxDecoration(
-                            gradient: isSelected ? LuxTokens.goldGradient : null,
+                            gradient: isSelected
+                                ? const LinearGradient(colors: [Color(0xFF102A43), Color(0xFF244E77)])
+                                : null,
                             color: isSelected
                                 ? null
                                 : const Color(0xFFF8FAFC),
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(
                               color: isSelected
-                                  ? LuxTokens.gold
+                                  ? const Color(0xFF102A43)
                                   : const Color(0xFFE2E8F0),
                               width: isSelected ? 1.5 : 1.0,
                             ),
@@ -306,7 +308,7 @@ void showAddTransactionSheet(
                               Icon(
                                 cat['icon'],
                                 color: isSelected
-                                    ? const Color(0xFF140D02)
+                                    ? Colors.white
                                     : textSecondary,
                                 size: 20,
                               ),
@@ -315,7 +317,7 @@ void showAddTransactionSheet(
                                 (cat['name'] as String).tr,
                                 style: TextStyle(
                                   color: isSelected
-                                      ? const Color(0xFF140D02)
+                                      ? Colors.white
                                       : textSecondary,
                                   fontSize: 12,
                                   fontWeight: isSelected
@@ -354,7 +356,7 @@ void showAddTransactionSheet(
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide: const BorderSide(
-                          color: LuxTokens.gold,
+                          color: Color(0xFF102A43),
                           width: 1.8,
                         ),
                       ),
@@ -375,14 +377,14 @@ void showAddTransactionSheet(
                           return Theme(
                             data: Theme.of(context).copyWith(
                               colorScheme: const ColorScheme.light(
-                                primary: Color(0xFFC99427),
-                                onPrimary: Color(0xFF140D02),
+                                primary: Color(0xFF102A43),
+                                onPrimary: Colors.white,
                                 surface: Colors.white,
                                 onSurface: Color(0xFF0F172A),
                               ),
                               textButtonTheme: TextButtonThemeData(
                                 style: TextButton.styleFrom(
-                                  foregroundColor: const Color(0xFF8A5D0B),
+                                  foregroundColor: const Color(0xFF102A43),
                                   textStyle: const TextStyle(fontWeight: FontWeight.w700),
                                 ),
                               ),
@@ -401,7 +403,7 @@ void showAddTransactionSheet(
                         children: [
                           const Icon(
                             LucideIcons.calendar,
-                            color: LuxTokens.gold,
+                            color: Color(0xFF102A43),
                             size: 20,
                           ),
                           const SizedBox(width: 12),
@@ -429,7 +431,7 @@ void showAddTransactionSheet(
                     width: double.infinity,
                     height: 52,
                     decoration: BoxDecoration(
-                      gradient: LuxTokens.goldGradient,
+                      gradient: const LinearGradient(colors: [Color(0xFF102A43), Color(0xFF244E77)]),
                       borderRadius: BorderRadius.circular(14),
                       boxShadow: const [
                         BoxShadow(
@@ -484,7 +486,7 @@ void showAddTransactionSheet(
                       child: Text(
                         "Saqlash".tr,
                         style: const TextStyle(
-                          color: Color(0xFF140D02),
+                          color: Colors.white,
                           fontSize: 16,
                           fontWeight: FontWeight.w900,
                         ),
@@ -520,7 +522,7 @@ void _showAddCategoryDialog(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
           side: BorderSide(
-            color: LuxTokens.gold.withValues(alpha: 0.35),
+            color: const Color(0xFF102A43).withValues(alpha: 0.35),
             width: 1.5,
           ),
         ),
@@ -548,7 +550,7 @@ void _showAddCategoryDialog(
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: LuxTokens.gold, width: 1.8),
+              borderSide: const BorderSide(color: Color(0xFF102A43), width: 1.8),
             ),
           ),
         ),
@@ -562,7 +564,7 @@ void _showAddCategoryDialog(
           ),
           Container(
             decoration: BoxDecoration(
-              gradient: LuxTokens.goldGradient,
+              gradient: const LinearGradient(colors: [Color(0xFF102A43), Color(0xFF244E77)]),
               borderRadius: BorderRadius.circular(10),
             ),
             child: ElevatedButton(
@@ -600,7 +602,7 @@ void _showAddCategoryDialog(
               child: Text(
                 'Qo\'shish'.tr,
                 style: const TextStyle(
-                  color: Color(0xFF140D02),
+                  color: Colors.white,
                   fontWeight: FontWeight.w900,
                 ),
               ),
@@ -696,7 +698,7 @@ void showAddPlannedPaymentSheet(
                       ),
                       prefixIcon: const Icon(
                         LucideIcons.pencil,
-                        color: LuxTokens.gold,
+                        color: Color(0xFF102A43),
                       ),
                       filled: true,
                       fillColor: inputBg,
@@ -709,7 +711,7 @@ void showAddPlannedPaymentSheet(
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide: const BorderSide(
-                          color: LuxTokens.gold,
+                          color: Color(0xFF102A43),
                           width: 1.8,
                         ),
                       ),
@@ -733,7 +735,7 @@ void showAddPlannedPaymentSheet(
                       ),
                       prefixIcon: const Icon(
                         LucideIcons.banknote,
-                        color: LuxTokens.gold,
+                        color: Color(0xFF102A43),
                       ),
                       filled: true,
                       fillColor: inputBg,
@@ -746,7 +748,7 @@ void showAddPlannedPaymentSheet(
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide: const BorderSide(
-                          color: LuxTokens.gold,
+                          color: Color(0xFF102A43),
                           width: 1.8,
                         ),
                       ),
@@ -786,14 +788,16 @@ void showAddPlannedPaymentSheet(
                         },
                         child: Container(
                           decoration: BoxDecoration(
-                            gradient: isSelected ? LuxTokens.goldGradient : null,
+                            gradient: isSelected
+                                ? const LinearGradient(colors: [Color(0xFF102A43), Color(0xFF244E77)])
+                                : null,
                             color: isSelected
                                 ? null
                                 : const Color(0xFFF8FAFC),
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(
                               color: isSelected
-                                  ? LuxTokens.gold
+                                  ? const Color(0xFF102A43)
                                   : const Color(0xFFE2E8F0),
                               width: isSelected ? 1.5 : 1.0,
                             ),
@@ -804,7 +808,7 @@ void showAddPlannedPaymentSheet(
                               Icon(
                                 cat['icon'],
                                 color: isSelected
-                                    ? const Color(0xFF140D02)
+                                    ? Colors.white
                                     : textSecondary,
                                 size: 18,
                               ),
@@ -813,7 +817,7 @@ void showAddPlannedPaymentSheet(
                                 (cat['name'] as String).tr,
                                 style: TextStyle(
                                   color: isSelected
-                                      ? const Color(0xFF140D02)
+                                      ? Colors.white
                                       : textSecondary,
                                   fontSize: 11,
                                   fontWeight: isSelected
@@ -858,8 +862,8 @@ void showAddPlannedPaymentSheet(
                         onChanged: (val) {
                           setSheetState(() => isRecurring = val);
                         },
-                        activeColor: const Color(0xFF140D02),
-                        activeTrackColor: LuxTokens.gold,
+                        activeColor: Colors.white,
+                        activeTrackColor: const Color(0xFF102A43),
                       ),
                     ],
                   ),
@@ -881,14 +885,14 @@ void showAddPlannedPaymentSheet(
                           return Theme(
                             data: Theme.of(context).copyWith(
                               colorScheme: const ColorScheme.light(
-                                primary: Color(0xFFC99427),
-                                onPrimary: Color(0xFF140D02),
+                                primary: Color(0xFF102A43),
+                                onPrimary: Colors.white,
                                 surface: Colors.white,
                                 onSurface: Color(0xFF0F172A),
                               ),
                               textButtonTheme: TextButtonThemeData(
                                 style: TextButton.styleFrom(
-                                  foregroundColor: const Color(0xFF8A5D0B),
+                                  foregroundColor: const Color(0xFF102A43),
                                   textStyle: const TextStyle(fontWeight: FontWeight.w700),
                                 ),
                               ),
@@ -907,7 +911,7 @@ void showAddPlannedPaymentSheet(
                         children: [
                           const Icon(
                             LucideIcons.calendar,
-                            color: LuxTokens.gold,
+                            color: Color(0xFF102A43),
                             size: 20,
                           ),
                           const SizedBox(width: 12),
@@ -936,7 +940,7 @@ void showAddPlannedPaymentSheet(
                     width: double.infinity,
                     height: 52,
                     decoration: BoxDecoration(
-                      gradient: LuxTokens.goldGradient,
+                      gradient: const LinearGradient(colors: [Color(0xFF102A43), Color(0xFF244E77)]),
                       borderRadius: BorderRadius.circular(14),
                       boxShadow: const [
                         BoxShadow(
@@ -1000,7 +1004,7 @@ void showAddPlannedPaymentSheet(
                       child: Text(
                         "Saqlash".tr,
                         style: const TextStyle(
-                          color: Color(0xFF140D02),
+                          color: Colors.white,
                           fontSize: 16,
                           fontWeight: FontWeight.w900,
                         ),

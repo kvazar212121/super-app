@@ -412,21 +412,38 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
       resizeToAvoidBottomInset:
           false, // Prevent keyboard from causing bottom overflow
       bottom: PreferredSize(
-        preferredSize: const Size.fromHeight(48),
-        child: TabBar(
-          controller: _tabController,
-          indicatorColor: LuxTokens.gold,
-          indicatorWeight: 3,
-          labelColor: LuxTokens.gold,
-          unselectedLabelColor: GlassTokens.secondaryText(context),
-          labelStyle: const TextStyle(
-            fontWeight: FontWeight.w700,
-            fontSize: 14,
+        preferredSize: const Size.fromHeight(52),
+        child: Container(
+          margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+          padding: const EdgeInsets.all(4),
+          decoration: BoxDecoration(
+            color: const Color(0xFFF1F5F9),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: const Color(0xFF102A43).withValues(alpha: 0.15), width: 1.2),
           ),
-          tabs: [
-            Tab(text: '+ Yangi ro\'yxat'.tr),
-            Tab(text: 'Saqlanganlar'.tr),
-          ],
+          child: TabBar(
+            controller: _tabController,
+            indicator: BoxDecoration(
+              color: const Color(0xFF102A43),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            indicatorSize: TabBarIndicatorSize.tab,
+            dividerColor: Colors.transparent,
+            labelColor: Colors.white,
+            unselectedLabelColor: const Color(0xFF64748B),
+            labelStyle: const TextStyle(
+              fontWeight: FontWeight.w800,
+              fontSize: 14,
+            ),
+            unselectedLabelStyle: const TextStyle(
+              fontWeight: FontWeight.w600,
+              fontSize: 14,
+            ),
+            tabs: [
+              Tab(text: '+ Yangi ro\'yxat'.tr),
+              Tab(text: 'Saqlanganlar'.tr),
+            ],
+          ),
         ),
       ),
       body: TabBarView(
@@ -470,7 +487,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
       ),
       child: Row(
         children: [
-          const Icon(LucideIcons.wallet, color: Color(0xFFB8921F), size: 20),
+          const Icon(LucideIcons.wallet, color: Color(0xFF102A43), size: 20),
           const SizedBox(width: 10),
           Expanded(
             child: Column(
@@ -481,7 +498,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
                   style: const TextStyle(
                     fontSize: 12.5,
                     fontWeight: FontWeight.w700,
-                    color: Color(0xFF1E3A8A),
+                    color: Color(0xFF102A43),
                   ),
                 ),
                 const SizedBox(height: 2),
@@ -489,7 +506,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
                   'Bu ro\'yxat bilan ~${_formatPrice(projected)} bo\'ladi',
                   style: const TextStyle(
                     fontSize: 11.5,
-                    color: Color(0xFFC9A227),
+                    color: Color(0xFF244E77),
                   ),
                 ),
               ],
@@ -518,7 +535,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
               : Colors.black.withValues(alpha: 0.04),
           prefixIcon: Icon(
             LucideIcons.tag,
-            color: LuxTokens.goldSoft,
+            color: const Color(0xFF102A43),
             size: 18,
           ),
           contentPadding: const EdgeInsets.symmetric(
@@ -557,7 +574,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
             ? Colors.white.withValues(alpha: 0.05)
             : Colors.white.withValues(alpha: 0.85),
         borderRadius: BorderRadius.circular(GlassTokens.radiusMd),
-        border: Border.all(color: LuxTokens.gold.withValues(alpha: 0.35)),
+        border: Border.all(color: const Color(0xFF102A43).withValues(alpha: 0.2)),
         boxShadow: isDark
             ? []
             : [
@@ -753,14 +770,14 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
                 duration: const Duration(milliseconds: 200),
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
-                    colors: [Color(0xFFC9A227), Color(0xFFB8921F)],
+                    colors: [Color(0xFF102A43), Color(0xFF244E77)],
                   ),
                   borderRadius: BorderRadius.circular(12),
-                  boxShadow: [
+                  boxShadow: const [
                     BoxShadow(
-                      color: LuxTokens.gold,
+                      color: Color(0xFF102A43),
                       blurRadius: 8,
-                      offset: const Offset(0, 3),
+                      offset: Offset(0, 3),
                     ),
                   ],
                 ),
@@ -801,7 +818,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(LucideIcons.shoppingBasket, size: 64, color: LuxTokens.gold),
+          const Icon(LucideIcons.shoppingBasket, size: 64, color: Color(0xFF102A43)),
           const SizedBox(height: 16),
           Text(
             'Mahsulotlar qo\'shing'.tr,
@@ -860,8 +877,8 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
                   width: 40,
                   height: 40,
                   decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [LuxTokens.gold, LuxTokens.goldDim],
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFF102A43), Color(0xFF244E77)],
                     ),
                     borderRadius: BorderRadius.circular(10),
                   ),
@@ -944,7 +961,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
                     Text(
                       _formatPrice(actualTotal),
                       style: const TextStyle(
-                        color: Color(0xFFC9A227),
+                        color: Color(0xFF102A43),
                         fontSize: 22,
                         fontWeight: FontWeight.w800,
                       ),
@@ -972,8 +989,8 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
                   icon: const Icon(LucideIcons.save, size: 18),
                   label: Text('Saqlash'.tr),
                   style: OutlinedButton.styleFrom(
-                    foregroundColor: const Color(0xFFC9A227),
-                    side: const BorderSide(color: Color(0xFFC9A227)),
+                    foregroundColor: const Color(0xFF102A43),
+                    side: const BorderSide(color: Color(0xFF102A43)),
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(14),
@@ -1019,7 +1036,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
   Widget _buildSavedListsTab() {
     if (_isLoading) {
       return const Center(
-        child: CircularProgressIndicator(color: LuxTokens.gold),
+        child: CircularProgressIndicator(color: Color(0xFF102A43)),
       );
     }
     if (_lists.isEmpty) {
@@ -1027,7 +1044,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(LucideIcons.clipboardList, size: 64, color: LuxTokens.gold),
+            const Icon(LucideIcons.clipboardList, size: 64, color: Color(0xFF102A43)),
             const SizedBox(height: 16),
             Text(
               'Saqlangan ro\'yxatlar yo\'q'.tr,
@@ -1079,8 +1096,8 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: isDone
-                    ? [Colors.green, LuxTokens.gold]
-                    : [LuxTokens.gold, LuxTokens.goldDim],
+                    ? [Colors.green, const Color(0xFF102A43)]
+                    : [const Color(0xFF102A43), const Color(0xFF244E77)],
               ),
               borderRadius: BorderRadius.circular(12),
             ),
@@ -1132,7 +1149,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
                         value: progress,
                         backgroundColor: LuxTokens.surface,
                         valueColor: AlwaysStoppedAnimation(
-                          isDone ? Colors.green : LuxTokens.gold,
+                          isDone ? Colors.green : const Color(0xFF102A43),
                         ),
                         minHeight: 4,
                       ),
@@ -1178,7 +1195,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
                     icon: Icon(LucideIcons.shoppingBag),
                     label: Text('Bozorchi yollash'.tr),
                     style: FilledButton.styleFrom(
-                      backgroundColor: LuxTokens.goldDim,
+                      backgroundColor: const Color(0xFF102A43),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -1301,7 +1318,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
                     _formatPrice(item.estimatedPrice),
                     style: TextStyle(
                       color: item.estimatedPrice > 0
-                          ? LuxTokens.gold
+                          ? const Color(0xFF102A43)
                           : GlassTokens.secondaryText(context),
                       fontWeight: FontWeight.w600,
                       fontSize: 13,

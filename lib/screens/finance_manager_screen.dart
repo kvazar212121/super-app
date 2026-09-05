@@ -40,14 +40,14 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
   List<String> _customIncomeCategories = [];
 
   final List<Color> _chartColors = [
-    LuxTokens.goldSoft,
-    LuxTokens.goldSoft,
-    Colors.orangeAccent,
-    LuxTokens.goldSoft,
-    LuxTokens.goldSoft,
-    Colors.amberAccent,
-    Colors.redAccent,
-    LuxTokens.goldSoft,
+    const Color(0xFF102A43),
+    const Color(0xFF244E77),
+    const Color(0xFF334E68),
+    const Color(0xFF486581),
+    const Color(0xFF627D98),
+    const Color(0xFF829AB1),
+    const Color(0xFF9FB3C8),
+    const Color(0xFFBCCCDC),
   ];
 
   @override
@@ -250,7 +250,7 @@ class _FinanceManagerScreenState extends State<FinanceManagerScreen> {
               ],
             ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: LuxTokens.goldSoft,
+        backgroundColor: const Color(0xFF102A43),
         foregroundColor: Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         onPressed: _activeTab == 0

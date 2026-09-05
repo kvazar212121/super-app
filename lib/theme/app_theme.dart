@@ -163,14 +163,14 @@ class AppTheme {
         dayPeriodColor: Color(0xFFF1F5F9),
         dayPeriodTextColor: Color(0xFF0F172A),
         dialBackgroundColor: Color(0xFFF8FAFC),
-        dialHandColor: Color(0xFFC99427),
+        dialHandColor: Color(0xFF102A43),
         dialTextColor: Color(0xFF0F172A),
-        entryModeIconColor: Color(0xFF8A5D0B),
+        entryModeIconColor: Color(0xFF102A43),
       ),
       datePickerTheme: const DatePickerThemeData(
         backgroundColor: Colors.white,
-        headerBackgroundColor: Color(0xFFC99427),
-        headerForegroundColor: Color(0xFF140D02),
+        headerBackgroundColor: Color(0xFF102A43),
+        headerForegroundColor: Colors.white,
         surfaceTintColor: Colors.transparent,
       ),
       popupMenuTheme: PopupMenuThemeData(
@@ -192,7 +192,7 @@ class AppTheme {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(24),
           side: BorderSide(
-            color: isDark ? LuxTokens.gold.withValues(alpha: 0.5) : LuxTokens.gold.withValues(alpha: 0.7),
+            color: const Color(0xFF102A43).withValues(alpha: 0.2),
             width: 1.3,
           ),
         ),
@@ -210,8 +210,8 @@ class AppTheme {
         ),
       ),
       floatingActionButtonTheme: FloatingActionButtonThemeData(
-        backgroundColor: LuxTokens.gold,
-        foregroundColor: const Color(0xFF14100A),
+        backgroundColor: const Color(0xFF102A43),
+        foregroundColor: Colors.white,
         elevation: 0,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(GlassTokens.radiusLg),

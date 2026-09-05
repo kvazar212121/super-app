@@ -175,8 +175,8 @@ class _AlarmEditScreenState extends State<AlarmEditScreen> {
                     return Theme(
                       data: Theme.of(context).copyWith(
                         colorScheme: const ColorScheme.light(
-                          primary: Color(0xFFC99427),
-                          onPrimary: Color(0xFF140D02),
+                          primary: Color(0xFF102A43),
+                          onPrimary: Colors.white,
                           surface: Colors.white,
                           onSurface: Color(0xFF0F172A),
                         ),
@@ -187,9 +187,9 @@ class _AlarmEditScreenState extends State<AlarmEditScreen> {
                           dayPeriodColor: Color(0xFFF1F5F9),
                           dayPeriodTextColor: Color(0xFF0F172A),
                           dialBackgroundColor: Color(0xFFF8FAFC),
-                          dialHandColor: Color(0xFFC99427),
+                          dialHandColor: Color(0xFF102A43),
                           dialTextColor: Color(0xFF0F172A),
-                          entryModeIconColor: Color(0xFF8A5D0B),
+                          entryModeIconColor: Color(0xFF102A43),
                         ),
                       ),
                       child: child!,
@@ -236,7 +236,7 @@ class _AlarmEditScreenState extends State<AlarmEditScreen> {
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(14),
-                borderSide: const BorderSide(color: LuxTokens.gold, width: 1.8),
+                borderSide: const BorderSide(color: Color(0xFF102A43), width: 1.8),
               ),
             ),
           ),
@@ -273,11 +273,11 @@ class _AlarmEditScreenState extends State<AlarmEditScreen> {
                   height: 42,
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
-                    gradient: selected ? LuxTokens.goldGradient : null,
+                    gradient: selected ? const LinearGradient(colors: [Color(0xFF102A43), Color(0xFF244E77)]) : null,
                     color: selected ? null : const Color(0xFFF1F5F9),
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
-                      color: selected ? LuxTokens.gold : const Color(0xFFCBD5E1),
+                      color: selected ? const Color(0xFF102A43) : const Color(0xFFCBD5E1),
                       width: selected ? 1.5 : 1.0,
                     ),
                     boxShadow: selected
@@ -293,7 +293,7 @@ class _AlarmEditScreenState extends State<AlarmEditScreen> {
                   child: Text(
                     _weekdayLabels[i].tr,
                     style: TextStyle(
-                      color: selected ? const Color(0xFF140D02) : textSecondary,
+                      color: selected ? Colors.white : textSecondary,
                       fontWeight: selected ? FontWeight.w900 : FontWeight.w700,
                       fontSize: 14,
                     ),
@@ -362,8 +362,8 @@ class _AlarmEditScreenState extends State<AlarmEditScreen> {
                   ),
                   value: _snoozeEnabled,
                   contentPadding: EdgeInsets.zero,
-                  activeColor: const Color(0xFF140D02),
-                  activeTrackColor: LuxTokens.gold,
+                  activeColor: Colors.white,
+                  activeTrackColor: const Color(0xFF102A43),
                   onChanged: (v) => setState(() => _snoozeEnabled = v),
                 ),
                 if (_snoozeEnabled) ...[
@@ -414,7 +414,7 @@ class _AlarmEditScreenState extends State<AlarmEditScreen> {
             width: double.infinity,
             height: 54,
             decoration: BoxDecoration(
-              gradient: LuxTokens.goldGradient,
+              gradient: const LinearGradient(colors: [Color(0xFF102A43), Color(0xFF244E77)]),
               borderRadius: BorderRadius.circular(16),
               boxShadow: const [
                 BoxShadow(
@@ -439,7 +439,7 @@ class _AlarmEditScreenState extends State<AlarmEditScreen> {
                       width: 24,
                       child: CircularProgressIndicator(
                         strokeWidth: 2.5,
-                        color: Color(0xFF140D02),
+                        color: Colors.white,
                       ),
                     )
                   : Text(
@@ -447,7 +447,7 @@ class _AlarmEditScreenState extends State<AlarmEditScreen> {
                       style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w900,
-                        color: Color(0xFF140D02),
+                        color: Colors.white,
                       ),
                     ),
             ),
@@ -468,11 +468,11 @@ class _AlarmEditScreenState extends State<AlarmEditScreen> {
         padding: const EdgeInsets.symmetric(vertical: 12),
         alignment: Alignment.center,
         decoration: BoxDecoration(
-          gradient: selected ? LuxTokens.goldGradient : null,
+          gradient: selected ? const LinearGradient(colors: [Color(0xFF102A43), Color(0xFF244E77)]) : null,
           color: selected ? null : const Color(0xFFF1F5F9),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: selected ? LuxTokens.gold : const Color(0xFFCBD5E1),
+            color: selected ? const Color(0xFF102A43) : const Color(0xFFCBD5E1),
             width: selected ? 1.5 : 1.0,
           ),
           boxShadow: selected
@@ -491,13 +491,13 @@ class _AlarmEditScreenState extends State<AlarmEditScreen> {
             Icon(
               icon,
               size: 18,
-              color: selected ? const Color(0xFF140D02) : textSecondary,
+              color: selected ? Colors.white : textSecondary,
             ),
             const SizedBox(width: 6),
             Text(
               label,
               style: TextStyle(
-                color: selected ? const Color(0xFF140D02) : textSecondary,
+                color: selected ? Colors.white : textSecondary,
                 fontWeight: selected ? FontWeight.w900 : FontWeight.w700,
                 fontSize: 13,
               ),
@@ -546,18 +546,18 @@ class _AlarmEditScreenState extends State<AlarmEditScreen> {
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                       decoration: BoxDecoration(
-                        gradient: selected ? LuxTokens.goldGradient : null,
+                        gradient: selected ? const LinearGradient(colors: [Color(0xFF102A43), Color(0xFF244E77)]) : null,
                         color: selected ? null : Colors.white,
                         borderRadius: BorderRadius.circular(10),
                         border: Border.all(
-                          color: selected ? LuxTokens.gold : const Color(0xFFCBD5E1),
+                          color: selected ? const Color(0xFF102A43) : const Color(0xFFCBD5E1),
                           width: selected ? 1.5 : 1.0,
                         ),
                       ),
                       child: Text(
                         uz.tr,
                         style: TextStyle(
-                          color: selected ? const Color(0xFF140D02) : textPrimary,
+                          color: selected ? Colors.white : textPrimary,
                           fontWeight: selected ? FontWeight.w900 : FontWeight.w600,
                           fontSize: 12,
                         ),
@@ -600,7 +600,7 @@ class _AlarmEditScreenState extends State<AlarmEditScreen> {
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(color: LuxTokens.gold, width: 1.8),
+                    borderSide: const BorderSide(color: Color(0xFF102A43), width: 1.8),
                   ),
                 ),
                 maxLines: 2,

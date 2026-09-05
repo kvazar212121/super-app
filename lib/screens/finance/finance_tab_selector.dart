@@ -38,7 +38,7 @@ class FinanceTabSelector extends StatelessWidget {
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
                         color: activeTab == 0
-                            ? LuxTokens.goldSoft
+                            ? const Color(0xFF102A43)
                             : Colors.transparent,
                         borderRadius: BorderRadius.circular(14),
                       ),
@@ -62,7 +62,7 @@ class FinanceTabSelector extends StatelessWidget {
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
                         color: activeTab == 1
-                            ? LuxTokens.goldSoft
+                            ? const Color(0xFF102A43)
                             : Colors.transparent,
                         borderRadius: BorderRadius.circular(14),
                       ),
