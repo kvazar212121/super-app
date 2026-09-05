@@ -61,22 +61,18 @@ abstract final class GlassTokens {
   }
 
   static Color primaryText(BuildContext context) {
-    // Ilova oq/oltin dizaynda — sarlavha va asosiy matnlar HAR DOIM tim qora.
-    return const Color(0xFF000000);
+    return const Color(0xFF17202A);
   }
 
   static Color secondaryText(BuildContext context) {
-    // Ikkilamchi matn — qora-ga yaqin to'q rang (xira kulrang emas).
-    return const Color(0xFF2A2A2A);
+    return const Color(0xFF6B7280);
   }
 
   static List<BoxShadow> glassShadow(BuildContext context) => [
     BoxShadow(
-      color: Colors.black.withValues(
-        alpha: Theme.of(context).brightness == Brightness.dark ? 0.45 : 0.30,
-      ),
-      blurRadius: 20,
-      offset: const Offset(0, 8),
+      color: const Color(0xFF102A43).withValues(alpha: 0.05),
+      blurRadius: 12,
+      offset: const Offset(0, 4),
     ),
   ];
 }

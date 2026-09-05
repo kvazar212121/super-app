@@ -31,13 +31,8 @@ class HomeScreen extends StatelessWidget {
     // Oraliqlar bir maromda: bo'limlar orasi 24, ichkarisi 10-12.
     // Yon chekka 18 (oldin 20) — kartalar biroz kengroq nafas oladi.
     // Yagona yuqa ko'k-zangori orqa fon — sahifa bir xil ko'rinadi.
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    // Dark rejimda fon LuxTokens.bg — MeshBackground bilan bir xil, shuning
-    // uchun ekranlar orasida rang "sakramaydi".
-    final bgColor = isDark ? LuxTokens.bg : const Color(0xFFEFF4FA);
-
-    return ColoredBox(
-      color: bgColor,
+    return const ColoredBox(
+      color: LuxTokens.bg,
       child: SafeArea(
         bottom: false,
         child: SingleChildScrollView(

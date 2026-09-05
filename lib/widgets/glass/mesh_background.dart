@@ -9,9 +9,8 @@ class MeshBackground extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Yuqa zangori-ko'k fon — barcha ekranlarda bir xil nafis fon
-    return ColoredBox(
-      color: isDark ? LuxTokens.bg : const Color(0xFFEFF4FA),
+    return const ColoredBox(
+      color: LuxTokens.bg,
     );
   }
 }

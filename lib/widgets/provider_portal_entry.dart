@@ -320,7 +320,17 @@ class _ProviderPortalEntryState extends State<ProviderPortalEntry> {
           SizedBox(
             width: double.infinity,
             child: Container(
-              decoration: LuxTokens.goldBoxDecoration(radius: GlassTokens.radiusMd),
+              decoration: BoxDecoration(
+                color: const Color(0xFF102A43),
+                borderRadius: BorderRadius.circular(GlassTokens.radiusMd),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFF102A43).withValues(alpha: 0.25),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
               child: Material(
                 color: Colors.transparent,
                 child: InkWell(
@@ -331,7 +341,11 @@ class _ProviderPortalEntryState extends State<ProviderPortalEntry> {
                     child: Center(
                       child: Text(
                         buttonLabel,
-                        style: LuxTokens.goldEngravedTextStyle.copyWith(fontSize: 15),
+                        style: const TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w800,
+                          color: Colors.white,
+                        ),
                       ),
                     ),
                   ),

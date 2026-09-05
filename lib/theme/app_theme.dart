@@ -22,7 +22,7 @@ class AppTheme {
     // Foydalanuvchi so'rovi — banner bilan bir xil stil barcha ekranlarda.
     // Serif shrift ingichka ko'ringani uchun asosiy matnni sal qalinroq
     // (w600) qilamiz — o'qilishi yaxshiroq bo'ladi.
-    final ink = isDark ? LuxTokens.text : const Color(0xFF000000);
+    final ink = LuxTokens.text;
     TextStyle? styleDisplay(TextStyle? s) => s?.copyWith(
           fontFamily: LuxTokens.display,
           fontWeight: FontWeight.w700,
@@ -55,16 +55,16 @@ class AppTheme {
     return ThemeData(
       useMaterial3: true,
       brightness: brightness,
-      scaffoldBackgroundColor: isDark ? LuxTokens.bg : const Color(0xFFEFF4FA),
+      scaffoldBackgroundColor: LuxTokens.bg,
       colorScheme:
           ColorScheme.fromSeed(
-            seedColor: LuxTokens.gold,
-            secondary: isDark ? LuxTokens.goldSoft : const Color(0xFF141416),
+            seedColor: LuxTokens.navy,
+            secondary: LuxTokens.gold,
             brightness: brightness,
-            surface: isDark ? LuxTokens.surface : Colors.white,
+            surface: LuxTokens.surface,
           ).copyWith(
-            primary: LuxTokens.gold,
-            onPrimary: isDark ? const Color(0xFF14100A) : Colors.black,
+            primary: LuxTokens.navy,
+            onPrimary: Colors.white,
           ),
       textTheme: textTheme.copyWith(
         titleLarge: textTheme.titleLarge?.copyWith(

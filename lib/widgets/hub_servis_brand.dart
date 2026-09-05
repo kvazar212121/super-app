@@ -131,35 +131,17 @@ class _HubServisBrandState extends State<HubServisBrand>
         ),
         SizedBox(height: widget.compact ? 14 : 22),
 
-        // 2. "HubServis" SARLAVHASI (OCHIQ FONDA JUDA TINIQ VA HASHAMATLI OLTIN SHIMMER)
-        AnimatedBuilder(
-          animation: _shimmerController,
-          builder: (context, child) {
-            final t = _shimmerController.value;
-            return ShaderMask(
-              shaderCallback: (bounds) => LinearGradient(
-                begin: Alignment(-1.5 + (t * 3.0), 0.0),
-                end: Alignment(-0.5 + (t * 3.0), 0.0),
-                colors: const [
-                  Color(0xFF6B4505),
-                  Color(0xFFD4AF37),
-                  Color(0xFF6B4505),
-                ],
-                stops: const [0.0, 0.5, 1.0],
-              ).createShader(bounds),
-              child: Text(
-                'HubServis',
-                style: TextStyle(
-                  fontFamily: LuxTokens.display,
-                  fontSize: widget.titleSize,
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: -0.8,
-                  color: Colors.white,
-                  height: 1.05,
-                ),
-              ),
-            );
-          },
+        // 2. "HubServis" SARLAVHASI (PROFFESIONAL TO'Q NAVY)
+        Text(
+          'HubServis',
+          style: TextStyle(
+            fontFamily: LuxTokens.display,
+            fontSize: widget.titleSize,
+            fontWeight: FontWeight.w900,
+            letterSpacing: -0.8,
+            color: const Color(0xFF102A43),
+            height: 1.05,
+          ),
         ),
         if (widget.showTagline) ...[
           SizedBox(height: widget.compact ? 4 : 8),
@@ -168,8 +150,8 @@ class _HubServisBrandState extends State<HubServisBrand>
             style: TextStyle(
               fontFamily: LuxTokens.display,
               fontSize: widget.compact ? 14 : 15,
-              fontWeight: FontWeight.w700,
-              color: const Color(0xFF1E293B),
+              fontWeight: FontWeight.w600,
+              color: const Color(0xFF6B7280),
               letterSpacing: 0.2,
             ),
           ),

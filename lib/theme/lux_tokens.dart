@@ -1,68 +1,83 @@
 import 'package:flutter/material.dart';
 
-/// Premium "qora + oltin" dizayn tokenlari.
+/// Premium, sokin va professional "Deep Navy + Soft Gold Accent" dizayn tokenlari.
 ///
-/// NEGA alohida fayl: eski `GlassTokens` butun ilovada ishlatiladi va uni
-/// o'zgartirish 80+ ekranga ta'sir qiladi. Yangi ko'rinish avval bosh
-/// ekranda sinaladi, keyin qolgan ekranlarga bosqichma-bosqich ko'chiriladi.
+/// Ranglar palitrasi (Foydalanuvchi tanlagan arxitektura):
+/// - Fon: #F5F7FA (Juda och kulrang-ko'kimtir)
+/// - Kartalar: #FFFFFF (Yumshoq oq, #E5E7EB chegara bilan)
+/// - Asosiy brend rang (Logo & Sarlavhalar): #102A43 (To'q navy)
+/// - Urg'u (Accent): #E5B93D (Yumshoq oltin — faqat aktiv holat/narx/badj uchun)
+/// - Muvaffaqiyat (Success): #4F8A6D (Sokin yashil)
+/// - Xatolik (Error): #D96C6C (Yumshoq qizil)
+/// - Asosiy matn: #17202A (Juda to'q)
+/// - Ikkinchi matn: #6B7280 (Kulrang)
 abstract final class LuxTokens {
-  /// Sahifa foni — nozik, nafis yuqa ko'k-zangori fon.
-  static const bg = Color(0xFFEFF4FA);
+  /// Sahifa foni — sokin, nafis juda och kulrang-ko'kimtir fon (#F5F7FA).
+  static const bg = Color(0xFFF5F7FA);
 
-  /// Karta foni — oq rang, chegara va nozik soya bilan.
+  /// Karta foni — sof yumshoq oq rang.
   static const surface = Color(0xFFFFFFFF);
-  static const surfaceHigh = Color(0xFFF1F5F9);
+  static const surfaceHigh = Color(0xFFF8FAFC);
 
-  /// Nozik oltin chegara — barcha kartalar va panellar qirg'og'i uchun.
-  static const border = Color(0xFFD4AF37);
+  /// Asosiy brend rangi — to'q navy (#102A43).
+  static const navy = Color(0xFF102A43);
+  static const primaryNavy = Color(0xFF102A43);
 
-  /// Asosiy urg'u — issiq to'yingan oltin rang.
-  static const gold = Color(0xFFC9A227);
-  static const goldSoft = Color(0xFFD4AF37);
-  static const goldDim = Color(0xFF8C6D13);
+  /// Nozik toza chegara — barcha kartalar uchun (#E5E7EB).
+  /// Sariq chegaralar o'rniga zamonaviy och kulrang chegara.
+  static const border = Color(0xFFE5E7EB);
 
-  /// Matn ierarxiyasi: to'q qora va kulrang matnlar.
-  static const text = Color(0xFF000000);
-  static const textMuted = Color(0xFF2A2A2A);
-  static const textFaint = Color(0xFF64748B);
+  /// Asosiy urg'u (Accent) — yumshoq oltin rang (#E5B93D).
+  /// Faqat aktiv tugma, narx, chegirma badge va aktiv tab ikonkalari uchun.
+  static const gold = Color(0xFFE5B93D);
+  static const goldSoft = Color(0xFFF5D77F);
+  static const goldDim = Color(0xFFB88C22);
+
+  /// Muvaffaqiyat va Xatolik ranglari.
+  static const success = Color(0xFF4F8A6D);
+  static const error = Color(0xFFD96C6C);
+
+  /// Matn ierarxiyasi: juda to'q va kulrang matnlar.
+  static const text = Color(0xFF17202A);
+  static const textMuted = Color(0xFF334155);
+  static const textFaint = Color(0xFF6B7280);
 
   static const radiusSm = 12.0;
   static const radiusMd = 18.0;
   static const radiusLg = 24.0;
 
   // ── SHRIFT (BITTA MARKAZIY JOY) ────────────────────────────────
-  // BUTUN ILOVA SHRIFTI shu yerda belgilanadi. Faqat shu bitta qatorni
-  // o'zgartirsangiz — bosh sahifa, sarlavhalar, banner, chat, menyu,
-  // yorliqlar, provayder nomlari... HAMMA joy yangi shriftga o'tadi.
-  //
-  // Yangi shrift qo'shish: assets/fonts/ ga .ttf tashlang, pubspec.yaml
-  // 'fonts:' ro'yxatiga family qo'shing, keyin shu qatordagi nomni yozing.
   static const fontFamily = 'PlusJakartaSans';
   static const displayFontFamily = 'PlusJakartaSans';
 
-  //  • [body]    — oddiy matn, tugma, ro'yxat va izoh.
-  //  • [display] — sarlavhalar, banner nomi, AppBar sarlavhalari (PlusJakartaSans).
-  //  • [accent]  — KATTA HARFLI mayda yorliqlar.
   static const body = fontFamily;
   static const display = fontFamily;
   static const accent = fontFamily;
 
-  /// Oltin Foil Metall Gradient — 1 palasali yaltiroq metall yorug'lik chizig'i (Single-band Specular Gleam).
+  /// Yumshoq Oltin Gradient — faqat muhim accent tugma va nishonlar uchun.
   static const goldGradient = LinearGradient(
     colors: [
-      Color(0xFFE0B454), // Yuqori-chap: Oltin zamin
-      Color(0xFFFFF9DB), // BIR DONA O'RTA CHIZIQ: 1 PALASA YALTIRAQ NUR! (Single specular streak)
-      Color(0xFFC99427), // Oltin tanasi
-      Color(0xFF8A5D0B), // Pastki-o'ng: Metall soya
+      Color(0xFFF0CB5B),
+      Color(0xFFE5B93D),
+      Color(0xFFC79820),
     ],
-    stops: [0.0, 0.40, 0.65, 1.0],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
 
   static const goldBarGradient = goldGradient;
 
-  /// Metallic Gold 3D Box Decoration (Tugma, karta, badge va chip uchun)
+  /// Deep Navy Brand Gradient (Brend sarlavhalari va navigatsiya uchun)
+  static const navyGradient = LinearGradient(
+    colors: [
+      Color(0xFF102A43),
+      Color(0xFF243B53),
+    ],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
+
+  /// Accent Gold Box Decoration (Faqat asosiylashgan tugmalar va badge uchun)
   static BoxDecoration goldBoxDecoration({
     double radius = radiusMd,
     BorderRadiusGeometry? customRadius,
@@ -74,44 +89,22 @@ abstract final class LuxTokens {
         borderRadius: isCircle
             ? null
             : (customRadius ?? BorderRadius.circular(radius)),
-        border: Border.all(
-          color: const Color(0xFFFFF7C2),
-          width: 1.2,
-        ),
         boxShadow: [
-          const BoxShadow(
-            color: Color(0xFFFFF7C2),
-            blurRadius: 2,
-            spreadRadius: -1,
-            offset: Offset(-1, -1),
-          ),
           BoxShadow(
-            color: const Color(0xFFC99427).withValues(alpha: 0.40),
-            blurRadius: 8,
-            offset: const Offset(0, 3),
+            color: const Color(0xFFE5B93D).withValues(alpha: 0.25),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
           ),
         ],
       );
 
-  /// Metallic Gold 3D Engraved Stamp Text Style (To'q qora va o'yilgan harflar)
+  /// Metallic Gold 3D Engraved Stamp Text Style
   static const goldEngravedTextStyle = TextStyle(
-    color: Color(0xFF140D02),
-    fontWeight: FontWeight.w700,
-    shadows: [
-      Shadow(
-        color: Color(0xFFFFF7C2),
-        blurRadius: 1,
-        offset: Offset(0, 1.0),
-      ),
-      Shadow(
-        color: Color(0x80000000),
-        blurRadius: 1,
-        offset: Offset(0, -0.8),
-      ),
-    ],
+    color: Color(0xFF102A43),
+    fontWeight: FontWeight.w800,
   );
 
-  /// Karta uchun standart bezak (fon + chegara + radius).
+  /// Karta uchun standart bezak (Sof Oq fon + #E5E7EB chegara + nozik yumshoq soya).
   static BoxDecoration card({
     double radius = radiusMd,
     Color? color,
@@ -120,41 +113,48 @@ abstract final class LuxTokens {
     color: color ?? surface,
     borderRadius: BorderRadius.circular(radius),
     border: Border.all(color: borderColor ?? border, width: 1),
+    boxShadow: [
+      BoxShadow(
+        color: const Color(0xFF102A43).withValues(alpha: 0.04),
+        blurRadius: 12,
+        offset: const Offset(0, 4),
+      ),
+    ],
   );
 
-  /// Kichik "chip" (yorliq) bezagi — oltin ramkali shaffof fon.
+  /// Kichik "chip" (yorliq) bezagi — nozik ramka bilan.
   static BoxDecoration chip({bool accent = false}) => BoxDecoration(
-    color: accent ? gold.withValues(alpha: 0.12) : const Color(0xFF1F1F22),
+    color: accent ? gold.withValues(alpha: 0.12) : surface,
     borderRadius: BorderRadius.circular(999),
     border: Border.all(
-      color: accent ? gold.withValues(alpha: 0.45) : border,
+      color: accent ? gold : border,
       width: 1,
     ),
   );
 
-  /// Bo'lim sarlavhasi uslubi — Syne, keng harf oralig'i oltin rangda.
+  /// Bo'lim sarlavhasi uslubi — To'q Navy (#102A43) rangda.
   static const sectionTitle = TextStyle(
     fontFamily: accent,
-    color: gold,
-    fontSize: 12,
-    fontWeight: FontWeight.w600,
-    letterSpacing: 3.2,
+    color: navy,
+    fontSize: 13,
+    fontWeight: FontWeight.w800,
+    letterSpacing: 2.0,
   );
 
   static const sectionTitleMuted = TextStyle(
     fontFamily: accent,
     color: textFaint,
     fontSize: 12,
-    fontWeight: FontWeight.w400,
-    letterSpacing: 2.4,
+    fontWeight: FontWeight.w500,
+    letterSpacing: 1.8,
   );
 
   /// Mayda KATTA HARFLI yorliq (chip, izoh, "MAXSUS TAKLIF").
   static TextStyle label({
     Color color = textFaint,
-    double size = 9,
-    FontWeight weight = FontWeight.w500,
-    double spacing = 1.6,
+    double size = 10,
+    FontWeight weight = FontWeight.w600,
+    double spacing = 1.2,
   }) => TextStyle(
     fontFamily: accent,
     color: color,
@@ -163,34 +163,29 @@ abstract final class LuxTokens {
     letterSpacing: spacing,
   );
 
-  /// Nafis yirik sarlavha (banner nomi). Serif — faqat 18px+ da.
+  /// Nafis yirik sarlavha.
   static TextStyle heading({
     Color color = text,
     double size = 26,
-    FontWeight weight = FontWeight.w600,
+    FontWeight weight = FontWeight.w800,
   }) => TextStyle(
     fontFamily: display,
     color: color,
     fontSize: size,
     fontWeight: weight,
     height: 1.1,
-    letterSpacing: 0.2,
+    letterSpacing: -0.3,
   );
 
   /// Son/qiymat uslubi (karta ichidagi asosiy raqam).
-  ///
-  /// NEGA serif EMAS: Cormorant Garamond raqamlari "old-style" (matnli) —
-  /// 3, 4, 7 asosiy chiziqdan pastga tushadi va son notekis ko'rinadi.
-  /// Statistika uchun bu yaroqsiz, shuning uchun Syne ishlatiladi:
-  /// zamonaviy, barcha raqamlari bir balandlikda (tabular ko'rinish).
   static TextStyle value({
-    Color color = goldSoft,
+    Color color = navy,
     double size = 21,
   }) => TextStyle(
     fontFamily: accent,
     color: color,
     fontSize: size,
-    fontWeight: FontWeight.w600,
+    fontWeight: FontWeight.w700,
     height: 1.05,
     letterSpacing: -0.2,
   );

@@ -33,7 +33,7 @@ class GoldTabBar extends StatelessWidget implements PreferredSizeWidget {
           ),
           child: TabBar(
             controller: tabController,
-            indicatorColor: const Color(0xFFC9A227),
+            indicatorColor: const Color(0xFFE5B93D),
             indicatorWeight: 3,
             labelPadding: EdgeInsets.zero,
             dividerColor: Colors.transparent,
@@ -41,49 +41,33 @@ class GoldTabBar extends StatelessWidget implements PreferredSizeWidget {
               final isSelected = index == currentIndex;
               final iconData = hasIcons ? icons![index] : null;
 
-              final Widget content = Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  if (iconData != null) ...[
-                    Icon(
-                      iconData,
-                      size: isSelected ? 20 : 18,
-                      color: isSelected ? const Color(0xFFE0B454) : const Color(0xFF64748B),
-                    ),
-                    const SizedBox(height: 3),
-                  ],
-                  Text(
-                    tabs[index],
-                    maxLines: 1,
-                    style: TextStyle(
-                      fontSize: isSelected ? 13.5 : 12.5,
-                      fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
-                      color: isSelected ? Colors.white : const Color(0xFF475569),
-                      letterSpacing: -0.2,
-                    ),
-                  ),
-                ],
-              );
-
               return Tab(
                 child: FittedBox(
                   fit: BoxFit.scaleDown,
-                  child: isSelected
-                      ? ShaderMask(
-                          shaderCallback: (bounds) => const LinearGradient(
-                            colors: [
-                              Color(0xFFFFEEA0),
-                              Color(0xFFE0B454),
-                              Color(0xFFC99427),
-                              Color(0xFF8A5D0B),
-                            ],
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                          ).createShader(bounds),
-                          child: content,
-                        )
-                      : content,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (iconData != null) ...[
+                        Icon(
+                          iconData,
+                          size: isSelected ? 20 : 18,
+                          color: isSelected ? const Color(0xFF102A43) : const Color(0xFF6B7280),
+                        ),
+                        const SizedBox(height: 3),
+                      ],
+                      Text(
+                        tabs[index],
+                        maxLines: 1,
+                        style: TextStyle(
+                          fontSize: isSelected ? 13.5 : 12.5,
+                          fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
+                          color: isSelected ? const Color(0xFF102A43) : const Color(0xFF6B7280),
+                          letterSpacing: -0.2,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               );
             }),
