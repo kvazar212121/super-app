@@ -94,17 +94,11 @@ class _AuthGateScreenState extends State<AuthGateScreen> {
         Scaffold(
           backgroundColor: Colors.transparent,
           appBar: AppBar(
-            systemOverlayStyle: isDark
-                ? SystemUiOverlayStyle.light.copyWith(
-                    statusBarColor: Colors.transparent,
-                    statusBarIconBrightness: Brightness.light,
-                    statusBarBrightness: Brightness.dark,
-                  )
-                : SystemUiOverlayStyle.dark.copyWith(
-                    statusBarColor: Colors.transparent,
-                    statusBarIconBrightness: Brightness.dark,
-                    statusBarBrightness: Brightness.light,
-                  ),
+            systemOverlayStyle: const SystemUiOverlayStyle(
+              statusBarColor: Colors.transparent,
+              statusBarIconBrightness: Brightness.dark,
+              statusBarBrightness: Brightness.light,
+            ),
             backgroundColor: Colors.transparent,
             elevation: 0,
             leading: IconButton(

@@ -47,93 +47,96 @@ class GlassScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final overlayStyle = forceDark
+        ? SystemUiOverlayStyle.light.copyWith(
+            statusBarColor: Colors.transparent,
+            statusBarIconBrightness: Brightness.light,
+            statusBarBrightness: Brightness.dark,
+          )
+        : SystemUiOverlayStyle.dark.copyWith(
+            statusBarColor: Colors.transparent,
+            statusBarIconBrightness: Brightness.dark,
+            statusBarBrightness: Brightness.light,
+          );
+
     if (embeddedInShell) {
-      return Scaffold(
-        resizeToAvoidBottomInset: resizeToAvoidBottomInset,
-        backgroundColor: Colors.transparent,
-        floatingActionButton: floatingActionButton,
-        floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-        body: SafeArea(
-          bottom: safeAreaBottom,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              if (title != null)
-                _ShellHeader(
-                  title: title!,
-                  showBackButton: showBackButton,
-                  actions: actions,
-                ),
-              if (bottom != null) bottom!,
-              Expanded(child: body),
-            ],
+      return AnnotatedRegion<SystemUiOverlayStyle>(
+        value: overlayStyle,
+        child: Scaffold(
+          resizeToAvoidBottomInset: resizeToAvoidBottomInset,
+          backgroundColor: Colors.transparent,
+          floatingActionButton: floatingActionButton,
+          floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+          body: SafeArea(
+            bottom: safeAreaBottom,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                if (title != null)
+                  _ShellHeader(
+                    title: title!,
+                    showBackButton: showBackButton,
+                    actions: actions,
+                  ),
+                if (bottom != null) bottom!,
+                Expanded(child: body),
+              ],
+            ),
           ),
         ),
       );
     }
 
     // Fon rangi TEMADAN olinadi (AppProvider.isDarkMode dan emas).
-    //
-    // NEGA: ilova temasi `main.dart` da ThemeMode.dark bilan majburan
-    // qorong'i qilingan, lekin `isDarkMode` bayrog'i false qolgan edi.
-    // Natijada matn oq (temadan), fon esa OQ (bayroqdan) bo'lib, ekran
-    // o'qib bo'lmas holga kelardi. Tema yagona haqiqat manbai bo'lishi kerak.
     final isDark =
         forceDark || Theme.of(context).brightness == Brightness.dark;
 
-    final scaffold = Stack(
-      fit: StackFit.expand,
-      children: [
-        MeshBackground(isDark: isDark),
-        Scaffold(
-          resizeToAvoidBottomInset: resizeToAvoidBottomInset,
-          backgroundColor: Colors.transparent,
-          extendBodyBehindAppBar: title != null,
-          appBar: title == null
-              ? null
-              : AppBar(
-                  systemOverlayStyle: isDark
-                      ? SystemUiOverlayStyle.light.copyWith(
-                          statusBarColor: Colors.transparent,
-                          statusBarIconBrightness: Brightness.light,
-                          statusBarBrightness: Brightness.dark,
-                        )
-                      : SystemUiOverlayStyle.dark.copyWith(
-                          statusBarColor: Colors.transparent,
-                          statusBarIconBrightness: Brightness.dark,
-                          statusBarBrightness: Brightness.light,
-                        ),
-                  backgroundColor: Colors.transparent,
-                  elevation: 0,
-                  scrolledUnderElevation: 0,
-                  centerTitle: true,
-                  leading: showBackButton
-                      ? IconButton(
-                          icon: Icon(
-                            Icons.arrow_back_ios_new_rounded,
-                            color: GlassTokens.primaryText(context),
-                            size: 20,
-                          ),
-                          onPressed: () => Navigator.maybePop(context),
-                        )
-                      : null,
-                  title: Text(
-                    title!,
-                    style: TextStyle(
-                      fontFamily: LuxTokens.fontFamily,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
-                      color: GlassTokens.primaryText(context),
-                      letterSpacing: -0.2,
+    final scaffold = AnnotatedRegion<SystemUiOverlayStyle>(
+      value: overlayStyle,
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          MeshBackground(isDark: isDark),
+          Scaffold(
+            resizeToAvoidBottomInset: resizeToAvoidBottomInset,
+            backgroundColor: Colors.transparent,
+            extendBodyBehindAppBar: title != null,
+            appBar: title == null
+                ? null
+                : AppBar(
+                    systemOverlayStyle: overlayStyle,
+                    backgroundColor: Colors.transparent,
+                    elevation: 0,
+                    scrolledUnderElevation: 0,
+                    centerTitle: true,
+                    leading: showBackButton
+                        ? IconButton(
+                            icon: Icon(
+                              Icons.arrow_back_ios_new_rounded,
+                              color: GlassTokens.primaryText(context),
+                              size: 20,
+                            ),
+                            onPressed: () => Navigator.maybePop(context),
+                          )
+                        : null,
+                    title: Text(
+                      title!,
+                      style: TextStyle(
+                        fontFamily: LuxTokens.fontFamily,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                        color: GlassTokens.primaryText(context),
+                        letterSpacing: -0.2,
+                      ),
                     ),
+                    actions: actions,
+                    bottom: bottom,
                   ),
-                  actions: actions,
-                  bottom: bottom,
-                ),
-          body: SafeArea(bottom: safeAreaBottom, child: body),
-          floatingActionButton: floatingActionButton,
-        ),
-      ],
+            body: SafeArea(bottom: safeAreaBottom, child: body),
+            floatingActionButton: floatingActionButton,
+          ),
+        ],
+      ),
     );
 
     // forceDark — butun ekranni dark tema ichida (matn/ikonlar oq bo'ladi)
