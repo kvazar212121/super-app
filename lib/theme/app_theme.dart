@@ -83,6 +83,8 @@ class AppTheme {
         scrolledUnderElevation: 0,
         backgroundColor: Colors.transparent,
         foregroundColor: isDark ? Colors.white : const Color(0xFF0F172A),
+        iconTheme: IconThemeData(color: isDark ? Colors.white : const Color(0xFF102A43)),
+        actionsIconTheme: IconThemeData(color: isDark ? Colors.white : const Color(0xFF102A43)),
         systemOverlayStyle: const SystemUiOverlayStyle(
           statusBarColor: Colors.transparent,
           statusBarIconBrightness: Brightness.dark,
