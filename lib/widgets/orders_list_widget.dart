@@ -65,13 +65,13 @@ class OrdersListWidget extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: LuxTokens.gold.withValues(alpha: 0.14),
+                  color: const Color(0xFF102A43).withValues(alpha: 0.08),
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(
                   LucideIcons.inbox,
                   size: 40,
-                  color: Color(0xFF140D02),
+                  color: Color(0xFF102A43),
                 ),
               ),
               const SizedBox(height: 16),
@@ -79,7 +79,7 @@ class OrdersListWidget extends StatelessWidget {
                 'Buyurtmalar topilmadi'.tr,
                 textAlign: TextAlign.center,
                 style: const TextStyle(
-                  color: Color(0xFF140D02),
+                  color: Color(0xFF102A43),
                   fontSize: 16,
                   fontWeight: FontWeight.w800,
                 ),
@@ -132,8 +132,11 @@ class _OrderCard extends StatelessWidget {
                 Container(
                   width: 36,
                   height: 36,
-                  decoration: LuxTokens.goldBoxDecoration(radius: 10),
-                  child: Icon(icon, color: const Color(0xFF140D02), size: 17),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF102A43).withValues(alpha: 0.08),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Icon(icon, color: const Color(0xFF102A43), size: 17),
                 ),
                 const SizedBox(width: 10),
                 Expanded(
@@ -151,7 +154,7 @@ class _OrderCard extends StatelessWidget {
                       Text(
                         order.providerName,
                         style: const TextStyle(
-                          color: Color(0xFF8A5D0B),
+                          color: Color(0xFF64748B),
                           fontWeight: FontWeight.w700,
                           fontSize: 10.5,
                         ),
@@ -172,7 +175,7 @@ class _OrderCard extends StatelessWidget {
                   const Icon(
                     LucideIcons.mapPin,
                     size: 12,
-                    color: Color(0xFF140D02),
+                    color: Color(0xFF64748B),
                   ),
                   const SizedBox(width: 4),
                   Expanded(
@@ -181,7 +184,7 @@ class _OrderCard extends StatelessWidget {
                       style: const TextStyle(
                         fontSize: 10,
                         fontWeight: FontWeight.w600,
-                        color: Color(0xFF140D02),
+                        color: Color(0xFF475569),
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -199,7 +202,7 @@ class _OrderCard extends StatelessWidget {
                     const Icon(
                       LucideIcons.calendar,
                       size: 12,
-                      color: Color(0xFF140D02),
+                      color: Color(0xFF64748B),
                     ),
                     const SizedBox(width: 4),
                     Text(
@@ -207,7 +210,7 @@ class _OrderCard extends StatelessWidget {
                       style: const TextStyle(
                         fontSize: 10,
                         fontWeight: FontWeight.w600,
-                        color: Color(0xFF140D02),
+                        color: Color(0xFF475569),
                       ),
                     ),
                   ],
@@ -217,7 +220,7 @@ class _OrderCard extends StatelessWidget {
                   style: const TextStyle(
                     fontWeight: FontWeight.w900,
                     fontSize: 11.5,
-                    color: Color(0xFF140D02),
+                    color: Color(0xFF0F172A),
                   ),
                 ),
               ],
@@ -265,9 +268,9 @@ class _StatusBadge extends StatelessWidget {
       case OrderStatus.inProgress:
       case OrderStatus.arrived:
       case OrderStatus.onTheWay:
-        bg = const Color(0xFFFFFBEB); // Warm Gold Alabaster fon
-        border = const Color(0xFFFDE68A); // Oltin ramka
-        text = const Color(0xFF8A5D0B); // 24K Oltin to'q braun matn
+        bg = const Color(0xFFEFF6FF); // Light blue fon
+        border = const Color(0xFFBFDBFE); // Light blue ramka
+        text = const Color(0xFF1E40AF); // Deep blue matn
         icon = LucideIcons.sparkles;
         break;
 

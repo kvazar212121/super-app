@@ -28,14 +28,14 @@ class OrdersFilterWidget extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(999),
         border: Border.all(
-          color: LuxTokens.gold.withValues(alpha: 0.50),
+          color: const Color(0xFFE2E8F0),
           width: 1.5,
         ),
-        boxShadow: [
+        boxShadow: const [
           BoxShadow(
-            color: LuxTokens.gold.withValues(alpha: 0.10),
+            color: Color(0x0A000000),
             blurRadius: 12,
-            offset: const Offset(0, 4),
+            offset: Offset(0, 4),
           ),
         ],
       ),
@@ -53,7 +53,17 @@ class OrdersFilterWidget extends StatelessWidget {
                 curve: Curves.easeOutCubic,
                 padding: const EdgeInsets.symmetric(vertical: 7),
                 decoration: selected
-                    ? LuxTokens.goldBoxDecoration(customRadius: pillRadius)
+                    ? BoxDecoration(
+                        color: const Color(0xFF102A43),
+                        borderRadius: pillRadius,
+                        boxShadow: const [
+                          BoxShadow(
+                            color: Color(0x22102A43),
+                            blurRadius: 6,
+                            offset: Offset(0, 2),
+                          ),
+                        ],
+                      )
                     : BoxDecoration(
                         color: Colors.transparent,
                         borderRadius: pillRadius,
@@ -62,9 +72,10 @@ class OrdersFilterWidget extends StatelessWidget {
                   item['label']!,
                   textAlign: TextAlign.center,
                   style: selected
-                      ? LuxTokens.goldEngravedTextStyle.copyWith(
+                      ? const TextStyle(
+                          color: Colors.white,
                           fontSize: 10.5,
-                          fontWeight: FontWeight.w900,
+                          fontWeight: FontWeight.w800,
                         )
                       : const TextStyle(
                           fontWeight: FontWeight.w800,

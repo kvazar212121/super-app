@@ -81,7 +81,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                             Expanded(
                               child: RefreshIndicator(
                                 onRefresh: () => provider.fetchOrders(),
-                                color: const Color(0xFFC9A227),
+                                color: const Color(0xFF102A43),
                                 child: OrdersListWidget(filter: _filter),
                               ),
                             ),
