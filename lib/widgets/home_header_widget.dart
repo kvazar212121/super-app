@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:provider/provider.dart';
+import '../config/app_config.dart';
 import '../providers/app_provider.dart';
 import '../providers/auth_provider.dart';
 import '../screens/notifications_screen.dart';
@@ -17,9 +19,14 @@ class HomeHeaderWidget extends StatelessWidget {
     final authProvider = Provider.of<AuthProvider>(context);
     final unreadCount = appProvider.unreadCount;
 
-    final user = authProvider.user;
-    final String avatarUrl = (user?['avatar'] as String?) ?? (user?['image'] as String?) ?? '';
-    final String name = authProvider.displayName;
+    final profileUser = appProvider.user;
+    final String avatarUrl = (profileUser.avatarUrl != null && profileUser.avatarUrl!.isNotEmpty)
+        ? profileUser.avatarUrl!
+        : ((authProvider.user?['avatar_url'] as String?) ??
+            (authProvider.user?['avatar'] as String?) ??
+            (authProvider.user?['image'] as String?) ??
+            '');
+    final String name = profileUser.name.isNotEmpty ? profileUser.name : authProvider.displayName;
     final String initialLetter = name.isNotEmpty ? name[0].toUpperCase() : 'U';
 
     const textColor = Color(0xFF0F172A);
@@ -87,12 +94,15 @@ class HomeHeaderWidget extends StatelessWidget {
                       ),
                       child: ClipOval(
                         child: avatarUrl.isNotEmpty
-                            ? Image.network(
-                                avatarUrl,
+                            ? CachedNetworkImage(
+                                imageUrl: AppConfig.formatImageUrl(avatarUrl),
                                 width: 38,
                                 height: 38,
                                 fit: BoxFit.cover,
-                                errorBuilder: (_, __, ___) => _buildInitialFallback(initialLetter),
+                                memCacheWidth: 120,
+                                memCacheHeight: 120,
+                                fadeInDuration: const Duration(milliseconds: 120),
+                                errorWidget: (_, __, ___) => _buildInitialFallback(initialLetter),
                               )
                             : _buildInitialFallback(initialLetter),
                       ),
