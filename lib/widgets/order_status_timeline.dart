@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/service_order.dart';
 import '../l10n/locale_controller.dart';
+import '../theme/glass_tokens.dart';
 
 class OrderTimelineStep {
   final String label;
@@ -103,7 +104,6 @@ class OrderStatusTimeline extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final steps = buildOrderTimeline(status);
-    final theme = Theme.of(context);
 
     return Column(
       children: steps.asMap().entries.map((entry) {
@@ -119,7 +119,7 @@ class OrderStatusTimeline extends StatelessWidget {
         } else if (step.isDone) {
           dotColor = const Color(0xFF10B981);
         } else {
-          dotColor = theme.colorScheme.outlineVariant;
+          dotColor = const Color(0xFFCBD5E1);
         }
 
         return IntrinsicHeight(
@@ -155,7 +155,7 @@ class OrderStatusTimeline extends StatelessWidget {
                           margin: const EdgeInsets.symmetric(vertical: 4),
                           color: step.isDone
                               ? const Color(0xFF10B981)
-                              : theme.colorScheme.outlineVariant,
+                              : const Color(0xFFE2E8F0),
                         ),
                       ),
                   ],
@@ -169,10 +169,10 @@ class OrderStatusTimeline extends StatelessWidget {
                     style: TextStyle(
                       fontWeight: step.isActive
                           ? FontWeight.bold
-                          : FontWeight.w500,
+                          : (step.isDone ? FontWeight.w600 : FontWeight.w500),
                       color: step.isActive || step.isDone
-                          ? theme.colorScheme.onSurface
-                          : theme.colorScheme.onSurface,
+                          ? GlassTokens.primaryText(context)
+                          : GlassTokens.secondaryText(context),
                       fontSize: step.isActive ? 15 : 14,
                     ),
                   ),
@@ -185,3 +185,4 @@ class OrderStatusTimeline extends StatelessWidget {
     );
   }
 }
+
