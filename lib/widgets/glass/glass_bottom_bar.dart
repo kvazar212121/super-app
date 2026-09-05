@@ -52,19 +52,7 @@ class GlassBottomBar extends StatelessWidget {
                 borderRadius: BorderRadius.circular(20),
                 boxShadow: [
                   BoxShadow(
-                    color: const Color(0xFFC9A227).withValues(alpha: 0.35),
-                    blurRadius: 24,
-                    spreadRadius: 2,
-                    offset: const Offset(0, 4),
-                  ),
-                  BoxShadow(
-                    color: const Color(0xFFDAA520).withValues(alpha: 0.25),
-                    blurRadius: 36,
-                    spreadRadius: 4,
-                    offset: const Offset(0, 6),
-                  ),
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.12),
+                    color: Colors.black.withValues(alpha: 0.08),
                     blurRadius: 16,
                     spreadRadius: 0,
                     offset: const Offset(0, 4),
@@ -313,18 +301,10 @@ class _ConcaveTopBorderPainter extends CustomPainter {
     );
     path.close();
 
-    // Rich gold ambient aura glow along path
-    final glowPaint = Paint()
-      ..color = const Color(0xFFC9A227).withValues(alpha: 0.40)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 4.0
-      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 4.0);
-    canvas.drawPath(path, glowPaint);
-
     final linePaint = Paint()
-      ..color = const Color(0xFFC9A227)
+      ..color = const Color(0xFFE5E7EB)
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.8
+      ..strokeWidth = 1.0
       ..strokeCap = StrokeCap.round
       ..strokeJoin = StrokeJoin.round;
     canvas.drawPath(path, linePaint);
@@ -377,8 +357,8 @@ class _AiOrbState extends State<_AiOrb> with SingleTickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    const c1 = Color(0xFFC9A227);
-    const c2 = Color(0xFFE3C766);
+    const c1 = Color(0xFF3B82F6);
+    const c2 = Color(0xFF6366F1);
 
     return Material(
       color: Colors.transparent,
