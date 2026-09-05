@@ -1648,125 +1648,118 @@ class _ChatScreenState extends State<ChatScreen>
                     onPressed: isRecording ? null : _pickPhotoSource,
                     icon: const Icon(Icons.add_a_photo_outlined),
                     tooltip: 'Ish joyi rasmini yuborish'.tr,
-                    color: LuxTokens.gold,
+                    color: const Color(0xFF102A43),
                   ),
                   Expanded(
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: isRecording
-                        ? Colors.red.shade50
-                        : const Color(0xFFF1F5F9),
-                    borderRadius: BorderRadius.circular(24),
-                    border: Border.all(
-                      color: isRecording
-                          ? Colors.redAccent
-                          : LuxTokens.border,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: isRecording
+                            ? Colors.red.shade50
+                            : const Color(0xFFF1F5F9),
+                        borderRadius: BorderRadius.circular(24),
+                        border: Border.all(
+                          color: isRecording
+                              ? Colors.redAccent
+                              : const Color(0xFFCBD5E1),
+                        ),
+                      ),
+                      child: TextField(
+                        controller: _textController,
+                        style: TextStyle(
+                          color: isRecording
+                              ? Colors.redAccent
+                              : LuxTokens.text,
+                        ),
+                        maxLines: 3,
+                        minLines: 1,
+                        textInputAction: TextInputAction.send,
+                        onSubmitted: (_) {
+                          if (isRecording) return;
+                          if (_pendingPhoto != null) {
+                            _sendPendingPhoto();
+                          } else {
+                            _sendMessage();
+                          }
+                        },
+                        readOnly: isRecording,
+                        decoration: InputDecoration(
+                          hintText: isRecording
+                              ? 'Eshitilmoqda...'.tr
+                              : 'Xabar yozish...'.tr,
+                          hintStyle: TextStyle(
+                            color: isRecording
+                                ? Colors.redAccent.withValues(alpha: 0.7)
+                                : LuxTokens.textMuted,
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 12,
+                          ),
+                          border: InputBorder.none,
+                          enabledBorder: InputBorder.none,
+                          focusedBorder: InputBorder.none,
+                        ),
+                      ),
                     ),
                   ),
-                  child: TextField(
-                    controller: _textController,
-                    style: TextStyle(
-                      color: isRecording
-                          ? Colors.redAccent
-                          : LuxTokens.text,
-                    ),
-                    maxLines: 3,
-                    minLines: 1,
-                    textInputAction: TextInputAction.send,
-                    onSubmitted: (_) {
-                      if (isRecording) return;
-                      // Rasm kutayotgan bo'lsa yozilgan matn uning
-                      // izohi bo'ladi, alohida xabar emas.
-                      if (_pendingPhoto != null) {
-                        _sendPendingPhoto();
+                  const SizedBox(width: 12),
+                  GestureDetector(
+                    onTap: () {
+                      if (isRecording) {
+                        _stopRecordingAndSend();
+                      } else if (_pendingPhoto != null) {
+                        if (!_isTyping) _sendPendingPhoto();
+                      } else if (_hasText) {
+                        if (!_isTyping) _sendMessage();
                       } else {
-                        _sendMessage();
+                        _startRecording();
                       }
                     },
-                    readOnly: isRecording,
-                    decoration: InputDecoration(
-                      hintText: isRecording
-                          ? 'Eshitilmoqda...'.tr
-                          : 'Xabar yozish...'.tr,
-                      hintStyle: TextStyle(
-                        color: isRecording
-                            ? Colors.redAccent.withValues(alpha: 0.7)
-                            : LuxTokens.textMuted,
-                      ),
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 12,
-                      ),
-                      border: InputBorder.none,
+                    child: AnimatedBuilder(
+                      animation: _pulseAnim,
+                      builder: (context, child) {
+                        return Transform.scale(
+                          scale: isRecording ? _pulseAnim.value : 1.0,
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 200),
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: isRecording
+                                    ? [
+                                        const Color(0xFFEF4444),
+                                        const Color(0xFFDC2626),
+                                      ]
+                                    : [
+                                        const Color(0xFF102A43),
+                                        const Color(0xFF243B53),
+                                      ],
+                              ),
+                              shape: BoxShape.circle,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: isRecording
+                                      ? Colors.redAccent.withValues(alpha: 0.5)
+                                      : const Color(0xFF102A43).withValues(alpha: 0.25),
+                                  blurRadius: isRecording ? 12 : 8,
+                                  offset: const Offset(0, 4),
+                                ),
+                              ],
+                            ),
+                            child: Icon(
+                              isRecording
+                                  ? LucideIcons.square
+                                  : ((_hasText || _pendingPhoto != null)
+                                      ? LucideIcons.send
+                                      : LucideIcons.mic),
+                              color: Colors.white,
+                              size: 20,
+                            ),
+                          ),
+                        );
+                      },
                     ),
                   ),
-                ),
-              ),
-              const SizedBox(width: 12),
-              GestureDetector(
-                onTap: () {
-                  if (isRecording) {
-                    _stopRecordingAndSend();
-                  } else if (_pendingPhoto != null) {
-                    // Rasm kutyapti: matn bo'lsa u izoh sifatida ketadi
-                    if (!_isTyping) _sendPendingPhoto();
-                  } else if (_hasText) {
-                    if (!_isTyping) _sendMessage();
-                  } else {
-                    _startRecording();
-                  }
-                },
-                child: AnimatedBuilder(
-                  animation: _pulseAnim,
-                  builder: (context, child) {
-                    return Transform.scale(
-                      scale: isRecording ? _pulseAnim.value : 1.0,
-                      child: AnimatedContainer(
-                        duration: const Duration(milliseconds: 200),
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: isRecording
-                                ? [
-                                    const Color(0xFFEF4444),
-                                    const Color(0xFFDC2626),
-                                  ]
-                                : (_hasText || _pendingPhoto != null)
-                                ? [
-                                    const Color(0xFFE3C766),
-                                    const Color(0xFFC9A227),
-                                  ]
-                                : [
-                                    const Color(0xFFE3C766),
-                                    const Color(0xFFC9A227),
-                                  ],
-                          ),
-                          shape: BoxShape.circle,
-                          boxShadow: [
-                            BoxShadow(
-                              color: isRecording
-                                  ? Colors.redAccent.withValues(alpha: 0.5)
-                                  : const Color(0xFFC9A227).withValues(alpha: 0.5),
-                              blurRadius: isRecording ? 12 : 8,
-                              offset: const Offset(0, 4),
-                            ),
-                          ],
-                        ),
-                        child: Icon(
-                          isRecording
-                              ? LucideIcons
-                                    .square // Stop icon
-                              : ((_hasText || _pendingPhoto != null)
-                                    ? LucideIcons.send
-                                    : LucideIcons.mic),
-                          color: Colors.white,
-                          size: 20,
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
             ],
               ),
             ],

@@ -142,8 +142,8 @@ class AppTheme {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(GlassTokens.radiusMd),
-          borderSide: BorderSide(
-            color: LuxTokens.gold,
+          borderSide: const BorderSide(
+            color: LuxTokens.navy,
             width: 1.5,
           ),
         ),
