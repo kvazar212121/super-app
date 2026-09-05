@@ -130,12 +130,7 @@ class _MainScreenState extends State<MainScreen> {
           left: 0,
           right: 0,
           bottom: 0,
-          child: SafeArea(
-            bottom: true,
-            top: false,
-            left: false,
-            right: false,
-            child: GlassBottomBar(
+          child: GlassBottomBar(
               currentIndex: _selectedIndex,
               onTap: (i) {
                 // Bosilganini his qildiradi (haptic)
@@ -166,7 +161,6 @@ class _MainScreenState extends State<MainScreen> {
               ),
             ),
           ),
-        ),
       ],
     ),
   );

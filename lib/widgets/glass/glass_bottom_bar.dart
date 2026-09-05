@@ -34,14 +34,16 @@ class GlassBottomBar extends StatelessWidget {
     const double barTopY = 16.0;
     const double dipDepth = 32.0;
     const double notchRadius = 42.0;
+    final double bottomPadding = MediaQuery.of(context).padding.bottom;
+    final double totalHeight = 68.0 + bottomPadding;
 
     return Container(
-      margin: const EdgeInsets.fromLTRB(16, 0, 16, 10),
-      height: 72,
+      margin: EdgeInsets.zero,
+      height: totalHeight,
       child: Stack(
         clipBehavior: Clip.none,
         children: [
-          // 1) Ambient Gold Glow behind the capsule
+          // 1) Ambient Shadow behind full-width bar
           Positioned(
             top: barTopY,
             left: 0,
@@ -49,13 +51,11 @@ class GlassBottomBar extends StatelessWidget {
             bottom: 0,
             child: Container(
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.08),
+                    color: Colors.black.withValues(alpha: 0.06),
                     blurRadius: 16,
-                    spreadRadius: 0,
-                    offset: const Offset(0, 4),
+                    offset: const Offset(0, -4),
                   ),
                 ],
               ),
@@ -73,15 +73,12 @@ class GlassBottomBar extends StatelessWidget {
                 notchRadius: notchRadius,
               ),
               child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(20),
-                ),
+                color: Colors.white,
               ),
             ),
           ),
 
-          // 3) Golden Border Line passing UNDER the orb
+          // 3) Border Line passing UNDER the orb
           Positioned.fill(
             child: IgnorePointer(
               child: CustomPaint(
@@ -99,9 +96,9 @@ class GlassBottomBar extends StatelessWidget {
           // 4) Left & Right Navigation Buttons
           Positioned(
             top: barTopY,
-            left: 8,
-            right: 8,
-            bottom: 0,
+            left: 4,
+            right: 4,
+            bottom: bottomPadding,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -200,21 +197,8 @@ class _ConcaveNotchedBarClipper extends CustomClipper<Path> {
       clockwise: true,
     );
 
-    path.lineTo(size.width, size.height - cornerRadius);
-    // Bottom-right circular arc
-    path.arcToPoint(
-      Offset(size.width - cornerRadius, size.height),
-      radius: const Radius.circular(cornerRadius),
-      clockwise: true,
-    );
-
-    path.lineTo(cornerRadius, size.height);
-    // Bottom-left circular arc
-    path.arcToPoint(
-      Offset(0, size.height - cornerRadius),
-      radius: const Radius.circular(cornerRadius),
-      clockwise: true,
-    );
+    path.lineTo(size.width, size.height);
+    path.lineTo(0, size.height);
     path.close();
     return path;
   }
@@ -229,7 +213,7 @@ class _ConcaveNotchedBarClipper extends CustomClipper<Path> {
   }
 }
 
-/// Concave Golden Line Painter: draws line dipping DOWN under the orb
+/// Concave Line Painter: draws top border line dipping DOWN under the orb
 class _ConcaveTopBorderPainter extends CustomPainter {
   final int itemCount;
   final int centerIndex;
@@ -283,23 +267,6 @@ class _ConcaveTopBorderPainter extends CustomPainter {
       radius: const Radius.circular(cornerRadius),
       clockwise: true,
     );
-
-    path.lineTo(size.width, size.height - cornerRadius);
-    // Bottom-right circular arc
-    path.arcToPoint(
-      Offset(size.width - cornerRadius, size.height),
-      radius: const Radius.circular(cornerRadius),
-      clockwise: true,
-    );
-
-    path.lineTo(cornerRadius, size.height);
-    // Bottom-left circular arc
-    path.arcToPoint(
-      Offset(0, size.height - cornerRadius),
-      radius: const Radius.circular(cornerRadius),
-      clockwise: true,
-    );
-    path.close();
 
     final linePaint = Paint()
       ..color = const Color(0xFFE5E7EB)
