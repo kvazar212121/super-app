@@ -6,8 +6,8 @@ import 'package:flutter/material.dart';
 /// o'zgartirish 80+ ekranga ta'sir qiladi. Yangi ko'rinish avval bosh
 /// ekranda sinaladi, keyin qolgan ekranlarga bosqichma-bosqich ko'chiriladi.
 abstract final class LuxTokens {
-  /// Sahifa foni — toza yorug' fon.
-  static const bg = Color(0xFFF8F9FA);
+  /// Sahifa foni — nozik, nafis yuqa ko'k-zangori fon.
+  static const bg = Color(0xFFEFF4FA);
 
   /// Karta foni — oq rang, chegara va nozik soya bilan.
   static const surface = Color(0xFFFFFFFF);

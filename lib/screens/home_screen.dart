@@ -34,7 +34,7 @@ class HomeScreen extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     // Dark rejimda fon LuxTokens.bg — MeshBackground bilan bir xil, shuning
     // uchun ekranlar orasida rang "sakramaydi".
-    final bgColor = isDark ? LuxTokens.bg : const Color(0xFFF8F9FA);
+    final bgColor = isDark ? LuxTokens.bg : const Color(0xFFEFF4FA);
 
     return ColoredBox(
       color: bgColor,

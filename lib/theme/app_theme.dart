@@ -54,7 +54,7 @@ class AppTheme {
     return ThemeData(
       useMaterial3: true,
       brightness: brightness,
-      scaffoldBackgroundColor: isDark ? LuxTokens.bg : const Color(0xFFF8F9FA),
+      scaffoldBackgroundColor: isDark ? LuxTokens.bg : const Color(0xFFEFF4FA),
       colorScheme:
           ColorScheme.fromSeed(
             seedColor: LuxTokens.gold,
