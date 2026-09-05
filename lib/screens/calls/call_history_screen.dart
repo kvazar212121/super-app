@@ -50,7 +50,10 @@ class _CallHistoryScreenState extends State<CallHistoryScreen>
       actions: [
         IconButton(
           tooltip: "Operator bilan chat".tr,
-          icon: const Icon(LucideIcons.messageCircle),
+          icon: Icon(
+            LucideIcons.messageCircle,
+            color: GlassTokens.primaryText(context),
+          ),
           onPressed: () => Navigator.push(
             context,
             MaterialPageRoute(builder: (_) => const SupportChatScreen()),
