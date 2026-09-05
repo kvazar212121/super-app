@@ -381,31 +381,72 @@ class _PositionBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final isTop1 = position == 1;
-    final isTop2Or3 = position == 2 || position == 3;
+
+    Gradient? gradient;
+    Color? color;
+    Color textColor = Colors.white;
+    List<BoxShadow>? shadow;
+
+    if (position == 1) {
+      gradient = const LinearGradient(
+        colors: [Color(0xFFFBBF24), Color(0xFFD97706)],
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+      );
+      shadow = [
+        BoxShadow(
+          color: const Color(0xFFF59E0B).withValues(alpha: 0.35),
+          blurRadius: 6,
+          offset: const Offset(0, 2),
+        ),
+      ];
+    } else if (position == 2) {
+      gradient = const LinearGradient(
+        colors: [Color(0xFFCBD5E1), Color(0xFF64748B)],
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+      );
+      shadow = [
+        BoxShadow(
+          color: const Color(0xFF64748B).withValues(alpha: 0.25),
+          blurRadius: 5,
+          offset: const Offset(0, 2),
+        ),
+      ];
+    } else if (position == 3) {
+      gradient = const LinearGradient(
+        colors: [Color(0xFFF97316), Color(0xFF9A3412)],
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+      );
+      shadow = [
+        BoxShadow(
+          color: const Color(0xFFEA580C).withValues(alpha: 0.25),
+          blurRadius: 5,
+          offset: const Offset(0, 2),
+        ),
+      ];
+    } else {
+      color = isDark ? const Color(0xFF334155) : const Color(0xFFF1F5F9);
+      textColor = isDark ? const Color(0xFFCBD5E1) : const Color(0xFF475569);
+    }
 
     return Container(
-      width: 26,
-      height: 26,
+      width: 27,
+      height: 27,
       alignment: Alignment.center,
       decoration: BoxDecoration(
-        color: isTop1
-            ? const Color(0xFF102A43)
-            : (isTop2Or3
-                ? (isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0))
-                : (isDark ? const Color(0xFF1E293B) : const Color(0xFFF1F5F9))),
+        gradient: gradient,
+        color: color,
         shape: BoxShape.circle,
+        boxShadow: shadow,
       ),
       child: Text(
         '$position',
         style: TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.w800,
-          color: isTop1
-              ? Colors.white
-              : (isTop2Or3
-                  ? GlassTokens.primaryText(context)
-                  : GlassTokens.secondaryText(context)),
+          fontSize: 12.5,
+          fontWeight: FontWeight.w900,
+          color: textColor,
         ),
       ),
     );
