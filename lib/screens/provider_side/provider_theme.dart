@@ -17,11 +17,34 @@ class ProviderTheme extends StatelessWidget {
     const primary = Colors.black;
     final base = ThemeData.light(useMaterial3: true);
 
-    final textTheme = base.textTheme
-        .apply(
-          fontSizeFactor: 0.82, // Shriftlar o'lchamini ~25-30% ga ixchamlashtiradi
-        )
-        .apply(bodyColor: ink, displayColor: ink);
+    TextTheme scaleTextTheme(TextTheme theme, double factor) {
+      TextStyle? safeScale(TextStyle? s) {
+        if (s == null) return null;
+        final fontSize = s.fontSize;
+        if (fontSize == null) return s;
+        return s.copyWith(fontSize: fontSize * factor);
+      }
+
+      return theme.copyWith(
+        displayLarge: safeScale(theme.displayLarge),
+        displayMedium: safeScale(theme.displayMedium),
+        displaySmall: safeScale(theme.displaySmall),
+        headlineLarge: safeScale(theme.headlineLarge),
+        headlineMedium: safeScale(theme.headlineMedium),
+        headlineSmall: safeScale(theme.headlineSmall),
+        titleLarge: safeScale(theme.titleLarge),
+        titleMedium: safeScale(theme.titleMedium),
+        titleSmall: safeScale(theme.titleSmall),
+        bodyLarge: safeScale(theme.bodyLarge),
+        bodyMedium: safeScale(theme.bodyMedium),
+        bodySmall: safeScale(theme.bodySmall),
+        labelLarge: safeScale(theme.labelLarge),
+        labelMedium: safeScale(theme.labelMedium),
+        labelSmall: safeScale(theme.labelSmall),
+      ).apply(bodyColor: ink, displayColor: ink);
+    }
+
+    final textTheme = scaleTextTheme(base.textTheme, 0.82);
 
     return Theme(
       data: base.copyWith(

@@ -403,7 +403,7 @@ class _UnifiedProviderDashboardScreenState
             outline: Colors.black,
             outlineVariant: LuxTokens.textMuted,
           ),
-          textTheme: Typography.material2021().black.apply(fontSizeFactor: 0.82),
+          textTheme: Typography.material2021().black,
         ),
         child: Scaffold(
           backgroundColor: LuxTokens.surface,
