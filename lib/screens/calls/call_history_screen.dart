@@ -47,19 +47,6 @@ class _CallHistoryScreenState extends State<CallHistoryScreen>
     return GlassScaffold(
       showBackButton: false,
       title: "Aloqa tarixi".tr,
-      actions: [
-        IconButton(
-          tooltip: "Operator bilan chat".tr,
-          icon: Icon(
-            LucideIcons.messageCircle,
-            color: GlassTokens.primaryText(context),
-          ),
-          onPressed: () => Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => const SupportChatScreen()),
-          ),
-        ),
-      ],
       bottom: GoldTabBar(
         controller: _tab,
         tabs: [
@@ -378,66 +365,100 @@ class _MessagesTabState extends State<_MessagesTab> {
     }
   }
 
+  Widget _buildSupportChatItem(BuildContext context) {
+    return GlassSurface(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const SupportChatScreen()),
+        );
+      },
+      padding: const EdgeInsets.all(8),
+      opacity: 0.65,
+      child: ListTile(
+        contentPadding: const EdgeInsets.symmetric(horizontal: 8),
+        leading: Stack(
+          children: [
+            CircleAvatar(
+              backgroundColor: LuxTokens.gold.withValues(alpha: 0.2),
+              child: const Icon(LucideIcons.headset, color: Color(0xFFC9A227)),
+            ),
+            Positioned(
+              right: 0,
+              bottom: 0,
+              child: Container(
+                width: 10,
+                height: 10,
+                decoration: BoxDecoration(
+                  color: Colors.green,
+                  shape: BoxShape.circle,
+                  border: Border.all(color: Colors.white, width: 1.5),
+                ),
+              ),
+            ),
+          ],
+        ),
+        title: Row(
+          children: [
+            Expanded(
+              child: Text(
+                'HubServis Qo\'llab-quvvatlash'.tr,
+                style: TextStyle(
+                  fontWeight: FontWeight.w700,
+                  color: GlassTokens.primaryText(context),
+                ),
+              ),
+            ),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+              decoration: BoxDecoration(
+                color: LuxTokens.gold.withValues(alpha: 0.18),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: LuxTokens.gold.withValues(alpha: 0.4), width: 0.8),
+              ),
+              child: Text(
+                'Operator'.tr,
+                style: const TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w700,
+                  color: Color(0xFF854D0E),
+                ),
+              ),
+            ),
+          ],
+        ),
+        subtitle: Text(
+          'Savollaringiz bormi? Operatorga yozing'.tr,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(
+            color: GlassTokens.secondaryText(context),
+            fontSize: 12.5,
+          ),
+        ),
+        trailing: Icon(
+          LucideIcons.chevronRight,
+          size: 18,
+          color: GlassTokens.secondaryText(context),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     if (_loading) return const Center(child: CircularProgressIndicator());
-    if (_convos.isEmpty) {
-      return Center(
-        child: SingleChildScrollView(
-          child: GlassSurface(
-            margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
-            padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 30),
-            borderRadius: GlassTokens.radiusLg,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: LuxTokens.gold.withValues(alpha: 0.14),
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(
-                    LucideIcons.messageSquare,
-                    size: 40,
-                    color: Color(0xFF140D02),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  'Hali yozishma yo\'q'.tr,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    color: Color(0xFF140D02),
-                    fontSize: 16,
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Qo\'ng\'iroqlar ro\'yxatidan abonentga xabar yozing'.tr,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    color: Color(0xFF332205),
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                    height: 1.4,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      );
-    }
     return RefreshIndicator(
       onRefresh: _load,
       child: ListView.separated(
         padding: const EdgeInsets.fromLTRB(16, 16, 16, 160),
-        itemCount: _convos.length,
+        itemCount: 1 + _convos.length,
         separatorBuilder: (_, _) => const SizedBox(height: 8),
         itemBuilder: (context, idx) {
-          final c = Map<String, dynamic>.from(_convos[idx] as Map);
+          if (idx == 0) {
+            return _buildSupportChatItem(context);
+          }
+          final c = Map<String, dynamic>.from(_convos[idx - 1] as Map);
           final unread = (c['unread'] as num?)?.toInt() ?? 0;
           final peerId = (c['peer_id'] as num).toInt();
           final peerName = c['peer_name'] as String? ?? '';
