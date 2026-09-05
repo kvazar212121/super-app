@@ -347,36 +347,16 @@ class _ServicesButtonState extends State<_ServicesButton>
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      children: [
-                        Flexible(
-                          child: Text(
-                            'Barcha xizmatlar'.tr,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                              fontFamily: LuxTokens.display,
-                              color: LuxTokens.text,
-                              fontWeight: FontWeight.w700,
-                              fontSize: 16,
-                              letterSpacing: -0.1,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 2,
-                          ),
-                          decoration: LuxTokens.chip(accent: true),
-                          child: Text(
-                            '40+',
-                            // Raqamli chip — `value` uslubi (tekis raqamlar).
-                            style: LuxTokens.value(size: 10.5),
-                          ),
-                        ),
-                      ],
+                    Text(
+                      'Barcha xizmatlar'.tr,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        color: LuxTokens.text,
+                        fontWeight: FontWeight.w800,
+                        fontSize: 17,
+                        letterSpacing: -0.2,
+                      ),
                     ),
                   ],
                 ),
