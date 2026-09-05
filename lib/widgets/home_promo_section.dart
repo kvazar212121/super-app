@@ -264,69 +264,94 @@ class _HomePromoSectionState extends State<HomePromoSection>
                               errorWidget: (_, _, _) =>
                                   const SizedBox.shrink(),
                             ),
-                          // Matn o'qilishi uchun qoraytiruvchi qatlam
+                          // Chap tarafdan ko'kimtir (Deep Navy) gradient parda
                           if (p.imageUrl != null)
                             Container(
-                              decoration: BoxDecoration(
+                              decoration: const BoxDecoration(
                                 gradient: LinearGradient(
                                   colors: [
-                                    Colors.black.withValues(alpha: 0.55),
-                                    Colors.black.withValues(alpha: 0.15),
+                                    Color(0xFFA0B16),
+                                    Color(0xD9102A43),
+                                    Color(0x66102A43),
+                                    Color(0x00102A43),
                                   ],
                                   begin: Alignment.centerLeft,
                                   end: Alignment.centerRight,
+                                  stops: [0.0, 0.45, 0.75, 1.0],
                                 ),
                               ),
                             ),
                           Padding(
-                            padding: const EdgeInsets.fromLTRB(18, 14, 14, 14),
-                            child: Row(
+                            padding: const EdgeInsets.all(14),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Text(
-                                        p.title.tr,
-                                        style: const TextStyle(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.w800,
-                                          fontSize: 15,
-                                        ),
-                                        maxLines: 2,
-                                        overflow: TextOverflow.ellipsis,
+                                if (p.badge.trim().isNotEmpty)
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 10,
+                                      vertical: 4,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xFF102A43),
+                                      borderRadius: BorderRadius.circular(12),
+                                      border: Border.all(color: Colors.white30, width: 1),
+                                    ),
+                                    child: Text(
+                                      p.badge.tr,
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w800,
+                                        fontSize: 11,
                                       ),
-                                      const SizedBox(height: 6),
-                                      Text(
-                                        p.subtitle.tr,
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 12,
-                                        ),
-                                        maxLines: 2,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    ],
+                                    ),
                                   ),
+                                const Spacer(),
+                                Text(
+                                  p.title.tr,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w900,
+                                    fontSize: 16,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
                                 ),
-                                const SizedBox(width: 8),
+                                const SizedBox(height: 3),
+                                Text(
+                                  p.subtitle.tr,
+                                  style: const TextStyle(
+                                    color: Colors.white70,
+                                    fontSize: 11.5,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                const SizedBox(height: 8),
                                 Container(
                                   padding: const EdgeInsets.symmetric(
-                                    horizontal: 10,
+                                    horizontal: 14,
                                     vertical: 6,
                                   ),
                                   decoration: BoxDecoration(
                                     color: Colors.white,
-                                    borderRadius: BorderRadius.circular(12),
+                                    borderRadius: BorderRadius.circular(16),
+                                    boxShadow: const [
+                                      BoxShadow(
+                                        color: Color(0x33000000),
+                                        blurRadius: 6,
+                                        offset: Offset(0, 2),
+                                      ),
+                                    ],
                                   ),
                                   child: Text(
-                                    p.badge.tr,
-                                    style: TextStyle(
-                                      color: p.colors[0],
-                                      fontWeight: FontWeight.w800,
-                                      fontSize: 12,
+                                    'KO\'RISH'.tr,
+                                    style: const TextStyle(
+                                      color: Color(0xFF102A43),
+                                      fontWeight: FontWeight.w900,
+                                      fontSize: 10,
+                                      letterSpacing: 1.0,
                                     ),
                                   ),
                                 ),
@@ -396,7 +421,7 @@ class _LuxPromoCarouselState extends State<_LuxPromoCarousel> {
                 width: active ? 18 : 6,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: active ? LuxTokens.gold : LuxTokens.border,
+                  color: active ? const Color(0xFF102A43) : LuxTokens.border,
                   borderRadius: BorderRadius.circular(2),
                 ),
               );
@@ -457,100 +482,122 @@ class _LuxPromoCard extends StatelessWidget {
                   ),
                 ),
               ),
-            // Pastdan yuqoriga qorayuvchi parda — matn HAR QANDAY rasm
-            // ustida o'qiladi. Yon tomonlarga tegmaydi, shuning uchun
-            // rasm o'zi ham ko'rinib turadi.
+            // Chap tarafdan ko'kimtir (Deep Navy) gradient parda — matn silliq va aniq o'qiladi
+            const DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                  colors: [
+                    Color(0xFFA0B16), // Deep Navy (#102A43)
+                    Color(0xEA102A43),
+                    Color(0x77102A43),
+                    Color(0x00102A43),
+                  ],
+                  stops: [0.0, 0.45, 0.75, 1.0],
+                ),
+              ),
+            ),
+            // Pastdan yuqoriga qo'shimcha yumshoq soya
             const DecoratedBox(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   begin: Alignment.bottomCenter,
                   end: Alignment.topCenter,
                   colors: [
-                    Color(0xE60A0A0B),
-                    Color(0x800A0A0B),
-                    Color(0x1A0A0A0B),
+                    Color(0xAA0A0A0B),
+                    Color(0x000A0A0B),
                   ],
-                  stops: [0.0, 0.55, 1.0],
+                  stops: [0.0, 0.5],
                 ),
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(18),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      // Chegirma nishoni (o'ngda) — oltin, eng ko'zga tashlanadigan.
-                      if (promo.badge.trim().isNotEmpty)
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 6,
-                          ),
-                          decoration: BoxDecoration(
-                            gradient: LuxTokens.goldGradient,
-                            borderRadius: BorderRadius.circular(999),
-                          ),
-                          child: Text(
-                            promo.badge.tr,
-                            // Chegirma raqami — tekis raqamli uslub.
-                            style: LuxTokens.value(
-                              color: const Color(0xFF14100A),
-                              size: 13,
-                            ),
-                          ),
+                  // Yuqori chapda chegirma nishoni
+                  if (promo.badge.trim().isNotEmpty)
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 5,
+                      ),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF102A43),
+                        borderRadius: BorderRadius.circular(999),
+                        border: Border.all(
+                          color: Colors.white30,
+                          width: 1,
                         ),
-                    ],
-                  ),
+                        boxShadow: const [
+                          BoxShadow(
+                            color: Color(0x33000000),
+                            blurRadius: 6,
+                            offset: Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: Text(
+                        promo.badge.tr,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
+                    ),
                   const Spacer(),
+                  // Chap tomonda tartiblangan yozuvlar va KO'RISH tugmasi
                   Text(
                     promo.title.tr,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    // Cormorant Garamond — nafis oq serif sarlavha.
-                    style: LuxTokens.heading(color: Colors.white, size: 27),
+                    style: const TextStyle(
+                      fontFamily: LuxTokens.display,
+                      color: Colors.white,
+                      fontSize: 22,
+                      fontWeight: FontWeight.w900,
+                    ),
                   ),
-                  const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          promo.subtitle.tr,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            fontFamily: LuxTokens.display,
-                            color: Colors.white70,
-                            fontSize: 10.5,
-                            fontWeight: FontWeight.w400,
-                          ),
+                  const SizedBox(height: 4),
+                  Text(
+                    promo.subtitle.tr,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      color: Colors.white70,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 18,
+                      vertical: 8,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(999),
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Color(0x33000000),
+                          blurRadius: 8,
+                          offset: Offset(0, 3),
                         ),
+                      ],
+                    ),
+                    child: Text(
+                      'KO\'RISH'.tr,
+                      style: const TextStyle(
+                        color: Color(0xFF102A43),
+                        fontSize: 11,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: 1.2,
                       ),
-                      const SizedBox(width: 10),
-                      // KO'RISH — oq kapsula. Qora fonda eng yuqori kontrast,
-                      // shuning uchun asosiy harakat sifatida ishlatiladi.
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 18,
-                          vertical: 9,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(999),
-                        ),
-                        child: Text(
-                          'KO\'RISH'.tr,
-                          style: LuxTokens.label(
-                            color: const Color(0xFF0A0A0B),
-                            size: 10,
-                            weight: FontWeight.w700,
-                            spacing: 1.4,
-                          ),
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
                 ],
               ),
