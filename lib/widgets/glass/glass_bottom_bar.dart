@@ -398,15 +398,15 @@ class _NavButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Tiniq va professional navy va accent gold ranglar
-    const activeColor = Color(0xFFE5B93D); // Tanlangan tab uchun accent gold
-    const navyColor = Color(0xFF102A43); // Asosiy to'q navy rang
+    // Tiniq va professional navy va slate grey ranglar
+    const activeColor = Color(0xFF102A43); // Tanlangan tab uchun to'q navy rang
+    const unselectedColor = Color(0xFF64748B); // Tanlanmagan tab uchun slate grey
 
     final displayIcon = selected
         ? (item.activeIcon ?? item.icon)
         : item.icon;
 
-    final iconColor = selected ? activeColor : navyColor;
+    final iconColor = selected ? activeColor : unselectedColor;
 
     return Material(
       color: Colors.transparent,
