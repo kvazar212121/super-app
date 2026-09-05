@@ -1652,6 +1652,7 @@ class _ChatScreenState extends State<ChatScreen>
                   ),
                   Expanded(
                     child: Container(
+                      clipBehavior: Clip.antiAlias,
                       decoration: BoxDecoration(
                         color: isRecording
                             ? Colors.red.shade50
@@ -1683,6 +1684,8 @@ class _ChatScreenState extends State<ChatScreen>
                         },
                         readOnly: isRecording,
                         decoration: InputDecoration(
+                          filled: false,
+                          fillColor: Colors.transparent,
                           hintText: isRecording
                               ? 'Eshitilmoqda...'.tr
                               : 'Xabar yozish...'.tr,

@@ -248,6 +248,14 @@ class _SupportChatScreenState extends State<SupportChatScreen> {
                     borderRadius: BorderRadius.circular(24),
                     borderSide: BorderSide(color: LuxTokens.border),
                   ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(24),
+                    borderSide: BorderSide(color: LuxTokens.border),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(24),
+                    borderSide: const BorderSide(color: LuxTokens.navy, width: 1.5),
+                  ),
                 ),
               ),
             ),
