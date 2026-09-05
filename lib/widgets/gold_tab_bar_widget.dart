@@ -28,12 +28,12 @@ class GoldTabBar extends StatelessWidget implements PreferredSizeWidget {
         return Container(
           decoration: const BoxDecoration(
             border: Border(
-              bottom: BorderSide(color: Color(0x22C9A227), width: 1),
+              bottom: BorderSide(color: Color(0x1A102A43), width: 1),
             ),
           ),
           child: TabBar(
             controller: tabController,
-            indicatorColor: const Color(0xFFE5B93D),
+            indicatorColor: const Color(0xFF102A43),
             indicatorWeight: 3,
             labelPadding: EdgeInsets.zero,
             dividerColor: Colors.transparent,

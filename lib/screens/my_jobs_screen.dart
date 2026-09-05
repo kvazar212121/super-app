@@ -69,15 +69,16 @@ class _MyJobsScreenState extends State<MyJobsScreen> {
             ),
       floatingActionButton: Container(
         height: 52,
+        margin: EdgeInsets.only(bottom: widget.embedded ? 90 : 16),
         padding: const EdgeInsets.symmetric(horizontal: 18),
         decoration: BoxDecoration(
-          gradient: LuxTokens.goldGradient,
+          color: const Color(0xFF102A43),
           borderRadius: BorderRadius.circular(26),
           boxShadow: const [
             BoxShadow(
-              color: Colors.black26,
-              blurRadius: 8,
-              offset: Offset(0, 3),
+              color: Color(0x33102A43),
+              blurRadius: 10,
+              offset: Offset(0, 4),
             ),
           ],
         ),
@@ -87,13 +88,13 @@ class _MyJobsScreenState extends State<MyJobsScreen> {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(LucideIcons.plus, color: Color(0xFF140D02), size: 20),
+              const Icon(LucideIcons.plus, color: Colors.white, size: 20),
               const SizedBox(width: 8),
               Text(
                 'E\'lon berish'.tr,
                 style: const TextStyle(
-                  color: Color(0xFF140D02),
-                  fontWeight: FontWeight.w900,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w700,
                   fontSize: 15,
                 ),
               ),
@@ -103,7 +104,7 @@ class _MyJobsScreenState extends State<MyJobsScreen> {
       ),
       body: RefreshIndicator(
         onRefresh: _load,
-        color: LuxTokens.gold,
+        color: const Color(0xFF102A43),
         child: _body(),
       ),
     );
@@ -121,8 +122,8 @@ class _MyJobsScreenState extends State<MyJobsScreen> {
         Center(
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: LuxTokens.gold,
-              foregroundColor: const Color(0xFF140D02),
+              backgroundColor: const Color(0xFF102A43),
+              foregroundColor: Colors.white,
             ),
             onPressed: _load,
             child: Text('Qayta urinish'.tr),
@@ -143,13 +144,13 @@ class _MyJobsScreenState extends State<MyJobsScreen> {
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: LuxTokens.gold.withValues(alpha: 0.14),
+                    color: const Color(0xFF102A43).withValues(alpha: 0.08),
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(
                     LucideIcons.clipboardList,
                     size: 40,
-                    color: Color(0xFF140D02),
+                    color: Color(0xFF102A43),
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -157,7 +158,7 @@ class _MyJobsScreenState extends State<MyJobsScreen> {
                   'Hali e\'lon bermagansiz'.tr,
                   textAlign: TextAlign.center,
                   style: const TextStyle(
-                    color: Color(0xFF140D02),
+                    color: Color(0xFF102A43),
                     fontSize: 16,
                     fontWeight: FontWeight.w800,
                   ),
@@ -167,7 +168,7 @@ class _MyJobsScreenState extends State<MyJobsScreen> {
                   '"E\'lon berish" tugmasini bosing — ustalar sizga taklif yuborishadi.'.tr,
                   textAlign: TextAlign.center,
                   style: const TextStyle(
-                    color: Color(0xFF332205),
+                    color: Color(0xFF64748B),
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
                     height: 1.4,
@@ -193,14 +194,14 @@ class _MyJobsScreenState extends State<MyJobsScreen> {
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: LuxTokens.gold.withValues(alpha: 0.35),
+          color: const Color(0xFFE2E8F0),
           width: 1.2,
         ),
-        boxShadow: [
+        boxShadow: const [
           BoxShadow(
-            color: LuxTokens.gold.withValues(alpha: 0.08),
+            color: Color(0x0A000000),
             blurRadius: 10,
-            offset: const Offset(0, 3),
+            offset: Offset(0, 3),
           ),
         ],
       ),
@@ -261,12 +262,12 @@ class _MyJobsScreenState extends State<MyJobsScreen> {
               Row(
                 children: [
                   if (job.budget != null) ...[
-                    const Icon(LucideIcons.banknote, size: 15, color: Color(0xFF8A5D0B)),
+                    const Icon(LucideIcons.banknote, size: 15, color: Color(0xFF102A43)),
                     const SizedBox(width: 4),
                     Text(
                       '${job.budget!.toStringAsFixed(0)} ${'so\'m'.tr}',
                       style: const TextStyle(
-                        color: Color(0xFF8A5D0B),
+                        color: Color(0xFF102A43),
                         fontWeight: FontWeight.w900,
                         fontSize: 14,
                       ),
@@ -313,9 +314,9 @@ class _MyJobsScreenState extends State<MyJobsScreen> {
 
     switch (s) {
       case JobStatus.open:
-        bg = const Color(0xFFFFFBEB);
-        border = const Color(0xFFFDE68A);
-        text = const Color(0xFF8A5D0B);
+        bg = const Color(0xFFEFF6FF);
+        border = const Color(0xFFBFDBFE);
+        text = const Color(0xFF1E40AF);
         icon = LucideIcons.sparkles;
         break;
       case JobStatus.assigned:
@@ -350,7 +351,6 @@ class _MyJobsScreenState extends State<MyJobsScreen> {
           ),
         ],
       ),
-    );
   }
 
   Future<void> _openCreate() async {
