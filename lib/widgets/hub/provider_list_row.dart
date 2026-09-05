@@ -250,16 +250,16 @@ class _Tag extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 7),
       alignment: Alignment.center,
       decoration: BoxDecoration(
-        color: const Color(0xFFFFF9E6),
+        color: const Color(0xFFF1F5F9),
         borderRadius: BorderRadius.circular(6),
-        border: Border.all(color: LuxTokens.border.withValues(alpha: 0.6)),
+        border: Border.all(color: const Color(0xFFE2E8F0)),
       ),
       child: Text(
         label,
         style: const TextStyle(
           fontSize: 10.5,
           fontWeight: FontWeight.w700,
-          color: Color(0xFF8A5D0B),
+          color: Color(0xFF334155),
         ),
       ),
     );

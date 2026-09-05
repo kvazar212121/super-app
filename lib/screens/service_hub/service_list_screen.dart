@@ -322,7 +322,7 @@ class _MapButton extends StatelessWidget {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Icon(LucideIcons.map, size: 18, color: LuxTokens.gold),
+                const Icon(LucideIcons.map, size: 18, color: Color(0xFF102A43)),
                 const SizedBox(width: 7),
                 Text(
                   'Xaritadan'.tr,
@@ -419,7 +419,17 @@ class _BarButton extends StatelessWidget {
   Widget build(BuildContext context) {
     if (filled) {
       return Container(
-        decoration: LuxTokens.goldBoxDecoration(radius: GlassTokens.radiusLg),
+        decoration: BoxDecoration(
+          color: const Color(0xFF102A43),
+          borderRadius: BorderRadius.circular(GlassTokens.radiusLg),
+          boxShadow: [
+            BoxShadow(
+              color: const Color(0xFF102A43).withValues(alpha: 0.25),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
         child: Material(
           color: Colors.transparent,
           child: InkWell(
@@ -430,14 +440,18 @@ class _BarButton extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(icon, size: 17, color: const Color(0xFF140D02)),
+                  Icon(icon, size: 17, color: Colors.white),
                   const SizedBox(width: 8),
                   Flexible(
                     child: Text(
                       label,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: LuxTokens.goldEngravedTextStyle.copyWith(fontSize: 14),
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w800,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                   if (showDot) ...[
@@ -446,7 +460,7 @@ class _BarButton extends StatelessWidget {
                       width: 7,
                       height: 7,
                       decoration: const BoxDecoration(
-                        color: Color(0xFF140D02),
+                        color: Colors.white,
                         shape: BoxShape.circle,
                       ),
                     ),
@@ -461,9 +475,9 @@ class _BarButton extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFFFFF9E6),
+        color: Colors.white,
         borderRadius: BorderRadius.circular(GlassTokens.radiusLg),
-        border: Border.all(color: LuxTokens.border),
+        border: Border.all(color: LuxTokens.border, width: 1.5),
       ),
       child: Material(
         color: Colors.transparent,
@@ -475,7 +489,7 @@ class _BarButton extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(icon, size: 17, color: LuxTokens.gold),
+                Icon(icon, size: 17, color: const Color(0xFF102A43)),
                 const SizedBox(width: 8),
                 Flexible(
                   child: Text(
@@ -485,7 +499,7 @@ class _BarButton extends StatelessWidget {
                     style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w700,
-                      color: LuxTokens.gold,
+                      color: Color(0xFF102A43),
                     ),
                   ),
                 ),
