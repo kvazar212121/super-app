@@ -623,8 +623,8 @@ class _DailyBtn extends StatelessWidget {
             color: cardBg,
             borderRadius: BorderRadius.circular(20),
             border: Border.all(
-              color: const Color(0xFFDFB435),
-              width: 1.5,
+              color: const Color(0xFFE5E7EB),
+              width: 1.0,
             ),
             boxShadow: [
               BoxShadow(
@@ -661,10 +661,10 @@ class _DailyBtn extends StatelessWidget {
                             width: 48,
                             height: 48,
                             decoration: BoxDecoration(
-                              color: const Color(0xFFC9A227).withValues(alpha: 0.12),
+                              color: const Color(0xFF102A43).withValues(alpha: 0.10),
                               shape: BoxShape.circle,
                             ),
-                            child: Icon(icon, color: const Color(0xFFC9A227), size: 26),
+                            child: Icon(icon, color: const Color(0xFF102A43), size: 26),
                           ),
                         ),
                       ),

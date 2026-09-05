@@ -111,7 +111,7 @@ class _DailyUtilitiesWidgetState extends State<DailyUtilitiesWidget> {
         leading: const Icon(
           LucideIcons.circleDollarSign,
           size: 16,
-          color: Color(0xFFC9A227),
+          color: Color(0xFF102A43),
         ),
         text: txt,
       ),
@@ -137,7 +137,7 @@ class _PillChip extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: const Color(0xFFC9A227).withValues(alpha: 0.6),
+          color: const Color(0xFFE5E7EB),
           width: 1.2,
         ),
         boxShadow: [
