@@ -9,6 +9,7 @@ import '../theme/lux_tokens.dart';
 import '../theme/glass_tokens.dart';
 import '../widgets/glass/glass_surface.dart';
 import '../l10n/locale_controller.dart';
+import 'chat_screen.dart';
 
 /// Mijozning ish e'lonlari: ro'yxat + yangi e'lon berish.
 class MyJobsScreen extends StatefulWidget {
@@ -355,11 +356,15 @@ class _MyJobsScreenState extends State<MyJobsScreen> {
   }
 
   Future<void> _openCreate() async {
-    final created = await Navigator.push<bool>(
+    await Navigator.push(
       context,
-      MaterialPageRoute(builder: (_) => const CreateJobScreen()),
+      MaterialPageRoute(
+        builder: (_) => const ChatScreen(
+          initialText: "Yangi xizmat yoki ish e'lonini joylashtirmoqchiman: ",
+        ),
+      ),
     );
-    if (created == true) _load();
+    _load();
   }
 }
 
