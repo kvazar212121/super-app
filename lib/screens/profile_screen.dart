@@ -14,7 +14,6 @@ import '../l10n/locale_controller.dart';
 import 'auth/auth_gate_screen.dart';
 import 'auth/pin_setup_screen.dart';
 import 'premium/premium_screen.dart';
-import 'orders_screen.dart';
 import 'support/support_center_screen.dart';
 import '../widgets/crystal_diamond_widget.dart';
 import '../config/app_config.dart';
@@ -46,8 +45,6 @@ class ProfileScreen extends StatelessWidget {
             _buildProfileHeader(context, user, auth.isAuthenticated),
             const SizedBox(height: 20),
             if (auth.isAuthenticated) ...[
-              _buildOrdersBanner(context),
-              const SizedBox(height: 20),
               _buildPremiumBanner(context, user),
               const SizedBox(height: 20),
               if (user.isProvider) ...[
@@ -308,58 +305,7 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  /// Buyurtmalar paneli — Premium banner o'lchamida, undan yuqorida turadi.
-  /// Bosilganda buyurtmalar ro'yxati (OrdersScreen) ochiladi.
-  Widget _buildOrdersBanner(BuildContext context) {
-    return GestureDetector(
-      onTap: () => Navigator.push(
-        context,
-        MaterialPageRoute(builder: (_) => const OrdersScreen()),
-      ),
-      child: Container(
-        padding: const EdgeInsets.all(18),
-        decoration: LuxTokens.goldBoxDecoration(radius: GlassTokens.radiusLg),
-        child: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: const Color(0xFF140D02).withValues(alpha: 0.12),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: const Icon(
-                Icons.receipt_long,
-                color: Color(0xFF140D02),
-                size: 26,
-              ),
-            ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Buyurtmalarim'.tr,
-                    style: LuxTokens.goldEngravedTextStyle.copyWith(fontSize: 16),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    'Faol va o\'tgan buyurtmalar'.tr,
-                    style: const TextStyle(
-                      color: Color(0xFF332205),
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const Icon(Icons.chevron_right, color: Color(0xFF140D02), size: 24),
-          ],
-        ),
-      ),
-    );
-  }
+
 
   /// Premium banner — obuna faol bo'lsa "faol" holatini, aks holda sotib olishga
   /// undovchi karta ko'rsatadi. Bosilganда PremiumScreen ochiladi.
