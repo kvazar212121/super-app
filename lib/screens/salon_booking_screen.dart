@@ -73,7 +73,7 @@ class _SalonBookingScreenState extends State<SalonBookingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final accentColor = const Color(0xFFB8921F); // Pink for Salon
+    final accentColor = const Color(0xFF102A43); // Deep Navy for Salon
     final currencyFormat = NumberFormat.currency(
       locale: 'uz_UZ',
       symbol: 'so\'m'.tr,

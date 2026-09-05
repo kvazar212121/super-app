@@ -87,7 +87,7 @@ class ProviderCategoryConfig {
     categoryKey: 'salon',
     title: 'Salon',
     icon: LucideIcons.sparkles,
-    accentColor: Color(0xFFE3C766),
+    accentColor: Color(0xFF102A43),
     subCategories: ['Soch turmagi', 'Makiyaj', 'Manikyur', 'Kosmetologiya'],
   );
   static const plumber = ProviderCategoryConfig(

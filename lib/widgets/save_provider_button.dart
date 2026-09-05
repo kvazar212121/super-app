@@ -59,16 +59,17 @@ class SaveProviderButton extends StatelessWidget {
           },
           icon: Icon(
             isSaved ? Icons.favorite : Icons.favorite_border,
-            color: isSaved ? const Color(0xFFEF4444) : null,
+            color: isSaved ? const Color(0xFFEF4444) : const Color(0xFF102A43),
             size: 20,
           ),
           label: Text(isSaved ? 'Saqlangan'.tr : 'Saqlab qo\'yish'.tr),
           style: OutlinedButton.styleFrom(
-            foregroundColor: isSaved ? const Color(0xFFEF4444) : null,
+            foregroundColor:
+                isSaved ? const Color(0xFFEF4444) : const Color(0xFF102A43),
             side: BorderSide(
               color: isSaved
                   ? const Color(0xFFEF4444)
-                  : Theme.of(context).dividerColor,
+                  : const Color(0xFFCBD5E1),
             ),
             padding: const EdgeInsets.symmetric(vertical: 14),
             shape: RoundedRectangleBorder(
