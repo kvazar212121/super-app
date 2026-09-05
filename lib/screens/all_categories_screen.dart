@@ -95,7 +95,7 @@ class _AllCategoriesScreenState extends State<AllCategoriesScreen> {
       context: context,
       barrierDismissible: false,
       builder: (_) => const Center(
-        child: CircularProgressIndicator(color: LuxTokens.gold),
+        child: CircularProgressIndicator(color: Color(0xFF102A43)),
       ),
     );
 
@@ -108,7 +108,7 @@ class _AllCategoriesScreenState extends State<AllCategoriesScreen> {
             context,
             kind,
             data,
-            accentColor: LuxTokens.gold,
+            accentColor: const Color(0xFF102A43),
           );
           allEntries.addAll(entries);
         }
@@ -123,7 +123,7 @@ class _AllCategoriesScreenState extends State<AllCategoriesScreen> {
       MaterialPageRoute(
         builder: (_) => ServiceMapScreen(
           title: 'Xizmatlar Xaritasi'.tr,
-          accent: LuxTokens.gold,
+          accent: const Color(0xFF102A43),
           entries: allEntries,
         ),
       ),
@@ -159,13 +159,13 @@ class _AllCategoriesScreenState extends State<AllCategoriesScreen> {
                     Container(
                       height: 48,
                       decoration: BoxDecoration(
-                        gradient: LuxTokens.goldGradient,
+                        color: const Color(0xFF102A43),
                         borderRadius: BorderRadius.circular(GlassTokens.radiusSm),
-                        border: Border.all(color: const Color(0xFFFFF7C2), width: 1.2),
                         boxShadow: [
                           BoxShadow(
-                            color: LuxTokens.gold.withValues(alpha: 0.3),
+                            color: const Color(0xFF102A43).withValues(alpha: 0.25),
                             blurRadius: 8,
+                            offset: const Offset(0, 2),
                           ),
                         ],
                       ),
@@ -179,14 +179,14 @@ class _AllCategoriesScreenState extends State<AllCategoriesScreen> {
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                const Icon(LucideIcons.mapPin, size: 18, color: Color(0xFF14100A)),
+                                const Icon(LucideIcons.mapPin, size: 18, color: Colors.white),
                                 const SizedBox(width: 6),
                                 Text(
                                   'Xarita'.tr,
                                   style: const TextStyle(
                                     fontSize: 13.5,
                                     fontWeight: FontWeight.w700,
-                                    color: Color(0xFF14100A),
+                                    color: Colors.white,
                                     fontFamily: LuxTokens.body,
                                   ),
                                 ),
@@ -236,7 +236,7 @@ class _AllCategoriesScreenState extends State<AllCategoriesScreen> {
                                     width: 3,
                                     height: 13,
                                     decoration: BoxDecoration(
-                                      gradient: LuxTokens.goldGradient,
+                                      color: const Color(0xFF102A43),
                                       borderRadius: BorderRadius.circular(2),
                                     ),
                                   ),
@@ -245,7 +245,7 @@ class _AllCategoriesScreenState extends State<AllCategoriesScreen> {
                                     child: Text(
                                       group.title.tr.toUpperCase(),
                                       style: LuxTokens.sectionTitle.copyWith(
-                                        color: LuxTokens.gold,
+                                        color: const Color(0xFF102A43),
                                         fontSize: 9.5,
                                         fontWeight: FontWeight.w700,
                                       ),
