@@ -270,8 +270,8 @@ class _HomePromoSectionState extends State<HomePromoSection>
                               decoration: const BoxDecoration(
                                 gradient: LinearGradient(
                                   colors: [
-                                    Color(0xFFA0B16),
-                                    Color(0xD9102A43),
+                                    Color(0xFF102A43),
+                                    Color(0xDC102A43),
                                     Color(0x66102A43),
                                     Color(0x00102A43),
                                   ],
@@ -489,9 +489,9 @@ class _LuxPromoCard extends StatelessWidget {
                   begin: Alignment.centerLeft,
                   end: Alignment.centerRight,
                   colors: [
-                    Color(0xFFA0B16), // Deep Navy (#102A43)
-                    Color(0xEA102A43),
-                    Color(0x77102A43),
+                    Color(0xFF102A43), // Deep Navy (#102A43)
+                    Color(0xDC102A43),
+                    Color(0x66102A43),
                     Color(0x00102A43),
                   ],
                   stops: [0.0, 0.45, 0.75, 1.0],
