@@ -62,18 +62,18 @@ class _PillReminderWidgetState extends State<PillReminderWidget> {
     await showDialog<void>(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: isDark ? LuxTokens.surface : Colors.white,
+        backgroundColor: GlassTokens.glassFill(ctx),
         surfaceTintColor: Colors.transparent,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(24),
-          side: BorderSide(color: const Color(0xFF102A43).withValues(alpha: 0.3), width: 1.5),
+          side: BorderSide(color: GlassTokens.glassBorder(ctx), width: 1.5),
         ),
         title: Text(
           'Dori / Vitamin eslatmasi qo\'shish'.tr,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w800,
-            color: Color(0xFF0F172A),
+            color: GlassTokens.primaryText(ctx),
           ),
         ),
         content: Column(
@@ -82,22 +82,22 @@ class _PillReminderWidgetState extends State<PillReminderWidget> {
             TextField(
               controller: titleCtrl,
               autofocus: true,
-              style: const TextStyle(
-                color: Color(0xFF0F172A),
+              style: TextStyle(
+                color: GlassTokens.primaryText(ctx),
                 fontWeight: FontWeight.w600,
               ),
               decoration: InputDecoration(
                 hintText: 'Dori nomi (masalan: C Vitamini)',
-                hintStyle: const TextStyle(color: Color(0xFF94A3B8)),
+                hintStyle: TextStyle(color: GlassTokens.secondaryText(ctx)),
                 filled: true,
-                fillColor: const Color(0xFFF1F5F9),
+                fillColor: isDark ? const Color(0xFF334155) : const Color(0xFFF1F5F9),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(14),
                   borderSide: BorderSide.none,
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(14),
-                  borderSide: BorderSide(color: const Color(0xFF102A43).withValues(alpha: 0.3)),
+                  borderSide: BorderSide(color: GlassTokens.glassBorder(ctx)),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(14),
@@ -108,22 +108,22 @@ class _PillReminderWidgetState extends State<PillReminderWidget> {
             const SizedBox(height: 12),
             TextField(
               controller: dosageCtrl,
-              style: const TextStyle(
-                color: Color(0xFF0F172A),
+              style: TextStyle(
+                color: GlassTokens.primaryText(ctx),
                 fontWeight: FontWeight.w600,
               ),
               decoration: InputDecoration(
                 hintText: 'Dozasi (masalan: 1 kapsula ovqatdan so\'ng)',
-                hintStyle: const TextStyle(color: Color(0xFF94A3B8)),
+                hintStyle: TextStyle(color: GlassTokens.secondaryText(ctx)),
                 filled: true,
-                fillColor: const Color(0xFFF1F5F9),
+                fillColor: isDark ? const Color(0xFF334155) : const Color(0xFFF1F5F9),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(14),
                   borderSide: BorderSide.none,
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(14),
-                  borderSide: BorderSide(color: const Color(0xFF102A43).withValues(alpha: 0.3)),
+                  borderSide: BorderSide(color: GlassTokens.glassBorder(ctx)),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(14),
@@ -137,7 +137,7 @@ class _PillReminderWidgetState extends State<PillReminderWidget> {
           TextButton(
             onPressed: () => Navigator.pop(ctx),
             style: TextButton.styleFrom(
-              foregroundColor: const Color(0xFF102A43),
+              foregroundColor: isDark ? const Color(0xFF94A3B8) : const Color(0xFF102A43),
             ),
             child: Text('Bekor qilish'.tr),
           ),
@@ -171,7 +171,7 @@ class _PillReminderWidgetState extends State<PillReminderWidget> {
     final dateStr = _service.formatDate(widget.selectedDate);
 
     if (_isLoading) {
-      return const Center(child: CircularProgressIndicator(color: Color(0xFF102A43)));
+      return Center(child: CircularProgressIndicator(color: GlassTokens.primaryText(context)));
     }
 
     return SingleChildScrollView(
@@ -184,14 +184,14 @@ class _PillReminderWidgetState extends State<PillReminderWidget> {
             children: [
               Text(
                 'Dori-Darmon va Vitaminlar:'.tr,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w800,
-                  color: Color(0xFF0F172A),
+                  color: GlassTokens.primaryText(context),
                 ),
               ),
               IconButton(
-                icon: const Icon(LucideIcons.plusCircle, color: Color(0xFF102A43), size: 24),
+                icon: Icon(LucideIcons.plusCircle, color: GlassTokens.primaryText(context), size: 24),
                 onPressed: _showAddPillDialog,
               ),
             ],
@@ -202,16 +202,16 @@ class _PillReminderWidgetState extends State<PillReminderWidget> {
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: isDark ? LuxTokens.surface : Colors.white,
+                color: GlassTokens.glassFill(context),
                 borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: LuxTokens.border),
+                border: Border.all(color: GlassTokens.glassBorder(context)),
               ),
               child: Center(
                 child: Text(
                   'Hali dorilar qo\'shilmadi.',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 13,
-                    color: Color(0xFF64748B),
+                    color: GlassTokens.secondaryText(context),
                   ),
                 ),
               ),
@@ -226,9 +226,9 @@ class _PillReminderWidgetState extends State<PillReminderWidget> {
                   margin: const EdgeInsets.only(bottom: 12),
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: isDark ? LuxTokens.surface : Colors.white,
+                    color: GlassTokens.glassFill(context),
                     borderRadius: BorderRadius.circular(22),
-                    border: Border.all(color: const Color(0xFFE2E8F0)),
+                    border: Border.all(color: GlassTokens.glassBorder(context)),
                     boxShadow: [
                       BoxShadow(
                         color: Colors.black.withValues(alpha: 0.03),

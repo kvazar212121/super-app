@@ -380,6 +380,7 @@ class _PositionBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final isTop1 = position == 1;
     final isTop2Or3 = position == 2 || position == 3;
 
@@ -391,8 +392,8 @@ class _PositionBadge extends StatelessWidget {
         color: isTop1
             ? const Color(0xFF102A43)
             : (isTop2Or3
-                ? GlassTokens.glassBorder(context).withValues(alpha: 0.8)
-                : GlassTokens.glassBorder(context).withValues(alpha: 0.4)),
+                ? (isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0))
+                : (isDark ? const Color(0xFF1E293B) : const Color(0xFFF1F5F9))),
         shape: BoxShape.circle,
       ),
       child: Text(
