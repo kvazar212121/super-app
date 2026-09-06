@@ -1,7 +1,7 @@
 from datetime import date, datetime, time
 
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, func, or_
+from sqlalchemy import and_, func, or_, select
 from fastapi import HTTPException, status
 
 from app.models.provider import Provider
@@ -56,6 +56,22 @@ class ProviderService:
             base = base.where(search_filter)
             count_base = count_base.where(search_filter)
 
+        # Salon xodimi va to'xtatilgan provayder ro'yxatda ko'rinmaydi.
+        # Bu filtr SQL'da: ilgari u `LIMIT` dan KEYIN Python'da ishlardi,
+        # ya'ni har sahifa `per_page` dan kam element qaytarardi va `total`
+        # filtrlanmagan sondan hisoblanib, sahifalar soni noto'g'ri chiqardi.
+        rol = Provider.metadata_json["barber_role"].as_string()
+        suspend = Provider.metadata_json["is_suspended"].as_boolean()
+        ko_rinadi = or_(
+            Provider.metadata_json.is_(None),
+            and_(
+                or_(rol.is_(None), rol != "shop_employee"),
+                or_(suspend.is_(None), suspend.is_(False)),
+            ),
+        )
+        base = base.where(ko_rinadi)
+        count_base = count_base.where(ko_rinadi)
+
         total = (await db.execute(count_base)).scalar() or 0
 
         # Saralash. `sort="rating"` — bosh sahifadagi "Top reytingli" ro'yxati
@@ -72,12 +88,7 @@ class ProviderService:
 
         query = base.offset((page - 1) * per_page).limit(per_page)
         providers = (await db.execute(query)).scalars().all()
-        filtered = [
-            p for p in providers
-            if (p.metadata_json or {}).get("barber_role") != "shop_employee"
-            and not (p.metadata_json or {}).get("is_suspended")
-        ]
-        return filtered, total
+        return list(providers), total
 
     @staticmethod
     async def get_by_id(db: AsyncSession, provider_id: int) -> Provider:

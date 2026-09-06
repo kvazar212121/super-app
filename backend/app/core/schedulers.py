@@ -262,29 +262,54 @@ async def market_scraper_scheduler():
             await asyncio.sleep(3600)  # xato bo'lsa 1 soat kutish
 
 
+# Bir tranzaksiyada o'chiriladigan qator soni. Kichik bo'lak: uzoq lock,
+# jadval shishishi (bloat) va replikatsiya kechikishini oldini oladi.
+_RETENTION_BATCH = 10_000
+
+
+async def _delete_old_rows(db, jadval: str) -> int:
+    """30 kundan eski qatorlarni BO'LAKLAB o'chiradi.
+
+    Nega bo'lak: 1 mln foydalanuvchida kuniga millionlab qator eskiradi.
+    Bitta `DELETE` ularni bitta uzoq tranzaksiyada o'chiradi — bu jadvalni
+    bloklaydi, WAL'ni shishiradi va replikani orqada qoldiradi.
+    """
+    jami = 0
+    while True:
+        res = await db.execute(text(
+            f"DELETE FROM {jadval} WHERE id IN ("
+            f"  SELECT id FROM {jadval}"
+            f"  WHERE created_at < NOW() - INTERVAL '30 days'"
+            f"  LIMIT :n)"
+        ), {"n": _RETENTION_BATCH})
+        await db.commit()
+        jami += res.rowcount or 0
+        if (res.rowcount or 0) < _RETENTION_BATCH:
+            return jami
+        # Bazaga va replikaga nafas beramiz — tozalash shoshilinch ish emas.
+        await asyncio.sleep(1)
+
+
 async def retention_scheduler():
     """Saqlash limiti: eski bildirishnomalarni serverdan tozalash (1 oy).
 
     Bildirishnomalar mijoz qurilmasida ko'rinadi; serverда 30 kundan ortiq
     saqlanmaydi. Har 24 soatda bir marta ishlaydi.
+
+    Jadval ~10 mln qatordan oshsa, bo'laklab o'chirish ham qimmatlashadi —
+    o'shanda oyma-oy partitsiyalashga o'tish kerak (ARXITEKTURA.md §16.5).
     """
-    from sqlalchemy import text
     logger.info("Retention scheduler starting...")
     while True:
         try:
             async with async_session() as db:
-                res = await db.execute(text(
-                    "DELETE FROM notifications WHERE created_at < NOW() - INTERVAL '30 days'"
-                ))
+                n1 = await _delete_old_rows(db, "notifications")
                 # Foydalanuvchilararo xabarlar ham serverда 30 kun saqlanadi
-                res2 = await db.execute(text(
-                    "DELETE FROM direct_messages WHERE created_at < NOW() - INTERVAL '30 days'"
-                ))
-                await db.commit()
-                if res.rowcount:
-                    logger.info(f"Retention: {res.rowcount} ta eski bildirishnoma tozalandi (>30 kun)")
-                if res2.rowcount:
-                    logger.info(f"Retention: {res2.rowcount} ta eski xabar tozalandi (>30 kun)")
+                n2 = await _delete_old_rows(db, "direct_messages")
+                if n1:
+                    logger.info(f"Retention: {n1} ta eski bildirishnoma tozalandi (>30 kun)")
+                if n2:
+                    logger.info(f"Retention: {n2} ta eski xabar tozalandi (>30 kun)")
             await asyncio.sleep(60 * 60 * 24)  # kuniga bir marta
         except asyncio.CancelledError:
             logger.info("Retention scheduler cancelled.")

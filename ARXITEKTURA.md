@@ -649,63 +649,102 @@ SQL'da sana filtri **yo'q** — barcha bajarilmagan rejalar RAM'ga tortiladi.
 | Toifa lentasi | 15.7 ms | **0.4 ms** (qisman indeks) | 39× |
 | Geo filtr | *SQL'da imkonsiz* | **14.1 ms** (bounding box) | — |
 
-### 16.5 Tavsiya qilinadigan tartib
+### 16.5 Bajarilgan tuzatishlar (2026-09-06)
 
-**1-bosqich — qidiruvni SQL'ga ko'chirish** (eng muhimi)
+✅ **Qidiruv SQL'ga ko'chirildi** (`services/marketplace/search.py`)
 
-- `LIMIT 200 + Python filtr` naqshini butunlay olib tashlang
-- Narx solishtiruvi uchun `price_uzs` ni **yozish paytida** hisoblab saqlang
-  (denormalizatsiya) — SQL'da valyuta konvertatsiyasi kerak bo'lmaydi
-- Geo: avval `lat/lng BETWEEN` bounding box, keyin aniq masofa — ikkalasi SQL'da
+`LIMIT 200 + Python filtr` naqshi olib tashlandi. Endi narx, masofa va matn
+filtri — hammasi SQL'da. Valyuta `CASE` bilan joriy kursda hisoblanadi
+(ustunda saqlanmaydi, chunki kurs har kuni o'zgaradi). Narxi yoki
+koordinatasi yo'q e'lonlar avvalgidek **yo'qolmaydi**.
 
-**2-bosqich — indekslar**
+Xuddi shu 500K e'lonli bazada qayta o'lchandi: **15/15, 11/11, 9/9**
+natija qaytdi (ilgari 0/22, 0/8, 0/7), issiq holatda 24-26 ms.
 
-```sql
-CREATE EXTENSION IF NOT EXISTS pg_trgm;
+✅ **Usta lentasi geo filtri** (`api/v1/jobs.py`, `services/job_service.py`)
 
--- ILIKE '%...%' uchun
-CREATE INDEX ix_listings_title_trgm  ON listings  USING gin (title gin_trgm_ops);
-CREATE INDEX ix_listings_desc_trgm   ON listings  USING gin (description gin_trgm_ops);
-CREATE INDEX ix_providers_name_trgm  ON providers USING gin (name gin_trgm_ops);
-CREATE INDEX ix_providers_addr_trgm  ON providers USING gin (address gin_trgm_ops);
+Koordinata bo'yicha masofa filtri endi `LIMIT` dan **oldin**, SQL'da.
+Manzil MATNI bo'yicha hudud qoidasi Python'da qoldi — u faqat qo'shimcha
+filtrlaydi, natija qo'shmaydi, shuning uchun yo'qotish bermaydi.
 
--- faqat faol yozuvlar uchun qisman indeks
-CREATE INDEX ix_listings_active_created ON listings (created_at DESC, id DESC) WHERE status='active';
-CREATE INDEX ix_listings_active_geo     ON listings (lat, lng)                 WHERE status='active';
-CREATE INDEX ix_providers_active_rating ON providers (rating DESC, id DESC)    WHERE is_active;
+✅ **Scheduler to'liq skani** (`core/schedulers.py`)
 
--- scheduler uchun
-CREATE INDEX ix_plans_pending ON plans (due_date) WHERE is_completed = false AND is_notified = false;
-```
+`plan_reminder_scheduler` endi `due_date <= now() + offset` shartini SQL'da
+tekshiradi va bir siklda ko'pi bilan 500 ta rejani oladi.
 
-> Indekslarni **modellarga ham** `__table_args__` bilan yozing, aks holda
-> `alembic --autogenerate` ularni o'chirmoqchi bo'ladi (§7).
+✅ **Indekslar** — modellarda `__table_args__` bilan e'lon qilingan, ya'ni
+`alembic --autogenerate` ularni o'chirmoqchi bo'lmaydi. Migratsiya:
+`ece5f1b1b853`.
 
-**3-bosqich — keyset sahifalash**
+| Indeks | Turi |
+|---|---|
+| `ix_listings_title_trgm`, `ix_listings_description_trgm` | GIN trigram |
+| `ix_providers_name_trgm`, `ix_providers_address_trgm` | GIN trigram |
+| `ix_listings_active_created`, `ix_listings_active_cat_created` | qisman (`status='active'`) |
+| `ix_listings_active_geo` | qisman, bounding box uchun |
+| `ix_providers_active_rating` | qisman (`is_active`) |
+| `ix_plans_pending_due` | qisman (bajarilmagan rejalar) |
 
-`OFFSET` o'rniga kursor: `WHERE (created_at, id) < (:last_created, :last_id)`.
-Chuqurlikdan qat'i nazar bir xil tez (o'lchangan: 0.4 ms).
+`pg_trgm` kengaytmasi `db/base.py` dagi `before_create` hook orqali
+yaratiladi — `startup.py` da emas. Sabab: `create_all` ni chaqiradigan har
+yo'l (testlar, seed skriptlari, yangi muhit) o'zi ishlashi kerak.
 
-**4-bosqich — model tuzatishlari**
+✅ **`lazy="selectin"` tuzatildi** — `Provider.orders` va `Provider.reviews`
+`lazy="raise"` ga o'tkazildi (`Category.providers` uslubi). Ular kodda
+hech qayerda o'qilmasdi, lekin har provayder yuklanganda uning barcha
+buyurtma va sharhlari tortilardi.
 
-`models/provider.py` da `Provider.orders` va `Provider.reviews` —
-`lazy="selectin"`. Provayder ro'yxatini yuklaganda har bir provayderning
-**barcha** buyurtma va sharhlari RAM'ga tortiladi. `Category.providers` da bu
-xato allaqachon topilib `lazy="raise"` ga o'tkazilgan; shu ikkitasi qolgan.
+✅ **Provayder ro'yxatidagi `metadata_json` filtri SQL'ga ko'chirildi**
+(`services/provider_service.py`). Ilgari salon xodimi va to'xtatilgan
+provayder `LIMIT` dan **keyin** Python'da olib tashlanardi — natijada har
+sahifa `per_page` dan kam element qaytarardi va `total` filtrlanmagan
+sondan hisoblanib, sahifalar soni noto'g'ri chiqardi.
 
-**5-bosqich — o'sish boshqaruvi**
+✅ **Tozalash bo'laklab ishlaydi** (`core/schedulers.py`). Bitta katta
+`DELETE` o'rniga 10 000 talik bo'laklar, orasida 1 soniya tanaffus —
+uzoq lock, bloat va replikatsiya kechikishini oldini oladi.
 
-`notifications` — hozir 140 foydalanuvchiga 21 661 qator (~155 ta/kishi),
-1 mln da ~150 mln qator. 30 kunlik tozalash bor, lekin bunday hajmda `DELETE`
-uzoq lock va bloat beradi. **Oyma-oy partitsiyalash** va eski partitsiyani
-`DROP` qilish kerak.
+### 16.6 Ataylab BAJARILMAGAN va sababi
 
-**6-bosqich — infratuzilma**
+**Keyset sahifalash** — `OFFSET` o'z holicha qoldirildi.
+
+O'lchovda `OFFSET 100000` 71 ms bergan edi, lekin bu **5000-sahifa**.
+Flutter tomonini tekshirganda ma'lum bo'ldi: chuqur sahifalash faqat
+`top_providers` "yana yuklash" da bor va u bir necha sahifadan oshmaydi.
+`OFFSET 10000` (500-sahifa) esa 37 ms — muammo emas. Keyset kursorga
+o'tish API shartnomasini buzadi (`page` → `cursor`, `total` yo'qoladi) va
+Flutter tomonini ham o'zgartirishni talab qiladi. Foyda xarajatga
+arzimaydi.
+
+**Qachon qaytib ko'rish kerak:** ro'yxatda cheksiz skroll paydo bo'lsa yoki
+foydalanuvchilar 1000-sahifadan nariga chiqa boshlasa.
+
+**`notifications` partitsiyalash** — bajarilmadi, o'rniga bo'laklab
+o'chirish qilindi.
+
+Jadval hozir **21 697 qator / 5.7 MB**. Partitsiyalash 10 mln+ qatorli
+jadvallar uchun. Mavjud jadvalni partitsiyalanganga aylantirib bo'lmaydi:
+yangi jadval + nusxa + almashtirish kerak, ya'ni jonli bazada texnik
+tanaffus. Bundan tashqari PK `id` dan `(id, created_at)` ga o'zgaradi va
+kimdir har oy yangi partitsiya yaratib turishi shart — aks holda `INSERT`
+yiqiladi.
+
+**Qachon qilish kerak:** jadval ~10 mln qatordan oshganda. Tartib:
+1. `notifications_new` ni `PARTITION BY RANGE (created_at)` bilan yaratish
+2. Oylik partitsiyalar + keyingi oy uchun avtomatik yaratuvchi scheduler
+3. Ma'lumotni bo'laklab ko'chirish
+4. Tranzaksiya ichida nomlarni almashtirish
+5. Retention `DELETE` o'rniga `DROP PARTITION` ga o'tadi
+
+### 16.7 Qolgan ish — infratuzilma
 
 - **PgBouncer majburiy:** `pool_size=10 + overflow=5` har worker uchun,
   `WEB_CONCURRENCY=3`. 4 ta backend × 3 worker × 15 = **180 ulanish**,
   PostgreSQL standarti esa 100.
 - Read replica, alohida WebSocket server, rasm uchun S3/Spaces.
+- **Katta jadvalda indeks yaratish:** migratsiya `CREATE INDEX` bloklaydi.
+  Jadval yirik bo'lsa qo'lda `CREATE INDEX CONCURRENTLY` qilib, keyin
+  `alembic stamp ece5f1b1b853` qiling (migratsiya faylida ham yozilgan).
 
 ### 16.6 Elasticsearch kerakmi?
 
@@ -719,15 +758,16 @@ Alohida qidiruv tizimini faqat ~5 mln e'londan keyin yoki morfologik qidiruv
 
 | # | Muammo | Joyi | Og'irlik |
 |---|---|---|---|
-| 1 | Qidiruv natijani yo'qotadi (200 qator + Python filtr) | `services/marketplace/search.py` | 🔴 Kritik (masshtabda) |
-| 2 | Usta lentasi geo filtri `LIMIT` dan keyin | `api/v1/jobs.py` | 🔴 Kritik (masshtabda) |
-| 3 | `plan_reminder_scheduler` to'liq skan, indekssiz | `core/schedulers.py` | 🟠 Yuqori |
-| 4 | `Provider.orders` / `Provider.reviews` `lazy="selectin"` | `models/provider.py` | 🟠 Yuqori |
-| 5 | `OFFSET` sahifalash chuqurlikda sekinlashadi | `services/provider_service.py` | 🟡 O'rta |
-| 6 | `notifications` partitsiyalanmagan | — | 🟡 O'rta (kelajakda) |
-| 7 | `finance_groups` ↔ `users` aylanma FK | modellar | 🟢 Past (ogohlantirish) |
-| 8 | `barber_service.py` / `salon_service.py` ~58 qator nusxa | servislar | 🟢 Past |
-| 9 | Flutter SDK CI'da yo'q — `flutter analyze` qo'lda | — | 🟢 Past |
+| 1 | `OFFSET` sahifalash chuqurlikda sekinlashadi (hozir muammo emas — §16.6) | `services/provider_service.py` | 🟡 O'rta |
+| 2 | `notifications` partitsiyalanmagan (10 mln qatordan keyin — §16.6) | — | 🟡 O'rta (kelajakda) |
+| 3 | PgBouncer yo'q — ulanishlar soni Postgres limitidan oshadi | infratuzilma | 🟡 O'rta |
+| 4 | `finance_groups` ↔ `users` aylanma FK | modellar | 🟢 Past (ogohlantirish) |
+| 5 | `barber_service.py` / `salon_service.py` ~58 qator nusxa | servislar | 🟢 Past |
+| 6 | Flutter SDK CI'da yo'q — `flutter analyze` qo'lda | — | 🟢 Past |
+
+**2026-09-06 da hal qilinganlar:** qidiruvning natija yo'qotishi, usta
+lentasi geo filtri, scheduler to'liq skani, `lazy="selectin"`, provayder
+ro'yxatidagi `metadata_json` filtri, tozalashning uzoq `DELETE` i — §16.5.
 
 ---
 
@@ -779,3 +819,5 @@ ishlashi mumkin. `docs/qilingan_ishlar/` — **arxiv**, "todo" emas.
 | 2026-09-06 | `User.providers` ↔ `Provider.owner` `back_populates` bilan bog'landi | §6 |
 | 2026-09-06 | Flutter: 39 o'lik fayl, 3 ortiqcha asset (~15.8 MB), `google_fonts` olib tashlandi | §12 |
 | 2026-09-06 | Backend: 20 buzuq skript, 9 o'lik simvol, 37 ishlatilmaydigan import tozalandi | §5 |
+| 2026-09-06 | Qidiruv SQL'ga ko'chirildi (0% → 100% qamrov), 9 ta indeks, `lazy="raise"`, bo'laklab tozalash | §16.5 |
+| 2026-09-06 | Keyset sahifalash va partitsiyalash ataylab qoldirildi — sabab yozildi | §16.6 |
