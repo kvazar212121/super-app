@@ -81,7 +81,7 @@ async def fraud_overview(
         "summary": {
             "total": len(items),
             "by_level": by_level,
-            "suspended": by_level.get(FraudFlagLevel.suspended.value, 0),
+            "review": by_level.get(FraudFlagLevel.review.value, 0),
             "alert": by_level.get(FraudFlagLevel.alert.value, 0),
         },
     }

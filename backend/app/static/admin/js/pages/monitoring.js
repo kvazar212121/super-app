@@ -15,7 +15,10 @@ function fraudBadge(level) {
         normal: ['Normal', 'active'],
         warning: ['Ogohlantirish', 'pending'],
         alert: ['Xavf', 'cancelled'],
-        suspended: ['To\'xtatilgan', 'cancelled']
+        // Provayder BLOKLANMAYDI — faqat tekshiruvga qo'yiladi.
+        // Ilgari bu yerda "To'xtatilgan" deb yozilardi va admin ham,
+        // provayder ham profil to'xtagan deb o'ylardi.
+        review: ['Tekshiruvda', 'pending']
     };
     var pair = map[level] || [level, 'pending'];
     return '<span class="badge-status ' + pair[1] + '">' + window.escapeHtml(pair[0]) + '</span>';
@@ -75,7 +78,7 @@ async function renderMonitoring() {
     }
     if (fraud && fraud.summary) {
         html += statCard('Shubhali provayderlar',
-            (fraud.summary.alert || 0) + (fraud.summary.suspended || 0),
+            (fraud.summary.alert || 0) + (fraud.summary.review || 0),
             fraud.month + ' oyi');
     }
     html += '</div>';

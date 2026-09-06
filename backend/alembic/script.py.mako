@@ -9,7 +9,9 @@ from typing import Sequence, Union
 
 from alembic import op
 import sqlalchemy as sa
-${imports}
+## `imports` faqat --autogenerate da beriladi. Shartsiz yozilsa
+## oddiy `alembic revision` "NameError: Undefined" bilan yiqilardi.
+${imports if imports is not UNDEFINED else ""}
 
 # revision identifiers, used by alembic.
 revision: str = '${up_revision}'

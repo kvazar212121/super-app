@@ -96,6 +96,20 @@ async def run_startup_init():
         await conn.execute(text(
             "ALTER TABLE plans ADD COLUMN IF NOT EXISTS is_notified BOOLEAN DEFAULT FALSE"
         ))
+        # `suspended` -> `review`. Nomi yolg'on edi: bu daraja hech qachon
+        # provayderni bloklamagan. Migratsiya ham bor (dc44c41514df), lekin
+        # jadvallarini `create_all` dan olgan bazalar migratsiyani
+        # o'tkazmaydi — shuning uchun bu yerda ham qo'llanadi.
+        await conn.execute(text("""
+            DO $$ BEGIN
+              IF EXISTS (
+                SELECT 1 FROM pg_enum e JOIN pg_type t ON t.oid = e.enumtypid
+                WHERE t.typname = 'fraudflaglevel' AND e.enumlabel = 'suspended'
+              ) THEN
+                ALTER TYPE fraudflaglevel RENAME VALUE 'suspended' TO 'review';
+              END IF;
+            END $$;
+        """))
         await conn.execute(text(
             "ALTER TABLE users ADD COLUMN IF NOT EXISTS reminder_offset_minutes INTEGER DEFAULT 10"
         ))

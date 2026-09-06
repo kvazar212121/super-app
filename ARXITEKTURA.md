@@ -893,12 +893,23 @@ Eskalatsiya narvoni ham bor (`services/checkin_service.py`):
 
 #### Uchta jiddiy kamchilik
 
-**1. `suspended` hech narsani to'xtatmaydi.** Flag qo'yiladi va provayderga
-«🔴 Faoliyat to'xtatildi... Profilingiz tekshiruv tugagunicha to'xtatildi»
-degan xabar ketadi. Lekin `flag_level` butun kodda faqat **admin
-monitoringida ko'rsatish uchun** o'qiladi. Qidiruv esa `is_blocked` ni
-tekshiradi — bu **alohida**, admin qo'lda qo'yadigan maydon.
-**Ya'ni tizim provayderga yolg'on aytadi:** u to'xtatilmagan, ishlayveradi.
+**1. ~~`suspended` hech narsani to'xtatmaydi~~ — TUZATILDI (2026-09-06).**
+
+Flag `review` deb qayta nomlandi va xabar haqiqatni aytadi: «Profilingiz
+tekshiruvga olindi… hozircha ishlashda davom etishingiz mumkin». Admin ham
+xabar oladi — aks holda "tekshiruv" hech kim ko'rmaydigan bayroq bo'lib
+qolardi.
+
+**Nega avtomatik BLOKLAMAYMIZ** (ataylab qaror): `disputed` hisobi tomonlar
+bir-biriga ZID javob berganda oshadi (mijoz «keldim», usta «kelmadi»).
+Bu ustaning aybi isbotlangani emas — mijoz yolg'on aytayotgan bo'lishi ham
+mumkin, adminga ketadigan xabarda ham «Tekshirish kerak!» deb yozilgan.
+Isbotlanmagan ziddiyat uchun halol ustaning ishini to'xtatib qo'yish
+firibgarni qo'yib yuborishdan qimmatroq.
+
+Migratsiya `dc44c41514df` (`ALTER TYPE ... RENAME VALUE` — katalog
+o'zgarishi, jadval qayta yozilmaydi) + `startup.py` da idempotent variant
+`create_all` dan kelgan bazalar uchun.
 
 **2. Hisob har oy nolga tushadi.** `provider_fraud_stats.month = "2026-09"` —
 har oy yangi qator. Har oyda 2 ta nizo qiladigan odam **hech qachon**

@@ -366,20 +366,34 @@ class CheckinService:
 
         # Flag level ni yangilash
         if stat.disputed_count >= 3:
-            stat.flag_level = FraudFlagLevel.suspended
-            # Provider ga ogohlantirish
+            stat.flag_level = FraudFlagLevel.review
             from app.models.provider import Provider
             provider = await db.get(Provider, provider_id)
+            # Xabar HAQIQATNI aytadi: profil to'xtatilmaydi, tekshiruvga
+            # olinadi. Ilgari "Faoliyat to'xtatildi" deb yozilardi, lekin
+            # hech narsa to'xtamasdi — provayder ishlab yuraverardi.
             if provider and provider.owner_user_id:
                 NotificationService.send_notification(
                     user_id=provider.owner_user_id,
-                    ntype="fraud_suspended",
-                    title="🔴 Faoliyat to'xtatildi",
+                    ntype="fraud_review",
+                    title="⚠️ Profilingiz tekshiruvga olindi",
                     message=(
-                        f"Ushbu oyda {stat.disputed_count} ta nizoli holat aniqlandi. "
-                        f"Profilingiz tekshiruv tugagunicha to'xtatildi."
+                        f"Ushbu oyda {stat.disputed_count} ta nizoli holat aniqlandi "
+                        f"(mijoz va siz turlicha javob bergansiz). Administrator "
+                        f"tekshirib chiqadi. Hozircha ishlashda davom etishingiz mumkin."
                     ),
                 )
+            # Admin HAM xabardor bo'lishi kerak — aks holda "tekshiruv"
+            # hech kim ko'rmaydigan bayroq bo'lib qolardi.
+            NotificationService.send_notification(
+                user_id=1,
+                ntype="fraud_review",
+                title="⚠️ Provayder tekshiruvga olindi",
+                message=(
+                    f"Provider #{provider_id}: oyda {stat.disputed_count} ta "
+                    f"nizoli holat. Ko'rib chiqing."
+                ),
+            )
         elif stat.no_show_count >= 10:
             stat.flag_level = FraudFlagLevel.alert
             NotificationService.send_notification(
