@@ -1,84 +1,45 @@
 # AGENTS.md — bu loyihada ishlaydigan agentlar uchun
 
-O'qing, keyin ishni boshlang. Bu fayl vaqt yo'qotmaslik uchun.
+## Avval shuni o'qing
 
-## 1. Bajarilgan ishni QAYTA qilmang
+**[`ARXITEKTURA.md`](ARXITEKTURA.md)** — loyihaning **yagona** arxitektura
+hujjati. Loyiha nima, qanday tuzilgan, qanday qoidalar bor, qanday muammolar
+ma'lum — hammasi o'sha yerda, mundarija bilan.
 
-`docs/qilingan_ishlar/` — **arxiv**. U yerdagi rejalar allaqachon
-bajarilgan, test qilingan va commit qilingan. Ular "todo" emas.
-Ishni boshlashdan oldin `docs/qilingan_ishlar/README.md` ni o'qing.
+Boshqa arxitektura hujjati **yaratmang**. O'zgarish kiritsangiz —
+`ARXITEKTURA.md` ning tegishli bo'limini yangilang va §19 "O'zgarishlar
+jurnali" ga bir qator qo'shing.
 
-Loyihada bir nechta agent parallel ishlashi mumkin. `git log` va
-`git status` ni doim tekshiring: kimdir shu ishni qilib qo'ygan
-bo'lishi mumkin.
-
-## 2. Loyiha nima
-
-HubServis (`super_app`) — O'zbekiston uchun xizmatlar super-app'i.
-
-- **Backend:** FastAPI + PostgreSQL 16 + Redis 7, Docker Compose
-- **Ilova:** Flutter (`lib/`)
-- **Admin panel:** vanilla HTML/JS (`backend/app/static/admin/`)
-- **To'liq tavsif:** `ARXITEKTURA.md`
-- **Serverga chiqarish:** `DEPLOY.md`
-
-## 3. Tekshiruv (ishni tugatgach MAJBURIY)
+## Ishni boshlashdan oldin
 
 ```bash
-flutter analyze && flutter test          # 201 test, 0 error bo'lishi kerak
-
-# Xarita 3D ni tekshirish (Chrome kerak, bo'lmasa SKIP)
-python3 scripts/check_3d_map.py
-
-# Telefon ulangan bo'lsa — 3D native render:
-# flutter test integration_test/ -d <qurilma> --dart-define=MAPTILER_KEY=...
-PYTHON=backend/.venv/bin/python bash tests/run.sh
+git log --oneline -10 && git status
 ```
 
-Backend integratsiya testlari haqiqiy PostgreSQL talab qiladi. Bazasiz
-ular **SKIP** bo'ladi (yiqilmaydi). Jiddiy o'zgarish kiritsangiz baza
-bilan bir marta ishlating:
+Loyihada bir nechta agent parallel ishlashi mumkin — kimdir shu ishni qilib
+qo'ygan bo'lishi mumkin.
+
+`docs/qilingan_ishlar/` — **arxiv**. U yerdagi rejalar allaqachon bajarilgan,
+ular "todo" emas.
+
+## Ishni tugatgach — tekshiruv
 
 ```bash
-export SUPERAPP_TEST_DB="postgresql+asyncpg://postgres@127.0.0.1:5435/superapp_test"
+flutter analyze && flutter test                    # 268 test
+PYTHON=backend/.venv/bin/python bash tests/run.sh  # backend integratsiya
+cd backend && .venv/bin/alembic check              # modellar migratsiyaga mos
 ```
 
-> Diqqat: test bazasi `drop_all` qiladi. Ishchi bazani KO'RSATMANG.
+Backend integratsiya testlari haqiqiy PostgreSQL talab qiladi; bazasiz
+**SKIP** bo'ladi (yiqilmaydi).
 
-## 4. Bu loyihaning qoidalari
+## Eng ko'p buziladigan uchta qoida
 
-- **Izohlar o'zbekcha** va "nima uchun" ni tushuntiradi, "nima" ni emas.
-- **Sirlar kodga yozilmaydi.** `.env` (backend), `--dart-define`
-  (Flutter, masalan `MAPTILER_KEY`).
-- **Baza:** Alembic ishlatilmaydi. Yangi jadval `create_all` bilan
-  o'zi yaratiladi; mavjud jadvalga ustun qo'shish uchun
-  `app/core/startup.py` dagi `ALTER TABLE ... IF NOT EXISTS` uslubi.
-- **Savdo (`marketplace`) va ish e'loni (`jobs`) — BOSHQA narsa.**
-  `jobs` da xizmat qidiriladi, `marketplace` da buyum sotiladi.
-  Ikkalasini birlashtirmang, alohida papkada turadi.
-- **Ustaning yoki sotuvchining haqiqiy telefon raqami BERILMAYDI.** Aloqa faqat
-  ilova ichida (chat / WebRTC). Buni buzmang, biznes modeli shunga
-  bog'liq.
-- **Xarita:** tile manzilini hech qayerga qo'lda yozmang, faqat
-  `lib/config/map_config.dart`. Buni test qo'riqlaydi.
-- **3D xarita — soxta 3D QILMANG.** Rasterni `Matrix4` bilan
-  qiyshaytirish 3D emas: binolar tekis qoladi. Haqiqiy 3D vektor
-  style (`streets-v4`) + MapLibre `pitch` bilan bo'ladi
-  (`lib/screens/navigation_3d_screen.dart`). Bu bir marta noto'g'ri
-  qilingan va rad etilgan.
-- Har mazmunli o'zgarishdan keyin commit qiling, izoh o'zbekcha.
+1. **Baza:** yangi o'zgarish uchun Alembic. Mavjud bazada `upgrade head`
+   ISHLATMANG — `stamp head` qiling (`ARXITEKTURA.md` §7).
+2. **Qidiruv:** natijani `LIMIT` dan keyin Python'da filtrlamang — natija
+   yo'qoladi (§16.2).
+3. **Telefon raqam:** ustaning haqiqiy raqami hech qachon berilmaydi, aloqa
+   faqat ilova ichida (§9).
 
-## 5. AI agent (`backend/app/services/ai_agent/`)
-
-45 ta tool bor. Yangi tool qo'shish = `tools_schema.py` ga sxema +
-mos modulga handler + `dispatcher.py` ga ulash. Sxema va handler soni
-MOS bo'lishi kerak, buni test tekshiradi.
-
-- **O'zgartiruvchi har amal `confirm` darvozasidan o'tadi**: avval
-  xulosa qaytariladi, foydalanuvchi tasdiqlagach bajariladi. AI xato
-  tushunsa, haqiqiy bronni buzib qo'ymasin.
-- **Har amal faqat so'rovchining o'z ma'lumotiga tegadi**
-  (`user_id` bo'yicha filtr majburiy). Buni test qo'riqlaydi.
-- LLM ba'zan buzuq JSON qaytaradi — `dispatcher._parse_args` uni
-  tiklaydi. Bu joyni soddalashtirmang, u haqiqiy 500 xatosini
-  tuzatgan.
+Qolgan qoidalar: `ARXITEKTURA.md` §18.
