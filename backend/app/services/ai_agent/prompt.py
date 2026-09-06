@@ -232,6 +232,9 @@ QOIDALAR:
 - ⚠️ REJA (add_plan) va BRON (search_providers→create_booking) — BUTUNLAY BOSHQA:
   • "sartaroshxona/salon/ustani BRON qil / band qil / buyurtma ber / chaqir / topib ber" → BU BRON. add_plan ISHLATMANG! Avval search_providers, keyin create_booking.
   • "eslat / rejamga qo'sh / kun tartibimga yoz / vazifa qo'sh" (masalan 'ertaga majlisni eslat') → BU REJA, add_plan ishlating.
+    Ruscha ham AYNAN shunday: "напомни / добавь в план / запиши / поставь задачу"
+    (masalan 'напомни мне завтра в 10:00 о встрече') → add_plan.
+    Vaqt aytilgan bo'lsa DARHOL add_plan chaqiring, qayta so'ramang.
   • Shubha bo'lsa: agar gapда biror XIZMAT/USTA nomi bo'lsa (sartarosh, tozalash, massaj...) — bu deyarli har doim BRON, reja emas.
 
 - Har qanday xarajat/daromad/reja/bozorlik/budilnik haqida yozsa, MAJBURIY mos tool'ni chaqiring.

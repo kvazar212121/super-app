@@ -823,6 +823,7 @@ ishlashi mumkin. `docs/qilingan_ishlar/` — **arxiv**, "todo" emas.
 | 2026-09-06 | Qidiruv SQL'ga ko'chirildi (0% → 100% qamrov), 9 ta indeks, `lazy="raise"`, bo'laklab tozalash | §16.5 |
 | 2026-09-06 | Keyset sahifalash va partitsiyalash ataylab qoldirildi — sabab yozildi | §16.6 |
 | 2026-09-06 | AI agent kengaytirish konsepsiyasi: qamrov tahlili, shikoyat/jazo tizimi, aldashdan himoya | §20 |
+| 2026-09-06 | Eval to'plami qurildi (`tests/eval_ai_tools.py`), bazaviy natija 92%; ruscha eslatma tuzatildi | §20.6 |
 
 ---
 
@@ -1022,25 +1023,55 @@ Kerak bo'lgan minimal tizim:
 | **A/B** | Ikki versiyani foydalanuvchilarning bir qismida solishtirish |
 | **Kim o'zgartirdi** | `audit_logs` ga yozish (mexanizm allaqachon bor) |
 
-### 20.6 Poydevor: eval to'plami
+### 20.6 Eval to'plami — QURILDI ✅
 
-**Bularning hammasidan OLDIN shu kerak.** Hozir agentning tool tanlashini
-o'lchaydigan hech narsa yo'q — barcha AI testlari deterministik (handler
-ishlaydimi, promptda falon so'z bormi).
+`tests/eval_ai_tools.py` — 22 holat, haqiqiy model ustida yuriladi.
 
-Ya'ni promptga har tegish — qimor. Prompt'ning o'zida «bu eng ko'p uchraydigan
-xato» deb belgilangan joylar bor (savdo/ish e'lonini aralashtirish), lekin
-ular haqiqatan tuzalganini hech kim o'lchamaydi.
+```bash
+AI_EVAL=1 backend/.venv/bin/python tests/eval_ai_tools.py
+AI_EVAL=1 ... tests/eval_ai_tools.py --guruh savdo --takror 5
+```
 
-To'plam shakli: `{foydalanuvchi gapi → kutilgan tool(lar)}`, haqiqiy model
-ustida yurgiziladi, ball chiqadi.
+`AI_EVAL=1` ataylab majburiy — eval haqiqiy pul sarflaydi, shuning uchun
+`tests/run.sh` da avtomatik ishlamaydi. Yangi holat qo'shish = `CASES`
+ro'yxatiga bitta `Holat(...)`.
 
-Boshlang'ich to'plamga majburiy kiradigan holatlar:
-- Savdo ↔ ish e'loni farqi (prompt o'zi "eng ko'p xato" deb belgilagan)
-- Reja ↔ bron farqi
-- Tasdiq talab qiladigan amallar tasdiqsiz bajarilmasligi
-- Boshqa foydalanuvchining ma'lumotiga urinish → rad etilishi
-- Til almashuvi (o'zbekcha/ruscha)
+**Bazaviy natija (2026-09-06, 3 takror): 61/66 urinish — 92%**
+
+| Guruh | Natija | Izoh |
+|---|---|---|
+| savdo | 12/12 | Savdo ↔ ish e'loni farqi ishonchli |
+| ish | 9/9 | |
+| bron | 9/9 | |
+| info | 9/9 | |
+| tasdiq | 3/3 | Tasdiqsiz bekor qilinmaydi |
+| chegara | 6/6 | Pul/hisob amallarini bajarmaydi |
+| elon | 3/3 | |
+| **reja** | **8/9** | ⚠️ Eng zaif |
+| **til** | **4/6** | ⚠️ Ruscha eslatma |
+
+**Topilgan zaiflik:** eslatma/reja niyati eng ishonchsiz — ayniqsa rus
+tilida (3/5). Sabab: promptdagi eslatma qoidasida faqat o'zbekcha kalit
+so'zlar bor edi, savdo qoidasida esa ruscha misol ham bor. Ruscha
+ekvivalentlar qo'shilgach 4/5 ga ko'tarildi.
+
+> ⚠️ 5 ta namunada bu farq statistik jihatdan qat'iy emas — yo'nalish
+> to'g'ri, lekin jiddiy xulosa uchun takrorni oshirish kerak.
+
+**Eval qurish jarayonida chiqqan ikki saboq:**
+
+1. **Bitta urinish chalg'itadi.** Harorat 0 da ham model beqaror: bir xil
+   gap bir yurishda `add_plan` chaqirdi, keyingisida yo'q. Shuning uchun
+   `--takror` standart 3.
+2. **Eval ishlab chiqarish bilan BIR XIL sozlamada yurishi shart.**
+   Skript `backend/` ga `chdir` qiladi: sozlamalar `.env` ni ishchi
+   papkaga nisbatan qidiradi. Ildizdan yurgizilganda `.env` topilmay,
+   baza standart portga tushib, provayder ro'yxati boshqacha yig'ilgan va
+   eval **butunlay boshqa sozlamani** sinagan — buni bildirmasdan.
+
+**Yo'l-yo'lakay topilgan:** OpenAI kalitida kredit tugagan
+(`429 — You have no credits remaining`). Zaxira zanjiri ishlagani uchun
+chat to'xtamagan, lekin bu e'tiborsiz qolgan.
 
 ### 20.7 Qolib ketgan, e'tibor talab qiladigan nuqtalar
 
