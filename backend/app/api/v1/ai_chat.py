@@ -136,7 +136,7 @@ async def ai_chat(
                             "messages": messages,
                             "tools": TOOLS,
                             "tool_choice": "auto",
-                            "temperature": 0.7,
+                            "temperature": settings.ai_chat_temperature,
                             "max_tokens": settings.groq_max_tokens,
                         }),
                     )
@@ -167,12 +167,23 @@ async def ai_chat(
     # qidiruvида ishlatiladi.
     tool_ctx = {"lat": body.lat, "lng": body.lng} if body.lat is not None and body.lng is not None else None
 
+    # Kuzatuv: qaysi tool ishlatildi, nechta raund, qancha vaqt ketdi.
+    # Ilgari bu hech qayerda yozilmasdi — qaysi tool haqiqatan
+    # ishlatilishini yoki qaysi biri yiqilishini bilishning yo'li yo'q edi,
+    # ya'ni nimani yaxshilash kerakligi ham noma'lum edi.
+    import time as _time
+    boshlandi = _time.perf_counter()
+    ishlatilgan: list[str] = []
+    xato_tool: list[str] = []
+
     try:
         # Agentic loop — model bir turда bir necha tool chaqira oladi (masalan: search → book → javob).
         actions: list[dict] = []
         final_reply = ""
         MAX_TOOL_ROUNDS = 5
+        raund = 0
         for _round in range(MAX_TOOL_ROUNDS):
+            raund = _round + 1
             response = await call_groq(groq_messages)
             if response.status_code != 200:
                 logger.warning(f"AI API status {response.status_code}. Falling back to local parse.")
@@ -184,22 +195,41 @@ async def ai_chat(
                 final_reply = message.get("content") or ""
                 break
 
-            # Model tool(lar) chaqirdi — bajarib, natijani qaytaramiz
+            # Model tool(lar) chaqirdi — bajarib, natijani qaytaramiz.
+            #
+            # KETMA-KET (parallel EMAS) ataylab: barcha tool bitta
+            # `AsyncSession` ni bo'lishadi, u esa bir vaqtda ishlatishga
+            # xavfsiz emas. Parallel qilish uchun har toolga alohida
+            # sessiya kerak bo'ladi va bu tranzaksiya chegarasini
+            # o'zgartiradi (masalan qoralamani saqlash va e'lon berish
+            # boshqa-boshqa tranzaksiyaga tushadi).
             groq_messages.append(message)
             for tool_call in message["tool_calls"]:
+                nomi = tool_call["function"]["name"]
+                ishlatilgan.append(nomi)
                 tool_result_str, action = await handle_tool_call(
                     db, user_id, tool_call, ctx=tool_ctx
                 )
+                if '"status": "error"' in tool_result_str:
+                    xato_tool.append(nomi)
                 if action:
                     actions.append(action)
                 groq_messages.append({
                     "role": "tool",
                     "tool_call_id": tool_call["id"],
-                    "name": tool_call["function"]["name"],
+                    "name": nomi,
                     "content": tool_result_str,
                 })
         else:
             final_reply = "So'rovingiz bajarildi."  # tool rounds limiti
+            logger.warning("AI chat: tool raundlari limitiga yetdi (user=%s, tools=%s)",
+                           user_id, ishlatilgan)
+
+        logger.info(
+            "ai_chat user=%s raund=%s tools=%s xato=%s %.0fms",
+            user_id, raund, ishlatilgan or "-", xato_tool or "-",
+            (_time.perf_counter() - boshlandi) * 1000,
+        )
 
         # Clean <think> blocks just in case
         final_reply = re.sub(r"<think>.*?</think>", "", final_reply, flags=re.DOTALL).strip()

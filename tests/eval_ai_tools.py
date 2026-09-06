@@ -175,7 +175,7 @@ async def _prompt_yig(db):
     return await build_system_prompt(db)
 
 
-async def _sora(messages) -> dict | None:
+async def _sora(messages, harorat: float | None = None) -> dict | None:
     """Modelga bitta so'rov. Ishlab chiqarishdagi AYNAN o'sha yo'l."""
     import httpx
     from app.core.config import settings
@@ -193,9 +193,12 @@ async def _sora(messages) -> dict | None:
                         "messages": messages,
                         "tools": TOOLS,
                         "tool_choice": "auto",
-                        # Eval BARQAROR bo'lishi kerak: ishlab chiqarishda
-                        # 0.7, lekin o'lchov uchun past harorat.
-                        "temperature": 0.0,
+                        # ISHLAB CHIQARISH harorati. Ilgari bu yerda 0.0
+                        # turardi va eval hech qachon yuborilmaydigan
+                        # sozlamani o'lchardi. `--harorat` bilan solishtirish
+                        # uchun boshqa qiymat berish mumkin.
+                        "temperature": (settings.ai_chat_temperature
+                                        if harorat is None else harorat),
                         "max_tokens": settings.groq_max_tokens,
                     }),
                 )
@@ -241,6 +244,8 @@ async def main() -> int:
     # o'tdi. Takror bo'lmasa bu prompt xatosi deb qabul qilinardi.
     p.add_argument("--takror", type=int, default=3,
                    help="har holatni necha marta (LLM beqaror)")
+    p.add_argument("--harorat", type=float, default=None,
+                   help="haroratni majburiy belgilash (standart: sozlamadagi)")
     args = p.parse_args()
 
     if os.environ.get("AI_EVAL") != "1":
@@ -270,7 +275,9 @@ async def main() -> int:
         from app.services.ai_agent import SYSTEM_PROMPT
         system_prompt = SYSTEM_PROMPT
 
-    print(f"\n  Holatlar: {len(holatlar)} × {args.takror} takror\n")
+    from app.core.config import settings as _s
+    harorat = _s.ai_chat_temperature if args.harorat is None else args.harorat
+    print(f"\n  Holatlar: {len(holatlar)} × {args.takror} takror · harorat={harorat}\n")
 
     natijalar: list[tuple[Holat, int, int, list[str]]] = []
     for h in holatlar:
@@ -280,7 +287,7 @@ async def main() -> int:
             messages = ([{"role": "system", "content": system_prompt}]
                         + h.oldingi
                         + [{"role": "user", "content": h.gap}])
-            msg = await _sora(messages)
+            msg = await _sora(messages, args.harorat)
             ok, sabab = _baho(h, msg)
             otdi += 1 if ok else 0
             if not ok:

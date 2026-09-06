@@ -73,6 +73,15 @@ class Settings(BaseSettings):
     # (Sozlamalar → AI kalitlari), kodga qaytib kelish shart emas.
     groq_model: str = "openai/gpt-oss-120b"
     groq_max_tokens: int = 1024
+    # Chat harorati. `tests/eval_ai_tools.py` shu qiymatni o'qiydi, ya'ni
+    # o'zgartirilsa eval aynan yuborilayotgan sozlamani o'lchaydi.
+    #
+    # 0.7 ATAYLAB saqlangan. "Tool tanlash uchun past harorat yaxshiroq"
+    # degan umumiy qoida shu loyihada O'LCHOVDA tasdiqlanmadi:
+    # 0.7 -> 65/66, 0.3 -> 63/66. Farq kichik (statistik qat'iy emas),
+    # lekin pasaytirish uchun asos yo'q. O'zgartirmoqchi bo'lsangiz —
+    # avval `--harorat` bilan o'lchang.
+    ai_chat_temperature: float = 0.7
     # Groq hozir VISION modelini bermaydi — rasm tahlili Gemini yoki
     # OpenAI orqali ketadi (`ai_providers.VISION_PROVIDERS`).
     groq_vision_model: str = ""

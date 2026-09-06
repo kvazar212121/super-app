@@ -825,6 +825,7 @@ ishlashi mumkin. `docs/qilingan_ishlar/` — **arxiv**, "todo" emas.
 | 2026-09-06 | AI agent kengaytirish konsepsiyasi: qamrov tahlili, shikoyat/jazo tizimi, aldashdan himoya | §20 |
 | 2026-09-06 | Eval to'plami qurildi (`tests/eval_ai_tools.py`), bazaviy natija 92%; ruscha eslatma tuzatildi | §20.6 |
 | 2026-09-06 | Qoralama ko'p workerda eskirishi tuzatildi: Redis yagona manba, lokal lug'at faqat zaxira | §10 |
+| 2026-09-06 | Agent kuzatuvi qo'shildi (tool/raund/vaqt/xato); harorat o'lchandi va 0.7 saqlandi | §20.6 |
 
 ---
 
@@ -1069,6 +1070,18 @@ ekvivalentlar qo'shilgach 4/5 ga ko'tarildi.
    papkaga nisbatan qidiradi. Ildizdan yurgizilganda `.env` topilmay,
    baza standart portga tushib, provayder ro'yxati boshqacha yig'ilgan va
    eval **butunlay boshqa sozlamani** sinagan — buni bildirmasdan.
+
+**Eval bilan o'lchangan qaror — harorat.** "Tool tanlash uchun past
+harorat yaxshiroq" degan umumiy qoida shu loyihada **tasdiqlanmadi**:
+
+| Harorat | Natija |
+|---|---|
+| 0.7 (hozirgi) | **65/66 (98%)** |
+| 0.3 | 63/66 (95%) |
+
+Farq kichik va statistik qat'iy emas, lekin pasaytirish uchun asos yo'q —
+0.7 saqlab qolindi. Endi u `ai_chat_temperature` sozlamasi, eval esa
+aynan shu qiymatni o'qiydi (`--harorat` bilan solishtirish mumkin).
 
 **Yo'l-yo'lakay topilgan:** OpenAI kalitida kredit tugagan
 (`429 — You have no credits remaining`). Zaxira zanjiri ishlagani uchun
