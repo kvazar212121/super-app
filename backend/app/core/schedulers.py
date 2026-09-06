@@ -6,7 +6,7 @@ saylovi orqali ko'p workerда FAQAT bittasида ishlashini ta'minlaydi.
 import asyncio
 import logging
 
-from sqlalchemy import select
+from sqlalchemy import func, select, text
 
 from app.db.session import async_session
 
@@ -18,33 +18,40 @@ async def plan_reminder_scheduler():
     while True:
         try:
             await asyncio.sleep(15)  # Check every 15 seconds
-            from datetime import datetime, timezone, timedelta
-            now = datetime.now(timezone.utc)
 
             async with async_session() as db:
                 from app.models.plan import Plan
                 from app.models.user import User
                 from app.services.notification_service import NotificationService
 
-                stmt = select(Plan, User).join(User, Plan.user_id == User.id).where(
-                    Plan.is_completed == False,
-                    Plan.is_notified == False
+                # Vaqt sharti SQL'da: `due_date - offset <= now` ni teng
+                # ko'rinishga o'tkazamiz -> `due_date <= now + offset`.
+                # Nega SQL'da: ilgari BARCHA bajarilmagan rejalar RAM'ga
+                # tortilib, vaqt Python'da tekshirilardi. Bu har 15 soniyada
+                # to'liq jadval skani edi va foydalanuvchi soni bilan o'sardi.
+                stmt = (
+                    select(Plan)
+                    .join(User, Plan.user_id == User.id)
+                    .where(
+                        Plan.is_completed.is_(False),
+                        Plan.is_notified.is_(False),
+                        Plan.due_date <= func.now() + (
+                            User.reminder_offset_minutes * text("INTERVAL '1 minute'")
+                        ),
+                    )
+                    .limit(500)  # bir sikl portlab ketmasin
                 )
-                result = await db.execute(stmt)
-                rows = result.all()
+                plans = (await db.execute(stmt)).scalars().all()
 
-                if rows:
-                    for plan, user in rows:
-                        offset = getattr(user, "reminder_offset_minutes", 10)
-                        reminder_time = plan.due_date - timedelta(minutes=offset)
-                        if reminder_time <= now:
-                            NotificationService.send_notification(
-                                user_id=plan.user_id,
-                                ntype="plan_reminder",
-                                title="Reja eslatmasi ⏰",
-                                message=f"Siz shu soatda shuni qilishingiz kerak edi: {plan.title}",
-                            )
-                            plan.is_notified = True
+                for plan in plans:
+                    NotificationService.send_notification(
+                        user_id=plan.user_id,
+                        ntype="plan_reminder",
+                        title="Reja eslatmasi ⏰",
+                        message=f"Siz shu soatda shuni qilishingiz kerak edi: {plan.title}",
+                    )
+                    plan.is_notified = True
+                if plans:
                     await db.commit()
         except asyncio.CancelledError:
             logger.info("Plan reminder scheduler cancelled.")

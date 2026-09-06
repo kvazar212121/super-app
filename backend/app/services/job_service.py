@@ -11,10 +11,11 @@ QOIDALAR:
   - Har bir muhim qadamda ikkala tomonga bildirishnoma boradi
 """
 
+import math
 from datetime import datetime, timezone
 
 from fastapi import HTTPException
-from sqlalchemy import func, select, update as sa_update
+from sqlalchemy import func, or_, select, update as sa_update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
@@ -102,8 +103,20 @@ class JobService:
         db: AsyncSession,
         category_id: int | None = None,
         limit: int = 50,
+        provider=None,
     ) -> list[dict]:
-        """Ustalar ko'radigan OCHIQ e'lonlar."""
+        """Ustalar ko'radigan OCHIQ e'lonlar.
+
+        `provider` berilsa va uning koordinatasi bo'lsa, masofa filtri
+        SQL'da — `LIMIT` dan OLDIN — qo'llanadi. Nega muhim: ilgari eng
+        yangi 50 ta e'lon olinib, masofa keyin Python'da tekshirilardi.
+        Toshkentda kuniga minglab e'lon bo'lsa, Buxorodagi usta lentasi
+        deyarli doim bo'sh chiqardi — e'lonlar bor bo'lsa ham.
+
+        Manzil MATNI bo'yicha hudud solishtiruvi (koordinatasi yo'q
+        e'lonlar uchun) `geo.filter_jobs_for_provider` da qoladi: u faqat
+        qo'shimcha filtrlaydi, natija qo'shmaydi.
+        """
         now = _now()
         q = (
             select(JobPost, func.count(JobOffer.id))
@@ -121,6 +134,30 @@ class JobService:
         )
         if category_id is not None:
             q = q.where(JobPost.category_id == category_id)
+
+        p_lat = getattr(provider, "lat", None) if provider is not None else None
+        p_lng = getattr(provider, "lng", None) if provider is not None else None
+        if p_lat is not None and p_lng is not None:
+            from app.services.ai_job.geo import radius_km as _radius
+            r = _radius()
+            d_lat = r / 111.0
+            d_lng = r / (111.0 * max(math.cos(math.radians(p_lat)), 0.01))
+            masofa = 6371.0 * 2 * func.asin(func.sqrt(
+                func.power(func.sin(func.radians(JobPost.lat - p_lat) / 2), 2)
+                + func.cos(func.radians(p_lat))
+                * func.cos(func.radians(JobPost.lat))
+                * func.power(func.sin(func.radians(JobPost.lng - p_lng) / 2), 2)
+            ))
+            q = q.where(or_(
+                # Koordinatasiz e'lon bu bosqichda TUSHIB QOLMAYDI —
+                # uni matn bo'yicha qoida hal qiladi.
+                JobPost.lat.is_(None),
+                JobPost.lng.is_(None),
+                (JobPost.lat.between(p_lat - d_lat, p_lat + d_lat)
+                 & JobPost.lng.between(p_lng - d_lng, p_lng + d_lng)
+                 & (masofa <= r)),
+            ))
+
         rows = (await db.execute(q)).all()
         return [job.to_dict(offers_count=cnt) for job, cnt in rows]
 

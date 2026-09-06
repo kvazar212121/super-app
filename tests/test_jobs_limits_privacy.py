@@ -95,11 +95,17 @@ def static_checks():
               "Dart modelida qolgan")
 
         feed = _read_lib("lib/screens/jobs_feed_screen.dart") or ""
+        # Rasm vidjeti `Image.network` dan `CachedNetworkImage` ga
+        # o'tkazilgan (RAM keshi cheklangan). Test niyatni tekshiradi —
+        # rasm ko'rsatiladimi va xato holati qayta ishlanadimi — konkret
+        # vidjet nomini emas.
+        rasm_bor = "Image.network" in feed or "CachedNetworkImage" in feed
         check("usta e'lon kartasida RASMNI ko'radi",
-              "job.photos" in feed and "Image.network" in feed,
+              "job.photos" in feed and rasm_bor,
               "usta ish hajmini rasmsiz baholay olmaydi")
         check("rasm yuklanmasa karta buzilmaydi",
-              "errorBuilder" in feed, "errorBuilder yo'q")
+              "errorBuilder" in feed or "errorWidget" in feed,
+              "xato holati uchun zaxira vidjet yo'q")
 
     create_src = inspect.getsource(jobs_api.create_job)
     check("oddiy POST /jobs chegarani tekshiradi",

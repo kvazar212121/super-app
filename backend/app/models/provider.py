@@ -1,4 +1,4 @@
-from sqlalchemy import Float, Index, Integer, String, ForeignKey, JSON
+from sqlalchemy import Float, Index, Integer, String, ForeignKey, JSON, text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
@@ -8,6 +8,16 @@ class Provider(Base):
     __tablename__ = "providers"
     __table_args__ = (
         Index("ix_providers_category_id_is_active", "category_id", "is_active"),
+        # Qidiruv `ILIKE '%...%'` qiladi — oldingi joker B-tree indeksni
+        # ishlatishga imkon bermaydi, trigram GIN esa ishlatadi.
+        Index("ix_providers_name_trgm", "name",
+              postgresql_using="gin", postgresql_ops={"name": "gin_trgm_ops"}),
+        Index("ix_providers_address_trgm", "address",
+              postgresql_using="gin", postgresql_ops={"address": "gin_trgm_ops"}),
+        # Ro'yxat doim faol provayderlarni reyting bo'yicha beradi. Qisman
+        # indeks bloklangan/nofaollarni tashlab, keyset sahifalashni ham qo'llaydi.
+        Index("ix_providers_active_rating", "rating", "id",
+              postgresql_where=text("is_active")),
     )
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
@@ -37,8 +47,11 @@ class Provider(Base):
     cancelled_orders_count: Mapped[int] = mapped_column(Integer, default=0)
 
     category = relationship("Category", back_populates="providers")
-    orders = relationship("Order", back_populates="provider", lazy="selectin")
-    reviews = relationship("Review", back_populates="provider", lazy="selectin")
+    # `lazy="raise"`: bu to'plamlar hech qayerda o'qilmaydi, `selectin` esa
+    # har provayder yuklanganda uning BARCHA buyurtma va sharhlarini tortardi.
+    # Kerak bo'lsa `selectinload(Provider.orders)` bilan aniq so'ralsin.
+    orders = relationship("Order", back_populates="provider", lazy="raise")
+    reviews = relationship("Review", back_populates="provider", lazy="raise")
     owner = relationship("User", foreign_keys=[owner_user_id], back_populates="providers", lazy="selectin")
 
     def to_dict(self) -> dict:

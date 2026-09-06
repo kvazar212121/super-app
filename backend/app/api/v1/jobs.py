@@ -107,16 +107,19 @@ async def jobs_feed(
     Buxorodagi usta Toshkentdagi e'lonni ko'rib, bekorga taklif
     bermasligi uchun.
     """
-    jobs = await JobService.list_for_providers(db, category_id, limit)
     if provider_id is None:
-        return jobs
+        return await JobService.list_for_providers(db, category_id, limit)
 
     from app.models.provider import Provider
     from app.services.ai_job.geo import filter_jobs_for_provider
 
     provider = await db.get(Provider, provider_id)
     if provider is None:
-        return jobs
+        return await JobService.list_for_providers(db, category_id, limit)
+
+    # Masofa filtri `LIMIT` dan OLDIN, SQL'da qo'llanadi. Keyingi Python
+    # bosqichi faqat koordinatasiz e'lonlarni manzil matni bo'yicha saralaydi.
+    jobs = await JobService.list_for_providers(db, category_id, limit, provider)
     return filter_jobs_for_provider(jobs, provider)
 
 

@@ -8,7 +8,8 @@ from datetime import datetime, timezone
 import enum
 
 from sqlalchemy import (
-    JSON, DateTime, Enum, Float, ForeignKey, Integer, String, Text, func,
+    JSON, DateTime, Enum, Float, ForeignKey, Index, Integer, String, Text,
+    func, text,
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -38,6 +39,23 @@ class Listing(Base):
     """Sotuvga qo'yilgan buyum."""
 
     __tablename__ = "listings"
+    __table_args__ = (
+        # Matn qidiruvi `ILIKE '%...%'` — faqat trigram GIN yordam beradi.
+        Index("ix_listings_title_trgm", "title",
+              postgresql_using="gin", postgresql_ops={"title": "gin_trgm_ops"}),
+        Index("ix_listings_description_trgm", "description",
+              postgresql_using="gin",
+              postgresql_ops={"description": "gin_trgm_ops"}),
+        # Qidiruv HAR DOIM `status='active'` bilan cheklanadi, shuning uchun
+        # qisman indeks: jadvalning 25% i (sotilgan/eskirgan) indeksga kirmaydi.
+        Index("ix_listings_active_created", "created_at", "id",
+              postgresql_where=text("status = 'active'")),
+        Index("ix_listings_active_cat_created", "category_key", "created_at", "id",
+              postgresql_where=text("status = 'active'")),
+        # Geo: avval bounding box (lat/lng BETWEEN), keyin aniq masofa.
+        Index("ix_listings_active_geo", "lat", "lng",
+              postgresql_where=text("status = 'active'")),
+    )
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True,
                                     autoincrement=True)

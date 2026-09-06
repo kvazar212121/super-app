@@ -1,5 +1,7 @@
 from datetime import datetime
-from sqlalchemy import DateTime, Integer, String, Boolean, ForeignKey, func, Text
+from sqlalchemy import (
+    Boolean, DateTime, ForeignKey, Index, Integer, String, Text, func, text,
+)
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
@@ -7,6 +9,13 @@ from app.db.base import Base
 
 class Plan(Base):
     __tablename__ = "plans"
+    __table_args__ = (
+        # Eslatma scheduleri har 15 soniyada shu shart bo'yicha qidiradi.
+        # Qisman indeks: bajarilgan/xabar berilgan rejalar (aksariyati)
+        # indeksga umuman kirmaydi, shuning uchun u kichik va doim issiq.
+        Index("ix_plans_pending_due", "due_date",
+              postgresql_where=text("is_completed = false AND is_notified = false")),
+    )
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id", ondelete="CASCADE"), index=True)
