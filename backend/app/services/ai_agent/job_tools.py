@@ -48,16 +48,24 @@ _REDIS_TTL = 7200
 
 
 def _get_draft(user_id: int) -> JobDraft:
-    draft = _DRAFTS.get(user_id)
-    if draft is not None:
-        return draft
+    """Qoralamani oladi. Redis — YAGONA haqiqat manbai.
+
+    Ilgari avval lokal lug'at tekshirilardi va u hech qachon Redis bilan
+    solishtirilmasdi. Uch workerda bu shunday buzilardi:
+      1-xabar A workerga tushdi  -> {sarlavha}
+      2-xabar B workerga tushdi  -> Redis'dan o'qidi, manzil qo'shdi
+      3-xabar yana A workerga    -> A o'z ESKI nusxasini qaytardi
+    Natijada agent foydalanuvchi aytgan narsani "unutar" edi. Bundan
+    yomoni: e'lon A'da joylangach `clear_draft` faqat A'ni tozalardi,
+    B'dagi eski nusxa qolib, takroriy e'longa olib kelishi mumkin edi.
+    """
     try:
         from app.core.redis_client import get_redis
 
         raw = get_redis().get(_REDIS_KEY.format(user_id))
         if raw:
             data = json.loads(raw)
-            draft = JobDraft(
+            return JobDraft(
                 category_id=data.get("category_id"),
                 title=data.get("title"),
                 description=data.get("description"),
@@ -68,18 +76,18 @@ def _get_draft(user_id: int) -> JobDraft:
                 lat=data.get("lat"),
                 lng=data.get("lng"),
             )
-            _DRAFTS[user_id] = draft
-            return draft
+        # Redis ishlayapti, lekin qoralama YO'Q (tugallangan yoki muddati
+        # o'tgan). Shu workerda eski nusxa qolgan bo'lsa — tashlaymiz.
+        _DRAFTS.pop(user_id, None)
+        return JobDraft()
     except Exception as exc:
         logger.warning("Ish qoralamasini Redis'dan o'qib bo'lmadi: %s", exc)
 
-    draft = JobDraft()
-    _DRAFTS[user_id] = draft
-    return draft
+    # Redis yo'q — lokal zaxiraga tushamiz (bitta worker bo'lsa ishlaydi).
+    return _DRAFTS.get(user_id) or JobDraft()
 
 
 def _save_draft(user_id: int, draft: JobDraft) -> None:
-    _DRAFTS[user_id] = draft
     try:
         from app.core.redis_client import get_redis
 
@@ -100,8 +108,13 @@ def _save_draft(user_id: int, draft: JobDraft) -> None:
             json.dumps(data, ensure_ascii=False),
             ex=_REDIS_TTL,
         )
+        # Redis'da bor — lokal nusxa kerak emas va zararli (eskiradi).
+        # Shu sabab `_DRAFTS` faqat Redis yo'q bo'lgandagina to'ladi va
+        # cheksiz o'smaydi (Redis'da TTL bor, lug'atda yo'q edi).
+        _DRAFTS.pop(user_id, None)
     except Exception as exc:
         logger.warning("Ish qoralamasini Redis'ga yozib bo'lmadi: %s", exc)
+        _DRAFTS[user_id] = draft
 
 
 def clear_draft(user_id: int) -> None:

@@ -56,16 +56,20 @@ _REDIS_TTL = 7200  # 2 soat — suhbat shuncha davom etmaydi
 
 
 def _get_draft(user_id: int) -> ListingDraft:
-    draft = _DRAFTS.get(user_id)
-    if draft is not None:
-        return draft
+    """Qoralamani oladi. Redis — YAGONA haqiqat manbai.
+
+    Ilgari lokal lug'at birinchi tekshirilardi va Redis bilan hech qachon
+    solishtirilmasdi: boshqa workerda kiritilgan o'zgarish shu workerda
+    ko'rinmay, agent aytilgan narsani "unutardi". Batafsil sabab
+    `job_tools._get_draft` izohida.
+    """
     try:
         from app.core.redis_client import get_redis
 
         raw = get_redis().get(_REDIS_KEY.format(user_id))
         if raw:
             data = json.loads(raw)
-            draft = ListingDraft(
+            return ListingDraft(
                 category_key=data.get("category_key"),
                 title=data.get("title"),
                 description=data.get("description"),
@@ -79,21 +83,21 @@ def _get_draft(user_id: int) -> ListingDraft:
                 attributes=data.get("attributes") or {},
                 photos=list(data.get("photos") or []),
             )
-            _DRAFTS[user_id] = draft
-            return draft
+        # Redis ishlayapti, lekin qoralama YO'Q (e'lon berilgan yoki
+        # muddati o'tgan). Shu workerdagi eski nusxa tashlanadi — aks
+        # holda tugallangan e'lon qayta ochilib ketishi mumkin edi.
+        _DRAFTS.pop(user_id, None)
+        return ListingDraft()
     except Exception as exc:
         # Redis yo'q bo'lsa ham savdo ISHLASHDA DAVOM ETADI —
         # bitta worker doirasida qoralama xotirada saqlanadi.
         logger.warning("Qoralamani Redis'dan o'qib bo'lmadi: %s", exc)
 
-    draft = ListingDraft()
-    _DRAFTS[user_id] = draft
-    return draft
+    return _DRAFTS.get(user_id) or ListingDraft()
 
 
 def _save_draft(user_id: int, draft: ListingDraft) -> None:
-    """Qoralamani xotiraga va Redis'ga yozadi."""
-    _DRAFTS[user_id] = draft
+    """Qoralamani Redis'ga yozadi (lokal lug'at — faqat zaxira)."""
     try:
         from app.core.redis_client import get_redis
 
@@ -116,8 +120,11 @@ def _save_draft(user_id: int, draft: ListingDraft) -> None:
             json.dumps(data, ensure_ascii=False),
             ex=_REDIS_TTL,
         )
+        # Redis'da bor — lokal nusxa kerak emas va eskirib zarar keltiradi.
+        _DRAFTS.pop(user_id, None)
     except Exception as exc:
         logger.warning("Qoralamani Redis'ga yozib bo'lmadi: %s", exc)
+        _DRAFTS[user_id] = draft
 
 
 def clear_draft(user_id: int) -> None:

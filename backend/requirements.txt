@@ -31,3 +31,5 @@ firebase-admin>=6.5,<7
 
 # Testlar (tests/ ichidagi skriptlar SQLite xotira bazasida ishlaydi)
 aiosqlite>=0.20
+# Ko'p workerli qoralama testi umumiy Redis'ni taqlid qiladi
+fakeredis>=2.21
