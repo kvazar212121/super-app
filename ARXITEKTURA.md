@@ -52,6 +52,7 @@ Ular uchun `git log` va `docs/qilingan_ishlar/` bor.
 | [17](#17-malum-muammolar) | Ma'lum muammolar |
 | [18](#18-ishlash-qoidalari) | Ishlash qoidalari |
 | [19](#19-ozgarishlar-jurnali) | O'zgarishlar jurnali |
+| [20](#20-ai-agentni-kengaytirish-konsepsiyasi) | **AI agentni kengaytirish konsepsiyasi** |
 
 ---
 
@@ -128,7 +129,7 @@ find backend/app -name '*.py' | xargs cat | wc -l     # 29 810 qator
 grep -c include_router backend/app/api/v1/router.py   # 49 router
 grep -rh '__tablename__' backend/app/models/ | wc -l  # 47 jadval
 find backend/app/services -name '*.py' | wc -l        # 70 servis
-grep -c '"name":' backend/app/services/ai_agent/tools_schema.py   # 47 AI tool
+grep -c '"name":' backend/app/services/ai_agent/tools_schema.py   # 46 AI tool
 ```
 
 ---
@@ -379,7 +380,7 @@ chiqadi. Kelishilsa `call_deals` yozuvi yaratiladi va buyurtmaga aylanadi.
 
 ## 10. AI agent
 
-`backend/app/services/ai_agent/` — **47 ta tool**.
+`backend/app/services/ai_agent/` — **46 ta tool**.
 
 ### Yangi tool qo'shish
 
@@ -821,3 +822,247 @@ ishlashi mumkin. `docs/qilingan_ishlar/` — **arxiv**, "todo" emas.
 | 2026-09-06 | Backend: 20 buzuq skript, 9 o'lik simvol, 37 ishlatilmaydigan import tozalandi | §5 |
 | 2026-09-06 | Qidiruv SQL'ga ko'chirildi (0% → 100% qamrov), 9 ta indeks, `lazy="raise"`, bo'laklab tozalash | §16.5 |
 | 2026-09-06 | Keyset sahifalash va partitsiyalash ataylab qoldirildi — sabab yozildi | §16.6 |
+| 2026-09-06 | AI agent kengaytirish konsepsiyasi: qamrov tahlili, shikoyat/jazo tizimi, aldashdan himoya | §20 |
+
+---
+
+## 20. AI agentni kengaytirish konsepsiyasi
+
+> **Holat:** loyihalash bosqichi (2026-09-06). Hali qurilmagan.
+> Bu bo'lim maqsad va qarorlarni yozib qo'yadi — kod yozilgach §10 yangilanadi.
+
+### 20.1 Bugungi qamrov — o'lchangan
+
+Agent **46 ta tool** bilan ishlaydi va ular **faqat mijoz tomonini** qoplaydi.
+
+**Agent qila oladi:** reja, vazifa, budilnik, moliya, bozorlik, xizmat qidirish va
+bron, ish e'loni, savdo e'loni, ob-havo/valyuta/namoz, qadam soni.
+
+**Agentga umuman ulanmagan bo'limlar (10 ta):**
+`calls`, `calories`, `campaigns`, `checkin`, `disputes`, `messages`,
+`notifications`, `support`, `promos`, `app_config`.
+
+**Eng katta bo'shliq — usta kabineti.** Loyihada **18 ta provayder portali
+moduli** bor (sartarosh, salon, kuryer, enaga, hamshira, stomatolog…), lekin
+ular uchun bironta ham tool yo'q. Ya'ni usta AI'dan hech qanday yordam
+ololmaydi: buyurtmani qabul qila olmaydi, jadvalini boshqara olmaydi, ish
+e'loniga taklif bera olmaydi, hisobotini so'rayolmaydi.
+
+Bu ikki tomonlama bozor, lekin AI faqat bir tomoniga xizmat qiladi.
+
+### 20.2 Universal agent — qamrovni yopish
+
+Maqsad: **ilovadagi har bir amal agent orqali ham bajarilishi kerak.**
+
+Tartib (foyda / mehnat nisbatiga ko'ra):
+
+| Bosqich | Nima qo'shiladi | Nega |
+|---|---|---|
+| 1 | **Usta tomoni tool'lari** — taklif berish, buyurtmani qabul/rad, jadval, bo'sh vaqt, hisobot, balans ko'rish | Butun bir foydalanuvchi toifasi AI'siz qolgan |
+| 2 | **Chat va aloqa** — `messages`, `calls` tarixi, "ustaga yoz" | Bitim shu yerda pishadi |
+| 3 | **Shikoyat va nizo** — `disputes`, `support` (§20.3) | Xavfsizlik uchun poydevor |
+| 4 | **Bildirishnoma va aksiya** — `notifications`, `campaigns`, `promos` | Qaytarish (retention) |
+| 5 | **Kaloriya, check-in** | Qolgan mini-ilovalar |
+
+**Qoida:** har yangi tool `user_id` filtri va (o'zgartiruvchi bo'lsa) `confirm`
+darvozasi bilan keladi — §10 dagi mavjud qoida yangi tool'larga ham tegishli.
+
+⚠️ **Tool soni oshgani sayin token yuki oshadi.** Hozir 46 tool = 6 837 token
+har chaqiruvda (§20.6). 100 toolga chiqsa prompt bilan birga ~20 000 token
+bo'ladi. Shuning uchun **tool'larni guruhlash** universal agentga o'tishning
+SHARTI: avval niyat aniqlanadi, keyin faqat mos guruh yuboriladi.
+
+### 20.3 Shikoyat va javobgarlik tizimi
+
+#### Bugun nima bor
+
+| Jadval | Vazifasi | Holati |
+|---|---|---|
+| `disputes` | Buyurtma bo'yicha nizo, qaytarish summasi, admin yechimi | ✅ Ishlaydi |
+| `provider_fraud_stats` | Oylik: `no_show_count`, `disputed_count`, `flag_level` | ⚠️ Muammoli |
+| `blocked_users` | Provayder mijozni bloklaydi | ✅ Ishlaydi (lokal) |
+| `support_tickets` | Foydalanuvchi ↔ admin yozishmasi | ✅ Ishlaydi |
+| `audit_logs` | Admin amallari jurnali | ✅ Ishlaydi |
+
+Eskalatsiya narvoni ham bor (`services/checkin_service.py`):
+5+ no_show → `warning`, 10+ → `alert`, 3+ nizo → `suspended`.
+
+#### Uchta jiddiy kamchilik
+
+**1. `suspended` hech narsani to'xtatmaydi.** Flag qo'yiladi va provayderga
+«🔴 Faoliyat to'xtatildi... Profilingiz tekshiruv tugagunicha to'xtatildi»
+degan xabar ketadi. Lekin `flag_level` butun kodda faqat **admin
+monitoringida ko'rsatish uchun** o'qiladi. Qidiruv esa `is_blocked` ni
+tekshiradi — bu **alohida**, admin qo'lda qo'yadigan maydon.
+**Ya'ni tizim provayderga yolg'on aytadi:** u to'xtatilmagan, ishlayveradi.
+
+**2. Hisob har oy nolga tushadi.** `provider_fraud_stats.month = "2026-09"` —
+har oy yangi qator. Har oyda 2 ta nizo qiladigan odam **hech qachon**
+`suspended` ga yetmaydi. Doimiy tarix yo'q.
+
+**3. Foydalanuvchi shikoyati tizimga kirmaydi.** Hisob faqat check-in'dagi
+`no_show` va `disputed` dan o'sadi. Mijoz AI chatda «bu usta meni aldadi»
+desa — bu hech qayerga yozilmaydi.
+
+#### Loyihalanayotgan tizim
+
+**Asosiy qaror: AI jazo TAYINLAMAYDI.**
+
+AI shikoyatni qabul qiladi, tasniflaydi, dalil yig'adi va **taklif** qiladi.
+Qaror — deterministik qoidalar mexanizmi, og'ir holatlarda esa **inson**.
+
+Nega bu shunchalik muhim:
+- LLM ni gap bilan aldash mumkin (§20.4)
+- LLM bir xil kirishga har xil javob beradi
+- Umrbod bloklash va militsiyaga xabar — **qaytarib bo'lmaydigan** amallar
+- Aybsiz odamning biznesini yopish, aybdorni qo'yib yuborishdan qimmatroq
+
+```
+Shikoyat (chat / tugma / nizo)
+   ↓
+[AI]  tasniflaydi: tur, og'irlik, dalil havolalari
+      → yozadi: complaints (append-only)
+      → jazo tayinlamaydi, hech narsa o'chirmaydi
+   ↓
+[QOIDALAR MEXANIZMI]  deterministik, LLM emas
+      → offence_ledger ga voqea qo'shadi
+      → doimiy trust_score qayta hisoblanadi
+   ↓
+   ├─ yengil   → ogohlantirish            (avtomatik)
+   ├─ o'rta    → vaqtincha cheklov        (avtomatik, apellyatsiya bilan)
+   ├─ og'ir    → to'xtatish               (avtomatik + inson 24 soatda ko'rib chiqadi)
+   └─ o'ta og'ir → umrbod / huquqiy       (FAQAT inson qarori)
+```
+
+#### Jazo narvoni
+
+| Daraja | Sabab (misol) | Chora | Kim qaror qiladi |
+|---|---|---|---|
+| 1 | Kechikish, javob bermaslik | Ogohlantirish + ball | Avtomatik |
+| 2 | Takroriy no-show | 7 kun qidiruvda past o'rin | Avtomatik |
+| 3 | Tasdiqlangan nizo (pul) | 30 kun to'xtatish | Avtomatik + inson tekshiruvi |
+| 4 | Firibgarlik namunasi | Doimiy to'xtatish | **Inson** |
+| 5 | Jinoyat alomati | Huquqiy jarayon | **Inson + yurist** |
+
+**Har daraja uchun shart:** apellyatsiya yo'li va dalil. Dalilsiz jazo yo'q.
+
+#### Ma'lumot modeli (yangi jadvallar)
+
+```
+complaints              kim, kimga, tur, matn, dalil havolalari, AI tasnifi,
+                        holati (yangi/tekshiruvda/asosli/asossiz)
+
+offence_ledger          APPEND-ONLY. Har voqea: sabab, daraja, dalil,
+                        kim/nima qo'ygan (qoida yoki admin id), vaqt.
+                        HECH QACHON UPDATE/DELETE qilinmaydi.
+
+trust_profile           Joriy holat — ledger'dan HISOBLANADI, qo'lda yozilmaydi.
+                        Doimiy (oyma-oy tushmaydi): umumiy ball, joriy cheklov,
+                        cheklov tugash vaqti.
+
+identity_links          Bir odamning bir necha akkaunti: telefon, qurilma
+                        (device_token), to'lov kartasi, manzil — HASH holida.
+                        Bloklangan odam yangi raqam bilan qaytmasin.
+
+appeals                 Shikoyat ustidan shikoyat: kim, qaysi jazoga, sabab,
+                        natija.
+```
+
+**Nega `offence_ledger` append-only:** joriy holatni o'chirib bo'lmaydi, chunki
+u saqlanmaydi — hisoblanadi. Kimdir (yoki biror xato) `trust_profile` ni
+o'zgartirsa ham, keyingi qayta hisobda tarix qaytadi.
+
+#### Umrbod ro'yxat va huquqiy jarayon
+
+Siz aytgan «nomini spam qilish» va «militsiyaga berish» qismiga alohida
+e'tibor kerak:
+
+- **Ichki qora ro'yxat — ha.** Bloklangan odam yangi akkaunt ochsa,
+  `identity_links` orqali tanilib, ro'yxatdan o'tolmaydi. Bu qonuniy va
+  to'g'ri.
+- **Ismni OMMAGA e'lon qilish — tavsiya etilmaydi.** Bu tuhmat (defamation)
+  bo'yicha da'vo xavfini tug'diradi, ayniqsa keyinchalik xato aniqlansa.
+  Bunda platforma javobgar bo'ladi, firibgar emas. Ichki ro'yxat bir xil
+  himoyani beradi, xavfsiz.
+- **Militsiyaga xabar — hech qachon avtomatik emas.** Tizim *dosye* tayyorlaydi
+  (buyurtmalar, yozishmalar, to'lovlar, dalillar), lekin uni **inson** ko'rib
+  chiqib, yurist bilan tasdiqlaydi. AI tasnifiga asoslanib odamni militsiyaga
+  berish — noto'g'ri aniqlashda og'ir oqibat.
+
+### 20.4 AI ni aldashdan himoya
+
+Siz to'g'ri xavotir bildirdingiz: kimdir AI ni gap bilan ko'ndirib o'z
+yozuvini o'chirtirishi mumkin. Yechim — **AI ga bunday imkoniyat umuman
+bermaslik.**
+
+| Qoida | Qanday amalga oshadi |
+|---|---|
+| AI jazo yozuviga **yoza olmaydi** | `offence_ledger` uchun tool YO'Q. Faqat qoidalar mexanizmi yozadi |
+| AI o'z holatini **o'zgartira olmaydi** | Har tool `user_id` bo'yicha filtrlaydi (mavjud qoida) — o'zining jazo yozuviga ham tegolmaydi |
+| Yozuvlar **o'chmaydi** | Append-only jadval; `DELETE` huquqi ilova roliga berilmaydi |
+| Prompt bilan boshqarib bo'lmaydi | Chegara promptda emas, **kodda va DB huquqlarida**. Prompt "iltimos qilma" deydi — bu himoya emas |
+| Shikoyat matni **buyruq emas** | Foydalanuvchi matni tool argumenti sifatida keladi, prompt sifatida emas |
+
+**Asosiy tamoyil:** LLM ga aytilgan qoida — maslahat. Kodda qo'yilgan chegara —
+qoida. Xavfsizlik faqat ikkinchisiga tayanadi.
+
+### 20.5 Admin panelda prompt boshqaruvi
+
+Bugun: `settings_service.get("ai_chat_prompt")` — bitta matn maydoni,
+to'g'ridan-to'g'ri almashtiriladi. Xato yozilsa agent darhol buziladi va
+qaytarish yo'li yo'q.
+
+Kerak bo'lgan minimal tizim:
+
+| Imkoniyat | Nega |
+|---|---|
+| **Versiyalash** | Har saqlash yangi versiya. Buzilsa bir bosishda qaytariladi |
+| **Eval bilan darvoza** | Yangi prompt §20.6 dagi to'plamda sinaladi. Ball tushsa — ogohlantirish |
+| **Bo'laklarga bo'lish** | Bitta 240 qatorli matn emas: asosiy qoidalar / bron / savdo / format — alohida bloklar. Bittasini o'zgartirish boshqasini buzmaydi |
+| **A/B** | Ikki versiyani foydalanuvchilarning bir qismida solishtirish |
+| **Kim o'zgartirdi** | `audit_logs` ga yozish (mexanizm allaqachon bor) |
+
+### 20.6 Poydevor: eval to'plami
+
+**Bularning hammasidan OLDIN shu kerak.** Hozir agentning tool tanlashini
+o'lchaydigan hech narsa yo'q — barcha AI testlari deterministik (handler
+ishlaydimi, promptda falon so'z bormi).
+
+Ya'ni promptga har tegish — qimor. Prompt'ning o'zida «bu eng ko'p uchraydigan
+xato» deb belgilangan joylar bor (savdo/ish e'lonini aralashtirish), lekin
+ular haqiqatan tuzalganini hech kim o'lchamaydi.
+
+To'plam shakli: `{foydalanuvchi gapi → kutilgan tool(lar)}`, haqiqiy model
+ustida yurgiziladi, ball chiqadi.
+
+Boshlang'ich to'plamga majburiy kiradigan holatlar:
+- Savdo ↔ ish e'loni farqi (prompt o'zi "eng ko'p xato" deb belgilagan)
+- Reja ↔ bron farqi
+- Tasdiq talab qiladigan amallar tasdiqsiz bajarilmasligi
+- Boshqa foydalanuvchining ma'lumotiga urinish → rad etilishi
+- Til almashuvi (o'zbekcha/ruscha)
+
+### 20.7 Qolib ketgan, e'tibor talab qiladigan nuqtalar
+
+Siz so'ragan "yana nima qoldi" savoliga:
+
+1. **Yolg'on shikoyat.** Raqib usta bir-biriga shikoyat yozib, halol odamni
+   yopib qo'yishi mumkin. Shikoyat beruvchining ham `trust_score` i bo'lishi
+   kerak — asossiz shikoyat o'zi jazoga sabab.
+2. **Xarid tarixisiz shikoyat.** Faqat haqiqiy buyurtma qilgan odam o'sha
+   buyurtma bo'yicha shikoyat qila olsin.
+3. **Ikki tomonlama baho.** Hozir faqat mijoz ustani baholaydi. Usta ham
+   mijozni baholay olsa, yomon mijoz ham ko'rinadi.
+4. **Apellyatsiya muddati.** Jazo qo'yilgach necha kun ichida shikoyat qilish
+   mumkin — belgilanmasa, ish hech qachon yopilmaydi.
+5. **Ma'lumot saqlash muddati.** Jazo yozuvlari qancha saqlanadi? Umrbod
+   saqlash shaxsiy ma'lumot qonunchiligi bilan to'qnashishi mumkin.
+6. **Monitoring va maslahat** (siz aytgan). Bu foydali, lekin chegarasi bor:
+   foydalanuvchi xatti-harakatini kuzatib maslahat berish — u **rozilik**
+   bergandagina. Aks holda bu kuzatuv bo'lib qoladi.
+7. **Agent xatosi kimning javobgarligi.** AI noto'g'ri bron qilsa yoki
+   noto'g'ri e'lon joylasa — kim javob beradi? `confirm` darvozasi shuning
+   uchun bor, lekin qoida yozilishi kerak.
+8. **Xarajat chegarasi.** Universal agent har so'rovда ko'p token yeydi.
+   Foydalanuvchi boshiga kunlik chegara kerak, aks holda bitta odam
+   hisobni bo'shatishi mumkin.
