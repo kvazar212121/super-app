@@ -8,7 +8,6 @@ import '../../widgets/friendly_error.dart';
 import '../../widgets/glass/glass_scaffold.dart';
 import 'alarm_edit_screen.dart';
 import 'alarm_ring_screen.dart';
-import '../../theme/lux_tokens.dart';
 
 /// Majburlovchi budilnik — budilniklar ro'yxati.
 class AlarmHomeScreen extends StatefulWidget {

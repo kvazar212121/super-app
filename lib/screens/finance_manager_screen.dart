@@ -16,7 +16,6 @@ import 'finance/finance_category_breakdown.dart';
 import 'finance/finance_transactions_list.dart';
 import 'finance/finance_planned_tab.dart';
 import 'finance/finance_sheets.dart';
-import '../theme/lux_tokens.dart';
 
 class FinanceManagerScreen extends StatefulWidget {
   const FinanceManagerScreen({super.key});

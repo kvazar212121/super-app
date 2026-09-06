@@ -62,8 +62,8 @@ class _ProviderSalonTeamWidgetState extends State<ProviderSalonTeamWidget> {
   Future<void> _regenerate() async {
     try {
       final code = await _portal.regenerateInvite();
-      setState(() => _inviteCode = code);
       if (mounted) {
+        setState(() => _inviteCode = code);
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text('Yangi kod yaratildi'.tr)));

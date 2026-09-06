@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
-import '../../theme/lux_tokens.dart';
 import '../../theme/glass_tokens.dart';
 import '../../l10n/locale_controller.dart';
 import '../../services/todo_local_service.dart';

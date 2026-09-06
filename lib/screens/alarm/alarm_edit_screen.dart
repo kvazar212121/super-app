@@ -4,7 +4,6 @@ import '../../l10n/locale_controller.dart';
 import '../../models/alarm.dart';
 import '../../services/api_service.dart';
 import '../../services/notification_helper.dart';
-import '../../theme/lux_tokens.dart';
 
 /// Budilnik qo'shish yoki tahrirlash ekrani.
 class AlarmEditScreen extends StatefulWidget {

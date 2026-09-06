@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../theme/lux_tokens.dart';
 import 'package:super_app/l10n/locale_controller.dart';
 
 /// 3-xonali buyurtmalar filtr paneli.

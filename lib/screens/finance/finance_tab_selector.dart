@@ -2,7 +2,6 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import '../../theme/glass_tokens.dart';
 import '../../l10n/locale_controller.dart';
-import '../../theme/lux_tokens.dart';
 
 class FinanceTabSelector extends StatelessWidget {
   final int activeTab;

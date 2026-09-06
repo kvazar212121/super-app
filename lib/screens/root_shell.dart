@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 import '../providers/app_provider.dart';
 import '../providers/auth_provider.dart';
 import '../config/provider_category_config.dart';
-import '../app_navigator.dart';
 import '../services/call_service.dart';
 import '../services/firebase_service.dart';
 import '../services/callkit_service.dart';

@@ -165,6 +165,7 @@ class _HomePromoSectionState extends State<HomePromoSection>
       if (mounted) {
         // TARMOQ XATOSI: avval kesh, kesh ham bo'sh bo'lsagina statik fallback.
         final cached = await _readCache();
+        if (!mounted) return;
         setState(() {
           if (_promos.isEmpty) {
             _promos = cached.isNotEmpty ? cached : _fallbackPromos;

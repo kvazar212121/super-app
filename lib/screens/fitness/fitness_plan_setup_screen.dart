@@ -6,7 +6,6 @@ import '../../services/api_service.dart';
 import '../../theme/glass_tokens.dart';
 import '../../widgets/glass/glass_scaffold.dart';
 import 'fitness_utils.dart';
-import '../../theme/lux_tokens.dart';
 
 /// Shaxsiy mashg'ulot rejasini tuzish: 4 savollik wizard + natija ko'rinishi.
 class FitnessPlanSetupScreen extends StatefulWidget {

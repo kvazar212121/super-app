@@ -8,7 +8,6 @@ import 'package:provider/provider.dart';
 import 'package:smart_auth/smart_auth.dart';
 
 import '../../providers/auth_provider.dart';
-import '../../theme/lux_tokens.dart';
 import 'uz_phone_field.dart';
 import '../../l10n/locale_controller.dart';
 

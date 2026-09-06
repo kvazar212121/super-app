@@ -4,7 +4,6 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../screens/service_hub/service_catalog_screen.dart';
 import 'provider_banner.dart';
 import '../../theme/glass_tokens.dart';
-import '../../theme/lux_tokens.dart';
 import '../../utils/geo_utils.dart';
 
 /// Xizmat ro'yxatidagi BITTA qator (yangi dizayn).
