@@ -60,3 +60,28 @@ post_install do |installer|
     end
   end
 end
+
+# Xcode 16 does not schedule CocoaPods' aggregate target (`Pods-Runner`) as an implicit
+# dependency of `Runner`, so `ld` looks for a framework nobody built:
+#     ld: framework 'Pods_Runner' not found
+# The aggregate holds nothing but CocoaPods' dummy symbol — every real pod is already
+# linked through OTHER_LDFLAGS and copied by [CP] Embed Pods Frameworks (the aggregate is
+# absent from Pods-Runner-frameworks-*-input-files.xcfilelist) — so drop the phantom link.
+# Must run in post_integrate: post_install fires *before* the client project is
+# integrated, and integration would put the link straight back.
+post_integrate do |installer|
+  installer.aggregate_targets.each do |aggregate_target|
+    removed = false
+    aggregate_target.user_targets.each do |user_target|
+      phase = user_target.frameworks_build_phase
+      phase.files.to_a.each do |build_file|
+        name = build_file.display_name.to_s
+        next unless name =~ /\APods_.+\.framework\z/
+        phase.remove_build_file(build_file)
+        removed = true
+        Pod::UI.puts "Removed phantom #{name} link from #{user_target.name}"
+      end
+    end
+    aggregate_target.user_project.save if removed
+  end
+end
