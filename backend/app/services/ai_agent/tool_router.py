@@ -59,6 +59,7 @@ GROUPS: dict[str, set[str]] = {
         "get_steps_today",
     },
     "info": {"get_weather", "get_currency", "get_prayer_times"},
+    "shikoyat": {"report_complaint"},
 }
 
 # Kalit so'zlar. O'zbekcha + ruscha: ruscha yozganda ham to'g'ri guruh
@@ -90,6 +91,11 @@ KEYWORDS: dict[str, tuple[str, ...]] = {
     "info": (
         "ob-havo", "havo qanday", "valyuta", "kurs", "namoz", "dollar",
         "погод", "валют", "курс", "намаз",
+    ),
+    "shikoyat": (
+        "shikoyat", "alda", "firibgar", "qo'pol", "qopol", "pulimni",
+        "norozi", "arz qil",
+        "жалоб", "обману", "обманул", "мошенник", "хамств", "недоволен",
     ),
 }
 

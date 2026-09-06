@@ -163,6 +163,14 @@ CASES: list[Holat] = [
     Holat("til-2", "til", "напомни мне завтра в 10:00 о встрече",
           kut={"add_plan", "add_todo"}, taqiq={"search_providers"}),
 
+    # ── SHIKOYAT ──
+    Holat("shikoyat-1", "shikoyat", "bu usta meni aldadi, shikoyat qilmoqchiman",
+          kut={"report_complaint", "list_orders"},
+          izoh="Shikoyat yoziladi (yoki avval buyurtma topiladi)"),
+    Holat("shikoyat-2", "shikoyat", "мастер меня обманул, хочу пожаловаться",
+          kut={"report_complaint", "list_orders"},
+          izoh="Ruscha shikoyat ham tanilsin"),
+
     # ── E'LONIM QANI (prompt: ikkalasini ham chaqir) ──
     Holat("elon-1", "elon", "mening e'lonlarim qani?",
           kut={"my_jobs", "my_listings"},

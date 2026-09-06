@@ -823,6 +823,8 @@ ishlashi mumkin. `docs/qilingan_ishlar/` — **arxiv**, "todo" emas.
 | 2026-09-06 | Qidiruv SQL'ga ko'chirildi (0% → 100% qamrov), 9 ta indeks, `lazy="raise"`, bo'laklab tozalash | §16.5 |
 | 2026-09-06 | Keyset sahifalash va partitsiyalash ataylab qoldirildi — sabab yozildi | §16.6 |
 | 2026-09-06 | AI agent kengaytirish konsepsiyasi: qamrov tahlili, shikoyat/jazo tizimi, aldashdan himoya | §20 |
+| 2026-09-06 | `suspended` yolg'oni tuzatildi -> `review`, xabar haqiqatni aytadi | §20.3 |
+| 2026-09-06 | Shikoyat tizimi qurildi: jadval, AI tool, admin API. AI jazo tayinlay olmaydi | §20.3 |
 | 2026-09-06 | Eval to'plami qurildi (`tests/eval_ai_tools.py`), bazaviy natija 92%; ruscha eslatma tuzatildi | §20.6 |
 | 2026-09-06 | Qoralama ko'p workerda eskirishi tuzatildi: Redis yagona manba, lokal lug'at faqat zaxira | §10 |
 | 2026-09-06 | Agent kuzatuvi qo'shildi (tool/raund/vaqt/xato); harorat o'lchandi va 0.7 saqlandi | §20.6 |
@@ -915,9 +917,33 @@ o'zgarishi, jadval qayta yozilmaydi) + `startup.py` da idempotent variant
 har oy yangi qator. Har oyda 2 ta nizo qiladigan odam **hech qachon**
 `suspended` ga yetmaydi. Doimiy tarix yo'q.
 
-**3. Foydalanuvchi shikoyati tizimga kirmaydi.** Hisob faqat check-in'dagi
-`no_show` va `disputed` dan o'sadi. Mijoz AI chatda «bu usta meni aldadi»
-desa — bu hech qayerga yozilmaydi.
+**3. ~~Foydalanuvchi shikoyati tizimga kirmaydi~~ — QURILDI (2026-09-06).**
+
+`complaints` jadvali + `report_complaint` tool + admin endpointi
+(`/api/v1/admin/complaints`).
+
+| Qism | Joyi |
+|---|---|
+| Model | `models/complaint.py` |
+| Servis | `services/complaint_service.py` |
+| AI tool | `services/ai_agent/complaint_tools.py` |
+| Admin API | `api/v1/admin/complaints.py` |
+| Migratsiya | `0903e7db0e81` |
+| Test | `tests/test_complaints.py` |
+
+**Muhim qarorlar:**
+
+- **Tasdiq majburiy.** AI shikoyatni darhol yozmaydi: avval matnni
+  ko'rsatib rozilik oladi. Aks holda o'tkinchi norozilik rasmiy
+  shikoyatga aylanib qolardi.
+- **`has_interaction`** — shikoyatchi bilan shikoyat qilinayotgan
+  o'rtasida haqiqiy buyurtma bo'lganmi. Yozuvni **bloklamaydi** (savdo
+  yoki chatdagi holat uchun buyurtma bo'lmasligi normal), lekin adminga
+  eng muhim signal beradi.
+- **Kunlik chegara 10 ta** — ommaviy tuhmatning oldini oladi.
+- **Admin endpointi shart edi:** shikoyat yig'ilib, hech kim ko'rmaydigan
+  jadvalda yotib qolsa, `flag_level` bilan bo'lgan xato takrorlanardi.
+- **Holatni faqat admin o'zgartiradi** va `new` ga qaytarib bo'lmaydi.
 
 #### Loyihalanayotgan tizim
 

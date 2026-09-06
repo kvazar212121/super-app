@@ -18,11 +18,12 @@ from .nav_tools import HANDLERS as _nav
 from .job_tools import HANDLERS as _job
 from .booking_tools import HANDLERS as _booking
 from .market_tools import HANDLERS as _market
+from .complaint_tools import HANDLERS as _complaint
 
 logger = logging.getLogger(__name__)
 
 HANDLERS = {**_personal, **_provider, **_read, **_manage, **_info,
-            **_nav, **_job, **_booking, **_market}
+            **_nav, **_job, **_booking, **_market, **_complaint}
 
 
 def _parse_args(raw) -> dict:

@@ -679,5 +679,41 @@ TOOLS = [
                 "lang": {"type": "string"}
             }, "required": ["listing_id"]}
         }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "report_complaint",
+            "description": (
+                "Foydalanuvchi biror usta yoki sotuvchi ustidan SHIKOYAT "
+                "qilganda chaqiring: «aldadi», «kelmadi», «pulni oldi-yu "
+                "ishlamadi», «qo'pol muomala qildi», «жаловаться хочу». "
+                "IKKI QADAMLI: avval confirm=false — shikoyat matnini "
+                "ko'rsatib «Shu shikoyatni yuborayinmi?» deb so'rang, "
+                "foydalanuvchi rozi bo'lgach confirm=true. "
+                "MUHIM: shikoyat administratorga boradi. Jazo, bloklash "
+                "yoki natija haqida HECH NARSA va'da qilmang — buni siz "
+                "hal qilmaysiz. Qaysi usta haqida ekani noaniq bo'lsa "
+                "avval list_orders bilan buyurtmani toping."
+            ),
+            "parameters": {"type": "object", "properties": {
+                "text": {"type": "string",
+                         "description": "Foydalanuvchi aytgan shikoyat matni"},
+                "kind": {"type": "string",
+                         "enum": ["no_show", "quality", "price", "rude",
+                                  "fraud", "other"],
+                         "description": "no_show — kelmadi, quality — sifatsiz, "
+                                        "price — narx aldovi, rude — qo'pollik, "
+                                        "fraud — firibgarlik"},
+                "provider_id": {"type": "integer", "description": "Usta/provayder ID"},
+                "target_user_id": {"type": "integer",
+                                   "description": "Savdoda sotuvchi (oddiy foydalanuvchi) ID"},
+                "order_id": {"type": "integer", "description": "Tegishli buyurtma ID (dalil)"},
+                "summary": {"type": "string",
+                            "description": "Sizning qisqa xulosangiz (admin o'qiydi)"},
+                "confirm": {"type": "boolean"},
+                "lang": {"type": "string"}
+            }, "required": ["text"]}
+        }
     }
 ]

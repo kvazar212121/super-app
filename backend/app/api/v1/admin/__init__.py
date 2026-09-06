@@ -6,6 +6,7 @@ from app.api.v1.admin import (
     orders,
     categories,
     reviews,
+    complaints,
     finance,
     settings,
     promos,
@@ -39,6 +40,9 @@ router.include_router(providers.router, dependencies=_g("providers"))
 router.include_router(orders.router, dependencies=_g("orders"))
 router.include_router(categories.router, dependencies=_g("categories"))
 router.include_router(reviews.router, dependencies=_g("reviews"))
+# Shikoyatlar «reviews» huquqi ostida: ikkalasi ham foydalanuvchi
+# fikri bilan ishlaydi, alohida rol yaratish ortiqcha.
+router.include_router(complaints.router, dependencies=_g("reviews"))
 router.include_router(finance.router, dependencies=_g("finance"))
 router.include_router(settings.router, dependencies=_g("settings"))
 router.include_router(promos.router, dependencies=_g("promos"))
