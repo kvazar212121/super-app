@@ -4,7 +4,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'dart:async';
 import 'dart:io';
-import 'dart:math' as math;
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -28,6 +27,9 @@ import '../widgets/glass/glass_scaffold.dart';
 import '../theme/glass_tokens.dart';
 import '../l10n/locale_controller.dart';
 import '../models/marketplace/listing.dart';
+import 'chat/chat_catalog_sheet.dart';
+import 'chat/chat_voice_overlay.dart';
+import 'chat/chat_suggestions.dart';
 import '../widgets/marketplace/listing_grid.dart';
 import '../widgets/marketplace/listing_modal.dart';
 import '../theme/lux_tokens.dart';
@@ -69,6 +71,14 @@ class _ChatScreenState extends State<ChatScreen>
   final List<Map<String, dynamic>> _chatHistory = [];
   bool _isTyping = false;
   bool _hasText = false;
+
+  /// Taklif tugmalari ko'rinadimi.
+  ///
+  /// Foydalanuvchi birinchi xabarni yuborishi bilan yashiriladi — suhbat
+  /// boshlangach ular joyni egallab turmasin. Saqlanmaydi: ilova qayta
+  /// ochilganda yana ko'rinadi, chunki har seansda AI nima qila olishini
+  /// eslatib turish kerak.
+  bool _showSuggestions = true;
 
   /// Tanlangan, LEKIN hali yuborilmagan rasm.
   ///
@@ -433,7 +443,7 @@ class _ChatScreenState extends State<ChatScreen>
     if (_voiceOverlay != null) return;
     final overlay = Overlay.of(context);
     _voiceOverlay = OverlayEntry(
-      builder: (_) => _VoiceListeningOverlay(
+      builder: (_) => VoiceListeningOverlay(
         soundLevel: _soundLevelVN,
         onStop: _stopRecordingAndSend,
       ),
@@ -719,6 +729,7 @@ class _ChatScreenState extends State<ChatScreen>
         });
       }
       _isTyping = true;
+      _showSuggestions = false;
     });
     _textController.clear();
     _scrollToBottom();
@@ -755,6 +766,16 @@ class _ChatScreenState extends State<ChatScreen>
           onPressed: _showTextSizeSheet,
         ),
         IconButton(
+          tooltip: 'AI nima qila oladi'.tr,
+          icon: Icon(
+            LucideIcons.layoutGrid,
+            color: GlassTokens.primaryText(context),
+            size: 21,
+          ),
+          onPressed: _openCatalog,
+        ),
+        IconButton(
+          tooltip: 'Yangi chat'.tr,
           icon: Icon(
             LucideIcons.refreshCcw,
             color: GlassTokens.primaryText(context),
@@ -770,6 +791,8 @@ class _ChatScreenState extends State<ChatScreen>
                     "Chat tozalab tashlandi. Sizga yana qanday yordam bera olaman?"
                         .tr,
               });
+              // Yangi chat — takliflar yana kerak bo'ladi.
+              _showSuggestions = true;
             });
           },
         ),
@@ -807,9 +830,39 @@ class _ChatScreenState extends State<ChatScreen>
               },
             ),
           ),
+          if (_showSuggestions)
+            ChatSuggestionBar(
+              takliflar: defaultSuggestions(),
+              onTanlandi: (matn) {
+                // Matnni DARHOL yubormaymiz: foydalanuvchi tahrirlashi
+                // mumkin («ertaga 10:00» -> «bugun 14:00»). Shuning uchun
+                // maydonga qo'yamiz va kursorni oxiriga olib boramiz.
+                // Matn va kursor BITTA amalda qo'yiladi: alohida
+                // qo'yilsa oraliq holatda kursor eski matn uzunligiga
+                // ishora qilib qolishi mumkin.
+                _textController.value = TextEditingValue(
+                  text: matn,
+                  selection: TextSelection.collapsed(offset: matn.length),
+                );
+                // `_hasText` ni qo'lda qo'ymaymiz: kontroller listeneri
+                // (initState'da) matn o'zgarishida o'zi yangilaydi.
+              },
+              onKatalog: _openCatalog,
+            ),
           _buildInputArea(),
         ],
       ),
+    );
+  }
+
+  /// AI imkoniyatlari katalogi. Tanlangan matn kiritish maydoniga
+  /// qo'yiladi — foydalanuvchi so'rovni qanday shakllantirishni ko'radi.
+  Future<void> _openCatalog() async {
+    final matn = await showChatCatalog(context);
+    if (matn == null || !mounted) return;
+    _textController.value = TextEditingValue(
+      text: matn,
+      selection: TextSelection.collapsed(offset: matn.length),
     );
   }
 
@@ -1775,218 +1828,6 @@ class _ChatScreenState extends State<ChatScreen>
           ),
         ),
       ),
-    );
-  }
-}
-
-/// Ovoz yozish paytида ko'rinadigan modal overlay — jonli mic + ekvalayzer.
-/// Foydalanuvchi gapirib bo'lgach (avto-tugash) o'zi yopiladi; tashqariga yoki
-/// yashil tugmaga bosib ham yakunlash mumkin.
-class _VoiceListeningOverlay extends StatefulWidget {
-  final ValueNotifier<double> soundLevel;
-  final VoidCallback onStop;
-
-  const _VoiceListeningOverlay({
-    required this.soundLevel,
-    required this.onStop,
-  });
-
-  @override
-  State<_VoiceListeningOverlay> createState() => _VoiceListeningOverlayState();
-}
-
-class _VoiceListeningOverlayState extends State<_VoiceListeningOverlay>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _c;
-
-  @override
-  void initState() {
-    super.initState();
-    _c = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 1400),
-    )..repeat();
-  }
-
-  @override
-  void dispose() {
-    _c.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Positioned.fill(
-      child: GestureDetector(
-        onTap: widget.onStop, // tashqariga bosish ham yakunlaydi
-        child: Material(
-          color: Colors.black.withValues(alpha: 0.62),
-          child: Center(
-            child: GestureDetector(
-              onTap: () {}, // kartaga bosish holatni o'zgartirmasin
-              child: Container(
-                margin: const EdgeInsets.symmetric(horizontal: 36),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 28, vertical: 34),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(28),
-                  border: Border.all(color: LuxTokens.border, width: 1.5),
-                  boxShadow: [
-                    BoxShadow(
-                      color: const Color(0xFF102A43).withValues(alpha: 0.18),
-                      blurRadius: 30,
-                      spreadRadius: 2,
-                    ),
-                  ],
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    _buildMic(),
-                    const SizedBox(height: 26),
-                    _buildBars(),
-                    const SizedBox(height: 24),
-                    Text(
-                      'Tinglayapman...'.tr,
-                      style: const TextStyle(
-                        color: LuxTokens.text,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      "So'zlang — tugagach o'zi yoziladi".tr,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        color: LuxTokens.textMuted,
-                        fontSize: 13,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    const SizedBox(height: 26),
-                    GestureDetector(
-                      onTap: widget.onStop,
-                      child: Container(
-                        width: 62,
-                        height: 62,
-                        decoration: const BoxDecoration(
-                          color: Color(0xFF102A43),
-                          shape: BoxShape.circle,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Color(0x33102A43),
-                              blurRadius: 10,
-                              offset: Offset(0, 4),
-                            ),
-                          ],
-                        ),
-                        child: const Icon(
-                          LucideIcons.check,
-                          color: Colors.white,
-                          size: 28,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildMic() {
-    return ValueListenableBuilder<double>(
-      valueListenable: widget.soundLevel,
-      builder: (context, level, _) {
-        final norm = (level.clamp(0.0, 10.0)) / 10.0;
-        return AnimatedBuilder(
-          animation: _c,
-          builder: (context, _) {
-            return SizedBox(
-              width: 150,
-              height: 150,
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  // Kengayuvchi halqalar
-                  ...List.generate(2, (r) {
-                    final p = (_c.value + r * 0.5) % 1.0;
-                    return Container(
-                      width: 80 + p * 62,
-                      height: 80 + p * 62,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: const Color(0xFF102A43).withValues(alpha: (1 - p) * 0.35),
-                          width: 1.5,
-                        ),
-                      ),
-                    );
-                  }),
-                  // Ovoz balandligiga qarab kattalashuvchi mic doirasi
-                  Container(
-                    width: 74 + norm * 16,
-                    height: 74 + norm * 16,
-                    decoration: const BoxDecoration(
-                      color: Color(0xFF102A43),
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Color(0x33102A43),
-                          blurRadius: 12,
-                          offset: Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    child: const Icon(LucideIcons.mic,
-                        color: Colors.white, size: 32),
-                  ),
-                ],
-              ),
-            );
-          },
-        );
-      },
-    );
-  }
-
-  Widget _buildBars() {
-    return ValueListenableBuilder<double>(
-      valueListenable: widget.soundLevel,
-      builder: (context, level, _) {
-        final norm = (level.clamp(0.0, 10.0)) / 10.0;
-        return AnimatedBuilder(
-          animation: _c,
-          builder: (context, _) {
-            final t = _c.value;
-            return Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: List.generate(21, (i) {
-                final dist = (i - 10).abs() / 10.0; // 0 markaz .. 1 chet
-                final center = 1 - dist; // markaz balandroq
-                final phase = i * 0.55;
-                final wave = 0.5 + 0.5 * math.sin(t * 2 * math.pi + phase);
-                final h = 5.0 + (10 + norm * 42) * wave * (0.35 + 0.65 * center);
-                return Container(
-                  width: 4,
-                  height: h,
-                  margin: const EdgeInsets.symmetric(horizontal: 2.5),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF102A43),
-                    borderRadius: BorderRadius.circular(3),
-                  ),
-                );
-              }),
-            );
-          },
-        );
-      },
     );
   }
 }
