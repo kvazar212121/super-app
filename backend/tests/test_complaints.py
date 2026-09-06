@@ -130,11 +130,16 @@ async def main() -> int:
 
         print("\n=== CHEGARA: AI jazo tizimiga tega olmaydi ===")
         from app.services.ai_agent.dispatcher import HANDLERS
+        # ODAMGA qarshi chora ko'radigan tool bo'lmasligi kerak.
+        # `provider_block_time` bunga kirmaydi — u kalendarda VAQT
+        # oralig'ini band qiladi, hech kimni bloklamaydi.
         taqiqli = [n for n in HANDLERS
-                   if any(k in n for k in ("block", "ban", "punish", "suspend",
-                                           "penalty", "resolve_complaint",
-                                           "delete_complaint"))]
-        check("jazo/blok qiladigan tool YO'Q", not taqiqli, f"topildi: {taqiqli}")
+                   if any(k in n for k in ("block_user", "ban_", "_ban",
+                                           "punish", "suspend", "penalty",
+                                           "resolve_complaint",
+                                           "delete_complaint",
+                                           "update_complaint"))]
+        check("odamga chora ko'radigan tool YO'Q", not taqiqli, f"topildi: {taqiqli}")
 
         # AI status yubormoqchi bo'lsa ham — e'tiborsiz qoladi.
         natija, _ = await handle_tool_call(

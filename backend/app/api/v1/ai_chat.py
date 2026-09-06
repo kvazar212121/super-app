@@ -194,7 +194,26 @@ async def ai_chat(
                 logger.warning(f"AI API status {response.status_code}. Falling back to local parse.")
                 return await fallback_local_parse(user_msg_clean, user_id, db)
 
-            message = response.json()["choices"][0]["message"]
+            tanlov = response.json()["choices"][0]
+            message = tanlov["message"]
+
+            # Model token chegarasiga urilgan bo'lsa, u tool chaqiruvini
+            # TUGATMAGAN: javob bo'sh, amal bajarilmagan. Buni sezmasak
+            # pastdagi zaxira matn «So'rovingiz bajarildi ✅» deb YOLG'ON
+            # aytadi — foydalanuvchi ish bo'ldi deb o'ylab ketadi.
+            if (tanlov.get("finish_reason") == "length"
+                    and not message.get("tool_calls")):
+                logger.warning(
+                    "ai_chat: javob token chegarasida uzildi (user=%s, "
+                    "max_tokens=%s) — amal bajarilmadi",
+                    user_id, settings.groq_max_tokens,
+                )
+                return ChatResponse(
+                    reply=("So'rovingiz uzun chiqdi va javob to'liq "
+                           "shakllanmadi 😔\nIltimos qisqaroq qilib qayta "
+                           "yozing."),
+                    actions=actions,
+                )
 
             if not message.get("tool_calls"):
                 final_reply = message.get("content") or ""

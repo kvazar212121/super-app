@@ -72,7 +72,13 @@ class Settings(BaseSettings):
     # 404 beradi. Model nomini adminkadan o'zgartirish mumkin
     # (Sozlamalar → AI kalitlari), kodga qaytib kelish shart emas.
     groq_model: str = "openai/gpt-oss-120b"
-    groq_max_tokens: int = 1024
+    # 1024 KAM edi. Fikrlaydigan modellar (deepseek-v4-flash) javobdan
+    # oldin ichki tokenlarni sarflaydi va tool chaqiruvigacha yetib
+    # bormaydi: `finish_reason="length"`, javob BO'SH, tool chaqirilmagan.
+    # Foydalanuvchi esa «So'rovingiz bajarildi ✅» degan xabarni ko'rardi —
+    # holbuki hech narsa bajarilmagan. O'lchangan: 1024 -> yiqiladi,
+    # 3000 -> tool to'g'ri chaqiriladi.
+    groq_max_tokens: int = 3000
     # Chat harorati. `tests/eval_ai_tools.py` shu qiymatni o'qiydi, ya'ni
     # o'zgartirilsa eval aynan yuborilayotgan sozlamani o'lchaydi.
     #

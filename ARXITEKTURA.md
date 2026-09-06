@@ -825,6 +825,8 @@ ishlashi mumkin. `docs/qilingan_ishlar/` — **arxiv**, "todo" emas.
 | 2026-09-06 | AI agent kengaytirish konsepsiyasi: qamrov tahlili, shikoyat/jazo tizimi, aldashdan himoya | §20 |
 | 2026-09-06 | `suspended` yolg'oni tuzatildi -> `review`, xabar haqiqatni aytadi | §20.3 |
 | 2026-09-06 | Shikoyat tizimi qurildi: jadval, AI tool, admin API. AI jazo tayinlay olmaydi | §20.3 |
+| 2026-09-06 | Usta tomoni: 5 ta tool + prompt bo'limi + router guruhi | §20.2 |
+| 2026-09-06 | `GROQ_MAX_TOKENS` 1024→3000: kesilgan javob amalni bajarmay «bajarildi» derdi | §20.6 |
 | 2026-09-06 | Eval to'plami qurildi (`tests/eval_ai_tools.py`), bazaviy natija 92%; ruscha eslatma tuzatildi | §20.6 |
 | 2026-09-06 | Qoralama ko'p workerda eskirishi tuzatildi: Redis yagona manba, lokal lug'at faqat zaxira | §10 |
 | 2026-09-06 | Agent kuzatuvi qo'shildi (tool/raund/vaqt/xato); harorat o'lchandi va 0.7 saqlandi | §20.6 |
@@ -848,7 +850,20 @@ bron, ish e'loni, savdo e'loni, ob-havo/valyuta/namoz, qadam soni.
 `calls`, `calories`, `campaigns`, `checkin`, `disputes`, `messages`,
 `notifications`, `support`, `promos`, `app_config`.
 
-**Eng katta bo'shliq — usta kabineti.** Loyihada **18 ta provayder portali
+**Usta kabineti — BOSHLANDI (2026-09-06).** 5 ta tool qo'shildi
+(`services/ai_agent/provider_side_tools.py`): `provider_my_orders`,
+`provider_stats`, `provider_open_jobs`, `provider_send_offer`,
+`provider_block_time`. Router'da alohida `usta` guruhi bor, promptda
+alohida bo'lim.
+
+⚠️ **Buyurtma holatini o'zgartirish ATAYLAB qo'shilmadi.** Uning mantig'i
+`api/v1/provider_portal.py` endpointi ichida: ikki tomonlama tasdiq
+(usta belgilasa mijoz tasdig'i kutiladi) va 30 daqiqalik qoida. Tool'ga
+ko'chirilsa mantiq ikkiga bo'linadi va vaqt o'tib bir-biridan
+uzoqlashadi. Agent ustani `open_app_section` bilan o'sha ekranga
+yo'naltiradi.
+
+**Eski holat — nima bo'lgani:** Loyihada **18 ta provayder portali
 moduli** bor (sartarosh, salon, kuryer, enaga, hamshira, stomatolog…), lekin
 ular uchun bironta ham tool yo'q. Ya'ni usta AI'dan hech qanday yordam
 ololmaydi: buyurtmani qabul qila olmaydi, jadvalini boshqara olmaydi, ish
@@ -1076,38 +1091,34 @@ AI_EVAL=1 ... tests/eval_ai_tools.py --guruh savdo --takror 5
 `tests/run.sh` da avtomatik ishlamaydi. Yangi holat qo'shish = `CASES`
 ro'yxatiga bitta `Holat(...)`.
 
-**Bazaviy natija (2026-09-06, 3 takror): 61/66 urinish — 92%**
+**Natija (2026-09-06, 3 takror): 84/84 — 100%**
 
-| Guruh | Natija | Izoh |
-|---|---|---|
-| savdo | 12/12 | Savdo ↔ ish e'loni farqi ishonchli |
-| ish | 9/9 | |
-| bron | 9/9 | |
-| info | 9/9 | |
-| tasdiq | 3/3 | Tasdiqsiz bekor qilinmaydi |
-| chegara | 6/6 | Pul/hisob amallarini bajarmaydi |
-| elon | 3/3 | |
-| **reja** | **8/9** | ⚠️ Eng zaif |
-| **til** | **4/6** | ⚠️ Ruscha eslatma |
+| Guruh | Natija |
+|---|---|
+| savdo | 12/12 |
+| ish | 9/9 |
+| bron | 9/9 |
+| reja | 9/9 |
+| til | 6/6 |
+| usta | 12/12 |
+| shikoyat | 6/6 |
+| info, chegara, tasdiq, elon | to'liq |
 
-**Topilgan zaiflik:** eslatma/reja niyati eng ishonchsiz — ayniqsa rus
-tilida (3/5). Sabab: promptdagi eslatma qoidasida faqat o'zbekcha kalit
-so'zlar bor edi, savdo qoidasida esa ruscha misol ham bor. Ruscha
-ekvivalentlar qo'shilgach 4/5 ga ko'tarildi.
+**Eval eng katta xatoni shu yerda topdi.** Dastlab «eslatma niyati zaif,
+ayniqsa rus tilida» degan xulosa chiqarilgan edi va promptga ruscha kalit
+so'zlar qo'shilgandi. **Bu tashxis NOTO'G'RI bo'lib chiqdi.** Asl sabab —
+`GROQ_MAX_TOKENS=1024`: fikrlaydigan model (`deepseek-v4-flash`) javobdan
+oldin ichki tokenlarni sarflab, tool chaqiruvigacha yetib bormasdi
+(`finish_reason="length"`). Ruscha matn uzunroq bo'lgani uchun ko'proq
+kesilardi — «til muammosi» shundan ko'ringan.
 
-> ⚠️ 5 ta namunada bu farq statistik jihatdan qat'iy emas — yo'nalish
-> to'g'ri, lekin jiddiy xulosa uchun takrorni oshirish kerak.
+Chegara 3000 ga ko'tarilgach eval 84/84 ga chiqdi. Bu **ishlab
+chiqarishdagi haqiqiy xato** edi: foydalanuvchi «So'rovingiz bajarildi ✅»
+degan javobni ko'rardi, holbuki hech narsa bajarilmagan.
 
-**Eval qurish jarayonida chiqqan ikki saboq:**
-
-1. **Bitta urinish chalg'itadi.** Harorat 0 da ham model beqaror: bir xil
-   gap bir yurishda `add_plan` chaqirdi, keyingisida yo'q. Shuning uchun
-   `--takror` standart 3.
-2. **Eval ishlab chiqarish bilan BIR XIL sozlamada yurishi shart.**
-   Skript `backend/` ga `chdir` qiladi: sozlamalar `.env` ni ishchi
-   papkaga nisbatan qidiradi. Ildizdan yurgizilganda `.env` topilmay,
-   baza standart portga tushib, provayder ro'yxati boshqacha yig'ilgan va
-   eval **butunlay boshqa sozlamani** sinagan — buni bildirmasdan.
+> ⚠️ Sozlama `.env` da: kod standarti emas, **`GROQ_MAX_TOKENS`**.
+> Serverdagi `.env` ham yangilanishi shart, aks holda tuzatish u yerda
+> ishlamaydi.
 
 **Eval bilan o'lchangan qaror — harorat.** "Tool tanlash uchun past
 harorat yaxshiroq" degan umumiy qoida shu loyihada **tasdiqlanmadi**:

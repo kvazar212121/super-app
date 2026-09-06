@@ -715,5 +715,88 @@ TOOLS = [
                 "lang": {"type": "string"}
             }, "required": ["text"]}
         }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "provider_my_orders",
+            "description": (
+                "USTA uchun: menga kelgan buyurtmalar. «Buyurtmalarim», "
+                "«bugun nechta ish bor», «kim menga yozildi». Faqat "
+                "provayder profili bor foydalanuvchida ishlaydi."
+            ),
+            "parameters": {"type": "object", "properties": {
+                "status": {"type": "string",
+                           "description": "pending|confirmed|completed|cancelled"},
+                "limit": {"type": "integer"},
+                "lang": {"type": "string"}
+            }}
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "provider_stats",
+            "description": (
+                "USTA uchun: reyting, sharhlar soni, balans, buyurtmalar "
+                "hisobi. «Ishlarim qanday ketyapti», «reytingim qancha», "
+                "«balansim»."
+            ),
+            "parameters": {"type": "object", "properties": {
+                "lang": {"type": "string"}
+            }}
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "provider_open_jobs",
+            "description": (
+                "USTA uchun: sohamdagi ochiq ish e'lonlari — taklif berish "
+                "uchun. «Yangi ish bormi», «e'lonlarni ko'rsat»."
+            ),
+            "parameters": {"type": "object", "properties": {
+                "limit": {"type": "integer"},
+                "lang": {"type": "string"}
+            }}
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "provider_send_offer",
+            "description": (
+                "USTA uchun: ish e'loniga TAKLIF yuborish. IKKI QADAMLI: "
+                "confirm=false -> tafsilotni ko'rsatib tasdiq so'rang -> "
+                "confirm=true. job_id ni bilmasangiz avval "
+                "provider_open_jobs chaqiring."
+            ),
+            "parameters": {"type": "object", "properties": {
+                "job_id": {"type": "integer"},
+                "price": {"type": "number", "description": "Taklif narxi (so'm)"},
+                "message": {"type": "string", "description": "Mijozga xabar"},
+                "duration_text": {"type": "string", "description": "Masalan «2 soat»"},
+                "confirm": {"type": "boolean"},
+                "lang": {"type": "string"}
+            }, "required": ["job_id", "price"]}
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "provider_block_time",
+            "description": (
+                "USTA uchun: band vaqtni belgilash — bu oraliqda bron "
+                "TUSHMAYDI. «Ertaga 14:00-18:00 bandman», «dam olaman». "
+                "IKKI QADAMLI: confirm=false -> tasdiq -> confirm=true."
+            ),
+            "parameters": {"type": "object", "properties": {
+                "start_time": {"type": "string", "description": "ISO 8601"},
+                "end_time": {"type": "string", "description": "ISO 8601"},
+                "reason": {"type": "string"},
+                "confirm": {"type": "boolean"},
+                "lang": {"type": "string"}
+            }, "required": ["start_time", "end_time"]}
+        }
     }
 ]

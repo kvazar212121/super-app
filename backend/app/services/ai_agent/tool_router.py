@@ -60,6 +60,11 @@ GROUPS: dict[str, set[str]] = {
     },
     "info": {"get_weather", "get_currency", "get_prayer_times"},
     "shikoyat": {"report_complaint"},
+    # USTA tomoni — mijoz tool'laridan ALOHIDA guruh.
+    "usta": {
+        "provider_my_orders", "provider_stats", "provider_open_jobs",
+        "provider_send_offer", "provider_block_time",
+    },
 }
 
 # Kalit so'zlar. O'zbekcha + ruscha: ruscha yozganda ham to'g'ri guruh
@@ -91,6 +96,13 @@ KEYWORDS: dict[str, tuple[str, ...]] = {
     "info": (
         "ob-havo", "havo qanday", "valyuta", "kurs", "namoz", "dollar",
         "погод", "валют", "курс", "намаз",
+    ),
+    "usta": (
+        "menga kelgan", "buyurtmalarim", "reytingim", "balansim",
+        "taklif ber", "taklif yubor", "bandman", "dam olaman",
+        "yangi ish bormi", "ishlarim qanday",
+        "мои заказы", "мой рейтинг", "мой баланс", "отправить предложение",
+        "я занят",
     ),
     "shikoyat": (
         "shikoyat", "alda", "firibgar", "qo'pol", "qopol", "pulimni",
