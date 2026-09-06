@@ -1,11 +1,11 @@
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
 from app.core.cache import cached_json
 from app.db.session import get_db
 from app.models.category import Category, CategoryVariant
-from app.schemas.category import CategoryOut, CategoryCreate, VariantOut, VariantCreate
+from app.schemas.category import CategoryOut, VariantOut
 from app.services import settings_service
 
 router = APIRouter(prefix="/categories", tags=["categories"])

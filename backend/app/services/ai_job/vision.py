@@ -14,7 +14,6 @@ import base64
 import json
 import logging
 
-import httpx
 from fastapi import HTTPException
 
 logger = logging.getLogger(__name__)

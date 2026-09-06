@@ -1,7 +1,7 @@
 from datetime import datetime
 from enum import Enum
 
-from sqlalchemy import DateTime, Float, Integer, String, ForeignKey, Enum as SAEnum
+from sqlalchemy import DateTime, Float, Index, Integer, String, ForeignKey, Enum as SAEnum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
@@ -24,6 +24,11 @@ class OrderStatus(str, Enum):
 
 class Order(Base):
     __tablename__ = "orders"
+    __table_args__ = (
+        Index("ix_orders_user_id_status", "user_id", "status"),
+        Index("ix_orders_provider_id_status", "provider_id", "status"),
+        Index("ix_orders_created_at_status", "created_at", "status"),
+    )
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     user_id: Mapped[int] = mapped_column(

@@ -9,16 +9,9 @@ from alembic import context
 
 from app.db.base import Base
 
-# Import all models so Alembic can detect them
-from app.models.user import User          # noqa: F401
-from app.models.category import Category, CategoryVariant  # noqa: F401
-from app.models.provider import Provider  # noqa: F401
-from app.models.order import Order        # noqa: F401
-from app.models.review import Review      # noqa: F401
-from app.models.payment import PaymentCard  # noqa: F401
-from app.models.setting import PlatformSetting  # noqa: F401
-from app.models.notification import Notification  # noqa: F401
-from app.models.transaction import Transaction  # noqa: F401
+# Hamma modellar import qilinadi: Base.metadata to'liq bo'lmasa, autogenerate
+# ro'yxatga tushmagan jadvallarni "ortiqcha" deb bilib DROP TABLE yozadi.
+import app.models  # noqa: F401
 
 config = context.config
 
@@ -45,8 +38,10 @@ def run_migrations_offline() -> None:
 def run_migrations_online() -> None:
     """Run migrations in 'online' mode."""
     from sqlalchemy import create_engine
+    from app.core.config import settings
 
-    connectable = create_engine(config.get_main_option("sqlalchemy.url"))
+    db_url = getattr(settings, "database_sync_url", None) or config.get_main_option("sqlalchemy.url")
+    connectable = create_engine(db_url)
 
     with connectable.connect() as connection:
         context.configure(

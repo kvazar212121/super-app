@@ -1,7 +1,6 @@
 """Tozalash — yakka tozalovchi yoki jamoa/kompaniya."""
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import selectinload
 from fastapi import HTTPException
 
 from app.models.provider import Provider

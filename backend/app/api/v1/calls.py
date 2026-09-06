@@ -383,7 +383,6 @@ async def save_call_history(
 ):
     from app.models.call_history import CallHistory
     from app.api.v1.provider_portal import _get_user_provider
-    import traceback
 
     # if is_incoming, it means the current user received the call from target_id
     caller_id = data.target_id if data.is_incoming else current_user.id

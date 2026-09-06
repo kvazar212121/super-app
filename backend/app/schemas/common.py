@@ -1,13 +1,8 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 
 class UrlResponse(BaseModel):
     url: str
-
-
-class PaginationParams(BaseModel):
-    page: int = Field(1, ge=1)
-    per_page: int = Field(20, ge=1, le=100)
 
 
 class PaginatedResponse(BaseModel):

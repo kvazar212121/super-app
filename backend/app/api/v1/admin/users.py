@@ -77,7 +77,7 @@ async def list_users(
     search: str | None = Query(None),
     is_premium: bool | None = Query(None),
     sort_by: str = Query("created_at"),
-    sort_order: str = Query("desc", regex="^(asc|desc)$"),
+    sort_order: str = Query("desc", pattern="^(asc|desc)$"),
     page: int = Query(1, ge=1),
     per_page: int = Query(20, ge=1, le=100),
     _admin: User = Depends(require_admin),

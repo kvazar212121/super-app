@@ -1,4 +1,3 @@
-from typing import Optional
 from fastapi import APIRouter, Depends, Query, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import func, select, desc
@@ -8,15 +7,10 @@ from app.db.session import get_db
 from app.models.user import User
 from app.models.provider import Provider
 from app.models.review import Review
-from app.schemas.provider import ReviewOut
 from app.schemas.common import PaginatedResponse
 from app.api.v1.admin.dependencies import require_admin
 
 router = APIRouter()
-
-
-class ReviewListOut(ReviewOut):
-    provider_name: Optional[str] = None
 
 
 @router.get("/reviews", response_model=PaginatedResponse)

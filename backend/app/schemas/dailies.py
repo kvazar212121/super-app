@@ -33,15 +33,6 @@ class ShoppingItemIn(BaseModel):
     qty: float = 1.0
     unit: str = "dona"
 
-class ShoppingItemFull(BaseModel):
-    name: str
-    qty: float = 1.0
-    unit: str = "dona"
-    estimated_price: float = 0.0
-    unit_price: float = 0.0
-    actual_price: Optional[float] = None
-    is_bought: bool = False
-
 class ShoppingListCreate(BaseModel):
     name: str = "Bozorlik"
     items: List[ShoppingItemIn]

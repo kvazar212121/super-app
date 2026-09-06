@@ -1,6 +1,6 @@
 """Seed ma'lumotlar — PostgreSQL ga yuklash uchun."""
 
-from datetime import datetime, timedelta, timezone
+from datetime import datetime
 
 # ── Foydalanuvchilar (seed) ─────────────────────────────────────────────
 USERS = [

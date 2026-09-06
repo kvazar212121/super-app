@@ -12,7 +12,6 @@ from urllib.parse import quote
 
 from app.models.user import User
 from app.models.premium import PremiumPayment
-from app.models.transaction import Transaction
 
 
 def is_active(user: User) -> bool:

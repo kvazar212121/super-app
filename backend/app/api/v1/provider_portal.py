@@ -1,10 +1,10 @@
 """Soha egasi (provider) paneli — buyurtmalar, statistika, hisobotlar."""
-from datetime import datetime, date, timedelta
+from datetime import datetime, date
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query
-from pydantic import BaseModel, Field
-from sqlalchemy import select, func, and_
+from pydantic import BaseModel
+from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 

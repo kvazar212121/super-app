@@ -52,11 +52,3 @@ async def get_db() -> AsyncGenerator[AsyncSession, None]:
         except Exception:
             await session.rollback()
             raise
-
-
-def get_sync_db():
-    db = sync_session()
-    try:
-        yield db
-    finally:
-        db.close()

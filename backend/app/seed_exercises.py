@@ -17,7 +17,6 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 
 from app.core.config import settings
-from app.db.base import Base  # noqa: F401
 from app.models import *  # noqa: F401,F403 — barcha modellarni ro'yxatga olish
 from app.models.exercise import Exercise
 

@@ -2,7 +2,7 @@
 import argparse
 import asyncio
 import logging
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta
 
 from sqlalchemy import select, func, delete
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker

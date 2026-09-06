@@ -55,7 +55,7 @@ class User(Base):
     meal_logs = relationship("MealLog", back_populates="user", lazy="select", cascade="all, delete-orphan")
     nutrition_profile = relationship("NutritionProfile", back_populates="user", uselist=False, lazy="select", cascade="all, delete-orphan")
     alarms = relationship("Alarm", back_populates="user", lazy="select", cascade="all, delete-orphan")
-    providers = relationship("Provider", primaryjoin="User.id==Provider.owner_user_id", lazy="selectin")
+    providers = relationship("Provider", primaryjoin="User.id==Provider.owner_user_id", back_populates="owner", lazy="selectin")
 
     def to_dict(self) -> dict:
         return {

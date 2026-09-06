@@ -84,11 +84,6 @@ class Campaign(Base):
         cascade="all, delete-orphan", lazy="selectin",
     )
 
-    def is_running(self, now: datetime | None = None) -> bool:
-        """Hozir ovoz qabul qilinadimi?"""
-        now = now or datetime.now(self.starts_at.tzinfo)
-        return bool(self.is_active and self.starts_at <= now <= self.ends_at)
-
     def status(self, now: datetime | None = None) -> str:
         """upcoming | running | finished | disabled"""
         if not self.is_active:

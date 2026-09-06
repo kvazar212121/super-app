@@ -1,4 +1,3 @@
-from math import ceil
 from datetime import date, datetime, time
 
 from sqlalchemy.ext.asyncio import AsyncSession

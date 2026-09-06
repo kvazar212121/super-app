@@ -1,4 +1,4 @@
-from sqlalchemy import Float, Integer, String, ForeignKey, JSON
+from sqlalchemy import Float, Index, Integer, String, ForeignKey, JSON
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
@@ -6,6 +6,9 @@ from app.db.base import Base
 
 class Provider(Base):
     __tablename__ = "providers"
+    __table_args__ = (
+        Index("ix_providers_category_id_is_active", "category_id", "is_active"),
+    )
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     category_id: Mapped[int] = mapped_column(
@@ -36,7 +39,7 @@ class Provider(Base):
     category = relationship("Category", back_populates="providers")
     orders = relationship("Order", back_populates="provider", lazy="selectin")
     reviews = relationship("Review", back_populates="provider", lazy="selectin")
-    owner = relationship("User", foreign_keys=[owner_user_id], lazy="selectin")
+    owner = relationship("User", foreign_keys=[owner_user_id], back_populates="providers", lazy="selectin")
 
     def to_dict(self) -> dict:
         return {

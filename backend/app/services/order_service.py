@@ -8,7 +8,6 @@ from app.models.order import Order, OrderStatus
 from app.models.provider import Provider
 from app.models.user import User
 from app.schemas.order import OrderCreate, OrderStatusUpdate
-from app.core.config import settings
 
 
 class OrderService:

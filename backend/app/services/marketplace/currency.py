@@ -70,15 +70,3 @@ def to_uzs(price: float | None, currency: str | None,
     if cur == "USD":
         return float(price) * rate
     return float(price)
-
-
-def format_uzs(price_uzs: float | None, *, original: float | None = None,
-               currency: str = "UZS", lang: str = "uz") -> str:
-    """Xaridorga ko'rinadigan matn: `4 500 000 so'm (350 $)`."""
-    if price_uzs is None:
-        return "Kelishamiz" if lang != "ru" else "Договорная"
-    birlik = "сум" if lang == "ru" else "so'm"
-    matn = f"{price_uzs:,.0f} {birlik}".replace(",", " ")
-    if (currency or "UZS").upper() == "USD" and original:
-        matn += f" ({original:,.0f} $)".replace(",", " ")
-    return matn

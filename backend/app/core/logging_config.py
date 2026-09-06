@@ -113,11 +113,6 @@ def get_request_id() -> str:
     return str(uuid.uuid4())
 
 
-def add_request_id_to_record(record: logging.LogRecord, request_id: str) -> None:
-    """LogRecord ga request_id qo'shadi."""
-    record.request_id = request_id  # type: ignore[attr-defined]
-
-
 class RequestIdFilter(logging.Filter):
     """Hamma log yozuvlariga request_id qo'shadi (agar mavjud bo'lsa)."""
 

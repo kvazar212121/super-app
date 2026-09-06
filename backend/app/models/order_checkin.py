@@ -5,7 +5,7 @@ Har bir buyurtma uchun mijoz va usta alohida checkin qiladi.
 from datetime import datetime
 from enum import Enum
 
-from sqlalchemy import DateTime, Integer, String, ForeignKey, Enum as SAEnum
+from sqlalchemy import DateTime, Integer, ForeignKey, Enum as SAEnum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base

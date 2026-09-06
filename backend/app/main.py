@@ -219,31 +219,6 @@ def create_app() -> FastAPI:
     from fastapi.responses import HTMLResponse
     from app.services import settings_service as _settings_svc
 
-    def _legal_page(title: str, content: str) -> str:
-        paras = "".join(
-            f"<section><p>{p.replace(chr(10), '<br>')}</p></section>"
-            for p in _htmlmod.escape(content or "").split("\n\n") if p.strip()
-        )
-        return (
-            "<!DOCTYPE html><html lang=\"uz\"><head><meta charset=\"UTF-8\">"
-            "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">"
-            f"<title>HubServis — {_htmlmod.escape(title)}</title>"
-            "<style>*{box-sizing:border-box;margin:0;padding:0}"
-            "body{font-family:Inter,system-ui,sans-serif;background:#050505;color:#E5E7EB;line-height:1.65}"
-            "nav{position:sticky;top:0;background:rgba(5,5,5,.85);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,.1)}"
-            ".ni{max-width:820px;margin:0 auto;padding:16px 24px;display:flex;justify-content:space-between;align-items:center}"
-            ".lg{font-weight:800;font-size:1.4rem;letter-spacing:-1px;color:#fff;text-decoration:none}"
-            ".bk{color:#9CA3AF;text-decoration:none;font-size:.9rem}main{max-width:820px;margin:0 auto;padding:40px 24px 72px}"
-            "h1{font-size:2rem;font-weight:800;margin-bottom:24px}"
-            "section{margin-bottom:18px;padding:18px 22px;background:#101012;border:1px solid rgba(255,255,255,.1);border-radius:14px}"
-            "p{color:#D1D5DB;font-size:.98rem}footer{border-top:1px solid rgba(255,255,255,.1);text-align:center;padding:28px;color:#52525B;font-size:.85rem}"
-            "@media(prefers-color-scheme:light){body{background:#fff;color:#0F172A}nav{background:rgba(255,255,255,.9);border-color:rgba(0,0,0,.08)}"
-            ".lg{color:#0F172A}section{background:#F8FAFC;border-color:rgba(0,0,0,.08)}p{color:#334155}}</style></head><body>"
-            "<nav><div class=\"ni\"><a href=\"/\" class=\"lg\">HUBSERVIS</a><a href=\"/\" class=\"bk\">← Bosh sahifa</a></div></nav>"
-            f"<main><h1>{_htmlmod.escape(title)}</h1>{paras}</main>"
-            "<footer>© 2026 HUBSERVIS. Barcha huquqlar himoyalangan.</footer></body></html>"
-        )
-
     def _multilang_legal_page(titles: dict, contents: dict) -> str:
         """Ko'p tilli huquqiy sahifa (uz/ru/en) — yuqorida til almashtirgich bilan."""
         LANGS = [("uz", "O'zbekcha"), ("ru", "Русский"), ("en", "English")]

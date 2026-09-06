@@ -3,13 +3,11 @@ from typing import Optional
 from fastapi import APIRouter, Depends, Query, HTTPException
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import func, select, or_, desc, and_
+from sqlalchemy import func, select, or_, desc
 from sqlalchemy.orm import selectinload
 
 from app.db.session import get_db
 from app.models.user import User
-from app.models.category import Category
-from app.models.provider import Provider
 from app.models.order import Order, OrderStatus
 from app.models.dispute import Dispute
 from app.schemas.order import OrderOut, OrderStatusUpdate

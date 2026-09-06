@@ -1,14 +1,12 @@
 """Foydalanuvchi uchun premium obuna API."""
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
-from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.session import get_db
 from app.api.dependencies import get_current_user
 from app.models.user import User
 from app.models.premium import PremiumPayment
-from app.models.transaction import Transaction
 from app.services import settings_service, premium_service
 
 router = APIRouter(prefix="/premium", tags=["premium"])

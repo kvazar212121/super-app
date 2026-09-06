@@ -1,4 +1,3 @@
-from typing import Optional
 from fastapi import APIRouter, Depends, Query, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import func, select, or_, desc
@@ -12,12 +11,6 @@ from app.schemas.common import PaginatedResponse
 from app.api.v1.admin.dependencies import require_admin
 
 router = APIRouter()
-
-
-class ProviderListOut(ProviderOut):
-    category_title: Optional[str] = None
-    owner_balance: Optional[float] = None
-    owner_phone: Optional[str] = None
 
 
 @router.get("/providers", response_model=PaginatedResponse)

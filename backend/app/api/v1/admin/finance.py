@@ -8,7 +8,7 @@ from sqlalchemy import func, select
 from app.db.session import get_db
 from app.models.user import User
 from app.models.provider import Provider
-from app.models.order import Order, OrderStatus
+from app.models.order import Order
 from app.models.transaction import Transaction
 from app.models.setting import PlatformSetting
 from app.api.v1.admin.dependencies import require_admin

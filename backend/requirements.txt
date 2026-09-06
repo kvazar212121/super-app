@@ -28,3 +28,6 @@ python-multipart>=0.0.9
 # Rasm siqish (upload'larni JPEG'ga o'tkazish)
 Pillow>=10.0
 firebase-admin>=6.5,<7
+
+# Testlar (tests/ ichidagi skriptlar SQLite xotira bazasida ishlaydi)
+aiosqlite>=0.20
