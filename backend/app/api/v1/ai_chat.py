@@ -118,7 +118,12 @@ async def ai_chat(
         Javob `httpx.Response` ga o'xshash oddiy obyekt: chaqiruvchi
         kod `status_code` va `.json()` ni kutadi.
         """
+        from app.services.ai_agent.tool_router import tanla
         from app.services.ai_providers import adapt_payload, mark_failed
+
+        # Suhbatga mos tool'largina yuboriladi. Ikkilanish bo'lsa —
+        # hammasi (tool_router izohiga qarang).
+        yuboriladigan = tanla(messages, TOOLS)
 
         oxirgi = None
         for provider, url, key, model in _chat_nomzodlar:
@@ -134,7 +139,7 @@ async def ai_chat(
                         # `temperature` ni rad etadi — moslashtiramiz.
                         json=adapt_payload(provider, model, {
                             "messages": messages,
-                            "tools": TOOLS,
+                            "tools": yuboriladigan,
                             "tool_choice": "auto",
                             "temperature": settings.ai_chat_temperature,
                             "max_tokens": settings.groq_max_tokens,

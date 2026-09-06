@@ -180,7 +180,11 @@ async def _sora(messages, harorat: float | None = None) -> dict | None:
     import httpx
     from app.core.config import settings
     from app.services.ai_agent import TOOLS
+    from app.services.ai_agent.tool_router import tanla
     from app.services.ai_providers import adapt_payload, candidates
+
+    # Ishlab chiqarishdagidek: faqat mos tool'lar yuboriladi.
+    yuboriladigan = tanla(messages, TOOLS)
 
     for provider, url, key, model in candidates("chat"):
         try:
@@ -191,7 +195,7 @@ async def _sora(messages, harorat: float | None = None) -> dict | None:
                              "Authorization": f"Bearer {key}"},
                     json=adapt_payload(provider, model, {
                         "messages": messages,
-                        "tools": TOOLS,
+                        "tools": yuboriladigan,
                         "tool_choice": "auto",
                         # ISHLAB CHIQARISH harorati. Ilgari bu yerda 0.0
                         # turardi va eval hech qachon yuborilmaydigan

@@ -826,6 +826,7 @@ ishlashi mumkin. `docs/qilingan_ishlar/` — **arxiv**, "todo" emas.
 | 2026-09-06 | Eval to'plami qurildi (`tests/eval_ai_tools.py`), bazaviy natija 92%; ruscha eslatma tuzatildi | §20.6 |
 | 2026-09-06 | Qoralama ko'p workerda eskirishi tuzatildi: Redis yagona manba, lokal lug'at faqat zaxira | §10 |
 | 2026-09-06 | Agent kuzatuvi qo'shildi (tool/raund/vaqt/xato); harorat o'lchandi va 0.7 saqlandi | §20.6 |
+| 2026-09-06 | Tool router: token yuki 70-90% kamaydi, aniqlik o'zgarmadi (65/66) | §20.7 |
 
 ---
 
@@ -1087,7 +1088,39 @@ aynan shu qiymatni o'qiydi (`--harorat` bilan solishtirish mumkin).
 (`429 — You have no credits remaining`). Zaxira zanjiri ishlagani uchun
 chat to'xtamagan, lekin bu e'tiborsiz qolgan.
 
-### 20.7 Qolib ketgan, e'tibor talab qiladigan nuqtalar
+### 20.7 Token yuki — QISQARTIRILDI ✅
+
+`services/ai_agent/tool_router.py` — suhbatga qarab faqat kerakli tool
+guruhini yuboradi.
+
+| Gap | Yuborilgan | Token |
+|---|---|---|
+| (to'liq to'plam) | 46 tool | ~6 837 |
+| «telefonimni sotmoqchiman» | 11 tool | ~1 807 |
+| «kranim oqyapti» | 7 tool | ~1 195 |
+| «sartaroshga yozilmoqchiman» | 12 tool | ~2 187 |
+| «ob-havo qanday» | 6 tool | ~657 |
+| «salom» (ikkilanish) | **to'liq** | ~6 837 |
+
+**Asosiy qoida: ishonch bo'lmasa — HAMMASI yuboriladi.** Qisqartirish
+faqat bitta guruh aniq mos kelganda ishlaydi. Noto'g'ri guruh tanlansa
+agent vazifani umuman bajara olmaydi va foydalanuvchi sababini
+tushunmaydi — ortiqcha token bundan arzon.
+
+Boshlangan suhbatning guruhi doim qo'shiladi: yarim yig'ilgan qoralama
+uzilib qolmasligi kerak.
+
+**O'lchangan ta'sir:** eval 65/66 (98%) — to'liq to'plam bilan bir xil,
+`til` guruhi esa 5/6 dan 6/6 ga ko'tarildi. Ya'ni token 70-90% kamaydi,
+aniqlik tushmadi.
+
+`tests/test_ai_tool_router.py` buni qo'riqlaydi (AI chaqirmaydi, tekin).
+
+> Universal agentga o'tishda (§20.2) yangi tool'lar mos guruhga
+> qo'shilishi SHART, aks holda ular yuborilmay qoladi. Test guruhlarda
+> mavjud bo'lmagan nom borligini ham tekshiradi.
+
+### 20.8 Qolib ketgan, e'tibor talab qiladigan nuqtalar
 
 Siz so'ragan "yana nima qoldi" savoliga:
 
