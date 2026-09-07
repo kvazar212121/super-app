@@ -26,10 +26,18 @@
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>QR-kodlarni skanerlash, rasm va hujjatlarni yuklash hamda video qo'ng'iroqlar uchun kameraga ruxsat bering.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Yaqin atrofdagi xizmatlarni va ob-havo ma'lumotlarini ko'rsatish uchun joylashuvingiz kerak.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Ob-havo ma'lumotlarini aniq ko'rsatish uchun joylashuvingiz kerak.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Ilova orqali qo'ng'iroq qilish uchun mikrofonga ruxsat bering.</string>
+	<key>NSMotionUsageDescription</key>
+	<string>Kunlik qadamlaringizni hisoblash uchun harakat sensorlariga ruxsat bering.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Profil rasmi, hujjat va e'lon suratlarini yuklash uchun galereyaga ruxsat bering.</string>
 	<key>NSSpeechRecognitionUsageDescription</key>
 	<string>Ovozli buyruqlarni matnga aylantirish uchun nutqni aniqlashga ruxsat bering.</string>
 	<key>UIApplicationSceneManifest</key>
